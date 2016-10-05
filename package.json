@@ -1,6 +1,6 @@
 {
   "name": "electron-forge",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A complete tool for building modern Electron applications",
   "main": "index.js",
   "bin": {
