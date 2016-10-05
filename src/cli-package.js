@@ -5,6 +5,7 @@ import path from 'path';
 import program from 'commander';
 import ora from 'ora';
 
+import './util/terminate';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {

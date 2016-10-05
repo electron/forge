@@ -5,6 +5,7 @@ import path from 'path';
 import program from 'commander';
 import ora from 'ora';
 
+import './util/terminate';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -14,7 +15,6 @@ const main = async () => {
     .version(require('../package.json').version)
     .arguments('[cwd]')
     .option('-l, --logging', 'Enable advanced logging.  This will log internal Electron things')
-    .option
     .action((cwd) => {
       if (cwd && fs.existsSync(path.resolve(dir, cwd))) {
         dir = path.resolve(dir, cwd);

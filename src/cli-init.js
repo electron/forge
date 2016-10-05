@@ -6,6 +6,8 @@ import initGit from './init/init-git';
 import initNPM from './init/init-npm';
 import initStarter from './init/init-starter-files';
 
+import './util/terminate';
+
 const main = async () => {
   let dir = process.cwd();
   program

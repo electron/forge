@@ -3,6 +3,7 @@ import 'colors';
 import ora from 'ora';
 import program from 'commander';
 
+import './util/terminate';
 import checkSystem from './util/check-system';
 
 const checker = ora('Checking your System').start();
