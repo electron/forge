@@ -13,6 +13,8 @@ const main = async () => {
   program
     .version(require('../package.json').version)
     .arguments('[cwd]')
+    .option('-l, --logging', 'Enable advanced logging.  This will log internal Electron things')
+    .option
     .action((cwd) => {
       if (cwd && fs.existsSync(path.resolve(dir, cwd))) {
         dir = path.resolve(dir, cwd);
@@ -30,6 +32,10 @@ const main = async () => {
   spawn(`${process.platform === 'win32' ? 'npm.cmd' : 'npm'}`, ['start'], {
     cwd: dir,
     stdio: 'inherit',
+    env: program.logging ? {
+      ELECTRON_ENABLE_LOGGING: true,
+      ELECTRON_ENABLE_STACK_DUMPING: true,
+    } : {},
   });
 
   startSpinner.succeed();
