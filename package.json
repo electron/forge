@@ -9,6 +9,7 @@
   "scripts": {
     "build": "gulp build",
     "lint": "eslint src",
+    "prepublish": "npm run build",
     "test": "npm run lint && mocha test --compilers js:babel-core/register",
     "watch": "gulp watch"
   },
