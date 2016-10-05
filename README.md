@@ -1,5 +1,6 @@
 Electron Forge
 --------------
+[![Build Status](https://travis-ci.org/MarshallOfSound/electron-forge.svg?branch=master)](https://travis-ci.org/MarshallOfSound/electron-forge)
 
 > The simple way to get started with Electron
 
