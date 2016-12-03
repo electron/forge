@@ -3,7 +3,6 @@ import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
 import ora from 'ora';
-import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
 
 import './util/terminate';
 import getForgeConfig from './util/forge-config';
@@ -58,17 +57,17 @@ const main = async () => {
     const makeSpinner = ora(`Making for target: ${target.cyan} - On platform: ${process.platform.cyan}`).start();
     let maker;
     try {
-      maker = require(`./makers/${process.platform}/${target}.js`)
+      maker = require(`./makers/${process.platform}/${target}.js`); //eslint-disable-line
     } catch (err1) {
       try {
-        maker = require(`./makers/generic/${target}.js`)
+        maker = require(`./makers/generic/${target}.js`); //eslint-disable-line
       } catch (err2) {
         makeSpinner.fail();
         throw new Error(`Could not find a build target with the name: ${target} for the platform: ${process.platform}`);
       }
     }
     try {
-      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig);
+      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig); // eslint-disable-line
     } catch (err) {
       makeSpinner.fail();
       if (err) throw err;

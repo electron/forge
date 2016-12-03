@@ -28,8 +28,7 @@
     "eslint-plugin-import": "^1.16.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "mocha": "^3.2.0",
-    "rimraf": "^2.5.4"
+    "mocha": "^3.2.0"
   },
   "babel": {
     "presets": [
@@ -59,6 +58,7 @@
     "mkdirp": "^0.5.1",
     "ora": "^0.3.0",
     "pify": "^2.3.0",
+    "rimraf": "^2.5.4",
     "semver": "^5.3.0",
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",

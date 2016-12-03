@@ -8,12 +8,12 @@ export default async (dir) => {
     electronPackagerConfig: {},
     electronWinstallerConfig: {},
     electronInstallerDebian: {},
-    electronInstallerRedhat: {}
+    electronInstallerRedhat: {},
   }, forgeConfig);
   forgeConfig.make_targets = Object.assign({
     win32: ['squirrel'],
     darwin: ['zip'],
-    linux: ['deb', 'rpm']
+    linux: ['deb', 'rpm'],
   }, forgeConfig.make_targets);
   return forgeConfig;
 };

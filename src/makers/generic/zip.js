@@ -1,7 +1,6 @@
 import { spawn } from 'child_process';
 import fs from 'fs-promise';
 import mkdirp from 'mkdirp';
-import ora from 'ora';
 import path from 'path';
 import pify from 'pify';
 import rimraf from 'rimraf';
@@ -20,7 +19,7 @@ const zipPromise = (from, to) =>
     });
   });
 
-export default async (dir, appName, forgeConfig) => {
+export default async (dir, appName, forgeConfig) => { // eslint-disable-line
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await pify(mkdirp)(path.dirname(zipPath));
   if (await fs.exists(zipPath)) {
@@ -36,5 +35,7 @@ export default async (dir, appName, forgeConfig) => {
     case 'linux':
       await zipPromise(dir, zipPath);
       break;
+    default:
+      throw new Error('Unrecognized platform');
   }
-}
+};
