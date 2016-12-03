@@ -35,7 +35,7 @@ export default async (dir, lintStyle) => {
     await installDepList(dir, deps);
     await installDepList(dir, devDeps, true);
     for (const packageName of exactDevDeps) {
-      await installDepList(dir, [packageName, '--exact'], true);
+      await installDepList(dir, [packageName], true, true);
     }
     switch (lintStyle) {
       case 'standard':

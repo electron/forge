@@ -26,8 +26,9 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    console.error('Failed to locate lintable Electron application'.red);
     lintSpinner.fail();
+    console.error('Failed to locate lintable Electron application'.red);
+    if (global._resolveError) global._resolveError();
     process.exit(1);
   }
 

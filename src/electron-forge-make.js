@@ -28,8 +28,9 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    console.error('Failed to locate makeable Electron application'.red);
     resolveSpinner.fail();
+    console.error('Failed to locate makeable Electron application'.red);
+    if (global._resolveError) global._resolveError();
     process.exit(1);
   }
 

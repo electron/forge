@@ -35,6 +35,7 @@ const main = async () => {
   if (!dir) {
     packagerSpinner.fail();
     console.error('Failed to locate compilable Electron application'.red);
+    if (global._resolveError) global._resolveError();
     process.exit(1);
   }
 

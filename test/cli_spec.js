@@ -22,7 +22,7 @@ const pSpawn = async (args = [], opts = {}) => {
   });
 };
 
-describe.only('electron-forge CLI', () => {
+describe('electron-forge CLI', () => {
   it('should output help', async () => {
     expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
   });
