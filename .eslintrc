@@ -2,7 +2,8 @@
   "extends": "airbnb-base",
   "rules": {
     "consistent-return": 0,
-    "global-require": 0
+    "global-require": 0,
+    "no-underscore-dangle": 0
   },
   "parser": "babel-eslint"
 }

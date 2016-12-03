@@ -1,5 +1,4 @@
 import 'colors';
-import { spawn } from 'child_process';
 import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';

@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'fs';
 import mkdirp from 'mkdirp';
 import os from 'os';
 import path from 'path';
