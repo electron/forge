@@ -4,7 +4,8 @@
   "description": "A complete tool for building modern Electron applications",
   "main": "index.js",
   "bin": {
-    "electron-forge": "dist/cli.js"
+    "electron-forge": "dist/electron-forge.js",
+    "forge": "dist/electron-forge.js"
   },
   "scripts": {
     "build": "gulp build",
@@ -56,6 +57,7 @@
     "mkdirp": "^0.5.1",
     "ora": "^0.3.0",
     "semver": "^5.3.0",
-    "username": "^2.2.2"
+    "username": "^2.2.2",
+    "yarn-or-npm": "^2.0.2"
   }
 }

@@ -20,12 +20,13 @@ const copy = (source, target) =>
     rd.pipe(wr);
   });
 
-export default async (dir) => {
+export default async (dir, lintStyle) => {
   const initSpinner = ora('Copying Starter Files').start();
   const tmplPath = path.resolve(__dirname, '../../tmpl');
 
   mkdirp.sync(path.resolve(dir, 'src'));
-  const rootFiles = ['_gitignore', '_eslintrc'];
+  const rootFiles = ['_gitignore'];
+  if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
   const srcFiles = ['index.js', 'index.html'];
 
   rootFiles.forEach(async (file) => {

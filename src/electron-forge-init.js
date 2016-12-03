@@ -13,15 +13,19 @@ const main = async () => {
   program
     .version(require('../package.json').version)
     .arguments('[name]')
+    .option('-l, --lintstyle [style]', 'Linting standard to follow.  Can be "airbnb" or "standard"', 'airbnb')
     .action((name) => {
       if (name) dir = path.resolve(dir, name);
     })
     .parse(process.argv);
 
+  program.lintstyle = program.lintstyle.toLowerCase();
+  if (!['airbnb', 'standard'].includes(program.lintstyle)) program.lintstyle = 'airbnb';
+
   await initDirectory(dir);
   await initGit(dir);
-  await initNPM(dir);
-  await initStarter(dir);
+  await initNPM(dir, program.lintstyle);
+  await initStarter(dir, program.lintstyle);
 };
 
 main();

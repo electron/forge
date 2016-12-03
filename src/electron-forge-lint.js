@@ -4,6 +4,7 @@ import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
 import ora from 'ora';
+import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
 
 import './util/terminate';
 import resolveDir from './util/resolve-dir';
@@ -28,7 +29,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  const child = spawn(`${process.platform === 'win32' ? 'npm.cmd' : 'npm'}`, ['run', 'lint'], {
+  const child = yarnOrNPMSpawn(['run', 'lint', '--', '--color'], {
     cwd: dir,
   });
   const output = [];
