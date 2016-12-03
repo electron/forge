@@ -9,5 +9,18 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": ["squirrel"],
+        "darwin": ["zip"],
+        "linux": ["deb", "rpm"]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {},
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {}
+    }
+  }
 }

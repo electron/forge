@@ -6,8 +6,10 @@ export default async (dir) => {
   let prevDir;
   while (prevDir !== mDir) {
     prevDir = mDir;
-    if (await fs.exists(path.resolve(mDir, 'package.json'))) {
-      return mDir;
+    const testPath = path.resolve(mDir, 'package.json');
+    if (await fs.exists(testPath)) {
+      const packageJSON = JSON.parse(await fs.readFile(testPath, 'utf8'));
+      if (packageJSON.config && packageJSON.config.forge) return mDir;
     }
     mDir = path.dirname(mDir);
   }

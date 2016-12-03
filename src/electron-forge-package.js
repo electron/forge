@@ -133,4 +133,8 @@ const main = async () => {
   compileSpinner.succeed();
 };
 
-main();
+if (process.mainModule === module) {
+  main();
+}
+
+export default main;

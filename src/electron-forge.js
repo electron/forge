@@ -23,6 +23,7 @@ checkSystem()
       .command('init', 'Initialize a new Electron application')
       .command('lint', 'Lints the current Electron application')
       .command('package', 'Package the current Electron application')
+      .command('make', 'Generate distributables for the current Electron application')
       .command('start', 'Start the current Electron application')
       .parse(process.argv);
 
