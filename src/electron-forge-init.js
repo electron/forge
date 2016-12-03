@@ -4,6 +4,7 @@ import program from 'commander';
 import initDirectory from './init/init-directory';
 import initGit from './init/init-git';
 import initNPM from './init/init-npm';
+import initStandardFix from './init/init-standard-fix';
 import initStarter from './init/init-starter-files';
 
 import './util/terminate';
@@ -15,7 +16,12 @@ const main = async () => {
     .arguments('[name]')
     .option('-l, --lintstyle [style]', 'Linting standard to follow.  Can be "airbnb" or "standard"', 'airbnb')
     .action((name) => {
-      if (name) dir = path.resolve(dir, name);
+      if (!name) return;
+      if (path.isAbsolute(name)) {
+        dir = name;
+      } else {
+        dir = path.resolve(dir, name);
+      }
     })
     .parse(process.argv);
 
@@ -26,6 +32,9 @@ const main = async () => {
   await initGit(dir);
   await initNPM(dir, program.lintstyle);
   await initStarter(dir, program.lintstyle);
+  if (program.lintstyle === 'standard') {
+    await initStandardFix(dir);
+  }
 };
 
 main();

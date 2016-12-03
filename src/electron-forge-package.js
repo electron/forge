@@ -19,7 +19,10 @@ const main = async () => {
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
     .action((cwd) => {
-      if (cwd && fs.existsSync(path.resolve(dir, cwd))) {
+      if (!cwd) return;
+      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
+        dir = cwd;
+      } else if (fs.existsSync(path.resolve(dir, cwd))) {
         dir = path.resolve(dir, cwd);
       }
     })

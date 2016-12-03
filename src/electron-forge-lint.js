@@ -15,7 +15,10 @@ const main = async () => {
     .version(require('../package.json').version)
     .arguments('[cwd]')
     .action((cwd) => {
-      if (cwd && fs.existsSync(path.resolve(dir, cwd))) {
+      if (!cwd) return;
+      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
+        dir = cwd;
+      } else if (fs.existsSync(path.resolve(dir, cwd))) {
         dir = path.resolve(dir, cwd);
       }
     })
@@ -38,6 +41,7 @@ const main = async () => {
     if (code !== 0) lintSpinner.fail();
     if (code === 0) lintSpinner.succeed();
     output.forEach(data => process.stdout.write(data));
+    if (code !== 0) process.exit(code);
   });
 };
 

@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import path from 'path';
 
 import checkSystem from '../src/util/check-system';
 

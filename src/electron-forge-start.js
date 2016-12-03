@@ -16,7 +16,10 @@ const main = async () => {
     .arguments('[cwd]')
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
     .action((cwd) => {
-      if (cwd && fs.existsSync(path.resolve(dir, cwd))) {
+      if (!cwd) return;
+      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
+        dir = cwd;
+      } else if (fs.existsSync(path.resolve(dir, cwd))) {
         dir = path.resolve(dir, cwd);
       }
     })
