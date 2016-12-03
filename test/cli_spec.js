@@ -22,7 +22,9 @@ const pSpawn = async (args = [], opts = {}) => {
   });
 };
 
-describe('electron-forge CLI', () => {
+const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
+
+describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
   it('should output help', async () => {
     expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
   });

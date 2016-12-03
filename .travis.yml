@@ -1,3 +1,8 @@
 language: node_js
 node_js:
   - "6"
+
+script:
+  - npm run test -- --installer=npm
+  - npm i -g yarn
+  - npm run test -- --installer=yarn
