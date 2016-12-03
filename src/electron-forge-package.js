@@ -3,6 +3,7 @@ import asar from 'asar';
 import fs from 'fs-promise';
 import path from 'path';
 import pify from 'pify';
+import packager from 'electron-packager';
 import program from 'commander';
 import ora from 'ora';
 
@@ -44,7 +45,6 @@ const main = async () => {
   const arch = program.arch || process.arch;
   const platform = program.platform || process.platform;
 
-  const packager = require(path.resolve(dir, 'node_modules/electron-packager')); // eslint-disable-line
   const packageOpts = {
     asar: true,
     overwrite: true,

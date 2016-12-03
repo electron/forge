@@ -6,7 +6,7 @@ import username from 'username';
 import installDepList from '../util/install-dependencies';
 
 const deps = [];
-const devDeps = ['babel-preset-stage-0', 'electron-packager'];
+const devDeps = ['babel-preset-stage-0'];
 const exactDevDeps = ['electron-prebuilt-compile'];
 const standardDeps = ['standard'];
 const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
