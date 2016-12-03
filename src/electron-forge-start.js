@@ -1,9 +1,9 @@
 import 'colors';
+import { spawn } from 'child_process';
 import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
 import ora from 'ora';
-import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
 
 import './util/terminate';
 import resolveDir from './util/resolve-dir';
@@ -32,7 +32,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  yarnOrNPMSpawn(['start'], {
+  spawn(process.execPath, [path.resolve(dir, 'node_modules/.bin/electron'), '.'].concat(process.argv.slice(2)), {
     cwd: dir,
     stdio: 'inherit',
     env: program.enableLogging ? {

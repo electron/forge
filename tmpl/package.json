@@ -5,7 +5,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron-forge start"
   },
   "keywords": [],
   "author": "",
