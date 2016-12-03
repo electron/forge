@@ -54,6 +54,8 @@ When you want to start your app it's as simple as
 electron-forge start
 ```
 
+Any args after "start" will be passed through to your application when it is launched.
+
 And when you get round to packaging your application, all you have to do is:
 
 ```bash
