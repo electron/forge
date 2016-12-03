@@ -60,4 +60,36 @@ describe.only('electron-forge CLI', () => {
   };
   forLintingMethod('airbnb');
   forLintingMethod('standard');
+
+  describe('after init', () => {
+    let dir;
+
+    before(async () => {
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${Date.now()}`);
+      await pSpawn(['init', dir]);
+      await pSpawn(['package', dir]);
+    });
+
+    let targets = [];
+    if (fs.existsSync(path.resolve(__dirname, `../src/makers/${process.platform}`))) {
+      targets = fs.readdirSync(path.resolve(__dirname, `../src/makers/${process.platform}`)).map(file => path.parse(file).name);
+    }
+    const genericTargets = fs.readdirSync(path.resolve(__dirname, '../src/makers/generic')).map(file => path.parse(file).name);
+
+    [].concat(targets).concat(genericTargets).forEach((target) => {
+      describe(`make (with target=${target})`, () => {
+        before(async () => {
+          const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+          packageJSON.config.forge.make_targets[process.platform] = [target];
+          await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
+        });
+
+        it('successfully makes with default config', async () => {
+          await pSpawn(['make', dir, '-s']);
+        });
+      });
+    });
+
+    after(done => rimraf(dir, done));
+  });
 });

@@ -11,7 +11,7 @@
     "build": "gulp build",
     "lint": "eslint src test",
     "prepublish": "npm run build",
-    "test": "npm run lint && mocha test --compilers js:babel-register --timeout=60000",
+    "test": "npm run lint && mocha test --compilers js:babel-register --timeout=300000",
     "watch": "gulp watch"
   },
   "author": "Samuel Attard",
