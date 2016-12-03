@@ -3,6 +3,7 @@ import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 import config from './config'
 
 export default (dir, deps, areDev=false) => {
+  if (deps.length === 0) return Promise.resolve();
   let cmd = ['install'].concat(deps).concat([areDev ? '--save-dev' : '--save']);
   if (hasYarn()) {
     cmd = ['add'].concat(deps);

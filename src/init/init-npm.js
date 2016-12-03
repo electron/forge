@@ -6,8 +6,9 @@ import username from 'username';
 
 import installDepList from '../util/install-dependencies';
 
-const dependencies = ['electron-prebuilt-compile', '--exact'];
-const devDependencies = ['babel-preset-stage-0', 'electron-packager'];
+const deps = [];
+const devDeps = ['babel-preset-stage-0', 'electron-packager'];
+const exactDevDeps = ['electron-prebuilt-compile']
 const standardDeps = ['standard'];
 const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
                         'eslint-plugin-jsx-a11y@^2.2.3', 'eslint-plugin-react'];
@@ -30,8 +31,11 @@ export default async (dir, lintStyle) => {
   initSpinner.succeed();
   const installSpinner = ora('Installing NPM Dependencies').start();
   try {
-    await installDepList(dir, dependencies);
-    await installDepList(dir, devDependencies, true);
+    await installDepList(dir, deps);
+    await installDepList(dir, devDeps, true);
+    for (let packageName of exactDevDeps) {
+      await installDepList(dir, [packageName, '--exact'], true);
+    }
     switch (lintStyle) {
       case 'standard':
         await installDepList(dir, standardDeps, true);
