@@ -9,6 +9,8 @@
   },
   "scripts": {
     "build": "gulp build",
+    "precommit": "npm run lint",
+    "commit": "git-cz",
     "lint": "eslint src test",
     "prepublish": "npm run build",
     "test": "npm run lint && mocha test --compilers js:babel-register --timeout=300000",
@@ -23,6 +25,8 @@
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015": "^6.16.0",
     "chai": "^3.5.0",
+    "commitizen": "^2.8.6",
+    "cz-customizable": "4.0.0",
     "eslint": "^3.7.1",
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",
@@ -63,5 +67,13 @@
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "./.cz.js"
+    }
   }
 }
