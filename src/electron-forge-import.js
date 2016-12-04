@@ -138,6 +138,15 @@ const main = async () => {
   packageJSON.config.forge = JSON.parse(await fs.readFile(path.resolve(__dirname, '../tmpl/package.json'))).config.forge;
 
   await writeChanges();
+
+  const gitignoreSpinner = ora.ora('Fixing .gitignore').start();
+  if (await fs.exists(path.resolve(dir, '.gitignore'))) {
+    const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
+    if (!gitignore.includes('out')) {
+      await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\nout/`);
+    }
+  }
+  gitignoreSpinner.succeed();
 };
 
 main();
