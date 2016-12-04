@@ -82,6 +82,7 @@
     }
   },
   "optionalDependencies": {
-    "electron-installer-debian": "^0.4.0"
+    "electron-installer-debian": "^0.4.0",
+    "electron-installer-redhat": "^0.3.0"
   }
 }
