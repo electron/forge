@@ -107,14 +107,14 @@ Once you have generated a project your `package.json` file will have some defaul
 
 ## Possible `make` targets
 
-| Target Name | Available Platforms | Description | Configurable Options | Requirements |
-|-------------|---------------------|-------------|----------------------|--------------|
-| `zip`       | All                 | Zips your packaged application | None | `zip` on Darwin/Linux |
-| `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) |
-| `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) |
-| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
-| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
-| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | [`flatpak`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
+| Target Name | Available Platforms | Description | Configurable Options | Default? | Requirements |
+|-------------|---------------------|-------------|----------------------|----------|--------------|
+| `zip`       | All                 | Zips your packaged application | None | Yes | `zip` on Darwin/Linux |
+| `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) | Yes |  |
+| `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) | No |  |
+| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | Yes | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
+| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | Yes | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
+| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | No | [`flatpak-builder`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
 
 ## Configuring `package`
 
