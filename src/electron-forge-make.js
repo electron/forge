@@ -49,7 +49,8 @@ const main = async () => {
   console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
 
   const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
-  const packageDir = path.resolve(dir, `out/${packageJSON.productName || packageJSON.name}-${process.platform}-${process.arch}`);
+  const appName = packageJSON.productName || packageJSON.name;
+  const packageDir = path.resolve(dir, `out/${appName}-${process.platform}-${process.arch}`);
   if (!(await fs.exists(packageDir))) {
     throw new Error(`Couldn't find packaged app at: ${packageDir}`);
   }
@@ -68,7 +69,7 @@ const main = async () => {
       }
     }
     try {
-      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig, packageJSON);
+      await (maker.default || maker)(packageDir, appName, forgeConfig, packageJSON);
     } catch (err) {
       makeSpinner.fail();
       if (err) throw err;
