@@ -48,12 +48,10 @@ const main = async () => {
   const platform = program.platform || process.platform;
 
   const forgeConfig = await getForgeConfig(dir);
-  const packageOpts = {
+  const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
-  };
-  Object.assign(packageOpts, forgeConfig.electronPackagerConfig);
-  Object.assign(packageOpts, {
+  }, forgeConfig.electronPackagerConfig, {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
