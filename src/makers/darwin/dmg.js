@@ -1,16 +1,12 @@
 import electronDMG from 'electron-installer-dmg';
-import fs from 'fs-promise';
-import mkdirp from 'mkdirp';
 import path from 'path';
 import pify from 'pify';
-import rimraf from 'rimraf';
+
+import { ensureFile } from '../../util/ensure-output';
 
 export default async (dir, appName, forgeConfig) => {
   const outPath = path.resolve(dir, '../make', `${path.basename(dir)}.dmg`);
-  if (await fs.exists(outPath)) {
-    await pify(rimraf)(outPath);
-  }
-  await pify(mkdirp)(path.dirname(outPath));
+  await ensureFile(outPath);
   const dmgConfig = Object.assign({
     overwrite: true,
   }, forgeConfig.electronInstallerDMG, {
