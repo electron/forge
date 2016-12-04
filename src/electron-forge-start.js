@@ -25,7 +25,7 @@ const main = async () => {
         dir = path.resolve(dir, cwd);
       }
     })
-    .parse(process.argv);
+    .parse(process.argv.slice(0, 2));
 
   dir = await resolveDir(dir);
   if (!dir) {

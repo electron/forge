@@ -9,11 +9,11 @@ import readPackageJSON from '../util/read-package-json';
 
 const d = debug('electron-forge:init:npm');
 
-const deps = ['electron-compile'];
-const devDeps = ['babel-preset-stage-0'];
-const exactDevDeps = ['electron-prebuilt-compile'];
-const standardDeps = ['standard'];
-const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
+export const deps = ['electron-compile'];
+export const devDeps = ['babel-preset-stage-0'];
+export const exactDevDeps = ['electron-prebuilt-compile'];
+export const standardDeps = ['standard'];
+export const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
   'eslint-plugin-jsx-a11y@^2.2.3', 'eslint-plugin-react'];
 
 export default async (dir, lintStyle) => {
@@ -27,8 +27,10 @@ export default async (dir, lintStyle) => {
       packageJSON.scripts.lint = 'standard';
       break;
     case 'airbnb':
-    default:
       packageJSON.scripts.lint = 'eslint src';
+      break;
+    default:
+      packageJSON.scripts.lint = 'echo "No linting yet..."';
       break;
   }
   d('writing package.json to:', dir);
