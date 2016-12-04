@@ -9,7 +9,7 @@ Electron Forge
 
 > The simple way to get started with Electron
 
-# Let's do it!
+# Getting Started
 
 ```bash
 npm install -g electron-forge
@@ -45,15 +45,16 @@ worrying about transpiling or build tooling.
 
 Glad you asked, it's beyond easy to get started with `electron-forge`.
 
+## Starting a new Project
+
 ```bash
 npm install -g electron-forge
 electron-forge init my-new-project
 ```
 
-This command will generate you a brand new project folder and install all your
-NPM dependencies so you will be all set to go.
+This command will generate you a brand new project folder and install all your NPM dependencies so you will be all set to go.  By default we will also install `airbnb` linting modules.  If you want to follow the `standard` linting rules instead use the `--lintstyle=standard` argument.
 
-When you want to start your app it's as simple as
+## Launching your Project
 
 ```bash
 electron-forge start
@@ -61,30 +62,59 @@ electron-forge start
 
 Any args after "start" will be passed through to your application when it is launched.
 
-And when you get round to packaging your application, all you have to do is:
+## Packaging your Project
 
 ```bash
 electron-forge package
 ```
 
-# But I want to set [insert property here] to `electron-packager`
+Yes, it really is that simple.  If you want to specify platform / arch you the `--platform=<platform>` and `--arch=<arch>` arguments.
 
-Good news, the `package` command also passes through any arguments you give it
-directly to `electron-packager`.  So if you want the all the power, you have it.
-
-# CLI Usage
+## Generating a distributable for your Project
 
 ```bash
-electron-forge --help
+electron-forge make
 ```
 
-Running `--help` will give you a lot of the syntax that `electron-forge` expects.
+This will generate platform specific distributables for you.  Note you can only generate distributables for your current platform.
 
-Basically there are 4 top level commands to provide `electron-forge`.
-* `init` - Similar to `git init` and `npm init`.  It creates a new project from
-scratch and sets everything up for you
-* `lint` - Run basic JS style linting across your application.  Good for sanity
-checking your code.
-* `package` - Packages your application into a platform specific format.  Windows
-will get `.exe`, macOS will get `.app` and so on.
-* `start` - Immediately launches your application
+## Linting your Project
+
+```bash
+electron-forge lint
+```
+
+# Config
+
+Once you have generated a project your `package.json` file will have some default `forge` config.  Below is the reference structure for this config object.
+
+```js
+{
+  "make_targets": {
+    "win32": ["squirrel"], // An array of win32 make targets
+    "darwin": ["zip"], // An array of darwin make targets
+    "linux": ["deb", "rpm"] // An array of linux make targets
+  },
+  "electronPackagerConfig": {},
+  "electronWinstallerConfig": {},
+  "electronInstallerDMG": {},
+  "electronInstallerFlatpak": {},
+  "electronInstallerDebian": {},
+  "electronInstallerRedhat": {}  
+}
+```
+
+## Possible `make` targets
+
+| Target Name | Available Platforms | Description | Configurable Options |
+|-------------|---------------------|-------------|----------------------|
+| `zip`       | All                 | Zips your packaged application | None |
+| `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) |
+| `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) |
+| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) |
+| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) |
+| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) |
+
+## Configuring `package`
+
+You can set `electronPackagerConfig` with **any** of the options from [`electron-packager`](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
