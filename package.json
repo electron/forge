@@ -58,6 +58,7 @@
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "debug": "^2.3.3",
+    "electron-installer-debian": "^0.4.0",
     "electron-installer-dmg": "^0.1.2",
     "electron-packager": "^8.3.0",
     "electron-winstaller": "^2.5.0",

@@ -2,7 +2,7 @@
   "name": "",
   "productName": "",
   "version": "1.0.0",
-  "description": "",
+  "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start"
