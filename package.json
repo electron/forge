@@ -2,6 +2,7 @@
   "name": "electron-forge",
   "version": "0.0.5",
   "description": "A complete tool for building modern Electron applications",
+  "repository": "https://github.com/MarshallOfSound/electron-forge",
   "main": "index.js",
   "bin": {
     "electron-forge": "dist/electron-forge.js",
