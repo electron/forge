@@ -6,8 +6,10 @@ import pify from 'pify';
 import packager from 'electron-packager';
 import program from 'commander';
 import ora from 'ora';
+import rimraf from 'rimraf';
 
 import './util/terminate';
+import getForgeConfig from './util/forge-config';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -45,15 +47,24 @@ const main = async () => {
   const arch = program.arch || process.arch;
   const platform = program.platform || process.platform;
 
+  const forgeConfig = await getForgeConfig(dir);
   const packageOpts = {
-    asar: true,
+    asar: false,
     overwrite: true,
+  };
+  Object.assign(packageOpts, forgeConfig.electronPackagerConfig);
+  Object.assign(packageOpts, {
+    afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
+      done();
+    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []), // eslint-disable-line
     dir,
     arch,
     platform,
     out: path.resolve(dir, 'out'),
     version: packageJSON.devDependencies['electron-prebuilt-compile'],
-  };
+  });
+  console.log(packageOpts);
   const userDefinedAsarPrefs = packageOpts.asar;
   packageOpts.asar = false;
   const log = console.error; // eslint-disable-line
@@ -113,6 +124,7 @@ const main = async () => {
     }
     const appDir = await packageDirToResourcesDir(packageDir);
     await pify(asar.createPackageWithOptions)(appDir, path.resolve(appDir, '../app.asar'), opts);
+    await pify(rimraf)(appDir);
   }
 
   for (const packageDir of packageDirs) {
