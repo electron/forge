@@ -18,7 +18,7 @@ const zipPromise = (from, to) =>
     });
   });
 
-export default async (dir, appName, forgeConfig) => { // eslint-disable-line
+export default async (dir, appName, forgeConfig, packageJSON) => { // eslint-disable-line
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await ensureFile(zipPath);
   switch (process.platform) {

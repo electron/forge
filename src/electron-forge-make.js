@@ -68,7 +68,7 @@ const main = async () => {
       }
     }
     try {
-      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig);
+      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig, packageJSON);
     } catch (err) {
       makeSpinner.fail();
       if (err) throw err;

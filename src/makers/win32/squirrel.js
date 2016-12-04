@@ -3,7 +3,7 @@ import path from 'path';
 
 import { ensureDirectory } from '../../util/ensure-output';
 
-export default async (dir, appName, forgeConfig) => {
+export default async (dir, appName, forgeConfig, packageJSON) => { // eslint-disable-line
   const outPath = path.resolve(dir, '../make/squirrel.windows');
   await ensureDirectory(outPath);
 
