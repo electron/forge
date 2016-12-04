@@ -5,7 +5,7 @@ import path from 'path';
 import pify from 'pify';
 import rimraf from 'rimraf';
 
-export default async (dir, appName, forgeConfig) => { // eslint-disable-line
+export default async (dir, appName, forgeConfig) => {
   const outPath = path.resolve(dir, '../make/squirrel.windows');
   if (await fs.exists(outPath)) {
     await pify(rimraf)(outPath);

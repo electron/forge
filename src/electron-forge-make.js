@@ -58,17 +58,17 @@ const main = async () => {
     const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${process.platform.cyan}`).start();
     let maker;
     try {
-      maker = require(`./makers/${process.platform}/${target}.js`); //eslint-disable-line
+      maker = require(`./makers/${process.platform}/${target}.js`);
     } catch (err1) {
       try {
-        maker = require(`./makers/generic/${target}.js`); //eslint-disable-line
+        maker = require(`./makers/generic/${target}.js`);
       } catch (err2) {
         makeSpinner.fail();
         throw new Error(`Could not find a build target with the name: ${target} for the platform: ${process.platform}`);
       }
     }
     try {
-      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig); // eslint-disable-line
+      await (maker.default || maker)(packageDir, packageJSON.productName || packageJSON.name, forgeConfig);
     } catch (err) {
       makeSpinner.fail();
       if (err) throw err;

@@ -55,7 +55,7 @@ const main = async () => {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
-    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []), // eslint-disable-line
+    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
     dir,
     arch,
     platform,
@@ -64,17 +64,18 @@ const main = async () => {
   });
   const userDefinedAsarPrefs = packageOpts.asar;
   packageOpts.asar = false;
-  const log = console.error; // eslint-disable-line
-  console.error = () => {}; // eslint-disable-line
+
+  // Prevent electron-packager spitting logs out
+  const log = console.error;
+  console.error = () => {};
   const packageDirs = await pify(packager)(packageOpts);
-  console.error = log; // eslint-disable-line
+  console.error = log;
 
   packagerSpinner.succeed();
 
   const compileSpinner = ora.ora('Compiling Application').start();
 
-  const compileCLI = require(path.resolve(dir, 'node_modules/electron-compile/lib/cli.js')); // eslint-disable-line
-  const { runAsarArchive } = require(path.resolve(dir, 'node_modules/electron-compile/lib/packager-cli.js')); // eslint-disable-line
+  const compileCLI = require(path.resolve(dir, 'node_modules/electron-compile/lib/cli.js'));
 
   const env = process.env.NODE_ENV;
   process.env.NODE_ENV = 'production';
