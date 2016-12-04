@@ -7,9 +7,7 @@ export default async (dir, appName, forgeConfig, packageJSON) => { // eslint-dis
   const outPath = path.resolve(dir, '../make/squirrel.windows');
   await ensureDirectory(outPath);
 
-  const winstallerConfig = Object.assign({
-    description: 'This is the default electron-forge description, you can override it in your config',
-  }, forgeConfig.electronWinstallerConfig, {
+  const winstallerConfig = Object.assign({}, forgeConfig.electronWinstallerConfig, {
     appDirectory: dir,
     outputDirectory: outPath,
   });

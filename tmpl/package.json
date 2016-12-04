@@ -18,7 +18,9 @@
         "linux": ["deb", "rpm"]
       },
       "electronPackagerConfig": {},
-      "electronWinstallerConfig": {},
+      "electronWinstallerConfig": {
+        "name": ""
+      },
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {}
     }

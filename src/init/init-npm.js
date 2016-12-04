@@ -19,6 +19,7 @@ export default async (dir, lintStyle) => {
   const initSpinner = ora.ora('Initializing NPM Module').start();
   const packageJSON = JSON.parse(await fs.readFile(path.resolve(__dirname, '../../tmpl/package.json'), 'utf8'));
   packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
+  packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
   packageJSON.author = await username();
   switch (lintStyle) {
     case 'standard':
