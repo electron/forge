@@ -16,6 +16,7 @@ module.exports = {
     { name: 'packager' },
     { name: 'linter' },
     { name: 'starter' },
+    { name: 'importer' },
     { name: 'tests' },
     { name: 'initializer' },
     { name: 'publisher' },
