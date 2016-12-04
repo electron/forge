@@ -5,7 +5,11 @@ os:
 - linux
 - osx
 
+env:
+  matrix:
+  - NODE_INSTALLER=npm
+  - NODE_INSTALLER=yarn
+
 script:
-  - npm run test -- --installer=npm
-  - npm i -g yarn
-  - npm run test -- --installer=yarn
+- if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm i -g yarn; fi
+- npm run test -- --installer=$NODE_INSTALLER
