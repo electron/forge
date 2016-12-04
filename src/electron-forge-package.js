@@ -62,7 +62,6 @@ const main = async () => {
     out: path.resolve(dir, 'out'),
     version: packageJSON.devDependencies['electron-prebuilt-compile'],
   });
-  console.log(packageOpts);
   const userDefinedAsarPrefs = packageOpts.asar;
   packageOpts.asar = false;
   const log = console.error; // eslint-disable-line
