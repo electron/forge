@@ -8,6 +8,7 @@ export default async (dir) => {
     electronPackagerConfig: {},
     electronWinstallerConfig: {},
     electronInstallerDebian: {},
+    electronInstallerDMG: {},
     electronInstallerRedhat: {},
   }, forgeConfig);
   forgeConfig.make_targets = Object.assign({

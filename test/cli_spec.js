@@ -67,7 +67,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     let dir;
 
     before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${Date.now()}`);
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${`${Date.now()}`.substr(7)}`);
       await pSpawn(['init', dir]);
       await pSpawn(['package', dir]);
     });
