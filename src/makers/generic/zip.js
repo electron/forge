@@ -1,10 +1,9 @@
 import { spawn } from 'child_process';
-import fs from 'fs-promise';
-import mkdirp from 'mkdirp';
 import path from 'path';
 import pify from 'pify';
-import rimraf from 'rimraf';
 import zipFolder from 'zip-folder';
+
+import { ensureFile } from '../../util/ensure-output';
 
 const zipPromise = (from, to) =>
   new Promise((resolve, reject) => {
@@ -21,10 +20,7 @@ const zipPromise = (from, to) =>
 
 export default async (dir, appName, forgeConfig) => { // eslint-disable-line
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
-  await pify(mkdirp)(path.dirname(zipPath));
-  if (await fs.exists(zipPath)) {
-    await pify(rimraf)(zipPath);
-  }
+  await ensureFile(zipPath);
   switch (process.platform) {
     case 'win32':
       await pify(zipFolder)(dir, zipPath);
