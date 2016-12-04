@@ -1,10 +1,15 @@
+import debug from 'debug';
 import fs from 'fs-promise';
 import mkdirp from 'mkdirp';
 import ora from 'ora';
 import path from 'path';
+import pify from 'pify';
+
+const d = debug('electron-forge:init:starter-files');
 
 const copy = (source, target) =>
   new Promise((resolve, reject) => {
+    d(`copying "${source}" --> "${target}"`);
     let rd;
     let wr;
     const rejectCleanup = (err) => {
@@ -21,10 +26,11 @@ const copy = (source, target) =>
   });
 
 export default async (dir, lintStyle) => {
-  const initSpinner = ora('Copying Starter Files').start();
+  const initSpinner = ora.ora('Copying Starter Files').start();
   const tmplPath = path.resolve(__dirname, '../../tmpl');
 
-  mkdirp.sync(path.resolve(dir, 'src'));
+  d('creating directory:', path.resolve(dir, 'src'));
+  await pify(mkdirp)(path.resolve(dir, 'src'));
   const rootFiles = ['_gitignore'];
   if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
   const srcFiles = ['index.js', 'index.html'];

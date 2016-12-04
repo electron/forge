@@ -13,7 +13,7 @@ import getForgeConfig from './util/forge-config';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const packagerSpinner = ora('Packaging Application').start();
+  const packagerSpinner = ora.ora('Packaging Application').start();
   let dir = process.cwd();
 
   program
@@ -71,7 +71,7 @@ const main = async () => {
 
   packagerSpinner.succeed();
 
-  const compileSpinner = ora('Compiling Application').start();
+  const compileSpinner = ora.ora('Compiling Application').start();
 
   const compileCLI = require(path.resolve(dir, 'node_modules/electron-compile/lib/cli.js')); // eslint-disable-line
   const { runAsarArchive } = require(path.resolve(dir, 'node_modules/electron-compile/lib/packager-cli.js')); // eslint-disable-line

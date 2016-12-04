@@ -1,8 +1,10 @@
+import debug from 'debug';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import os from 'os';
 import path from 'path';
 
+const d = debug('electron-forge:runtime-config');
 
 /*
  * Let's be real sharing config accross spawned process's must be easier than
@@ -18,12 +20,14 @@ class BasicConfigStore {
 
   get(key) {
     this._load();
+    d('fetching key', key);
     return this._store[key];
   }
 
   set(key, value) {
     this._load();
     this._store[key] = value;
+    d('setting key:', key, 'to value:', value);
     fs.writeFileSync(this._path, JSON.stringify(this._store));
   }
 

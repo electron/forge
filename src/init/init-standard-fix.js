@@ -1,5 +1,8 @@
+import debug from 'debug';
 import ora from 'ora';
 import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
+
+const d = debug('electron-forge:init:standard-fix');
 
 const run = dir =>
   new Promise((resolve, reject) => {
@@ -14,8 +17,9 @@ const run = dir =>
   });
 
 export default async (dir) => {
-  const initSpinner = ora('Applying Standard Style to JS').start();
+  const initSpinner = ora.ora('Applying Standard Style to JS').start();
   try {
+    d('executing "standard --fix" in:', dir);
     await run(dir);
   } catch (err) {
     initSpinner.fail();

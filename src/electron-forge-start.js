@@ -9,7 +9,7 @@ import './util/terminate';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const startSpinner = ora('Launching Application').start();
+  const startSpinner = ora.ora('Launching Application').start();
   let dir = process.cwd();
   program
     .version(require('../package.json').version)

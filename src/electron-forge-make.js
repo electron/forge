@@ -10,7 +10,7 @@ import packager from './electron-forge-package';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const resolveSpinner = ora('Resolving Forge Config').start();
+  const resolveSpinner = ora.ora('Resolving Forge Config').start();
   let dir = process.cwd();
   program
     .version(require('../package.json').version)
@@ -55,7 +55,7 @@ const main = async () => {
   }
 
   for (const target of targets) {
-    const makeSpinner = ora(`Making for target: ${target.cyan} - On platform: ${process.platform.cyan}`).start();
+    const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${process.platform.cyan}`).start();
     let maker;
     try {
       maker = require(`./makers/${process.platform}/${target}.js`); //eslint-disable-line

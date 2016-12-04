@@ -1,3 +1,4 @@
+import debug from 'debug';
 import path from 'path';
 import program from 'commander';
 
@@ -8,6 +9,8 @@ import initStandardFix from './init/init-standard-fix';
 import initStarter from './init/init-starter-files';
 
 import './util/terminate';
+
+const d = debug('electron-forge:init');
 
 const main = async () => {
   let dir = process.cwd();
@@ -25,8 +28,12 @@ const main = async () => {
     })
     .parse(process.argv);
 
+  d(`Initializing in: ${dir}`);
   program.lintstyle = program.lintstyle.toLowerCase();
-  if (!['airbnb', 'standard'].includes(program.lintstyle)) program.lintstyle = 'airbnb';
+  if (!['airbnb', 'standard'].includes(program.lintstyle)) {
+    d(`Unrecognized lintstyle argument: '${program.lintstyle}' -- defaulting to 'airbnb'`);
+    program.lintstyle = 'airbnb';
+  }
 
   await initDirectory(dir);
   await initGit(dir);
