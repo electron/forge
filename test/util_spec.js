@@ -9,7 +9,7 @@ describe('resolve-dir', () => {
   });
 
   it('should return a directory if it finds a node module', async () => {
-    expect(await resolveDir(path.resolve(__dirname, '../tmpl'))).to.not.be.equal(null);
-    expect(await resolveDir(path.resolve(__dirname, '../tmpl'))).to.be.equal(path.resolve(__dirname, '../tmpl'));
+    expect(await resolveDir(path.resolve(__dirname, 'fixture/foo'))).to.not.be.equal(null);
+    expect(await resolveDir(path.resolve(__dirname, 'fixture/foo'))).to.be.equal(path.resolve(__dirname, 'fixture'));
   });
 });
