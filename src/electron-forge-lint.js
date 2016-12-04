@@ -1,4 +1,5 @@
 import 'colors';
+import debug from 'debug';
 import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
@@ -8,8 +9,10 @@ import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
 import './util/terminate';
 import resolveDir from './util/resolve-dir';
 
+const d = debug('electron-forge:lint');
+
 const main = async () => {
-  const lintSpinner = ora('Linting Application').start();
+  const lintSpinner = ora.ora('Linting Application').start();
   let dir = process.cwd();
   program
     .version(require('../package.json').version)
@@ -32,6 +35,7 @@ const main = async () => {
     process.exit(1);
   }
 
+  d('executing "run lint -- --color" in dir:', dir);
   const child = yarnOrNPMSpawn(['run', 'lint', '--', '--color'], {
     cwd: dir,
   });
@@ -39,10 +43,12 @@ const main = async () => {
   child.stdout.on('data', data => output.push(data.toString()));
   child.stderr.on('data', data => output.push(data.toString().red));
   child.on('exit', (code) => {
-    if (code !== 0) lintSpinner.fail();
     if (code === 0) lintSpinner.succeed();
-    output.forEach(data => process.stdout.write(data));
-    if (code !== 0) process.exit(code);
+    if (code !== 0) {
+      lintSpinner.fail();
+      output.forEach(data => process.stdout.write(data));
+      process.exit(code);
+    }
   });
 };
 

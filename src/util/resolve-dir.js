@@ -10,7 +10,7 @@ export default async (dir) => {
   while (prevDir !== mDir) {
     prevDir = mDir;
     const testPath = path.resolve(mDir, 'package.json');
-    d('searching for project in', testPath);
+    d('searching for project in:', mDir);
     if (await fs.exists(testPath)) {
       const packageJSON = JSON.parse(await fs.readFile(testPath, 'utf8'));
 
