@@ -7,7 +7,9 @@ import { ensureFile } from '../../util/ensure-output';
 
 const zipPromise = (from, to) =>
   new Promise((resolve, reject) => {
-    const child = spawn('zip', ['-r', '-y', to, from]);
+    const child = spawn('zip', ['-r', '-y', to, path.basename(from)], {
+      cwd: path.dirname(from),
+    });
 
     child.stdout.on('data', () => {});
     child.stderr.on('data', () => {});
