@@ -8,7 +8,7 @@ import installDepList from '../util/install-dependencies';
 
 const d = debug('electron-forge:init:npm');
 
-const deps = [];
+const deps = ['electron-compile'];
 const devDeps = ['babel-preset-stage-0'];
 const exactDevDeps = ['electron-prebuilt-compile'];
 const standardDeps = ['standard'];
