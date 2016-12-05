@@ -37,7 +37,7 @@ should be handled by one dependency in a standard way while still offering users
 maximum choice and freedom.
 
 With these goals in mind, under the hood this project uses
-[`electron-compile`](https://github.com/electron/electron-compile).  A tool
+[`electron-compile`](https://github.com/electron/electron-compile): a tool
 that lets you use modern and futuristic langauges inside Electron without
 worrying about transpiling or build tooling.
 
@@ -68,7 +68,8 @@ Any args after "start" will be passed through to your application when it is lau
 electron-forge package
 ```
 
-Yes, it really is that simple.  If you want to specify platform / arch you the `--platform=<platform>` and `--arch=<arch>` arguments.
+Yes, it really is that simple.  If you want to specify platform / arch, use the
+`--platform=<platform>` and `--arch=<arch>` arguments.
 
 ## Generating a distributable for your Project
 
@@ -88,33 +89,33 @@ electron-forge lint
 
 Once you have generated a project your `package.json` file will have some default `forge` config.  Below is the reference structure for this config object.
 
-```js
+```javascript
 {
   "make_targets": {
     "win32": ["squirrel"], // An array of win32 make targets
-    "darwin": ["zip"], // An array of darwin make targets
-    "linux": ["deb", "rpm"] // An array of linux make targets
+    "darwin": ["zip", "dmg"], // An array of darwin make targets
+    "linux": ["deb", "rpm", "flatpak"] // An array of linux make targets
   },
   "electronPackagerConfig": {},
   "electronWinstallerConfig": {},
   "electronInstallerDMG": {},
   "electronInstallerFlatpak": {},
   "electronInstallerDebian": {},
-  "electronInstallerRedhat": {}  
+  "electronInstallerRedhat": {}
 }
 ```
 
 ## Possible `make` targets
 
-| Target Name | Available Platforms | Description | Configurable Options |
-|-------------|---------------------|-------------|----------------------|
-| `zip`       | All                 | Zips your packaged application | None |
+| Target Name | Available Platforms | Description | Configurable Options | Requirements |
+|-------------|---------------------|-------------|----------------------|--------------|
+| `zip`       | All                 | Zips your packaged application | None | `zip` on Darwin/Linux |
 | `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) |
 | `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) |
-| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) |
-| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) |
-| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) |
+| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
+| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
+| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | [`flatpak`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
 
 ## Configuring `package`
 
-You can set `electronPackagerConfig` with **any** of the options from [`electron-packager`](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md)
+You can set `electronPackagerConfig` with **any** of the options from [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
