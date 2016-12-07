@@ -36,10 +36,10 @@ const main = async () => {
   spawn(process.execPath, [path.resolve(dir, 'node_modules/.bin/electron'), '.'].concat(process.argv.slice(2)), {
     cwd: dir,
     stdio: 'inherit',
-    env: program.enableLogging ? {
+    env: Object.assign({}, process.env, program.enableLogging ? {
       ELECTRON_ENABLE_LOGGING: true,
       ELECTRON_ENABLE_STACK_DUMPING: true,
-    } : {},
+    } : {}),
   });
 
   startSpinner.succeed();
