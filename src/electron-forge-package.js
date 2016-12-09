@@ -64,12 +64,9 @@ const main = async () => {
   });
   const userDefinedAsarPrefs = packageOpts.asar;
   packageOpts.asar = false;
+  packageOpts.quiet = true;
 
-  // Prevent electron-packager spitting logs out
-  const log = console.error;
-  console.error = () => {};
   const packageDirs = await pify(packager)(packageOpts);
-  console.error = log;
 
   packagerSpinner.succeed();
 
