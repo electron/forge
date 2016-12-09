@@ -1,5 +1,4 @@
 import 'colors';
-import asar from 'asar';
 import fs from 'fs-promise';
 import path from 'path';
 import pify from 'pify';
@@ -10,10 +9,11 @@ import rimraf from 'rimraf';
 
 import './util/terminate';
 import getForgeConfig from './util/forge-config';
+import packagerCompileHook from './util/compile-hook';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const packagerSpinner = ora.ora('Packaging Application').start();
+  const prepareSpinner = ora.ora('Preparing to Package Application').start();
   let dir = process.cwd();
 
   program
@@ -36,7 +36,7 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    packagerSpinner.fail();
+    prepareSpinner.fail();
     console.error('Failed to locate compilable Electron application'.red);
     if (global._resolveError) global._resolveError();
     process.exit(1);
@@ -48,6 +48,8 @@ const main = async () => {
   const platform = program.platform || process.platform;
 
   const forgeConfig = await getForgeConfig(dir);
+  let packagerSpinner;
+
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
@@ -55,6 +57,10 @@ const main = async () => {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
+    }, async (...args) => {
+      prepareSpinner.succeed();
+      await packagerCompileHook(dir, ...args);
+      packagerSpinner = ora.ora('Packaging Application').start();
     }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
     dir,
     arch,
@@ -62,83 +68,15 @@ const main = async () => {
     out: path.resolve(dir, 'out'),
     version: packageJSON.devDependencies['electron-prebuilt-compile'],
   });
-  const userDefinedAsarPrefs = packageOpts.asar;
-  packageOpts.asar = false;
   packageOpts.quiet = true;
+  if (typeof packageOpts.asar === 'object' && packageOpts.unpack) {
+    packagerSpinner.fail();
+    throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
+  }
 
-  const packageDirs = await pify(packager)(packageOpts);
+  await pify(packager)(packageOpts);
 
   packagerSpinner.succeed();
-
-  const compileSpinner = ora.ora('Compiling Application').start();
-
-  const compileCLI = require(path.resolve(dir, 'node_modules/electron-compile/lib/cli.js'));
-
-  const env = process.env.NODE_ENV;
-  process.env.NODE_ENV = 'production';
-
-  async function packageDirToResourcesDir(packageDir) {
-    const appDir = (await fs.readdir(packageDir)).find(x => x.match(/\.app$/i));
-    if (appDir) {
-      return path.join(packageDir, appDir, 'Contents', 'Resources', 'app');
-    }
-    return path.join(packageDir, 'resources', 'app');
-  }
-
-  async function compileAndShim(packageDir) {
-    const appDir = await packageDirToResourcesDir(packageDir);
-
-    for (const entry of await fs.readdir(appDir)) {
-      if (!entry.match(/^(node_modules|bower_components)$/)) {
-        const fullPath = path.join(appDir, entry);
-
-        if ((await fs.stat(fullPath)).isDirectory()) {
-          await compileCLI.main(appDir, [fullPath]);
-        }
-      }
-    }
-
-    const packageJson = JSON.parse(await fs.readFile(path.join(appDir, 'package.json'), 'utf8'));
-
-    const index = packageJson.main || 'index.js';
-    packageJson.originalMain = index;
-    packageJson.main = 'es6-shim.js';
-
-    await fs.writeFile(path.join(appDir, 'es6-shim.js'),
-      await fs.readFile(path.join(path.resolve(dir, 'node_modules/electron-compile/lib/es6-shim.js')), 'utf8'));
-
-    await fs.writeFile(
-      path.join(appDir, 'package.json'),
-      JSON.stringify(packageJson, null, 2));
-  }
-
-  async function asarMagic(packageDir, asarUnpackDir) {
-    const opts = {};
-    if (asarUnpackDir) {
-      opts.unpackDir = asarUnpackDir;
-    }
-    const appDir = await packageDirToResourcesDir(packageDir);
-    await pify(asar.createPackageWithOptions)(appDir, path.resolve(appDir, '../app.asar'), opts);
-    await pify(rimraf)(appDir);
-  }
-
-  for (const packageDir of packageDirs) {
-    await compileAndShim(packageDir);
-
-    if (userDefinedAsarPrefs) {
-      if (typeof userDefinedAsarPrefs === 'object' && userDefinedAsarPrefs.unpack) {
-        throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackdir');
-      }
-
-      const asarUnpackDir = typeof userDefinedAsarPrefs === 'object' ? userDefinedAsarPrefs.unpackDir || null : null;
-
-      await asarMagic(packageDir, asarUnpackDir);
-    }
-  }
-
-  process.env.NODE_ENV = env;
-
-  compileSpinner.succeed();
 };
 
 if (process.mainModule === module) {
