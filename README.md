@@ -7,7 +7,11 @@ Electron Forge
 [![license](https://img.shields.io/github/license/MarshallOfSound/electron-forge.svg)](https://github.com/MarshallOfSound/electron-forge/blob/master/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
-> The simple way to get started with Electron
+A complete tool for building modern Electron applications.
+
+Electron Forge unifies the existing (and well maintained) build tools for
+Electron development into a simple, easy to use package so that anyone can
+jump right in to Electron development.
 
 # Getting Started
 
@@ -18,32 +22,21 @@ cd my-new-app
 electron-forge start
 ```
 
-# Urgh, really...  Another build tool
+# Project Goals
 
-Funnily enough, no :D.  This is not another build tool, `electron-forge` simply
-unifies the existing (and well maintained) build tools for Electron development
-into one, simple, easy to use package so that anyone can just jump right in
-to Electron development.
-
-# So what's the point
-
-This project has a few main goals.
-
-1. Starting with Electron should be as simple as a single command
-2. Developers shouldn't have to worry about `babel`, `browserify`, `webpack` or
-any of that nonsense.  Everything should just work for them out of the box.
+1. Starting with Electron should be as simple as a single command.
+2. Developers shouldn't have to worry about `babel`, `browserify`, `webpack`,
+etc.  Everything should "just work" for them out of the box.
 3. Everything from creating the project to packaging the project for release
 should be handled by one dependency in a standard way while still offering users
 maximum choice and freedom.
 
 With these goals in mind, under the hood this project uses
 [`electron-compile`](https://github.com/electron/electron-compile): a tool
-that lets you use modern and futuristic langauges inside Electron without
+that lets you use modern and futuristic languages inside Electron without
 worrying about transpiling or build tooling.
 
-# So go on then... How do I use the thing :)
-
-Glad you asked, it's beyond easy to get started with `electron-forge`.
+# Usage
 
 ## Starting a new Project
 
@@ -52,7 +45,10 @@ npm install -g electron-forge
 electron-forge init my-new-project
 ```
 
-This command will generate you a brand new project folder and install all your NPM dependencies so you will be all set to go.  By default we will also install `airbnb` linting modules.  If you want to follow the `standard` linting rules instead use the `--lintstyle=standard` argument.
+This command will generate a brand new project folder and install all your NPM
+dependencies so you will be all set to go.  By default we will also install the
+`airbnb` linting modules.  If you want to follow the `standard` linting rules
+instead, use the `--lintstyle=standard` argument.
 
 ## Launching your Project
 
@@ -60,7 +56,8 @@ This command will generate you a brand new project folder and install all your N
 electron-forge start
 ```
 
-Any args after "start" will be passed through to your application when it is launched.
+Any arguments after "start" will be passed through to your application when
+it's launched.
 
 ## Packaging your Project
 
@@ -77,7 +74,9 @@ Yes, it really is that simple.  If you want to specify platform / arch, use the
 electron-forge make
 ```
 
-This will generate platform specific distributables for you.  Note you can only generate distributables for your current platform.
+This will generate platform specific distributables (installers, distribution
+packages, etc.) for you. Note that you can only generate distributables for your
+current platform.
 
 ## Linting your Project
 
@@ -87,7 +86,9 @@ electron-forge lint
 
 # Config
 
-Once you have generated a project your `package.json` file will have some default `forge` config.  Below is the reference structure for this config object.
+Once you have generated a project, your `package.json` file will have some
+default `forge` configuration.  Below is the reference structure for this
+config object:
 
 ```javascript
 {
@@ -112,12 +113,15 @@ Once you have generated a project your `package.json` file will have some defaul
 | `zip`       | All                 | Zips your packaged application | None | Yes | `zip` on Darwin/Linux |
 | `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) | Yes |  |
 | `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) | No |  |
-| `deb`       | Linux               | Generates a Debian installer | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | Yes | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
-| `rpm`       | Linux               | Generates a Redhat installer | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | Yes | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
-| `flatpak`   | Linux               | Generates a `flatpak` file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | No | [`flatpak-builder`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
+| `deb`       | Linux               | Generates a Debian package | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | Yes | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
+| `rpm`       | Linux               | Generates an RPM package | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | Yes | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
+| `flatpak`   | Linux               | Generates a [Flatpak](http://flatpak.org/) file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | No | [`flatpak-builder`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
 
 ## Configuring `package`
 
-You can set `electronPackagerConfig` with **any** of the options from [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+You can set `electronPackagerConfig` with **any** of the options from
+[Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
 
-**NOTE:** The `afterCopy` and `afterExtract` options are mapped to `require` calls internally so provide a path to a file that exports your hooks and they will still run.
+**NOTE:** The `afterCopy` and `afterExtract` options are mapped to `require`
+calls internally, so provide a path to a file that exports your hooks and they
+will still run.
