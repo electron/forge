@@ -1,6 +1,6 @@
 {
   "name": "electron-forge",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/MarshallOfSound/electron-forge",
   "main": "index.js",
