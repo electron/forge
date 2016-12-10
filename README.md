@@ -119,3 +119,5 @@ Once you have generated a project your `package.json` file will have some defaul
 ## Configuring `package`
 
 You can set `electronPackagerConfig` with **any** of the options from [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+
+**NOTE:** The `afterCopy` and `afterExtract` are mapped to `require` calls internally so provide a path to a file that exports your hooks and they will still run.
