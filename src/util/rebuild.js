@@ -41,7 +41,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
       });
 
       await new Promise((resolve, reject) => {
-        const child = spawn(process.execPath, [path.resolve(__dirname, '../../node_modules/.bin/node-gyp')].concat(rebuildArgs), {
+        const child = spawn(path.resolve(__dirname, `../../node_modules/.bin/node-gyp${process.platform === 'win32' ? '.cmd' : ''}`), rebuildArgs, {
           cwd: modulePath,
           env: Object.assign({}, process.env, {
             HOME: path.resolve(os.homedir(), '.electron-gyp'),
