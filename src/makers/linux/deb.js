@@ -8,11 +8,8 @@ function debianArch(nodeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'amd64';
-    case 'arm':
-      if (process.config.variables.arm_version === '7') {
-        return 'armhf';
-      }
-      return 'armel';
+    case 'armv7l': return 'armhf';
+    case 'arm': return 'armel';
     default: return nodeArch;
   }
 }

@@ -8,11 +8,8 @@ function rpmArch(nodeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
-    case 'arm':
-      if (process.config.variables.arm_version === '7') {
-        return 'armv7hl';
-      }
-      return 'armv6hl';
+    case 'armv7l': return 'armv7hl';
+    case 'arm': return 'armv6hl';
     default: return nodeArch;
   }
 }
