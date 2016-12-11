@@ -4,7 +4,6 @@ environment:
   nodejs_version: "6"
   matrix:
   - node_installer: npm
-  - node_installer: yarn
 cache:
 - '%APPDATA%\npm-cache'
 - '%USERPROFILE%\.electron'
@@ -15,14 +14,13 @@ branches:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - npm install -g npm@4
-- npm install -g yarn
+- npm uninstall -g yarn
 - set PATH=%APPDATA%\npm;%PATH%
 - npm install
 
 test_script:
 - node --version
 - npm --version
-- yarn --version
 - npm test -- --installer=%node_installer%
 
 build: off
