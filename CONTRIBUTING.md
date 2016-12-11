@@ -66,8 +66,6 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 * One of the philosophies of the project is to keep the code base as small as possible. If you are
   adding a new feature, think about whether it is appropriate to go into a separate Node module,
   and then be integrated into this project.
-* If you are contributing a nontrivial change, please add an entry to `NEWS.md`. The format is
-  similar to the one described at [Keep a Changelog](http://keepachangelog.com/).
 * Please **do not** bump the version number in your pull requests, the maintainers will do that.
   Feel free to indicate whether the changes require a major, minor, or patch version bump, as
   prescribed by the [semantic versioning specification](http://semver.org/).
@@ -79,10 +77,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 ### Release process
 
 - if you aren't sure if a release should happen, open an issue
-- make sure that `NEWS.md` is up to date
 - make sure the tests pass
-- `npm version <major|minor|patch>`
-- `git push && git push --tags` (or `git push` with `git config --global push.followTags true` on latest git)
-- create a new GitHub release from the pushed tag with the contents of `NEWS.md` for that version
+- `npm run release:(patch|minor|major)`
+- create a new GitHub release from the pushed tag with the contents of `CHANGELOG.md` for that version
 - close the milestone associated with the version if one is open
-- `npm publish`
