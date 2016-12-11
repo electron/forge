@@ -9,12 +9,14 @@ import { expect } from 'chai';
 
 import installDeps from '../src/util/install-dependencies';
 
-const pSpawn = async (args = [], opts = {}) => {
+const pSpawn = async (args = [], opts = {
+  stdio: 'inherit',
+}) => {
   const child = spawn(process.execPath, [path.resolve(__dirname, '../dist/electron-forge.js')].concat(args), opts);
-  let stdout = '';
-  let stderr = '';
-  child.stdout.on('data', (data) => { stdout += data; });
-  child.stderr.on('data', (data) => { stderr += data; });
+  const stdout = '';
+  const stderr = '';
+  // child.stdout.on('data', (data) => { stdout += data; });
+  // child.stderr.on('data', (data) => { stderr += data; });
   return new Promise((resolve, reject) => {
     child.on('exit', (code) => {
       if (code === 0) {
