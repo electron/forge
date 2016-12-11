@@ -64,7 +64,7 @@ const main = async () => {
       if (packagerSpinner) {
         packagerSpinner.succeed();
         prepareCounter += 1;
-        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'arm' : 'x64').cyan}`).start();
+        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
