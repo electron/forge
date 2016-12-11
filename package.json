@@ -15,6 +15,9 @@
     "lint": "eslint src test",
     "prepublish": "npm run build",
     "test": "npm run lint && mocha test --compilers js:babel-register --timeout=300000",
+    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
+    "release:minor": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
+    "release:major": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
     "watch": "gulp watch"
   },
   "author": "Samuel Attard",
@@ -31,6 +34,7 @@
     "eslint": "^3.7.1",
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",
+    "generate-changelog": "^1.0.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "mocha": "^3.2.0"
