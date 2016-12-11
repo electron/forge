@@ -39,7 +39,7 @@ const main = async () => {
 
   resolveSpinner.succeed();
 
-  if (program.platform && program.platform !== process.platform) {
+  if (program.platform && program.platform !== process.platform && !(process.platform === 'darwin' && program.platform === 'mas')) {
     console.error('You can not "make" for a platform other than your systems platform'.red);
     process.exit(1);
   }
@@ -51,12 +51,14 @@ const main = async () => {
     console.warn('WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
 
+  const declaredArch = program.arch || electronHostArch();
+  const declaredPlatform = program.platform || process.platform;
+
   const forgeConfig = await getForgeConfig(dir);
-  const targets = forgeConfig.make_targets[process.platform];
+  const targets = forgeConfig.make_targets[declaredPlatform];
 
   console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
 
-  const declaredArch = program.arch || electronHostArch();
   let targetArchs = [declaredArch];
   if (declaredArch === 'all') {
     switch (process.platform) {
@@ -75,13 +77,13 @@ const main = async () => {
   const appName = packageJSON.productName || packageJSON.name;
 
   for (const targetArch of targetArchs) {
-    const packageDir = path.resolve(dir, `out/${appName}-${process.platform}-${targetArch}`);
+    const packageDir = path.resolve(dir, `out/${appName}-${declaredPlatform}-${targetArch}`);
     if (!(await fs.exists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }
 
     for (const target of targets) {
-      const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${process.platform.cyan} - For arch: ${targetArch.cyan}`).start();
+      const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`).start();
       let maker;
       try {
         maker = require(`./makers/${process.platform}/${target}.js`);
@@ -90,7 +92,7 @@ const main = async () => {
           maker = require(`./makers/generic/${target}.js`);
         } catch (err2) {
           makeSpinner.fail();
-          throw new Error(`Could not find a build target with the name: ${target} for the platform: ${process.platform}`);
+          throw new Error(`Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`);
         }
       }
       try {
