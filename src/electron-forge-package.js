@@ -14,7 +14,6 @@ import rebuildHook from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const prepareSpinner = ora.ora('Preparing to Package Application').start();
   let dir = process.cwd();
 
   program
@@ -35,6 +34,11 @@ const main = async () => {
     })
     .parse(process.argv);
 
+  const arch = program.arch || process.arch;
+  const platform = program.platform || process.platform;
+
+  let prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
+
   dir = await resolveDir(dir);
   if (!dir) {
     prepareSpinner.fail();
@@ -45,17 +49,20 @@ const main = async () => {
 
   const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
 
-  const arch = program.arch || process.arch;
-  const platform = program.platform || process.platform;
-
   const forgeConfig = await getForgeConfig(dir);
   let packagerSpinner;
+
+  // const targetCallCount = arch === 'all' ? (platform === 'darwin' ? 1 : 2) : 1; // eslint-disable-line
 
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
   }, forgeConfig.electronPackagerConfig, {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      if (packagerSpinner) {
+        packagerSpinner.succeed();
+        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${'x64'.cyan}`).start();
+      }
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
     }, async (...args) => {
