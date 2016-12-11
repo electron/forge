@@ -21,7 +21,7 @@ const zipPromise = (from, to) =>
   });
 
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
-  const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}_${targetArch}.zip`);
+  const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await ensureFile(zipPath);
   switch (process.platform) {
     case 'win32':
