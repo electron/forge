@@ -15,4 +15,9 @@ env:
   - NODE_INSTALLER=npm
   - NODE_INSTALLER=yarn
 
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+/
+
 script: ci/script.sh
