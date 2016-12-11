@@ -6,6 +6,8 @@ import rimraf from 'rimraf';
 
 import { expect } from 'chai';
 
+import installDeps from '../src/util/install-dependencies';
+
 const pSpawn = async (args = [], opts = {}) => {
   const child = spawn(process.execPath, [path.resolve(__dirname, '../dist/electron-forge.js')].concat(args), opts);
   let stdout = '';
@@ -72,22 +74,37 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       await pSpawn(['package', dir]);
     });
 
-    let targets = [];
-    if (fs.existsSync(path.resolve(__dirname, `../src/makers/${process.platform}`))) {
-      targets = fs.readdirSync(path.resolve(__dirname, `../src/makers/${process.platform}`)).map(file => path.parse(file).name);
-    }
-    const genericTargets = fs.readdirSync(path.resolve(__dirname, '../src/makers/generic')).map(file => path.parse(file).name);
+    it('can package without errors', async () => {
+      await pSpawn(['package', dir]);
+    });
 
-    [].concat(targets).concat(genericTargets).forEach((target) => {
-      describe(`make (with target=${target})`, () => {
-        before(async () => {
-          const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
-          packageJSON.config.forge.make_targets[process.platform] = [target];
-          await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
-        });
+    it('can package without errors with native pre-gyp deps installed', async () => {
+      await installDeps(dir, ['ref']);
+      await pSpawn(['package', dir]);
+    });
 
-        it('successfully makes with default config', async () => {
-          await pSpawn(['make', dir, '-s']);
+    describe('after package', () => {
+      before(async () => {
+        await pSpawn(['package', dir]);
+      });
+
+      let targets = [];
+      if (fs.existsSync(path.resolve(__dirname, `../src/makers/${process.platform}`))) {
+        targets = fs.readdirSync(path.resolve(__dirname, `../src/makers/${process.platform}`)).map(file => path.parse(file).name);
+      }
+      const genericTargets = fs.readdirSync(path.resolve(__dirname, '../src/makers/generic')).map(file => path.parse(file).name);
+
+      [].concat(targets).concat(genericTargets).forEach((target) => {
+        describe(`make (with target=${target})`, () => {
+          before(async () => {
+            const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+            packageJSON.config.forge.make_targets[process.platform] = [target];
+            await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
+          });
+
+          it('successfully makes with default config', async () => {
+            await pSpawn(['make', dir, '-s']);
+          });
         });
       });
     });
