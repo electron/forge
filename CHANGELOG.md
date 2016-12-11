@@ -1,3 +1,13 @@
+#### [1.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v1.0.1) (2016-12-12)
+
+##### Chores
+
+* **tests:** add AppVeyor support (#15) ([fe63ac0b](https://github.com/electron-userland/electron-forge/commit/fe63ac0b))
+
+##### Bug Fixes
+
+* **starter:** fix launching on newest yarn ([8c5bc656](https://github.com/electron-userland/electron-forge/commit/8c5bc656))
+
 ## [1.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v1.0.0) (2016-12-11)
 
 ##### Chores
