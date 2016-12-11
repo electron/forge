@@ -1,4 +1,4 @@
-**Have you read the [section in CONTRIBUTING.md about pull requests](https://github.com/MarshallOfSound/electron-forge/blob/master/CONTRIBUTING.md#filing-pull-requests)?**
+**Have you read the [section in CONTRIBUTING.md about pull requests](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md#filing-pull-requests)?**
 
 
 

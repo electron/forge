@@ -47,7 +47,7 @@ messages when a script errors.**
 
 ## Contribution suggestions
 
-We use the label [`help wanted`](https://github.com/MarshallOfSound/electron-forge/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+We use the label [`help wanted`](https://github.com/electron-userland/electron-forge/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 in the issue tracker to denote fairly-well-scoped-out bugs or feature requests that the community
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
