@@ -38,6 +38,7 @@ const main = async () => {
   const platform = program.platform || process.platform;
 
   let prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
+  let prepareCounter = 0;
 
   dir = await resolveDir(dir);
   if (!dir) {
@@ -61,7 +62,8 @@ const main = async () => {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
       if (packagerSpinner) {
         packagerSpinner.succeed();
-        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${'x64'.cyan}`).start();
+        prepareCounter += 1;
+        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'arm' : 'x64').cyan}`).start();
       }
       await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
