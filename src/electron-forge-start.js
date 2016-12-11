@@ -37,14 +37,19 @@ const main = async () => {
   const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
 
   await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
-  spawn(process.execPath, [path.resolve(dir, 'node_modules/.bin/electron'), '.'].concat(process.argv.slice(2)), {
+  const spawnOpts = {
     cwd: dir,
     stdio: 'inherit',
     env: Object.assign({}, process.env, program.enableLogging ? {
       ELECTRON_ENABLE_LOGGING: true,
       ELECTRON_ENABLE_STACK_DUMPING: true,
     } : {}),
-  });
+  };
+  if (process.platform === 'win32') {
+    spawn(path.resolve(dir, 'node_modules/.bin/electron.cmd'), ['.'].concat(process.argv.slice(2)), spawnOpts);
+  } else {
+    spawn(path.resolve(dir, 'node_modules/.bin/electron'), ['.'].concat(process.argv.slice(2)), spawnOpts);
+  }
 
   startSpinner.succeed();
 };
