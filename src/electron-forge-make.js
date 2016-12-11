@@ -66,6 +66,8 @@ const main = async () => {
         targetArchs = ['x64'];
         break;
       case 'linux':
+        targetArchs = ['ia32', 'x64', 'armv7l'];
+        break;
       case 'win32':
       default:
         targetArchs = ['ia32', 'x64'];
