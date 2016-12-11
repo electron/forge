@@ -2,14 +2,16 @@ import { spawn } from 'child_process';
 import debug from 'debug';
 import fs from 'fs-promise';
 import mkdirp from 'mkdirp';
+import ora from 'ora';
 import os from 'os';
 import path from 'path';
 import pify from 'pify';
 
 const d = debug('electron-forge:rebuild');
 
-export default async (buildPath, electronVersion, pPlatform, pArch, done) => {
+export default async (buildPath, electronVersion, pPlatform, pArch) => {
   const rebuilds = [];
+
   const rebuildModuleAt = async (modulePath) => {
     if (await fs.exists(path.resolve(modulePath, 'binding.gyp'))) {
       const metaPath = path.resolve(modulePath, 'build', 'Release', '.forge-meta');
@@ -58,7 +60,13 @@ export default async (buildPath, electronVersion, pPlatform, pArch, done) => {
       }
     }
   };
+  const nativeSpinner = ora.ora('Preparing native dependencies').start();
   rebuildAllModulesIn(path.resolve(buildPath, 'node_modules'));
-  await Promise.all(rebuilds);
-  done();
+  try {
+    await Promise.all(rebuilds);
+  } catch (err) {
+    nativeSpinner.fail();
+    throw err;
+  }
+  nativeSpinner.succeed();
 };
