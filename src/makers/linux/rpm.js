@@ -17,8 +17,8 @@ function rpmArch(nodeArch) {
   }
 }
 
-export default async (dir, appName, forgeConfig, packageJSON) => { // eslint-disable-line
-  const arch = rpmArch(process.arch);
+export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+  const arch = rpmArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.rpm`);
 
   await ensureFile(outPath);

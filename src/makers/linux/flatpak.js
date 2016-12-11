@@ -13,8 +13,8 @@ function flatpakArch(nodeArch) {
   }
 }
 
-export default async (dir, appName, forgeConfig, packageJSON) => { // eslint-disable-line
-  const arch = flatpakArch(process.arch);
+export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+  const arch = flatpakArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.flatpak`);
 
   await ensureFile(outPath);
