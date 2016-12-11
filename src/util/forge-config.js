@@ -14,6 +14,7 @@ export default async (dir) => {
   forgeConfig.make_targets = Object.assign({
     win32: ['squirrel'],
     darwin: ['zip'],
+    mas: ['zip'],
     linux: ['deb', 'rpm'],
   }, forgeConfig.make_targets);
   return forgeConfig;
