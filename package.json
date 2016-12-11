@@ -68,6 +68,7 @@
     "inquirer": "^1.2.1",
     "log-symbols": "^1.0.2",
     "mkdirp": "^0.5.1",
+    "node-gyp": "^3.4.0",
     "ora": "^0.3.0",
     "pify": "^2.3.0",
     "rimraf": "^2.5.4",

@@ -10,6 +10,7 @@ import rimraf from 'rimraf';
 import './util/terminate';
 import getForgeConfig from './util/forge-config';
 import packagerCompileHook from './util/compile-hook';
+import rebuildHook from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -60,8 +61,8 @@ const main = async () => {
     }, async (...args) => {
       prepareSpinner.succeed();
       await packagerCompileHook(dir, ...args);
-      packagerSpinner = ora.ora('Packaging Application').start();
-    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
+      packagerSpinner = ora.ora('Packaging Application');
+    }, rebuildHook].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
     afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item => require(item)) : [],
     dir,
     arch,

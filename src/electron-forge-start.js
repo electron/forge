@@ -4,8 +4,10 @@ import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
 import ora from 'ora';
+import pify from 'pify';
 
 import './util/terminate';
+import rebuild from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -33,6 +35,9 @@ const main = async () => {
     process.exit(1);
   }
 
+  const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+
+  await pify(rebuild)(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
   spawn(process.execPath, [path.resolve(dir, 'node_modules/.bin/electron'), '.'].concat(process.argv.slice(2)), {
     cwd: dir,
     stdio: 'inherit',
