@@ -1,3 +1,36 @@
+### 0.1.0 (2016-12-11)
+
+##### Chores
+
+* **tests:**
+  * install g++ since Docker Hub won't create a new image ([f219e994](https://github.com/marshallofsound/electron-forge/commit/f219e994))
+  * disable building branches on Travis CI ([12e5d99e](https://github.com/marshallofsound/electron-forge/commit/12e5d99e))
+* **initializer:** output logs of the install step on failure ([20c0b12a](https://github.com/marshallofsound/electron-forge/commit/20c0b12a))
+* **generic:**
+  * make the changelog link to the relevent commits ([ee6a7d86](https://github.com/marshallofsound/electron-forge/commit/ee6a7d86))
+  * set up changelog generation ([9a3854f1](https://github.com/marshallofsound/electron-forge/commit/9a3854f1))
+
+##### Documentation Changes
+
+* **generic:**
+  * add contributing/issue/pull request docs + news ([d25d701d](https://github.com/marshallofsound/electron-forge/commit/d25d701d))
+  * clean up README ([eddd61d8](https://github.com/marshallofsound/electron-forge/commit/eddd61d8))
+* **packager:** fix syntax of hook docs ([84a1a063](https://github.com/marshallofsound/electron-forge/commit/84a1a063))
+
+##### New Features
+
+* **packager:** rebuild native modules automatically in all the right places ([1d1ff74d](https://github.com/marshallofsound/electron-forge/commit/1d1ff74d))
+
+##### Bug Fixes
+
+* **packager:**
+  * output rebuild errors if there are any ([f8ffca13](https://github.com/marshallofsound/electron-forge/commit/f8ffca13))
+  * rebuild pre-gyp modules with their binary variables ([ed9137dd](https://github.com/marshallofsound/electron-forge/commit/ed9137dd))
+
+##### Refactors
+
+* **packager:** make the rebuild a promise and use an ora ([bc1ec28d](https://github.com/marshallofsound/electron-forge/commit/bc1ec28d))
+
 #### [0.0.9](https://github.com/MarshallOfSound/electron-forge/releases/tag/v0.0.9) (2016-12-11)
 
 ##### Documentation Changes
