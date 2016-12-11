@@ -54,8 +54,6 @@ const main = async () => {
   const forgeConfig = await getForgeConfig(dir);
   let packagerSpinner;
 
-  // const targetCallCount = arch === 'all' ? (platform === 'darwin' ? 1 : 2) : 1; // eslint-disable-line
-
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
