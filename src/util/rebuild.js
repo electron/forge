@@ -43,7 +43,6 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
       await new Promise((resolve, reject) => {
         const child = spawn(process.execPath, [path.resolve(__dirname, '../../node_modules/.bin/node-gyp')].concat(rebuildArgs), {
           cwd: modulePath,
-          // stdio: 'inherit',
           env: Object.assign({}, process.env, {
             HOME: path.resolve(os.homedir(), '.electron-gyp'),
             USERPROFILE: path.resolve(os.homedir(), '.electron-gyp'),
@@ -54,9 +53,12 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
             npm_config_build_from_source: true,
           }),
         });
+        let output = '';
+        child.stdout.on('data', (data) => { output += data; });
+        child.stderr.on('data', (data) => { output += data; });
         child.on('exit', async (code) => {
           d('built:', path.basename(modulePath));
-          if (code !== 0) return reject(new Error(`Failed to rebuild: ${modulePath}`));
+          if (code !== 0) return reject(new Error(`Failed to rebuild: ${modulePath}\n\n${output}`));
           await pify(mkdirp)(path.dirname(metaPath));
           await fs.writeFile(metaPath, pArch);
           resolve();
