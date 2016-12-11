@@ -8,6 +8,7 @@ function flatpakArch(nodeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
+    case 'armv7l': return 'arm';
     // arm => arm
     default: return nodeArch;
   }

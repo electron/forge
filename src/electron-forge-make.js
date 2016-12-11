@@ -5,6 +5,7 @@ import program from 'commander';
 import ora from 'ora';
 
 import './util/terminate';
+import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packager from './electron-forge-package';
 import resolveDir from './util/resolve-dir';
@@ -55,7 +56,7 @@ const main = async () => {
 
   console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
 
-  const declaredArch = program.arch || process.arch;
+  const declaredArch = program.arch || electronHostArch();
   let targetArchs = [declaredArch];
   if (declaredArch === 'all') {
     switch (process.platform) {

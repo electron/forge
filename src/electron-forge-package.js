@@ -8,6 +8,7 @@ import ora from 'ora';
 import rimraf from 'rimraf';
 
 import './util/terminate';
+import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packagerCompileHook from './util/compile-hook';
 import rebuildHook from './util/rebuild';
@@ -34,7 +35,7 @@ const main = async () => {
     })
     .parse(process.argv);
 
-  const arch = program.arch || process.arch;
+  const arch = program.arch || electronHostArch();
   const platform = program.platform || process.platform;
 
   let prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
