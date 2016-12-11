@@ -1,6 +1,7 @@
 Electron Forge
 --------------
-[![Build Status](https://travis-ci.org/electron-userland/electron-forge.svg?branch=master)](https://travis-ci.org/electron-userland/electron-forge)
+[![Linux/macOS Build Status](https://travis-ci.org/electron-userland/electron-forge.svg?branch=master)](https://travis-ci.org/electron-userland/electron-forge)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/79ae80nek1eucyy3?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-forge)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm version](https://badge.fury.io/js/electron-forge.svg)](https://www.npmjs.com/package/electron-forge)
 [![npm](https://img.shields.io/npm/dt/electron-forge.svg?maxAge=2592000)](https://www.npmjs.com/package/electron-forge)
