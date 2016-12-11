@@ -3,7 +3,7 @@ platform:
 environment:
   nodejs_version: "6"
   matrix:
-  - node_installer: npm
+  - node_installer: yarn
 cache:
 - '%APPDATA%\npm-cache'
 - '%USERPROFILE%\.electron'

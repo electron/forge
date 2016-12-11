@@ -31,12 +31,14 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
   });
 
+  let dirID = Date.now();
   const forLintingMethod = (lintStyle) => {
     describe(`init (with lintStyle=${lintStyle})`, () => {
       let dir;
 
       before(async () => {
-        dir = path.resolve(os.tmpdir(), `electron-forge-test-${Date.now()}`);
+        dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
+        dirID += 1;
         await pSpawn(['init', dir, `--lintstyle=${lintStyle}`]);
       });
 
@@ -69,7 +71,8 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     let dir;
 
     before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${Date.now()}/electron-forge-test`);
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
+      dirID += 1;
       await pSpawn(['init', dir]);
       await pSpawn(['package', dir]);
     });
