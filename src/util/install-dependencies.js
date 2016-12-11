@@ -25,10 +25,15 @@ export default (dir, deps, areDev = false, exact = false) => {
     d('executing', JSON.stringify(cmd), 'in:', dir);
     const child = yarnOrNPMSpawn(cmd, {
       cwd: dir,
-      stdio: config.get('verbose') ? 'inherit' : 'ignore',
+      stdio: config.get('verbose') ? 'inherit' : 'pipe',
     });
+    let output = '';
+    if (!config.get('verbose')) {
+      child.stdout.on('data', (data) => { output += data; });
+      child.stderr.on('data', (data) => { output += data; });
+    }
     child.on('exit', (code) => {
-      if (code !== 0) return reject(code);
+      if (code !== 0) return reject(new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${output}`));
       resolve();
     });
   });
