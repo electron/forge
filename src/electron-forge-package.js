@@ -61,8 +61,11 @@ const main = async () => {
     }, async (...args) => {
       prepareSpinner.succeed();
       await packagerCompileHook(dir, ...args);
-      packagerSpinner = ora.ora('Packaging Application');
-    }, rebuildHook].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
+    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
+      packagerSpinner = ora.ora('Packaging Application').start();
+      done();
+    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
     afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item => require(item)) : [],
     dir,
     arch,
