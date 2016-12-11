@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import fs from 'fs-promise';
 import os from 'os';
 import path from 'path';
+import pify from 'pify';
 import rimraf from 'rimraf';
 
 import { expect } from 'chai';
@@ -39,6 +40,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       before(async () => {
         dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
         dirID += 1;
+        await pify(rimraf)(dir);
         await pSpawn(['init', dir, `--lintstyle=${lintStyle}`]);
       });
 
@@ -74,7 +76,6 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
       dirID += 1;
       await pSpawn(['init', dir]);
-      await pSpawn(['package', dir]);
     });
 
     it('can package without errors', async () => {
@@ -87,10 +88,6 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     });
 
     describe('after package', () => {
-      before(async () => {
-        await pSpawn(['package', dir]);
-      });
-
       let targets = [];
       if (fs.existsSync(path.resolve(__dirname, `../src/makers/${process.platform}`))) {
         targets = fs.readdirSync(path.resolve(__dirname, `../src/makers/${process.platform}`)).map(file => path.parse(file).name);
