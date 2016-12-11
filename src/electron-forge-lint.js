@@ -37,11 +37,14 @@ const main = async () => {
 
   d('executing "run lint -- --color" in dir:', dir);
   const child = yarnOrNPMSpawn(['run', 'lint', '--', '--color'], {
+    stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
     cwd: dir,
   });
   const output = [];
-  child.stdout.on('data', data => output.push(data.toString()));
-  child.stderr.on('data', data => output.push(data.toString().red));
+  if (process.platform !== 'win32') {
+    child.stdout.on('data', data => output.push(data.toString()));
+    child.stderr.on('data', data => output.push(data.toString().red));
+  }
   child.on('exit', (code) => {
     if (code === 0) lintSpinner.succeed();
     if (code !== 0) {

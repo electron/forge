@@ -7,6 +7,7 @@ const d = debug('electron-forge:init:standard-fix');
 const run = dir =>
   new Promise((resolve, reject) => {
     const child = yarnOrNPMSpawn(['run', 'lint', '--', '--fix'], {
+      stdio: 'inherit',
       cwd: dir,
     });
 
