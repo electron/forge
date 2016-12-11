@@ -1,4 +1,32 @@
-### 0.1.0 (2016-12-11)
+## [1.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v1.0.0) (2016-12-11)
+
+##### Chores
+
+* **generic:**
+  * rename all instances of marshallofsound to electron-userland ([9981fcbb](https://github.com/electron-userland/electron-forge/commit/9981fcbb))
+  * fix changelog link parsing ([07defb76](https://github.com/electron-userland/electron-forge/commit/07defb76))
+* **packager:** remove commented code ([35745594](https://github.com/electron-userland/electron-forge/commit/35745594))
+* **maker:** add mas default targets ([775459cd](https://github.com/electron-userland/electron-forge/commit/775459cd))
+
+##### New Features
+
+* **maker:**
+  * enable MAS makes on darwin platform ([d8ac9ad8](https://github.com/electron-userland/electron-forge/commit/d8ac9ad8))
+  * allow make to target different or multiple arches ([3d4ee593](https://github.com/electron-userland/electron-forge/commit/3d4ee593))
+
+##### Bug Fixes
+
+* **maker:** build armv7l distributables when arch=all ([f6d28c32](https://github.com/electron-userland/electron-forge/commit/f6d28c32))
+* **packager:**
+  * change arch name when armv7l is packaged during arch=all ([132b3670](https://github.com/electron-userland/electron-forge/commit/132b3670))
+  * fix the third arch ora on linux ([894fd4e7](https://github.com/electron-userland/electron-forge/commit/894fd4e7))
+  * fix ora sequencing when running with --arch=all ([e4dfdede](https://github.com/electron-userland/electron-forge/commit/e4dfdede))
+
+##### Refactors
+
+* **generic:** replace process.arch with a function that handles arm arches better ([81fa0943](https://github.com/electron-userland/electron-forge/commit/81fa0943))
+
+### [0.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v0.1.0) (2016-12-11)
 
 ##### Chores
 
