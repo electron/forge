@@ -8,4 +8,4 @@ export default async () =>
       resolve(true);
     });
   })
-  .then(prev => Promise.resolve(prev && semver.gt(process.versions.node, '4.0.0')));
+  .then(prev => Promise.resolve(prev && semver.gt(process.versions.node, '6.0.0')));
