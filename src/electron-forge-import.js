@@ -147,6 +147,36 @@ const main = async () => {
     }
   }
   gitignoreSpinner.succeed();
+
+  let babelConfig = packageJSON.babel;
+  const babelPath = path.resolve(dir, '.babelrc');
+  if (!babelConfig && await fs.exists(babelPath)) {
+    babelConfig = JSON.parse(await fs.readFile(babelPath, 'utf8'));
+  }
+
+  if (babelConfig) {
+    const babelSpinner = ora.ora('Porting original babel config').start();
+
+    let compileConfig = {};
+    const compilePath = path.resolve(dir, '.compilerc');
+    if (await fs.exists(compilePath)) {
+      compileConfig = JSON.parse(await fs.readFile(compilePath, 'utf8'));
+    }
+
+    await fs.writeFile(compilePath, JSON.stringify(Object.assign(compileConfig, {
+      'application/javascript': babelConfig,
+    }, null, 2)));
+
+    babelSpinner.succeed();
+    console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow);
+  }
+  /* eslint-disable prefer-template */
+  console.info('\n\nWe have ATTEMPTED to convert your app to be in a format that electron-forge understands.\nNothing much will have changed but we added the' +
+  ' "electron-prebuilt-compile" '.cyan +
+  'dependency.  This is the dependency you must version bump to get newer versions of Electron.\n\n' +
+  'We also tried to import any build tooling you already had but we can\'t get everything.  You might need to convert any CLI/gulp/grunt tasks yourself.\n\n' +
+  'Also please note if you are using `preload` scripts you need to follow the steps outlined at https://github.com/electron-userland/electron-forge/wiki/Using-\'preload\'-scripts\n\n' +
+  'Thanks for using ' + 'electron-forge'.green + '!!!');
 };
 
 main();
