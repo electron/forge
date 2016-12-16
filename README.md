@@ -128,3 +128,15 @@ You can set `electronPackagerConfig` with **any** of the options from
 **NOTE:** The `afterCopy` and `afterExtract` options are mapped to `require`
 calls internally, so provide a path to a file that exports your hooks and they
 will still run.
+
+**NOTE:** You can also set your `forge` config property of your package.json to point to a JS file the exports the config object like so.
+
+```js
+{
+  ...
+  "config": {
+    "forge": "./forge.config.js"
+  }
+  ...
+}
+```
