@@ -3,6 +3,16 @@ import path from 'path';
 
 export default async (dir) => {
   let forgeConfig = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'))).config.forge;
+  if (typeof forgeConfig === 'string' && (await fs.exists(path.resolve(dir, forgeConfig)) || await fs.exists(path.resolve(dir, `${forgeConfig}.js`)))) {
+    try {
+      forgeConfig = require(path.resolve(dir, forgeConfig));
+    } catch (err) {
+      console.error(`Failed to load: ${path.resolve(dir, forgeConfig)}`);
+      throw err;
+    }
+  } else if (typeof forgeConfig !== 'object') {
+    throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
+  }
   forgeConfig = Object.assign({
     make_targets: {},
     electronPackagerConfig: {},
