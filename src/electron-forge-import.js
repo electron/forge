@@ -66,7 +66,7 @@ const main = async () => {
   const { shouldChangeMain } = await inquirer.createPromptModule()({
     type: 'confirm',
     name: 'shouldChangeMain',
-    message: 'Do you want us to change the "main" attribute of your package.json?  If you are currently using babel and pointint to a "build" directory say yes.', // eslint-disable-line
+    message: 'Do you want us to change the "main" attribute of your package.json?  If you are currently using babel and pointing to a "build" directory say yes.', // eslint-disable-line
   });
   if (shouldChangeMain) {
     const { newMain } = await inquirer.createPromptModule()({
@@ -170,13 +170,20 @@ const main = async () => {
     babelSpinner.succeed();
     console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow);
   }
-  /* eslint-disable prefer-template */
-  console.info('\n\nWe have ATTEMPTED to convert your app to be in a format that electron-forge understands.\nNothing much will have changed but we added the' +
-  ' "electron-prebuilt-compile" '.cyan +
-  'dependency.  This is the dependency you must version bump to get newer versions of Electron.\n\n' +
-  'We also tried to import any build tooling you already had but we can\'t get everything.  You might need to convert any CLI/gulp/grunt tasks yourself.\n\n' +
-  'Also please note if you are using `preload` scripts you need to follow the steps outlined at https://github.com/electron-userland/electron-forge/wiki/Using-\'preload\'-scripts\n\n' +
-  'Thanks for using ' + 'electron-forge'.green + '!!!');
+
+  console.info(`
+
+We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
+Nothing much will have changed but we added the ${'"electron-prebuilt-compile"'.cyan} dependency.  This is \
+the dependency you must version bump to get newer versions of Electron.
+
+
+We also tried to import any build tooling you already had but we can't get everything.  You might need to convert any CLI/gulp/grunt tasks yourself.
+
+Also please note if you are using \`preload\` scripts you need to follow the steps outlined \
+at https://github.com/electron-userland/electron-forge/wiki/Using-%27preload%27-scripts
+
+Thanks for using ${'"electron-forge"'.green}!!!`);
 };
 
 main();
