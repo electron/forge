@@ -11,17 +11,7 @@
   "author": "",
   "license": "MIT",
   "config": {
-    "forge": {
-      "make_targets": {
-        "win32": ["squirrel"],
-        "darwin": ["zip"],
-        "linux": ["deb", "rpm"]
-      },
-      "electronPackagerConfig": {},
-      "electronWinstallerConfig": {},
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {}
-    }
+    "forge": "./forge.config.js"
   },
   "devDependencies": {
     "electron-prebuilt-compile": "9.9.9"
