@@ -30,7 +30,7 @@ export default async (dir, lintStyle) => {
       packageJSON.scripts.lint = 'eslint src';
       break;
     default:
-      packageJSON.scripts.lint = 'echo "No linting yet..."';
+      packageJSON.scripts.lint = 'echo "No linting configured"';
       break;
   }
   d('writing package.json to:', dir);
