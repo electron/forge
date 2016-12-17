@@ -1,21 +1,22 @@
 import fs from 'fs-promise';
-import mkdirp from 'mkdirp';
 import path from 'path';
-import pify from 'pify';
-import rimraf from 'rimraf';
 
+// This is different from fs-extra's ensureDir because it wipes out the existing directory,
+// if it's found.
 async function ensureDirectory(dir) {
   if (await fs.exists(dir)) {
-    await pify(rimraf)(dir);
+    await fs.remove(dir);
   }
-  return pify(mkdirp)(dir);
+  return fs.mkdirs(dir);
 }
 
+// This is different from fs-extra's ensureFile because it wipes out the existing file,
+// if it's found.
 async function ensureFile(file) {
   if (await fs.exists(file)) {
-    await pify(rimraf)(file);
+    await fs.remove(file);
   }
-  await pify(mkdirp)(path.dirname(file));
+  await fs.mkdirs(path.dirname(file));
 }
 
 export { ensureDirectory, ensureFile };

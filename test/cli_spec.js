@@ -2,8 +2,6 @@ import { spawn } from 'child_process';
 import fs from 'fs-promise';
 import os from 'os';
 import path from 'path';
-import pify from 'pify';
-import rimraf from 'rimraf';
 
 import { expect } from 'chai';
 
@@ -44,7 +42,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       before(async () => {
         dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
         dirID += 1;
-        await pify(rimraf)(dir);
+        await fs.remove(dir);
         await pSpawn(['init', dir, `--lintstyle=${lintStyle}`]);
       });
 
@@ -67,7 +65,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
         it('should initially pass the linting process', () => pSpawn(['lint', dir]));
       });
 
-      after(done => rimraf(dir, done));
+      after(() => fs.remove(dir));
     });
   };
   forLintingMethod('airbnb');
@@ -113,6 +111,6 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       });
     });
 
-    after(done => rimraf(dir, done));
+    after(() => fs.remove(dir));
   });
 });

@@ -2,9 +2,7 @@ import debug from 'debug';
 import fs from 'fs-promise';
 import inquirer from 'inquirer';
 import logSymbols from 'log-symbols';
-import mkdirp from 'mkdirp';
 import ora from 'ora';
-import pify from 'pify';
 
 const d = debug('electron-forge:init:directory');
 
@@ -12,7 +10,7 @@ export default async (dir) => {
   const initSpinner = ora.ora('Initializing Project Directory').start();
 
   d('creating directory:', dir);
-  await pify(mkdirp)(dir);
+  await fs.mkdirs(dir);
 
   const files = await fs.readdir(dir);
   if (files.length !== 0) {

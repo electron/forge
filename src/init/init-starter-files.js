@@ -1,9 +1,7 @@
 import debug from 'debug';
 import fs from 'fs-promise';
-import mkdirp from 'mkdirp';
 import ora from 'ora';
 import path from 'path';
-import pify from 'pify';
 
 const d = debug('electron-forge:init:starter-files');
 
@@ -30,7 +28,7 @@ export default async (dir, lintStyle) => {
   const tmplPath = path.resolve(__dirname, '../../tmpl');
 
   d('creating directory:', path.resolve(dir, 'src'));
-  await pify(mkdirp)(path.resolve(dir, 'src'));
+  await fs.mkdirs(path.resolve(dir, 'src'));
   const rootFiles = ['_gitignore'];
   if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
   const srcFiles = ['index.js', 'index.html'];

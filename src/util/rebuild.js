@@ -1,11 +1,9 @@
 import { spawn } from 'child_process';
 import debug from 'debug';
 import fs from 'fs-promise';
-import mkdirp from 'mkdirp';
 import ora from 'ora';
 import os from 'os';
 import path from 'path';
-import pify from 'pify';
 
 const d = debug('electron-forge:rebuild');
 
@@ -59,7 +57,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
         child.on('exit', async (code) => {
           d('built:', path.basename(modulePath));
           if (code !== 0) return reject(new Error(`Failed to rebuild: ${modulePath}\n\n${output}`));
-          await pify(mkdirp)(path.dirname(metaPath));
+          await fs.mkdirs(path.dirname(metaPath));
           await fs.writeFile(metaPath, pArch);
           resolve();
         });

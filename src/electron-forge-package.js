@@ -5,7 +5,6 @@ import pify from 'pify';
 import packager from 'electron-packager';
 import program from 'commander';
 import ora from 'ora';
-import rimraf from 'rimraf';
 
 import './util/terminate';
 import electronHostArch from './util/electron-host-arch';
@@ -64,7 +63,7 @@ const main = async () => {
         prepareCounter += 1;
         prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
-      await pify(rimraf)(path.resolve(buildPath, 'node_modules/electron-compile/test'));
+      await fs.remove(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       done();
     }, async (...args) => {
       prepareSpinner.succeed();
