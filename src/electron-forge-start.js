@@ -10,7 +10,7 @@ import rebuild from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const startSpinner = ora.ora('Launching Application').start();
+  const locateSpinner = ora.ora('Locating Application').start();
   let dir = process.cwd();
   program
     .version(require('../package.json').version)
@@ -28,15 +28,19 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    startSpinner.fail();
+    locateSpinner.fail();
     console.error('Failed to locate startable Electron application'.red);
     if (global._resolveError) global._resolveError();
     process.exit(1);
   }
+  locateSpinner.succeed();
 
   const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
 
   await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
+
+  const startSpinner = ora.ora('Launching Application').start();
+
   const spawnOpts = {
     cwd: dir,
     stdio: 'inherit',
