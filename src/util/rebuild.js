@@ -79,13 +79,14 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
     }
   };
 
-  const rebuildAllModulesIn = (nodeModulesPath) => {
+  const rebuildAllModulesIn = (nodeModulesPath, prefix = '') => {
+    d('scanning:', nodeModulesPath);
     for (const modulePath of fs.readdirSync(nodeModulesPath)) {
-      if (prodDeps[modulePath]) {
+      if (prodDeps[`${prefix}${modulePath}`]) {
         rebuilds.push(rebuildModuleAt(path.resolve(nodeModulesPath, modulePath)));
       }
-      if (path.resolve(nodeModulesPath, modulePath).startsWith('@')) {
-        rebuildAllModulesIn(path.resolve(nodeModulesPath, modulePath));
+      if (modulePath.startsWith('@')) {
+        rebuildAllModulesIn(path.resolve(nodeModulesPath, modulePath), `${modulePath}/`);
       }
       if (fs.existsSync(path.resolve(nodeModulesPath, modulePath, 'node_modules'))) {
         rebuildAllModulesIn(path.resolve(nodeModulesPath, modulePath, 'node_modules'));
@@ -107,6 +108,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
   };
 
   const markChildrenAsProdDeps = async (modulePath) => {
+    d('exporing:', modulePath);
     const childPackageJSON = JSON.parse(await fs.readFile(path.resolve(modulePath, 'package.json'), 'utf8'));
     const moduleWait = [];
     Object.keys(childPackageJSON.dependencies || {}).forEach((key) => {
