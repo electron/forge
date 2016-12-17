@@ -73,8 +73,12 @@ const main = async () => {
       await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
       packagerSpinner = ora.ora('Packaging Application').start();
       done();
-    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item => require(item)) : []),
-    afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item => require(item)) : [],
+    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item =>
+      (typeof item === 'string' ? require(item) : item)
+    ) : []),
+    afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item =>
+      (typeof item === 'string' ? require(item) : item)
+    ) : [],
     dir,
     arch,
     platform,
