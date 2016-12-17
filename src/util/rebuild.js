@@ -9,14 +9,26 @@ const d = debug('electron-forge:rebuild');
 
 export default async (buildPath, electronVersion, pPlatform, pArch) => {
   const rebuilds = [];
+  let rebuildCount = 0;
+  let rebuildCompleteCount = 0;
+  const prodDeps = {};
+
+  const nativeSpinner = ora.ora(`Preparing native dependencies ${rebuildCompleteCount}/${rebuildCount}`).start();
+  const updateNativeSpinner = () => {
+    nativeSpinner.text = `Preparing native dependencies ${rebuildCompleteCount}/${rebuildCount}`;
+  };
 
   const rebuildModuleAt = async (modulePath) => {
     if (await fs.exists(path.resolve(modulePath, 'binding.gyp'))) {
       const metaPath = path.resolve(modulePath, 'build', 'Release', '.forge-meta');
+      rebuildCount += 1;
+      updateNativeSpinner();
       if (await fs.exists(metaPath)) {
         const meta = await fs.readFile(metaPath, 'utf8');
         if (meta === pArch) {
           d(`skipping: ${path.basename(modulePath)} as it is already built`);
+          rebuildCompleteCount += 1;
+          updateNativeSpinner();
           return;
         }
       }
@@ -59,11 +71,14 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
           if (code !== 0) return reject(new Error(`Failed to rebuild: ${modulePath}\n\n${output}`));
           await fs.mkdirs(path.dirname(metaPath));
           await fs.writeFile(metaPath, pArch);
+          rebuildCompleteCount += 1;
+          updateNativeSpinner();
           resolve();
         });
       });
     }
   };
+
   const rebuildAllModulesIn = (nodeModulesPath) => {
     for (const modulePath of fs.readdirSync(nodeModulesPath)) {
       rebuilds.push(rebuildModuleAt(path.resolve(nodeModulesPath, modulePath)));
@@ -75,7 +90,40 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
       }
     }
   };
-  const nativeSpinner = ora.ora('Preparing native dependencies').start();
+
+  const findModule = async (moduleName, fromDir, foundFn) => {
+    let targetDir = fromDir;
+    const foundFns = [];
+    while (targetDir !== buildPath) {
+      const testPath = path.resolve(targetDir, 'node_modules', moduleName);
+      if (await fs.exists(testPath)) {
+        foundFns.push(foundFn(testPath));
+      }
+      targetDir = path.dirname(targetDir);
+    }
+    await Promise.all(foundFns);
+  };
+
+  const markChildrenAsProdDeps = async (modulePath) => {
+    const childPackageJSON = JSON.parse(await fs.readFile(path.resolve(modulePath, 'package.json'), 'utf8'));
+    const moduleWait = [];
+    Object.keys(childPackageJSON.dependencies || {}).forEach((key) => {
+      if (prodDeps[key]) return;
+      prodDeps[key] = true;
+      moduleWait.push(findModule(key, modulePath, markChildrenAsProdDeps));
+    });
+    await Promise.all(moduleWait);
+  };
+
+  const rootPackageJSON = JSON.parse(await fs.readFile(path.resolve(buildPath, 'package.json'), 'utf8'));
+  const markWaiters = [];
+  Object.keys(rootPackageJSON.dependencies || {}).concat(Object.keys(rootPackageJSON.optionalDependencies || {})).forEach((key) => {
+    prodDeps[key] = true;
+    markWaiters.push(markChildrenAsProdDeps(path.resolve(buildPath, 'node_modules', key)));
+  });
+
+  await Promise.all(markWaiters);
+
   rebuildAllModulesIn(path.resolve(buildPath, 'node_modules'));
   try {
     await Promise.all(rebuilds);
