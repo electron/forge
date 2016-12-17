@@ -6,6 +6,7 @@ import path from 'path';
 import { expect } from 'chai';
 
 import installDeps from '../src/util/install-dependencies';
+import readPackageJSON from '../src/util/read-package-json';
 
 const pSpawn = async (args = [], opts = {
   stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
@@ -99,7 +100,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       [].concat(targets).concat(genericTargets).forEach((target) => {
         describe(`make (with target=${target})`, () => {
           before(async () => {
-            const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+            const packageJSON = readPackageJSON(dir);
             packageJSON.config.forge.make_targets[process.platform] = [target];
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });

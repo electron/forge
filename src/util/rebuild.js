@@ -4,6 +4,7 @@ import fs from 'fs-promise';
 import ora from 'ora';
 import os from 'os';
 import path from 'path';
+import readPackageJSON from './read-package-json';
 
 const d = debug('electron-forge:rebuild');
 
@@ -41,7 +42,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
         '--build-from-source',
       ];
 
-      const modulePackageJSON = JSON.parse(await fs.readFile(path.resolve(modulePath, 'package.json')));
+      const modulePackageJSON = readPackageJSON(modulePath);
       Object.keys(modulePackageJSON.binary || {}).forEach((binaryKey) => {
         let value = modulePackageJSON.binary[binaryKey];
         if (binaryKey === 'module_path') {
@@ -109,7 +110,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
 
   const markChildrenAsProdDeps = async (modulePath) => {
     d('exporing:', modulePath);
-    const childPackageJSON = JSON.parse(await fs.readFile(path.resolve(modulePath, 'package.json'), 'utf8'));
+    const childPackageJSON = readPackageJSON(modulePath);
     const moduleWait = [];
     Object.keys(childPackageJSON.dependencies || {}).forEach((key) => {
       if (prodDeps[key]) return;
@@ -119,7 +120,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
     await Promise.all(moduleWait);
   };
 
-  const rootPackageJSON = JSON.parse(await fs.readFile(path.resolve(buildPath, 'package.json'), 'utf8'));
+  const rootPackageJSON = readPackageJSON(buildPath);
   const markWaiters = [];
   Object.keys(rootPackageJSON.dependencies || {}).concat(Object.keys(rootPackageJSON.optionalDependencies || {})).forEach((key) => {
     prodDeps[key] = true;

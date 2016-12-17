@@ -10,6 +10,7 @@ import './util/terminate';
 import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packagerCompileHook from './util/compile-hook';
+import readPackageJSON from './util/read-package-json';
 import rebuildHook from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
@@ -48,7 +49,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+  const packageJSON = readPackageJSON(dir);
 
   const forgeConfig = await getForgeConfig(dir);
   let packagerSpinner;

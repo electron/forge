@@ -8,6 +8,7 @@ import './util/terminate';
 import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packager from './electron-forge-package';
+import readPackageJSON from './util/read-package-json';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -75,7 +76,7 @@ const main = async () => {
     }
   }
 
-  const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+  const packageJSON = readPackageJSON(dir);
   const appName = packageJSON.productName || packageJSON.name;
 
   for (const targetArch of targetArchs) {

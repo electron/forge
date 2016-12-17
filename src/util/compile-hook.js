@@ -1,6 +1,7 @@
 import fs from 'fs-promise';
 import ora from 'ora';
 import path from 'path';
+import readPackageJSON from './read-package-json';
 
 export default async(originalDir, buildPath, electronVersion, pPlatform, pArch, done) => {
   const compileSpinner = ora.ora('Compiling Application').start();
@@ -21,18 +22,18 @@ export default async(originalDir, buildPath, electronVersion, pPlatform, pArch, 
       }
     }
 
-    const packageJson = JSON.parse(await fs.readFile(path.join(appDir, 'package.json'), 'utf8'));
+    const packageJSON = readPackageJSON(appDir);
 
-    const index = packageJson.main || 'index.js';
-    packageJson.originalMain = index;
-    packageJson.main = 'es6-shim.js';
+    const index = packageJSON.main || 'index.js';
+    packageJSON.originalMain = index;
+    packageJSON.main = 'es6-shim.js';
 
     await fs.writeFile(path.join(appDir, 'es6-shim.js'),
       await fs.readFile(path.join(path.resolve(originalDir, 'node_modules/electron-compile/lib/es6-shim.js')), 'utf8'));
 
     await fs.writeFile(
       path.join(appDir, 'package.json'),
-      JSON.stringify(packageJson, null, 2));
+      JSON.stringify(packageJSON, null, 2));
   }
 
   await compileAndShim(buildPath);
