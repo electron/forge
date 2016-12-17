@@ -81,7 +81,9 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
 
   const rebuildAllModulesIn = (nodeModulesPath) => {
     for (const modulePath of fs.readdirSync(nodeModulesPath)) {
-      rebuilds.push(rebuildModuleAt(path.resolve(nodeModulesPath, modulePath)));
+      if (prodDeps[modulePath]) {
+        rebuilds.push(rebuildModuleAt(path.resolve(nodeModulesPath, modulePath)));
+      }
       if (path.resolve(nodeModulesPath, modulePath).startsWith('@')) {
         rebuildAllModulesIn(path.resolve(nodeModulesPath, modulePath));
       }
