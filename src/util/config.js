@@ -1,13 +1,12 @@
 import debug from 'debug';
-import fs from 'fs';
-import mkdirp from 'mkdirp';
+import fs from 'fs-promise';
 import os from 'os';
 import path from 'path';
 
 const d = debug('electron-forge:runtime-config');
 
 /*
- * Let's be real sharing config accross spawned process's must be easier than
+ * Let's be real: sharing config across spawned processes must be easier than
  * this...
  */
 class BasicConfigStore {
@@ -15,7 +14,7 @@ class BasicConfigStore {
     this._store = {};
     this._dir = path.resolve(os.tmpdir(), 'electron-forge');
     this._path = path.resolve(this._dir, '.runtime.config');
-    mkdirp.sync(this._dir);
+    fs.mkdirsSync(this._dir);
   }
 
   get(key) {
