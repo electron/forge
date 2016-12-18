@@ -31,8 +31,12 @@ const pSpawn = async (args = [], opts = {
 const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
 
 describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
-  it.skip('should output help', async () => {
-    expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
+  it('should output help', async function helpSpec() {
+    if (process.platform === 'win32') {
+      this.skip();
+    } else {
+      expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
+    }
   });
 
   let dirID = Date.now();
