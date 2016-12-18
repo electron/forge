@@ -44,8 +44,8 @@ describe('rebuilder', () => {
   });
 
   it('should have rebuilt children of scoped top level prod dependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', '@newrelic/native-metrics', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), '@newrelic/native-metrics build meta should exist').to.equal(true);
+    const forgeMeta = path.resolve(testModulePath, 'node_modules', '@paulcbetts/cld', 'build', 'Release', '.forge-meta');
+    expect(await fs.exists(forgeMeta), '@paulcbetts/cld build meta should exist').to.equal(true);
   });
 
   it('should have rebuilt top level optional dependencies', async () => {
