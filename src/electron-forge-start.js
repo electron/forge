@@ -6,6 +6,7 @@ import program from 'commander';
 import ora from 'ora';
 
 import './util/terminate';
+import readPackageJSON from './util/read-package-json';
 import rebuild from './util/rebuild';
 import resolveDir from './util/resolve-dir';
 
@@ -35,7 +36,7 @@ const main = async () => {
   }
   locateSpinner.succeed();
 
-  const packageJSON = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'));
+  const packageJSON = await readPackageJSON(dir);
 
   await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
 

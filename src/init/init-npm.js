@@ -5,6 +5,7 @@ import path from 'path';
 import username from 'username';
 
 import installDepList from '../util/install-dependencies';
+import readPackageJSON from '../util/read-package-json';
 
 const d = debug('electron-forge:init:npm');
 
@@ -17,7 +18,7 @@ const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
 
 export default async (dir, lintStyle) => {
   const initSpinner = ora.ora('Initializing NPM Module').start();
-  const packageJSON = JSON.parse(await fs.readFile(path.resolve(__dirname, '../../tmpl/package.json'), 'utf8'));
+  const packageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
   packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
   packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
   packageJSON.author = await username();

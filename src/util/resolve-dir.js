@@ -1,6 +1,7 @@
 import debug from 'debug';
 import fs from 'fs-promise';
 import path from 'path';
+import readPackageJSON from './read-package-json';
 
 const d = debug('electron-forge:project-resolver');
 
@@ -12,7 +13,7 @@ export default async (dir) => {
     const testPath = path.resolve(mDir, 'package.json');
     d('searching for project in:', mDir);
     if (await fs.exists(testPath)) {
-      const packageJSON = JSON.parse(await fs.readFile(testPath, 'utf8'));
+      const packageJSON = await readPackageJSON(mDir);
 
       if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {
         if (!/[0-9]/.test(packageJSON.devDependencies['electron-prebuilt-compile'][0])) {

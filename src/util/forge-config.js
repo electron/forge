@@ -1,8 +1,9 @@
 import fs from 'fs-promise';
 import path from 'path';
+import readPackageJSON from './read-package-json';
 
 export default async (dir) => {
-  let forgeConfig = JSON.parse(await fs.readFile(path.resolve(dir, 'package.json'))).config.forge;
+  let forgeConfig = (await readPackageJSON(dir)).config.forge;
   if (typeof forgeConfig === 'string' && (await fs.exists(path.resolve(dir, forgeConfig)) || await fs.exists(path.resolve(dir, `${forgeConfig}.js`)))) {
     try {
       forgeConfig = require(path.resolve(dir, forgeConfig));
