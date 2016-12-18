@@ -22,7 +22,7 @@ export default async(originalDir, buildPath, electronVersion, pPlatform, pArch, 
       }
     }
 
-    const packageJSON = readPackageJSON(appDir);
+    const packageJSON = await readPackageJSON(appDir);
 
     const index = packageJSON.main || 'index.js';
     packageJSON.originalMain = index;

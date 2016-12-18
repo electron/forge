@@ -3,7 +3,7 @@ import path from 'path';
 import readPackageJSON from './read-package-json';
 
 export default async (dir) => {
-  let forgeConfig = readPackageJSON(dir).config.forge;
+  let forgeConfig = (await readPackageJSON(dir)).config.forge;
   if (typeof forgeConfig === 'string' && (await fs.exists(path.resolve(dir, forgeConfig)) || await fs.exists(path.resolve(dir, `${forgeConfig}.js`)))) {
     try {
       forgeConfig = require(path.resolve(dir, forgeConfig));

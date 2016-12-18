@@ -36,7 +36,7 @@ const main = async () => {
   }
   locateSpinner.succeed();
 
-  const packageJSON = readPackageJSON(dir);
+  const packageJSON = await readPackageJSON(dir);
 
   await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
 

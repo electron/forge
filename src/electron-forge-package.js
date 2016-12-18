@@ -49,7 +49,7 @@ const main = async () => {
     process.exit(1);
   }
 
-  const packageJSON = readPackageJSON(dir);
+  const packageJSON = await readPackageJSON(dir);
 
   const forgeConfig = await getForgeConfig(dir);
   let packagerSpinner;

@@ -76,7 +76,7 @@ const main = async () => {
     }
   }
 
-  const packageJSON = readPackageJSON(dir);
+  const packageJSON = await readPackageJSON(dir);
   const appName = packageJSON.productName || packageJSON.name;
 
   for (const targetArch of targetArchs) {

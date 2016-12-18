@@ -42,7 +42,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
         '--build-from-source',
       ];
 
-      const modulePackageJSON = readPackageJSON(modulePath);
+      const modulePackageJSON = await readPackageJSON(modulePath);
       Object.keys(modulePackageJSON.binary || {}).forEach((binaryKey) => {
         let value = modulePackageJSON.binary[binaryKey];
         if (binaryKey === 'module_path') {
@@ -110,7 +110,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
 
   const markChildrenAsProdDeps = async (modulePath) => {
     d('exporing:', modulePath);
-    const childPackageJSON = readPackageJSON(modulePath);
+    const childPackageJSON = await readPackageJSON(modulePath);
     const moduleWait = [];
     Object.keys(childPackageJSON.dependencies || {}).forEach((key) => {
       if (prodDeps[key]) return;
@@ -120,7 +120,7 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
     await Promise.all(moduleWait);
   };
 
-  const rootPackageJSON = readPackageJSON(buildPath);
+  const rootPackageJSON = await readPackageJSON(buildPath);
   const markWaiters = [];
   Object.keys(rootPackageJSON.dependencies || {}).concat(Object.keys(rootPackageJSON.optionalDependencies || {})).forEach((key) => {
     prodDeps[key] = true;

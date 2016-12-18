@@ -100,7 +100,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       [].concat(targets).concat(genericTargets).forEach((target) => {
         describe(`make (with target=${target})`, () => {
           before(async () => {
-            const packageJSON = readPackageJSON(dir);
+            const packageJSON = await readPackageJSON(dir);
             packageJSON.config.forge.make_targets[process.platform] = [target];
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });

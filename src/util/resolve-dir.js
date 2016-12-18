@@ -13,7 +13,7 @@ export default async (dir) => {
     const testPath = path.resolve(mDir, 'package.json');
     d('searching for project in:', mDir);
     if (await fs.exists(testPath)) {
-      const packageJSON = readPackageJSON(mDir);
+      const packageJSON = await readPackageJSON(mDir);
 
       if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {
         if (!/[0-9]/.test(packageJSON.devDependencies['electron-prebuilt-compile'][0])) {
