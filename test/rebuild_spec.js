@@ -13,6 +13,11 @@ ora.ora = ora;
 describe('rebuilder', () => {
   const testModulePath = path.resolve(os.tmpdir(), 'electron-forge-rebuild-test');
 
+  async function expectForgeMeta(npmPackage, shouldExist = true) {
+    const forgeMeta = path.resolve(testModulePath, 'node_modules', npmPackage, 'build', 'Release', '.forge-meta');
+    expect(await fs.exists(forgeMeta), `${npmPackage} build meta ${shouldExist ? 'should' : 'should not'} exist`).to.equal(shouldExist);
+  }
+
   before(async () => {
     await fs.remove(testModulePath);
     await fs.mkdirs(testModulePath);
@@ -34,28 +39,23 @@ describe('rebuilder', () => {
   });
 
   it('should have rebuilt top level prod dependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'ref build meta should exist').to.equal(true);
+    expectForgeMeta('ref');
   });
 
   it('should have rebuilt children of top level prod dependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', 'microtime', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'microtime build meta should exist').to.equal(true);
+    expectForgeMeta('microtime');
   });
 
   it('should have rebuilt children of scoped top level prod dependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', '@paulcbetts/cld', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), '@paulcbetts/cld build meta should exist').to.equal(true);
+    expectForgeMeta('@paulcbetts/cld');
   });
 
   it('should have rebuilt top level optional dependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', 'zipfile', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'zipfile build meta should exist').to.equal(true);
+    expectForgeMeta('zipfile');
   });
 
   it('should not have rebuilt top level devDependencies', async () => {
-    const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ffi', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'ffi build meta should not exist').to.equal(false);
+    expectForgeMeta('ffi', false);
   });
 
   after(async () => {
