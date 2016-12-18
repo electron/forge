@@ -30,7 +30,7 @@ const pSpawn = async (args = [], opts = {
 const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
 
 describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
-  it('should output help', async () => {
+  it('should output help', async function helpSpec() {
     if (process.platform === 'win32') {
       this.skip();
     } else {
