@@ -1,3 +1,38 @@
+### [1.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v1.1.0) (2016-12-27)
+
+##### Chores
+
+* **tests:** run flatpak runtime install in local Dockerfile ([d046965f](https://github.com/electron-userland/electron-forge/commit/d046965f))
+* **generic:** add pretest step to improve development ([558fae31](https://github.com/electron-userland/electron-forge/commit/558fae31))
+* **packages:** upgrade fs-promise and inquirer (#18) ([d51d482f](https://github.com/electron-userland/electron-forge/commit/d51d482f))
+
+##### Documentation Changes
+
+* **generic:** document the new JS file option for config ([2d44c41f](https://github.com/electron-userland/electron-forge/commit/2d44c41f))
+
+##### New Features
+
+* **rebuilder:** only rebuild prod and optional deps (ignore dev deps) ([d751a85f](https://github.com/electron-userland/electron-forge/commit/d751a85f))
+* **generic:** allow JS files to provide the config object ([e57f3c78](https://github.com/electron-userland/electron-forge/commit/e57f3c78))
+
+##### Bug Fixes
+
+* **packager:** allow hooks to be strings or functions depending on config setup ([ec0caecc](https://github.com/electron-userland/electron-forge/commit/ec0caecc))
+* **rebuilder:** rebuild modules inside @ scoped folders as well (#19) ([bc21528d](https://github.com/electron-userland/electron-forge/commit/bc21528d))
+* **generic:** document that the minimum Node version is 6 ([1f5ac7f2](https://github.com/electron-userland/electron-forge/commit/1f5ac7f2))
+
+##### Refactors
+
+* **generic:**
+  * standardize reading package.json files (#33) ([0855eacf](https://github.com/electron-userland/electron-forge/commit/0855eacf))
+  * replace mkdirp/rimraf calls with equivalent fs-promise calls ([bb2c6cf3](https://github.com/electron-userland/electron-forge/commit/bb2c6cf3))
+* **tests:** use different native modules so the tests run on CI ([d20387b7](https://github.com/electron-userland/electron-forge/commit/d20387b7))
+
+##### Tests
+
+* **generic:** only skip help spec on Windows (#34) ([202987e1](https://github.com/electron-userland/electron-forge/commit/202987e1))
+* **builder:** add tests to ensure correct behvior of the native module builder ([b79c7af5](https://github.com/electron-userland/electron-forge/commit/b79c7af5))
+
 #### [1.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v1.0.1) (2016-12-12)
 
 ##### Chores
