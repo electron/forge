@@ -165,7 +165,7 @@ const main = async () => {
 
     await fs.writeFile(compilePath, JSON.stringify(Object.assign(compileConfig, {
       'application/javascript': babelConfig,
-    }, null, 2)));
+    }), null, 2));
 
     babelSpinner.succeed();
     console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow);
