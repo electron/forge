@@ -109,8 +109,13 @@ export default async (buildPath, electronVersion, pPlatform, pArch) => {
   };
 
   const markChildrenAsProdDeps = async (modulePath) => {
-    d('exporing:', modulePath);
-    const childPackageJSON = await readPackageJSON(modulePath);
+    d('exploring:', modulePath);
+    let childPackageJSON;
+    try {
+      childPackageJSON = await readPackageJSON(modulePath);
+    } catch (err) {
+      return;
+    }
     const moduleWait = [];
     Object.keys(childPackageJSON.dependencies || {}).forEach((key) => {
       if (prodDeps[key]) return;
