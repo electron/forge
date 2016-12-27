@@ -1,5 +1,6 @@
 import 'colors';
 import fs from 'fs-promise';
+import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
 import packager from 'electron-packager';
@@ -65,6 +66,10 @@ const main = async () => {
         prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
       await fs.remove(path.resolve(buildPath, 'node_modules/electron-compile/test'));
+      const bins = await pify(glob)(path.join(buildPath, '**/.bin/**/*'));
+      for (const bin of bins) {
+        await fs.remove(bin);
+      }
       done();
     }, async (...args) => {
       prepareSpinner.succeed();
