@@ -21,6 +21,7 @@ const main = async () => {
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
+    .option('-t, --targets [targets]', 'Override your mnake targets for this run')
     .allowUnknownOption(true)
     .action((cwd) => {
       if (!cwd) return;
@@ -58,7 +59,10 @@ const main = async () => {
   const declaredPlatform = program.platform || process.platform;
 
   const forgeConfig = await getForgeConfig(dir);
-  const targets = forgeConfig.make_targets[declaredPlatform];
+  let targets = forgeConfig.make_targets[declaredPlatform];
+  if (program.targets) {
+    targets = program.targets.split(',');
+  }
 
   console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
 
