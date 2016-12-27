@@ -1,9 +1,11 @@
 import fs from 'fs-promise';
 import path from 'path';
+import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
 
 export default async (dir) => {
-  let forgeConfig = (await readPackageJSON(dir)).config.forge;
+  const packageJSON = await readPackageJSON(dir);
+  let forgeConfig = packageJSON.config.forge;
   if (typeof forgeConfig === 'string' && (await fs.exists(path.resolve(dir, forgeConfig)) || await fs.exists(path.resolve(dir, `${forgeConfig}.js`)))) {
     try {
       forgeConfig = require(path.resolve(dir, forgeConfig));
@@ -28,5 +30,22 @@ export default async (dir) => {
     mas: ['zip'],
     linux: ['deb', 'rpm'],
   }, forgeConfig.make_targets);
+
+  const templateObj = Object.assign({}, packageJSON, { year: (new Date()).getFullYear() });
+  const template = (obj) => {
+    Object.keys(obj).forEach((objKey) => {
+      if (typeof obj[objKey] === 'object' && obj !== null) {
+        template(obj[objKey]);
+      } else if (typeof obj[objKey] === 'string') {
+        obj[objKey] = _template(obj[objKey])(templateObj); // eslint-disable-line
+        if (obj[objKey].startsWith('require:')) {
+          obj[objKey] = require(path.resolve(dir, obj[objKey].substr(8))); // eslint-disable-line
+        }
+      }
+    });
+  };
+
+  template(forgeConfig);
+
   return forgeConfig;
 };
