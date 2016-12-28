@@ -30,6 +30,7 @@ import config from './util/config';
     .command('make', 'Generate distributables for the current Electron application')
     .command('start', 'Start the current Electron application')
     .command('publish', 'Publish the current Electron application to GitHub')
+    .command('install', 'Install an Electron application from GitHub')
     .parse(process.argv);
 
   config.reset();

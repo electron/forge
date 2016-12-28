@@ -19,7 +19,8 @@
     "release:patch": "changelog -p && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
     "release:minor": "changelog -m && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:major": "changelog -M && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "watch-link": "nodemon --watch src --exec \"npm link\""
   },
   "author": "Samuel Attard",
   "license": "MIT",
@@ -38,7 +39,8 @@
     "generate-changelog": "^1.0.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0"
   },
   "babel": {
     "presets": [
@@ -71,11 +73,15 @@
     "inquirer": "^2.0.0",
     "lodash.template": "^4.4.0",
     "log-symbols": "^1.0.2",
+    "node-fetch": "^1.6.3",
     "node-gyp": "^3.4.0",
+    "nugget": "^2.0.1",
+    "opn": "^4.0.2",
     "ora": "^0.4.0",
     "pify": "^2.3.0",
     "resolve-package": "^1.0.1",
     "semver": "^5.3.0",
+    "sudo-prompt": "^6.2.1",
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
