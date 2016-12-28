@@ -6,13 +6,13 @@ const d = debug('electron-forge:lifecycle');
 
 process.on('unhandledRejection', (err) => {
   process.stdout.write('\n\nAn unhandled rejection has occurred inside Forge:\n');
-  console.error(colors.red(err.stack));
+  console.error(colors.red(err.stack || JSON.stringify(err)));
   process.exit(1);
 });
 
 process.on('uncaughtException', (err) => {
   process.stdout.write('\n\nAn unhandled exception has occurred inside Forge:\n');
-  console.error(colors.red(err.stack));
+  console.error(colors.red(err.stack || JSON.stringify(err)));
   process.exit(1);
 });
 

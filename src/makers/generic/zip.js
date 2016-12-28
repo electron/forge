@@ -36,4 +36,5 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     default:
       throw new Error('Unrecognized platform');
   }
+  return [zipPath];
 };

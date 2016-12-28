@@ -27,4 +27,5 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   const rpmConfig = Object.assign({}, forgeConfig.electronInstallerRedhat, rpmDefaults);
 
   await pify(installer)(rpmConfig);
+  return [outPath];
 };

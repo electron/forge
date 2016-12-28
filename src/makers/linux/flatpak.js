@@ -27,4 +27,5 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   const flatpakConfig = Object.assign({}, forgeConfig.electronInstallerFlatpak, flatpakDefaults);
 
   await pify(installer)(flatpakConfig);
+  return [outPath];
 };

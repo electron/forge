@@ -66,6 +66,7 @@
     "electron-packager": "^8.4.0",
     "electron-winstaller": "^2.5.0",
     "fs-promise": "^1.0.0",
+    "github": "^7.2.0",
     "inquirer": "^2.0.0",
     "log-symbols": "^1.0.2",
     "node-gyp": "^3.4.0",

@@ -22,7 +22,11 @@
         "name": ""
       },
       "electronInstallerDebian": {},
-      "electronInstallerRedhat": {}
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      }
     }
   }
 }
