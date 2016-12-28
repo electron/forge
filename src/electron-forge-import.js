@@ -3,9 +3,7 @@ import fs from 'fs-promise';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
-import pify from 'pify';
 import program from 'commander';
-import rimraf from 'rimraf';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import initGit from './init/init-git';
@@ -134,9 +132,9 @@ const main = async () => {
 
     const installSpinner = ora.ora('Installing dependencies').start();
 
-    await pify(rimraf)(path.resolve(dir, 'node_modules/.bin/electron'));
-    await pify(rimraf)(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-    await pify(rimraf)(path.resolve(dir, 'node_modules', electronName));
+    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
+    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
+    await fs.remove(path.resolve(dir, 'node_modules', electronName));
 
     d('installing dependencies');
     await installDepList(dir, deps);
