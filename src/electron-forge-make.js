@@ -17,9 +17,10 @@ const main = async () => {
   program
     .version(require('../package.json').version)
     .arguments('[cwd]')
-    .option('-s, --skip-package', 'Assume the app is already packaged')
+    .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
+    .allowUnknownOption(true)
     .action((cwd) => {
       if (!cwd) return;
       if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
@@ -78,6 +79,7 @@ const main = async () => {
 
   const packageJSON = await readPackageJSON(dir);
   const appName = packageJSON.productName || packageJSON.name;
+  const outputs = [];
 
   for (const targetArch of targetArchs) {
     const packageDir = path.resolve(dir, `out/${appName}-${declaredPlatform}-${targetArch}`);
@@ -99,7 +101,7 @@ const main = async () => {
         }
       }
       try {
-        await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON);
+        outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
       } catch (err) {
         makeSpinner.fail();
         if (err) throw err;
@@ -108,6 +110,12 @@ const main = async () => {
       makeSpinner.succeed();
     }
   }
+
+  return outputs;
 };
 
-main();
+if (process.mainModule === module) {
+  main();
+}
+
+export default main;

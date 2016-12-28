@@ -27,4 +27,5 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   const debianConfig = Object.assign({}, forgeConfig.electronInstallerDebian, debianDefaults);
 
   await pify(installer)(debianConfig);
+  return [outPath];
 };

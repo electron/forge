@@ -25,6 +25,7 @@ checkSystem()
       .command('package', 'Package the current Electron application')
       .command('make', 'Generate distributables for the current Electron application')
       .command('start', 'Start the current Electron application')
+      .command('publish', 'Publish the current Electron application to GitHub')
       .parse(process.argv);
 
     config.reset();
