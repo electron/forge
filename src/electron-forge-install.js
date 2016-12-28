@@ -14,6 +14,7 @@ import semver from 'semver';
 
 import './util/terminate';
 
+import darwinDMGInstaller from './installers/darwin/dmg';
 import darwinZipInstaller from './installers/darwin/zip';
 
 const d = debug('electron-forge:lint');
@@ -72,7 +73,7 @@ const main = async () => {
 
   const installTargets = {
     win32: ['.exe'],
-    darwin: ['OSX.zip', 'darwin.zip', 'macOS.zip', 'mac.zip'],
+    darwin: ['OSX.zip', 'darwin.zip', 'macOS.zip', 'mac.zip', '.dmg'],
     linux: ['.rpm', '.deb', '.flatpak'],
   };
 
@@ -130,6 +131,7 @@ const main = async () => {
     },
     darwin: {
       '.zip': darwinZipInstaller,
+      '.dmg': darwinDMGInstaller,
     },
     linux: {
       '.deb': async () => {},
