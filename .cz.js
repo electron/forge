@@ -20,6 +20,7 @@ module.exports = {
     { name: 'tests' },
     { name: 'initializer' },
     { name: 'publisher' },
+    { name: 'installer' },
     { name: 'generic' },
   ],
   allowCustomScopes: true,
