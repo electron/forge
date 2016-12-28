@@ -61,6 +61,8 @@ const main = async () => {
   });
   const latestRelease = sortedReleases[0];
 
+  searchSpinner.text = 'Searching for Releases';
+
   const assets = latestRelease.assets;
   if (!assets || !Array.isArray(assets)) {
     searchSpinner.fail();
