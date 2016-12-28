@@ -82,12 +82,27 @@ const main = async () => {
   packageJSON.devDependencies = packageJSON.devDependencies || {};
 
   const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
+  const buildToolPackages = [
+    'electron-builder',
+    'electron-download',
+    'electron-installer-debian',
+    'electron-installer-dmg',
+    'electron-installer-flatpak',
+    'electron-installer-redhat',
+    'electron-osx-sign',
+    'electron-packager',
+    'electron-winstaller',
+  ];
+
   let electronName;
   for (const key of keys) {
     if (key === 'electron' || key === 'electron-prebuilt') {
       delete packageJSON.dependencies[key];
       delete packageJSON.devDependencies[key];
       electronName = key;
+    } else if (buildToolPackages.includes(key)) {
+      delete packageJSON.dependencies[key];
+      delete packageJSON.devDependencies[key];
     }
   }
 
