@@ -80,17 +80,17 @@ const main = async () => {
   packageJSON.devDependencies = packageJSON.devDependencies || {};
 
   const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
-  const buildToolPackages = [
-    'electron-builder',
-    'electron-download',
-    'electron-installer-debian',
-    'electron-installer-dmg',
-    'electron-installer-flatpak',
-    'electron-installer-redhat',
-    'electron-osx-sign',
-    'electron-packager',
-    'electron-winstaller',
-  ];
+  const buildToolPackages = {
+    'electron-builder': 'provides mostly equivalent functionality',
+    'electron-download': 'already uses this module as a transitive dependency',
+    'electron-installer-debian': 'already uses this module as a transitive dependency',
+    'electron-installer-dmg': 'already uses this module as a transitive dependency',
+    'electron-installer-flatpak': 'already uses this module as a transitive dependency',
+    'electron-installer-redhat': 'already uses this module as a transitive dependency',
+    'electron-osx-sign': 'already uses this module as a transitive dependency',
+    'electron-packager': 'already uses this module as a transitive dependency',
+    'electron-winstaller': 'already uses this module as a transitive dependency',
+  };
 
   let electronName;
   for (const key of keys) {
@@ -98,9 +98,18 @@ const main = async () => {
       delete packageJSON.dependencies[key];
       delete packageJSON.devDependencies[key];
       electronName = key;
-    } else if (buildToolPackages.includes(key)) {
-      delete packageJSON.dependencies[key];
-      delete packageJSON.devDependencies[key];
+    } else if (buildToolPackages[key]) {
+      const explanation = buildToolPackages[key];
+      const { shouldRemoveDependency } = await inquirer.createPromptModule()({
+        type: 'confirm',
+        name: 'shouldRemoveDependency',
+        message: `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`,
+      });
+
+      if (shouldRemoveDependency) {
+        delete packageJSON.dependencies[key];
+        delete packageJSON.devDependencies[key];
+      }
     }
   }
 
