@@ -72,15 +72,15 @@ const main = async () => {
   }
 
   const installTargets = {
-    win32: ['.exe'],
-    darwin: ['OSX.zip', 'darwin.zip', 'macOS.zip', 'mac.zip', '.dmg'],
-    linux: ['.rpm', '.deb', '.flatpak'],
+    win32: [/\.exe$/],
+    darwin: [/OSX.*\.zip$/, /darwin.*\.zip$/, /macOS.*\.zip$/, /mac.*\.zip$/, /\.dmg$/],
+    linux: [/\.rpm$/, /\.deb$/, /\.flatpak$/],
   };
 
   const possibleAssets = assets.filter((asset) => {
     const targetSuffixes = installTargets[process.platform];
     for (const suffix of targetSuffixes) {
-      if (asset.name.endsWith(suffix)) return true;
+      if (suffix.test(asset.name)) return true;
     }
     return false;
   });
