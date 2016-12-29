@@ -9,6 +9,7 @@ import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packager from './electron-forge-package';
 import readPackageJSON from './util/read-package-json';
+import requireSearch from './util/require-search';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
@@ -89,16 +90,14 @@ const main = async () => {
 
     for (const target of targets) {
       const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`).start();
-      let maker;
-      try {
-        maker = require(`./makers/${process.platform}/${target}.js`);
-      } catch (err1) {
-        try {
-          maker = require(`./makers/generic/${target}.js`);
-        } catch (err2) {
-          makeSpinner.fail();
-          throw new Error(`Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`);
-        }
+      const maker = requireSearch(__dirname, [
+        `./makers/${process.platform}/${target}.js`,
+        `./makers/generic/${target}.js`,
+        `electron-forge-maker-${target}`,
+      ]);
+      if (!maker) {
+        makeSpinner.fail();
+        throw new Error(`Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`);
       }
       try {
         outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
