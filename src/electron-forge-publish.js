@@ -6,8 +6,8 @@ import ora from 'ora';
 
 import './util/terminate';
 import getForgeConfig from './util/forge-config';
-import GitHub from './util/github';
 import readPackageJSON from './util/read-package-json';
+import requireSearch from './util/require-search';
 import resolveDir from './util/resolve-dir';
 
 import make from './electron-forge-make';
@@ -19,8 +19,9 @@ const main = async () => {
   program
     .version(require('../package.json').version)
     .arguments('[cwd]')
-    .option('--auth-token', 'Provided GitHub authorization token')
+    .option('--auth-token', 'Authorization token for your publisher target (if required)')
     .option('-t, --tag', 'The tag to publish to on GitHub')
+    .option('--target', 'The deployment target, defaults to "github"')
     .allowUnknownOption(true)
     .action((cwd) => {
       if (!cwd) return;
@@ -48,73 +49,21 @@ const main = async () => {
 
   const forgeConfig = await getForgeConfig(dir);
 
-  if (!(forgeConfig.github_repository && typeof forgeConfig.github_repository === 'object' &&
-    forgeConfig.github_repository.owner && forgeConfig.github_repository.name)) {
-    console.error('In order to publish you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info'.red); // eslint-disable-line
-    process.exit(1);
+  if (!program.target) program.target = 'github';
+
+  const targetSpinner = ora.ora(`Resolving publish target: ${`${program.target}`.cyan}`).start();
+
+  const publisher = requireSearch(__dirname, [
+    `./publishers/${program.target}.js`,
+    `electron-forge-publisher-${program.target}`,
+  ]);
+  if (!publisher) {
+    targetSpinner.fail();
+    throw new Error(`Could not find a publish target with the name: ${program.target}`);
   }
+  targetSpinner.succeed();
 
-  const github = new GitHub(program.authToken);
-
-  let release;
-  try {
-    release = (await github.getGitHub().repos.getReleases({
-      owner: forgeConfig.github_repository.owner,
-      repo: forgeConfig.github_repository.name,
-      per_page: 100,
-    })).find(testRelease => testRelease.tag_name === (program.tag || `v${packageJSON.version}`));
-    if (!release) {
-      throw { code: 404 }; // eslint-disable-line
-    }
-  } catch (err) {
-    if (err.code === 404) {
-      // Release does not exist, let's make it
-      release = await github.getGitHub().repos.createRelease({
-        owner: forgeConfig.github_repository.owner,
-        repo: forgeConfig.github_repository.name,
-        tag_name: program.tag || `v${packageJSON.version}`,
-        name: program.tag || `v${packageJSON.version}`,
-        draft: true,
-      });
-    } else {
-      // Unknown error
-      throw err;
-    }
-  }
-
-  let uploaded = 0;
-  const uploadSpinner = ora.ora(`Uploading Artifacts ${uploaded}/${artifacts.length}`).start();
-  const updateSpinner = () => {
-    uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
-  };
-
-  try {
-    await Promise.all(artifacts.map(artifactPath =>
-      new Promise(async (resolve) => {
-        const done = () => {
-          uploaded += 1;
-          updateSpinner();
-          resolve();
-        };
-        if (release.assets.find(asset => asset.name === path.basename(artifactPath))) {
-          return done();
-        }
-        await github.getGitHub().repos.uploadAsset({
-          owner: forgeConfig.github_repository.owner,
-          repo: forgeConfig.github_repository.name,
-          id: release.id,
-          filePath: artifactPath,
-          name: path.basename(artifactPath),
-        });
-        return done();
-      })
-    ));
-  } catch (err) {
-    updateSpinner.fail();
-    throw err;
-  }
-
-  uploadSpinner.succeed();
+  await publisher(artifacts, packageJSON, forgeConfig, program.authToken, program.tag);
 };
 
 main();
