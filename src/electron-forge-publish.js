@@ -63,6 +63,9 @@ const main = async () => {
       repo: forgeConfig.github_repository.name,
       per_page: 100,
     })).find(testRelease => testRelease.tag_name === program.tag || `v${packageJSON.version}`);
+    if (!release) {
+      throw { code: 404 }; // eslint-disable-line
+    }
   } catch (err) {
     if (err.code === 404) {
       // Release does not exist, let's make it
