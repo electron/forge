@@ -12,7 +12,7 @@
     "build": "gulp build",
     "precommit": "npm run lint",
     "commit": "git-cz",
-    "lint": "eslint src test",
+    "lint": "eslint src test gulpfile.babel.js",
     "prepublish": "gulp build",
     "pretest": "gulp build",
     "test": "npm run lint && mocha test --compilers js:babel-register --timeout=300000",
