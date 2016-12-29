@@ -62,7 +62,7 @@ const main = async () => {
       owner: forgeConfig.github_repository.owner,
       repo: forgeConfig.github_repository.name,
       per_page: 100,
-    })).find(testRelease => testRelease.tag_name === program.tag || `v${packageJSON.version}`);
+    })).find(testRelease => testRelease.tag_name === (program.tag || `v${packageJSON.version}`));
     if (!release) {
       throw { code: 404 }; // eslint-disable-line
     }
