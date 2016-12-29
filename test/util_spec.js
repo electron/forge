@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import path from 'path';
 
+import requireSearch from '../src/util/require-search';
 import resolveDir from '../src/util/resolve-dir';
 import findConfig from '../src/util/forge-config';
 
@@ -46,5 +47,17 @@ describe('forge-config', () => {
     const conf = await findConfig(path.resolve(__dirname, 'fixture/dummy_js_conf'));
     expect(conf.magicFn).to.be.a('function');
     expect(conf.magicFn()).to.be.equal('magic result');
+  });
+});
+
+describe.only('require-search', () => {
+  it('should resolve undefined if no file exists', () => {
+    const resolved = requireSearch(__dirname, ['../src/util/wizard-secrets']);
+    expect(resolved).to.equal(undefined);
+  });
+
+  it('should resolve a file if it exists', () => {
+    const resolved = requireSearch(__dirname, ['../src/util/forge-config']);
+    expect(resolved).to.equal(findConfig);
   });
 });
