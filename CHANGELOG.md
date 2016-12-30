@@ -1,3 +1,13 @@
+### [2.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.2.0) (2016-12-30)
+
+##### New Features
+
+* **initializer:** allow custom initialzers ([9e6ddfa0](https://github.com/electron-userland/electron-forge/commit/9e6ddfa0))
+
+##### Tests
+
+* **initializer:** add test for custom initializer ([0dc62307](https://github.com/electron-userland/electron-forge/commit/0dc62307))
+
 ### [2.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.1.0) (2016-12-30)
 
 ##### Chores
