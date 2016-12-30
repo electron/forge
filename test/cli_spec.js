@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs-promise';
 import os from 'os';
 import path from 'path';
@@ -75,6 +75,40 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
   };
   forLintingMethod('airbnb');
   forLintingMethod('standard');
+
+  describe('init (with custom templater)', () => {
+    let dir;
+
+    before(async () => {
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
+      dirID += 1;
+      await fs.remove(dir);
+      execSync('npm link', {
+        cwd: path.resolve(__dirname, 'fixture/custom_init'),
+      });
+      await pSpawn(['init', dir, '--template=dummy']);
+    });
+
+    it('should create dot files correctly', async () => {
+      expect(await fs.exists(dir), 'the target dir should have been created').to.equal(true);
+      expect(await fs.exists(path.resolve(dir, '.bar')), 'the .bar file should exist').to.equal(true);
+    });
+
+    it('should create deep files correctly', async () => {
+      expect(await fs.exists(path.resolve(dir, 'src/foo.js')), 'the src/foo.js file should exist').to.equal(true);
+    });
+
+    describe('lint', () => {
+      it('should initially pass the linting process', () => pSpawn(['lint', dir]));
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+      execSync('npm unlink', {
+        cwd: path.resolve(__dirname, 'fixture/custom_init'),
+      });
+    });
+  });
 
   describe('after init', () => {
     let dir;
