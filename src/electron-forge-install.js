@@ -16,6 +16,7 @@ import './util/terminate';
 
 import darwinDMGInstaller from './installers/darwin/dmg';
 import darwinZipInstaller from './installers/darwin/zip';
+import linuxDebInstaller from './installers/linux/deb';
 
 const d = debug('electron-forge:lint');
 
@@ -134,7 +135,7 @@ const main = async () => {
       '.dmg': darwinDMGInstaller,
     },
     linux: {
-      '.deb': async () => {},
+      '.deb': linuxDebInstaller,
       '.rpm': async () => {},
       '.flatpak': async () => {},
     },
