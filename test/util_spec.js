@@ -50,7 +50,7 @@ describe('forge-config', () => {
   });
 });
 
-describe.only('require-search', () => {
+describe('require-search', () => {
   it('should resolve undefined if no file exists', () => {
     const resolved = requireSearch(__dirname, ['../src/util/wizard-secrets']);
     expect(resolved).to.equal(undefined);
