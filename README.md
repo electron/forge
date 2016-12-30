@@ -87,6 +87,14 @@ current platform.
 electron-forge lint
 ```
 
+## Publishing your Project
+
+```bash
+electron-forge publish
+```
+
+This will `make` your project and publish any generated artifacts.  By default it will publish to GitHub but you can change the publish target with `--target=YourTarget`.
+
 # Config
 
 Once you have generated a project, your `package.json` file will have some
@@ -125,7 +133,7 @@ config object:
 You can set `electronPackagerConfig` with **any** of the options from
 [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
 
-**NOTE:** You can also set your `forge` config property of your package.json to point to a JS file the exports the config object:
+**NOTE:** You can also set your `forge` config property of your package.json to point to a JS file that exports the config object:
 
 ```js
 {
@@ -140,3 +148,37 @@ You can set `electronPackagerConfig` with **any** of the options from
 **NOTE:** If you use the JSON object then the `afterCopy` and `afterExtract` options are mapped to `require`
 calls internally, so provide a path to a file that exports your hooks and they will still run.  If you use
 the JS file method mentioned above then you can use functions normally.
+
+## Possible `publish` targets
+
+| Target Name | Description | Required Config |
+|-------------|-------------|-----------------|
+| github      | Makes a new release for the current version (if required) and uploads the make artifacts as release assets | `process.env.GITHUB_TOKEN` - A personal access token with access to your releases <br />`forge.github_repository.owner` - The owner of the GitHub repository<br />`forge.github_repository.name` - The name of the GitHub repository |
+
+## Custom `make` and `publish` targets
+
+You can make your own custom targets for the `make` and `publish` targets.  If you publish them as `electron-forge-publisher-{name}` or `electron-forge-maker-{name}` you can then just specify `{name}` as your make / publish target.  The API for each is documented below.
+
+### API for `make` targets
+
+You must export a Function that returns a Promise.  Your function will be called with the following parameters.
+
+* `appDir` - The directory containing the packaged application
+* `appName` - The productName of the application
+* `targetArch` - The target architecture of the make command
+* `forgeConfig` - An object representing the users forgeConfig
+* `packageJSON` - An object representing the users package.json file
+
+Your promise must resolve with an array of the artifacts you generated.
+
+### API for `publish` targets
+
+You must export a Function that returns a Promise.  Your function will be called with the following parameters.
+
+* artifactPaths - An array of absolute paths to artifacts to publish
+* packageJSON - An object representing the users package.json file
+* forgeConfig - An object representing the users forgeConfig
+* authToken - The value of `--auth-token`
+* tag - The value of `--tag`
+
+You should use `ora` to indicate your publish progress.
