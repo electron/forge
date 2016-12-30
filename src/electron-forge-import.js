@@ -10,6 +10,7 @@ import initGit from './init/init-git';
 import { deps, devDeps } from './init/init-npm';
 
 import installDepList from './util/install-dependencies';
+import readPackageJSON from './util/read-package-json';
 
 import './util/terminate';
 
@@ -47,8 +48,7 @@ const main = async () => {
 
   await initGit(dir);
 
-  const packageJSONPath = path.resolve(dir, 'package.json');
-  let packageJSON = JSON.parse(await fs.readFile(packageJSONPath, 'utf8'));
+  let packageJSON = await readPackageJSON(dir);
   if (packageJSON.config && packageJSON.config.forge) {
     console.warn('It looks like this project is already configured for "electron-forge"'.green);
     const { shouldContinue } = await inquirer.createPromptModule()({
@@ -115,7 +115,7 @@ const main = async () => {
 
   const writeChanges = async () => {
     const writeSpinner = ora.ora('Writing modified package.json file').start();
-    await fs.writeFile(packageJSONPath, `${JSON.stringify(packageJSON, null, 2)}\n`);
+    await fs.writeFile(path.resolve(dir, 'package.json'), `${JSON.stringify(packageJSON, null, 2)}\n`);
     writeSpinner.succeed();
   };
 
@@ -154,10 +154,11 @@ const main = async () => {
     installSpinner.succeed();
   }
 
-  packageJSON = JSON.parse(await fs.readFile(packageJSONPath, 'utf8'));
+  packageJSON = await readPackageJSON(dir);
 
   packageJSON.config = packageJSON.config || {};
-  packageJSON.config.forge = JSON.parse(await fs.readFile(path.resolve(__dirname, '../tmpl/package.json'))).config.forge;
+  const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../tmpl'));
+  packageJSON.config.forge = templatePackageJSON.config.forge;
 
   await writeChanges();
 
