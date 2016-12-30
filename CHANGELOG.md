@@ -1,3 +1,35 @@
+### [2.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.1.0) (2016-12-30)
+
+##### Chores
+
+* **generic:** add importer to the git-cz list ([fbf691cb](https://github.com/electron-userland/electron-forge/commit/fbf691cb))
+* **tests:** remove .only from util_spec ([3b01f08c](https://github.com/electron-userland/electron-forge/commit/3b01f08c))
+
+##### New Features
+
+* **importer:**
+  * confirm build tool package removal from user ([3b548557](https://github.com/electron-userland/electron-forge/commit/3b548557))
+  * delete existing Electron build tools from package.json ([4152bd2d](https://github.com/electron-userland/electron-forge/commit/4152bd2d))
+  * move babel config in existing project to .compilerc ([b09fc3d6](https://github.com/electron-userland/electron-forge/commit/b09fc3d6))
+  * fix the projects gitignore on import ([75366bfe](https://github.com/electron-userland/electron-forge/commit/75366bfe))
+  * create inital import logic ([bddb9038](https://github.com/electron-userland/electron-forge/commit/bddb9038))
+* **maker:** allow user to override make targets ([bac86800](https://github.com/electron-userland/electron-forge/commit/bac86800))
+* **generic:** allow config options to use string templating ([5a568cb8](https://github.com/electron-userland/electron-forge/commit/5a568cb8))
+
+##### Bug Fixes
+
+* **importer:**
+  * pretty print the compilerc file ([07f06b40](https://github.com/electron-userland/electron-forge/commit/07f06b40))
+  * update the logging as per PR feedback ([dac33f0d](https://github.com/electron-userland/electron-forge/commit/dac33f0d))
+* **rebuild:** skip dependencies without a package.json file ([3348223d](https://github.com/electron-userland/electron-forge/commit/3348223d))
+* **packager:** remove stray .bin files leftover by yarn installs during packaging ([50ad8e6d](https://github.com/electron-userland/electron-forge/commit/50ad8e6d))
+
+##### Refactors
+
+* **importer:**
+  * use readPackageJSON ([e000eaf1](https://github.com/electron-userland/electron-forge/commit/e000eaf1))
+  * de-rimrafify ([df4193a4](https://github.com/electron-userland/electron-forge/commit/df4193a4))
+
 ## [2.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.0.0) (2016-12-30)
 
 ##### Chores
