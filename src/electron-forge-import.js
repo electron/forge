@@ -121,7 +121,8 @@ const main = async () => {
 
   let electronVersion;
   if (electronName) {
-    electronVersion = JSON.parse(await fs.readFile(path.resolve(dir, 'node_modules', electronName, 'package.json'))).version;
+    const electronPackageJSON = await readPackageJSON(path.resolve(dir, 'node_modules', electronName));
+    electronVersion = electronPackageJSON.version;
     packageJSON.devDependencies['electron-prebuilt-compile'] = electronVersion;
   }
 

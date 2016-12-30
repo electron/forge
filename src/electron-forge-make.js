@@ -21,7 +21,7 @@ const main = async () => {
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
-    .option('-t, --targets [targets]', 'Override your mnake targets for this run')
+    .option('-t, --targets [targets]', 'Override your make targets for this run')
     .allowUnknownOption(true)
     .action((cwd) => {
       if (!cwd) return;
