@@ -54,9 +54,11 @@ export default async (dir, lintStyle) => {
         await installDepList(dir, standardDeps, true);
         break;
       case 'airbnb':
-      default:
         d('installing airbnb linting dependencies');
         await installDepList(dir, airbnDeps, true);
+        break;
+      default:
+        d('not installing linting deps');
         break;
     }
   } catch (err) {

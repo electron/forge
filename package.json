@@ -74,6 +74,7 @@
     "node-gyp": "^3.4.0",
     "ora": "^0.3.0",
     "pify": "^2.3.0",
+    "resolve-package": "^1.0.1",
     "semver": "^5.3.0",
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",
