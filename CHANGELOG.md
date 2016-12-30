@@ -1,3 +1,33 @@
+## [2.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.0.0) (2016-12-30)
+
+##### Chores
+
+* **generic:** add publisher to cz config ([8653b62b](https://github.com/electron-userland/electron-forge/commit/8653b62b))
+
+##### Documentation Changes
+
+* **publisher:** document the API for custom makers and publishers ([81ed28d7](https://github.com/electron-userland/electron-forge/commit/81ed28d7))
+
+##### New Features
+
+* **publisher:** initial work on a publish command to sent make artifacts to github ([189cb0cc](https://github.com/electron-userland/electron-forge/commit/189cb0cc))
+* **generic:** map the alias bin commands to the correct commander files ([f1cac740](https://github.com/electron-userland/electron-forge/commit/f1cac740))
+
+##### Bug Fixes
+
+* **publisher:**
+  * publish to the correct version ([02fe5699](https://github.com/electron-userland/electron-forge/commit/02fe5699))
+  * throw custom 404 if we cant find the release ([6f4e1ed4](https://github.com/electron-userland/electron-forge/commit/6f4e1ed4))
+* **maker:** fix RPM maker outPath variable ([4b32fe42](https://github.com/electron-userland/electron-forge/commit/4b32fe42))
+
+##### Refactors
+
+* **publisher:** move github publish logic to own file ([bdaff3ce](https://github.com/electron-userland/electron-forge/commit/bdaff3ce))
+
+##### Tests
+
+* **generic:** add tests for the require-search util ([b7930eaa](https://github.com/electron-userland/electron-forge/commit/b7930eaa))
+
 ### [1.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v1.1.0) (2016-12-27)
 
 ##### Chores
