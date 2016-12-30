@@ -5,7 +5,7 @@ import path from 'path';
 
 const d = debug('electron-forge:init:starter-files');
 
-const copy = (source, target) =>
+export const copy = (source, target) =>
   new Promise((resolve, reject) => {
     d(`copying "${source}" --> "${target}"`);
     let rd;
