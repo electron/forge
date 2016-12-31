@@ -2,7 +2,7 @@ import fs from 'fs-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 import pify from 'pify';
-import Sudoer from 'electron-sudo';
+import sudo from 'sudo-prompt';
 import { exec, spawn } from 'child_process';
 
 export default async (filePath, installSpinner) => {
@@ -44,8 +44,9 @@ export default async (filePath, installSpinner) => {
   if (writeAccess) {
     await pify(exec)(moveCommand);
   } else {
-    const sudoer = new Sudoer({ name: 'Electron Forge' });
-    await sudoer.exec(moveCommand);
+    await pify(sudo.exec)(moveCommand, {
+      name: 'Electron Forge',
+    });
   }
 
   spawn('open', ['-R', targetApplicationPath], { detached: true });
