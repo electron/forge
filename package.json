@@ -82,6 +82,7 @@
     "pify": "^2.3.0",
     "resolve-package": "^1.0.1",
     "semver": "^5.3.0",
+    "sudo-prompt": "^6.2.1",
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
