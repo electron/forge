@@ -35,9 +35,8 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    console.error('Failed to locate publishable Electron application'.red);
-    if (global._resolveError) global._resolveError();
-    process.exit(1);
+    // eslint-disable-next-line no-throw-literal
+    throw 'Failed to locate publishable Electron application';
   }
 
   const artifacts = makeResults.reduce((accum, arr) => {

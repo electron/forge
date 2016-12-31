@@ -5,14 +5,26 @@ import ora from 'ora';
 const d = debug('electron-forge:lifecycle');
 
 process.on('unhandledRejection', (err) => {
-  process.stdout.write('\n\nAn unhandled rejection has occurred inside Forge:\n');
-  console.error(colors.red(err.stack || JSON.stringify(err)));
+  if (err && err.message && err.stack) {
+    console.error('\nAn unhandled rejection has occurred inside Forge:'.red);
+    console.error(colors.red(err.message));
+    console.error(colors.red(err.stack));
+  } else {
+    console.error('\nElectron forge was terminated:'.red);
+    console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
+  }
   process.exit(1);
 });
 
 process.on('uncaughtException', (err) => {
-  process.stdout.write('\n\nAn unhandled exception has occurred inside Forge:\n');
-  console.error(colors.red(err.stack || JSON.stringify(err)));
+  if (err && err.message && err.stack) {
+    console.error('\nAn unhandled exception has occurred inside Forge:'.red);
+    console.error(colors.red(err.message));
+    console.error(colors.red(err.stack));
+  } else {
+    console.error('\nElectron forge was terminated:'.red);
+    console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
+  }
   process.exit(1);
 });
 

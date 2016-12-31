@@ -29,10 +29,8 @@ const main = async () => {
   await asyncOra('Linting Application', async (lintSpinner) => {
     dir = await resolveDir(dir);
     if (!dir) {
-      lintSpinner.fail();
-      console.error('Failed to locate lintable Electron application'.red);
-      if (global._resolveError) global._resolveError();
-      process.exit(1);
+      // eslint-disable-next-line no-throw-literal
+      throw 'Failed to locate lintable Electron application';
     }
 
     d('executing "run lint -- --color" in dir:', dir);

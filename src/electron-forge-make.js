@@ -33,13 +33,11 @@ const main = async () => {
     .parse(process.argv);
 
   let forgeConfig;
-  await asyncOra('Resolving Forge Config', async (resolveSpinner) => {
+  await asyncOra('Resolving Forge Config', async () => {
     dir = await resolveDir(dir);
     if (!dir) {
-      resolveSpinner.fail();
-      console.error('Failed to locate makeable Electron application'.red);
-      if (global._resolveError) global._resolveError();
-      process.exit(1);
+      // eslint-disable-next-line no-throw-literal
+      throw 'Failed to locate makeable Electron application';
     }
 
     forgeConfig = await getForgeConfig(dir);

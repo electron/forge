@@ -10,12 +10,12 @@ export default (initalOraValue, asyncFn) => {
     }).catch((err) => {
       fnOra.fail();
       if (err && err.message && err.stack) {
-        console.error('\nAn unhandled error has occurred inside Forge:');
+        console.error('\nAn unhandled error has occurred inside Forge:'.red);
         console.error(colors.red(err.message));
         console.error(colors.red(err.stack));
       } else {
         console.error('\nElectron forge was terminated:'.red);
-        console.error(colors.red(JSON.stringify(err)));
+        console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
       }
       process.exit(1);
     });

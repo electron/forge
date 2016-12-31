@@ -26,13 +26,11 @@ const main = async () => {
     })
     .parse(process.argv.slice(0, 2));
 
-  await asyncOra('Locating Application', async (locateSpinner) => {
+  await asyncOra('Locating Application', async () => {
     dir = await resolveDir(dir);
     if (!dir) {
-      locateSpinner.fail();
-      console.error('Failed to locate startable Electron application'.red);
-      if (global._resolveError) global._resolveError();
-      process.exit(1);
+      // eslint-disable-next-line no-throw-literal
+      throw 'Failed to locate startable Electron application';
     }
   });
 

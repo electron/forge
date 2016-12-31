@@ -44,10 +44,8 @@ const main = async () => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    prepareSpinner.fail();
-    console.error('Failed to locate compilable Electron application'.red);
-    if (global._resolveError) global._resolveError();
-    process.exit(1);
+    // eslint-disable-next-line no-throw-literal
+    throw 'Failed to locate compilable Electron application';
   }
 
   const packageJSON = await readPackageJSON(dir);
