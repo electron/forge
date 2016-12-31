@@ -2,9 +2,9 @@ import 'colors';
 import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
-import ora from 'ora';
 
 import './util/terminate';
+import asyncOra from './util/ora-handler';
 import getForgeConfig from './util/forge-config';
 import readPackageJSON from './util/read-package-json';
 import requireSearch from './util/require-search';
@@ -51,17 +51,16 @@ const main = async () => {
 
   if (!program.target) program.target = 'github';
 
-  const targetSpinner = ora.ora(`Resolving publish target: ${`${program.target}`.cyan}`).start();
-
-  const publisher = requireSearch(__dirname, [
-    `./publishers/${program.target}.js`,
-    `electron-forge-publisher-${program.target}`,
-  ]);
-  if (!publisher) {
-    targetSpinner.fail();
-    throw new Error(`Could not find a publish target with the name: ${program.target}`);
-  }
-  targetSpinner.succeed();
+  let publisher;
+  await asyncOra(`Resolving publish target: ${`${program.target}`.cyan}`, async () => {
+    publisher = requireSearch(__dirname, [
+      `./publishers/${program.target}.js`,
+      `electron-forge-publisher-${program.target}`,
+    ]);
+    if (!publisher) {
+      throw `Could not find a publish target with the name: ${program.target}`; // eslint-disable-line
+    }
+  });
 
   await publisher(artifacts, packageJSON, forgeConfig, program.authToken, program.tag);
 };

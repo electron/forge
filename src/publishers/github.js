@@ -1,5 +1,6 @@
-import ora from 'ora';
 import path from 'path';
+
+import asyncOra from '../util/ora-handler';
 import GitHub from '../util/github';
 
 export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
@@ -12,38 +13,39 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
   const github = new GitHub(authToken);
 
   let release;
-  try {
-    release = (await github.getGitHub().repos.getReleases({
-      owner: forgeConfig.github_repository.owner,
-      repo: forgeConfig.github_repository.name,
-      per_page: 100,
-    })).find(testRelease => testRelease.tag_name === (tag || `v${packageJSON.version}`));
-    if (!release) {
-      throw { code: 404 }; // eslint-disable-line
-    }
-  } catch (err) {
-    if (err.code === 404) {
-      // Release does not exist, let's make it
-      release = await github.getGitHub().repos.createRelease({
+  await asyncOra('Searching for target Release', async () => {
+    try {
+      release = (await github.getGitHub().repos.getReleases({
         owner: forgeConfig.github_repository.owner,
         repo: forgeConfig.github_repository.name,
-        tag_name: tag || `v${packageJSON.version}`,
-        name: tag || `v${packageJSON.version}`,
-        draft: true,
-      });
-    } else {
-      // Unknown error
-      throw err;
+        per_page: 100,
+      })).find(testRelease => testRelease.tag_name === (tag || `v${packageJSON.version}`));
+      if (!release) {
+        throw { code: 404 }; // eslint-disable-line
+      }
+    } catch (err) {
+      if (err.code === 404) {
+        // Release does not exist, let's make it
+        release = await github.getGitHub().repos.createRelease({
+          owner: forgeConfig.github_repository.owner,
+          repo: forgeConfig.github_repository.name,
+          tag_name: tag || `v${packageJSON.version}`,
+          name: tag || `v${packageJSON.version}`,
+          draft: true,
+        });
+      } else {
+        // Unknown error
+        throw err;
+      }
     }
-  }
+  });
 
   let uploaded = 0;
-  const uploadSpinner = ora.ora(`Uploading Artifacts ${uploaded}/${artifacts.length}`).start();
-  const updateSpinner = () => {
-    uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
-  };
+  await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
+    const updateSpinner = () => {
+      uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line
+    };
 
-  try {
     await Promise.all(artifacts.map(artifactPath =>
       new Promise(async (resolve) => {
         const done = () => {
@@ -64,10 +66,5 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
         return done();
       })
     ));
-  } catch (err) {
-    updateSpinner.fail();
-    throw err;
-  }
-
-  uploadSpinner.succeed();
+  });
 };
