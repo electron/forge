@@ -1,8 +1,11 @@
+import debug from 'debug';
 import { createWindowsInstaller } from 'electron-winstaller';
 import fs from 'fs-promise';
 import path from 'path';
 
 import { ensureDirectory } from '../../util/ensure-output';
+
+const d = debug('electron-forge:make:squirrel');
 
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
   const outPath = path.resolve(dir, `../make/squirrel.windows/${targetArch}`);
@@ -15,6 +18,9 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     appDirectory: dir,
     outputDirectory: outPath,
   });
+
+  d('executing electron-winstaller with options:', winstallerConfig);
+
   await createWindowsInstaller(winstallerConfig);
   const artifacts = [
     path.resolve(outPath, 'RELEASES'),

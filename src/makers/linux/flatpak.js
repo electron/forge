@@ -1,8 +1,11 @@
+import debug from 'debug';
 import installer from 'electron-installer-flatpak';
 import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+
+const d = debug('electron-forge:make:flatpak');
 
 function flatpakArch(nodeArch) {
   switch (nodeArch) {
@@ -26,6 +29,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   };
   const flatpakConfig = Object.assign({}, forgeConfig.electronInstallerFlatpak, flatpakDefaults);
 
+  d('executing electron-installer-flatpak with options:', flatpakConfig);
   await pify(installer)(flatpakConfig);
   return [outPath];
 };

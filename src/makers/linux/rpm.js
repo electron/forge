@@ -1,8 +1,11 @@
+import debug from 'debug';
 import installer from 'electron-installer-redhat';
 import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+
+const d = debug('electron-forge:make:rpm');
 
 function rpmArch(nodeArch) {
   switch (nodeArch) {
@@ -26,6 +29,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   };
   const rpmConfig = Object.assign({}, forgeConfig.electronInstallerRedhat, rpmDefaults);
 
+  d('executing electron-installer-redhat with options:', rpmConfig);
   await pify(installer)(rpmConfig);
   return [outPath];
 };
