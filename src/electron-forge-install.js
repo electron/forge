@@ -29,6 +29,7 @@ const main = async () => {
   program
     .version(require('../package.json').version)
     .arguments('[repository]')
+    .option('--prerelease', 'Fetch prerelease versions')
     .action((repository) => {
       repo = repository;
     })
@@ -55,6 +56,8 @@ const main = async () => {
       // eslint-disable-next-line no-throw-literal
       throw `Failed to find releases for repository "${repo}".  Please check the name and try again.`;
     }
+
+    releases = releases.filter(release => !release.prerelease || program.prerelease);
 
     const sortedReleases = releases.sort((releaseA, releaseB) => {
       let tagA = releaseA.tag_name;
@@ -93,7 +96,7 @@ const main = async () => {
     }
   });
 
-  console.info('Found latest release:', `${latestRelease.tag_name}`.cyan);
+  console.info(`Found latest release${program.prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
 
   let targetAsset = possibleAssets[0];
   if (possibleAssets.length > 1) {
