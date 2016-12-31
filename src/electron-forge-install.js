@@ -17,6 +17,7 @@ import './util/terminate';
 import darwinDMGInstaller from './installers/darwin/dmg';
 import darwinZipInstaller from './installers/darwin/zip';
 import linuxDebInstaller from './installers/linux/deb';
+import linuxRPMInstaller from './installers/linux/rpm';
 
 const d = debug('electron-forge:lint');
 
@@ -136,8 +137,10 @@ const main = async () => {
     },
     linux: {
       '.deb': linuxDebInstaller,
-      '.rpm': async () => {},
-      '.flatpak': async () => {},
+      '.rpm': linuxRPMInstaller,
+      '.flatpak': async () => {
+        console.error('Not yet supported');
+      },
     },
   };
 
