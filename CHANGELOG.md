@@ -1,3 +1,43 @@
+### [2.3.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.3.0) (2017-1-1)
+
+##### Chores
+
+* **installer:** use the ora helper in the install command ([9358eb42](https://github.com/electron-userland/electron-forge/commit/9358eb42))
+* **generic:**
+  * add installer to cz config ([3b253b11](https://github.com/electron-userland/electron-forge/commit/3b253b11))
+  * only send slack notifications on build change ([838d70e7](https://github.com/electron-userland/electron-forge/commit/838d70e7))
+* **tests:** make sure ora knows that the Docker container is for CI ([41d25ea7](https://github.com/electron-userland/electron-forge/commit/41d25ea7))
+
+##### New Features
+
+* **installer:**
+  * add rpm installer ([f8f9baa5](https://github.com/electron-userland/electron-forge/commit/f8f9baa5))
+  * don't suffix temp install files with .forge-install ([1c2bfd81](https://github.com/electron-userland/electron-forge/commit/1c2bfd81))
+  * add deb installer ([fb217c74](https://github.com/electron-userland/electron-forge/commit/fb217c74))
+  * add DMG support for macOS installer ([3465d261](https://github.com/electron-userland/electron-forge/commit/3465d261))
+  * add inital app installer for macOS platform ([da3150d9](https://github.com/electron-userland/electron-forge/commit/da3150d9))
+* **generic:**
+  * use an ora/promise helper instead of a global uncaughtRejection handler (#50) ([1b6b7276](https://github.com/electron-userland/electron-forge/commit/1b6b7276))
+  * travis build notifications ([d25f1461](https://github.com/electron-userland/electron-forge/commit/d25f1461))
+
+##### Bug Fixes
+
+* **installer:**
+  * fix installer debug key ([24454950](https://github.com/electron-userland/electron-forge/commit/24454950))
+  * dont fetch prerelease versions unless instructed ([1b88b153](https://github.com/electron-userland/electron-forge/commit/1b88b153))
+  * await promises through the linux install chain ([a0b5ac70](https://github.com/electron-userland/electron-forge/commit/a0b5ac70))
+  * remove flatpak check ([0b044134](https://github.com/electron-userland/electron-forge/commit/0b044134))
+  * wildcard the extension matchers ([1489e641](https://github.com/electron-userland/electron-forge/commit/1489e641))
+
+##### Refactors
+
+* **installer:**
+  * use single regexp to make repo path safe ([1255803b](https://github.com/electron-userland/electron-forge/commit/1255803b))
+  * finish replacing sudo-prompt with electron-sudo ([d8587930](https://github.com/electron-userland/electron-forge/commit/d8587930))
+  * replace sudo-prompt with git branch of electron-sudo for Linux installers ([9834cb1b](https://github.com/electron-userland/electron-forge/commit/9834cb1b))
+  * check that the linux installer program exists first ([fb56c542](https://github.com/electron-userland/electron-forge/commit/fb56c542))
+  * update the ora text wh have resolved a repo but not found a release ([5cbf8cb8](https://github.com/electron-userland/electron-forge/commit/5cbf8cb8))
+
 ### [2.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.2.0) (2016-12-30)
 
 ##### New Features
