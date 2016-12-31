@@ -3,16 +3,16 @@ import debug from 'debug';
 import fetch from 'node-fetch';
 import fs from 'fs-promise';
 import inquirer from 'inquirer';
+import nugget from 'nugget';
 import opn from 'opn';
 import os from 'os';
 import path from 'path';
 import pify from 'pify';
 import program from 'commander';
-import nugget from 'nugget';
-import ora from 'ora';
 import semver from 'semver';
 
 import './util/terminate';
+import asyncOra from './util/ora-handler';
 
 import darwinDMGInstaller from './installers/darwin/dmg';
 import darwinZipInstaller from './installers/darwin/zip';
@@ -24,8 +24,6 @@ const d = debug('electron-forge:lint');
 const GITHUB_API = 'https://api.github.com';
 
 const main = async () => {
-  const searchSpinner = ora.ora('Searching for Application').start();
-
   let repo;
 
   program
@@ -36,64 +34,65 @@ const main = async () => {
     })
     .parse(process.argv);
 
-  if (!repo || repo.indexOf('/') === -1) {
-    searchSpinner.fail();
-    console.error('Invalid repository name, must be in the format owner/name'.red);
-    process.exit(1);
-  }
+  let latestRelease;
+  let possibleAssets = [];
 
-  d('searching for repo:', repo);
-  let releases;
-  try {
-    releases = await (await fetch(`${GITHUB_API}/repos/${repo}/releases`)).json();
-  } catch (err) {
-    // Ignore error
-  }
-  if (!releases || releases.message === 'Not Found' || !Array.isArray(releases)) {
-    searchSpinner.fail();
-    console.error(`Failed to find releases for repository "${repo}".  Please check the name and try again.`.red);
-    process.exit(1);
-  }
-
-  const sortedReleases = releases.sort((releaseA, releaseB) => {
-    let tagA = releaseA.tag_name;
-    if (tagA.substr(0, 1) === 'v') tagA = tagA.substr(1);
-    let tagB = releaseB.tag_name;
-    if (tagB.substr(0, 1) === 'v') tagB = tagB.substr(1);
-    return (semver.gt(tagB, tagA) ? 1 : -1);
-  });
-  const latestRelease = sortedReleases[0];
-
-  searchSpinner.text = 'Searching for Releases';
-
-  const assets = latestRelease.assets;
-  if (!assets || !Array.isArray(assets)) {
-    searchSpinner.fail();
-    console.error('Could not find any assets for the latest release'.red);
-    process.exit(1);
-  }
-
-  const installTargets = {
-    win32: [/\.exe$/],
-    darwin: [/OSX.*\.zip$/, /darwin.*\.zip$/, /macOS.*\.zip$/, /mac.*\.zip$/, /\.dmg$/],
-    linux: [/\.rpm$/, /\.deb$/],
-  };
-
-  const possibleAssets = assets.filter((asset) => {
-    const targetSuffixes = installTargets[process.platform];
-    for (const suffix of targetSuffixes) {
-      if (suffix.test(asset.name)) return true;
+  await asyncOra('Searching for Application', async (searchSpinner) => {
+    if (!repo || repo.indexOf('/') === -1) {
+      // eslint-disable-next-line no-throw-literal
+      throw 'Invalid repository name, must be in the format owner/name';
     }
-    return false;
+
+    d('searching for repo:', repo);
+    let releases;
+    try {
+      releases = await (await fetch(`${GITHUB_API}/repos/${repo}/releases`)).json();
+    } catch (err) {
+      // Ignore error
+    }
+
+    if (!releases || releases.message === 'Not Found' || !Array.isArray(releases)) {
+      // eslint-disable-next-line no-throw-literal
+      throw `Failed to find releases for repository "${repo}".  Please check the name and try again.`;
+    }
+
+    const sortedReleases = releases.sort((releaseA, releaseB) => {
+      let tagA = releaseA.tag_name;
+      if (tagA.substr(0, 1) === 'v') tagA = tagA.substr(1);
+      let tagB = releaseB.tag_name;
+      if (tagB.substr(0, 1) === 'v') tagB = tagB.substr(1);
+      return (semver.gt(tagB, tagA) ? 1 : -1);
+    });
+    latestRelease = sortedReleases[0];
+
+    searchSpinner.text = 'Searching for Releases'; // eslint-disable-line
+
+    const assets = latestRelease.assets;
+    if (!assets || !Array.isArray(assets)) {
+      // eslint-disable-next-line no-throw-literal
+      throw 'Could not find any assets for the latest release';
+    }
+
+    const installTargets = {
+      win32: [/\.exe$/],
+      darwin: [/OSX.*\.zip$/, /darwin.*\.zip$/, /macOS.*\.zip$/, /mac.*\.zip$/, /\.dmg$/],
+      linux: [/\.rpm$/, /\.deb$/],
+    };
+
+    possibleAssets = assets.filter((asset) => {
+      const targetSuffixes = installTargets[process.platform];
+      for (const suffix of targetSuffixes) {
+        if (suffix.test(asset.name)) return true;
+      }
+      return false;
+    });
+
+    if (possibleAssets.length === 0) {
+      // eslint-disable-next-line no-throw-literal
+      throw `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`;
+    }
   });
 
-  if (possibleAssets.length === 0) {
-    searchSpinner.fail();
-    console.error('Failed to find any installable assets for target platform:'.red, process.platform.cyan);
-    process.exit(1);
-  }
-
-  searchSpinner.succeed();
   console.info('Found latest release:', `${latestRelease.tag_name}`.cyan);
 
   let targetAsset = possibleAssets[0];
@@ -125,26 +124,24 @@ const main = async () => {
     await pify(nugget)(targetAsset.browser_download_url, nuggetOpts);
   }
 
-  const installSpinner = ora.ora('Installing Application').start();
+  await asyncOra('Installing Application', async (installSpinner) => {
+    const installActions = {
+      win32: {
+        '.exe': async filePath => await opn(filePath, { wait: false }),
+      },
+      darwin: {
+        '.zip': darwinZipInstaller,
+        '.dmg': darwinDMGInstaller,
+      },
+      linux: {
+        '.deb': linuxDebInstaller,
+        '.rpm': linuxRPMInstaller,
+      },
+    };
 
-  const installActions = {
-    win32: {
-      '.exe': async filePath => await opn(filePath, { wait: false }),
-    },
-    darwin: {
-      '.zip': darwinZipInstaller,
-      '.dmg': darwinDMGInstaller,
-    },
-    linux: {
-      '.deb': linuxDebInstaller,
-      '.rpm': linuxRPMInstaller,
-    },
-  };
-
-  const suffixFnIdent = Object.keys(installActions[process.platform]).find(suffix => targetAsset.name.endsWith(suffix));
-  await installActions[process.platform][suffixFnIdent](fullFilePath, installSpinner);
-
-  installSpinner.succeed();
+    const suffixFnIdent = Object.keys(installActions[process.platform]).find(suffix => targetAsset.name.endsWith(suffix));
+    await installActions[process.platform][suffixFnIdent](fullFilePath, installSpinner);
+  });
 };
 
 main();
