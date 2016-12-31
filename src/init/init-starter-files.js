@@ -1,7 +1,8 @@
 import debug from 'debug';
 import fs from 'fs-promise';
-import ora from 'ora';
 import path from 'path';
+
+import asyncOra from '../util/ora-handler';
 
 const d = debug('electron-forge:init:starter-files');
 
@@ -24,21 +25,20 @@ export const copy = (source, target) =>
   });
 
 export default async (dir, lintStyle) => {
-  const initSpinner = ora.ora('Copying Starter Files').start();
-  const tmplPath = path.resolve(__dirname, '../../tmpl');
+  await asyncOra('Copying Starter Files', async () => {
+    const tmplPath = path.resolve(__dirname, '../../tmpl');
 
-  d('creating directory:', path.resolve(dir, 'src'));
-  await fs.mkdirs(path.resolve(dir, 'src'));
-  const rootFiles = ['_gitignore'];
-  if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
-  const srcFiles = ['index.js', 'index.html'];
+    d('creating directory:', path.resolve(dir, 'src'));
+    await fs.mkdirs(path.resolve(dir, 'src'));
+    const rootFiles = ['_gitignore'];
+    if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
+    const srcFiles = ['index.js', 'index.html'];
 
-  rootFiles.forEach(async (file) => {
-    await copy(path.resolve(tmplPath, file), path.resolve(dir, file.replace(/^_/, '.')));
+    rootFiles.forEach(async (file) => {
+      await copy(path.resolve(tmplPath, file), path.resolve(dir, file.replace(/^_/, '.')));
+    });
+    srcFiles.forEach(async (file) => {
+      await copy(path.resolve(tmplPath, file), path.resolve(dir, 'src', file));
+    });
   });
-  srcFiles.forEach(async (file) => {
-    await copy(path.resolve(tmplPath, file), path.resolve(dir, 'src', file));
-  });
-
-  initSpinner.succeed();
 };

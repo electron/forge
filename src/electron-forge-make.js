@@ -2,9 +2,9 @@ import 'colors';
 import fs from 'fs-promise';
 import path from 'path';
 import program from 'commander';
-import ora from 'ora';
 
 import './util/terminate';
+import asyncOra from './util/ora-handler';
 import electronHostArch from './util/electron-host-arch';
 import getForgeConfig from './util/forge-config';
 import packager from './electron-forge-package';
@@ -13,7 +13,6 @@ import requireSearch from './util/require-search';
 import resolveDir from './util/resolve-dir';
 
 const main = async () => {
-  const resolveSpinner = ora.ora('Resolving Forge Config').start();
   let dir = process.cwd();
   program
     .version(require('../package.json').version)
@@ -33,15 +32,16 @@ const main = async () => {
     })
     .parse(process.argv);
 
-  dir = await resolveDir(dir);
-  if (!dir) {
-    resolveSpinner.fail();
-    console.error('Failed to locate makeable Electron application'.red);
-    if (global._resolveError) global._resolveError();
-    process.exit(1);
-  }
+  let forgeConfig;
+  await asyncOra('Resolving Forge Config', async () => {
+    dir = await resolveDir(dir);
+    if (!dir) {
+      // eslint-disable-next-line no-throw-literal
+      throw 'Failed to locate makeable Electron application';
+    }
 
-  resolveSpinner.succeed();
+    forgeConfig = await getForgeConfig(dir);
+  });
 
   if (program.platform && program.platform !== process.platform && !(process.platform === 'darwin' && program.platform === 'mas')) {
     console.error('You can not "make" for a platform other than your systems platform'.red);
@@ -58,7 +58,6 @@ const main = async () => {
   const declaredArch = program.arch || electronHostArch();
   const declaredPlatform = program.platform || process.platform;
 
-  const forgeConfig = await getForgeConfig(dir);
   let targets = forgeConfig.make_targets[declaredPlatform];
   if (program.targets) {
     targets = program.targets.split(',');
@@ -93,24 +92,31 @@ const main = async () => {
     }
 
     for (const target of targets) {
-      const makeSpinner = ora.ora(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`).start();
-      const maker = requireSearch(__dirname, [
-        `./makers/${process.platform}/${target}.js`,
-        `./makers/generic/${target}.js`,
-        `electron-forge-maker-${target}`,
-      ]);
-      if (!maker) {
-        makeSpinner.fail();
-        throw new Error(`Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`);
-      }
-      try {
-        outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
-      } catch (err) {
-        makeSpinner.fail();
-        if (err) throw err;
-        throw new Error(`An error occurred while making for target: ${target}`);
-      }
-      makeSpinner.succeed();
+      // eslint-disable-next-line no-loop-func
+      await asyncOra(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
+        const maker = requireSearch(__dirname, [
+          `./makers/${process.platform}/${target}.js`,
+          `./makers/generic/${target}.js`,
+          `electron-forge-maker-${target}`,
+        ]);
+        if (!maker) {
+          // eslint-disable-next-line no-throw-literal
+          throw `Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`;
+        }
+        try {
+          outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
+        } catch (err) {
+          if (err) {
+            // eslint-disable-next-line no-throw-literal
+            throw {
+              message: `An error occured while making for target: ${target}`,
+              stack: `${err.message}\n${err.stack}`,
+            };
+          } else {
+            throw new Error(`An unknown error occured while making for target: ${target}`);
+          }
+        }
+      });
     }
   }
 

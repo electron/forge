@@ -1,7 +1,6 @@
 import debug from 'debug';
 import fs from 'fs-promise';
 import inquirer from 'inquirer';
-import ora from 'ora';
 import path from 'path';
 import program from 'commander';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
@@ -9,6 +8,7 @@ import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 import initGit from './init/init-git';
 import { deps, devDeps } from './init/init-npm';
 
+import asyncOra from './util/ora-handler';
 import installDepList from './util/install-dependencies';
 import readPackageJSON from './util/read-package-json';
 
@@ -114,9 +114,9 @@ const main = async () => {
   }
 
   const writeChanges = async () => {
-    const writeSpinner = ora.ora('Writing modified package.json file').start();
-    await fs.writeFile(path.resolve(dir, 'package.json'), `${JSON.stringify(packageJSON, null, 2)}\n`);
-    writeSpinner.succeed();
+    await asyncOra('Writing modified package.json file', async () => {
+      await fs.writeFile(path.resolve(dir, 'package.json'), `${JSON.stringify(packageJSON, null, 2)}\n`);
+    });
   };
 
   let electronVersion;
@@ -129,30 +129,30 @@ const main = async () => {
   await writeChanges();
 
   if (electronName) {
-    const pruneSpinner = ora.ora('Pruning deleted modules').start();
-    await new Promise((resolve) => {
-      d('attempting to prune node_modules in:', dir);
-      const child = yarnOrNPMSpawn(hasYarn() ? [] : ['prune'], {
-        cwd: dir,
-        stdio: 'ignore',
+    await asyncOra('Pruning deleted modules', async () => {
+      await new Promise((resolve) => {
+        d('attempting to prune node_modules in:', dir);
+        const child = yarnOrNPMSpawn(hasYarn() ? [] : ['prune'], {
+          cwd: dir,
+          stdio: 'ignore',
+        });
+        child.on('exit', () => resolve());
       });
-      child.on('exit', () => resolve());
     });
-    pruneSpinner.succeed();
 
-    const installSpinner = ora.ora('Installing dependencies').start();
+    await asyncOra('Installing dependencies', async () => {
+      d('deleting old dependencies forcefully');
+      await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
+      await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
+      await fs.remove(path.resolve(dir, 'node_modules', electronName));
 
-    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
-    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-    await fs.remove(path.resolve(dir, 'node_modules', electronName));
-
-    d('installing dependencies');
-    await installDepList(dir, deps);
-    d('installing devDependencies');
-    await installDepList(dir, devDeps, true);
-    d('installing electron-prebuilt-compile');
-    await installDepList(dir, [`electron-prebuilt-compile@${electronVersion}`], false, true);
-    installSpinner.succeed();
+      d('installing dependencies');
+      await installDepList(dir, deps);
+      d('installing devDependencies');
+      await installDepList(dir, devDeps, true);
+      d('installing electron-prebuilt-compile');
+      await installDepList(dir, [`electron-prebuilt-compile@${electronVersion}`], false, true);
+    });
   }
 
   packageJSON = await readPackageJSON(dir);
@@ -163,14 +163,14 @@ const main = async () => {
 
   await writeChanges();
 
-  const gitignoreSpinner = ora.ora('Fixing .gitignore').start();
-  if (await fs.exists(path.resolve(dir, '.gitignore'))) {
-    const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
-    if (!gitignore.includes('out')) {
-      await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\nout/`);
+  await asyncOra('Fixing .gitignore', async () => {
+    if (await fs.exists(path.resolve(dir, '.gitignore'))) {
+      const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
+      if (!gitignore.includes('out')) {
+        await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\nout/`);
+      }
     }
-  }
-  gitignoreSpinner.succeed();
+  });
 
   let babelConfig = packageJSON.babel;
   const babelPath = path.resolve(dir, '.babelrc');
@@ -179,19 +179,18 @@ const main = async () => {
   }
 
   if (babelConfig) {
-    const babelSpinner = ora.ora('Porting original babel config').start();
+    await asyncOra('Porting original babel config', async () => {
+      let compileConfig = {};
+      const compilePath = path.resolve(dir, '.compilerc');
+      if (await fs.exists(compilePath)) {
+        compileConfig = JSON.parse(await fs.readFile(compilePath, 'utf8'));
+      }
 
-    let compileConfig = {};
-    const compilePath = path.resolve(dir, '.compilerc');
-    if (await fs.exists(compilePath)) {
-      compileConfig = JSON.parse(await fs.readFile(compilePath, 'utf8'));
-    }
+      await fs.writeFile(compilePath, JSON.stringify(Object.assign(compileConfig, {
+        'application/javascript': babelConfig,
+      }), null, 2));
+    });
 
-    await fs.writeFile(compilePath, JSON.stringify(Object.assign(compileConfig, {
-      'application/javascript': babelConfig,
-    }), null, 2));
-
-    babelSpinner.succeed();
     console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow);
   }
 
