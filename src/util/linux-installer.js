@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { default as Sudoer } from 'electron-sudo';
+import Sudoer from 'electron-sudo';
 
 const which = async (type, prog, promise) => {
   if (spawnSync('which', [prog]).status === 0) {
