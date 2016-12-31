@@ -19,7 +19,7 @@ import darwinZipInstaller from './installers/darwin/zip';
 import linuxDebInstaller from './installers/linux/deb';
 import linuxRPMInstaller from './installers/linux/rpm';
 
-const d = debug('electron-forge:lint');
+const d = debug('electron-forge:install');
 
 const GITHUB_API = 'https://api.github.com';
 
