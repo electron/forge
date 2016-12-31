@@ -2,7 +2,7 @@ import fs from 'fs-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 import pify from 'pify';
-import { default as Sudoer } from 'electron-sudo';
+import Sudoer from 'electron-sudo';
 import { exec, spawn } from 'child_process';
 
 export default async (filePath, installSpinner) => {
