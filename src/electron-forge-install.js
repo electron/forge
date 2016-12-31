@@ -76,7 +76,7 @@ const main = async () => {
   const installTargets = {
     win32: [/\.exe$/],
     darwin: [/OSX.*\.zip$/, /darwin.*\.zip$/, /macOS.*\.zip$/, /mac.*\.zip$/, /\.dmg$/],
-    linux: [/\.rpm$/, /\.deb$/, /\.flatpak$/],
+    linux: [/\.rpm$/, /\.deb$/],
   };
 
   const possibleAssets = assets.filter((asset) => {
@@ -138,9 +138,6 @@ const main = async () => {
     linux: {
       '.deb': linuxDebInstaller,
       '.rpm': linuxRPMInstaller,
-      '.flatpak': async () => {
-        console.error('Not yet supported');
-      },
     },
   };
 
