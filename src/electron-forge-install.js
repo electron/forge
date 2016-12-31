@@ -111,7 +111,7 @@ const main = async () => {
   }
 
   const tmpdir = path.resolve(os.tmpdir(), 'forge-install');
-  const pathSafeRepo = repo.replace(/\//g, '-').replace(/\\/g, '-');
+  const pathSafeRepo = repo.replace(/[/\\]/g, '-');
   const filename = `${pathSafeRepo}-${latestRelease.tag_name}-${targetAsset.name}`;
 
   const fullFilePath = path.resolve(tmpdir, filename);
