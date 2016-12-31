@@ -13,6 +13,7 @@
     "precommit": "npm run lint",
     "commit": "git-cz",
     "docs": "esdoc",
+    "install": "tabtab install --auto",
     "lint": "eslint src test gulpfile.babel.js",
     "prepublish": "gulp build",
     "pretest": "gulp build",
@@ -115,6 +116,7 @@
     "semver": "^5.3.0",
     "spawn-rx": "^2.0.7",
     "sudo-prompt": "^6.2.1",
+    "tabtab": "^2.2.1",
     "username": "^2.2.2",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
