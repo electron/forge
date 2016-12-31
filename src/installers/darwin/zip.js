@@ -33,7 +33,8 @@ export default async (filePath, installSpinner) => {
       message: `The application "${path.basename(targetApplicationPath)}" appears to already exist in /Applications. Do you want to replace it?`,
     });
     if (!confirm) {
-      throw new Error('Installation stopped by user');
+      // eslint-disable-next-line no-throw-literal
+      throw 'Installation stopped by user';
     } else {
       installSpinner.start();
       await fs.remove(targetApplicationPath);
