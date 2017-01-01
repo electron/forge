@@ -5,13 +5,13 @@ import path from 'path';
 
 import { expect } from 'chai';
 
-import installDeps from '../src/util/install-dependencies';
-import readPackageJSON from '../src/util/read-package-json';
+import installDeps from '../../src/util/install-dependencies';
+import readPackageJSON from '../../src/util/read-package-json';
 
 const pSpawn = async (args = [], opts = {
   stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
 }) => {
-  const child = spawn(process.execPath, [path.resolve(__dirname, '../dist/electron-forge.js')].concat(args), opts);
+  const child = spawn(process.execPath, [path.resolve(__dirname, '../../dist/electron-forge.js')].concat(args), opts);
   let stdout = '';
   let stderr = '';
   if (process.platform !== 'win32') {
@@ -84,7 +84,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       dirID += 1;
       await fs.remove(dir);
       execSync('npm link', {
-        cwd: path.resolve(__dirname, 'fixture/custom_init'),
+        cwd: path.resolve(__dirname, '../fixture/custom_init'),
       });
       await pSpawn(['init', dir, '--template=dummy']);
     });
@@ -105,7 +105,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     after(async () => {
       await fs.remove(dir);
       execSync('npm unlink', {
-        cwd: path.resolve(__dirname, 'fixture/custom_init'),
+        cwd: path.resolve(__dirname, '../fixture/custom_init'),
       });
     });
   });
@@ -130,10 +130,10 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
 
     describe('after package', () => {
       let targets = [];
-      if (fs.existsSync(path.resolve(__dirname, `../src/makers/${process.platform}`))) {
-        targets = fs.readdirSync(path.resolve(__dirname, `../src/makers/${process.platform}`)).map(file => path.parse(file).name);
+      if (fs.existsSync(path.resolve(__dirname, `../../src/makers/${process.platform}`))) {
+        targets = fs.readdirSync(path.resolve(__dirname, `../../src/makers/${process.platform}`)).map(file => path.parse(file).name);
       }
-      const genericTargets = fs.readdirSync(path.resolve(__dirname, '../src/makers/generic')).map(file => path.parse(file).name);
+      const genericTargets = fs.readdirSync(path.resolve(__dirname, '../../src/makers/generic')).map(file => path.parse(file).name);
 
       [].concat(targets).concat(genericTargets).forEach((target) => {
         describe(`make (with target=${target})`, () => {

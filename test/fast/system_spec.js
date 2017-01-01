@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import checkSystem from '../src/util/check-system';
+import checkSystem from '../../src/util/check-system';
 
 describe('check-system', () => {
   it('should succeed on valid agents', async () => {

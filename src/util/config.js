@@ -15,6 +15,11 @@ class BasicConfigStore {
     this._dir = path.resolve(os.tmpdir(), 'electron-forge');
     this._path = path.resolve(this._dir, '.runtime.config');
     fs.mkdirsSync(this._dir);
+
+    process.on('exit', () => {
+      if (fs.existsSync(this._path)) fs.unlinkSync(this._path);
+      this._store = {};
+    });
   }
 
   get(key) {

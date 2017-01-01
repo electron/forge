@@ -6,7 +6,7 @@ import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import { expect } from 'chai';
 
-import rebuild from '../src/util/rebuild';
+import rebuild from '../../src/util/rebuild';
 
 ora.ora = ora;
 
@@ -16,7 +16,7 @@ describe('rebuilder', () => {
   before(async () => {
     await fs.remove(testModulePath);
     await fs.mkdirs(testModulePath);
-    await fs.writeFile(path.resolve(testModulePath, 'package.json'), await fs.readFile(path.resolve(__dirname, 'fixture/native_app/package.json'), 'utf8'));
+    await fs.writeFile(path.resolve(testModulePath, 'package.json'), await fs.readFile(path.resolve(__dirname, '../fixture/native_app/package.json'), 'utf8'));
     await new Promise((resolve, reject) => {
       const child = yarnOrNPMSpawn(hasYarn() ? [] : ['install'], {
         cwd: testModulePath,
