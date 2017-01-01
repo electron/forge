@@ -3,7 +3,7 @@
   "version": "2.4.0",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron-userland/electron-forge",
-  "main": "index.js",
+  "main": "dist/api/index.js",
   "bin": {
     "electron-forge": "dist/electron-forge.js",
     "forge": "dist/electron-forge.js"
@@ -12,6 +12,7 @@
     "build": "gulp build",
     "precommit": "npm run lint",
     "commit": "git-cz",
+    "docs": "esdoc",
     "lint": "eslint src test gulpfile.babel.js",
     "prepublish": "gulp build",
     "pretest": "gulp build",
@@ -33,6 +34,8 @@
     "chai": "^3.5.0",
     "commitizen": "^2.8.6",
     "cz-customizable": "4.0.0",
+    "esdoc": "^0.5.1",
+    "esdoc-importpath-plugin": "^0.1.0",
     "eslint": "^3.7.1",
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",

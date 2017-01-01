@@ -1,17 +1,11 @@
-import 'colors';
-import debug from 'debug';
-import fs from 'fs-promise';
+import fs from 'fs';
 import path from 'path';
 import program from 'commander';
-import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
 
 import './util/terminate';
-import asyncOra from './util/ora-handler';
-import resolveDir from './util/resolve-dir';
+import { lint } from './api';
 
-const d = debug('electron-forge:lint');
-
-const main = async () => {
+(async () => {
   let dir = process.cwd();
   program
     .version(require('../package.json').version)
@@ -26,31 +20,8 @@ const main = async () => {
     })
     .parse(process.argv);
 
-  await asyncOra('Linting Application', async (lintSpinner) => {
-    dir = await resolveDir(dir);
-    if (!dir) {
-      // eslint-disable-next-line no-throw-literal
-      throw 'Failed to locate lintable Electron application';
-    }
-
-    d('executing "run lint -- --color" in dir:', dir);
-    const child = yarnOrNPMSpawn(['run', 'lint', '--', '--color'], {
-      stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
-      cwd: dir,
-    });
-    const output = [];
-    if (process.platform !== 'win32') {
-      child.stdout.on('data', data => output.push(data.toString()));
-      child.stderr.on('data', data => output.push(data.toString().red));
-    }
-    child.on('exit', (code) => {
-      if (code !== 0) {
-        lintSpinner.fail();
-        output.forEach(data => process.stdout.write(data));
-        process.exit(code);
-      }
-    });
+  await lint({
+    dir,
+    interactive: true,
   });
-};
-
-main();
+})();

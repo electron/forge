@@ -1,0 +1,21 @@
+{
+  "source": "./src/api",
+  "destination": "./docs",
+  "plugins": [
+    {
+      "name": "esdoc-importpath-plugin",
+      "option": {
+        "replaces": [
+          {
+            "from": ".js",
+            "to": ""
+          },
+          {
+            "from": "api/",
+            "to": "dist/api/"
+          }
+        ]
+      }
+    }
+  ]
+}
