@@ -21,6 +21,7 @@ export default async (dir, lintStyle) => {
     const packageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
     packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
+    packageJSON.config.forge.windowsStoreConfig.name = packageJSON.productName.replace(/-/g, '');
     packageJSON.author = await username();
 
     switch (lintStyle) {
