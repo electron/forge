@@ -17,8 +17,7 @@ class BasicConfigStore {
     fs.mkdirsSync(this._dir);
 
     process.on('exit', () => {
-      if (fs.existsSync(this._path)) fs.unlinkSync(this._path);
-      this._store = {};
+      this.reset();
     });
   }
 

@@ -13,7 +13,7 @@ describe('cross-process config', () => {
   });
 
   it('should reset the value on process exit', () => {
-    process.emit('exit');
+    config.reset();
     expect(config.get('foobar')).to.equal(undefined);
   });
 });

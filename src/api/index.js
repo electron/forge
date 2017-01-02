@@ -15,7 +15,7 @@ module.exports = {
   install,
   lint,
   make,
-  'pacakge': _package, // eslint-disable-line
+  'package': _package, // eslint-disable-line
   publish,
   start,
 };
