@@ -13,14 +13,15 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": ["squirrel"],
+        "win32": ["squirrel", "appx"],
         "darwin": ["zip"],
         "linux": ["deb", "rpm"]
       },
       "electronPackagerConfig": {},
       "electronInstallerRedhat": {},
       "electronInstallerDebian": {},
-      "electronWinstallerConfig": { "windows": "magic" }
+      "electronWinstallerConfig": { "windows": "magic" },
+      "windowsStoreConfig": { "packageName": "test" }
     }
   },
   "devDependencies": {

@@ -18,7 +18,7 @@ describe('resolve-dir', () => {
 
 const defaults = {
   make_targets: {
-    win32: ['squirrel'],
+    win32: ['squirrel', 'appx'],
     darwin: ['zip'],
     linux: ['deb', 'rpm'],
     mas: ['zip'],
@@ -34,6 +34,7 @@ describe('forge-config', () => {
   it('should resolve the object in package.json with defaults  if one exists', async () => {
     expect(await findConfig(path.resolve(__dirname, 'fixture/dummy_app'))).to.be.deep.equal(Object.assign({}, defaults, {
       electronWinstallerConfig: { windows: 'magic' },
+      windowsStoreConfig: { packageName: 'test' },
     }));
   });
 

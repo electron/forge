@@ -24,8 +24,10 @@
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
       "github_repository": {
-        "owner": "",
-        "name": ""
+        "owner": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": ""
       }
     }
   }
