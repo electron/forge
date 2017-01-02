@@ -7,6 +7,8 @@ import initNPM from '../init/init-npm';
 import initStandardFix from '../init/init-standard-fix';
 import initStarter from '../init/init-starter-files';
 
+import asyncOra from '../util/ora-handler';
+
 const d = debug('electron-forge:init');
 
 /**
@@ -31,6 +33,7 @@ export default async (providedOptions = {}) => {
     lintstyle: 'airbnb',
     template: null,
   }, providedOptions);
+  asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);
 

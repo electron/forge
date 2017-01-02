@@ -111,11 +111,15 @@ export default async (providedOptions = {}) => {
     if (chooseAsset) {
       targetAsset = await Promise.resolve(chooseAsset(possibleAssets));
     } else if (!interactive) {
+      const choices = [];
+      possibleAssets.forEach((asset) => {
+        choices.push({ name: asset.name, value: asset.id });
+      });
       const { assetID } = await inquirer.createPromptModule()({
         type: 'list',
         name: 'assetID',
         message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
-        choices: possibleAssets.map(asset => ({ name: asset.name, value: asset.id })),
+        choices,
       });
 
       targetAsset = possibleAssets.find(asset => asset.id === assetID);

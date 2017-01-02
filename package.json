@@ -17,9 +17,11 @@
     "prepublish": "gulp build",
     "pretest": "gulp build",
     "test": "npm run lint && npm run test-all",
+    "test-coverage": "npm run lint && npm run test-all-coverage",
     "test-all": "mocha test/**/*_spec*.js --compilers js:babel-register --timeout=300000",
     "test-fast": "mocha test/**/*_spec.js --compilers js:babel-register --timeout=10000",
-    "test-slow": "mocha test/**/*_spec_slow.js --compilers js:babel-register --timeout=300000",
+    "test-all-coverage": "cross-env NODE_ENV=test nyc npm run test-all",
+    "test-fast-coverage": "cross-env NODE_ENV=test nyc npm run test-fast",
     "release:patch": "changelog -p && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
     "release:minor": "changelog -m && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:major": "changelog -M && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
@@ -30,12 +32,14 @@
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^7.0.0",
+    "babel-plugin-istanbul": "^3.0.0",
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "babel-plugin-transform-async-to-module-method": "^6.16.0",
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-es2015": "^6.16.0",
     "chai": "^3.5.0",
     "commitizen": "^2.8.6",
+    "cross-env": "^3.1.3",
     "cz-customizable": "4.0.0",
     "esdoc": "^0.5.1",
     "esdoc-importpath-plugin": "^0.1.0",
@@ -46,9 +50,17 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "mocha": "^3.2.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "nyc": "^10.0.0"
   },
   "babel": {
+    "env": {
+      "test": {
+        "plugins": [
+          "istanbul"
+        ]
+      }
+    },
     "presets": [
       "es2015"
     ],
@@ -63,6 +75,16 @@
         }
       ]
     ]
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": false,
+    "instrument": false,
+    "cache": true
   },
   "dependencies": {
     "babel-register": "^6.16.3",

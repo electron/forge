@@ -1,43 +1,44 @@
-import { execSync, spawn } from 'child_process';
+import { execSync } from 'child_process';
 import fs from 'fs-promise';
 import os from 'os';
 import path from 'path';
 
 import { expect } from 'chai';
 
+import forge from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 
-const pSpawn = async (args = [], opts = {
-  stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
-}) => {
-  const child = spawn(process.execPath, [path.resolve(__dirname, '../../dist/electron-forge.js')].concat(args), opts);
-  let stdout = '';
-  let stderr = '';
-  if (process.platform !== 'win32') {
-    child.stdout.on('data', (data) => { stdout += data; });
-    child.stderr.on('data', (data) => { stderr += data; });
-  }
-  return new Promise((resolve, reject) => {
-    child.on('exit', (code) => {
-      if (code === 0) {
-        return resolve(stdout);
-      }
-      reject(new Error(stderr));
-    });
-  });
-};
+// const pSpawn = async (args = [], opts = {
+//   stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
+// }) => {
+//   const child = spawn(process.execPath, [path.resolve(__dirname, '../../dist/electron-forge.js')].concat(args), opts);
+//   let stdout = '';
+//   let stderr = '';
+//   if (process.platform !== 'win32') {
+//     child.stdout.on('data', (data) => { stdout += data; });
+//     child.stderr.on('data', (data) => { stderr += data; });
+//   }
+//   return new Promise((resolve, reject) => {
+//     child.on('exit', (code) => {
+//       if (code === 0) {
+//         return resolve(stdout);
+//       }
+//       reject(new Error(stderr));
+//     });
+//   });
+// };
 
 const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
 
 describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
-  it('should output help', async function helpSpec() {
-    if (process.platform === 'win32') {
-      this.skip();
-    } else {
-      expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
-    }
-  });
+  // it('should output help', async function helpSpec() {
+  //   if (process.platform === 'win32') {
+  //     this.skip();
+  //   } else {
+  //     expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
+  //   }
+  // });
 
   let dirID = Date.now();
   const forLintingMethod = (lintStyle) => {
@@ -48,7 +49,10 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
         dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
         dirID += 1;
         await fs.remove(dir);
-        await pSpawn(['init', dir, `--lintstyle=${lintStyle}`]);
+        await forge.init({
+          dir,
+          lintstyle: lintStyle,
+        });
       });
 
       it('should create a new folder with a npm module inside', async () => {
@@ -67,7 +71,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       });
 
       describe('lint', () => {
-        it('should initially pass the linting process', () => pSpawn(['lint', dir]));
+        it('should initially pass the linting process', () => forge.lint({ dir }));
       });
 
       after(() => fs.remove(dir));
@@ -86,7 +90,10 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
       execSync('npm link', {
         cwd: path.resolve(__dirname, '../fixture/custom_init'),
       });
-      await pSpawn(['init', dir, '--template=dummy']);
+      await forge.init({
+        dir,
+        template: 'dummy',
+      });
     });
 
     it('should create dot files correctly', async () => {
@@ -99,7 +106,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     });
 
     describe('lint', () => {
-      it('should initially pass the linting process', () => pSpawn(['lint', dir]));
+      it('should initially pass the linting process', () => forge.lint({ dir }));
     });
 
     after(async () => {
@@ -116,16 +123,16 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     before(async () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
       dirID += 1;
-      await pSpawn(['init', dir]);
+      await forge.init({ dir });
     });
 
     it('can package without errors', async () => {
-      await pSpawn(['package', dir]);
+      await forge.package({ dir });
     });
 
     it('can package without errors with native pre-gyp deps installed', async () => {
       await installDeps(dir, ['ref']);
-      await pSpawn(['package', dir]);
+      await forge.package({ dir });
     });
 
     describe('after package', () => {
@@ -144,7 +151,7 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
           });
 
           it('successfully makes with default config', async () => {
-            await pSpawn(['make', dir, '-s']);
+            await forge.make({ dir, skipPackage: true });
           });
         });
       });
