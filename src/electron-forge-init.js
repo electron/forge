@@ -42,8 +42,8 @@ const main = async () => {
 
   await initDirectory(dir);
   await initGit(dir);
-  await initNPM(dir, program.template ? undefined : program.lintstyle);
   await initStarter(dir, program.template ? undefined : program.lintstyle);
+  await initNPM(dir, program.template ? undefined : program.lintstyle);
   if (!program.template) {
     if (program.lintstyle === 'standard') {
       await initStandardFix(dir);

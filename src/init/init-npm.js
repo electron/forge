@@ -10,7 +10,7 @@ import asyncOra from '../util/ora-handler';
 const d = debug('electron-forge:init:npm');
 
 export const deps = ['electron-compile'];
-export const devDeps = ['babel-preset-stage-0'];
+export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-transform-async-to-generator'];
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
 export const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
@@ -23,6 +23,7 @@ export default async (dir, lintStyle) => {
     packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
     packageJSON.config.forge.windowsStoreConfig.name = packageJSON.productName.replace(/-/g, '');
     packageJSON.author = await username();
+
     switch (lintStyle) {
       case 'standard':
         packageJSON.scripts.lint = 'standard';
@@ -41,12 +42,15 @@ export default async (dir, lintStyle) => {
   await asyncOra('Installing NPM Dependencies', async () => {
     d('installing dependencies');
     await installDepList(dir, deps);
+
     d('installing devDependencies');
     await installDepList(dir, devDeps, true);
+
     d('installing exact dependencies');
     for (const packageName of exactDevDeps) {
       await installDepList(dir, [packageName], true, true);
     }
+
     switch (lintStyle) {
       case 'standard':
         d('installing standard linting dependencies');
@@ -60,5 +64,18 @@ export default async (dir, lintStyle) => {
         d('not installing linting deps');
         break;
     }
+
+    // NB: For babel-preset-env to work correctly, it needs to know the
+    // actual version of Electron that we installed
+    const content = JSON.parse(await fs.readFile(path.join(dir, '.compilerc'), 'utf8'));
+    const electronPrebuilt = require(
+      path.join(dir, 'node_modules', 'electron-prebuilt-compile', 'package.json'));
+
+    for (const profile of ['development', 'production']) {
+      const envTarget = content.env[profile]['application/javascript'].presets.find(x => x[0] === 'env');
+      envTarget[1].targets.electron = electronPrebuilt.version;
+    }
+
+    await fs.writeFile(path.join(dir, '.compilerc'), JSON.stringify(content, null, 2), 'utf8');
   });
 };
