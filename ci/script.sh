@@ -6,6 +6,4 @@ if [[ "$TRAVIS_OS_NAME" = "linux" ]]; then
 else
     if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm i -g yarn; fi
     npm run test-coverage -- --installer=$NODE_INSTALLER
-    # Only publish coverage on the macOS yarn agent
-    if [[ "$NODE_INSTALLER" = "yarn" ]]; then cat coverage/lcov.info | node node_modules/coveralls/bin/coveralls.js; fi
 fi
