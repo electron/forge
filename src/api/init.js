@@ -45,7 +45,7 @@ export default async (providedOptions = {}) => {
     }
   }
 
-  await initDirectory(dir);
+  await initDirectory(dir, interactive);
   await initGit(dir);
   await initStarter(dir, template ? undefined : lintstyle);
   await initNPM(dir, template ? undefined : lintstyle);

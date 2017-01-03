@@ -10,6 +10,7 @@ import { deps, devDeps } from '../init/init-npm';
 import asyncOra from '../util/ora-handler';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
+import confirmIfInteractive from '../util/confirm-if-interactive';
 
 const d = debug('electron-forge:import');
 
@@ -42,11 +43,9 @@ export default async (providedOptions = {}) => {
     process.exit(1);
   }
 
-  const confirm = !interactive || (await inquirer.createPromptModule()({
-    type: 'confirm',
-    name: 'confirm',
-    message: `WARNING: We will now attempt to import: "${dir}".  This will involve modifying some files, are you sure you want to continue?`,
-  })).confirm;
+  // eslint-disable-next-line max-len
+  const confirm = await confirmIfInteractive(interactive, `WARNING: We will now attempt to import: "${dir}".  This will involve modifying some files, are you sure you want to continue?`);
+
   if (!confirm) {
     process.exit(1);
   }
@@ -56,21 +55,15 @@ export default async (providedOptions = {}) => {
   let packageJSON = await readPackageJSON(dir);
   if (packageJSON.config && packageJSON.config.forge) {
     console.warn('It looks like this project is already configured for "electron-forge"'.green);
-    const shouldContinue = !interactive || (await inquirer.createPromptModule()({
-      type: 'confirm',
-      name: 'shouldContinue',
-      message: 'Are you sure you want to continue?',
-    })).shouldContinue;
+    const shouldContinue = await confirmIfInteractive(interactive, 'Are you sure you want to continue?');
+
     if (!shouldContinue) {
       process.exit(0);
     }
   }
 
-  const shouldChangeMain = interactive ? (await inquirer.createPromptModule()({
-    type: 'confirm',
-    name: 'shouldChangeMain',
-    message: 'Do you want us to change the "main" attribute of your package.json?  If you are currently using babel and pointing to a "build" directory say yes.', // eslint-disable-line
-  })).shouldChangeMain : false;
+  // eslint-disable-next-line max-len
+  const shouldChangeMain = await confirmIfInteractive(interactive, 'Do you want us to change the "main" attribute of your package.json?  If you are currently using babel and pointing to a "build" directory say yes.', false);
   if (shouldChangeMain) {
     const { newMain } = await inquirer.createPromptModule()({
       type: 'input',
@@ -105,11 +98,8 @@ export default async (providedOptions = {}) => {
       electronName = key;
     } else if (buildToolPackages[key]) {
       const explanation = buildToolPackages[key];
-      const shouldRemoveDependency = !interactive || (await inquirer.createPromptModule()({
-        type: 'confirm',
-        name: 'shouldRemoveDependency',
-        message: `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`,
-      })).shouldRemoveDependency;
+      // eslint-disable-next-line max-len
+      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`);
 
       if (shouldRemoveDependency) {
         delete packageJSON.dependencies[key];
