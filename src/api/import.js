@@ -26,7 +26,7 @@ const d = debug('electron-forge:import');
  * - Sets up `git` and the correct NPM dependencies
  * - Adds a template forge config to `package.json`
  *
- * @param {ImportOptions} options - Options for the import method
+ * @param {ImportOptions} providedOptions - Options for the import method
  * @return {Promise} Will resolve when the import process is complete
  */
 export default async (providedOptions = {}) => {

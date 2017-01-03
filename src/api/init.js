@@ -22,7 +22,7 @@ const d = debug('electron-forge:init');
 /**
  * Initialize a new Electron Forge template project in the given directory.
  *
- * @param {InitOptions} options - Options for the init method
+ * @param {InitOptions} providedOptions - Options for the init method
  * @return {Promise} Will resolve when the initialization process is complete
  */
 export default async (providedOptions = {}) => {

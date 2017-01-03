@@ -32,7 +32,7 @@ const GITHUB_API = 'https://api.github.com';
 /**
  * Install an Electron application from GitHub. If you leave interactive as `false`, you MUST provide a `chooseAsset` function.
  *
- * @param {InstallOptions} options - Options for the install method
+ * @param {InstallOptions} providedOptions - Options for the install method
  * @return {Promise} Will resolve when the install process is complete
  */
 export default async (providedOptions = {}) => {

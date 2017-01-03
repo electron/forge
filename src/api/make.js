@@ -24,7 +24,7 @@ import packager from './package';
 /**
  * Make distributables for an Electron application.
  *
- * @param {MakeOptions} options - Options for the make method
+ * @param {MakeOptions} providedOptions - Options for the make method
  * @return {Promise} Will resolve when the make process is complete
  */
 export default async (providedOptions = {}) => {

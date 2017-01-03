@@ -21,7 +21,7 @@ import make from './make';
 /**
  * Publish an Electron application into the given target service.
  *
- * @param {PublishOptions} options - Options for the Publish method
+ * @param {PublishOptions} providedOptions - Options for the Publish method
  * @return {Promise} Will resolve when the publish process is complete
  */
 export default async (providedOptions = {}) => {
