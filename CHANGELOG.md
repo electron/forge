@@ -1,3 +1,14 @@
+### [2.4.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.4.0) (2017-1-3)
+
+##### New Features
+
+* **maker:** add support for Windows Store (AppX) packages ([74a12163](https://github.com/electron-userland/electron-forge/commit/74a12163))
+* **starter:** switch the default Babel preset to use babel-preset-env ([4e3bb17b](https://github.com/electron-userland/electron-forge/commit/4e3bb17b))
+
+##### Bug Fixes
+
+* **starter:** ensure linebreak-style is disabled ([ac7a20bc](https://github.com/electron-userland/electron-forge/commit/ac7a20bc))
+
 ### [2.3.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.3.0) (2017-1-1)
 
 ##### Chores
