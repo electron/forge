@@ -18,7 +18,7 @@ import resolveDir from '../util/resolve-dir';
 /**
  * Start an Electron application.
  *
- * @param {StartOptions} options - Options for the Publish method
+ * @param {StartOptions} providedOptions - Options for the Publish method
  * @return {Promise} Will resolve when the application is launched
  */
 export default async (providedOptions = {}) => {

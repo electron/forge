@@ -24,7 +24,7 @@ import resolveDir from '../util/resolve-dir';
 /**
  * Package an Electron application into an platform dependent format.
  *
- * @param {PackageOptions} options - Options for the Package method
+ * @param {PackageOptions} providedOptions - Options for the Package method
  * @return {Promise} Will resolve when the package process is complete
  */
 export default async (providedOptions = {}) => {

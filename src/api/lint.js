@@ -19,7 +19,7 @@ const d = debug('electron-forge:lint');
  * The promise will be rejected with the stdout+stderr of the linting process if linting fails or
  * will be resolved if it succeeds.
  *
- * @param {LintOptions} options - Options for the Lint method
+ * @param {LintOptions} providedOptions - Options for the Lint method
  * @return {Promise<null, string>} Will resolve when the lint process is complete
  */
 export default async (providedOptions = {}) => {
