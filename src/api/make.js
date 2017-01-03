@@ -13,18 +13,18 @@ import packager from './package';
 
 /**
  * @typedef {Object} MakeOptions
- * @property {string} [dir=process.cwd()] The path to the module to import
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {string} [dir=process.cwd()] The path to the app from which distributables are generated
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {boolean} [skipPackage=false] Whether to skip the pre-make packaging step
  * @property {Array<string>} [overrideTargets] An array of make targets to override your forge config
- * @property {string} [arch=process.arch] The target arch
- * @property {string} [platform=process.platform] The target platform.  NOTE: This is limited to be the current platform at the moment
+ * @property {string} [arch=host architecture] The target architecture
+ * @property {string} [platform=process.platform] The target platform. NOTE: This is limited to be the current platform at the moment
  */
 
 /**
- * Makes distributables for an Electron application.
+ * Make distributables for an Electron application.
  *
- * @param {MakeOptions} options - Options for the Make method
+ * @param {MakeOptions} options - Options for the make method
  * @return {Promise} Will resolve when the make process is complete
  */
 export default async (providedOptions = {}) => {

@@ -9,14 +9,14 @@ import resolveDir from '../util/resolve-dir';
 
 /**
  * @typedef {Object} StartOptions
- * @property {string} [dir=process.cwd()] The path to the module to publish
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually
+ * @property {string} [dir=process.cwd()] The path to the app to be run
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {boolean} [enableLogging=false] Enables advanced internal Electron debug calls
  * @property {Array<string>} [args] Arguments to pass through to the launched Electron application
  */
 
 /**
- * Starts an Electron application
+ * Start an Electron application.
  *
  * @param {StartOptions} options - Options for the Publish method
  * @return {Promise} Will resolve when the application is launched

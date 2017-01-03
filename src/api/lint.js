@@ -10,14 +10,14 @@ const d = debug('electron-forge:lint');
 /**
  * @typedef {Object} LintOptions
  * @property {string} [dir=process.cwd()] The path to the module to import
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  */
 
 /**
- * Lints a local Electron application.
+ * Lint a local Electron application.
  *
- * The promise will be rejected with the stdout+stderr of the linting process if linting fails or will be resolved
- * if it succeeds.
+ * The promise will be rejected with the stdout+stderr of the linting process if linting fails or
+ * will be resolved if it succeeds.
  *
  * @param {LintOptions} options - Options for the Lint method
  * @return {Promise<null, string>} Will resolve when the lint process is complete

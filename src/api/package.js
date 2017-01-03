@@ -15,14 +15,14 @@ import resolveDir from '../util/resolve-dir';
 
 /**
  * @typedef {Object} PackageOptions
- * @property {string} [dir=process.cwd()] The path to the module to import
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {string} [dir=process.cwd()] The path to the app to package
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {string} [arch=process.arch] The target arch
  * @property {string} [platform=process.platform] The target platform.  NOTE: This is limited to be the current platform at the moment
  */
 
 /**
- * Packages an Electron application into an platform dependent format.
+ * Package an Electron application into an platform dependent format.
  *
  * @param {PackageOptions} options - Options for the Package method
  * @return {Promise} Will resolve when the package process is complete
