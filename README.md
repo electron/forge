@@ -59,10 +59,10 @@ instead, use the `--lintstyle=standard` argument.
 electron-forge import existing-project-directory
 ```
 
-Given an existing Electron project, it will attempt to interactively navigate
-through the process of importing an existing project to the Electron Forge
-format, so the commands listed below can be used. This includes being prompted
-to remove existing Electron build tools in favor of Electron Forge equivalents.
+Given an existing Electron project, this command will attempt to interactively
+navigate through the process of importing it to the Electron Forge format, so
+the commands listed below can be used. This includes being prompted to remove
+existing Electron build tools in favor of Electron Forge equivalents.
 
 ## Launching your Project
 
