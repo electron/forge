@@ -6,7 +6,7 @@ contributions. They include, but are not limited to:
 * Constructive feedback
 * [Questions about usage](#questions-about-usage)
 * [Bug reports / technical issues](#before-opening-bug-reportstechnical-issues)
-* Documentation changes
+* [Documentation changes](#documentation-changes)
 * Feature requests
 * [Pull requests](#filing-pull-requests)
 
@@ -51,6 +51,18 @@ We use the label [`help wanted`](https://github.com/electron-userland/electron-f
 in the issue tracker to denote fairly-well-scoped-out bugs or feature requests that the community
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
+
+## Documentation changes
+
+When changing the API documentation, here are some rules to keep in mind.
+
+* The first line:
+  * should end with a period
+  * should be in imperative mood (e.g., "Create" instead of "Creates")
+  * First line should not be the function's "signature"
+* The first word of the first line:
+  * should be properly capitalized
+  * should not be "This"
 
 ## Filing Pull Requests
 
