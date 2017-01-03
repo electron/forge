@@ -10,8 +10,8 @@ import make from './make';
 
 /**
  * @typedef {Object} PublishOptions
- * @property {string} [dir=process.cwd()] The path to the module to publish
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {string} [dir=process.cwd()] The path to the app to be published
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {string} [authToken] An authentication token to use when publishing
  * @property {string} [tag=packageJSON.version] The string to tag this release with
  * @property {string} [target=github] The publish target
@@ -19,7 +19,7 @@ import make from './make';
  */
 
 /**
- * Packages an Electron application into an platform dependent format.
+ * Publish an Electron application into the given target service.
  *
  * @param {PublishOptions} options - Options for the Publish method
  * @return {Promise} Will resolve when the publish process is complete

@@ -23,16 +23,16 @@ const GITHUB_API = 'https://api.github.com';
 
 /**
  * @typedef {Object} InstallOptions
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {boolean} [prerelease=false] Whether to install prerelease versions
  * @property {string} repo The GitHub repository to install from, in the format owner/name
- * @property {function} chooseAsset A function that must return the asset to use/install from a provided array of compatible GitHub assets.
+ * @property {function} chooseAsset A function that must return the asset to use/install from a provided array of compatible GitHub assets
  */
 
 /**
- * Installs an Electron application from GitHub.  If you leave interactive as `false` you MUST provide a chooseAsset function.
+ * Install an Electron application from GitHub. If you leave interactive as `false`, you MUST provide a `chooseAsset` function.
  *
- * @param {InstallOptions} options - Options for the Install method
+ * @param {InstallOptions} options - Options for the install method
  * @return {Promise} Will resolve when the install process is complete
  */
 export default async (providedOptions = {}) => {

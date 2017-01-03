@@ -13,16 +13,16 @@ const d = debug('electron-forge:init');
 
 /**
  * @typedef {Object} InitOptions
- * @property {string} [dir=process.cwd()] The path to the module to import
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
- * @property {string} [lintstyle=airbnb] The lintstyle to pass through to the template creater
- * @property {string} [template] The custom template to use, if left empty will use the default template.
+ * @property {string} [dir=process.cwd()] The path to the app to be initialized
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
+ * @property {string} [lintstyle=airbnb] The lintstyle to pass through to the template creator
+ * @property {string} [template] The custom template to use. If left empty, the default template is used
  */
 
 /**
- * Initializes a new electron-forge template project in the given directory
+ * Initialize a new Electron Forge template project in the given directory.
  *
- * @param {InitOptions} options - Options for the Import method
+ * @param {InitOptions} options - Options for the init method
  * @return {Promise} Will resolve when the initialization process is complete
  */
 export default async (providedOptions = {}) => {

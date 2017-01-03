@@ -15,18 +15,18 @@ const d = debug('electron-forge:import');
 
 /**
  * @typedef {Object} ImportOptions
- * @property {string} [dir=process.cwd()] The path to the module to import
- * @property {boolean} [interactive=false] Boolean, whether to use sensible defaults or prompt the user visually.
+ * @property {string} [dir=process.cwd()] The path to the app to be imported
+ * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  */
 
 /**
- * Attempts to import a given module directory to the electron-forge standard.
+ * Attempt to import a given module directory to the Electron Forge standard.
  *
- * - Replaces the electron prebuilt with electron-compile
- * - Sets up git and the correct NPM dependencies
- * - Puts in a template forge config
+ * - Replaces the prebuilt electron package with the one that integrates with `electron-compile`
+ * - Sets up `git` and the correct NPM dependencies
+ * - Adds a template forge config to `package.json`
  *
- * @param {ImportOptions} options - Options for the Import method
+ * @param {ImportOptions} options - Options for the import method
  * @return {Promise} Will resolve when the import process is complete
  */
 export default async (providedOptions = {}) => {
