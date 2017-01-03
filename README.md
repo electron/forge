@@ -53,6 +53,17 @@ dependencies so you will be all set to go.  By default we will also install the
 `airbnb` linting modules.  If you want to follow the `standard` linting rules
 instead, use the `--lintstyle=standard` argument.
 
+## Importing an existing Project
+
+```bash
+electron-forge import existing-project-directory
+```
+
+Given an existing Electron project, it will attempt to interactively navigate
+through the process of importing an existing project to the Electron Forge
+format, so the commands listed below can be used. This includes being prompted
+to remove existing Electron build tools in favor of Electron Forge equivalents.
+
 ## Launching your Project
 
 ```bash
