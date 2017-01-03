@@ -31,7 +31,8 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
           repo: forgeConfig.github_repository.name,
           tag_name: tag || `v${packageJSON.version}`,
           name: tag || `v${packageJSON.version}`,
-          draft: true,
+          draft: forgeConfig.github_repository.draft !== false,
+          prerelease: forgeConfig.github_repository.prerelease === true,
         });
       } else {
         // Unknown error
