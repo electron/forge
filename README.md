@@ -165,7 +165,7 @@ the JS file method mentioned above then you can use functions normally.
 
 | Target Name | Description | Required Config |
 |-------------|-------------|-----------------|
-| github      | Makes a new release for the current version (if required) and uploads the make artifacts as release assets | `process.env.GITHUB_TOKEN` - A personal access token with access to your releases <br />`forge.github_repository.owner` - The owner of the GitHub repository<br />`forge.github_repository.name` - The name of the GitHub repository |
+| github      | Makes a new release for the current version (if required) and uploads the make artifacts as release assets | `process.env.GITHUB_TOKEN` - A personal access token with access to your releases <br />`forge.github_repository.owner` - The owner of the GitHub repository<br />`forge.github_repository.name` - The name of the GitHub repository <br />`forge.github_repository.draft` - Create the release as a draft, defaults to `true` <br />`forge.github_repository.prerelease` - Identify the release as a prerelease, defaults to `false` |
 
 ## Custom `make` and `publish` targets
 
