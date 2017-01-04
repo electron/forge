@@ -1,3 +1,43 @@
+### [2.5.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.0) (2017-1-3)
+
+##### Chores
+
+* **generic:**
+  * only publish CI coverage on success ([7fbbef72](https://github.com/electron-userland/electron-forge/commit/7fbbef72))
+  * enable coveralls ([2f821155](https://github.com/electron-userland/electron-forge/commit/2f821155))
+* **tests:**
+  * fix appx tests on rebased branch ([75f217a5](https://github.com/electron-userland/electron-forge/commit/75f217a5))
+  * move tests to be unit tests on the API and enable coverage ([54603c1e](https://github.com/electron-userland/electron-forge/commit/54603c1e))
+
+##### Documentation Changes
+
+* **generic:**
+  * fix option variable names ([0923ac1e](https://github.com/electron-userland/electron-forge/commit/0923ac1e))
+  * cleanup API docs ([9c118a4f](https://github.com/electron-userland/electron-forge/commit/9c118a4f))
+  * add doc formatting guidelines based off of pycodestyle ([6efa5259](https://github.com/electron-userland/electron-forge/commit/6efa5259))
+* **importer:**
+  * tweak description ([e885cd5e](https://github.com/electron-userland/electron-forge/commit/e885cd5e))
+  * mention import in the README ([d5eab37a](https://github.com/electron-userland/electron-forge/commit/d5eab37a))
+
+##### New Features
+
+* **generic:**
+  * expose some util methods through JS API ([a506dd33](https://github.com/electron-userland/electron-forge/commit/a506dd33))
+  * expose top level methods as JS APIs ([93fb48f5](https://github.com/electron-userland/electron-forge/commit/93fb48f5))
+* **publisher:** add draft and prerelease options for publishing to github ([898de235](https://github.com/electron-userland/electron-forge/commit/898de235))
+
+##### Bug Fixes
+
+* **generic:** lock istanbul dependency versions to prevent bug ([205104c4](https://github.com/electron-userland/electron-forge/commit/205104c4))
+
+##### Refactors
+
+* **generic:** refactor confirm prompts into a helper for interactive mode ([b495012e](https://github.com/electron-userland/electron-forge/commit/b495012e))
+
+##### Tests
+
+* **generic:** add tests for lots of the utils ([d0962b93](https://github.com/electron-userland/electron-forge/commit/d0962b93))
+
 ### [2.4.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.4.0) (2017-1-3)
 
 ##### New Features
