@@ -50,7 +50,6 @@
     "generate-changelog": "^1.0.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "istanbul-lib-instrument": "^1.4.2",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
     "nyc": "^10.0.0",
