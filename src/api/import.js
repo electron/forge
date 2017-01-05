@@ -153,7 +153,7 @@ export default async (providedOptions = {}) => {
   packageJSON = await readPackageJSON(dir);
 
   packageJSON.config = packageJSON.config || {};
-  const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../tmpl'));
+  const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
   packageJSON.config.forge = templatePackageJSON.config.forge;
 
   await writeChanges();
