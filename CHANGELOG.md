@@ -1,3 +1,16 @@
+#### [2.5.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.1) (2017-1-5)
+
+##### Chores
+
+* **undefined:**
+  * istanbul-lib-instrument is no longer required ([f60dd586](https://github.com/electron-userland/electron-forge/commit/f60dd586))
+  * upgrade to version of babel-plugin-istanbul that should address regression ([0913506b](https://github.com/electron-userland/electron-forge/commit/0913506b))
+
+##### Bug Fixes
+
+* **importer:** fix relative path to tmpl directory ([b39c1008](https://github.com/electron-userland/electron-forge/commit/b39c1008))
+* **undefined:** regression in istanbul-lib-instrument and babel-plugin-istanbul should now be addressed ([58b9791e](https://github.com/electron-userland/electron-forge/commit/58b9791e))
+
 ### [2.5.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.0) (2017-1-3)
 
 ##### Chores
