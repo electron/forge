@@ -38,8 +38,10 @@ export const getMakeOptions = () => {
   return makeOpts;
 };
 
-(async () => {
-  const makeOpts = getMakeOptions();
+if (process.mainModule === module) {
+  (async () => {
+    const makeOpts = getMakeOptions();
 
-  await make(makeOpts);
-})();
+    await make(makeOpts);
+  })();
+}

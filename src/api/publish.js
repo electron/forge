@@ -34,7 +34,10 @@ export default async (providedOptions = {}) => {
     target: 'github',
   }, providedOptions);
 
-  const makeResults = await make(makeOptions);
+  const makeResults = await make(Object.assign({
+    dir,
+    interactive,
+  }, makeOptions));
 
   dir = await resolveDir(dir);
   if (!dir) {
@@ -54,7 +57,7 @@ export default async (providedOptions = {}) => {
   let publisher;
   await asyncOra(`Resolving publish target: ${`${target}`.cyan}`, async () => {
     publisher = requireSearch(__dirname, [
-      `./publishers/${target}.js`,
+      `../publishers/${target}.js`,
       `electron-forge-publisher-${target}`,
     ]);
     if (!publisher) {

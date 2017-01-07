@@ -1,4 +1,5 @@
 import 'colors';
+import debug from 'debug';
 import fs from 'fs-promise';
 import glob from 'glob';
 import path from 'path';
@@ -12,6 +13,8 @@ import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
+
+const d = debug('electron-forge:packager');
 
 /**
  * @typedef {Object} PackageOptions
@@ -90,6 +93,8 @@ export default async (providedOptions = {}) => {
     packagerSpinner.fail();
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
   }
+
+  d('packaging with options', packageOpts);
 
   await pify(packager)(packageOpts);
 

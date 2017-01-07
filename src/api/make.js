@@ -105,9 +105,9 @@ export default async (providedOptions = {}) => {
     for (const target of targets) {
       // eslint-disable-next-line no-loop-func
       await asyncOra(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
-        const maker = requireSearch(path.resolve(__dirname, '..'), [
-          `./makers/${process.platform}/${target}.js`,
-          `./makers/generic/${target}.js`,
+        const maker = requireSearch(__dirname, [
+          `../makers/${process.platform}/${target}.js`,
+          `../makers/generic/${target}.js`,
           `electron-forge-maker-${target}`,
         ]);
         if (!maker) {
