@@ -1,3 +1,9 @@
+#### [2.5.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.2) (2017-1-7)
+
+##### Bug Fixes
+
+* **publisher:** dont call make twice while publishing ([55bfe1ac](https://github.com/electron-userland/electron-forge/commit/55bfe1ac))
+
 #### [2.5.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.1) (2017-1-5)
 
 ##### Chores
