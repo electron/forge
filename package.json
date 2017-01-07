@@ -99,7 +99,7 @@
     "electron-packager": "^8.4.0",
     "electron-rebuild": "^1.5.5",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
-    "electron-windows-store": "^0.6.3",
+    "electron-windows-store": "^0.7.2",
     "electron-winstaller": "^2.5.0",
     "fs-promise": "^1.0.0",
     "github": "^7.2.0",
