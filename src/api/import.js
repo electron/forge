@@ -108,6 +108,15 @@ export default async (providedOptions = {}) => {
     }
   }
 
+  packageJSON.scripts = packageJSON.scripts || {};
+  d('reading current scripts object:', packageJSON.scripts);
+
+  packageJSON.scripts.start = 'electron-forge start';
+  packageJSON.scripts.package = 'electron-forge package';
+  packageJSON.scripts.make = 'electron-forge make';
+
+  d('forgified scripts object:', packageJSON.scripts);
+
   const writeChanges = async () => {
     await asyncOra('Writing modified package.json file', async () => {
       await fs.writeFile(path.resolve(dir, 'package.json'), `${JSON.stringify(packageJSON, null, 2)}\n`);
