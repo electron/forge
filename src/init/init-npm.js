@@ -9,7 +9,8 @@ import asyncOra from '../util/ora-handler';
 
 const d = debug('electron-forge:init:npm');
 
-export const deps = ['electron-compile'];
+// FIXME remove electron-compilers entry when >= 5.3.0 is fixed
+export const deps = ['electron-compile', 'electron-compilers@5.2.5'];
 export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-transform-async-to-generator'];
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
