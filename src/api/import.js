@@ -111,9 +111,19 @@ export default async (providedOptions = {}) => {
   packageJSON.scripts = packageJSON.scripts || {};
   d('reading current scripts object:', packageJSON.scripts);
 
-  packageJSON.scripts.start = 'electron-forge start';
-  packageJSON.scripts.package = 'electron-forge package';
-  packageJSON.scripts.make = 'electron-forge make';
+  const updatePackageScript = async (scriptName, newValue) => {
+    if (packageJSON.scripts[scriptName] !== newValue) {
+      // eslint-disable-next-line max-len
+      const shouldUpdate = await confirmIfInteractive(interactive, `Do you want us to update the "${scriptName}" script to instead call the electron-forge task "${newValue}"`);
+      if (shouldUpdate) {
+        packageJSON.scripts[scriptName] = newValue;
+      }
+    }
+  };
+
+  await updatePackageScript('start', 'electron-forge start');
+  await updatePackageScript('package', 'electron-forge package');
+  await updatePackageScript('make', 'electron-forge make');
 
   d('forgified scripts object:', packageJSON.scripts);
 
