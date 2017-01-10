@@ -106,7 +106,7 @@ export default async (providedOptions = {}) => {
   if (possibleAssets.length > 1) {
     if (chooseAsset) {
       targetAsset = await Promise.resolve(chooseAsset(possibleAssets));
-    } else if (!interactive) {
+    } else if (interactive) {
       const choices = [];
       possibleAssets.forEach((asset) => {
         choices.push({ name: asset.name, value: asset.id });
