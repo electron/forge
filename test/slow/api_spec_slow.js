@@ -117,6 +117,31 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     });
   });
 
+  describe('init (with built-in templater)', () => {
+    let dir;
+
+    before(async () => {
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
+      dirID += 1;
+      await fs.remove(dir);
+    });
+
+    it('should succeed in initializing', async () => {
+      await forge.init({
+        dir,
+        template: 'react-typescript',
+      });
+    });
+
+    it('should add a dependency on react', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('react');
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+    });
+  });
+
   describe('after init', () => {
     let dir;
 
