@@ -95,7 +95,7 @@ export default async (providedOptions = {}) => {
     version: packageJSON.devDependencies['electron-prebuilt-compile'],
   });
   packageOpts.quiet = true;
-  if (typeof packageOpts.asar === 'object' && packageOpts.unpack) {
+  if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
     packagerSpinner.fail();
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
   }
