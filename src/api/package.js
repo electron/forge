@@ -92,7 +92,7 @@ export default async (providedOptions = {}) => {
     arch,
     platform,
     out: path.resolve(dir, 'out'),
-    version: packageJSON.devDependencies['electron-prebuilt-compile'],
+    electronVersion: packageJSON.devDependencies['electron-prebuilt-compile'],
   });
   packageOpts.quiet = true;
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {

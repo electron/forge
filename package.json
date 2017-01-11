@@ -96,7 +96,7 @@
     "commander": "^2.9.0",
     "debug": "^2.3.3",
     "electron-installer-dmg": "^0.1.2",
-    "electron-packager": "^8.4.0",
+    "electron-packager": "^8.5.0",
     "electron-rebuild": "^1.5.5",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
     "electron-windows-store": "^0.7.2",
