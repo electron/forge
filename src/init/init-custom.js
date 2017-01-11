@@ -16,9 +16,15 @@ export default async (dir, template, lintStyle) => {
   await asyncOra(`Locating custom template: "${template}"`, async () => {
     try {
       templateModulePath = await resolvePackage(`electron-forge-template-${template}`);
+      d('using global template');
     } catch (err) {
-      // eslint-disable-next-line no-throw-literal
-      throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``;
+      try {
+        templateModulePath = require(`electron-forge-template-${template}`);
+        d('using local template');
+      } catch (err2) {
+        // eslint-disable-next-line no-throw-literal
+        throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``;
+      }
     }
   });
 
