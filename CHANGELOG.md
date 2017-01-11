@@ -1,3 +1,35 @@
+### [2.6.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.6.0) (2017-1-10)
+
+##### Chores
+
+* **deps:** Update electron-windows-store ([761464f0](https://github.com/electron-userland/electron-forge/commit/761464f0))
+
+##### New Features
+
+* **importer:**
+  * ensure the user is aware of any script changes we make ([cbb73e7e](https://github.com/electron-userland/electron-forge/commit/cbb73e7e))
+  * import now sets the scripts section in package.json to be forge scripts ([cb01d406](https://github.com/electron-userland/electron-forge/commit/cb01d406))
+* **initializer:** template package.json now includes package and make scripts ([272d9b1e](https://github.com/electron-userland/electron-forge/commit/272d9b1e))
+* **rebuilder:** show rebuild progress from the electron-rebuild lifecycle ([26f23b48](https://github.com/electron-userland/electron-forge/commit/26f23b48))
+* **generic:**
+  * use electron-rebuild instead of generic rebuild logic ([3d26da5b](https://github.com/electron-userland/electron-forge/commit/3d26da5b))
+  * add basic tab completion for top level commands ([30082bbf](https://github.com/electron-userland/electron-forge/commit/30082bbf))
+
+##### Bug Fixes
+
+* **packager:**
+  * check asar.unpack correctly ([150ea5dd](https://github.com/electron-userland/electron-forge/commit/150ea5dd))
+  * clarify entry point error messages ([969ab1ea](https://github.com/electron-userland/electron-forge/commit/969ab1ea))
+  * throw errors on an uncompilable entrypoint ([b7f7b81c](https://github.com/electron-userland/electron-forge/commit/b7f7b81c))
+* **initializer:**
+  * unpin electron-compilers ([9e2aefaa](https://github.com/electron-userland/electron-forge/commit/9e2aefaa))
+  * unpin eslint-plugin-jsx-a11y ([02b6e367](https://github.com/electron-userland/electron-forge/commit/02b6e367))
+  * pin electron-compilers dependency due to typescript bug ([4ebafa8d](https://github.com/electron-userland/electron-forge/commit/4ebafa8d))
+
+##### Refactors
+
+* **packager:** upgrade to Electron Packager 8.5.0 ([b8489b47](https://github.com/electron-userland/electron-forge/commit/b8489b47))
+
 #### [2.5.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.5.2) (2017-1-7)
 
 ##### Bug Fixes
