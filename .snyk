@@ -1,0 +1,22 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.7.0
+ignore: {}
+
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:hawk:20160119':
+    - electron-packager > asar > mksnapshot > request > hawk:
+        patched: '2017-01-12T08:31:13.034Z'
+    - electron-winstaller > asar > mksnapshot > request > hawk:
+        patched: '2017-01-12T08:31:13.034Z'
+  'npm:minimatch:20160620':
+    - zip-folder > archiver > glob > minimatch:
+        patched: '2017-01-12T08:31:13.034Z'
+  'npm:request:20160119':
+    - electron-packager > asar > mksnapshot > request:
+        patched: '2017-01-12T08:31:13.034Z'
+    - electron-winstaller > asar > mksnapshot > request:
+        patched: '2017-01-12T08:31:13.034Z'
+  'npm:semver:20150403':
+    - electron-windows-store > flatten-packages > semver:
+        patched: '2017-01-12T08:31:13.034Z'
