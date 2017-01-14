@@ -48,7 +48,6 @@ export default async (providedOptions = {}) => {
 
   await asyncOra('Searching for Application', async (searchSpinner) => {
     if (!repo || repo.indexOf('/') === -1) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Invalid repository name, must be in the format owner/name';
     }
 
@@ -61,7 +60,6 @@ export default async (providedOptions = {}) => {
     }
 
     if (!releases || releases.message === 'Not Found' || !Array.isArray(releases)) {
-      // eslint-disable-next-line no-throw-literal
       throw `Failed to find releases for repository "${repo}".  Please check the name and try again.`;
     }
 
@@ -80,7 +78,6 @@ export default async (providedOptions = {}) => {
 
     const assets = latestRelease.assets;
     if (!assets || !Array.isArray(assets)) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Could not find any assets for the latest release';
     }
 
@@ -99,7 +96,6 @@ export default async (providedOptions = {}) => {
     });
 
     if (possibleAssets.length === 0) {
-      // eslint-disable-next-line no-throw-literal
       throw `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`;
     }
   });
@@ -124,7 +120,6 @@ export default async (providedOptions = {}) => {
 
       targetAsset = possibleAssets.find(asset => asset.id === assetID);
     } else {
-      // eslint-disable-next-line no-throw-literal
       throw 'expected a chooseAsset function to be provided but it was not';
     }
   }

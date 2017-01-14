@@ -17,11 +17,9 @@ export default async (dir) => {
 
       if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {
         if (!/[0-9]/.test(packageJSON.devDependencies['electron-prebuilt-compile'][0])) {
-          // eslint-disable-next-line no-throw-literal
           throw 'You must depend on an EXACT version of "electron-prebuilt-compile" not a range';
         }
       } else {
-        // eslint-disable-next-line no-throw-literal
         throw 'You must depend on "electron-prebuilt-compile" in your devDependencies';
       }
 

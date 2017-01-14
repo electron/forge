@@ -33,7 +33,6 @@ export default async (providedOptions = {}) => {
   await asyncOra('Locating Application', async () => {
     dir = await resolveDir(dir);
     if (!dir) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Failed to locate startable Electron application';
     }
   });
