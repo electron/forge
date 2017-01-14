@@ -8,7 +8,7 @@ class MockOra {
   stop() { return this; }
 }
 
-const asyncOra = (initalOraValue, asyncFn) => {
+const asyncOra = (initalOraValue, asyncFn, processExitFn = process.exit) => {
   let fnOra = new MockOra();
   if (asyncOra.interactive) {
     fnOra = ora(initalOraValue).start();
@@ -28,7 +28,10 @@ const asyncOra = (initalOraValue, asyncFn) => {
           console.error('\nElectron forge was terminated:'.red);
           console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
         }
-        process.exit(1);
+        processExitFn(1);
+        // If the process is still alive we should continue because either something went really wrong
+        // or we are testing this function
+        setTimeout(() => resolve(), 500);
       } else {
         reject(err);
       }
