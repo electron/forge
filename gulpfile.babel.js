@@ -28,7 +28,10 @@ gulp.task('link', () => {
 
     if (packageJSON.bin[binName] === packageJSON.bin['electron-forge']) {
       files.forEach((fileName) => {
-        fs.writeFileSync(path.resolve(__dirname, `./dist/${fileName.replace('electron-forge', binName)}`), `require('./${fileName}');`);
+        fs.writeFileSync(
+          path.resolve(__dirname, `./dist/${fileName.replace('electron-forge', binName)}`),
+          `/* Auto-generated bin alias file */\nglobal.__LINKED_FORGE__ = true;\nrequire('./${fileName}');\n`
+        );
       });
     }
   });

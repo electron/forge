@@ -38,7 +38,7 @@ export const getMakeOptions = () => {
   return makeOpts;
 };
 
-if (process.mainModule === module) {
+if (process.mainModule === module || global.__LINKED_FORGE__) {
   (async () => {
     const makeOpts = getMakeOptions();
 
