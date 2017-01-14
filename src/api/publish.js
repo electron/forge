@@ -41,7 +41,6 @@ export default async (providedOptions = {}) => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    // eslint-disable-next-line no-throw-literal
     throw 'Failed to locate publishable Electron application';
   }
 

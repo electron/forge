@@ -42,7 +42,6 @@ export default async (providedOptions = {}) => {
   await asyncOra('Resolving Forge Config', async () => {
     dir = await resolveDir(dir);
     if (!dir) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Failed to locate makeable Electron application';
     }
 
@@ -111,14 +110,12 @@ export default async (providedOptions = {}) => {
           `electron-forge-maker-${target}`,
         ]);
         if (!maker) {
-          // eslint-disable-next-line no-throw-literal
           throw `Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`;
         }
         try {
           outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
         } catch (err) {
           if (err) {
-            // eslint-disable-next-line no-throw-literal
             throw {
               message: `An error occured while making for target: ${target}`,
               stack: `${err.message}\n${err.stack}`,

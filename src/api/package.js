@@ -44,7 +44,6 @@ export default async (providedOptions = {}) => {
 
   dir = await resolveDir(dir);
   if (!dir) {
-    // eslint-disable-next-line no-throw-literal
     throw 'Failed to locate compilable Electron application';
   }
 
@@ -52,7 +51,6 @@ export default async (providedOptions = {}) => {
 
   if (path.dirname(require.resolve(path.resolve(dir, packageJSON.main))) === dir) {
     console.error(`Entry point: ${packageJSON.main}`.red);
-    // eslint-disable-next-line no-throw-literal
     throw 'The entry point to your application ("packageJSON.name") must be in a subfolder not in the top level directory';
   }
 

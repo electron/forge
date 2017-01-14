@@ -10,7 +10,8 @@
     "linebreak-style": 0,
     "max-len": [2, 160],
     "no-console": 0,
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "no-throw-literal": 0
   },
   "parser": "babel-eslint"
 }

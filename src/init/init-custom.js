@@ -22,7 +22,6 @@ export default async (dir, template, lintStyle) => {
         templateModulePath = require(`electron-forge-template-${template}`);
         d('using local template');
       } catch (err2) {
-        // eslint-disable-next-line no-throw-literal
         throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``;
       }
     }
@@ -44,7 +43,6 @@ export default async (dir, template, lintStyle) => {
     if (templateDirectory) {
       const tmplPath = templateDirectory;
       if (!path.isAbsolute(templateDirectory)) {
-        // eslint-disable-next-line no-throw-literal
         throw `Custom template path needs to be absolute, this is an issue with "electron-forge-template-${template}"`;
       }
 

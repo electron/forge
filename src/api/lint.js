@@ -36,7 +36,6 @@ export default async (providedOptions = {}) => {
   await asyncOra('Linting Application', async (lintSpinner) => {
     dir = await resolveDir(dir);
     if (!dir) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Failed to locate lintable Electron application';
     }
 
