@@ -1,3 +1,13 @@
+### [2.7.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.0) (2017-1-14)
+
+##### Documentation Changes
+
+* **initializer:** document the built in templates ([b0eec7c3](https://github.com/electron-userland/electron-forge/commit/b0eec7c3))
+
+##### New Features
+
+* **initializer:** add userland templates to forge ([bcba06a2](https://github.com/electron-userland/electron-forge/commit/bcba06a2))
+
 ### [2.6.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.6.0) (2017-1-10)
 
 ##### Chores
