@@ -4,7 +4,6 @@ import fetch from 'node-fetch';
 import fs from 'fs-promise';
 import inquirer from 'inquirer';
 import nugget from 'nugget';
-import opn from 'opn';
 import os from 'os';
 import path from 'path';
 import pify from 'pify';
@@ -16,6 +15,7 @@ import darwinDMGInstaller from '../installers/darwin/dmg';
 import darwinZipInstaller from '../installers/darwin/zip';
 import linuxDebInstaller from '../installers/linux/deb';
 import linuxRPMInstaller from '../installers/linux/rpm';
+import win32ExeInstaller from '../installers/win32/exe';
 
 const d = debug('electron-forge:install');
 
@@ -144,7 +144,7 @@ export default async (providedOptions = {}) => {
   await asyncOra('Installing Application', async (installSpinner) => {
     const installActions = {
       win32: {
-        '.exe': async filePath => await opn(filePath, { wait: false }),
+        '.exe': win32ExeInstaller,
       },
       darwin: {
         '.zip': darwinZipInstaller,
