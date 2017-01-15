@@ -19,7 +19,7 @@ export default async (dir, template, lintStyle) => {
       d('using global template');
     } catch (err) {
       try {
-        templateModulePath = require(`electron-forge-template-${template}`);
+        templateModulePath = require.resolve(`electron-forge-template-${template}`);
         d('using local template');
       } catch (err2) {
         throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``;
