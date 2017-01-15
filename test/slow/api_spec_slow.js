@@ -4,42 +4,17 @@ import os from 'os';
 import path from 'path';
 
 import { expect } from 'chai';
+import proxyquire from 'proxyquire';
 
-import forge from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 
-// const pSpawn = async (args = [], opts = {
-//   stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
-// }) => {
-//   const child = spawn(process.execPath, [path.resolve(__dirname, '../../dist/electron-forge.js')].concat(args), opts);
-//   let stdout = '';
-//   let stderr = '';
-//   if (process.platform !== 'win32') {
-//     child.stdout.on('data', (data) => { stdout += data; });
-//     child.stderr.on('data', (data) => { stderr += data; });
-//   }
-//   return new Promise((resolve, reject) => {
-//     child.on('exit', (code) => {
-//       if (code === 0) {
-//         return resolve(stdout);
-//       }
-//       reject(new Error(stderr));
-//     });
-//   });
-// };
-
 const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
+const forge = proxyquire.noCallThru().load('../../src/api', {
+  './install': async () => {},
+});
 
-describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
-  // it('should output help', async function helpSpec() {
-  //   if (process.platform === 'win32') {
-  //     this.skip();
-  //   } else {
-  //     expect(await pSpawn(['--help'])).to.contain('Usage: electron-forge [options] [command]');
-  //   }
-  // });
-
+describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   let dirID = Date.now();
   const forLintingMethod = (lintStyle) => {
     describe(`init (with lintStyle=${lintStyle})`, () => {
@@ -127,6 +102,13 @@ describe(`electron-forge CLI (with installer=${installer.substr(12)})`, () => {
     });
 
     it('should succeed in initializing', async () => {
+      await forge.init({
+        dir,
+        template: 'react-typescript',
+      });
+    });
+
+    it('should succeed in initializing an already initialized directory', async () => {
       await forge.init({
         dir,
         template: 'react-typescript',

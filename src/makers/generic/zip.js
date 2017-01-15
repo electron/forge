@@ -24,12 +24,16 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await ensureFile(zipPath);
   switch (process.platform) {
+    // This case is tested but not on the coverage reporting platform
+    /* istanbul ignore next */
     case 'win32':
       await pify(zipFolder)(dir, zipPath);
       break;
     case 'darwin':
       await zipPromise(path.resolve(dir, `${appName}.app`), zipPath);
       break;
+    // This case is tested but not on the coverage reporting platform
+    /* istanbul ignore next */
     case 'linux':
       await zipPromise(dir, zipPath);
       break;
