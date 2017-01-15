@@ -29,6 +29,7 @@ export default async (providedOptions = {}) => {
     enableLogging: false,
     args: [],
   }, providedOptions);
+  asyncOra.interactive = interactive;
 
   await asyncOra('Locating Application', async () => {
     dir = await resolveDir(dir);
@@ -50,6 +51,7 @@ export default async (providedOptions = {}) => {
     } : {}),
   };
   await asyncOra('Launching Application', async () => {
+    /* istanbul ignore if  */
     if (process.platform === 'win32') {
       spawn(path.resolve(dir, 'node_modules/.bin/electron.cmd'), ['.'].concat(args), spawnOpts);
     } else {
