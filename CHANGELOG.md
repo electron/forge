@@ -1,3 +1,16 @@
+#### [2.7.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.1) (2017-1-15)
+
+##### Chores
+
+* **generic:**
+  * alphabetize custom eslint rules ([e7f6eeb6](https://github.com/electron-userland/electron-forge/commit/e7f6eeb6))
+  * disable the no-throw-literal eslint rule ([05f893e8](https://github.com/electron-userland/electron-forge/commit/05f893e8))
+
+##### Bug Fixes
+
+* **initializer:** handle local templates correctly ([42bf745a](https://github.com/electron-userland/electron-forge/commit/42bf745a))
+* **alias:** fix the forge alias so that it can run the make command ([725e6b06](https://github.com/electron-userland/electron-forge/commit/725e6b06))
+
 ### [2.7.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.0) (2017-1-14)
 
 ##### Documentation Changes
