@@ -124,6 +124,27 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
   });
 
+  describe.only('init (with a nonexistent templater)', () => {
+    let dir;
+
+    before(async () => {
+      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
+      dirID += 1;
+      await fs.remove(dir);
+    });
+
+    it('should fail in initializing', async () => {
+      await expect(forge.init({
+        dir,
+        template: 'does-not-exist',
+      })).to.eventually.be.rejectedWith('Failed to locate custom template');
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+    });
+  });
+
   describe('after init', () => {
     let dir;
 
