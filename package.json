@@ -101,7 +101,7 @@
     "electron-forge-template-vue": "^1.0.0",
     "electron-installer-dmg": "^0.1.2",
     "electron-packager": "^8.5.0",
-    "electron-rebuild": "^1.5.5",
+    "electron-rebuild": "^1.5.7",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
     "electron-windows-store": "^0.7.2",
     "electron-winstaller": "^2.5.0",
