@@ -1,3 +1,9 @@
+#### [2.7.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.2) (2017-1-18)
+
+##### Bug Fixes
+
+* **packager:** force upgrade to electron-rebuild 1.5.7 ([f2912db5](https://github.com/electron-userland/electron-forge/commit/f2912db5))
+
 #### [2.7.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.1) (2017-1-15)
 
 ##### Chores
