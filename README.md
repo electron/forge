@@ -29,15 +29,22 @@ electron-forge start
 
 1. Starting with Electron should be as simple as a single command.
 2. Developers shouldn't have to worry about `babel`, `browserify`, `webpack`,
-etc.  Everything should "just work" for them out of the box.
+   native module rebuilding, etc.  Everything should "just work" for them out
+   of the box.
 3. Everything from creating the project to packaging the project for release
-should be handled by one dependency in a standard way while still offering users
-maximum choice and freedom.
+   should be handled by one dependency in a standard way while still offering
+   users maximum choice and freedom.
 
-With these goals in mind, under the hood this project uses
-[`electron-compile`](https://github.com/electron/electron-compile): a tool
-that lets you use modern and futuristic languages inside Electron without
-worrying about transpiling or build tooling.
+With these goals in mind, under the hood this project uses, among others:
+
+* [`electron-compile`](https://github.com/electron/electron-compile): a tool
+  that lets you use modern and futuristic languages inside Electron without
+  worrying about transpiling or build tooling.
+* [`electron-rebuild`](https://github.com/electron/electron-rebuild):
+  Automatically recompiles native Node.js modules against the correct
+  Electron version.
+* [Electron Packager](https://github.com/electron-userland/electron-packager):
+  Customizes and bundles your Electron app to get it ready for distribution.
 
 # Usage
 
@@ -48,10 +55,10 @@ npm install -g electron-forge
 electron-forge init my-new-project
 ```
 
-This command will generate a brand new project folder and install all your NPM
-dependencies so you will be all set to go.  By default we will also install the
-`airbnb` linting modules.  If you want to follow the `standard` linting rules
-instead, use the `--lintstyle=standard` argument.
+This command will generate a brand new project folder and install all your Node
+module dependencies, so you will be all set to go.  By default we will also
+install the `airbnb` linting modules.  If you want to follow the `standard`
+linting rules instead, use the `--lintstyle=standard` argument.
 
 You can also start a project with your
 [favorite framework](https://beta.electronforge.io/templates) with the `--template`
