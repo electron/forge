@@ -1,3 +1,18 @@
+#### [2.7.3](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.3) (2017-1-25)
+
+##### New Features
+
+* **installer:** manually mount and scan a DMG file when installing for the .app ([7ea5af8a](https://github.com/electron-userland/electron-forge/commit/7ea5af8a))
+
+##### Bug Fixes
+
+* **packager:** fix resolving of afterCopy and afterExtract hook paths ([bd4df685](https://github.com/electron-userland/electron-forge/commit/bd4df685))
+* **installer:** fix install prompt when multiple compatable targets found ([9a2f36c9](https://github.com/electron-userland/electron-forge/commit/9a2f36c9))
+
+##### Code Style Changes
+
+* **generic:** remove unnecessary eslint pragmas ([23d1aa9f](https://github.com/electron-userland/electron-forge/commit/23d1aa9f))
+
 #### [2.7.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.2) (2017-1-18)
 
 ##### Bug Fixes
