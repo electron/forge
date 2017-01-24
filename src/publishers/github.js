@@ -21,7 +21,7 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
         per_page: 100,
       })).find(testRelease => testRelease.tag_name === (tag || `v${packageJSON.version}`));
       if (!release) {
-        throw { code: 404 }; // eslint-disable-line
+        throw { code: 404 };
       }
     } catch (err) {
       if (err.code === 404) {
