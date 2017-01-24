@@ -12,6 +12,7 @@ import getForgeConfig from '../util/forge-config';
 import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
+import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:packager');
@@ -81,10 +82,10 @@ export default async (providedOptions = {}) => {
       packagerSpinner = ora.ora('Packaging Application').start();
       done();
     }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item =>
-      (typeof item === 'string' ? require(item) : item)
+      (typeof item === 'string' ? requireSearch(dir, [item]) : item)
     ) : []),
     afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item =>
-      (typeof item === 'string' ? require(item) : item)
+      (typeof item === 'string' ? requireSearch(dir, [item]) : item)
     ) : [],
     dir,
     arch,
