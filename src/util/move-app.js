@@ -21,7 +21,6 @@ export default async (appPath, targetApplicationPath, spinner, copyInstead = fal
       message: `The application "${path.basename(targetApplicationPath)}" appears to already exist in /Applications. Do you want to replace it?`,
     });
     if (!confirm) {
-      // eslint-disable-next-line no-throw-literal
       throw 'Installation stopped by user';
     } else {
       spinner.start();
