@@ -13,7 +13,7 @@
     "precommit": "npm run lint",
     "commit": "git-cz",
     "docs": "esdoc",
-    "install": "tabtab install --auto",
+    "install": "node tabtab-install.js",
     "lint": "eslint src test gulpfile.babel.js",
     "prepublish": "gulp build",
     "pretest": "gulp build",
