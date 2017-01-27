@@ -1,3 +1,13 @@
+#### [2.7.4](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.4) (2017-1-27)
+
+##### Documentation Changes
+
+* **generic:** clarify what the major package dependencies are ([559956b3](https://github.com/electron-userland/electron-forge/commit/559956b3))
+
+##### Refactors
+
+* **generic:** move ora.ora to an ora helper for ease of submodule use ([ee33638a](https://github.com/electron-userland/electron-forge/commit/ee33638a))
+
 #### [2.7.3](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.3) (2017-1-25)
 
 ##### New Features
