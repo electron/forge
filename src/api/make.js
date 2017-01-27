@@ -92,7 +92,7 @@ export default async (providedOptions = {}) => {
   }
 
   const packageJSON = await readPackageJSON(dir);
-  const appName = packageJSON.productName || packageJSON.name;
+  const appName = forgeConfig.electronPackagerConfig.name || packageJSON.productName || packageJSON.name;
   const outputs = [];
 
   for (const targetArch of targetArchs) {
