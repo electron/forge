@@ -1,5 +1,5 @@
 import colors from 'colors';
-import ora from 'ora';
+import ora from './ora';
 
 class MockOra {
   succeed() { return this; }
@@ -11,7 +11,7 @@ class MockOra {
 const asyncOra = (initalOraValue, asyncFn) => {
   let fnOra = new MockOra();
   if (asyncOra.interactive) {
-    fnOra = ora.ora(initalOraValue).start();
+    fnOra = ora(initalOraValue).start();
   }
   return new Promise((resolve, reject) => {
     asyncFn(fnOra).then(() => {

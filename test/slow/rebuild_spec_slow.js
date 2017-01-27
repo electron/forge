@@ -1,14 +1,11 @@
 import fs from 'fs-promise';
 import path from 'path';
 import os from 'os';
-import ora from 'ora';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import { expect } from 'chai';
 
 import rebuild from '../../src/util/rebuild';
-
-ora.ora = ora;
 
 describe('rebuilder', () => {
   const testModulePath = path.resolve(os.tmpdir(), 'electron-forge-rebuild-test');
