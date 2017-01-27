@@ -99,7 +99,7 @@
     "electron-forge-template-react": "^1.0.0",
     "electron-forge-template-react-typescript": "^1.0.0",
     "electron-forge-template-vue": "^1.0.0",
-    "electron-installer-dmg": "^0.1.2",
+    "electron-installer-dmg": "^0.2.0",
     "electron-packager": "^8.5.0",
     "electron-rebuild": "^1.5.7",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
