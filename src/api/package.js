@@ -5,10 +5,10 @@ import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
 import packager from 'electron-packager';
-import ora from 'ora';
 
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
+import ora from '../util/ora';
 import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
@@ -40,7 +40,7 @@ export default async (providedOptions = {}) => {
     platform: process.platform,
   }, providedOptions);
 
-  let prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
+  let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
   let prepareCounter = 0;
 
   dir = await resolveDir(dir);
@@ -66,7 +66,7 @@ export default async (providedOptions = {}) => {
       if (packagerSpinner) {
         packagerSpinner.succeed();
         prepareCounter += 1;
-        prepareSpinner = ora.ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
+        prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
       await fs.remove(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       const bins = await pify(glob)(path.join(buildPath, '**/.bin/**/*'));
@@ -79,7 +79,7 @@ export default async (providedOptions = {}) => {
       await packagerCompileHook(dir, ...args);
     }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
-      packagerSpinner = ora.ora('Packaging Application').start();
+      packagerSpinner = ora('Packaging Application').start();
       done();
     }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item =>
       (typeof item === 'string' ? requireSearch(dir, [item]) : item)

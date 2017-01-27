@@ -2,12 +2,12 @@ import debug from 'debug';
 import fs from 'fs-promise';
 import glob from 'glob';
 import resolvePackage from 'resolve-package';
-import ora from 'ora';
 import path from 'path';
 
 import { copy } from './init-starter-files';
 import asyncOra from '../util/ora-handler';
 import installDepList from '../util/install-dependencies';
+import ora from '../util/ora';
 
 const d = debug('electron-forge:init:custom');
 
@@ -57,6 +57,6 @@ export default async (dir, template, lintStyle) => {
   });
 
   if (typeof templateModule.postCopy === 'function') {
-    await Promise.resolve(templateModule.postCopy(dir, ora.ora, lintStyle));
+    await Promise.resolve(templateModule.postCopy(dir, ora, lintStyle));
   }
 };
