@@ -40,7 +40,7 @@ describe('asyncOra', () => {
     }).default;
   });
 
-  it('should create an ora with an inital value', () => {
+  it('should create an ora with an initial value', () => {
     asyncOra('say this first', async () => {});
     expect(currentOra).to.not.equal(undefined);
     expect(currentOra.text).to.equal('say this first');
