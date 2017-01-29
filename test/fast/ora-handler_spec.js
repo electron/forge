@@ -62,7 +62,7 @@ describe('asyncOra', () => {
 
   it('should succeed the ora if the async fn passes', async () => {
     await asyncOra('random text', async () => {
-      if (2 + 2 === 5) console.error('Big brother is at it again');
+      if (2 + 2 === 5) console.error('Big brother is at it again'); // eslint-disable-line
     });
     expect(currentOra.succeeded).to.equal(true);
     expect(currentOra.failed).to.equal(false);
