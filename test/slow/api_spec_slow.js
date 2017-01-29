@@ -124,7 +124,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
   });
 
-  describe.only('init (with a nonexistent templater)', () => {
+  describe('init (with a nonexistent templater)', () => {
     let dir;
 
     before(async () => {

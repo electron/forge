@@ -50,6 +50,7 @@
     "eslint": "^3.7.1",
     "eslint-config-airbnb-base": "^8.0.0",
     "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-mocha": "^4.8.0",
     "fetch-mock": "^5.8.1",
     "generate-changelog": "^1.0.2",
     "gulp": "^3.9.1",
