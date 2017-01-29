@@ -3,7 +3,7 @@
     "mocha": true
   },
   "rules": {
-    "import/no-extraneous-dependencies": 0,
-    "class-methods-use-this": 0
+    "class-methods-use-this": 0,
+    "import/no-extraneous-dependencies": 0
   }
 }
