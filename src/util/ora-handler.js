@@ -8,10 +8,10 @@ class MockOra {
   stop() { return this; }
 }
 
-const asyncOra = (initalOraValue, asyncFn, processExitFn = process.exit) => {
+const asyncOra = (initialOraValue, asyncFn, processExitFn = process.exit) => {
   let fnOra = new MockOra();
   if (asyncOra.interactive) {
-    fnOra = ora(initalOraValue).start();
+    fnOra = ora(initialOraValue).start();
   }
   return new Promise((resolve, reject) => {
     asyncFn(fnOra).then(() => {
