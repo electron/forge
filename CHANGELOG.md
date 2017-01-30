@@ -1,3 +1,29 @@
+#### [2.7.5](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.5) (2017-1-29)
+
+##### Chores
+
+* **tests:** add eslint-plugin-mocha ([74397232](https://github.com/electron-userland/electron-forge/commit/74397232))
+* **generic:** update electron-installer-dmg to version 0.2.0 ([aa8034b1](https://github.com/electron-userland/electron-forge/commit/aa8034b1))
+
+##### Bug Fixes
+
+* **tests:** update tests due to changes in #101 ([912b4f69](https://github.com/electron-userland/electron-forge/commit/912b4f69))
+* **maker:** detect out path of package step correctly ([6d15c62d](https://github.com/electron-userland/electron-forge/commit/6d15c62d))
+* **tabtab:** dont install tabtab in a development environment and ignore tabtab install errors ([f0cb0417](https://github.com/electron-userland/electron-forge/commit/f0cb0417))
+
+##### Code Style Changes
+
+* **generic:** fixed typos ([2f869d81](https://github.com/electron-userland/electron-forge/commit/2f869d81))
+* **tests:** ignore intentionally wrong code in test ([f01f9907](https://github.com/electron-userland/electron-forge/commit/f01f9907))
+
+##### Tests
+
+* **initializer:** add nonexistent template test ([6f26c64f](https://github.com/electron-userland/electron-forge/commit/6f26c64f))
+* **generic:** increase test coverage of the init API ([2c9caddf](https://github.com/electron-userland/electron-forge/commit/2c9caddf))
+* **starter:** add test coverage for starter ([0d2f5712](https://github.com/electron-userland/electron-forge/commit/0d2f5712))
+* **installer:** add test coverage for the installer ([4049e31c](https://github.com/electron-userland/electron-forge/commit/4049e31c))
+* **tests:** increase test coverage on util modules ([6c63aafa](https://github.com/electron-userland/electron-forge/commit/6c63aafa))
+
 #### [2.7.4](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.4) (2017-1-27)
 
 ##### Documentation Changes
