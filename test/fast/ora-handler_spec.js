@@ -36,7 +36,7 @@ describe('asyncOra', () => {
       return currentOra;
     };
     asyncOra = proxyquire.noCallThru().load('../../src/util/ora-handler', {
-      ora: { ora: MockOra },
+      './ora': MockOra,
     }).default;
   });
 
