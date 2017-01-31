@@ -18,6 +18,7 @@ const d = debug('electron-forge:import');
  * @typedef {Object} ImportOptions
  * @property {string} [dir=process.cwd()] The path to the app to be imported
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
+ * @property {boolean} [updateScripts=true] Whether to update the modules package.json scripts to be electron-forge commands
  */
 
 /**
@@ -31,9 +32,10 @@ const d = debug('electron-forge:import');
  * @return {Promise} Will resolve when the import process is complete
  */
 export default async (providedOptions = {}) => {
-  const { dir, interactive } = Object.assign({
+  const { dir, interactive, updateScripts } = Object.assign({
     dir: process.cwd(),
     interactive: false,
+    updateScripts: true,
   }, providedOptions);
   asyncOra.interactive = interactive;
 
@@ -98,7 +100,7 @@ export default async (providedOptions = {}) => {
     } else if (buildToolPackages[key]) {
       const explanation = buildToolPackages[key];
       // eslint-disable-next-line max-len
-      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`);
+      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`, updateScripts);
 
       if (shouldRemoveDependency) {
         delete packageJSON.dependencies[key];
