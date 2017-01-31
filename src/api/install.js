@@ -100,7 +100,7 @@ export default async (providedOptions = {}) => {
     }
   });
 
-  console.info(`Found latest release${prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
+  if (interactive) console.info(`Found latest release${prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
 
   let targetAsset = possibleAssets[0];
   if (possibleAssets.length > 1) {

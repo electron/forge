@@ -49,19 +49,18 @@ export default async (providedOptions = {}) => {
   });
 
   if (platform && platform !== process.platform && !(process.platform === 'darwin' && platform === 'mas')) {
-    console.error('You can not "make" for a platform other than your systems platform'.red);
-    process.exit(1);
+    throw 'You can not "make" for a platform other than your systems platform';
   }
 
   if (!skipPackage) {
-    console.info('We need to package your application before we can make it'.green);
+    if (interactive) console.info('We need to package your application before we can make it'.green);
     await packager({
       dir,
       interactive,
       arch,
       platform,
     });
-  } else {
+  } else if (interactive) {
     console.warn('WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
 
@@ -73,7 +72,7 @@ export default async (providedOptions = {}) => {
     targets = overrideTargets;
   }
 
-  console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
+  if (interactive) console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
 
   let targetArchs = [declaredArch];
   if (declaredArch === 'all') {
