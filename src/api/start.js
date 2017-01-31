@@ -50,12 +50,17 @@ export default async (providedOptions = {}) => {
       ELECTRON_ENABLE_STACK_DUMPING: true,
     } : {}),
   };
+
+  let spawned;
+
   await asyncOra('Launching Application', async () => {
     /* istanbul ignore if  */
     if (process.platform === 'win32') {
-      spawn(path.resolve(dir, 'node_modules/.bin/electron.cmd'), ['.'].concat(args), spawnOpts);
+      spawned = spawn(path.resolve(dir, 'node_modules/.bin/electron.cmd'), ['.'].concat(args), spawnOpts);
     } else {
-      spawn(path.resolve(dir, 'node_modules/.bin/electron'), ['.'].concat(args), spawnOpts);
+      spawned = spawn(path.resolve(dir, 'node_modules/.bin/electron'), ['.'].concat(args), spawnOpts);
     }
   });
+
+  return spawned;
 };
