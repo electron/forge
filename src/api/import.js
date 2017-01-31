@@ -152,21 +152,21 @@ export default async (providedOptions = {}) => {
         child.on('exit', () => resolve());
       });
     });
-
-    await asyncOra('Installing dependencies', async () => {
-      d('deleting old dependencies forcefully');
-      await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
-      await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-      await fs.remove(path.resolve(dir, 'node_modules', electronName));
-
-      d('installing dependencies');
-      await installDepList(dir, deps);
-      d('installing devDependencies');
-      await installDepList(dir, devDeps, true);
-      d('installing electron-prebuilt-compile');
-      await installDepList(dir, [`electron-prebuilt-compile@${electronVersion}`], false, true);
-    });
   }
+
+  await asyncOra('Installing dependencies', async () => {
+    d('deleting old dependencies forcefully');
+    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
+    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
+    await fs.remove(path.resolve(dir, 'node_modules', electronName));
+
+    d('installing dependencies');
+    await installDepList(dir, deps);
+    d('installing devDependencies');
+    await installDepList(dir, devDeps, true);
+    d('installing electron-prebuilt-compile');
+    await installDepList(dir, [`electron-prebuilt-compile@${electronVersion || 'latest'}`], false, true);
+  });
 
   packageJSON = await readPackageJSON(dir);
 
