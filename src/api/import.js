@@ -39,22 +39,21 @@ export default async (providedOptions = {}) => {
 
   d(`Attempting to import project in: ${dir}`);
   if (!await fs.exists(dir) || !await fs.exists(path.resolve(dir, 'package.json'))) {
-    console.error(`We couldn't find a project in: ${dir}`.red);
-    process.exit(1);
+    throw `We couldn't find a project in: ${dir}`;
   }
 
   // eslint-disable-next-line max-len
   const confirm = await confirmIfInteractive(interactive, `WARNING: We will now attempt to import: "${dir}".  This will involve modifying some files, are you sure you want to continue?`);
 
   if (!confirm) {
-    process.exit(1);
+    process.exit(0);
   }
 
   await initGit(dir);
 
   let packageJSON = await readPackageJSON(dir);
   if (packageJSON.config && packageJSON.config.forge) {
-    console.warn('It looks like this project is already configured for "electron-forge"'.green);
+    if (interactive) console.warn('It looks like this project is already configured for "electron-forge"'.green);
     const shouldContinue = await confirmIfInteractive(interactive, 'Are you sure you want to continue?');
 
     if (!shouldContinue) {
@@ -205,10 +204,11 @@ export default async (providedOptions = {}) => {
       }), null, 2));
     });
 
-    console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow);
+    if (interactive) console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow); // eslint-disable-line max-len
   }
 
-  console.info(`
+  if (interactive) {
+    console.info(`
 
 We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
 Nothing much will have changed but we added the ${'"electron-prebuilt-compile"'.cyan} dependency.  This is \
@@ -221,4 +221,5 @@ Also please note if you are using \`preload\` scripts you need to follow the ste
 at https://github.com/electron-userland/electron-forge/wiki/Using-%27preload%27-scripts
 
 Thanks for using ${'"electron-forge"'.green}!!!`);
+  }
 };
