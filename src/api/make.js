@@ -49,7 +49,7 @@ export default async (providedOptions = {}) => {
   });
 
   if (platform && platform !== process.platform && !(process.platform === 'darwin' && platform === 'mas')) {
-    throw 'You can not "make" for a platform other than your systems platform';
+    throw "You cannot run 'make' for a platform other than your system's platform";
   }
 
   if (!skipPackage) {
