@@ -8,6 +8,7 @@ import initGit from '../init/init-git';
 import { deps, devDeps } from '../init/init-npm';
 
 import asyncOra from '../util/ora-handler';
+import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
 import confirmIfInteractive from '../util/confirm-if-interactive';
@@ -55,7 +56,7 @@ export default async (providedOptions = {}) => {
 
   let packageJSON = await readPackageJSON(dir);
   if (packageJSON.config && packageJSON.config.forge) {
-    if (interactive) console.warn('It looks like this project is already configured for "electron-forge"'.green);
+    warn(interactive, 'It looks like this project is already configured for "electron-forge"'.green);
     const shouldContinue = await confirmIfInteractive(interactive, 'Are you sure you want to continue?');
 
     if (!shouldContinue) {
@@ -206,11 +207,10 @@ export default async (providedOptions = {}) => {
       }), null, 2));
     });
 
-    if (interactive) console.info('NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2015` and `react` presets'.yellow); // eslint-disable-line max-len
+    info(interactive, 'NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2016` and `react` presets'.yellow);
   }
 
-  if (interactive) {
-    console.info(`
+  info(interactive, `
 
 We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
 Nothing much will have changed but we added the ${'"electron-prebuilt-compile"'.cyan} dependency.  This is \
@@ -223,5 +223,4 @@ Also please note if you are using \`preload\` scripts you need to follow the ste
 at https://github.com/electron-userland/electron-forge/wiki/Using-%27preload%27-scripts
 
 Thanks for using ${'"electron-forge"'.green}!!!`);
-  }
 };

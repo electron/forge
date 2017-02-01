@@ -10,6 +10,7 @@ import pify from 'pify';
 import semver from 'semver';
 
 import asyncOra from '../util/ora-handler';
+import { info } from '../util/messages';
 
 import darwinDMGInstaller from '../installers/darwin/dmg';
 import darwinZipInstaller from '../installers/darwin/zip';
@@ -100,7 +101,7 @@ export default async (providedOptions = {}) => {
     }
   });
 
-  if (interactive) console.info(`Found latest release${prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
+  info(interactive, `Found latest release${prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
 
   let targetAsset = possibleAssets[0];
   if (possibleAssets.length > 1) {
