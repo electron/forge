@@ -5,6 +5,7 @@ import path from 'path';
 import asyncOra from '../util/ora-handler';
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
+import { info, warn } from '../util/messages';
 import readPackageJSON from '../util/read-package-json';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
@@ -53,15 +54,15 @@ export default async (providedOptions = {}) => {
   }
 
   if (!skipPackage) {
-    if (interactive) console.info('We need to package your application before we can make it'.green);
+    info(interactive, 'We need to package your application before we can make it'.green);
     await packager({
       dir,
       interactive,
       arch,
       platform,
     });
-  } else if (interactive) {
-    console.warn('WARNING: Skipping the packaging step, this could result in an out of date build'.red);
+  } else {
+    warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
 
   const declaredArch = arch;
@@ -72,7 +73,7 @@ export default async (providedOptions = {}) => {
     targets = overrideTargets;
   }
 
-  if (interactive) console.info('Making for the following targets:', `${targets.join(', ')}`.cyan);
+  info(interactive, 'Making for the following targets:', `${targets.join(', ')}`.cyan);
 
   let targetArchs = [declaredArch];
   if (declaredArch === 'all') {
