@@ -1,3 +1,27 @@
+### [2.8.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.0) (2017-2-2)
+
+##### Chores
+
+* **gitignore:** ignore npm-debug.log files ([06b824ee](https://github.com/electron-userland/electron-forge/commit/06b824ee))
+
+##### New Features
+
+* **importer:** allow the implementer to decide whether to override scripts or not ([f85e194f](https://github.com/electron-userland/electron-forge/commit/f85e194f))
+* **starter:** resolve start api usage with a handle to the spawned process ([b5ba30e3](https://github.com/electron-userland/electron-forge/commit/b5ba30e3))
+
+##### Bug Fixes
+
+* **importer:** if no electron was found install the latest version by default ([c8b12fbf](https://github.com/electron-userland/electron-forge/commit/c8b12fbf))
+* **generic:** make all process.exit and console calls respect the interactive setting ([a3e43315](https://github.com/electron-userland/electron-forge/commit/a3e43315))
+
+##### Refactors
+
+* **generic:** add wrappers for console.info and console.warn ([f223df85](https://github.com/electron-userland/electron-forge/commit/f223df85))
+
+##### Tests
+
+* **starter:** add test for returned childProcess.spawn ([f2c128e4](https://github.com/electron-userland/electron-forge/commit/f2c128e4))
+
 #### [2.7.5](https://github.com/electron-userland/electron-forge/releases/tag/v2.7.5) (2017-1-29)
 
 ##### Chores
