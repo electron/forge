@@ -18,6 +18,7 @@ export default async (dir) => {
   }
   forgeConfig = Object.assign({
     make_targets: {},
+    publish_targets: {},
     electronPackagerConfig: {},
     electronWinstallerConfig: {},
     electronInstallerDebian: {},
@@ -30,6 +31,12 @@ export default async (dir) => {
     mas: ['zip'],
     linux: ['deb', 'rpm'],
   }, forgeConfig.make_targets);
+  forgeConfig.publish_targets = Object.assign({
+    win32: ['github'],
+    darwin: ['github'],
+    mas: ['github'],
+    linux: ['github'],
+  }, forgeConfig.publish_targets);
 
   const templateObj = Object.assign({}, packageJSON, { year: (new Date()).getFullYear() });
   const template = (obj) => {
