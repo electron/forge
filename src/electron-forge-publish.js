@@ -31,7 +31,7 @@ import { getMakeOptions } from './electron-forge-make';
     authToken: program.authToken,
     tag: program.tag,
   };
-  if (program.target) publishOpts.target = program.target;
+  if (program.target) publishOpts.target = program.target.split(',');
 
   publishOpts.makeOptions = getMakeOptions();
 

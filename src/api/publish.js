@@ -31,8 +31,11 @@ export default async (providedOptions = {}) => {
     interactive: false,
     tag: null,
     makeOptions: {},
-    target: 'github',
+    target: null,
   }, providedOptions);
+  asyncOra.interactive = interactive;
+  // FIXME(MarshallOfSound): Change the method param to publishTargets in the next major bump
+  let publishTargets = target;
 
   const makeResults = await make(Object.assign({
     dir,
@@ -53,16 +56,25 @@ export default async (providedOptions = {}) => {
 
   const forgeConfig = await getForgeConfig(dir);
 
-  let publisher;
-  await asyncOra(`Resolving publish target: ${`${target}`.cyan}`, async () => {
-    publisher = requireSearch(__dirname, [
-      `../publishers/${target}.js`,
-      `electron-forge-publisher-${target}`,
-    ]);
-    if (!publisher) {
-      throw `Could not find a publish target with the name: ${target}`;
-    }
-  });
+  if (publishTargets === null) {
+    publishTargets = forgeConfig.publish_targets[makeOptions.platform || process.platform];
+  } else if (typeof publishTargets === 'string') {
+    // FIXME(MarshallOfSound): Remove this fallback string typeof check in the next major bump
+    publishTargets = [publishTargets];
+  }
 
-  await publisher(artifacts, packageJSON, forgeConfig, authToken, tag);
+  for (const publishTarget of publishTargets) {
+    let publisher;
+    await asyncOra(`Resolving publish target: ${`${publishTarget}`.cyan}`, async () => {
+      publisher = requireSearch(__dirname, [
+        `../publishers/${publishTarget}.js`,
+        `electron-forge-publisher-${publishTarget}`,
+      ]);
+      if (!publisher) {
+        throw `Could not find a publish target with the name: ${publishTarget}`;
+      }
+    });
+
+    await publisher(artifacts, packageJSON, forgeConfig, authToken, tag);
+  }
 };

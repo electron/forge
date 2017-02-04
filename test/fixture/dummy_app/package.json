@@ -21,7 +21,11 @@
       "electronInstallerRedhat": {},
       "electronInstallerDebian": {},
       "electronWinstallerConfig": { "windows": "magic" },
-      "windowsStoreConfig": { "packageName": "test" }
+      "windowsStoreConfig": { "packageName": "test" },
+      "github_repository": {
+        "owner": "dummy",
+        "name": "project"
+      }
     }
   },
   "devDependencies": {
