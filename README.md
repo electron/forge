@@ -178,6 +178,18 @@ the JS file method mentioned above then you can use functions normally.
 |-------------|-------------|-----------------|
 | github      | Makes a new release for the current version (if required) and uploads the make artifacts as release assets | `process.env.GITHUB_TOKEN` - A personal access token with access to your releases <br />`forge.github_repository.owner` - The owner of the GitHub repository<br />`forge.github_repository.name` - The name of the GitHub repository <br />`forge.github_repository.draft` - Create the release as a draft, defaults to `true` <br />`forge.github_repository.prerelease` - Identify the release as a prerelease, defaults to `false` |
 
+For example:
+
+```javascript
+{
+  // Assume the GitHub repository is at https://github.com/username/repo
+  "github_repository": {
+    "owner": "username",
+    "name": "repo"
+  }
+}
+```
+
 ## Custom `make` and `publish` targets
 
 You can make your own custom targets for the `make` and `publish` targets.  If you publish them as `electron-forge-publisher-{name}` or `electron-forge-maker-{name}` you can then just specify `{name}` as your make / publish target.  The API for each is documented below.
