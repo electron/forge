@@ -14,7 +14,7 @@ export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
 export const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
-  'eslint-plugin-jsx-a11y', 'eslint-plugin-react'];
+  'eslint-plugin-jsx-a11y@^3.0.0', 'eslint-plugin-react'];
 
 export default async (dir, lintStyle) => {
   await asyncOra('Initializing NPM Module', async () => {

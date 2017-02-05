@@ -15,6 +15,12 @@ const defaults = {
   electronWinstallerConfig: {},
   electronInstallerDebian: {},
   electronInstallerRedhat: {},
+  publish_targets: {
+    win32: ['github'],
+    darwin: ['github'],
+    linux: ['github'],
+    mas: ['github'],
+  },
 };
 
 describe('forge-config', () => {
@@ -22,6 +28,10 @@ describe('forge-config', () => {
     expect(await findConfig(path.resolve(__dirname, '../fixture/dummy_app'))).to.be.deep.equal(Object.assign({}, defaults, {
       electronWinstallerConfig: { windows: 'magic' },
       windowsStoreConfig: { packageName: 'test' },
+      github_repository: {
+        name: 'project',
+        owner: 'dummy',
+      },
     }));
   });
 
