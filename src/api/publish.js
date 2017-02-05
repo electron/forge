@@ -1,6 +1,7 @@
 import 'colors';
 
 import asyncOra from '../util/ora-handler';
+import deprecate from '../util/deprecate';
 import getForgeConfig from '../util/forge-config';
 import readPackageJSON from '../util/read-package-json';
 import requireSearch from '../util/require-search';
@@ -60,6 +61,7 @@ export default async (providedOptions = {}) => {
     publishTargets = forgeConfig.publish_targets[makeOptions.platform || process.platform];
   } else if (typeof publishTargets === 'string') {
     // FIXME(MarshallOfSound): Remove this fallback string typeof check in the next major bump
+    deprecate('publish target as a string').replaceWith('an array of publish targets');
     publishTargets = [publishTargets];
   }
 
