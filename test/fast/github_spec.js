@@ -56,5 +56,12 @@ describe('GitHub', () => {
       gh.getGitHub();
       expect(gitHubAuthSpy.callCount).to.equal(0);
     });
+
+    it('should throw an exception if a token is required', () => {
+      expect(() => {
+        const gh = new GitHub(null, true);
+        gh.getGitHub();
+      }).to.throw('Please set GITHUB_TOKEN in your environment to access these features');
+    });
   });
 });

@@ -1,11 +1,13 @@
 import GitHubAPI from 'github';
 
 export default class GitHub {
-  constructor(authToken) {
+  constructor(authToken, requireAuth) {
     if (authToken) {
       this.token = authToken;
     } else if (process.env.GITHUB_TOKEN) {
       this.token = process.env.GITHUB_TOKEN;
+    } else if (requireAuth) {
+      throw 'Please set GITHUB_TOKEN in your environment to access these features';
     }
   }
 
