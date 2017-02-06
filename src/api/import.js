@@ -101,7 +101,7 @@ export default async (providedOptions = {}) => {
     } else if (buildToolPackages[key]) {
       const explanation = buildToolPackages[key];
       // eslint-disable-next-line max-len
-      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`, updateScripts);
+      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`);
 
       if (shouldRemoveDependency) {
         delete packageJSON.dependencies[key];
@@ -116,7 +116,7 @@ export default async (providedOptions = {}) => {
   const updatePackageScript = async (scriptName, newValue) => {
     if (packageJSON.scripts[scriptName] !== newValue) {
       // eslint-disable-next-line max-len
-      const shouldUpdate = await confirmIfInteractive(interactive, `Do you want us to update the "${scriptName}" script to instead call the electron-forge task "${newValue}"`);
+      const shouldUpdate = await confirmIfInteractive(interactive, `Do you want us to update the "${scriptName}" script to instead call the electron-forge task "${newValue}"`, updateScripts);
       if (shouldUpdate) {
         packageJSON.scripts[scriptName] = newValue;
       }
