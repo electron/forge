@@ -9,7 +9,7 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
     throw 'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info'; // eslint-disable-line
   }
 
-  const github = new GitHub(authToken);
+  const github = new GitHub(authToken, true);
 
   let release;
   await asyncOra('Searching for target Release', async () => {
