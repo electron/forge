@@ -161,7 +161,10 @@ export default async (providedOptions = {}) => {
     d('deleting old dependencies forcefully');
     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-    await fs.remove(path.resolve(dir, 'node_modules', electronName));
+
+    if (electronName) {
+      await fs.remove(path.resolve(dir, 'node_modules', electronName));
+    }
 
     d('installing dependencies');
     await installDepList(dir, deps);
