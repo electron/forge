@@ -5,7 +5,7 @@ import path from 'path';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import initGit from '../init/init-git';
-import { deps, devDeps } from '../init/init-npm';
+import { deps, devDeps, exactDevDeps } from '../init/init-npm';
 
 import asyncOra from '../util/ora-handler';
 import { info, warn } from '../util/messages';
@@ -168,10 +168,18 @@ export default async (providedOptions = {}) => {
 
     d('installing dependencies');
     await installDepList(dir, deps);
+
     d('installing devDependencies');
     await installDepList(dir, devDeps, true);
-    d('installing electron-prebuilt-compile');
-    await installDepList(dir, [`electron-prebuilt-compile@${electronVersion || 'latest'}`], false, true);
+
+    d('installing exactDevDependencies');
+    await installDepList(dir, exactDevDeps.map((dep) => {
+      if (dep === 'electron-prebuild-compile') {
+        return `${dep}@${electronVersion || 'latest'}`;
+      }
+
+      return dep;
+    }), true, true);
   });
 
   packageJSON = await readPackageJSON(dir);
