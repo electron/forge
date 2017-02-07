@@ -54,7 +54,7 @@ export default async (providedOptions = {}) => {
 
   if (path.dirname(require.resolve(path.resolve(dir, packageJSON.main))) === dir) {
     console.error(`Entry point: ${packageJSON.main}`.red);
-    throw 'The entry point to your application ("packageJSON.name") must be in a subfolder not in the top level directory';
+    throw 'The entry point to your application ("packageJSON.main") must be in a subfolder not in the top level directory';
   }
 
   const forgeConfig = await getForgeConfig(dir);
