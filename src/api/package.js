@@ -41,7 +41,7 @@ export default async (providedOptions = {}) => {
     platform: process.platform,
   }, providedOptions);
 
-  const outDir = providedOptions.outDir || `${dir}/out`;
+  const outDir = providedOptions.outDir || path.resolve(dir, 'out');
   let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
   let prepareCounter = 0;
 
