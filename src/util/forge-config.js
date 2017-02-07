@@ -3,6 +3,30 @@ import path from 'path';
 import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
 
+const underscoreCase = str => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+
+const proxify = (object, envPrefix) => {
+  const newObject = {};
+
+  Object.keys(object).forEach((key) => {
+    if (typeof object[key] === 'object' && !Array.isArray(object[key])) {
+      newObject[key] = proxify(object[key], `${envPrefix}_${underscoreCase(key)}`);
+    } else {
+      newObject[key] = object[key];
+    }
+  });
+
+  return new Proxy(newObject, {
+    get(target, name) {
+      if (target.hasOwnProperty(name)) return target[name]; // eslint-disable-line no-prototype-builtins
+      if (typeof name === 'string') {
+        const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
+        if (envValue) return envValue;
+      }
+    },
+  });
+};
+
 export default async (dir) => {
   const packageJSON = await readPackageJSON(dir);
   let forgeConfig = packageJSON.config.forge;
@@ -24,6 +48,8 @@ export default async (dir) => {
     electronInstallerDebian: {},
     electronInstallerDMG: {},
     electronInstallerRedhat: {},
+    s3: {},
+    github_repository: {},
   }, forgeConfig);
   forgeConfig.make_targets = Object.assign({
     win32: ['squirrel'],
@@ -54,5 +80,5 @@ export default async (dir) => {
 
   template(forgeConfig);
 
-  return forgeConfig;
+  return proxify(forgeConfig, 'ELECTRON_FORGE');
 };
