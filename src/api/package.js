@@ -23,6 +23,7 @@ const d = debug('electron-forge:packager');
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {string} [arch=process.arch] The target arch
  * @property {string} [platform=process.platform] The target platform.  NOTE: This is limited to be the current platform at the moment
+ * @property {string} [outDir=`${dir}/out`] The path to the output directory for packaged apps
  */
 
 /**
@@ -40,6 +41,7 @@ export default async (providedOptions = {}) => {
     platform: process.platform,
   }, providedOptions);
 
+  const outDir = providedOptions.outDir || `${dir}/out`;
   let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
   let prepareCounter = 0;
 
@@ -97,7 +99,7 @@ export default async (providedOptions = {}) => {
     dir,
     arch,
     platform,
-    out: path.resolve(dir, 'out'),
+    out: outDir,
     electronVersion: packageJSON.devDependencies['electron-prebuilt-compile'],
   });
   packageOpts.quiet = true;
