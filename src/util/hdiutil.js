@@ -32,7 +32,7 @@ export const mountImage = async (filePath) => {
 
   return {
     mountPath,
-    iamgePath: filePath,
+    imagePath: filePath,
   };
 };
 
