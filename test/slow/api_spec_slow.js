@@ -167,6 +167,16 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       await forge.package({ dir });
     });
 
+    it('can package to outDir without errors', async () => {
+      const outDir = `${dir}/foo`;
+
+      expect(fs.existsSync(outDir)).to.equal(false);
+
+      await forge.package({ dir, outDir });
+
+      expect(fs.existsSync(outDir)).to.equal(true);
+    });
+
     it('can package without errors with native pre-gyp deps installed', async () => {
       await installDeps(dir, ['ref']);
       await forge.package({ dir });
@@ -206,6 +216,10 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
 
           it('successfully makes with default config', async () => {
             await forge.make({ dir, skipPackage: true });
+          });
+
+          it('successfully makes to outDir with default config', async () => {
+            await forge.make({ dir, outDir: `${dir}/foo`, skipPackage: true });
           });
         });
       });
