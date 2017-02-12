@@ -24,8 +24,8 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
 
   const client = s3.createClient({
     s3Client: new AWS.S3({
-      accessKeyId: s3Config.accessKeyId,
-      secretAccessKey: s3Config.secretAccessKey,
+      accessKeyId: s3Config.accessKeyId || process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: s3Config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
     }),
   });
   client.s3.addExpect100Continue = () => {};
