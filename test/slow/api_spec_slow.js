@@ -167,9 +167,14 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
 
     describe('after package', () => {
+      let resourcesPath = 'electron-forge-test.app/Contents/Resources';
+      if (process.platform !== 'darwin') {
+        resourcesPath = 'resources';
+      }
+
       it('should have deleted the forge config from the packaged app', async () => {
         const cleanPackageJSON = await readPackageJSON(
-          path.resolve(dir, 'out', `electron-forge-test-${process.platform}-${process.arch}`, 'electron-forge-test.app', 'Contents', 'Resources', 'app')
+          path.resolve(dir, 'out', `electron-forge-test-${process.platform}-${process.arch}`, resourcesPath, 'app')
         );
         expect(cleanPackageJSON).to.not.have.deep.property('config.forge');
       });
