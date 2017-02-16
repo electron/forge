@@ -81,6 +81,13 @@ export default async (providedOptions = {}) => {
       await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
       packagerSpinner = ora('Packaging Application').start();
       done();
+    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      const copiedPackageJSON = await readPackageJSON(buildPath);
+      if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
+        delete copiedPackageJSON.config.forge;
+      }
+      await fs.writeFile(path.resolve(buildPath, 'package.json'), JSON.stringify(copiedPackageJSON, null, 2));
+      done();
     }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item =>
       (typeof item === 'string' ? requireSearch(dir, [item]) : item)
     ) : []),
