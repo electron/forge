@@ -152,6 +152,9 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
       dirID += 1;
       await forge.init({ dir });
+      const newPackageJSON = await readPackageJSON(dir);
+      newPackageJSON.config.forge.electronPackagerConfig.asar = false;
+      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(newPackageJSON, null, 2));
     });
 
     it('can package without errors', async () => {
@@ -164,6 +167,18 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
 
     describe('after package', () => {
+      it('should have deleted the forge config from the packaged app', async () => {
+        const cleanPackageJSON = await readPackageJSON(
+          path.resolve(dir, 'out', `electron-forge-test-${process.platform}-${process.arch}`, 'electron-forge-test.app', 'Contents', 'Resources', 'app')
+        );
+        expect(cleanPackageJSON).to.not.have.deep.property('config.forge');
+      });
+
+      it('should not affect the actual forge config', async () => {
+        const normalPackageJSON = await readPackageJSON(dir);
+        expect(normalPackageJSON).to.have.deep.property('config.forge');
+      });
+
       let targets = [];
       if (fs.existsSync(path.resolve(__dirname, `../../src/makers/${process.platform}`))) {
         targets = fs.readdirSync(path.resolve(__dirname, `../../src/makers/${process.platform}`)).map(file => path.parse(file).name);
