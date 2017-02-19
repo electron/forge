@@ -3,7 +3,7 @@
 
 <!-- For bugs and questions, please answer these questions to the best of your ability. -->
 
-**Console output when you run `electron-forge` with the environment variable `DEBUG=electron-forge:*`. (Instructions on how to do so [here](https://www.npmjs.com/package/debug#usage). Please include the stack trace if one exists.**
+**Console output when you run `electron-forge` with the environment variable `DEBUG=electron-forge:*`. (Instructions on how to do so [here](https://www.npmjs.com/package/debug#usage)). Please include the stack trace if one exists.**
 
 ```
 Put the console output here
