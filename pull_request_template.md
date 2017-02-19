@@ -1,18 +1,13 @@
-**Have you read the [section in CONTRIBUTING.md about pull requests](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md#filing-pull-requests)?**
+<!--
+Thanks for filing a pull request!
+Please check off all of the steps as they are completed by replacing [ ] with [x].
+-->
 
-
-
-**Are your changes appropriately documented?**
-
-
-
-**Do your changes have sufficient test coverage?**
-
-
-
-**Does the testsuite pass successfully on your local machine?**
-
-
+* [ ] I have read the [contribution documentation](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) for this project.
+* [ ] I agree to follow the [code of conduct](https://github.com/electron/electron/blob/master/CODE_OF_CONDUCT.md) that this project follows, as appropriate.
+* [ ] The changes are appropriately documented (if applicable).
+* [ ] The changes have sufficient test coverage (if applicable).
+* [ ] The testsuite passes successfully on my local machine (if applicable).
 
 **Summarize your changes:**
 
