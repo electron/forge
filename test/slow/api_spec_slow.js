@@ -170,11 +170,11 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     it('can package to outDir without errors', async () => {
       const outDir = `${dir}/foo`;
 
-      expect(fs.existsSync(outDir)).to.equal(false);
+      expect(await fs.exists(outDir)).to.equal(false);
 
       await forge.package({ dir, outDir });
 
-      expect(fs.existsSync(outDir)).to.equal(true);
+      expect(await fs.exists(outDir)).to.equal(true);
     });
 
     it('can package without errors with native pre-gyp deps installed', async () => {
