@@ -16,7 +16,7 @@ AWS.util.update(AWS.S3.prototype, {
 export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
   const s3Config = forgeConfig.s3;
   s3Config.secretAccessKey = s3Config.secretAccessKey || authToken;
-  if (!(s3Config.accessKeyId && s3Config.secret && s3Config.bucket)) {
+  if (!(s3Config.accessKeyId && s3Config.secretAccessKey && s3Config.bucket)) {
     throw 'In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your forge config. See the docs for more info'; // eslint-disable-line
   }
 
