@@ -14,7 +14,7 @@ branches:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - npm install -g npm@4
-- appveyor DownloadFile https://nightly.yarnpkg.com/yarn-0.19.0-20161210.1823-unsigned.msi
+- appveyor DownloadFile https://yarnpkg.com/latest.msi
 - msiexec /i yarn-0.19.0-20161210.1823-unsigned.msi /qn
 - set PATH=%APPDATA%\npm;%PATH%
 - npm install
