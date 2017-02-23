@@ -14,6 +14,11 @@ function debianArch(nodeArch) {
   }
 }
 
+export const supportedPlatforms = [
+  'darwin',
+  'linux',
+];
+
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
   const arch = debianArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.deb`);
