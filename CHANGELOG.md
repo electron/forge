@@ -1,3 +1,47 @@
+#### [2.8.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.1) (2017-2-23)
+
+##### Chores
+
+* **generic:**
+  * add checkboxes and intros to the issue/PR templates ([a1ab1c3a](https://github.com/electron-userland/electron-forge/commit/a1ab1c3a))
+  * fix formatting in GitHub issue template ([da95b42b](https://github.com/electron-userland/electron-forge/commit/da95b42b))
+* **tests:** remove now obsolete flatpak call in Linux tests ([b93b6cfe](https://github.com/electron-userland/electron-forge/commit/b93b6cfe))
+
+##### Documentation Changes
+
+* **publisher:**
+  * mention the standard AWS environment variables in the README ([efc7ea14](https://github.com/electron-userland/electron-forge/commit/efc7ea14))
+  * add example for GitHub publish target ([3fc0a9c2](https://github.com/electron-userland/electron-forge/commit/3fc0a9c2))
+
+##### New Features
+
+* **packager:** remove the users forge config after packaging for safety reasons ([7432e034](https://github.com/electron-userland/electron-forge/commit/7432e034))
+* **publisher:**
+  * allow usage of standard AWS environment variables for S3 publishing ([d31ce248](https://github.com/electron-userland/electron-forge/commit/d31ce248))
+  * add S3 publish target ([fa31902a](https://github.com/electron-userland/electron-forge/commit/fa31902a))
+  * allow platform level config for publish targets ([8572cad6](https://github.com/electron-userland/electron-forge/commit/8572cad6))
+* **generic:** allow config options to be automagically pulled in from process.env ([250c197f](https://github.com/electron-userland/electron-forge/commit/250c197f))
+
+##### Bug Fixes
+
+* **tests:**
+  * fix forge config deletion tests on all platforms ([7b99e847](https://github.com/electron-userland/electron-forge/commit/7b99e847))
+  * fix test failures caused by config structure changes ([3a3cdfdb](https://github.com/electron-userland/electron-forge/commit/3a3cdfdb))
+* **importer:**
+  * install electron-prebuilt-compile as devDep ([e80be32a](https://github.com/electron-userland/electron-forge/commit/e80be32a))
+  * check updateScripts value at script install vs deps removal ([4942cb60](https://github.com/electron-userland/electron-forge/commit/4942cb60))
+  * ensure electronName exists before resolving its path ([9dcf2ec5](https://github.com/electron-userland/electron-forge/commit/9dcf2ec5))
+* **publisher:** throw an exception if a GitHub token isn't specified ([bc299b7a](https://github.com/electron-userland/electron-forge/commit/bc299b7a))
+* **initializer:** add github_repository.name to package.json in default template ([d1ceadf3](https://github.com/electron-userland/electron-forge/commit/d1ceadf3))
+
+##### Refactors
+
+* **publisher:** add deprecate method call to inform the user ([24571197](https://github.com/electron-userland/electron-forge/commit/24571197))
+
+##### Code Style Changes
+
+* **util:** fix typo re: imagePath ([9e064cf3](https://github.com/electron-userland/electron-forge/commit/9e064cf3))
+
 ### [2.8.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.0) (2017-2-2)
 
 ##### Chores
