@@ -7,7 +7,7 @@ import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
 import { info, warn } from '../util/messages';
 import readPackageJSON from '../util/read-package-json';
-import requireSearch from '../util/require-search';
+import { requireSearchRaw } from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 import packager from './package';
@@ -19,7 +19,7 @@ import packager from './package';
  * @property {boolean} [skipPackage=false] Whether to skip the pre-make packaging step
  * @property {Array<string>} [overrideTargets] An array of make targets to override your forge config
  * @property {string} [arch=host architecture] The target architecture
- * @property {string} [platform=process.platform] The target platform. NOTE: This is limited to be the current platform at the moment
+ * @property {string} [platform=process.platform] The target platform.
  * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
  */
 
@@ -52,9 +52,29 @@ export default async (providedOptions = {}) => {
     forgeConfig = await getForgeConfig(dir);
   });
 
-  if (platform && platform !== process.platform && !(process.platform === 'darwin' && platform === 'mas')) {
-    throw "You cannot run 'make' for a platform other than your system's platform";
-  }
+  const makers = {};
+  const targets = overrideTargets || forgeConfig.make_targets[platform];
+
+  targets.forEach((target) => {
+    const maker = requireSearchRaw(__dirname, [
+      `../makers/${platform}/${target}.js`,
+      `../makers/generic/${target}.js`,
+      `electron-forge-maker-${target}`,
+      target,
+      path.resolve(dir, target),
+      path.resolve(dir, 'node_modules', target),
+    ]);
+
+    if (!maker) {
+      throw `Could not find a build target with the name: ${target} for the platform: ${platform}`;
+    }
+
+    if (platform !== process.platform && (!maker.supportedPlatforms || maker.supportedPlatforms.indexOf(process.platform) === -1)) {
+      throw `Cannot build for ${platform} target ${target} from your ${process.platform} device`;
+    }
+
+    makers[target] = maker.default;
+  });
 
   if (!skipPackage) {
     info(interactive, 'We need to package your application before we can make it'.green);
@@ -70,18 +90,12 @@ export default async (providedOptions = {}) => {
   }
 
   const declaredArch = arch;
-  const declaredPlatform = platform;
-
-  let targets = forgeConfig.make_targets[declaredPlatform];
-  if (overrideTargets) {
-    targets = overrideTargets;
-  }
 
   info(interactive, 'Making for the following targets:', `${targets.join(', ')}`.cyan);
 
   let targetArchs = [declaredArch];
   if (declaredArch === 'all') {
-    switch (process.platform) {
+    switch (platform) {
       case 'darwin':
         targetArchs = ['x64'];
         break;
@@ -100,25 +114,16 @@ export default async (providedOptions = {}) => {
   const outputs = [];
 
   for (const targetArch of targetArchs) {
-    const packageDir = path.resolve(outDir, `${appName}-${declaredPlatform}-${targetArch}`);
+    const packageDir = path.resolve(outDir, `${appName}-${platform}-${targetArch}`);
     if (!(await fs.exists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }
 
     for (const target of targets) {
+      const maker = makers[target];
+
       // eslint-disable-next-line no-loop-func
-      await asyncOra(`Making for target: ${target.cyan} - On platform: ${declaredPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
-        const maker = requireSearch(__dirname, [
-          `../makers/${process.platform}/${target}.js`,
-          `../makers/generic/${target}.js`,
-          `electron-forge-maker-${target}`,
-          target,
-          path.resolve(dir, target),
-          path.resolve(dir, 'node_modules', target),
-        ]);
-        if (!maker) {
-          throw `Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`;
-        }
+      await asyncOra(`Making for target: ${target.cyan} - On platform: ${platform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
           outputs.push(await (maker.default || maker)(packageDir, appName, targetArch, forgeConfig, packageJSON));
         } catch (err) {
