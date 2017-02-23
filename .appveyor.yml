@@ -15,8 +15,7 @@ install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - npm install -g npm@4
 - appveyor DownloadFile https://yarnpkg.com/latest.msi
-- ren yarn-* yarn.msi
-- msiexec /i yarn.msi /qn
+- msiexec /i latest.msi /qn
 - set PATH=%APPDATA%\npm;%PATH%
 - npm install
 
