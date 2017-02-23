@@ -22,7 +22,7 @@ const d = debug('electron-forge:packager');
  * @property {string} [dir=process.cwd()] The path to the app to package
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {string} [arch=process.arch] The target arch
- * @property {string} [platform=process.platform] The target platform.  NOTE: This is limited to be the current platform at the moment
+ * @property {string} [platform=process.platform] The target platform.
  * @property {string} [outDir=`${dir}/out`] The path to the output directory for packaged apps
  */
 
