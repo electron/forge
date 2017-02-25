@@ -1,4 +1,5 @@
 import 'colors';
+import path from 'path';
 
 import asyncOra from '../util/ora-handler';
 import deprecate from '../util/deprecate';
@@ -67,10 +68,12 @@ export default async (providedOptions = {}) => {
 
   for (const publishTarget of publishTargets) {
     let publisher;
-    await asyncOra(`Resolving publish target: ${`${publishTarget}`.cyan}`, async () => {
+    await asyncOra(`Resolving publish target: ${`${publishTarget}`.cyan}`, async () => { // eslint-disable-line no-loop-func
       publisher = requireSearch(__dirname, [
         `../publishers/${publishTarget}.js`,
         `electron-forge-publisher-${publishTarget}`,
+        publishTarget,
+        path.resolve(dir, publishTarget),
       ]);
       if (!publisher) {
         throw `Could not find a publish target with the name: ${publishTarget}`;
