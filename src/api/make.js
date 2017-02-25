@@ -108,6 +108,8 @@ export default async (providedOptions = {}) => {
           `../makers/${process.platform}/${target}.js`,
           `../makers/generic/${target}.js`,
           `electron-forge-maker-${target}`,
+          target,
+          path.resolve(dir, target),
         ]);
         if (!maker) {
           throw `Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`;
