@@ -35,6 +35,27 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[2].env).to.not.have.property('ELECTRON_ENABLE_LOGGING');
   });
 
+  it("should pass electron '.' as the app path if not specified", async () => {
+    resolveStub.returnsArg(0);
+    await start({
+      dir: __dirname,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[0]).to.contain('electron');
+    expect(spawnStub.firstCall.args[1][0]).to.equal('.');
+  });
+
+  it('should pass electron the app path if specified', async () => {
+    resolveStub.returnsArg(0);
+    await start({
+      dir: __dirname,
+      appPath: '/path/to/app.js',
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[0]).to.contain('electron');
+    expect(spawnStub.firstCall.args[1][0]).to.equal('/path/to/app.js');
+  });
+
   it('should enable electron logging if enableLogging=true', async () => {
     resolveStub.returnsArg(0);
     await start({
