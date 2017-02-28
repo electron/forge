@@ -1,3 +1,14 @@
+#### [2.8.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.2) (2017-2-28)
+
+##### Chores
+
+* **templates:** bump all template versions ([32297344](https://github.com/electron-userland/electron-forge/commit/32297344))
+
+##### Bug Fixes
+
+* **ci:** Use the preinstalled yarn on AppVeyor (#146) ([7a1deee7](https://github.com/electron-userland/electron-forge/commit/7a1deee7))
+* **publisher:** Fix secret access key ([0a9710b5](https://github.com/electron-userland/electron-forge/commit/0a9710b5))
+
 #### [2.8.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.1) (2017-2-23)
 
 ##### Chores
