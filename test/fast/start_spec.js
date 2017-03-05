@@ -68,6 +68,28 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_ENABLE_LOGGING', true);
   });
 
+  it('should enable RUN_AS_NODE if runAsNode=true', async () => {
+    resolveStub.returnsArg(0);
+    await start({
+      dir: __dirname,
+      interactive: false,
+      runAsNode: true,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_RUN_AS_NODE', true);
+  });
+
+  it('should disable RUN_AS_NODE if runAsNode=false', async () => {
+    resolveStub.returnsArg(0);
+    await start({
+      dir: __dirname,
+      interactive: false,
+      runAsNode: false,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[2].env).to.not.have.property('ELECTRON_RUN_AS_NODE');
+  });
+
   it('should throw if no dir could be found', async () => {
     resolveStub.returns(null);
 
