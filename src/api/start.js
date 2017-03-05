@@ -24,12 +24,13 @@ import resolveDir from '../util/resolve-dir';
  */
 export default async (providedOptions = {}) => {
   // eslint-disable-next-line prefer-const, no-unused-vars
-  let { dir, interactive, enableLogging, appPath, args } = Object.assign({
+  let { dir, interactive, enableLogging, appPath, args, runAsNode } = Object.assign({
     dir: process.cwd(),
     appPath: '.',
     interactive: false,
     enableLogging: false,
     args: [],
+    runAsNode: false,
   }, providedOptions);
   asyncOra.interactive = interactive;
 
@@ -52,6 +53,12 @@ export default async (providedOptions = {}) => {
       ELECTRON_ENABLE_STACK_DUMPING: true,
     } : {}),
   };
+
+  if (runAsNode) {
+    spawnOpts.env.ELECTRON_RUN_AS_NODE = true;
+  } else {
+    delete spawnOpts.env.ELECTRON_RUN_AS_NODE;
+  }
 
   let spawned;
 

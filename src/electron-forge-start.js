@@ -6,12 +6,11 @@ import './util/terminate';
 import { start } from './api';
 
 (async () => {
-  let commandArgs;
+  let commandArgs = process.argv;
   let appArgs;
+
   const tripleDashIndex = process.argv.indexOf('---');
-  if (tripleDashIndex === -1) {
-    commandArgs = process.argv;
-  } else {
+  if (tripleDashIndex !== -1) {
     commandArgs = process.argv.slice(0, tripleDashIndex);
     appArgs = process.argv.slice(tripleDashIndex + 1);
   }
@@ -22,6 +21,7 @@ import { start } from './api';
     .arguments('[cwd]')
     .option('-p, --app-path <path>', "Override the path to the Electron app to launch (defaults to '.')")
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
+    .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
     .action((cwd) => {
       if (!cwd) return;
       if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
@@ -43,17 +43,12 @@ import { start } from './api';
   const opts = {
     dir,
     interactive: true,
+    enableLogging: !!program.enableLogging,
+    runAsNode: !!program.runAsNode,
   };
 
-  if (program.appPath) {
-    opts.appPath = program.appPath;
-  }
-  if (program.enableLogging) {
-    opts.enableLogging = program.enableLogging;
-  }
-  if (appArgs) {
-    opts.args = appArgs;
-  }
+  if (program.appPath) opts.appPath = program.appPath;
+  if (appArgs) opts.args = appArgs;
 
   await start(opts);
 })();

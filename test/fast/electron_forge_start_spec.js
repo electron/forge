@@ -35,6 +35,8 @@ describe('electron-forge start', () => {
     expect(startStub.firstCall.args[0]).to.deep.equal({
       dir: process.cwd(),
       interactive: true,
+      enableLogging: false,
+      runAsNode: false,
     });
   });
 
@@ -44,6 +46,8 @@ describe('electron-forge start', () => {
     expect(startStub.firstCall.args[0]).to.deep.equal({
       dir: path.join(process.cwd(), 'test', 'fixture', 'dummy_app'),
       interactive: true,
+      enableLogging: false,
+      runAsNode: false,
     });
   });
 
@@ -53,6 +57,8 @@ describe('electron-forge start', () => {
     expect(startStub.firstCall.args[0]).to.deep.equal({
       dir: path.join(process.cwd(), 'test', 'fixture', 'dummy_app'),
       interactive: true,
+      enableLogging: false,
+      runAsNode: false,
     });
   });
 
@@ -63,6 +69,8 @@ describe('electron-forge start', () => {
       dir: process.cwd(),
       appPath: path.join('foo', 'electron.js'),
       interactive: true,
+      enableLogging: false,
+      runAsNode: false,
     });
   });
 
@@ -73,6 +81,7 @@ describe('electron-forge start', () => {
       dir: process.cwd(),
       enableLogging: true,
       interactive: true,
+      runAsNode: false,
     });
   });
 
@@ -84,6 +93,18 @@ describe('electron-forge start', () => {
       enableLogging: true,
       interactive: true,
       args: ['-a', 'foo', '-l'],
+      runAsNode: false,
+    });
+  });
+
+  it('should handle run-as-node', async () => {
+    await runCommand(['--run-as-node']);
+    expect(startStub.callCount).to.equal(1);
+    expect(startStub.firstCall.args[0]).to.deep.equal({
+      dir: process.cwd(),
+      enableLogging: false,
+      interactive: true,
+      runAsNode: true,
     });
   });
 });
