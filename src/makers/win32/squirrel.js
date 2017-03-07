@@ -9,8 +9,9 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   await ensureDirectory(outPath);
 
   const winstallerConfig = Object.assign({
-    name: packageJSON.name,
+    name: appName,
     noMsi: true,
+    exe: `${appName}.exe`,
   }, forgeConfig.electronWinstallerConfig, {
     appDirectory: dir,
     outputDirectory: outPath,
