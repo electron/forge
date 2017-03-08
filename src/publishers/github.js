@@ -18,21 +18,21 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
         owner: forgeConfig.github_repository.owner,
         repo: forgeConfig.github_repository.name,
         per_page: 100,
-      })).find(testRelease => testRelease.tag_name === (tag || `v${packageJSON.version}`));
+      })).data.find(testRelease => testRelease.tag_name === (tag || `v${packageJSON.version}`));
       if (!release) {
         throw { code: 404 };
       }
     } catch (err) {
       if (err.code === 404) {
         // Release does not exist, let's make it
-        release = await github.getGitHub().repos.createRelease({
+        release = (await github.getGitHub().repos.createRelease({
           owner: forgeConfig.github_repository.owner,
           repo: forgeConfig.github_repository.name,
           tag_name: tag || `v${packageJSON.version}`,
           name: tag || `v${packageJSON.version}`,
           draft: forgeConfig.github_repository.draft !== false,
           prerelease: forgeConfig.github_repository.prerelease === true,
-        });
+        })).data;
       } else {
         // Unknown error
         throw err;
