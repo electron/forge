@@ -63,6 +63,7 @@ export default async (providedOptions = {}) => {
       interactive,
       arch,
       platform,
+      outDir,
     });
   } else {
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
