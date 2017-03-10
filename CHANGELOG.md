@@ -1,3 +1,26 @@
+#### [2.8.3](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.3) (2017-3-10)
+
+##### Chores
+
+* **generic:**
+  * update react-typescript template ([30516e78](https://github.com/electron-userland/electron-forge/commit/30516e78))
+  * make release script work on windows ([0ff6a7ab](https://github.com/electron-userland/electron-forge/commit/0ff6a7ab))
+
+##### New Features
+
+* **starter:** automatically wipe the ELECTRON_RUN_AS_NODE variable unless specified ([c702fe4a](https://github.com/electron-userland/electron-forge/commit/c702fe4a))
+* **generic:**
+  * Support setting the Electron app path in start() ([47c5572e](https://github.com/electron-userland/electron-forge/commit/47c5572e))
+  * allow third party modules to be named whatever they want ([fddb40e6](https://github.com/electron-userland/electron-forge/commit/fddb40e6))
+
+##### Bug Fixes
+
+* **publisher:** use updated node-github response API ([0f8e6c4f](https://github.com/electron-userland/electron-forge/commit/0f8e6c4f))
+* **maker:**
+  * fix the squirrel maker app name logic ([84031ecb](https://github.com/electron-userland/electron-forge/commit/84031ecb))
+  * allow most appx default config to be overridden by the user ([b1e90538](https://github.com/electron-userland/electron-forge/commit/b1e90538))
+* **tests:** ensure test project has proper metadata filled ([0bc81858](https://github.com/electron-userland/electron-forge/commit/0bc81858))
+
 #### [2.8.2](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.2) (2017-2-28)
 
 ##### Chores
