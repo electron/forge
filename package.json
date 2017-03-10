@@ -103,7 +103,7 @@
     "debug": "^2.3.3",
     "electron-forge-template-angular2": "^1.0.3",
     "electron-forge-template-react": "^1.0.2",
-    "electron-forge-template-react-typescript": "^1.0.2",
+    "electron-forge-template-react-typescript": "^1.0.3",
     "electron-forge-template-vue": "^1.0.2",
     "electron-installer-dmg": "^0.2.0",
     "electron-packager": "^8.5.2",
