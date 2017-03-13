@@ -219,7 +219,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       }
       const genericTargets = fs.readdirSync(path.resolve(__dirname, '../../src/makers/generic')).map(file => path.parse(file).name);
 
-      const testMakeTarget = function testMakeTarget(target, ...options) {
+      const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
         describe(`make (with target=${target})`, async () => {
           before(async () => {
             const packageJSON = await readPackageJSON(dir);
@@ -228,16 +228,32 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
           });
 
           options.forEach((optionsFetcher) => {
-            it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-              await forge.make(optionsFetcher());
-            });
+            if (shouldPass) {
+              it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                await forge.make(optionsFetcher());
+              });
+            } else {
+              it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
+              });
+            }
           });
         });
       };
 
       [].concat(targets).concat(genericTargets).forEach((target) => {
         const testOptions = [() => ({ dir, skipPackage: true })];
-        testMakeTarget(target, ...testOptions);
+        testMakeTarget(target, true, ...testOptions);
+      });
+
+      testMakeTarget('zip', true, { dir, skipPackage: true, outDir: `${dir}/foo` });
+
+      const dummyMakerPath = `${process.cwd()}/test/fixture/dummy-maker`;
+      testMakeTarget('dummy', false, {
+        dir,
+        overrideTargets: [dummyMakerPath],
+        platform: process.platform === 'darwin' ? 'linux' : 'darwin',
+        skipPackage: true,
       });
     });
 
