@@ -205,24 +205,25 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         targets = fs.readdirSync(path.resolve(__dirname, `../../src/makers/${process.platform}`)).map(file => path.parse(file).name);
       }
       const genericTargets = fs.readdirSync(path.resolve(__dirname, '../../src/makers/generic')).map(file => path.parse(file).name);
-
-      [].concat(targets).concat(genericTargets).forEach((target) => {
-        describe(`make (with target=${target})`, () => {
-          before(async () => {
+      const testMakeTarget = async function testMakeTarget(target, options = {}) {
+        await describe(`make (with target=${target})`, async () => {
+          await before(async () => {
             const packageJSON = await readPackageJSON(dir);
             packageJSON.config.forge.make_targets[process.platform] = [target];
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });
 
-          it('successfully makes with default config', async () => {
-            await forge.make({ dir, skipPackage: true });
-          });
-
-          it('successfully makes to outDir with default config', async () => {
-            await forge.make({ dir, outDir: `${dir}/foo`, skipPackage: true });
+          await it(`successfully makes for config: ${JSON.stringify(options, 2)}`, async () => {
+            await forge.make(options);
           });
         });
+      };
+
+      [].concat(targets).concat(genericTargets).forEach(async (target) => {
+        await testMakeTarget(target, { dir, skipPackage: true });
       });
+
+      testMakeTarget('zip', { dir, skipPackage: true, outDir: `${dir}/foo` });
     });
 
     after(() => fs.remove(dir));
