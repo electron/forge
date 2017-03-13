@@ -4,6 +4,9 @@ import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
+import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
+
+export const supportedPlatforms = checkSupportedPlatforms('electron-installer-redhat');
 
 function rpmArch(nodeArch) {
   switch (nodeArch) {
