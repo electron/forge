@@ -13,7 +13,7 @@ export const deps = ['electron-compile'];
 export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-transform-async-to-generator'];
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
-export const airbnDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
+export const airbnbDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
   'eslint-plugin-jsx-a11y@^3.0.0', 'eslint-plugin-react'];
 
 export default async (dir, lintStyle) => {
@@ -58,7 +58,7 @@ export default async (dir, lintStyle) => {
         break;
       case 'airbnb':
         d('installing airbnb linting dependencies');
-        await installDepList(dir, airbnDeps, true);
+        await installDepList(dir, airbnbDeps, true);
         break;
       default:
         d('not installing linting deps');
