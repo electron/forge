@@ -74,6 +74,7 @@ export default async (providedOptions = {}) => {
         `electron-forge-publisher-${publishTarget}`,
         publishTarget,
         path.resolve(dir, publishTarget),
+        path.resolve(dir, 'node_modules', publishTarget),
       ]);
       if (!publisher) {
         throw `Could not find a publish target with the name: ${publishTarget}`;
