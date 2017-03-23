@@ -110,6 +110,7 @@ export default async (providedOptions = {}) => {
           `electron-forge-maker-${target}`,
           target,
           path.resolve(dir, target),
+          path.resolve(dir, 'node_modules', target),
         ]);
         if (!maker) {
           throw `Could not find a build target with the name: ${target} for the platform: ${declaredPlatform}`;
