@@ -20,6 +20,7 @@ import packager from './package';
  * @property {Array<string>} [overrideTargets] An array of make targets to override your forge config
  * @property {string} [arch=host architecture] The target architecture
  * @property {string} [platform=process.platform] The target platform. NOTE: This is limited to be the current platform at the moment
+ * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
  */
 
 /**
@@ -37,6 +38,8 @@ export default async (providedOptions = {}) => {
     arch: electronHostArch(),
     platform: process.platform,
   }, providedOptions);
+
+  const outDir = providedOptions.outDir || path.resolve(dir, 'out');
   asyncOra.interactive = interactive;
 
   let forgeConfig;
@@ -60,6 +63,7 @@ export default async (providedOptions = {}) => {
       interactive,
       arch,
       platform,
+      outDir,
     });
   } else {
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
@@ -96,7 +100,7 @@ export default async (providedOptions = {}) => {
   const outputs = [];
 
   for (const targetArch of targetArchs) {
-    const packageDir = path.resolve(dir, `out/${appName}-${declaredPlatform}-${targetArch}`);
+    const packageDir = path.resolve(outDir, `${appName}-${declaredPlatform}-${targetArch}`);
     if (!(await fs.exists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }

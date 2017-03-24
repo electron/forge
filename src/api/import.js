@@ -20,6 +20,7 @@ const d = debug('electron-forge:import');
  * @property {string} [dir=process.cwd()] The path to the app to be imported
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {boolean} [updateScripts=true] Whether to update the modules package.json scripts to be electron-forge commands
+ * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
  */
 
 /**
@@ -38,6 +39,8 @@ export default async (providedOptions = {}) => {
     interactive: false,
     updateScripts: true,
   }, providedOptions);
+
+  const outDir = providedOptions.outDir || 'out';
   asyncOra.interactive = interactive;
 
   d(`Attempting to import project in: ${dir}`);
@@ -193,8 +196,8 @@ export default async (providedOptions = {}) => {
   await asyncOra('Fixing .gitignore', async () => {
     if (await fs.exists(path.resolve(dir, '.gitignore'))) {
       const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
-      if (!gitignore.includes('out')) {
-        await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\nout/`);
+      if (!gitignore.includes(outDir)) {
+        await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\n${outDir}/`);
       }
     }
   });
