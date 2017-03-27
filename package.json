@@ -144,7 +144,7 @@
   "optionalDependencies": {
     "electron-installer-debian": "^0.5.0",
     "electron-installer-flatpak": "^0.4.0",
-    "electron-installer-redhat": "^0.3.0"
+    "electron-installer-redhat": "^0.4.0"
   },
   "engines": {
     "node": ">= 6.0"
