@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { spawnPromise, findActualExecutable } from 'spawn-rx';
+import parseAuthor from 'parse-author';
+import windowsStore from 'electron-windows-store';
+import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign.js';
 
+import { findActualExecutable } from 'spawn-rx';
 import { ensureDirectory } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
 
@@ -23,40 +26,54 @@ function findSdkTool(exe) {
   }
 
   if (!fs.existsSync(sdkTool)) {
-    throw new Error(`Can't find ${exe} in PATH, you probably need to install the Windows SDK`);
+    throw new Error(`Can't find ${exe} in PATH. You probably need to install the Windows SDK.`);
   }
 
   return sdkTool;
 }
 
-function spawnSdkTool(exe, params) {
-  return spawnPromise(findSdkTool(exe), params);
+export async function createDefaultCertificate(publisherName, { certFilePath, certFileName, install, program }) {
+  const makeCertOptions = {
+    publisherName,
+    certFilePath: certFilePath || process.cwd(),
+    certFileName: certFileName || 'default',
+    install: typeof install === 'boolean' ? install : false,
+    program: program || { windowsKit: path.dirname(findSdkTool('makecert.exe')) },
+  };
+
+  if (!isValidPublisherName(publisherName)) {
+    throw new Error(`Received invalid publisher name: '${publisherName}' did not conform to X.500 distinguished name syntax for MakeCert.`);
+  }
+
+  return await makeCert(makeCertOptions);
 }
 
-export async function createDefaultCertificate(publisherName, outPath) {
-  const defaultPvk = path.resolve(__dirname, '..', '..', '..', 'res', 'default.pvk');
-  const targetCert = path.join(outPath, 'default.cer');
-  const targetPfx = path.join(outPath, 'default.pfx');
+export function getDistinguishedNameFromAuthor(author) {
+  let publisher = author || '';
 
-  await spawnSdkTool(
-    'makecert.exe',
-    ['-r', '-h', '0', '-n', `CN=${publisherName}`, '-eku', '1.3.6.1.5.5.7.3.3', '-pe', '-sv', defaultPvk, targetCert]);
+  if (typeof publisher === 'string') {
+    publisher = parseAuthor(publisher);
+  }
 
-  await spawnSdkTool('pvk2pfx.exe', ['-pvk', defaultPvk, '-spc', targetCert, '-pfx', targetPfx]);
+  if (typeof publisher.name === 'string') {
+    publisher = publisher.name;
+  }
 
-  return targetPfx;
+  if (typeof publisher !== 'string') {
+    publisher = '';
+  }
+
+  return `CN=${publisher}`;
 }
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
-  const windowsStore = require('electron-windows-store');
-
   const outPath = path.resolve(dir, `../make/appx/${targetArch}`);
   await ensureDirectory(outPath);
 
   const userConfig = configFn(forgeConfig.windowsStoreConfig, targetArch);
 
   const opts = Object.assign({
-    publisher: packageJSON.author,
+    publisher: getDistinguishedNameFromAuthor(packageJSON.author),
     flatten: false,
     deploy: false,
     packageVersion: `${packageJSON.version}.0`,
@@ -70,12 +87,12 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
     outputDirectory: outPath,
   });
 
-  if (!opts.devCert) {
-    opts.devCert = await createDefaultCertificate(opts.publisher, outPath);
+  if (!opts.publisher) {
+    throw 'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target';
   }
 
-  if (!opts.publisher.match(/^CN=/)) {
-    opts.publisher = `CN=${opts.publisher}`;
+  if (!opts.devCert) {
+    opts.devCert = await createDefaultCertificate(opts.publisher, { certFilePath: outPath, program: opts });
   }
 
   if (opts.packageVersion.match(/-/)) {
