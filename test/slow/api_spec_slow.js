@@ -45,6 +45,11 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         expect(await fs.exists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
       });
 
+      it('should have set the .compilerc electron version to be a float', async () => {
+        const compilerc = JSON.parse(await fs.readFile(path.resolve(dir, '.compilerc')));
+        expect(compilerc.env.development['application/javascript'].presets[0][1].targets.electron).to.be.a('number');
+      });
+
       describe('lint', () => {
         it('should initially pass the linting process', () => forge.lint({ dir }));
       });
