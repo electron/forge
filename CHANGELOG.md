@@ -1,3 +1,43 @@
+### [2.9.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.9.0) (2017-4-2)
+
+##### Chores
+
+* **generic:** add .editorconfig ([5aaf871e](https://github.com/electron-userland/electron-forge/commit/5aaf871e))
+
+##### New Features
+
+* **importer:** add configurable outDir support for gitignore ([9369284f](https://github.com/electron-userland/electron-forge/commit/9369284f))
+
+##### Bug Fixes
+
+* **initializer:**
+  * update Electron version type in .compilerc template, for completeness ([a4fa4bfc](https://github.com/electron-userland/electron-forge/commit/a4fa4bfc))
+  * set electron version to be float in init step ([710129b7](https://github.com/electron-userland/electron-forge/commit/710129b7))
+* **maker:**
+  * upgrade rpm maker for better package.json handling ([926032e8](https://github.com/electron-userland/electron-forge/commit/926032e8))
+  * test outDir on zip target only, after other targets run ([a2c92499](https://github.com/electron-userland/electron-forge/commit/a2c92499))
+  * pass computed outDir to packager ([686200f6](https://github.com/electron-userland/electron-forge/commit/686200f6))
+  * search local node_modules folder for maker when installed globally ([9b8f2970](https://github.com/electron-userland/electron-forge/commit/9b8f2970))
+* **tests:**
+  * stop awaiting mocha and ensure we clean up out dirs ([2e6dc384](https://github.com/electron-userland/electron-forge/commit/2e6dc384))
+  * use expect(await ...) syntax per @marshallofsound ([59ddf9af](https://github.com/electron-userland/electron-forge/commit/59ddf9af))
+* **generic:** use path.resolve (vs /-delimited) to compute default outDir ([ff167447](https://github.com/electron-userland/electron-forge/commit/ff167447))
+* **packager:** correct main file reference in thrown error from packageJson.name to .main ([a68284b1](https://github.com/electron-userland/electron-forge/commit/a68284b1))
+* **publisher:** check local node_modules when searching for publisher ([42fad7f3](https://github.com/electron-userland/electron-forge/commit/42fad7f3))
+
+##### Refactors
+
+* **maker:** compute outDir from providedOptions w/default ([d69e7626](https://github.com/electron-userland/electron-forge/commit/d69e7626))
+* **packager:** compute outDir from providedOptions w/default ([1e26d258](https://github.com/electron-userland/electron-forge/commit/1e26d258))
+
+##### Code Style Changes
+
+* **initializer:** fix typo ([dd6aec48](https://github.com/electron-userland/electron-forge/commit/dd6aec48))
+
+##### Tests
+
+* **tests:** add tests for packager & maker outDir support ([32cecffd](https://github.com/electron-userland/electron-forge/commit/32cecffd))
+
 #### [2.8.3](https://github.com/electron-userland/electron-forge/releases/tag/v2.8.3) (2017-3-10)
 
 ##### Chores
