@@ -4,9 +4,10 @@ import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
-import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
 
-export const supportedPlatforms = checkSupportedPlatforms('electron-installer-dmg');
+// electron-installer-dmg doesn't set its 'os' field even though it depends on
+// appdmg, which is darwin-only
+export const supportedPlatforms = ['darwin'];
 
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
   const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
