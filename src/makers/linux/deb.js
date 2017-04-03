@@ -4,6 +4,9 @@ import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
+import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
+
+export const supportedPlatforms = checkSupportedPlatforms('electron-installer-debian');
 
 function debianArch(nodeArch) {
   switch (nodeArch) {
@@ -15,12 +18,7 @@ function debianArch(nodeArch) {
   }
 }
 
-export const supportedPlatforms = [
-  'darwin',
-  'linux',
-];
-
-export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
   const arch = debianArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.deb`);
 
