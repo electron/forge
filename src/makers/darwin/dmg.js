@@ -9,7 +9,7 @@ import configFn from '../../util/config-fn';
 // appdmg, which is darwin-only
 export const supportedPlatforms = ['darwin'];
 
-export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+export default async ({ dir, appName, targetArch, forgeConfig }) => {
   const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
   await ensureFile(outPath);
   const dmgConfig = Object.assign({

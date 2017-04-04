@@ -8,7 +8,7 @@ import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
 
 export const supportedPlatforms = checkSupportedPlatforms('electron-winstaller');
 
-export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const outPath = path.resolve(dir, `../make/squirrel.windows/${targetArch}`);
   await ensureDirectory(outPath);
 
