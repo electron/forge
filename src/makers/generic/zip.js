@@ -23,10 +23,10 @@ const zipPromise = (from, to) =>
     });
   });
 
-export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+export default async ({ dir, appName, targetPlatform }) => {
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await ensureFile(zipPath);
-  switch (process.platform) {
+  switch (targetPlatform) {
     // This case is tested but not on the coverage reporting platform
     /* istanbul ignore next */
     case 'win32':

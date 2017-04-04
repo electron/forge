@@ -48,7 +48,7 @@ export async function createDefaultCertificate(publisherName, outPath) {
   return targetPfx;
 }
 
-export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
+export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const outPath = path.resolve(dir, `../make/appx/${targetArch}`);
   await ensureDirectory(outPath);
 
