@@ -232,7 +232,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });
 
-          options.forEach((optionsFetcher) => {
+          for (const optionsFetcher of options) {
             if (shouldPass) {
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
                 await forge.make(optionsFetcher());
@@ -242,24 +242,28 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
                 await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
               });
             }
-          });
+          }
         });
       };
 
-      [].concat(targets).concat(genericTargets).forEach((target) => {
-        const testOptions = [() => ({ dir, skipPackage: true })];
-        testMakeTarget(target, true, ...testOptions);
-      });
+      const targetOptionFetcher = () => ({ dir, skipPackage: true });
+      for (const target of [].concat(targets).concat(genericTargets)) {
+        testMakeTarget(target, true, targetOptionFetcher);
+      }
 
-      testMakeTarget('zip', true, { dir, skipPackage: true, outDir: `${dir}/foo` });
+      testMakeTarget('zip', true, () => ({ dir, skipPackage: true, outDir: `${dir}/foo` }));
 
       const dummyMakerPath = `${process.cwd()}/test/fixture/dummy-maker`;
-      testMakeTarget('dummy', false, {
-        dir,
-        overrideTargets: [dummyMakerPath],
-        platform: process.platform === 'darwin' ? 'linux' : 'darwin',
-        skipPackage: true,
-      });
+      const dummyOptionFetcher = () => (
+        {
+          dir,
+          overrideTargets: [dummyMakerPath],
+          platform: process.platform === 'darwin' ? 'linux' : 'darwin',
+          skipPackage: true,
+        }
+      );
+
+      testMakeTarget('dummy', false, dummyOptionFetcher);
     });
 
     after(() => fs.remove(dir));
