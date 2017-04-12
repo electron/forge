@@ -43,7 +43,7 @@ With these goals in mind, under the hood this project uses, among others:
 * [`electron-rebuild`](https://github.com/electron/electron-rebuild):
   Automatically recompiles native Node.js modules against the correct
   Electron version.
-* [Electron Packager](https://github.com/electron-userland/electron-packager):
+* [`Electron Packager`](https://github.com/electron-userland/electron-packager):
   Customizes and bundles your Electron app to get it ready for distribution.
 
 # Usage
