@@ -6,7 +6,8 @@
   "main": "dist/api/index.js",
   "bin": {
     "electron-forge": "dist/electron-forge.js",
-    "forge": "dist/electron-forge.js"
+    "forge": "dist/electron-forge.js",
+    "electron-forge-vscode-nix": "script/vscode.sh"
   },
   "scripts": {
     "build": "gulp build",
