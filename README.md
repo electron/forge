@@ -248,6 +248,7 @@ good to go.
   "runtimeArgs": [
     "foo",
     "bar"
-  ]
+  ],
+  "cwd": "${workspaceRoot}"
 }
 ```
