@@ -1,8 +1,12 @@
 import installer from 'electron-installer-debian';
+
 import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
+
+export const supportedPlatforms = checkSupportedPlatforms('electron-installer-debian');
 
 function debianArch(nodeArch) {
   switch (nodeArch) {

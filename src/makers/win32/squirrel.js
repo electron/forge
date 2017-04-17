@@ -3,6 +3,9 @@ import fs from 'fs-promise';
 import path from 'path';
 
 import { ensureDirectory } from '../../util/ensure-output';
+import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
+
+export const supportedPlatforms = checkSupportedPlatforms('electron-winstaller');
 
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
   const outPath = path.resolve(dir, `../make/squirrel.windows/${targetArch}`);
