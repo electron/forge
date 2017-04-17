@@ -235,7 +235,7 @@ Debugging your Electron main process through VS Code is ridiculously
 easy with Forge.  Simply add this as a launch config in VSCode and you're
 good to go.
 
-```json
+```javascript
 {
   "type": "node",
   "request": "launch",
