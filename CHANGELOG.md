@@ -1,3 +1,17 @@
+### [2.10.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.10.0) (2017-4-16)
+
+##### Chores
+
+* **generic:**
+  * fix/rename coverage sending script ([547c044f](https://github.com/electron-userland/electron-forge/commit/547c044f))
+  * update various dependencies ([0f97292c](https://github.com/electron-userland/electron-forge/commit/0f97292c))
+
+##### New Features
+
+* **starter:**
+  * windows implementation of the vscode debug command ([9cb7f42c](https://github.com/electron-userland/electron-forge/commit/9cb7f42c))
+  * provide an executable to start forge in a vscode debugger compatible way ([1238dee5](https://github.com/electron-userland/electron-forge/commit/1238dee5))
+
 ### [2.9.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.9.0) (2017-4-2)
 
 ##### Chores
