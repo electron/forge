@@ -22,6 +22,7 @@ import { start } from './api';
     .option('-p, --app-path <path>', "Override the path to the Electron app to launch (defaults to '.')")
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
     .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
+    .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
     .action((cwd) => {
       if (!cwd) return;
       if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
@@ -46,6 +47,13 @@ import { start } from './api';
     enableLogging: !!program.enableLogging,
     runAsNode: !!program.runAsNode,
   };
+
+  if (program.vscode && appArgs) {
+    appArgs = appArgs
+      // Args are in the format ~arg~ so we need to strip the "~"
+      .map(arg => arg.substr(1, arg.length - 2))
+      .filter(arg => arg.length > 0);
+  }
 
   if (program.appPath) opts.appPath = program.appPath;
   if (appArgs) opts.args = appArgs;

@@ -228,3 +228,27 @@ You must export a Function that returns a Promise.  Your function will be called
 * tag - The value of `--tag`
 
 You should use `ora` to indicate your publish progress.
+
+## Debugging your application through VS Code
+
+Debugging your Electron main process through VS Code is ridiculously
+easy with Forge.  Simply add this as a launch config in VSCode and you're
+good to go.
+
+```json
+{
+  "type": "node",
+  "request": "launch",
+  "name": "Electron Main",
+  "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-forge-vscode-nix",
+  "windows": {
+    "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron-forge-vscode-win.cmd"
+  },
+  // runtimeArgs will be passed directly to your Electron application
+  "runtimeArgs": [
+    "foo",
+    "bar"
+  ],
+  "cwd": "${workspaceRoot}"
+}
+```
