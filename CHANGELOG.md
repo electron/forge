@@ -1,3 +1,9 @@
+### [2.11.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.11.0) (2017-4-19)
+
+##### New Features
+
+* **maker:** allow maker configs to be functions that return values based on arch ([d9cbec5a](https://github.com/electron-userland/electron-forge/commit/d9cbec5a))
+
 ### [2.10.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.10.0) (2017-4-16)
 
 ##### Chores
