@@ -4,6 +4,7 @@ import path from 'path';
 import { spawnPromise, findActualExecutable } from 'spawn-rx';
 
 import { ensureDirectory } from '../../util/ensure-output';
+import configFn from '../../util/config-fn';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
@@ -57,7 +58,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     packageDescription: packageJSON.description || appName,
     packageExecutable: `app\\${appName}.exe`,
     windowsKit: path.dirname(findSdkTool('makeappx.exe')),
-  }, forgeConfig.windowsStoreConfig, {
+  }, configFn(forgeConfig.windowsStoreConfig, targetArch), {
     inputDirectory: dir,
     outputDirectory: outPath,
   });
