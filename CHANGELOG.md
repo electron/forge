@@ -1,3 +1,5 @@
+#### [2.11.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.11.1) (2017-4-19)
+
 ### [2.11.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.11.0) (2017-4-19)
 
 ##### New Features
