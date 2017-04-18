@@ -3,6 +3,7 @@ import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+import configFn from '../../util/config-fn';
 
 function debianArch(nodeArch) {
   switch (nodeArch) {
@@ -24,7 +25,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     dest: path.dirname(outPath),
     src: dir,
   };
-  const debianConfig = Object.assign({}, forgeConfig.electronInstallerDebian, debianDefaults);
+  const debianConfig = Object.assign({}, configFn(forgeConfig.electronInstallerDebian, targetArch), debianDefaults);
 
   await pify(installer)(debianConfig);
   return [outPath];

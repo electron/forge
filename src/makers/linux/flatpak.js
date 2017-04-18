@@ -3,6 +3,7 @@ import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+import configFn from '../../util/config-fn';
 
 function flatpakArch(nodeArch) {
   switch (nodeArch) {
@@ -24,7 +25,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     dest: path.dirname(outPath),
     src: dir,
   };
-  const flatpakConfig = Object.assign({}, forgeConfig.electronInstallerFlatpak, flatpakDefaults);
+  const flatpakConfig = Object.assign({}, configFn(forgeConfig.electronInstallerFlatpak, targetArch), flatpakDefaults);
 
   await pify(installer)(flatpakConfig);
   return [outPath];

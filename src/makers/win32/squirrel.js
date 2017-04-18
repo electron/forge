@@ -3,6 +3,7 @@ import fs from 'fs-promise';
 import path from 'path';
 
 import { ensureDirectory } from '../../util/ensure-output';
+import configFn from '../../util/config-fn';
 
 export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { // eslint-disable-line
   const outPath = path.resolve(dir, `../make/squirrel.windows/${targetArch}`);
@@ -12,10 +13,11 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     name: appName,
     noMsi: true,
     exe: `${appName}.exe`,
-  }, forgeConfig.electronWinstallerConfig, {
+  }, configFn(forgeConfig.electronWinstallerConfig, targetArch), {
     appDirectory: dir,
     outputDirectory: outPath,
   });
+
   await createWindowsInstaller(winstallerConfig);
   const artifacts = [
     path.resolve(outPath, 'RELEASES'),

@@ -3,6 +3,7 @@ import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
+import configFn from '../../util/config-fn';
 
 function rpmArch(nodeArch) {
   switch (nodeArch) {
@@ -24,7 +25,7 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
     dest: path.dirname(outPath),
     src: dir,
   };
-  const rpmConfig = Object.assign({}, forgeConfig.electronInstallerRedhat, rpmDefaults);
+  const rpmConfig = Object.assign({}, configFn(forgeConfig.electronInstallerRedhat, targetArch), rpmDefaults);
 
   await pify(installer)(rpmConfig);
   return [outPath];
