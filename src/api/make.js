@@ -5,6 +5,7 @@ import path from 'path';
 import asyncOra from '../util/ora-handler';
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
+import runHook from '../util/hook';
 import { info, warn } from '../util/messages';
 import readPackageJSON from '../util/read-package-json';
 import requireSearch from '../util/require-search';
@@ -97,7 +98,9 @@ export default async (providedOptions = {}) => {
 
   const packageJSON = await readPackageJSON(dir);
   const appName = forgeConfig.electronPackagerConfig.name || packageJSON.productName || packageJSON.name;
-  const outputs = [];
+  let outputs = [];
+
+  await runHook(forgeConfig, 'preMake');
 
   for (const targetArch of targetArchs) {
     const packageDir = path.resolve(outDir, `${appName}-${declaredPlatform}-${targetArch}`);
@@ -133,6 +136,13 @@ export default async (providedOptions = {}) => {
         }
       });
     }
+  }
+
+  const result = await runHook(forgeConfig, 'postMake', outputs);
+  // If the postMake hooks modifies the locations / names of the outputs it must return
+  // the new locations so that the publish step knows where to look
+  if (Array.isArray(result)) {
+    outputs = result;
   }
 
   return outputs;

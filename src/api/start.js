@@ -6,6 +6,8 @@ import asyncOra from '../util/ora-handler';
 import readPackageJSON from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
+import getForgeConfig from '../util/forge-config';
+import runHook from '../util/hook';
 
 /**
  * @typedef {Object} StartOptions
@@ -61,6 +63,9 @@ export default async (providedOptions = {}) => {
   }
 
   let spawned;
+
+  const forgeConfig = await getForgeConfig(dir);
+  await runHook(forgeConfig, 'generateAssets');
 
   await asyncOra('Launching Application', async () => {
     /* istanbul ignore if  */

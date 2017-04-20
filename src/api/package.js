@@ -8,6 +8,7 @@ import packager from 'electron-packager';
 
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
+import runHook from '../util/hook';
 import ora from '../util/ora';
 import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
@@ -108,9 +109,14 @@ export default async (providedOptions = {}) => {
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
   }
 
+  await runHook(forgeConfig, 'generateAssets');
+  await runHook(forgeConfig, 'prePackage');
+
   d('packaging with options', packageOpts);
 
   await pify(packager)(packageOpts);
+
+  await runHook(forgeConfig, 'postPackage');
 
   packagerSpinner.succeed();
 };
