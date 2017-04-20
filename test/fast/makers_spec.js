@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 describe('makers', () => {
-  describe('supportedPlatforms', () => {
+  describe('supportsPlatform', () => {
     const expected = {
       'darwin/dmg': ['darwin'],
       'generic/zip': ['darwin', 'linux', 'win32'],
@@ -14,8 +14,8 @@ describe('makers', () => {
 
     Object.keys(expected).forEach((maker) => {
       it(`for ${maker} should be correct`, () => {
-        const supportedPlatforms = require(`../../src/makers/${maker}`).supportedPlatforms;
-        expect(supportedPlatforms.sort()).to.deep.equal(expected[maker].sort());
+        const { supportsPlatform } = require(`../../src/makers/${maker}`);
+        expect(supportsPlatform).to.equal(expected[maker].includes(process.platform));
       });
     });
   });

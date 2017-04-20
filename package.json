@@ -107,12 +107,9 @@
     "electron-forge-template-react": "^1.0.2",
     "electron-forge-template-react-typescript": "^1.0.3",
     "electron-forge-template-vue": "^1.0.2",
-    "electron-installer-dmg": "^0.2.0",
     "electron-packager": "^8.5.2",
     "electron-rebuild": "^1.5.7",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
-    "electron-windows-store": "^0.10.1",
-    "electron-winstaller": "^2.5.0",
     "fs-promise": "^2.0.0",
     "github": "^9.0.0",
     "glob": "^7.1.1",
@@ -145,8 +142,11 @@
   },
   "optionalDependencies": {
     "electron-installer-debian": "^0.5.0",
+    "electron-installer-dmg": "^0.2.0",
     "electron-installer-flatpak": "^0.4.0",
-    "electron-installer-redhat": "^0.4.0"
+    "electron-installer-redhat": "^0.4.0",
+    "electron-windows-store": "^0.10.1",
+    "electron-winstaller": "^2.5.0"
   },
   "engines": {
     "node": ">= 6.0"
