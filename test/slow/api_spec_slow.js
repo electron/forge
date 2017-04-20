@@ -251,8 +251,6 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         testMakeTarget(target, true, targetOptionFetcher);
       }
 
-      testMakeTarget('zip', true, () => ({ dir, skipPackage: true, outDir: `${dir}/foo` }));
-
       const dummyMakerPath = `${process.cwd()}/test/fixture/dummy-maker`;
       const dummyOptionFetcher = () => (
         {
