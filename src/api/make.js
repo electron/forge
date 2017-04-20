@@ -69,7 +69,7 @@ export default async (providedOptions = {}) => {
       throw `Could not find a build target with the name: ${target} for the platform: ${platform}`;
     }
 
-    if (platform !== process.platform && (!maker.supportedPlatforms || maker.supportedPlatforms.indexOf(process.platform) === -1)) {
+    if (!maker.supportsPlatform) {
       throw `Cannot build for ${platform} target ${target} from your ${process.platform} device`;
     }
 

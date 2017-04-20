@@ -3,9 +3,8 @@ import path from 'path';
 import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
-import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
 
-export const supportedPlatforms = checkSupportedPlatforms('zip-folder');
+export const supportsPlatform = true;
 
 const zipPromise = (from, to) =>
   new Promise((resolve, reject) => {
