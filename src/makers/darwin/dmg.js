@@ -10,9 +10,9 @@ export default async (dir, appName, targetArch, forgeConfig, packageJSON) => { /
   await ensureFile(outPath);
   const dmgConfig = Object.assign({
     overwrite: true,
+    name: appName,
   }, configFn(forgeConfig.electronInstallerDMG, targetArch), {
     appPath: path.resolve(dir, `${appName}.app`),
-    name: appName,
     out: path.dirname(outPath),
   });
   await pify(electronDMG)(dmgConfig);
