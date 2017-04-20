@@ -1,4 +1,3 @@
-import { createWindowsInstaller } from 'electron-winstaller';
 import fs from 'fs-promise';
 import path from 'path';
 
@@ -9,6 +8,8 @@ import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
 export const supportedPlatforms = checkSupportedPlatforms('electron-winstaller');
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
+  const { createWindowsInstaller } = require('electron-winstaller');
+
   const outPath = path.resolve(dir, `../make/squirrel.windows/${targetArch}`);
   await ensureDirectory(outPath);
 

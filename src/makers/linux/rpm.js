@@ -1,4 +1,3 @@
-import installer from 'electron-installer-redhat';
 import path from 'path';
 import pify from 'pify';
 
@@ -19,6 +18,8 @@ function rpmArch(nodeArch) {
 }
 
 export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
+  const installer = require('electron-installer-redhat');
+
   const arch = rpmArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}-${packageJSON.version}.${arch}.rpm`);
 

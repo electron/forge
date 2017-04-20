@@ -1,4 +1,3 @@
-import electronDMG from 'electron-installer-dmg';
 import path from 'path';
 import pify from 'pify';
 
@@ -10,6 +9,8 @@ import configFn from '../../util/config-fn';
 export const supportedPlatforms = ['darwin'];
 
 export default async ({ dir, appName, targetArch, forgeConfig }) => {
+  const electronDMG = require('electron-installer-dmg');
+
   const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
   await ensureFile(outPath);
   const dmgConfig = Object.assign({

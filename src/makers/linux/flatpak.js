@@ -1,4 +1,3 @@
-import installer from 'electron-installer-flatpak';
 import path from 'path';
 import pify from 'pify';
 
@@ -19,6 +18,8 @@ function flatpakArch(nodeArch) {
 }
 
 export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
+  const installer = require('electron-installer-flatpak');
+
   const arch = flatpakArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.flatpak`);
 
