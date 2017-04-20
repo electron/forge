@@ -1,4 +1,3 @@
-import windowsStore from 'electron-windows-store';
 import fs from 'fs';
 import path from 'path';
 import { spawnPromise, findActualExecutable } from 'spawn-rx';
@@ -49,6 +48,8 @@ export async function createDefaultCertificate(publisherName, outPath) {
 }
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
+  const windowsStore = require('electron-windows-store');
+
   const outPath = path.resolve(dir, `../make/appx/${targetArch}`);
   await ensureDirectory(outPath);
 

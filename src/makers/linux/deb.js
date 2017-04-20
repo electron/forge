@@ -1,4 +1,3 @@
-import installer from 'electron-installer-debian';
 import path from 'path';
 import pify from 'pify';
 
@@ -19,6 +18,8 @@ function debianArch(nodeArch) {
 }
 
 export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
+  const installer = require('electron-installer-debian');
+
   const arch = debianArch(targetArch);
   const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.deb`);
 

@@ -1,7 +1,6 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import pify from 'pify';
-import zipFolder from 'zip-folder';
 
 import { ensureFile } from '../../util/ensure-output';
 import { checkSupportedPlatforms } from '../../util/check-supported-platforms';
@@ -24,6 +23,8 @@ const zipPromise = (from, to) =>
   });
 
 export default async ({ dir, appName, targetPlatform }) => {
+  const zipFolder = require('zip-folder');
+
   const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
   await ensureFile(zipPath);
   switch (targetPlatform) {
