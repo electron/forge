@@ -14,6 +14,7 @@ describe('start', () => {
     resolveStub = sinon.stub();
     spawnStub = sinon.stub();
     start = proxyquire.noCallThru().load('../../src/api/start', {
+      '../util/forge-config': async () => ({}),
       '../util/resolve-dir': async dir => resolveStub(dir),
       '../util/read-package-json': () => Promise.resolve(require('../fixture/dummy_app/package.json')),
       '../util/rebuild': () => Promise.resolve(),
