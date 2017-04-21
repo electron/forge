@@ -5,7 +5,7 @@ import { ensureDirectory } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
 import isInstalled from '../../util/is-installed';
 
-export const supportsPlatform = isInstalled('electron-winstaller');
+export const isSupportedOnCurrentPlatform = async () => isInstalled('electron-winstaller');
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const { createWindowsInstaller } = require('electron-winstaller');

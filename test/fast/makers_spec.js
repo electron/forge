@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 describe('makers', () => {
-  describe('supportsPlatform', () => {
+  describe('isSupportedOnCurrentPlatform', () => {
     const expected = {
       'darwin/dmg': ['darwin'],
       'generic/zip': ['darwin', 'linux', 'win32'],
@@ -12,10 +12,10 @@ describe('makers', () => {
       'win32/squirrel': ['darwin', 'linux', 'win32'],
     };
 
-    Object.keys(expected).forEach((maker) => {
-      it(`for ${maker} should be correct`, () => {
-        const { supportsPlatform } = require(`../../src/makers/${maker}`);
-        expect(supportsPlatform).to.equal(expected[maker].includes(process.platform));
+    Object.keys(expected).forEach(async (maker) => {
+      it(`for ${maker} should be correct`, async () => {
+        const { isSupportedOnCurrentPlatform } = require(`../../src/makers/${maker}`);
+        await expect(isSupportedOnCurrentPlatform()).to.eventually.equal(expected[maker].includes(process.platform));
       });
     });
   });

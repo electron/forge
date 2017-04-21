@@ -4,7 +4,7 @@ import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
 
-export const supportsPlatform = true;
+export const isSupportedOnCurrentPlatform = async () => true;
 
 const zipPromise = (from, to) =>
   new Promise((resolve, reject) => {

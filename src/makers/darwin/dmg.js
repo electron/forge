@@ -6,7 +6,7 @@ import configFn from '../../util/config-fn';
 
 // electron-installer-dmg doesn't set its 'os' field even though it depends on
 // appdmg, which is darwin-only
-export const supportsPlatform = process.platform === 'darwin';
+export const isSupportedOnCurrentPlatform = async () => process.platform === 'darwin';
 
 export default async ({ dir, appName, targetArch, forgeConfig }) => {
   const electronDMG = require('electron-installer-dmg');
