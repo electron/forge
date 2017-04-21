@@ -233,35 +233,41 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
           });
 
           for (const optionsFetcher of options) {
-            if (shouldPass) {
-              it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-                await forge.make(optionsFetcher());
-              });
-            } else {
-              it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-                await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
-              });
-            }
+            it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+              await forge.make(optionsFetcher());
+            });
           }
         });
       };
 
       const targetOptionFetcher = () => ({ dir, skipPackage: true });
       for (const target of [].concat(targets).concat(genericTargets)) {
-        testMakeTarget(target, true, targetOptionFetcher);
+        testMakeTarget(target, targetOptionFetcher);
       }
 
-      const dummyMakerPath = `${process.cwd()}/test/fixture/dummy-maker`;
-      const dummyOptionFetcher = () => (
-        {
-          dir,
-          overrideTargets: [dummyMakerPath],
-          platform: process.platform === 'darwin' ? 'linux' : 'darwin',
-          skipPackage: true,
-        }
-      );
+      describe('make', async () => {
+        it('throws an error when given an unrecognized platform', async () => {
+          await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
+        });
 
-      testMakeTarget('dummy', false, dummyOptionFetcher);
+        it('throws an error when the specified maker doesn\'t support the current platform', async () => {
+          const makerPath = `${process.cwd()}/test/fixture/maker-unsupported`;
+          await expect(forge.make({
+            dir,
+            overrideTargets: [makerPath],
+            skipPackage: true,
+          })).to.eventually.be.rejectedWith(/the maker declared that it cannot run/);
+        });
+
+        it('throws an error when the specified maker doesn\'t implement isSupportedOnCurrentPlatform()', async () => {
+          const makerPath = `${process.cwd()}/test/fixture/maker-incompatible`;
+          await expect(forge.make({
+            dir,
+            overrideTargets: [makerPath],
+            skipPackage: true,
+          })).to.eventually.be.rejectedWith(/incompatible with this version/);
+        });
+      });
     });
 
     after(() => fs.remove(dir));

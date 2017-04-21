@@ -5,7 +5,7 @@ import { ensureFile } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
 import isInstalled from '../../util/is-installed';
 
-export const supportsPlatform = isInstalled('electron-installer-redhat');
+export const isSupportedOnCurrentPlatform = async () => isInstalled('electron-installer-redhat');
 
 function rpmArch(nodeArch) {
   switch (nodeArch) {

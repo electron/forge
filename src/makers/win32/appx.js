@@ -7,7 +7,7 @@ import configFn from '../../util/config-fn';
 
 // electron-windows-store doesn't set its 'os' field even though it only runs on
 // win32
-export const supportsPlatform = process.platform === 'win32';
+export const isSupportedOnCurrentPlatform = async () => process.platform === 'win32';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to

@@ -53,10 +53,14 @@ export default async (providedOptions = {}) => {
     forgeConfig = await getForgeConfig(dir);
   });
 
+  if (!['darwin', 'win32', 'linux'].includes(platform)) {
+    throw new Error(`'${platform}' is an invalid platform. Choices are 'darwin', 'win32' or 'linux'`);
+  }
+
   const makers = {};
   const targets = overrideTargets || forgeConfig.make_targets[platform];
 
-  targets.forEach((target) => {
+  for (const target of targets) {
     const maker = requireSearchRaw(__dirname, [
       `../makers/${platform}/${target}.js`,
       `../makers/generic/${target}.js`,
@@ -67,15 +71,29 @@ export default async (providedOptions = {}) => {
     ]);
 
     if (!maker) {
-      throw `Could not find a build target with the name: ${target} for the platform: ${platform}`;
+      throw new Error([
+        'Could not find a build target with the name: ',
+        `${target} for the platform: ${platform}`,
+      ].join(''));
     }
 
-    if (!maker.supportsPlatform) {
-      throw `Cannot build for ${platform} target ${target} from your ${process.platform} device`;
+    if (!maker.isSupportedOnCurrentPlatform) {
+      throw new Error([
+        `Maker for target ${target} is incompatible with this version of `,
+        'electron-forge, please upgrade or contact the maintainer ',
+        '(needs to implement \'isSupportedOnCurrentPlatform)\')',
+      ].join(''));
     }
 
-    makers[target] = maker.default;
-  });
+    if (!await maker.isSupportedOnCurrentPlatform()) {
+      throw new Error([
+        `Cannot build for ${platform} target ${target}: the maker declared `,
+        `that it cannot run on ${process.platform}`,
+      ].join(''));
+    }
+
+    makers[target] = maker.default || maker;
+  }
 
   if (!skipPackage) {
     info(interactive, 'We need to package your application before we can make it'.green);
@@ -128,7 +146,7 @@ export default async (providedOptions = {}) => {
       // eslint-disable-next-line no-loop-func
       await asyncOra(`Making for target: ${target.cyan} - On platform: ${platform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
-          outputs.push(await (maker.default || maker)({
+          outputs.push(await maker({
             dir: packageDir,
             appName,
             targetPlatform: platform,

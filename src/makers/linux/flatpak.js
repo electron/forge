@@ -5,7 +5,7 @@ import { ensureFile } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
 import isInstalled from '../../util/is-installed';
 
-export const supportsPlatform = isInstalled('electron-installer-flatpak');
+export const isSupportedOnCurrentPlatform = async () => isInstalled('electron-installer-flatpak');
 
 function flatpakArch(nodeArch) {
   switch (nodeArch) {
