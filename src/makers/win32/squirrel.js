@@ -17,12 +17,14 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
     name: appName,
     noMsi: true,
     exe: `${appName}.exe`,
+    setupExe: `${appName}-${packageJSON.version} Setup.exe`,
   }, configFn(forgeConfig.electronWinstallerConfig, targetArch), {
     appDirectory: dir,
     outputDirectory: outPath,
   });
 
   await createWindowsInstaller(winstallerConfig);
+
   const artifacts = [
     path.resolve(outPath, 'RELEASES'),
     path.resolve(outPath, winstallerConfig.setupExe || `${appName}Setup.exe`),

@@ -8,10 +8,10 @@ import configFn from '../../util/config-fn';
 // appdmg, which is darwin-only
 export const isSupportedOnCurrentPlatform = async () => process.platform === 'darwin';
 
-export default async ({ dir, appName, targetArch, forgeConfig }) => {
+export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const electronDMG = require('electron-installer-dmg');
 
-  const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
+  const outPath = path.resolve(dir, '../make', `${appName}-${packageJSON.version}.dmg`);
   await ensureFile(outPath);
   const dmgConfig = Object.assign({
     overwrite: true,
