@@ -75,7 +75,7 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag, platf
     let uploaded = 0;
     await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
       const updateSpinner = () => {
-        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line
+        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line no-param-reassign
       };
 
       await Promise.all(artifacts.map(artifactPath =>
@@ -101,7 +101,7 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag, platf
               body: artifactForm,
               headers: artifactForm.getHeaders(),
             });
-            d('upload successfullfor asset:', artifactPath);
+            d('upload successful for asset:', artifactPath);
             uploaded += 1;
             updateSpinner();
           } catch (err) {
