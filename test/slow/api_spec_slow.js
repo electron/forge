@@ -218,11 +218,14 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         expect(normalPackageJSON).to.have.deep.property('config.forge');
       });
 
-      let targets = [];
-      if (fs.existsSync(path.resolve(__dirname, `../../src/makers/${process.platform}`))) {
-        targets = fs.readdirSync(path.resolve(__dirname, `../../src/makers/${process.platform}`)).map(file => path.parse(file).name);
+      function getMakers(platform) {
+        return fs.readdirSync(path.resolve(__dirname, `../../src/makers/${platform}`)).map(file => path.parse(file).name);
       }
-      const genericTargets = fs.readdirSync(path.resolve(__dirname, '../../src/makers/generic')).map(file => path.parse(file).name);
+
+      const goodMakers = [...getMakers(process.platform), ...getMakers('generic')];
+      const badPlatforms = ['darwin', 'linux', 'win32'].filter(p => p !== process.platform);
+      const badMakers = [];
+      badPlatforms.forEach(platform => badMakers.push(...getMakers(platform)));
 
       const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
         describe(`make (with target=${target})`, async () => {
@@ -233,16 +236,26 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
           });
 
           for (const optionsFetcher of options) {
-            it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-              await forge.make(optionsFetcher());
-            });
+            if (shouldPass) {
+              it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                await forge.make(optionsFetcher());
+              });
+            } else {
+              it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
+              });
+            }
           }
         });
       };
 
       const targetOptionFetcher = () => ({ dir, skipPackage: true });
-      for (const target of [].concat(targets).concat(genericTargets)) {
-        testMakeTarget(target, targetOptionFetcher);
+      for (const maker of goodMakers) {
+        testMakeTarget(maker, true, targetOptionFetcher);
+      }
+
+      for (const maker of badMakers) {
+        testMakeTarget(maker, false, targetOptionFetcher);
       }
 
       describe('make', async () => {
