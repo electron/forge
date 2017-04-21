@@ -21,10 +21,10 @@ const zipPromise = (from, to) =>
     });
   });
 
-export default async ({ dir, appName, targetPlatform }) => {
+export default async ({ dir, appName, targetPlatform, packageJSON }) => {
   const zipFolder = require('zip-folder');
 
-  const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}.zip`);
+  const zipPath = path.resolve(dir, '../make', `${path.basename(dir)}-${packageJSON.version}.zip`);
   await ensureFile(zipPath);
   switch (targetPlatform) {
     // This case is tested but not on the coverage reporting platform
