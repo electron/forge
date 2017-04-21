@@ -81,6 +81,6 @@ export default async (providedOptions = {}) => {
       }
     });
 
-    await publisher(artifacts, packageJSON, forgeConfig, authToken, tag);
+    await publisher(artifacts, packageJSON, forgeConfig, authToken, tag, makeOptions.platform || process.platform, makeOptions.arch || process.arch);
   }
 };
