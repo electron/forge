@@ -110,6 +110,7 @@
     "electron-packager": "^8.5.2",
     "electron-rebuild": "^1.5.7",
     "electron-sudo": "malept/electron-sudo#fix-linux-sudo-detection",
+    "form-data": "^2.1.4",
     "fs-promise": "^2.0.0",
     "github": "^9.0.0",
     "glob": "^7.1.1",
