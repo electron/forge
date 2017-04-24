@@ -1,3 +1,13 @@
+### [2.12.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.12.0) (2017-4-25)
+
+##### New Features
+
+* **maker:** basic hooks for preMake, postMake, generateAssets, prePackage and postPackage ([1a17189b](https://github.com/electron-userland/electron-forge/commit/1a17189b))
+
+##### Bug Fixes
+
+* **maker:** do not enforce the name property on the DMG maker ([1b10fd57](https://github.com/electron-userland/electron-forge/commit/1b10fd57))
+
 #### [2.11.1](https://github.com/electron-userland/electron-forge/releases/tag/v2.11.1) (2017-4-19)
 
 ### [2.11.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.11.0) (2017-4-19)
