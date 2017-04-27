@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-describe('GitHub', () => {
+describe('Install dependencies', () => {
   let install;
   let spawnSpy;
   let hasYarnSpy;

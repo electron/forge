@@ -55,6 +55,8 @@ describe('publish', () => {
       await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')),
       'my_token',
       'my_special_tag',
+      process.platform,
+      process.arch,
     ]);
   });
 
