@@ -131,7 +131,7 @@ describe('start', () => {
     });
 
     it('should remove all "~" from args when in VSCode debug mode', (done) => {
-      process.argv = ['--vscode', '---', '--foo', 'bar', 'this arg exists'];
+      process.argv = ['--vscode', '--', '--foo', 'bar', 'this arg exists'];
       proxyquire.noCallThru().load('../../src/electron-forge-start', {
         './api': {
           start: (startOptions) => {

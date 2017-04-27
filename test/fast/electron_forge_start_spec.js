@@ -86,7 +86,7 @@ describe('electron-forge start', () => {
   });
 
   it('should handle app args', async () => {
-    await runCommand(['-l', '---', '-a', 'foo', '-l']);
+    await runCommand(['-l', '--', '-a', 'foo', '-l']);
     expect(startStub.callCount).to.equal(1);
     expect(startStub.firstCall.args[0]).to.deep.equal({
       dir: process.cwd(),

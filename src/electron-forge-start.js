@@ -9,10 +9,10 @@ import { start } from './api';
   let commandArgs = process.argv;
   let appArgs;
 
-  const tripleDashIndex = process.argv.indexOf('---');
-  if (tripleDashIndex !== -1) {
-    commandArgs = process.argv.slice(0, tripleDashIndex);
-    appArgs = process.argv.slice(tripleDashIndex + 1);
+  const doubleDashIndex = process.argv.indexOf('--');
+  if (doubleDashIndex !== -1) {
+    commandArgs = process.argv.slice(0, doubleDashIndex);
+    appArgs = process.argv.slice(doubleDashIndex + 1);
   }
 
   let dir = process.cwd();
@@ -34,9 +34,9 @@ import { start } from './api';
     .parse(commandArgs);
 
   program.on('--help', () => {
-    console.log("  Any arguments found after '---' will be passed to the Electron app, e.g.");
+    console.log("  Any arguments found after '--' will be passed to the Electron app, e.g.");
     console.log('');
-    console.log('    $ electron-forge /path/to/project -l --- -d -f foo.txt');
+    console.log('    $ electron-forge /path/to/project -l -- -d -f foo.txt');
     console.log('');
     console.log("  will pass the arguments '-d -f foo.txt' to the Electron app");
   });
