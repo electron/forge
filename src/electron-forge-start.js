@@ -58,5 +58,14 @@ import { start } from './api';
   if (program.appPath) opts.appPath = program.appPath;
   if (appArgs) opts.args = appArgs;
 
-  await start(opts);
+  const spawned = await start(opts);
+
+  await new Promise((resolve) => {
+    spawned.on('exit', (code) => {
+      if (code !== 0) {
+        process.exit(code);
+      }
+      resolve();
+    });
+  });
 })();

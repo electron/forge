@@ -76,14 +76,5 @@ export default async (providedOptions = {}) => {
     }
   });
 
-  await new Promise((resolve) => {
-    spawned.on('exit', (code) => {
-      if (code !== 0) {
-        process.exit(code);
-      }
-      resolve();
-    });
-  });
-
   return spawned;
 };
