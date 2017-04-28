@@ -11,16 +11,23 @@ describe('electron-forge start', () => {
   let argv;
   let startStub;
   let runCommand;
+  let childExitCode;
+  let childStub;
 
   beforeEach(() => {
     ({ argv } = process);
 
-    startStub = sinon.stub();
+    childExitCode = 0;
+    childStub = {
+      on: (event, cb) => cb(childExitCode),
+    };
+    startStub = sinon.stub().returns(Promise.resolve(childStub));
+
     runCommand = async (args = []) => {
       process.argv = ['node', 'electron-forge-start'].concat(args);
       return proxyquire.noCallThru().load('../../src/electron-forge-start', {
         commander: new Command(),
-        './api': { start: async opts => startStub(opts) },
+        './api': { start: startStub },
       });
     };
   });
@@ -106,5 +113,21 @@ describe('electron-forge start', () => {
       interactive: true,
       runAsNode: true,
     });
+  });
+
+  it('should exit with the status code of the spawned Electron instance if it is not zero', async () => {
+    childExitCode = 1;
+    const originalExit = process.exit;
+    process.exit = sinon.stub().returns(0);
+
+    await runCommand();
+
+    const getExitCode = new Promise((resolve) => {
+      const check = () => (process.exit.firstCall ? resolve(process.exit.firstCall.args[0]) : setTimeout(check, 1));
+      check();
+    });
+
+    expect(getExitCode).to.eventually.equal(childExitCode);
+    process.exit = originalExit;
   });
 });
