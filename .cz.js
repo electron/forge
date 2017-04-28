@@ -24,4 +24,5 @@ module.exports = {
     { name: 'generic' },
   ],
   allowCustomScopes: true,
+  allowBreakingChanges: ['feat', 'fix'],
 }
