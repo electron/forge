@@ -9,10 +9,16 @@ describe('start', () => {
   let start;
   let resolveStub;
   let spawnStub;
+  let childStub;
+  let childExitCode;
 
   beforeEach(() => {
+    childExitCode = 0;
+    childStub = {
+      on: (event, cb) => cb(childExitCode),
+    };
     resolveStub = sinon.stub();
-    spawnStub = sinon.stub();
+    spawnStub = sinon.stub().returns(childStub);
     start = proxyquire.noCallThru().load('../../src/api/start', {
       '../util/forge-config': async () => ({}),
       '../util/resolve-dir': async dir => resolveStub(dir),
@@ -102,7 +108,6 @@ describe('start', () => {
   it('should pass all args through to the spawned Electron instance', async () => {
     const args = ['magic_arg', 123, 'thingy'];
     resolveStub.returnsArg(0);
-    spawnStub.returns(0);
     await start({
       dir: __dirname,
       interactive: false,
@@ -113,15 +118,32 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(args);
   });
 
+  it('should exit with the status code of the spawned Electron instance if it is not zero', async () => {
+    resolveStub.returnsArg(0);
+    childExitCode = 1;
+
+    const originalExit = process.exit;
+    process.exit = sinon.stub();
+
+    await start({
+      dir: __dirname,
+      interactive: false,
+      enableLogging: true,
+    });
+
+    expect(process.exit.callCount).to.equal(1);
+    expect(process.exit.firstCall.args[0]).to.equal(childExitCode);
+    process.exit = originalExit;
+  });
+
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
-    spawnStub.returns('child');
 
     await expect(start({
       dir: __dirname,
       interactive: false,
       enableLogging: true,
-    })).to.eventually.equal('child');
+    })).to.eventually.equal(childStub);
   });
 
   describe('cli', () => {
