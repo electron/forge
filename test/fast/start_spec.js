@@ -126,8 +126,14 @@ describe('start', () => {
 
   describe('cli', () => {
     let argv;
+    let childExitCode;
+    let childStub;
     beforeEach(() => {
       argv = process.argv;
+      childExitCode = 0;
+      childStub = {
+        on: (event, cb) => cb(childExitCode),
+      };
     });
 
     it('should remove all "~" from args when in VSCode debug mode', (done) => {
@@ -137,7 +143,7 @@ describe('start', () => {
           start: (startOptions) => {
             expect(startOptions.args).to.deep.equal(['--foo', 'bar', 'this arg exists']);
             done();
-            return Promise.resolve();
+            return Promise.resolve(childStub);
           },
         },
       });
