@@ -127,7 +127,7 @@ describe('electron-forge start', () => {
       check();
     });
 
-    expect(getExitCode).to.eventually.equal(childExitCode);
+    await expect(getExitCode).to.eventually.equal(childExitCode);
     process.exit = originalExit;
   });
 });
