@@ -1,3 +1,40 @@
+## [3.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.0) (2017-5-1)
+
+##### Chores
+
+* **undefined:** fix devDependency peer dep versions ([c5c8e9a9](https://github.com/electron-userland/electron-forge/commit/c5c8e9a9))
+* **generic:** add breaking changes prompt to `npm run commit` ([566fd6fb](https://github.com/electron-userland/electron-forge/commit/566fd6fb))
+
+##### Documentation Changes
+
+* **publisher:** add docs for the new ers publisher ([e70405a8](https://github.com/electron-userland/electron-forge/commit/e70405a8))
+
+##### New Features
+
+* **publisher:** add new publisher for electron-release-server ([0c68ebab](https://github.com/electron-userland/electron-forge/commit/0c68ebab))
+* **makers:** Ensure all assets outputted by make are versioned ([6dda5179](https://github.com/electron-userland/electron-forge/commit/6dda5179))
+* **maker:**
+  * create and consume a common util to check makers' supported platforms ([fa53340b](https://github.com/electron-userland/electron-forge/commit/fa53340b))
+  * declare deb maker support for darwin & linux platforms ([f10fbd18](https://github.com/electron-userland/electron-forge/commit/f10fbd18))
+
+##### Bug Fixes
+
+* **start:** exit forge with same status code as Electron if nonzero ([a509f55a](https://github.com/electron-userland/electron-forge/commit/a509f55a))
+* **tests:** make optionFetcher-related tests compile again ([1097f8bd](https://github.com/electron-userland/electron-forge/commit/1097f8bd))
+* **docs:** rm note that package api's platform opt is ignored ([eefa93f0](https://github.com/electron-userland/electron-forge/commit/eefa93f0))
+
+##### Refactors
+
+* **starter:** use double dash instead of triple dash to pass args through ([e3a1be64](https://github.com/electron-userland/electron-forge/commit/e3a1be64))
+* **utils:** filter packages' os declarations to exclude blacklist entries ([fbaec97f](https://github.com/electron-userland/electron-forge/commit/fbaec97f))
+* **maker:** support make for targets on non-host platforms ([f79f6f78](https://github.com/electron-userland/electron-forge/commit/f79f6f78))
+* **util:** extend requireSearch to export a raw search fn ([84f0134b](https://github.com/electron-userland/electron-forge/commit/84f0134b))
+
+##### Tests
+
+* **publisher:** fix publisher tests for new syntax ([c19d1c2a](https://github.com/electron-userland/electron-forge/commit/c19d1c2a))
+* **maker:** add test to confirm dummy maker does not get called ([556deaac](https://github.com/electron-userland/electron-forge/commit/556deaac))
+
 ### [2.12.0](https://github.com/electron-userland/electron-forge/releases/tag/v2.12.0) (2017-4-25)
 
 ##### New Features
