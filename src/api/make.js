@@ -1,5 +1,5 @@
 import 'colors';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 
 import asyncOra from '../util/ora-handler';
@@ -136,7 +136,7 @@ export default async (providedOptions = {}) => {
 
   for (const targetArch of targetArchs) {
     const packageDir = path.resolve(outDir, `${appName}-${platform}-${targetArch}`);
-    if (!(await fs.exists(packageDir))) {
+    if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }
 

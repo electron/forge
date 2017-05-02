@@ -1,7 +1,7 @@
 import 'colors';
 import debug from 'debug';
 import fetch from 'node-fetch';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import nugget from 'nugget';
 import os from 'os';
@@ -130,7 +130,7 @@ export default async (providedOptions = {}) => {
   const filename = `${pathSafeRepo}-${latestRelease.tag_name}-${targetAsset.name}`;
 
   const fullFilePath = path.resolve(tmpdir, filename);
-  if (!await fs.exists(fullFilePath) || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
+  if (!await fs.pathExists(fullFilePath) || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
     await fs.mkdirs(tmpdir);
 
     const nuggetOpts = {

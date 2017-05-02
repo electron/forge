@@ -1,4 +1,4 @@
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
@@ -32,27 +32,27 @@ describe('rebuilder', () => {
 
   it('should have rebuilt top level prod dependencies', async () => {
     const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'ref build meta should exist').to.equal(true);
+    expect(await fs.pathExists(forgeMeta), 'ref build meta should exist').to.equal(true);
   });
 
   it('should have rebuilt children of top level prod dependencies', async () => {
     const forgeMeta = path.resolve(testModulePath, 'node_modules', 'microtime', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'microtime build meta should exist').to.equal(true);
+    expect(await fs.pathExists(forgeMeta), 'microtime build meta should exist').to.equal(true);
   });
 
   it('should have rebuilt children of scoped top level prod dependencies', async () => {
     const forgeMeta = path.resolve(testModulePath, 'node_modules', '@newrelic/native-metrics', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), '@newrelic/native-metrics build meta should exist').to.equal(true);
+    expect(await fs.pathExists(forgeMeta), '@newrelic/native-metrics build meta should exist').to.equal(true);
   });
 
   it('should have rebuilt top level optional dependencies', async () => {
     const forgeMeta = path.resolve(testModulePath, 'node_modules', 'zipfile', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'zipfile build meta should exist').to.equal(true);
+    expect(await fs.pathExists(forgeMeta), 'zipfile build meta should exist').to.equal(true);
   });
 
   it('should not have rebuilt top level devDependencies', async () => {
     const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ffi', 'build', 'Release', '.forge-meta');
-    expect(await fs.exists(forgeMeta), 'ffi build meta should not exist').to.equal(false);
+    expect(await fs.pathExists(forgeMeta), 'ffi build meta should not exist').to.equal(false);
   });
 
   after(async () => {

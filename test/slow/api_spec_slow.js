@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
@@ -31,18 +31,18 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       });
 
       it('should create a new folder with a npm module inside', async () => {
-        expect(await fs.exists(dir), 'the target dir should have been created').to.equal(true);
-        expect(await fs.exists(path.resolve(dir, 'package.json')), 'the package.json file should exist').to.equal(true);
+        expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'package.json')), 'the package.json file should exist').to.equal(true);
       });
 
       it('should have initialized a git repository', async () => {
-        expect(await fs.exists(path.resolve(dir, '.git')), 'the .git folder should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, '.git')), 'the .git folder should exist').to.equal(true);
       });
 
       it('should have installed the initial node_modules', async () => {
-        expect(await fs.exists(path.resolve(dir, 'node_modules')), 'node_modules folder should exist').to.equal(true);
-        expect(await fs.exists(path.resolve(dir, 'node_modules/electron-prebuilt-compile')), 'electron-prebuilt-compile should exist').to.equal(true);
-        expect(await fs.exists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules')), 'node_modules folder should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-prebuilt-compile')), 'electron-prebuilt-compile should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
       });
 
       it('should have set the .compilerc electron version to be a float', async () => {
@@ -77,12 +77,12 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
 
     it('should create dot files correctly', async () => {
-      expect(await fs.exists(dir), 'the target dir should have been created').to.equal(true);
-      expect(await fs.exists(path.resolve(dir, '.bar')), 'the .bar file should exist').to.equal(true);
+      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+      expect(await fs.pathExists(path.resolve(dir, '.bar')), 'the .bar file should exist').to.equal(true);
     });
 
     it('should create deep files correctly', async () => {
-      expect(await fs.exists(path.resolve(dir, 'src/foo.js')), 'the src/foo.js file should exist').to.equal(true);
+      expect(await fs.pathExists(path.resolve(dir, 'src/foo.js')), 'the src/foo.js file should exist').to.equal(true);
     });
 
     describe('lint', () => {
@@ -171,11 +171,11 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     it('can package to outDir without errors', async () => {
       const outDir = `${dir}/foo`;
 
-      expect(await fs.exists(outDir)).to.equal(false);
+      expect(await fs.pathExists(outDir)).to.equal(false);
 
       await forge.package({ dir, outDir });
 
-      expect(await fs.exists(outDir)).to.equal(true);
+      expect(await fs.pathExists(outDir)).to.equal(true);
     });
 
     it('can make from custom outDir without errors', async () => {

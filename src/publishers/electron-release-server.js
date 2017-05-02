@@ -1,7 +1,7 @@
 import debug from 'debug';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 
 import asyncOra from '../util/ora-handler';
