@@ -1,5 +1,5 @@
 import debug from 'debug';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 import readPackageJSON from './read-package-json';
 
@@ -12,7 +12,7 @@ export default async (dir) => {
     prevDir = mDir;
     const testPath = path.resolve(mDir, 'package.json');
     d('searching for project in:', mDir);
-    if (await fs.exists(testPath)) {
+    if (await fs.pathExists(testPath)) {
       const packageJSON = await readPackageJSON(mDir);
 
       if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {

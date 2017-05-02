@@ -1,5 +1,5 @@
 import debug from 'debug';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
@@ -44,7 +44,7 @@ export default async (providedOptions = {}) => {
   asyncOra.interactive = interactive;
 
   d(`Attempting to import project in: ${dir}`);
-  if (!await fs.exists(dir) || !await fs.exists(path.resolve(dir, 'package.json'))) {
+  if (!await fs.pathExists(dir) || !await fs.pathExists(path.resolve(dir, 'package.json'))) {
     throw `We couldn't find a project in: ${dir}`;
   }
 
@@ -194,7 +194,7 @@ export default async (providedOptions = {}) => {
   await writeChanges();
 
   await asyncOra('Fixing .gitignore', async () => {
-    if (await fs.exists(path.resolve(dir, '.gitignore'))) {
+    if (await fs.pathExists(path.resolve(dir, '.gitignore'))) {
       const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
       if (!gitignore.includes(outDir)) {
         await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\n${outDir}/`);
@@ -204,7 +204,7 @@ export default async (providedOptions = {}) => {
 
   let babelConfig = packageJSON.babel;
   const babelPath = path.resolve(dir, '.babelrc');
-  if (!babelConfig && await fs.exists(babelPath)) {
+  if (!babelConfig && await fs.pathExists(babelPath)) {
     babelConfig = JSON.parse(await fs.readFile(babelPath, 'utf8'));
   }
 
@@ -212,7 +212,7 @@ export default async (providedOptions = {}) => {
     await asyncOra('Porting original babel config', async () => {
       let compileConfig = {};
       const compilePath = path.resolve(dir, '.compilerc');
-      if (await fs.exists(compilePath)) {
+      if (await fs.pathExists(compilePath)) {
         compileConfig = JSON.parse(await fs.readFile(compilePath, 'utf8'));
       }
 

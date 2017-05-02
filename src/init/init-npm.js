@@ -1,5 +1,5 @@
 import debug from 'debug';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 import username from 'username';
 

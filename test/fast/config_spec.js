@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 
 import config from '../../src/util/config';
 

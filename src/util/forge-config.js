@@ -1,4 +1,4 @@
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
@@ -30,7 +30,7 @@ const proxify = (object, envPrefix) => {
 export default async (dir) => {
   const packageJSON = await readPackageJSON(dir);
   let forgeConfig = packageJSON.config.forge;
-  if (typeof forgeConfig === 'string' && (await fs.exists(path.resolve(dir, forgeConfig)) || await fs.exists(path.resolve(dir, `${forgeConfig}.js`)))) {
+  if (typeof forgeConfig === 'string' && (await fs.pathExists(path.resolve(dir, forgeConfig)) || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)))) {
     try {
       forgeConfig = require(path.resolve(dir, forgeConfig));
     } catch (err) {

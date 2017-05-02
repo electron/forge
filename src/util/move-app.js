@@ -1,4 +1,4 @@
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
 import pify from 'pify';
@@ -13,7 +13,7 @@ export default async (appPath, targetApplicationPath, spinner, copyInstead = fal
     writeAccess = false;
   }
 
-  if (await fs.exists(targetApplicationPath)) {
+  if (await fs.pathExists(targetApplicationPath)) {
     spinner.stop();
     const { confirm } = await inquirer.createPromptModule()({
       type: 'confirm',

@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 
 import { getMountedImages, mountImage, unmountImage } from '../../util/hdiutil';

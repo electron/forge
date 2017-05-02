@@ -1,4 +1,4 @@
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import path from 'path';
 
 import { ensureDirectory } from '../../util/ensure-output';
@@ -31,11 +31,11 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
     path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-full.nupkg`),
   ];
   const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-delta.nupkg`);
-  if (winstallerConfig.remoteReleases || await fs.exists(deltaPath)) {
+  if (winstallerConfig.remoteReleases || await fs.pathExists(deltaPath)) {
     artifacts.push(deltaPath);
   }
   const msiPath = path.resolve(outPath, winstallerConfig.setupMsi || `${appName}Setup.msi`);
-  if (!winstallerConfig.noMsi && await fs.exists(msiPath)) {
+  if (!winstallerConfig.noMsi && await fs.pathExists(msiPath)) {
     artifacts.push(msiPath);
   }
   return artifacts;

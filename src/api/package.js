@@ -1,6 +1,6 @@
 import 'colors';
 import debug from 'debug';
-import fs from 'fs-promise';
+import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
