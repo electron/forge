@@ -217,12 +217,12 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
           path.resolve(dir, 'out', `Test App-${process.platform}-${process.arch}`, resourcesPath, 'app.asar'),
           'package.json'
         ));
-        expect(cleanPackageJSON).to.not.have.deep.property('config.forge');
+        expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
       });
 
       it('should not affect the actual forge config', async () => {
         const normalPackageJSON = await readPackageJSON(dir);
-        expect(normalPackageJSON).to.have.deep.property('config.forge');
+        expect(normalPackageJSON).to.have.nested.property('config.forge');
       });
 
       function getMakers(platform) {
