@@ -1,3 +1,10 @@
+#### [3.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.1) (2017-5-3)
+
+##### Bug Fixes
+
+* **publisher:** fix ers publisher not publishing when version already exists ([1c643ef9](https://github.com/electron-userland/electron-forge/commit/1c643ef9))
+* **maker:** fix dmg output path and add test to enforce in future ([a41d6db3](https://github.com/electron-userland/electron-forge/commit/a41d6db3))
+
 ## [3.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.0) (2017-5-1)
 
 ##### Chores
