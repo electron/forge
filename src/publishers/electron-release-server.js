@@ -71,46 +71,44 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag, platf
         'Content-Type': 'application/json',
       },
     });
+  }
 
-    let uploaded = 0;
-    await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
-      const updateSpinner = () => {
-        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line no-param-reassign
-      };
+  let uploaded = 0;
+  await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
+    const updateSpinner = () => {
+      uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line no-param-reassign
+    };
 
-      await Promise.all(artifacts.map(artifactPath =>
-        new Promise(async (resolve, reject) => {
-          if (existingVersion) {
-            const existingAsset = existingVersion.assets.find(asset => asset.name === path.basename(artifactPath));
-            if (existingAsset) {
-              d('asset at path:', artifactPath, 'already exists on server');
-              uploaded += 1;
-              updateSpinner();
-              return;
-            }
-          }
-          try {
-            d('attempting to upload asset:', artifactPath);
-            const artifactForm = new FormData();
-            artifactForm.append('token', token);
-            artifactForm.append('version', packageJSON.version);
-            artifactForm.append('platform', ersPlatform(platform, arch));
-            artifactForm.append('file', fs.createReadStream(artifactPath));
-            await authFetch('api/asset', {
-              method: 'POST',
-              body: artifactForm,
-              headers: artifactForm.getHeaders(),
-            });
-            d('upload successful for asset:', artifactPath);
+    await Promise.all(artifacts.map(artifactPath =>
+      new Promise(async (resolve, reject) => {
+        if (existingVersion) {
+          const existingAsset = existingVersion.assets.find(asset => asset.name === path.basename(artifactPath));
+          if (existingAsset) {
+            d('asset at path:', artifactPath, 'already exists on server');
             uploaded += 1;
             updateSpinner();
-          } catch (err) {
-            reject(err);
+            return;
           }
-        })
-      ));
-    });
-  } else {
-    d('version already exists, not publishing');
-  }
+        }
+        try {
+          d('attempting to upload asset:', artifactPath);
+          const artifactForm = new FormData();
+          artifactForm.append('token', token);
+          artifactForm.append('version', packageJSON.version);
+          artifactForm.append('platform', ersPlatform(platform, arch));
+          artifactForm.append('file', fs.createReadStream(artifactPath));
+          await authFetch('api/asset', {
+            method: 'POST',
+            body: artifactForm,
+            headers: artifactForm.getHeaders(),
+          });
+          d('upload successful for asset:', artifactPath);
+          uploaded += 1;
+          updateSpinner();
+        } catch (err) {
+          reject(err);
+        }
+      })
+    ));
+  });
 };
