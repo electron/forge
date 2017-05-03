@@ -1,3 +1,4 @@
+import fs from 'fs-promise';
 import path from 'path';
 import pify from 'pify';
 
@@ -11,7 +12,8 @@ export const isSupportedOnCurrentPlatform = async () => process.platform === 'da
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const electronDMG = require('electron-installer-dmg');
 
-  const outPath = path.resolve(dir, '../make', `${appName}-${packageJSON.version}.dmg`);
+  const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
+  const wantedOutPath = path.resolve(dir, '../make', `${appName}-${packageJSON.version}.dmg`);
   await ensureFile(outPath);
   const dmgConfig = Object.assign({
     overwrite: true,
@@ -21,5 +23,6 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
     out: path.dirname(outPath),
   });
   await pify(electronDMG)(dmgConfig);
-  return [outPath];
+  await fs.rename(outPath, wantedOutPath);
+  return [wantedOutPath];
 };
