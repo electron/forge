@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import asar from 'asar';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -197,6 +198,10 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
     });
 
     it('can package without errors', async () => {
+      const packageJSON = await readPackageJSON(dir);
+      packageJSON.config.forge.electronPackagerConfig.asar = true;
+      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
+
       await forge.package({ dir });
     });
 
@@ -207,9 +212,10 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       }
 
       it('should have deleted the forge config from the packaged app', async () => {
-        const cleanPackageJSON = await readPackageJSON(
-          path.resolve(dir, 'out', `Test App-${process.platform}-${process.arch}`, resourcesPath, 'app')
-        );
+        const cleanPackageJSON = JSON.parse(asar.extractFile(
+          path.resolve(dir, 'out', `Test App-${process.platform}-${process.arch}`, resourcesPath, 'app.asar'),
+          'package.json'
+        ));
         expect(cleanPackageJSON).to.not.have.deep.property('config.forge');
       });
 

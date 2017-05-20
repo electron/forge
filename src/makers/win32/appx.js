@@ -92,4 +92,6 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
   delete opts.makeVersionWinStoreCompatible;
 
   await windowsStore(opts);
+
+  return [path.resolve(outPath, `${opts.packageName}.appx`)];
 };
