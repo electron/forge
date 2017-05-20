@@ -12,17 +12,21 @@ export const isSupportedOnCurrentPlatform = async () => process.platform === 'da
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const electronDMG = require('electron-installer-dmg');
 
-  const outPath = path.resolve(dir, '../make', `${appName}.dmg`);
+  const userConfig = configFn(forgeConfig.electronInstallerDMG, targetArch);
+
+  const outPath = path.resolve(dir, '../make', `${userConfig.name || appName}.dmg`);
   const wantedOutPath = path.resolve(dir, '../make', `${appName}-${packageJSON.version}.dmg`);
   await ensureFile(outPath);
   const dmgConfig = Object.assign({
     overwrite: true,
     name: appName,
-  }, configFn(forgeConfig.electronInstallerDMG, targetArch), {
+  }, userConfig, {
     appPath: path.resolve(dir, `${appName}.app`),
     out: path.dirname(outPath),
   });
   await pify(electronDMG)(dmgConfig);
-  await fs.rename(outPath, wantedOutPath);
+  if (!userConfig.name) {
+    await fs.rename(outPath, wantedOutPath);
+  }
   return [wantedOutPath];
 };
