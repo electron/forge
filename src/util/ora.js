@@ -9,7 +9,7 @@ if (useFakeOra) {
   console.warn('WARNING: DEBUG environment variable detected.  Progress indicators will be sent over electron-forge:lifecycle'.red);
 }
 
-export default useFakeOra ? (name) => {
+export const fakeOra = (name) => {
   const fake = {
     start: () => {
       d('Process Started:', name);
@@ -29,4 +29,6 @@ export default useFakeOra ? (name) => {
     },
   };
   return fake;
-} : realOra;
+};
+
+export default useFakeOra ? fakeOra : realOra;

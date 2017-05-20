@@ -9,7 +9,7 @@ import packager from 'electron-packager';
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
-import ora from '../util/ora';
+import realOra, { fakeOra } from '../util/ora';
 import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
@@ -41,6 +41,8 @@ export default async (providedOptions = {}) => {
     arch: electronHostArch(),
     platform: process.platform,
   }, providedOptions);
+
+  const ora = interactive ? realOra : fakeOra;
 
   const outDir = providedOptions.outDir || path.resolve(dir, 'out');
   let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
