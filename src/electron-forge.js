@@ -8,6 +8,15 @@ import asyncOra from './util/ora-handler';
 import checkSystem from './util/check-system';
 import config from './util/config';
 
+const originalSC = program.executeSubCommand.bind(program);
+program.executeSubCommand = (argv, args, unknown) => {
+  let newArgs = [].concat(args[0]).concat(unknown);
+  if (args.length > 1) {
+    newArgs = args.concat('--').concat(args.slice(1));
+  }
+  return originalSC(argv, newArgs, []);
+};
+
 program
   .version(require('../package.json').version)
   .option('--verbose', 'Enables verbose mode')
