@@ -1,3 +1,20 @@
+#### [3.0.2](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.2) (2017-5-25)
+
+##### Bug Fixes
+
+* **starter:** fix double dash arg pass through ([0379e5fc](https://github.com/electron-userland/electron-forge/commit/0379e5fc))
+* **maker:** fix renaming of DMG output when a custom name is provided ([14cc927a](https://github.com/electron-userland/electron-forge/commit/14cc927a))
+* **tests:** fix appx tests (maker did not return output path) ([8d895cfc](https://github.com/electron-userland/electron-forge/commit/8d895cfc))
+* **initializer:** fix linting install for airbnb style ([b3446184](https://github.com/electron-userland/electron-forge/commit/b3446184))
+
+##### Refactors
+
+* **generic:** replace fs-promise with fs-extra ([012b152f](https://github.com/electron-userland/electron-forge/commit/012b152f))
+
+##### Tests
+
+* **maker:** add tests for the DMG maker to ensure the renaming logic is correct ([8f5f9691](https://github.com/electron-userland/electron-forge/commit/8f5f9691))
+
 #### [3.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.1) (2017-5-3)
 
 ##### Bug Fixes
