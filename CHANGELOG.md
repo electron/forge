@@ -1,3 +1,9 @@
+#### [3.0.3](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.3) (2017-5-26)
+
+##### Bug Fixes
+
+* **initializer:** fix bad logic RE argument parsing from the top level forge command ([774b8769](https://github.com/electron-userland/electron-forge/commit/774b8769))
+
 #### [3.0.2](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.2) (2017-5-25)
 
 ##### Bug Fixes
