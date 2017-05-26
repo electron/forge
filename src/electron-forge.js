@@ -10,11 +10,19 @@ import config from './util/config';
 
 const originalSC = program.executeSubCommand.bind(program);
 program.executeSubCommand = (argv, args, unknown) => {
-  let newArgs = [].concat(args[0]).concat(unknown);
-  if (args.length > 1) {
-    newArgs = args.concat('--').concat(args.slice(1));
+  let indexOfDoubleDash = process.argv.indexOf('--');
+  indexOfDoubleDash = indexOfDoubleDash < 0 ? process.argv.length + 1 : indexOfDoubleDash;
+
+  const passThroughArgs = args.filter(arg => process.argv.indexOf(arg) > indexOfDoubleDash);
+  const normalArgs = args.filter(arg => process.argv.indexOf(arg) <= indexOfDoubleDash);
+
+  let newArgs = args;
+  let newUnknown = unknown;
+  if (passThroughArgs.length > 0) {
+    newArgs = normalArgs.concat(unknown).concat('--').concat(passThroughArgs);
+    newUnknown = [];
   }
-  return originalSC(argv, newArgs, []);
+  return originalSC(argv, newArgs, newUnknown);
 };
 
 program
