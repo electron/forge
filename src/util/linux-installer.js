@@ -1,5 +1,6 @@
 import { spawnSync } from 'child_process';
-import Sudoer from 'electron-sudo';
+import pify from 'pify';
+import sudoPrompt from 'sudo-prompt';
 
 const which = async (type, prog, promise) => {
   if (spawnSync('which', [prog]).status === 0) {
@@ -10,20 +11,6 @@ const which = async (type, prog, promise) => {
 };
 
 export const sudo = (type, prog, args) =>
-  new Promise((resolve, reject) => {
-    const sudoer = new Sudoer({ name: 'Electron Forge' });
-
-    which(type, prog, sudoer.spawn(`${prog} ${args}`)
-      .then((child) => {
-        child.on('exit', async (code) => {
-          if (code !== 0) {
-            console.error(child.output.stdout.toString('utf8').red);
-            console.error(child.output.stderr.toString('utf8').red);
-            return reject(new Error(`${prog} failed with status code ${code}`));
-          }
-          resolve();
-        });
-      }));
-  });
+  which(type, prog, pify(sudoPrompt.exec)(`${prog} ${args}`, { name: 'Electron Forge' }));
 
 export default which;
