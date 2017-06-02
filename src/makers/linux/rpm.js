@@ -21,7 +21,9 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
   const installer = require('electron-installer-redhat');
 
   const arch = rpmArch(targetArch);
-  const outPath = path.resolve(dir, '../make', `${packageJSON.name}-${packageJSON.version}.${arch}.rpm`);
+  const userConfig = configFn(forgeConfig.electronInstallerRedhat, targetArch);
+  const versionedName = `${packageJSON.name}-${packageJSON.version}.${arch}`;
+  const outPath = path.resolve(dir, '../make', `${userConfig.name || versionedName}.rpm`);
 
   await ensureFile(outPath);
   const rpmDefaults = {
@@ -29,7 +31,7 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
     dest: path.dirname(outPath),
     src: dir,
   };
-  const rpmConfig = Object.assign({}, configFn(forgeConfig.electronInstallerRedhat, targetArch), rpmDefaults);
+  const rpmConfig = Object.assign({}, userConfig, rpmDefaults);
 
   await pify(installer)(rpmConfig);
   return [outPath];
