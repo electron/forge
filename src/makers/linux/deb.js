@@ -21,7 +21,9 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
   const installer = require('electron-installer-debian');
 
   const arch = debianArch(targetArch);
-  const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.deb`);
+  const userConfig = configFn(forgeConfig.electronInstallerDebian, targetArch);
+  const versionedName = `${packageJSON.name}_${packageJSON.version}_${arch}`;
+  const outPath = path.resolve(dir, '../make', `${userConfig.name || versionedName}.deb`);
 
   await ensureFile(outPath);
   const debianDefaults = {
@@ -29,7 +31,7 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
     dest: path.dirname(outPath),
     src: dir,
   };
-  const debianConfig = Object.assign({}, configFn(forgeConfig.electronInstallerDebian, targetArch), debianDefaults);
+  const debianConfig = Object.assign({}, userConfig, debianDefaults);
 
   await pify(installer)(debianConfig);
   return [outPath];
