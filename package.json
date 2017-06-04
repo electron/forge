@@ -43,7 +43,6 @@
     "babel-preset-es2015": "^6.16.0",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
-    "chai-fetch-mock": "^1.0.0",
     "commitizen": "^2.8.6",
     "coveralls": "^2.11.15",
     "cross-env": "^4.0.0",

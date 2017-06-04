@@ -1,11 +1,9 @@
 import chai, { expect } from 'chai';
 import fetchMock from 'fetch-mock';
-import chaiFetchMock from 'chai-fetch-mock';
 import chaiAsPromised from 'chai-as-promised';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-chai.use(chaiFetchMock);
 chai.use(chaiAsPromised);
 
 describe('install', () => {
