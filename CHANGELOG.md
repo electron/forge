@@ -1,3 +1,18 @@
+#### [3.0.4](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.4) (2017-6-15)
+
+##### Chores
+
+* **tests:** remove unnecessary chai-fetch-mock dependency ([196a64db](https://github.com/electron-userland/electron-forge/commit/196a64db))
+
+##### Bug Fixes
+
+* **maker:** handle name option for the deb, rpm makers as well as dmg ([d335741a](https://github.com/electron-userland/electron-forge/commit/d335741a))
+* **generic:** add executable permissions to vscode.cmd ([33532f79](https://github.com/electron-userland/electron-forge/commit/33532f79))
+
+##### Refactors
+
+* **installer:** replace electron-sudo with sudo-prompt ([0ea55fab](https://github.com/electron-userland/electron-forge/commit/0ea55fab))
+
 #### [3.0.3](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.3) (2017-5-26)
 
 ##### Bug Fixes
