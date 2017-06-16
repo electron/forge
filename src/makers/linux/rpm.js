@@ -22,8 +22,9 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
 
   const arch = rpmArch(targetArch);
   const userConfig = configFn(forgeConfig.electronInstallerRedhat, targetArch);
-  const versionedName = `${packageJSON.name}-${packageJSON.version}.${arch}`;
-  const outPath = path.resolve(dir, '../make', `${userConfig.name || versionedName}.rpm`);
+  userConfig.options = userConfig.options || {};
+  const versionedName = `${userConfig.options.name || packageJSON.name}-${packageJSON.version}.${arch}`;
+  const outPath = path.resolve(dir, '../make', `${versionedName}.rpm`);
 
   await ensureFile(outPath);
   const rpmDefaults = {

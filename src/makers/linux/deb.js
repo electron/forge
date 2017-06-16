@@ -22,8 +22,9 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
 
   const arch = debianArch(targetArch);
   const userConfig = configFn(forgeConfig.electronInstallerDebian, targetArch);
-  const versionedName = `${packageJSON.name}_${packageJSON.version}_${arch}`;
-  const outPath = path.resolve(dir, '../make', `${userConfig.name || versionedName}.deb`);
+  userConfig.options = userConfig.options || {};
+  const versionedName = `${userConfig.options.name || packageJSON.name}_${packageJSON.version}_${arch}`;
+  const outPath = path.resolve(dir, '../make', `${versionedName}.deb`);
 
   await ensureFile(outPath);
   const debianDefaults = {
