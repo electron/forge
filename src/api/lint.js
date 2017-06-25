@@ -1,6 +1,6 @@
 import 'colors';
 import debug from 'debug';
-import { spawn as yarnOrNPMSpawn } from 'yarn-or-npm';
+import { yarnOrNpmSpawn } from '../util/yarn-or-npm';
 
 import asyncOra from '../util/ora-handler';
 import resolveDir from '../util/resolve-dir';
@@ -40,30 +40,16 @@ export default async (providedOptions = {}) => {
     }
 
     d('executing "run lint -- --color" in dir:', dir);
-    const child = yarnOrNPMSpawn(['run', 'lint', '--', '--color'], {
-      stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
-      cwd: dir,
-    });
-    const output = [];
-    if (process.platform !== 'win32') {
-      child.stdout.on('data', data => output.push(data.toString()));
-      child.stderr.on('data', data => output.push(data.toString().red));
-    }
-    await new Promise((resolve) => {
-      child.on('exit', (code) => {
-        if (code !== 0) {
-          success = false;
-          lintSpinner.fail();
-          if (interactive) {
-            output.forEach(data => process.stdout.write(data));
-            process.exit(code);
-          } else {
-            result = output.join('');
-          }
-        }
-        resolve();
+    try {
+      await yarnOrNpmSpawn(['run', 'lint', '--', '--color'], {
+        stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
+        cwd: dir,
       });
-    });
+    } catch (err) {
+      lintSpinner.fail();
+      success = false;
+      result = err;
+    }
   });
 
   if (!success) {

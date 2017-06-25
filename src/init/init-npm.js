@@ -6,6 +6,7 @@ import username from 'username';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
 import asyncOra from '../util/ora-handler';
+import yarnOrNpm from '../util/yarn-or-npm';
 
 const d = debug('electron-forge:init:npm');
 
@@ -22,6 +23,7 @@ export default async (dir, lintStyle) => {
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
     packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
     packageJSON.config.forge.windowsStoreConfig.name = packageJSON.productName.replace(/-/g, '');
+    packageJSON.config.forge.electronPackagerConfig.packageManager = yarnOrNpm();
     packageJSON.author = await username();
 
     switch (lintStyle) {

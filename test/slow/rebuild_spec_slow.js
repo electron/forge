@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
-import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import { expect } from 'chai';
 
 import rebuild from '../../src/util/rebuild';
+import { yarnOrNpmSpawn, hasYarn } from '../../src/util/yarn-or-npm';
 
 describe('rebuilder', () => {
   const testModulePath = path.resolve(os.tmpdir(), 'electron-forge-rebuild-test');
@@ -14,15 +14,9 @@ describe('rebuilder', () => {
     await fs.remove(testModulePath);
     await fs.mkdirs(testModulePath);
     await fs.writeFile(path.resolve(testModulePath, 'package.json'), await fs.readFile(path.resolve(__dirname, '../fixture/native_app/package.json'), 'utf8'));
-    await new Promise((resolve, reject) => {
-      const child = yarnOrNPMSpawn(hasYarn() ? [] : ['install'], {
-        cwd: testModulePath,
-        stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
-      });
-      child.on('exit', (code) => {
-        if (code === 0) resolve();
-        if (code !== 0) reject(new Error('Failed to install dependencies for test module'));
-      });
+    await yarnOrNpmSpawn(hasYarn() ? [] : ['install'], {
+      cwd: testModulePath,
+      stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
     });
   });
 
