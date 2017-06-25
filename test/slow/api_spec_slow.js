@@ -9,8 +9,9 @@ import proxyquire from 'proxyquire';
 
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
+import yarnOrNpm from '../../src/util/yarn-or-npm';
 
-const installer = process.argv.find(arg => arg.startsWith('--installer=')) || '--installer=system default';
+const installer = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
 });

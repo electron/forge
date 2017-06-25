@@ -6,21 +6,21 @@ describe('Install dependencies', () => {
   let install;
   let spawnSpy;
   let hasYarnSpy;
-  let exitHandler;
+  let spawnPromise;
+  let spawnPromiseResolve;
+  let spawnPromiseReject;
 
   beforeEach(() => {
-    const outOn = (s, fn) => fn('a');
-    const errOn = outOn;
     spawnSpy = sinon.stub();
-    spawnSpy.returns({
-      stdout: { on: outOn },
-      stderr: { on: errOn },
-      on: (s, fn) => { exitHandler = fn; },
+    spawnPromise = new Promise((resolve, reject) => {
+      spawnPromiseResolve = resolve;
+      spawnPromiseReject = reject;
     });
+    spawnSpy.returns(spawnPromise);
     hasYarnSpy = sinon.stub();
     install = proxyquire.noCallThru().load('../../src/util/install-dependencies', {
-      'yarn-or-npm': {
-        spawn: spawnSpy,
+      './yarn-or-npm': {
+        yarnOrNpmSpawn: spawnSpy,
         hasYarn: hasYarnSpy,
       },
     }).default;
@@ -35,14 +35,14 @@ describe('Install dependencies', () => {
     const p = install('void', ['electron']);
     p.then(() => done(new Error('expected install to be rejected')))
       .catch(() => done());
-    exitHandler(1);
+    spawnPromiseReject();
   });
 
   it('should resolve if reject the promise if exit code is 0', (done) => {
     const p = install('void', ['electron']);
     p.then(() => done())
       .catch(() => done(new Error('expected install to be resolved')));
-    exitHandler(0);
+    spawnPromiseResolve();
   });
 
   describe('with yarn', () => {

@@ -1,11 +1,11 @@
 import debug from 'debug';
-import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
+import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
 
 import config from './config';
 
 const d = debug('electron-forge:dependency-installer');
 
-export default (dir, deps, areDev = false, exact = false) => {
+export default async (dir, deps, areDev = false, exact = false) => {
   d('installing', JSON.stringify(deps), 'in:', dir, `dev=${areDev},exact=${exact},withYarn=${hasYarn()}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
@@ -21,20 +21,13 @@ export default (dir, deps, areDev = false, exact = false) => {
     if (areDev) cmd.push('--save-dev');
     if (!areDev) cmd.push('--save');
   }
-  return new Promise((resolve, reject) => {
-    d('executing', JSON.stringify(cmd), 'in:', dir);
-    const child = yarnOrNPMSpawn(cmd, {
+  d('executing', JSON.stringify(cmd), 'in:', dir);
+  try {
+    await yarnOrNpmSpawn(cmd, {
       cwd: dir,
       stdio: config.get('verbose') ? 'inherit' : 'pipe',
     });
-    let output = '';
-    if (!config.get('verbose')) {
-      child.stdout.on('data', (data) => { output += data; });
-      child.stderr.on('data', (data) => { output += data; });
-    }
-    child.on('exit', (code) => {
-      if (code !== 0) return reject(new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${output}`));
-      resolve();
-    });
-  });
+  } catch (err) {
+    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}`);
+  }
 };

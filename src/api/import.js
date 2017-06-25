@@ -2,7 +2,6 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
-import { spawn as yarnOrNPMSpawn, hasYarn } from 'yarn-or-npm';
 
 import initGit from '../init/init-git';
 import { deps, devDeps, exactDevDeps } from '../init/init-npm';
@@ -12,6 +11,7 @@ import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
 import confirmIfInteractive from '../util/confirm-if-interactive';
+import { yarnOrNpmSpawn, hasYarn } from '../util/yarn-or-npm';
 
 const d = debug('electron-forge:import');
 
@@ -149,13 +149,10 @@ export default async (providedOptions = {}) => {
 
   if (electronName) {
     await asyncOra('Pruning deleted modules', async () => {
-      await new Promise((resolve) => {
-        d('attempting to prune node_modules in:', dir);
-        const child = yarnOrNPMSpawn(hasYarn() ? [] : ['prune'], {
-          cwd: dir,
-          stdio: 'ignore',
-        });
-        child.on('exit', () => resolve());
+      d('attempting to prune node_modules in:', dir);
+      await yarnOrNpmSpawn(hasYarn() ? [] : ['prune'], {
+        cwd: dir,
+        stdio: 'ignore',
       });
     });
   }
