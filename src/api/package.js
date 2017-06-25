@@ -5,6 +5,7 @@ import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
 import packager from 'electron-packager';
+import yarnOrNpm from 'yarn-or-npm';
 
 import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
@@ -66,6 +67,7 @@ export default async (providedOptions = {}) => {
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
+    packageManager: yarnOrNpm(),
   }, forgeConfig.electronPackagerConfig, {
     afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
       if (packagerSpinner) {

@@ -107,7 +107,7 @@
     "electron-forge-template-react": "^1.0.2",
     "electron-forge-template-react-typescript": "^1.0.3",
     "electron-forge-template-vue": "^1.0.2",
-    "electron-packager": "^8.5.2",
+    "electron-packager": "^8.7.0",
     "electron-rebuild": "^1.5.7",
     "form-data": "^2.1.4",
     "fs-extra": "^3.0.0",
