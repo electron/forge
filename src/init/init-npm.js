@@ -14,8 +14,8 @@ export const deps = ['electron-compile'];
 export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-transform-async-to-generator'];
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
-export const airbnbDeps = ['eslint', 'eslint-config-airbnb', 'eslint-plugin-import',
-  'eslint-plugin-jsx-a11y', 'eslint-plugin-react'];
+export const airbnbDeps = ['eslint@^3', 'eslint-config-airbnb@^15', 'eslint-plugin-import@^2',
+  'eslint-plugin-jsx-a11y@^5', 'eslint-plugin-react@^7'];
 
 export default async (dir, lintStyle) => {
   await asyncOra('Initializing NPM Module', async () => {
