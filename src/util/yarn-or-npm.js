@@ -8,10 +8,10 @@ const safeYarnOrNpm = () => {
     case 'yarn':
     case 'npm':
       return process.env.NODE_INSTALLER;
-    case undefined:
-      return system;
     default:
-      console.warn(`${logSymbols.warning} Unknown NODE_INSTALLER, using detected installer ${system}`.yellow);
+      if (process.env.NODE_INSTALLER) {
+        console.warn(`${logSymbols.warning} Unknown NODE_INSTALLER, using detected installer ${system}`.yellow);
+      }
       return system;
   }
 };

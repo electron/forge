@@ -11,7 +11,11 @@ describe('yarn-or-npm', () => {
   });
 
   afterEach(() => {
-    process.env.NODE_INSTALLER = nodeInstaller;
+    if (!nodeInstaller) {
+      delete process.env.NODE_INSTALLER;
+    } else {
+      process.env.NODE_INSTALLER = nodeInstaller;
+    }
   });
 
   it('should by default equal the system yarn-or-npm value', () => {
