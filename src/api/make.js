@@ -146,14 +146,21 @@ export default async (providedOptions = {}) => {
       // eslint-disable-next-line no-loop-func
       await asyncOra(`Making for target: ${target.cyan} - On platform: ${platform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
-          outputs.push(await maker({
+          const output = await maker({
             dir: packageDir,
             appName,
             targetPlatform: platform,
             targetArch,
             forgeConfig,
             packageJSON,
-          }));
+          });
+
+          output.platform = platform;
+          output.arch = targetArch;
+          output.packageJSON = packageJSON;
+          output.forgeConfig = forgeConfig;
+
+          outputs.push(output);
         } catch (err) {
           if (err) {
             throw {

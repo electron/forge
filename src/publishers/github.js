@@ -12,7 +12,7 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
   const github = new GitHub(authToken, true);
 
   let release;
-  await asyncOra('Searching for target Release', async () => {
+  await asyncOra('Searching for target release', async () => {
     try {
       release = (await github.getGitHub().repos.getReleases({
         owner: forgeConfig.github_repository.owner,
