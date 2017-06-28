@@ -6,23 +6,10 @@ import asyncOra from '../util/ora-handler';
 
 const d = debug('electron-forge:init:starter-files');
 
-export const copy = (source, target) =>
-  new Promise((resolve, reject) => {
-    d(`copying "${source}" --> "${target}"`);
-    let rd;
-    let wr;
-    const rejectCleanup = (err) => {
-      rd.destroy();
-      wr.end();
-      reject(err);
-    };
-    rd = fs.createReadStream(source);
-    rd.on('error', rejectCleanup);
-    wr = fs.createWriteStream(target);
-    wr.on('error', rejectCleanup);
-    wr.on('finish', resolve);
-    rd.pipe(wr);
-  });
+export const copy = (source, target) => {
+  d(`copying "${source}" --> "${target}"`);
+  fs.copy(source, target);
+};
 
 export default async (dir, lintStyle) => {
   await asyncOra('Copying Starter Files', async () => {
@@ -34,11 +21,11 @@ export default async (dir, lintStyle) => {
     if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
     const srcFiles = ['index.js', 'index.html'];
 
-    rootFiles.forEach(async (file) => {
+    for (const file of rootFiles) {
       await copy(path.resolve(tmplPath, file), path.resolve(dir, file.replace(/^_/, '.')));
-    });
-    srcFiles.forEach(async (file) => {
+    }
+    for (const file of srcFiles) {
       await copy(path.resolve(tmplPath, file), path.resolve(dir, 'src', file));
-    });
+    }
   });
 };
