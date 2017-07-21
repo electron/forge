@@ -44,6 +44,7 @@ describe('electron-forge start', () => {
       interactive: true,
       enableLogging: false,
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -55,6 +56,7 @@ describe('electron-forge start', () => {
       interactive: true,
       enableLogging: false,
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -66,6 +68,7 @@ describe('electron-forge start', () => {
       interactive: true,
       enableLogging: false,
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -78,6 +81,7 @@ describe('electron-forge start', () => {
       interactive: true,
       enableLogging: false,
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -89,6 +93,7 @@ describe('electron-forge start', () => {
       enableLogging: true,
       interactive: true,
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -101,6 +106,7 @@ describe('electron-forge start', () => {
       interactive: true,
       args: ['-a', 'foo', '-l'],
       runAsNode: false,
+      inspect: false,
     });
   });
 
@@ -112,6 +118,19 @@ describe('electron-forge start', () => {
       enableLogging: false,
       interactive: true,
       runAsNode: true,
+      inspect: false,
+    });
+  });
+
+  it('should handle inspect-electron', async () => {
+    await runCommand(['--inspect-electron']);
+    expect(startStub.callCount).to.equal(1);
+    expect(startStub.firstCall.args[0]).to.deep.equal({
+      dir: process.cwd(),
+      enableLogging: false,
+      interactive: true,
+      runAsNode: false,
+      inspect: true,
     });
   });
 
