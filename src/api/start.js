@@ -26,13 +26,14 @@ import runHook from '../util/hook';
  */
 export default async (providedOptions = {}) => {
   // eslint-disable-next-line prefer-const, no-unused-vars
-  let { dir, interactive, enableLogging, appPath, args, runAsNode } = Object.assign({
+  let { dir, interactive, enableLogging, appPath, args, runAsNode, inspect } = Object.assign({
     dir: process.cwd(),
     appPath: '.',
     interactive: false,
     enableLogging: false,
     args: [],
     runAsNode: false,
+    inspect: false,
   }, providedOptions);
   asyncOra.interactive = interactive;
 
@@ -60,6 +61,10 @@ export default async (providedOptions = {}) => {
     spawnOpts.env.ELECTRON_RUN_AS_NODE = true;
   } else {
     delete spawnOpts.env.ELECTRON_RUN_AS_NODE;
+  }
+
+  if (inspect) {
+    args = ['--inspect'].concat(args);
   }
 
   let spawned;

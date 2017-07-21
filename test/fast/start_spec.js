@@ -113,6 +113,21 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(args);
   });
 
+  it('should pass --inspect at the start of the args if inspect is set', async () => {
+    const args = ['magic'];
+    resolveStub.returnsArg(0);
+    spawnStub.returns(0);
+    await start({
+      dir: __dirname,
+      interactive: false,
+      args,
+      inspect: true,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[0]).to.contain('electron');
+    expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(['--inspect'].concat(args));
+  });
+
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
     spawnStub.returns('child');
