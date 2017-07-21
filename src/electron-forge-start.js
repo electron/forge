@@ -23,6 +23,7 @@ import { start } from './api';
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
     .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
     .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
+    .option('-i, --inspect-electron', 'Triggers inspect mode on Electron to allow debugging the main process.  Electron >1.7 only')
     .action((cwd) => {
       if (!cwd) return;
       if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
@@ -46,6 +47,7 @@ import { start } from './api';
     interactive: true,
     enableLogging: !!program.enableLogging,
     runAsNode: !!program.runAsNode,
+    inspect: !!program.inspectElectron,
   };
 
   if (program.vscode && appArgs) {
