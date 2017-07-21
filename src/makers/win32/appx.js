@@ -53,6 +53,8 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
   const outPath = path.resolve(dir, `../make/appx/${targetArch}`);
   await ensureDirectory(outPath);
 
+  const userConfig = configFn(forgeConfig.windowsStoreConfig, targetArch);
+
   const opts = Object.assign({
     publisher: packageJSON.author,
     flatten: false,
@@ -62,8 +64,8 @@ export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) =>
     packageDisplayName: appName,
     packageDescription: packageJSON.description || appName,
     packageExecutable: `app\\${appName}.exe`,
-    windowsKit: path.dirname(findSdkTool('makeappx.exe')),
-  }, configFn(forgeConfig.windowsStoreConfig, targetArch), {
+    windowsKit: userConfig.windowsKit || path.dirname(findSdkTool('makeappx.exe')),
+  }, userConfig, {
     inputDirectory: dir,
     outputDirectory: outPath,
   });
