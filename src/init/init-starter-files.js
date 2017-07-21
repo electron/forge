@@ -6,9 +6,9 @@ import asyncOra from '../util/ora-handler';
 
 const d = debug('electron-forge:init:starter-files');
 
-export const copy = (source, target) => {
+export const copy = async (source, target) => {
   d(`copying "${source}" --> "${target}"`);
-  fs.copy(source, target);
+  await fs.copy(source, target);
 };
 
 export default async (dir, lintStyle) => {
