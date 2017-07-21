@@ -61,7 +61,7 @@ install the `airbnb` linting modules.  If you want to follow the `standard`
 linting rules instead, use the `--lintstyle=standard` argument.
 
 You can also start a project with your
-[favorite framework](https://beta.electronforge.io/templates) with the `--template`
+[favorite framework](https://electronforge.io/templates) with the `--template`
 argument.  E.g. `--template=react`.
 
 ## Importing an existing Project
