@@ -16,6 +16,8 @@ branches:
   only:
   - master
   - /^v\d+\.\d+\.\d+/
+before_install:
+- curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.23.3
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
