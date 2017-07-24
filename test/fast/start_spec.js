@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -31,7 +32,8 @@ describe('start', () => {
       interactive: false,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1][0]).to.contain(`electron-prebuilt-compile${path.sep}lib${path.sep}cli`);
     expect(spawnStub.firstCall.args[2]).to.have.property('cwd', __dirname);
     expect(spawnStub.firstCall.args[2].env).to.not.have.property('ELECTRON_ENABLE_LOGGING');
   });
@@ -42,8 +44,9 @@ describe('start', () => {
       dir: __dirname,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
-    expect(spawnStub.firstCall.args[1][0]).to.equal('.');
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1][0]).to.contain(`electron-prebuilt-compile${path.sep}lib${path.sep}cli`);
+    expect(spawnStub.firstCall.args[1][1]).to.equal('.');
   });
 
   it('should pass electron the app path if specified', async () => {
@@ -53,8 +56,9 @@ describe('start', () => {
       appPath: '/path/to/app.js',
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
-    expect(spawnStub.firstCall.args[1][0]).to.equal('/path/to/app.js');
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1][0]).to.contain(`electron-prebuilt-compile${path.sep}lib${path.sep}cli`);
+    expect(spawnStub.firstCall.args[1][1]).to.equal('/path/to/app.js');
   });
 
   it('should enable electron logging if enableLogging=true', async () => {
@@ -65,7 +69,8 @@ describe('start', () => {
       enableLogging: true,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1][0]).to.contain(`electron-prebuilt-compile${path.sep}lib${path.sep}cli`);
     expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_ENABLE_LOGGING', true);
   });
 
@@ -109,8 +114,8 @@ describe('start', () => {
       args,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
-    expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(args);
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1].slice(2)).to.deep.equal(args);
   });
 
   it('should pass --inspect at the start of the args if inspect is set', async () => {
@@ -124,8 +129,8 @@ describe('start', () => {
       inspect: true,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[0]).to.contain('electron');
-    expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(['--inspect'].concat(args));
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1].slice(2)).to.deep.equal(['--inspect'].concat(args));
   });
 
   it('should resolve with a handle to the spawned instance', async () => {

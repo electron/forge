@@ -73,12 +73,7 @@ export default async (providedOptions = {}) => {
   await runHook(forgeConfig, 'generateAssets');
 
   await asyncOra('Launching Application', async () => {
-    /* istanbul ignore if  */
-    if (process.platform === 'win32') {
-      spawned = spawn(path.resolve(dir, 'node_modules/.bin/electron.cmd'), [appPath].concat(args), spawnOpts);
-    } else {
-      spawned = spawn(path.resolve(dir, 'node_modules/.bin/electron'), [appPath].concat(args), spawnOpts);
-    }
+    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron-prebuilt-compile/lib/cli'), appPath].concat(args), spawnOpts);
   });
 
   return spawned;
