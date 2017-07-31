@@ -28,7 +28,7 @@ describe('dmg maker', () => {
       '../../util/config-fn': config => config,
       '../../util/ensure-output': { ensureFile: ensureFileStub },
       'electron-installer-dmg': eidStub,
-      'fs-promise': {
+      'fs-extra': {
         rename: renameStub,
       },
     }).default;
