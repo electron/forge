@@ -4,7 +4,7 @@ import asyncOra from '../util/ora-handler';
 
 export default async (buildPath, electronVersion, platform, arch) => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
-    const rebuilder = rebuild(buildPath, electronVersion, arch);
+    const rebuilder = rebuild({ buildPath, electronVersion, arch });
     const { lifecycle } = rebuilder;
 
     let found = 0;
