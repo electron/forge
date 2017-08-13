@@ -116,7 +116,7 @@ export default async (providedOptions = {}) => {
 
   d('packaging with options', packageOpts);
 
-  await pify(packager)(packageOpts);
+  await packager(packageOpts);
 
   await runHook(forgeConfig, 'postPackage');
 
