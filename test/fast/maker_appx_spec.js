@@ -1,6 +1,6 @@
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { copy, ensureDir, readFile, remove } from 'fs-promise';
+import fs from 'fs-extra';
 import { expect } from 'chai';
 
 import { getDistinguishedNameFromAuthor, createDefaultCertificate } from '../../src/makers/win32/appx.js';
@@ -10,16 +10,16 @@ describe('appx maker', () => {
     const tmpDir = join(tmpdir(), `electron-forge-maker-appx-test-${Date.now()}`);
 
     before(async () => {
-      await ensureDir(tmpDir);
+      await fs.ensureDir(tmpDir);
     });
 
     after(async () => {
-      await remove(tmpDir);
+      await fs.remove(tmpDir);
     });
 
     if (process.platform === 'win32') {
       it('should create a .pfx file', async () => {
-        await copy(join(__dirname, '..', '..', 'node_modules',
+        await fs.copy(join(__dirname, '..', '..', 'node_modules',
           'electron-windows-store', 'test', 'lib', 'bogus-private-key.pvk'),
           join(tmpDir, 'dummy.pvk'));
         const outputCertPath = await createDefaultCertificate('CN=Test', {
@@ -28,7 +28,7 @@ describe('appx maker', () => {
           install: false,
         });
 
-        const fileContents = await readFile(outputCertPath);
+        const fileContents = await fs.readFile(outputCertPath);
         expect(fileContents).to.be.an.instanceof(Buffer);
         expect(fileContents.length).to.be.above(0);
       });
