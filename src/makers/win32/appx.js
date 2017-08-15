@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import parseAuthor from 'parse-author';
 import windowsStore from 'electron-windows-store';
-import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign.js';
+import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
 
 import { findActualExecutable } from 'spawn-rx';
 import { ensureDirectory } from '../../util/ensure-output';
