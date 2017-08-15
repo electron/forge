@@ -293,14 +293,11 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
           })).to.eventually.be.rejectedWith(/incompatible with this version/);
         });
 
-        it('should succeed when provided comma separated arches', async () => {
+        it('should succeed when provided comma seperated arches', async () => {
           // Darwin only has x64 so we can't do this test on that platform
-          if (process.platform === 'darwin') return;
-
           await forge.make({
             dir,
-            arch: 'ia32,x64',
-            overrideTargets: ['zip'],
+            arch: process.platform === 'darwin' ? 'x64' : 'ia32,x64',
           });
         });
       });
