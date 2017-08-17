@@ -22,7 +22,22 @@ jump right in to Electron development.
 npm install -g electron-forge
 electron-forge init my-new-app
 cd my-new-app
-electron-forge start
+npm start
+```
+
+Alternatively, if you have a more recent version of `npm` or `yarn`, you can use
+[`npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b),
+or
+[`yarn create`](https://yarnpkg.com/blog/2017/05/12/introducing-yarn/).
+
+```bash
+npx electron-forge init my-new-app
+# or
+yarn create electron-app my-new-app
+
+# then
+cd my-new-app
+npm start
 ```
 
 # Project Goals
