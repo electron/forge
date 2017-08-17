@@ -45,6 +45,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules')), 'node_modules folder should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-prebuilt-compile')), 'electron-prebuilt-compile should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-forge')), 'electron-forge should exist').to.equal(true);
       });
 
       it('should have set the .compilerc electron version to be a float', async () => {
