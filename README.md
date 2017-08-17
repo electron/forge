@@ -153,8 +153,16 @@ config object:
 
 ## Configuring `package`
 
-You can set `electronPackagerConfig` with **any** of the options from
-[Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md).
+You can set `electronPackagerConfig` with any of the options from
+[Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md), except:
+
+* `arch`
+* `asar.unpack` (use `asar.unpackDir` instead)
+* `dir`
+* `electronVersion` (uses the exact version specified for `electron-prebuilt-compile` in your `devDependencies`)
+* `out`
+* `platform`
+* `quiet`
 
 **NOTE:** You can also set your `forge` config property of your package.json to point to a JS file that exports the config object:
 
