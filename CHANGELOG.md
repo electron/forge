@@ -1,3 +1,26 @@
+### [3.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v3.2.0) (2017-08-17)
+
+##### Chores
+
+* **generic:**
+  * use the xcode8.3 image for Travis OSX ([c24ae48c](https://github.com/electron-userland/electron-forge/commit/c24ae48c))
+  * upgrade dependencies ([9d17ca9e](https://github.com/electron-userland/electron-forge/commit/9d17ca9e))
+* **tests:** fixup comma arch test ([565fce42](https://github.com/electron-userland/electron-forge/commit/565fce42))
+
+##### Documentation Changes
+
+* **generic:** mention alternate ways of creating new Electron apps with Forge ([419962a8](https://github.com/electron-userland/electron-forge/commit/419962a8))
+* **packager:** list the Packager options that are not configurable ([bb33d9b6](https://github.com/electron-userland/electron-forge/commit/bb33d9b6))
+
+##### New Features
+
+* **initializer:** add Forge as a devDependency to new Electron projects ([6d2cf4b0](https://github.com/electron-userland/electron-forge/commit/6d2cf4b0))
+* **generic:** print a warning if the package manager used is not a known good version ([a4c36fa4](https://github.com/electron-userland/electron-forge/commit/a4c36fa4))
+
+##### Bug Fixes
+
+* **maker:** allow comma seperated arches in make as well as package ([9c69b08b](https://github.com/electron-userland/electron-forge/commit/9c69b08b))
+
 #### [3.0.5](https://github.com/electron-userland/electron-forge/releases/tag/v3.0.5) (2017-6-17)
 
 ##### Bug Fixes
