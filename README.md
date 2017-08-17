@@ -200,7 +200,7 @@ the JS file method mentioned above then you can use functions normally.
 | Target Name | Description | Required Config |
 |-------------|-------------|-----------------|
 | GitHub Releases - `github` | Makes a new release for the current version (if required) and uploads the make artifacts as release assets | `process.env.GITHUB_TOKEN` - A personal access token with access to your releases <br />`forge.github_repository.owner` - The owner of the GitHub repository<br />`forge.github_repository.name` - The name of the GitHub repository <br />`forge.github_repository.draft` - Create the release as a draft, defaults to `true` <br />`forge.github_repository.prerelease` - Identify the release as a prerelease, defaults to `false` |
-| Amazon S3 - `s3` | Uploads your artifacts to the given S3 bucket | `process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY` - Your secret access token for your AWS account _(falls back to the standard `AWS_SECRET_ACCESS_KEY` environment variable)_<br />`forge.s3.accessKey` - Your access key for your AWS account _(falls back to the standard `AWS_ACCESS_KEY_ID` environment variable)_<br />`forge.s3.bucket` - The name of the S3 bucket to upload to<br />`forge.s3.folder` - The folder path to upload to inside your bucket, defaults to your application version<br />`forge.s3.public` - Whether to make the S3 upload public, defaults to `false` |
+| Amazon S3 - `s3` | Uploads your artifacts to the given S3 bucket | `process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY` - Your secret access token for your AWS account _(falls back to the standard `AWS_SECRET_ACCESS_KEY` environment variable)_<br />`forge.s3.accessKeyId` - Your access key for your AWS account _(falls back to the standard `AWS_ACCESS_KEY_ID` environment variable)_<br />`forge.s3.bucket` - The name of the S3 bucket to upload to<br />`forge.s3.folder` - The folder path to upload to inside your bucket, defaults to your application version<br />`forge.s3.public` - Whether to make the S3 upload public, defaults to `false` |
 | [Electron Release Server](https://github.com/ArekSredzki/electron-release-server) - `electron-release-server` |  Makes a new release for the current version and uploads the artifacts to the correct platform/arch in the given version.  If the version already exists no upload will be performed.  The channel is determined from the current version. | `forge.electronReleaseServer.baseUrl` - The base URL of your release server, no trailing slash<br />`forge.electronReleaseServer.username` - The username for the admin panel on your server<br />`forge.electronReleaseServer.password` - The password for the admin panel on your server |
 
 For example:
@@ -218,7 +218,7 @@ For example:
 // s3
 {
   "s3": {
-    "accessKey": "<AWS_ACCESS_KEY>",
+    "accessKeyId": "<AWS_ACCESS_KEY>",
     "bucket": "my_bucket_name",
     "public": true
   }
