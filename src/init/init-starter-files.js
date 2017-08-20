@@ -17,7 +17,7 @@ export default async (dir, lintStyle) => {
 
     d('creating directory:', path.resolve(dir, 'src'));
     await fs.mkdirs(path.resolve(dir, 'src'));
-    const rootFiles = ['_gitignore', '_compilerc'];
+    const rootFiles = ['_gitignore', '_compilerc', '_travis.yml', '_appveyor.yml'];
     if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
     const srcFiles = ['index.js', 'index.html'];
 
