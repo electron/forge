@@ -34,7 +34,9 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
 
       it('should create a new folder with a npm module inside', async () => {
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-        expect(await fs.pathExists(path.resolve(dir, 'package.json')), 'the package.json file should exist').to.equal(true);
+        for (const filename of ['package.json', '.travis.yml', '.appveyor.yml']) {
+          expect(await fs.pathExists(path.resolve(dir, filename)), `the ${filename} file should exist`).to.equal(true);
+        }
       });
 
       it('should have initialized a git repository', async () => {
