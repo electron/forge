@@ -17,40 +17,51 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
 });
 
 describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
+  let dir;
   let dirID = Date.now();
+
+  const ensureTestDirIsNonexistent = async () => {
+    dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
+    dirID += 1;
+    await fs.remove(dir);
+  };
+
+  const beforeInitTest = (params, beforeInit) => {
+    before(async () => {
+      await ensureTestDirIsNonexistent();
+      if (beforeInit) {
+        beforeInit();
+      }
+      await forge.init(Object.assign({}, params, { dir }));
+    });
+  };
+
+  const expectProjectPathExists = async (subPath, pathType) => {
+    expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(true);
+  };
+
   const forLintingMethod = (lintStyle) => {
     describe(`init (with lintStyle=${lintStyle})`, () => {
-      let dir;
-
-      before(async () => {
-        dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
-        dirID += 1;
-        await fs.remove(dir);
-        await forge.init({
-          dir,
-          lintstyle: lintStyle,
-        });
-      });
+      beforeInitTest({ lintStyle });
 
       it('should create a new folder with a npm module inside', async () => {
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-        for (const filename of ['package.json', '.travis.yml', '.appveyor.yml']) {
-          expect(await fs.pathExists(path.resolve(dir, filename)), `the ${filename} file should exist`).to.equal(true);
-        }
+        expectProjectPathExists('package.json', 'file');
       });
 
       it('should have initialized a git repository', async () => {
-        expect(await fs.pathExists(path.resolve(dir, '.git')), 'the .git folder should exist').to.equal(true);
+        expectProjectPathExists('.git', 'folder');
       });
 
       it('should have installed the initial node_modules', async () => {
-        expect(await fs.pathExists(path.resolve(dir, 'node_modules')), 'node_modules folder should exist').to.equal(true);
+        expectProjectPathExists('node_modules', 'folder');
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-prebuilt-compile')), 'electron-prebuilt-compile should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-forge')), 'electron-forge should exist').to.equal(true);
       });
 
       it('should have set the .compilerc electron version to be a float', async () => {
+        expectProjectPathExists('.compilerc', 'file');
         const compilerc = JSON.parse(await fs.readFile(path.resolve(dir, '.compilerc')));
         expect(compilerc.env.development['application/javascript'].presets[0][1].targets.electron).to.be.a('number');
       });
@@ -65,29 +76,30 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   forLintingMethod('airbnb');
   forLintingMethod('standard');
 
-  describe('init (with custom templater)', () => {
-    let dir;
+  describe('init with CI files enabled', () => {
+    beforeInitTest({ copycifiles: true });
 
-    before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
-      dirID += 1;
-      await fs.remove(dir);
+    it('should copy over the CI config files correctly', async () => {
+      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+      expectProjectPathExists('.appveyor.yml', 'file');
+      expectProjectPathExists('.travis.yml', 'file');
+    });
+  });
+
+  describe('init (with custom templater)', () => {
+    beforeInitTest({ template: 'dummy' }, () => {
       execSync('npm link', {
         cwd: path.resolve(__dirname, '../fixture/custom_init'),
-      });
-      await forge.init({
-        dir,
-        template: 'dummy',
       });
     });
 
     it('should create dot files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      expect(await fs.pathExists(path.resolve(dir, '.bar')), 'the .bar file should exist').to.equal(true);
+      expectProjectPathExists('.bar', 'file');
     });
 
     it('should create deep files correctly', async () => {
-      expect(await fs.pathExists(path.resolve(dir, 'src/foo.js')), 'the src/foo.js file should exist').to.equal(true);
+      expectProjectPathExists('src/foo.js', 'file');
     });
 
     describe('lint', () => {
@@ -103,13 +115,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   });
 
   describe('init (with built-in templater)', () => {
-    let dir;
-
-    before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
-      dirID += 1;
-      await fs.remove(dir);
-    });
+    before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing', async () => {
       await forge.init({
@@ -135,13 +141,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   });
 
   describe('init (with a nonexistent templater)', () => {
-    let dir;
-
-    before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
-      dirID += 1;
-      await fs.remove(dir);
-    });
+    before(ensureTestDirIsNonexistent);
 
     it('should fail in initializing', async () => {
       await expect(forge.init({
@@ -156,8 +156,6 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   });
 
   describe('after init', () => {
-    let dir;
-
     before(async () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
       dirID += 1;

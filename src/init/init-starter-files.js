@@ -11,13 +11,14 @@ export const copy = async (source, target) => {
   await fs.copy(source, target);
 };
 
-export default async (dir, lintStyle) => {
+export default async (dir, { lintStyle, copyCIFiles }) => {
   await asyncOra('Copying Starter Files', async () => {
     const tmplPath = path.resolve(__dirname, '../../tmpl');
 
     d('creating directory:', path.resolve(dir, 'src'));
     await fs.mkdirs(path.resolve(dir, 'src'));
-    const rootFiles = ['_gitignore', '_compilerc', '_travis.yml', '_appveyor.yml'];
+    const rootFiles = ['_gitignore', '_compilerc'];
+    if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
     if (lintStyle === 'airbnb') rootFiles.push('_eslintrc');
     const srcFiles = ['index.js', 'index.html'];
 

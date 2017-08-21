@@ -27,10 +27,11 @@ const d = debug('electron-forge:init');
  */
 export default async (providedOptions = {}) => {
   // eslint-disable-next-line prefer-const, no-unused-vars
-  let { dir, interactive, lintstyle, template } = Object.assign({
+  let { dir, interactive, lintstyle, copycifiles, template } = Object.assign({
     dir: process.cwd(),
     interactive: false,
     lintstyle: 'airbnb',
+    copycifiles: false,
     template: null,
   }, providedOptions);
   asyncOra.interactive = interactive;
@@ -47,7 +48,7 @@ export default async (providedOptions = {}) => {
 
   await initDirectory(dir, interactive);
   await initGit(dir);
-  await initStarter(dir, template ? undefined : lintstyle);
+  await initStarter(dir, { lintStyle: template ? undefined : lintstyle, copyCIFiles: copycifiles });
   await initNPM(dir, template ? undefined : lintstyle);
   if (!template) {
     if (lintstyle === 'standard') {
