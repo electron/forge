@@ -79,6 +79,9 @@ You can also start a project with your
 [favorite framework](https://electronforge.io/templates) with the `--template`
 argument.  E.g. `--template=react`.
 
+If you'd like to have pre-made configuration files for Travis CI and AppVeyor CI to automatically
+build and deploy distributables to GitHub, use the `--copy-ci-files` argument.
+
 ## Importing an existing Project
 
 ```bash
