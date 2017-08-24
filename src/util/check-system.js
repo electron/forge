@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import logSymbols from 'log-symbols';
 import semver from 'semver';
 
 import { hasYarn, yarnOrNpmSpawn } from './yarn-or-npm';
@@ -26,31 +25,31 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
-function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions) {
+function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions, ora) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   if (!semver.satisfies(version, versions)) {
-    console.warn(
-      logSymbols.warning,
-      (`You are using ${packageManager}, but not a known good version. The known ` +
-        `versions that work with Electron Forge are: ${versions}`).yellow
+    ora.warn(
+      `You are using ${packageManager}, but not a known good version.\n` +
+      `The known versions that work with Electron Forge are: ${versions}`
     );
   }
 }
 
-async function checkPackageManagerVersion() {
+async function checkPackageManagerVersion(ora) {
   return yarnOrNpmSpawn(['--version'])
     .then((version) => {
       if (hasYarn()) {
-        warnIfPackageManagerIsntAKnownGoodVersion('Yarn', version, YARN_WHITELISTED_VERSIONS);
+        warnIfPackageManagerIsntAKnownGoodVersion('Yarn', version, YARN_WHITELISTED_VERSIONS, ora);
       } else {
-        warnIfPackageManagerIsntAKnownGoodVersion('NPM', version, NPM_WHITELISTED_VERSIONS);
+        warnIfPackageManagerIsntAKnownGoodVersion('NPM', version, NPM_WHITELISTED_VERSIONS, ora);
       }
 
       return true;
     });
 }
 
-export default async () =>
-  (await Promise.all([checkGitExists(), checkNodeVersion(), checkPackageManagerVersion()]))
+export default async function (ora) {
+  return (await Promise.all([checkGitExists(ora), checkNodeVersion(ora), checkPackageManagerVersion(ora)]))
     .every(check => check);
+}
