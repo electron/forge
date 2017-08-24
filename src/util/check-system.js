@@ -17,15 +17,23 @@ async function checkNodeVersion() {
   return Promise.resolve(semver.gt(process.versions.node, '6.0.0'));
 }
 
-const NPM_WHITELISTED_VERSIONS = '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.0';
-const YARN_WHITELISTED_VERSIONS = '0.23.3 || 0.24.6';
+const NPM_WHITELISTED_VERSIONS = {
+  all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.0',
+};
+const YARN_WHITELISTED_VERSIONS = {
+  all: '0.23.3 || 0.24.6',
+  darwin: '0.27.5',
+  linux: '0.27.5',
+};
 
 function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions) {
-  if (!semver.satisfies(version, whitelistedVersions)) {
+  const osVersions = whitelistedVersions[process.platform];
+  const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
+  if (!semver.satisfies(version, versions)) {
     console.warn(
       logSymbols.warning,
       (`You are using ${packageManager}, but not a known good version. The known ` +
-        `versions that work with Electron Forge are: ${whitelistedVersions}`).yellow
+        `versions that work with Electron Forge are: ${versions}`).yellow
     );
   }
 }
