@@ -57,8 +57,8 @@ tab.start();
 if (process.argv[2] !== 'completion') {
   (async () => {
     let goodSystem;
-    await asyncOra('Checking your system', async () => {
-      goodSystem = await checkSystem();
+    await asyncOra('Checking your system', async (ora) => {
+      goodSystem = await checkSystem(ora);
     });
 
     if (!goodSystem) {
