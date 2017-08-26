@@ -13,7 +13,7 @@ import { getMakeOptions } from './electron-forge-make';
     .arguments('[cwd]')
     .option('--auth-token', 'Authorization token for your publisher target (if required)')
     .option('--tag', 'The tag to publish to on GitHub')
-    .option('--target [target]', 'The deployment target, defaults to "github"')
+    .option('--target [target[,target...]]', 'The comma-separated deployment targets, defaults to "github"')
     .allowUnknownOption(true)
     .action((cwd) => {
       if (!cwd) return;
@@ -31,7 +31,7 @@ import { getMakeOptions } from './electron-forge-make';
     authToken: program.authToken,
     tag: program.tag,
   };
-  if (program.target) publishOpts.target = program.target.split(',');
+  if (program.target) publishOpts.publishTargets = program.target.split(',');
 
   publishOpts.makeOptions = getMakeOptions();
 

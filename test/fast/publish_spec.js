@@ -72,7 +72,7 @@ describe('publish', () => {
     await publish({
       dir: __dirname,
       interactive: false,
-      target: 'void',
+      publishTargets: ['void'],
     });
     expect(requireSearchStub.firstCall.args[1][0]).to.equal('../publishers/void.js');
   });
@@ -81,7 +81,7 @@ describe('publish', () => {
     await publish({
       dir: __dirname,
       interactive: false,
-      target: ['void', 'nowhere', 'black_hole', 'everywhere'],
+      publishTargets: ['void', 'nowhere', 'black_hole', 'everywhere'],
     });
     expect(requireSearchStub.getCall(0).args[1][0]).to.equal('../publishers/void.js');
     expect(requireSearchStub.getCall(1).args[1][0]).to.equal('../publishers/nowhere.js');
