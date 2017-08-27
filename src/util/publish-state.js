@@ -34,13 +34,7 @@ export default class PublishState {
     const id = crypto.createHash('md5').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
       const state = new PublishState(path.resolve(directory, id, 'null'), '', false);
-      state.setState({
-        paths: Array.from(artifact),
-        platform: artifact.platform,
-        arch: artifact.arch,
-        packageJSON: artifact.packageJSON,
-        forgeConfig: artifact.forgeConfig,
-      });
+      state.setState(artifact);
       await state.saveToDisk();
     }
   }

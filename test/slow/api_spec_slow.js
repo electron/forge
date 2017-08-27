@@ -247,7 +247,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
             if (shouldPass) {
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
-                for (const outputArr of outputs) {
+                for (const outputArr of outputs.artifacts) {
                   for (const output of outputArr) {
                     expect(await fs.exists(output)).to.equal(true);
                   }

@@ -60,12 +60,12 @@ const publish = async (providedOptions = {}) => {
 
   let packageJSON = await readPackageJSON(dir);
 
-  let forgeConfig = await getForgeConfig(dir);
+  const forgeConfig = await getForgeConfig(dir);
 
   if (dryRunResume) {
     d('attempting to resume from dry run');
     const publishes = await PublishState.loadFromDirectory(dryRunDir);
-    for (const states of publishes) {
+    for (const publishStates of publishes) {
       d('publishing for given state set');
       await publish({
         dir,
@@ -74,9 +74,9 @@ const publish = async (providedOptions = {}) => {
         tag,
         target,
         makeOptions,
-        dryRun,
+        dryRun: false,
         dryRunResume: false,
-        makeResults: states.map(({ state }) => state),
+        makeResults: publishStates.map(({ state }) => state),
       });
     }
     return;
@@ -92,22 +92,19 @@ const publish = async (providedOptions = {}) => {
 
     for (const makeResult of makeResults) {
       packageJSON = makeResult.packageJSON;
-      forgeConfig = makeResult.forgeConfig;
       makeOptions.platform = makeResult.platform;
       makeOptions.arch = makeResult.arch;
 
-      for (const makePath of makeResult.paths) {
+      for (const makePath of makeResult.artifacts) {
         if (!await fs.exists(makePath)) {
           throw `Attempted to resume a dry run but an artifact (${makePath}) could not be found`;
         }
       }
     }
-
-    makeResults = makeResults.map(makeResult => makeResult.paths);
   }
 
   if (dryRun) {
-    d('saving results of make in dry run state');
+    d('saving results of make in dry run state', makeResults);
     await fs.remove(dryRunDir);
     await PublishState.saveToDirectory(dryRunDir, makeResults);
     return;
@@ -118,8 +115,8 @@ const publish = async (providedOptions = {}) => {
     throw 'Failed to locate publishable Electron application';
   }
 
-  const artifacts = makeResults.reduce((accum, arr) => {
-    accum.push(...arr);
+  const artifacts = makeResults.reduce((accum, makeResult) => {
+    accum.push(...makeResult.artifacts);
     return accum;
   }, []);
 
