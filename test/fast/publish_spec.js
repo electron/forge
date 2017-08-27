@@ -44,7 +44,7 @@ describe('publish', () => {
   });
 
   it('should call the resolved publisher with the appropriate args', async () => {
-    makeStub.returns([['artifact1', 'artifact2']]);
+    makeStub.returns([{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -97,21 +97,20 @@ describe('publish', () => {
 
     const fakeMake = (platform) => {
       const ret = [
-        [
+        { artifacts: [
           path.resolve(dir, `artifact1-${platform}`),
           path.resolve(dir, `artifact2-${platform}`),
-        ], [
+        ] }, { artifacts: [
           path.resolve(dir, `artifact3-${platform}`),
-        ],
-        [
+        ] },
+        { artifacts: [
           path.resolve(dir, `artifact4-${platform}`),
-        ],
+        ] },
       ];
       const state = {
         platform,
         arch: 'x64',
-        packageJSON: { state: 0 },
-        forgeConfig: { config: 0 },
+        packageJSON: { state: platform === 'darwin' ? 1 : 0 },
       };
       Object.assign(ret[0], state);
       Object.assign(ret[1], state);
@@ -166,14 +165,13 @@ describe('publish', () => {
             const contents = await fs.readFile(jsonPath, 'utf8');
             expect(() => JSON.parse(contents), 'Should be valid JSON').to.not.throw();
             const data = JSON.parse(contents);
-            expect(data).to.have.property('paths');
+            expect(data).to.have.property('artifacts');
             expect(data).to.have.property('platform');
             expect(data).to.have.property('arch');
             expect(data).to.have.property('packageJSON');
-            expect(data).to.have.property('forgeConfig');
 
             // Make the artifacts for later
-            for (const artifactPath of data.paths) {
+            for (const artifactPath of data.artifacts) {
               await fs.writeFile(artifactPath, artifactPath);
             }
           }
@@ -201,27 +199,25 @@ describe('publish', () => {
         expect(publisher.callCount).to.equal(2, 'should call once for each platform (make run)');
         const darwinIndex = publisher.firstCall.args[5] === 'darwin' ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
-        expect(publisher.getCall(darwinIndex).args.slice(1)).to.deep.equal([
-          { state: 0 },
-          { config: 0 },
+        expect(publisher.getCall(darwinIndex).args[1]).to.deep.equal({ state: 1 });
+        expect(publisher.getCall(darwinIndex).args.slice(3)).to.deep.equal([
           undefined,
           null,
           'darwin',
           'x64',
         ]);
         expect(publisher.getCall(darwinIndex).args[0].sort()).to.deep.equal(
-          fakeMake('darwin').reduce((accum, val) => accum.concat(val), []).sort()
+          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
-        expect(publisher.getCall(win32Index).args.slice(1)).to.deep.equal([
-          { state: 0 },
-          { config: 0 },
+        expect(publisher.getCall(win32Index).args[1]).to.deep.equal({ state: 0 });
+        expect(publisher.getCall(win32Index).args.slice(3)).to.deep.equal([
           undefined,
           null,
           'win32',
           'x64',
         ]);
         expect(publisher.getCall(win32Index).args[0].sort()).to.deep.equal(
-          fakeMake('win32').reduce((accum, val) => accum.concat(val), []).sort()
+          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
       });
     });
