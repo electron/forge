@@ -25,10 +25,18 @@ import packager from './package';
  */
 
 /**
+ * @typedef {Object} MakeResult
+ * @property {Array<string>} artifacts An array of paths to artifacts generated for this make run
+ * @property {Object} packageJSON The state of the package.json file when the make happened
+ * @property {string} platform The platform this make run was for
+ * @property {string} arch The arch this make run was for
+ */
+
+/**
  * Make distributables for an Electron application.
  *
  * @param {MakeOptions} providedOptions - Options for the make method
- * @return {Promise} Will resolve when the make process is complete
+ * @return {Promise<Array<MakeResult>>} Will resolve when the make process is complete
  */
 export default async (providedOptions = {}) => {
   // eslint-disable-next-line prefer-const, no-unused-vars
