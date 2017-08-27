@@ -31,7 +31,7 @@ export default class PublishState {
   }
 
   static async saveToDirectory(directory, artifacts) {
-    const id = crypto.createHash('md5').update(JSON.stringify(artifacts)).digest('hex');
+    const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
       const state = new PublishState(path.resolve(directory, id, 'null'), '', false);
       state.setState(artifact);
@@ -47,7 +47,7 @@ export default class PublishState {
 
   generateHash() {
     const content = JSON.stringify(this.state || {});
-    return crypto.createHash('md5').update(content).digest('hex');
+    return crypto.createHash('SHA256').update(content).digest('hex');
   }
 
   setState(state) {
