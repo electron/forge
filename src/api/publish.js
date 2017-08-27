@@ -23,9 +23,9 @@ const d = debug('electron-forge:publish');
  * @property {Array<string>} [publishTargets=[github]] The publish targets
  * @property {MakeOptions} [makeOptions] Options object to passed through to make()
  * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
- * @property {boolean} [dryRun=false] Whether or not to generate dry run meta data and not actually publish
- * @property {boolean} [dryRunResume=false] Whether or not to attempt to resume a previously saved dryRun and publish
- * @property {Object} [makeResults=null] Provide results from make so that the publish step doesn't run make itself
+ * @property {boolean} [dryRun=false] Whether to generate dry run meta data but not actually publish
+ * @property {boolean} [dryRunResume=false] Whether or not to attempt to resume a previously saved `dryRun` and publish
+ * @property {MakeResult} [makeResults=null] Provide results from make so that the publish step doesn't run make itself
  */
 
 /**
@@ -72,7 +72,7 @@ const publish = async (providedOptions = {}) => {
         interactive,
         authToken,
         tag,
-        target,
+        publishTargets,
         makeOptions,
         dryRun: false,
         dryRunResume: false,
