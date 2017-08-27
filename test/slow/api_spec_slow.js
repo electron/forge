@@ -271,7 +271,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         testMakeTarget(maker, false, targetOptionFetcher);
       }
 
-      describe('make', () => {
+      describe('make', async () => {
         it('throws an error when given an unrecognized platform', async () => {
           await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
         });
@@ -297,6 +297,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
         it('should succeed when provided comma separated arches', async () => {
           // Darwin only has x64 so we can't do this test on that platform
           if (process.platform === 'darwin') return;
+          await fs.remove(path.resolve(dir, 'out'));
 
           await forge.make({
             dir,
