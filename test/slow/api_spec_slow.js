@@ -77,7 +77,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
   forLintingMethod('standard');
 
   describe('init with CI files enabled', () => {
-    beforeInitTest({ copycifiles: true });
+    beforeInitTest({ copyCIFiles: true });
 
     it('should copy over the CI config files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
