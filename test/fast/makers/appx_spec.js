@@ -3,7 +3,7 @@ import { join } from 'path';
 import fs from 'fs-extra';
 import { expect } from 'chai';
 
-import { getDistinguishedNameFromAuthor, createDefaultCertificate } from '../../src/makers/win32/appx.js';
+import { getDistinguishedNameFromAuthor, createDefaultCertificate } from '../../../src/makers/win32/appx';
 
 describe('appx maker', () => {
   describe('createDefaultCertificate', () => {
