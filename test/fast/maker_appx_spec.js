@@ -19,7 +19,7 @@ describe('appx maker', () => {
 
     if (process.platform === 'win32') {
       it('should create a .pfx file', async () => {
-        await fs.copy(join(__dirname, '..', '..', 'node_modules',
+        await fs.copy(join(__dirname, '..', '..', '..', 'node_modules',
           'electron-windows-store', 'test', 'lib', 'bogus-private-key.pvk'),
           join(tmpDir, 'dummy.pvk'));
         const outputCertPath = await createDefaultCertificate('CN=Test', {

@@ -7,6 +7,7 @@ import path from 'path';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
+import { createDefaultCertificate } from '../../src/makers/win32/appx';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
@@ -166,6 +167,16 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       packageJSON.productName = 'Test App';
       packageJSON.config.forge.electronPackagerConfig.asar = false;
       packageJSON.config.forge.windowsStoreConfig.packageName = 'TestApp';
+      if (process.platform === 'win32') {
+        await fs.copy(
+          path.join(__dirname, '..', '..', 'node_modules', 'electron-windows-store', 'test', 'lib', 'bogus-private-key.pvk'),
+          path.join(dir, 'default.pvk')
+        );
+        packageJSON.config.forge.windowsStoreConfig.devCert = await createDefaultCertificate(
+          'CN=Test Author',
+          { certFilePath: dir }
+        );
+      }
       packageJSON.homepage = 'http://www.example.com/';
       packageJSON.author = 'Test Author';
       await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
