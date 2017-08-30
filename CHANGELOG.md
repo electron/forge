@@ -1,3 +1,44 @@
+## [4.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.0) (2017-08-30)
+
+##### Chores
+
+* **publisher:** use SHA256 instead of md5 ([c69db80f](https://github.com/electron-userland/electron-forge/commit/c69db80f))
+* **generic:** upgrade Electron Packager to 9.x ([6275d2bf](https://github.com/electron-userland/electron-forge/commit/6275d2bf))
+
+##### Documentation Changes
+
+* **publisher:**
+  * improve docs for publish function ([7766a27c](https://github.com/electron-userland/electron-forge/commit/7766a27c))
+  * mention that multiple targets are allowed ([3ec0cfa6](https://github.com/electron-userland/electron-forge/commit/3ec0cfa6))
+  * fix S3 config key typo ([4225683b](https://github.com/electron-userland/electron-forge/commit/4225683b))
+* **maker:** document the return result of make ([5399f500](https://github.com/electron-userland/electron-forge/commit/5399f500))
+
+##### New Features
+
+* **publisher:** adds dryRun and resumeDryRun to the API to allow post-make publishes ([288edbc1](https://github.com/electron-userland/electron-forge/commit/288edbc1))
+* **initializer:**
+  * only copy CI files if specified ([fd6f2f9b](https://github.com/electron-userland/electron-forge/commit/fd6f2f9b))
+  * add Travis/AppVeyor CI files to default template ([296bdde8](https://github.com/electron-userland/electron-forge/commit/296bdde8))
+
+##### Bug Fixes
+
+* **generic:**
+  * clean up package manager warning output ([894ed0a9](https://github.com/electron-userland/electron-forge/commit/894ed0a9))
+  * add yarn 0.27.5 to the whitelist, but only for darwin/linux ([88b92fce](https://github.com/electron-userland/electron-forge/commit/88b92fce))
+  * fix installing tab completion when installing Forge locally ([7ea49812](https://github.com/electron-userland/electron-forge/commit/7ea49812))
+
+##### Refactors
+
+* **publisher:**
+  * make dryRun object storage make more sense ([f8d807ed](https://github.com/electron-userland/electron-forge/commit/f8d807ed))
+  * rename target option to publishTargets in API ([4b68880d](https://github.com/electron-userland/electron-forge/commit/4b68880d))
+* **initializer:** make init options camelcase ([f4459822](https://github.com/electron-userland/electron-forge/commit/f4459822))
+
+##### Tests
+
+* **maker:** Fix make test for new return type ([d6393567](https://github.com/electron-userland/electron-forge/commit/d6393567))
+* **publisher:** fix dry run specs ([d2085812](https://github.com/electron-userland/electron-forge/commit/d2085812))
+
 ### [3.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v3.2.0) (2017-08-17)
 
 ##### Chores
