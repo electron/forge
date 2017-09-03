@@ -10,7 +10,7 @@ import yarnOrNpm from '../util/yarn-or-npm';
 
 const d = debug('electron-forge:init:npm');
 
-export const deps = ['electron-compile'];
+export const deps = ['electron-compile', 'electron-squirrel-startup'];
 export const devDeps = ['babel-preset-env', 'babel-preset-react', 'babel-plugin-transform-async-to-generator', 'electron-forge'];
 export const exactDevDeps = ['electron-prebuilt-compile'];
 export const standardDeps = ['standard'];
