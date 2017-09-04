@@ -1,3 +1,9 @@
+#### [4.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.1) (2017-9-5)
+
+##### Bug Fixes
+
+* **generic:** tabtab install script fails on non-*nix systems ([fc3c0301](https://github.com/electron-userland/electron-forge/commit/fc3c0301))
+
 ## [4.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.0) (2017-08-30)
 
 ##### Chores
