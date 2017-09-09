@@ -1,3 +1,4 @@
+import 'colors';
 import debug from 'debug';
 import logSymbols from 'log-symbols';
 import realOra from 'ora';
