@@ -31,7 +31,7 @@ export default async (dir, lintStyle) => {
         packageJSON.scripts.lint = 'standard';
         break;
       case 'airbnb':
-        packageJSON.scripts.lint = 'eslint src';
+        packageJSON.scripts.lint = 'eslint src --color';
         break;
       default:
         packageJSON.scripts.lint = 'echo "No linting configured"';

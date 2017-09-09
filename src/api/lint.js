@@ -39,9 +39,9 @@ export default async (providedOptions = {}) => {
       throw 'Failed to locate lintable Electron application';
     }
 
-    d('executing "run lint -- --color" in dir:', dir);
+    d('executing "run lint" in dir:', dir);
     try {
-      await yarnOrNpmSpawn(['run', 'lint', '--', '--color'], {
+      await yarnOrNpmSpawn(['run', 'lint'], {
         stdio: process.platform === 'win32' ? 'inherit' : 'pipe',
         cwd: dir,
       });
