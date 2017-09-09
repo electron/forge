@@ -20,7 +20,7 @@ const NPM_WHITELISTED_VERSIONS = {
   all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.0',
 };
 const YARN_WHITELISTED_VERSIONS = {
-  all: '0.23.3 || 0.24.6',
+  all: '0.23.3 || 0.24.6 || >= 1.0.0',
   darwin: '0.27.5',
   linux: '0.27.5',
 };
