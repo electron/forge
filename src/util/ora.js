@@ -1,4 +1,5 @@
 import debug from 'debug';
+import logSymbols from 'log-symbols';
 import realOra from 'ora';
 
 const d = debug('electron-forge:lifecycle');
@@ -14,6 +15,9 @@ export const fakeOra = (name) => {
     start: () => {
       d('Process Started:', name);
       return fake;
+    },
+    warn: (msg) => {
+      console.warn(logSymbols.warning, msg.yellow);
     },
     fail: () => {
       d(`Process Failed: ${name}`.red);
