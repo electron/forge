@@ -1,3 +1,13 @@
+#### [4.0.2](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.2) (2017-09-10)
+
+##### Bug Fixes
+
+* **generic:** whitelist yarn >= 1.0.0 ([36bc34ad](https://github.com/electron-userland/electron-forge/commit/36bc34ad))
+* **linter:** don't pass --color to linters that don't support it ([66354fb6](https://github.com/electron-userland/electron-forge/commit/66354fb6))
+* **tests:**
+  * use fakeOra properly in system spec ([bb4c7875](https://github.com/electron-userland/electron-forge/commit/bb4c7875))
+  * stub ora.warn ([969a0359](https://github.com/electron-userland/electron-forge/commit/969a0359))
+
 #### [4.0.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.1) (2017-9-5)
 
 ##### Bug Fixes
