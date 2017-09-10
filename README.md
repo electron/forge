@@ -118,8 +118,12 @@ electron-forge make
 ```
 
 This will generate platform specific distributables (installers, distribution
-packages, etc.) for you. Note that you can only generate distributables for your
-current platform.
+packages, etc.) for you. By default, you can only generate distributables
+for your current platform. If you want to specify platform / arch, use the
+`--platform=<platform>` and `--arch=<arch>` arguments, but _please note that
+some distributables are not available to be built on anything but the platform
+that is targeted. For example, `appx` (Windows Store) distributables can only
+be built on Windows._
 
 ## Linting your Project
 
