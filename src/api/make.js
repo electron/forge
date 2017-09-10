@@ -7,6 +7,7 @@ import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { info, warn } from '../util/messages';
+import parseArchs from '../util/parse-archs';
 import readPackageJSON from '../util/read-package-json';
 import { requireSearchRaw } from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
@@ -116,25 +117,7 @@ export default async (providedOptions = {}) => {
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
 
-  const declaredArch = arch;
-
   info(interactive, 'Making for the following targets:', `${targets.join(', ')}`.cyan);
-
-  let targetArchs = declaredArch.split(',');
-  if (declaredArch === 'all') {
-    switch (platform) {
-      case 'darwin':
-        targetArchs = ['x64'];
-        break;
-      case 'linux':
-        targetArchs = ['ia32', 'x64', 'armv7l'];
-        break;
-      case 'win32':
-      default:
-        targetArchs = ['ia32', 'x64'];
-        break;
-    }
-  }
 
   const packageJSON = await readPackageJSON(dir);
   const appName = forgeConfig.electronPackagerConfig.name || packageJSON.productName || packageJSON.name;
@@ -142,7 +125,7 @@ export default async (providedOptions = {}) => {
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of targetArchs) {
+  for (const targetArch of parseArchs(platform, arch, packageJSON.devDependencies['electron-prebuilt-compile'])) {
     const packageDir = path.resolve(outDir, `${appName}-${platform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
