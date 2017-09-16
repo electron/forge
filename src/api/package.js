@@ -5,8 +5,8 @@ import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
 import packager from 'electron-packager';
+import { hostArch } from 'electron-packager/targets';
 
-import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import realOra, { fakeOra } from '../util/ora';
@@ -38,7 +38,7 @@ export default async (providedOptions = {}) => {
   let { dir, interactive, arch, platform } = Object.assign({
     dir: process.cwd(),
     interactive: false,
-    arch: electronHostArch(),
+    arch: hostArch(),
     platform: process.platform,
   }, providedOptions);
 
