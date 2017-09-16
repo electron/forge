@@ -1,9 +1,9 @@
 import 'colors';
 import fs from 'fs-extra';
 import path from 'path';
+import { hostArch } from 'electron-packager/targets';
 
 import asyncOra from '../util/ora-handler';
-import electronHostArch from '../util/electron-host-arch';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { info, warn } from '../util/messages';
@@ -45,7 +45,7 @@ export default async (providedOptions = {}) => {
     dir: process.cwd(),
     interactive: false,
     skipPackage: false,
-    arch: electronHostArch(),
+    arch: hostArch(),
     platform: process.platform,
   }, providedOptions);
 
