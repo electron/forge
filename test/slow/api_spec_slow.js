@@ -169,7 +169,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
       packageJSON.config.forge.windowsStoreConfig.packageName = 'TestApp';
       if (process.platform === 'win32') {
         await fs.copy(
-          path.join(__dirname, '..', '..', 'node_modules', 'electron-windows-store', 'test', 'lib', 'bogus-private-key.pvk'),
+          path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
           path.join(dir, 'default.pvk')
         );
         packageJSON.config.forge.windowsStoreConfig.devCert = await createDefaultCertificate(
