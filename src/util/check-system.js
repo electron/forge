@@ -17,7 +17,9 @@ async function checkNodeVersion() {
 }
 
 const NPM_WHITELISTED_VERSIONS = {
-  all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.0',
+  all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
+  darwin: '>= 5.4.0',
+  linux: '>= 5.4.0',
 };
 const YARN_WHITELISTED_VERSIONS = {
   all: '0.23.3 || 0.24.6 || >= 1.0.0',
