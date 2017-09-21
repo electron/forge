@@ -23,6 +23,7 @@ const defaults = {
   },
   github_repository: {},
   s3: {},
+  electronReleaseServer: {},
 };
 
 describe('forge-config', () => {
@@ -54,7 +55,10 @@ describe('forge-config', () => {
     expect(conf.s3.secretAccessKey).to.equal(undefined);
 
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+    process.env.ELECTRON_FORGE_ELECTRON_RELEASE_SERVER_BASE_URL = 'http://example.com';
     expect(conf.s3.secretAccessKey).to.equal('SecretyThing');
+    expect(conf.electronReleaseServer.baseUrl).to.equal('http://example.com');
     delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
+    delete process.env.ELECTRON_FORGE_ELECTRON_RELEASE_SERVER_BASE_URL;
   });
 });

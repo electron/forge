@@ -50,6 +50,7 @@ export default async (dir) => {
     electronInstallerRedhat: {},
     s3: {},
     github_repository: {},
+    electronReleaseServer: {},
   }, forgeConfig);
   forgeConfig.make_targets = Object.assign({
     win32: ['squirrel'],
