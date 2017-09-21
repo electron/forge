@@ -30,7 +30,7 @@ const YARN_WHITELISTED_VERSIONS = {
 function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions, ora) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
-  if (!semver.satisfies(version, versions)) {
+  if (!semver.satisfies(version.toString(), versions)) {
     ora.warn(
       `You are using ${packageManager}, but not a known good version.\n` +
       `The known versions that work with Electron Forge are: ${versions}`
