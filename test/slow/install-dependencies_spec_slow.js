@@ -5,17 +5,19 @@ import path from 'path';
 
 import installDeps from '../../src/util/install-dependencies';
 
-describe('install-dependencies', () => {
-  const installDir = path.resolve(os.tmpdir(), 'electron-forge-test-install-dependencies');
+if (!(process.platform === 'linux' && process.env.CI)) {
+  describe('install-dependencies', () => {
+    const installDir = path.resolve(os.tmpdir(), 'electron-forge-test-install-dependencies');
 
-  before(async () => { fs.ensureDir(installDir); });
+    before(async () => { fs.ensureDir(installDir); });
 
-  it('should install the latest minor version when the dependency has a caret', async () => {
-    await installDeps(installDir, ['debug@^2.0.0']);
+    it('should install the latest minor version when the dependency has a caret', async () => {
+      await installDeps(installDir, ['debug@^2.0.0']);
 
-    const packageJSON = require(path.resolve(installDir, 'node_modules', 'debug', 'package.json'));
-    expect(packageJSON.version).to.not.equal('2.0.0');
+      const packageJSON = require(path.resolve(installDir, 'node_modules', 'debug', 'package.json'));
+      expect(packageJSON.version).to.not.equal('2.0.0');
+    });
+
+    after(async () => await fs.remove(installDir));
   });
-
-  after(async () => await fs.remove(installDir));
-});
+}
