@@ -1,4 +1,4 @@
-import { spawnPromise } from 'spawn-rx';
+import spawnPromise from 'cross-spawn-promise';
 import debug from 'debug';
 
 const d = debug('electron-forge:hdiutil');
@@ -26,7 +26,7 @@ export const getMountedImages = async () => {
 
 export const mountImage = async (filePath) => {
   d('mounting image:', filePath);
-  const output = await spawnPromise('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]);
+  const output = await spawnPromise('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]).toString();
   const mountPath = /\/Volumes\/(.+)\n/g.exec(output)[1];
   d('mounted at:', mountPath);
 

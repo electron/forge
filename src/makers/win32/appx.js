@@ -4,7 +4,7 @@ import parseAuthor from 'parse-author';
 import windowsStore from 'electron-windows-store';
 import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
 
-import { findActualExecutable } from 'spawn-rx';
+import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
 import { ensureDirectory } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
 
@@ -22,7 +22,7 @@ const windowsSdkPath = process.arch === 'x64' ?
 function findSdkTool(exe) {
   let sdkTool = path.join(windowsSdkPath, exe);
   if (!fs.existsSync(sdkTool)) {
-    sdkTool = findActualExecutable(exe, []).cmd;
+    sdkTool = resolveCommand(exe, true);
   }
 
   if (!fs.existsSync(sdkTool)) {
