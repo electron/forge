@@ -1,16 +1,11 @@
-import { spawn } from 'child_process';
+import spawnPromise from 'cross-spawn-promise';
 import fs from 'fs-extra';
 import path from 'path';
 import moveApp from '../../util/move-app';
 
 export default async (filePath, installSpinner) => {
-  await new Promise((resolve) => {
-    const child = spawn('unzip', ['-q', '-o', path.basename(filePath)], {
-      cwd: path.dirname(filePath),
-    });
-    child.stdout.on('data', () => {});
-    child.stderr.on('data', () => {});
-    child.on('exit', () => resolve());
+  await spawnPromise('unzip', ['-q', '-o', path.basename(filePath)], {
+    cwd: path.dirname(filePath),
   });
 
   const appPath = (await fs.readdir(path.dirname(filePath))).filter(file => file.endsWith('.app'))
@@ -21,5 +16,5 @@ export default async (filePath, installSpinner) => {
 
   await moveApp(appPath, targetApplicationPath, installSpinner);
 
-  spawn('open', ['-R', targetApplicationPath], { detached: true });
+  await spawnPromise('open', ['-R', targetApplicationPath], { detached: true });
 };

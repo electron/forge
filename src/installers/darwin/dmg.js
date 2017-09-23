@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import spawnPromise from 'cross-spawn-promise';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -24,7 +24,7 @@ export default async (filePath, installSpinner) => {
 
     await moveApp(appPath, targetApplicationPath, installSpinner, true);
 
-    spawn('open', ['-R', targetApplicationPath], { detached: true });
+    await spawnPromise('open', ['-R', targetApplicationPath], { detached: true });
   } finally {
     await unmountImage(targetMount);
   }

@@ -1,4 +1,4 @@
-import crossSpawn from 'cross-spawn-promise';
+import spawnPromise from 'cross-spawn-promise';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
 
@@ -18,6 +18,6 @@ const safeYarnOrNpm = () => {
 
 export default safeYarnOrNpm;
 
-export const yarnOrNpmSpawn = (...args) => crossSpawn(safeYarnOrNpm(), ...args);
+export const yarnOrNpmSpawn = (...args) => spawnPromise(safeYarnOrNpm(), ...args);
 
 export const hasYarn = () => safeYarnOrNpm() === 'yarn';
