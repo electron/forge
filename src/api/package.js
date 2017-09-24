@@ -29,6 +29,17 @@ const d = debug('electron-forge:packager');
  */
 
 /**
+ * Resolves hooks if they are a path to a file (instead of a `Function`).
+ */
+function resolveHooks(hooks, dir) {
+  if (hooks) {
+    return hooks.map(hook => (typeof hook === 'string' ? requireSearch(dir, [hook]) : hook));
+  }
+
+  return [];
+}
+
+/**
  * Package an Electron application into an platform dependent format.
  *
  * @param {PackageOptions} providedOptions - Options for the Package method
@@ -94,12 +105,8 @@ export default async (providedOptions = {}) => {
       }
       await fs.writeFile(path.resolve(buildPath, 'package.json'), JSON.stringify(copiedPackageJSON, null, 2));
       done();
-    }].concat(forgeConfig.electronPackagerConfig.afterCopy ? forgeConfig.electronPackagerConfig.afterCopy.map(item =>
-      (typeof item === 'string' ? requireSearch(dir, [item]) : item)
-    ) : []),
-    afterExtract: forgeConfig.electronPackagerConfig.afterExtract ? forgeConfig.electronPackagerConfig.afterExtract.map(item =>
-      (typeof item === 'string' ? requireSearch(dir, [item]) : item)
-    ) : [],
+    }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir)),
+    afterExtract: resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir),
     dir,
     arch,
     platform,
