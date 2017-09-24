@@ -107,6 +107,7 @@ export default async (providedOptions = {}) => {
       done();
     }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir)),
     afterExtract: resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir),
+    afterPrune: resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir),
     dir,
     arch,
     platform,
