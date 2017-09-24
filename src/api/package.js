@@ -95,10 +95,6 @@ export default async (providedOptions = {}) => {
       prepareSpinner.succeed();
       await packagerCompileHook(dir, ...args);
     }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
-      packagerSpinner = ora('Packaging Application').start();
-      done();
-    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
       const copiedPackageJSON = await readPackageJSON(buildPath);
       if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
         delete copiedPackageJSON.config.forge;
@@ -107,7 +103,11 @@ export default async (providedOptions = {}) => {
       done();
     }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir)),
     afterExtract: resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir),
-    afterPrune: resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir),
+    afterPrune: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
+      packagerSpinner = ora('Packaging Application').start();
+      done();
+    }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir)),
     dir,
     arch,
     platform,
