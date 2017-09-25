@@ -27,10 +27,15 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
+export function isNightlyYarnVersion(version) {
+  return /((?:\d\.?)+)-\d.*/.test(version);
+}
+
 function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions, ora) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
-  if (!semver.satisfies(version.toString(), versions)) {
+  const versionString = version.toString();
+  if (isNightlyYarnVersion(versionString) || !semver.satisfies(versionString, versions)) {
     ora.warn(
       `You are using ${packageManager}, but not a known good version.\n` +
       `The known versions that work with Electron Forge are: ${versions}`
