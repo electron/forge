@@ -5,7 +5,7 @@ module.exports = {
     linux: ['deb', 'rpm'],
     mas: ['zip'],
   },
-  electronPackagerConfig: { foo: 'bar' },
+  electronPackagerConfig: { foo: 'bar', baz: {} },
   electronWinstallerConfig: {},
   electronInstallerDebian: {},
   electronInstallerRedhat: {},

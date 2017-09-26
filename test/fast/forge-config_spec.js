@@ -37,10 +37,19 @@ describe('forge-config', () => {
       },
     }));
   });
+  it('should allow access to built-ins of proxied objects', async () => {
+    const conf = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(conf.electronPackagerConfig.baz.hasOwnProperty).to.be.a('function');
+    process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+    // eslint-disable-next-line no-prototype-builtins
+    expect(conf.s3.hasOwnProperty('secretAccessKey')).to.equal(true);
+    delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
+  });
+
 
   it('should resolve the JS file exports in config.forge points to a JS file', async () => {
     expect(JSON.parse(JSON.stringify(await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))))).to.be.deep.equal(Object.assign({}, defaults, {
-      electronPackagerConfig: { foo: 'bar' },
+      electronPackagerConfig: { foo: 'bar', baz: {} },
     }));
   });
 

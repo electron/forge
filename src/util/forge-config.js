@@ -18,10 +18,18 @@ const proxify = (object, envPrefix) => {
 
   return new Proxy(newObject, {
     get(target, name) {
-      if (target.hasOwnProperty(name)) return target[name]; // eslint-disable-line no-prototype-builtins
-      if (typeof name === 'string') {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!target.hasOwnProperty(name) && typeof name === 'string') {
         const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
         if (envValue) return envValue;
+      }
+      return target[name];
+    },
+    getOwnPropertyDescriptor(target, name) {
+      const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
+      // eslint-disable-next-line no-prototype-builtins
+      if (target.hasOwnProperty(name) || envValue) {
+        return { configurable: true, enumerable: true };
       }
     },
   });
