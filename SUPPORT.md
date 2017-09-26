@@ -17,6 +17,7 @@ feature. Known modules include:
 * `electron-installer-dmg`
 * `electron-installer-flatpak`
 * `electron-installer-redhat`
+* `electron-installer-snap:*`
 * `electron-osx-sign`
 * `electron-packager`
 * `electron-rebuild`
