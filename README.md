@@ -162,7 +162,7 @@ config object:
   "make_targets": {
     "win32": ["squirrel"], // An array of win32 make targets
     "darwin": ["zip", "dmg"], // An array of darwin make targets
-    "linux": ["deb", "rpm", "flatpak"] // An array of linux make targets
+    "linux": ["deb", "rpm", "flatpak", "snap"] // An array of linux make targets
   },
   "electronPackagerConfig": {},
   "electronRebuildConfig": {},
@@ -170,7 +170,8 @@ config object:
   "electronInstallerDMG": {},
   "electronInstallerFlatpak": {},
   "electronInstallerDebian": {},
-  "electronInstallerRedhat": {}
+  "electronInstallerRedhat": {},
+  "electronInstallerSnap": {}
 }
 ```
 
@@ -186,6 +187,7 @@ config object:
 | `deb`       | Linux               | Generates a Debian package | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | Yes | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
 | `rpm`       | Linux               | Generates an RPM package | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | Yes | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
 | `flatpak`   | Linux               | Generates a [Flatpak](http://flatpak.org/) file | [`electronInstallerFlatpak`](https://github.com/endlessm/electron-installer-flatpak#options) | No | [`flatpak-builder`](https://github.com/endlessm/electron-installer-flatpak#requirements) |
+| `snap`      | Linux               | Generates a [Snap](https://snapcraft.io/) file | [`electronInstallerSnap`](https://github.com/electron-userland/electron-installer-snap/blob/master/docs/api.md#options) | No | [`snapcraft`](https://snapcraft.io/docs/build-snaps/#install-snapcraft) |
 
 ## Configuring `package`
 

@@ -8,6 +8,7 @@ describe('makers', () => {
       'linux/deb': ['darwin', 'linux'],
       'linux/flatpak': ['darwin', 'linux'],
       'linux/rpm': ['darwin', 'linux'],
+      'linux/snap': ['linux'],
       'win32/appx': ['win32'],
       'win32/squirrel': ['darwin', 'linux', 'win32'],
       'win32/wix': ['win32'],
