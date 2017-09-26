@@ -1,3 +1,37 @@
+### [4.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.0) (2017-09-26)
+
+##### Chores
+
+* **generic:**
+  * upgrade electron-windows-store to 0.12 ([fcdc0a02](https://github.com/electron-userland/electron-forge/commit/fcdc0a02))
+  * upgrade cz-customizable, and github ([9156296b](https://github.com/electron-userland/electron-forge/commit/9156296b))
+
+##### Documentation Changes
+
+* **maker:** mention that make can support non-host platforms ([6c302198](https://github.com/electron-userland/electron-forge/commit/6c302198))
+
+##### New Features
+
+* **initializer:** add electron-squirrel-startup to the default template ([e0e42aa2](https://github.com/electron-userland/electron-forge/commit/e0e42aa2))
+
+##### Bug Fixes
+
+* **generic:**
+  * automatically warn w/a nightly package manager version ([d997ba0c](https://github.com/electron-userland/electron-forge/commit/d997ba0c))
+  * blacklist NPM 5.4.[01] on Windows ([063caca4](https://github.com/electron-userland/electron-forge/commit/063caca4))
+* **init:** run package manager commands via cross-spawn ([cbee55e2](https://github.com/electron-userland/electron-forge/commit/cbee55e2))
+* **publisher:** allow config for Electron Release Server to be read from envars ([50d35374](https://github.com/electron-userland/electron-forge/commit/50d35374))
+* **tests:** use a newer version of native-metrics ([1e7c175e](https://github.com/electron-userland/electron-forge/commit/1e7c175e))
+
+##### Refactors
+
+* **generic:**
+  * use cross-spawn-promise instead of spawn-rx ([5a9848c7](https://github.com/electron-userland/electron-forge/commit/5a9848c7))
+  * replace electron-host-arch with hostArch in Electron Packager ([45afdfb5](https://github.com/electron-userland/electron-forge/commit/45afdfb5))
+* **maker:**
+  * use makeCert from electron-windows-store ([c31ceef6](https://github.com/electron-userland/electron-forge/commit/c31ceef6))
+  * use the target platform/arch API from Packager to determine "all" archs ([f9c4c20c](https://github.com/electron-userland/electron-forge/commit/f9c4c20c))
+
 #### [4.0.2](https://github.com/electron-userland/electron-forge/releases/tag/v4.0.2) (2017-09-10)
 
 ##### Bug Fixes
