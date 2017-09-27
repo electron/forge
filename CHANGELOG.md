@@ -1,3 +1,9 @@
+#### [4.1.2](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.2) (2017-09-27)
+
+##### Bug Fixes
+
+* **generic:** correct the getOwnPropertyDescriptor proxy hook to respect current properties writabil ([8e9872bc](https://github.com/electron-userland/electron-forge/commit/8e9872bc))
+
 #### [4.1.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.1) (2017-09-27)
 
 ##### Bug Fixes
