@@ -1,3 +1,9 @@
+#### [4.1.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.1) (2017-09-27)
+
+##### Bug Fixes
+
+* **generic:** ensure config proxy doesn't prevent access to built-ins ([07047889](https://github.com/electron-userland/electron-forge/commit/07047889))
+
 ### [4.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.0) (2017-09-26)
 
 ##### Chores
