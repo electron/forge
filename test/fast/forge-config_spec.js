@@ -37,12 +37,26 @@ describe('forge-config', () => {
       },
     }));
   });
+
   it('should allow access to built-ins of proxied objects', async () => {
     const conf = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.electronPackagerConfig.baz.hasOwnProperty).to.be.a('function');
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
     // eslint-disable-next-line no-prototype-builtins
     expect(conf.s3.hasOwnProperty('secretAccessKey')).to.equal(true);
+    delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
+  });
+
+  it('should allow overwrite of properties in proxied objects', async () => {
+    const conf = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(conf.electronPackagerConfig.baz.hasOwnProperty).to.be.a('function');
+    expect(() => { conf.electronPackagerConfig.baz = 'bar'; }).to.not.throw();
+    process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+
+    const descriptor = { writable: true, enumerable: true, configurable: true, value: 'SecretyThing' };
+    expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).to.be.deep.equal(descriptor);
+    expect(() => { conf.s3.secretAccessKey = 'bar'; }).to.not.throw();
+    expect(conf.s3.secretAccessKey).to.equal('bar');
     delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
   });
 

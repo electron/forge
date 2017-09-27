@@ -28,8 +28,10 @@ const proxify = (object, envPrefix) => {
     getOwnPropertyDescriptor(target, name) {
       const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
       // eslint-disable-next-line no-prototype-builtins
-      if (target.hasOwnProperty(name) || envValue) {
-        return { configurable: true, enumerable: true };
+      if (target.hasOwnProperty(name)) {
+        return Object.getOwnPropertyDescriptor(target, name);
+      } else if (envValue) {
+        return { writable: true, enumerable: true, configurable: true, value: envValue };
       }
     },
   });
