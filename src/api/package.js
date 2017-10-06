@@ -75,11 +75,16 @@ export default async (providedOptions = {}) => {
   const forgeConfig = await getForgeConfig(dir);
   let packagerSpinner;
 
-  const packageOpts = Object.assign({
-    asar: false,
-    overwrite: true,
-  }, forgeConfig.electronPackagerConfig, {
-    afterCopy: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
+  const pruneEnabled = !('prune' in forgeConfig.electronPackagerConfig) || forgeConfig.electronPackagerConfig.prune;
+
+  const rebuildHookFn = async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
+    packagerSpinner = ora('Packaging Application').start();
+    done();
+  };
+
+  const afterCopyHooks = [
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
       if (packagerSpinner) {
         packagerSpinner.succeed();
         prepareCounter += 1;
@@ -94,20 +99,38 @@ export default async (providedOptions = {}) => {
     }, async (...args) => {
       prepareSpinner.succeed();
       await packagerCompileHook(dir, ...args);
-    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      const copiedPackageJSON = await readPackageJSON(buildPath);
-      if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
-        delete copiedPackageJSON.config.forge;
-      }
-      await fs.writeFile(path.resolve(buildPath, 'package.json'), JSON.stringify(copiedPackageJSON, null, 2));
-      done();
-    }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir)),
+    },
+  ];
+
+  if (!pruneEnabled) {
+    afterCopyHooks.push(rebuildHookFn);
+  }
+
+  afterCopyHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    const copiedPackageJSON = await readPackageJSON(buildPath);
+    if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
+      delete copiedPackageJSON.config.forge;
+    }
+    await fs.writeFile(path.resolve(buildPath, 'package.json'), JSON.stringify(copiedPackageJSON, null, 2));
+    done();
+  });
+
+  afterCopyHooks.concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir));
+
+  const afterPruneHooks = [];
+
+  if (pruneEnabled) {
+    afterPruneHooks.push(rebuildHookFn);
+    afterPruneHooks.concat(resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
+  }
+
+  const packageOpts = Object.assign({
+    asar: false,
+    overwrite: true,
+  }, forgeConfig.electronPackagerConfig, {
+    afterCopy: afterCopyHooks,
     afterExtract: resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir),
-    afterPrune: [async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
-      packagerSpinner = ora('Packaging Application').start();
-      done();
-    }].concat(resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir)),
+    afterPrune: afterPruneHooks,
     dir,
     arch,
     platform,
