@@ -184,6 +184,10 @@ export default async (providedOptions = {}) => {
 
   packageJSON = await readPackageJSON(dir);
 
+  if (!packageJSON.version) {
+    warn(interactive, "Please set the 'version' in your application's package.json".yellow);
+  }
+
   packageJSON.config = packageJSON.config || {};
   const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
   packageJSON.config.forge = templatePackageJSON.config.forge;
