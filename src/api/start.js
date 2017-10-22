@@ -46,6 +46,10 @@ export default async (providedOptions = {}) => {
 
   const packageJSON = await readPackageJSON(dir);
 
+  if (!packageJSON.version) {
+    throw `Please set your application's 'version' in '${dir}/package.json'.`;
+  }
+
   await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
 
   const spawnOpts = {

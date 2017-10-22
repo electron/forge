@@ -8,16 +8,19 @@ chai.use(chaiAsPromised);
 
 describe('start', () => {
   let start;
+  let packageJSON;
   let resolveStub;
   let spawnStub;
 
   beforeEach(() => {
     resolveStub = sinon.stub();
     spawnStub = sinon.stub();
+    packageJSON = require('../fixture/dummy_app/package.json');
+
     start = proxyquire.noCallThru().load('../../src/api/start', {
       '../util/forge-config': async () => ({}),
       '../util/resolve-dir': async dir => resolveStub(dir),
-      '../util/read-package-json': () => Promise.resolve(require('../fixture/dummy_app/package.json')),
+      '../util/read-package-json': () => Promise.resolve(packageJSON),
       '../util/rebuild': () => Promise.resolve(),
       child_process: {
         spawn: spawnStub,
@@ -101,6 +104,18 @@ describe('start', () => {
 
     await expect(start()).to.eventually.be.rejectedWith(
       'Failed to locate startable Electron application'
+    );
+  });
+
+  it('should throw if no version is in package.json', async () => {
+    resolveStub.returnsArg(0);
+    packageJSON = Object.assign({}, packageJSON);
+    delete packageJSON.version;
+    await expect(start({
+      dir: __dirname,
+      interactive: false,
+    })).to.eventually.be.rejectedWith(
+      `Please set your application's 'version' in '${__dirname}/package.json'.`
     );
   });
 
