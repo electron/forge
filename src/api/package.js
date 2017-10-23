@@ -9,6 +9,7 @@ import { hostArch } from 'electron-packager/targets';
 
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
+import { warn } from '../util/messages';
 import realOra, { fakeOra } from '../util/ora';
 import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
@@ -109,6 +110,11 @@ export default async (providedOptions = {}) => {
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
     packagerSpinner.fail();
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
+  }
+
+  if (!packageJSON.version && !packageOpts.appVersion) {
+    // eslint-disable-next-line max-len
+    warn(interactive, "Please set 'version' or 'config.forge.electronPackagerConfig.appVersion' in your application's package.json so auto-updates work properly".yellow);
   }
 
   await runHook(forgeConfig, 'generateAssets');
