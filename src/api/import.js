@@ -6,6 +6,7 @@ import path from 'path';
 import initGit from '../init/init-git';
 import { deps, devDeps, exactDevDeps } from '../init/init-npm';
 
+import { setInitialForgeConfig } from '../util/forge-config';
 import asyncOra from '../util/ora-handler';
 import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
@@ -191,6 +192,7 @@ export default async (providedOptions = {}) => {
   packageJSON.config = packageJSON.config || {};
   const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
   packageJSON.config.forge = templatePackageJSON.config.forge;
+  setInitialForgeConfig(packageJSON);
 
   await writeChanges();
 

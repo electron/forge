@@ -3,10 +3,10 @@ import fs from 'fs-extra';
 import path from 'path';
 import username from 'username';
 
+import { setInitialForgeConfig } from '../util/forge-config';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
 import asyncOra from '../util/ora-handler';
-import yarnOrNpm from '../util/yarn-or-npm';
 
 const d = debug('electron-forge:init:npm');
 
@@ -21,10 +21,8 @@ export default async (dir, lintStyle) => {
   await asyncOra('Initializing NPM Module', async () => {
     const packageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
-    packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
-    packageJSON.config.forge.windowsStoreConfig.name = packageJSON.productName.replace(/-/g, '');
-    packageJSON.config.forge.electronPackagerConfig.packageManager = yarnOrNpm();
     packageJSON.author = await username();
+    setInitialForgeConfig(packageJSON);
 
     switch (lintStyle) {
       case 'standard':
