@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
+import yarnOrNpm from './yarn-or-npm';
 
 const underscoreCase = str => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
@@ -36,6 +37,17 @@ const proxify = (object, envPrefix) => {
     },
   });
 };
+
+/**
+ * Sets sensible defaults for the `config.forge` object.
+ */
+export function setInitialForgeConfig(packageJSON) {
+  /* eslint-disable no-param-reassign */
+  packageJSON.config.forge.electronWinstallerConfig.name = packageJSON.name.replace(/-/g, '_');
+  packageJSON.config.forge.windowsStoreConfig.name = packageJSON.productName.replace(/-/g, '');
+  packageJSON.config.forge.electronPackagerConfig.packageManager = yarnOrNpm();
+  /* eslint-enable no-param-reassign */
+}
 
 export default async (dir) => {
   const packageJSON = await readPackageJSON(dir);
