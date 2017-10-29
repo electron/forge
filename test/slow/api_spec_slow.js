@@ -304,6 +304,15 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
             skipPackage: true,
           })).to.eventually.be.rejectedWith(/incompatible with this version/);
         });
+
+        it('can make for the MAS platform successfully', async () => {
+          if (process.platform !== 'darwin') return;
+          await expect(forge.make({
+            dir,
+            overrideTargets: ['zip', 'dmg'],
+            platform: 'mas',
+          }));
+        });
       });
     });
 
