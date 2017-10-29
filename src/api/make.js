@@ -62,8 +62,10 @@ export default async (providedOptions = {}) => {
     forgeConfig = await getForgeConfig(dir);
   });
 
-  if (!['darwin', 'win32', 'linux'].includes(platform)) {
-    throw new Error(`'${platform}' is an invalid platform. Choices are 'darwin', 'win32' or 'linux'`);
+  const actualTargetPlatform = platform;
+  platform = platform === 'mas' ? 'darwin' : platform;
+  if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
+    throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);
   }
 
   const makers = {};
@@ -82,7 +84,7 @@ export default async (providedOptions = {}) => {
     if (!maker) {
       throw new Error([
         'Could not find a build target with the name: ',
-        `${target} for the platform: ${platform}`,
+        `${target} for the platform: ${actualTargetPlatform}`,
       ].join(''));
     }
 
@@ -110,7 +112,7 @@ export default async (providedOptions = {}) => {
       dir,
       interactive,
       arch,
-      platform,
+      actualTargetPlatform,
       outDir,
     });
   } else {
@@ -126,7 +128,7 @@ export default async (providedOptions = {}) => {
   await runHook(forgeConfig, 'preMake');
 
   for (const targetArch of parseArchs(platform, arch, packageJSON.devDependencies['electron-prebuilt-compile'])) {
-    const packageDir = path.resolve(outDir, `${appName}-${platform}-${targetArch}`);
+    const packageDir = path.resolve(outDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }
@@ -135,12 +137,12 @@ export default async (providedOptions = {}) => {
       const maker = makers[target];
 
       // eslint-disable-next-line no-loop-func
-      await asyncOra(`Making for target: ${target.cyan} - On platform: ${platform.cyan} - For arch: ${targetArch.cyan}`, async () => {
+      await asyncOra(`Making for target: ${target.cyan} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
           const artifacts = await maker({
             dir: packageDir,
             appName,
-            targetPlatform: platform,
+            targetPlatform: actualTargetPlatform,
             targetArch,
             forgeConfig,
             packageJSON,
@@ -149,7 +151,7 @@ export default async (providedOptions = {}) => {
           outputs.push({
             artifacts,
             packageJSON,
-            platform,
+            platform: actualTargetPlatform,
             arch: targetArch,
           });
         } catch (err) {

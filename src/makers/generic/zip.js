@@ -32,6 +32,7 @@ export default async ({ dir, appName, targetPlatform, packageJSON }) => {
     case 'win32':
       await pify(zipFolder)(dir, zipPath);
       break;
+    case 'mas':
     case 'darwin':
       await zipPromise(path.resolve(dir, `${appName}.app`), zipPath);
       break;
