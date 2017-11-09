@@ -112,8 +112,8 @@ export default async (providedOptions = {}) => {
       dir,
       interactive,
       arch,
-      actualTargetPlatform,
       outDir,
+      platform: actualTargetPlatform,
     });
   } else {
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);

@@ -311,7 +311,7 @@ describe(`electron-forge API (with installer=${installer.substr(12)})`, () => {
             dir,
             overrideTargets: ['zip', 'dmg'],
             platform: 'mas',
-          }));
+          })).to.eventually.have.length(2);
         });
       });
     });
