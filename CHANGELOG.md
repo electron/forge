@@ -1,3 +1,20 @@
+#### [4.1.3](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.3) (2017-11-10)
+
+##### Chores
+
+* **generic:** replace the deprecated babel-preset-es2015 with babel-preset-env ([b3499edf](https://github.com/electron-userland/electron-forge/commit/b3499edf))
+
+##### Bug Fixes
+
+* **make:** allow building for MAS inside make logic ([5e6411ec](https://github.com/electron-userland/electron-forge/commit/5e6411ec))
+* **packager:** warn if the app version is not set ([29070ca6](https://github.com/electron-userland/electron-forge/commit/29070ca6))
+* **importer:** warn if the package.json being imported does not have a version ([e55ea98d](https://github.com/electron-userland/electron-forge/commit/e55ea98d))
+* **starter:** throw an error if the app version is not set in package.json ([69b29958](https://github.com/electron-userland/electron-forge/commit/69b29958))
+
+##### Tests
+
+* **make:** add mas test ([359b2799](https://github.com/electron-userland/electron-forge/commit/359b2799))
+
 #### [4.1.2](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.2) (2017-09-27)
 
 ##### Bug Fixes
