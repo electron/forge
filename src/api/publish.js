@@ -64,7 +64,7 @@ const publish = async (providedOptions = {}) => {
 
   if (dryRunResume) {
     d('attempting to resume from dry run');
-    const publishes = await PublishState.loadFromDirectory(dryRunDir);
+    const publishes = await PublishState.loadFromDirectory(dryRunDir, dir);
     for (const publishStates of publishes) {
       d('publishing for given state set');
       await publish({
@@ -106,7 +106,7 @@ const publish = async (providedOptions = {}) => {
   if (dryRun) {
     d('saving results of make in dry run state', makeResults);
     await fs.remove(dryRunDir);
-    await PublishState.saveToDirectory(dryRunDir, makeResults);
+    await PublishState.saveToDirectory(dryRunDir, makeResults, dir);
     return;
   }
 

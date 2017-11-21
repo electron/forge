@@ -5,7 +5,7 @@ import path from 'path';
 const EXTENSION = '.forge.publish';
 
 export default class PublishState {
-  static async loadFromDirectory(directory) {
+  static async loadFromDirectory(directory, rootDir) {
     if (!await fs.exists(directory)) {
       throw new Error(`Attempted to load publish state from a missing directory: ${directory}`);
     }
@@ -22,6 +22,7 @@ export default class PublishState {
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);
           await state.load();
+          state.state.artifacts = state.state.artifacts.map(artifactPath => path.resolve(rootDir, artifactPath));
           states.push(state);
         }
       }
@@ -30,9 +31,10 @@ export default class PublishState {
     return publishes;
   }
 
-  static async saveToDirectory(directory, artifacts) {
+  static async saveToDirectory(directory, artifacts, rootDir) {
     const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
+      artifact.artifacts = artifact.artifacts.map(artifactPath => path.relative(rootDir, artifactPath));
       const state = new PublishState(path.resolve(directory, id, 'null'), '', false);
       state.setState(artifact);
       await state.saveToDisk();

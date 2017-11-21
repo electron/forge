@@ -98,13 +98,13 @@ describe('publish', () => {
     const fakeMake = (platform) => {
       const ret = [
         { artifacts: [
-          path.resolve(dir, `artifact1-${platform}`),
-          path.resolve(dir, `artifact2-${platform}`),
+          path.resolve(dir, `out/make/artifact1-${platform}`),
+          path.resolve(dir, `out/make/artifact2-${platform}`),
         ] }, { artifacts: [
-          path.resolve(dir, `artifact3-${platform}`),
+          path.resolve(dir, `out/make/artifact3-${platform}`),
         ] },
         { artifacts: [
-          path.resolve(dir, `artifact4-${platform}`),
+          path.resolve(dir, `out/make/artifact4-${platform}`),
         ] },
       ];
       const state = {
@@ -172,7 +172,8 @@ describe('publish', () => {
 
             // Make the artifacts for later
             for (const artifactPath of data.artifacts) {
-              await fs.writeFile(artifactPath, artifactPath);
+              await fs.mkdirp(path.dirname(path.resolve(dir, artifactPath)));
+              await fs.writeFile(path.resolve(dir, artifactPath), artifactPath);
             }
           }
         }
