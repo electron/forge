@@ -1,3 +1,19 @@
+#### [4.1.4](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.4) (2017-11-21)
+
+##### New Features
+
+* **packager:** add support for hook files for electronPackagerConfig.afterPrune ([e847a78e](https://github.com/electron-userland/electron-forge/commit/e847a78e))
+
+##### Bug Fixes
+
+* **publisher:** fix publishing a saved dry run on a different device from the initial dry run ([a2c33eb8](https://github.com/electron-userland/electron-forge/commit/a2c33eb8))
+* **packager:** move the rebuild hook to after pruning finishes ([cce9db42](https://github.com/electron-userland/electron-forge/commit/cce9db42))
+* **importer:** adjust Forge config defaults just like in init ([38f9a3d4](https://github.com/electron-userland/electron-forge/commit/38f9a3d4))
+
+##### Refactors
+
+* **packager:** resolve hook files in a common function ([08d55772](https://github.com/electron-userland/electron-forge/commit/08d55772))
+
 #### [4.1.3](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.3) (2017-11-10)
 
 ##### Chores
