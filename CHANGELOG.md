@@ -1,3 +1,9 @@
+#### [4.1.5](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.5) (2017-11-24)
+
+##### Bug Fixes
+
+* **packager:** fix custom afterCopy, afterPrune not being included ([c9e23e38](https://github.com/electron-userland/electron-forge/commit/c9e23e38))
+
 #### [4.1.4](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.4) (2017-11-21)
 
 ##### New Features
