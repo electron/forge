@@ -115,13 +115,13 @@ export default async (providedOptions = {}) => {
     done();
   });
 
-  afterCopyHooks.concat(resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir));
+  afterCopyHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir));
 
   const afterPruneHooks = [];
 
   if (pruneEnabled) {
     afterPruneHooks.push(rebuildHookFn);
-    afterPruneHooks.concat(resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
+    afterPruneHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
   }
 
   const packageOpts = Object.assign({
