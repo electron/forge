@@ -42,7 +42,7 @@ const proxify = (object, envPrefix) => {
  * Sets sensible defaults for the `config.forge` object.
  */
 export function setInitialForgeConfig(packageJSON) {
-  const { name = '', productName = '' } = packageJSON;
+  const { name = '', productName = name } = packageJSON;
 
   /* eslint-disable no-param-reassign */
   packageJSON.config.forge.electronWinstallerConfig.name = name.replace(/-/g, '_');
