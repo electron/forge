@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import checkSystem, { isNightlyYarnVersion } from '../../src/util/check-system';
+import checkSystem, { validPackageManagerVersion } from '../../src/util/check-system';
 import { fakeOra } from '../../src/util/ora';
 
 describe('check-system', () => {
@@ -8,17 +8,17 @@ describe('check-system', () => {
     expect(await checkSystem(fakeOra())).to.be.equal(true);
   });
 
-  describe('isNightlyYarnVersion', () => {
-    it('should not match release versions', () => {
-      expect(isNightlyYarnVersion('0.10.0')).to.be.equal(false);
+  describe('validPackageManagerVersion', () => {
+    it('should consider whitelisted versions to be valid', () => {
+      expect(validPackageManagerVersion('NPM', '3.10.1', '^3.0.0', fakeOra())).to.be.equal(true);
     });
 
-    it('should not match rc/beta/alpha versions', () => {
-      expect(isNightlyYarnVersion('0.10.0-beta.1')).to.be.equal(false);
+    it('should consider Yarn nightly versions to be invalid', () => {
+      expect(validPackageManagerVersion('Yarn', '0.23.0-20170311.0515', '0.23.0', fakeOra())).to.be.equal(false);
     });
 
-    it('should match nightly versions', () => {
-      expect(isNightlyYarnVersion('0.23.0-20170311.0515')).to.be.equal(true);
+    it('should consider invalid semver versions to be invalid', () => {
+      expect(validPackageManagerVersion('Yarn', '0.22', '0.22.0', fakeOra())).to.be.equal(false);
     });
   });
 });

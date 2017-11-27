@@ -1,7 +1,10 @@
 import { exec } from 'child_process';
+import debug from 'debug';
 import semver from 'semver';
 
 import { hasYarn, yarnOrNpmSpawn } from './yarn-or-npm';
+
+const d = debug('electron-forge:check-system');
 
 async function checkGitExists() {
   return new Promise((resolve) => {
@@ -27,15 +30,21 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
-export function isNightlyYarnVersion(version) {
-  return /((?:\d\.?)+)-\d.*/.test(version);
+export function validPackageManagerVersion(packageManager, version, whitelistedVersions, ora) {
+  try {
+    return semver.satisfies(version, whitelistedVersions);
+  } catch (e) {
+    ora.warn(`Could not check ${packageManager} version "${version}", assuming incompatible`);
+    d(`Exception while checking version: ${e}`);
+    return false;
+  }
 }
 
 function warnIfPackageManagerIsntAKnownGoodVersion(packageManager, version, whitelistedVersions, ora) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
-  if (isNightlyYarnVersion(versionString) || !semver.satisfies(versionString, versions)) {
+  if (!validPackageManagerVersion(packageManager, versionString, versions, ora)) {
     ora.warn(
       `You are using ${packageManager}, but not a known good version.\n` +
       `The known versions that work with Electron Forge are: ${versions}`
