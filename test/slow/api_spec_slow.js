@@ -12,13 +12,13 @@ import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 
-const installerArg = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
-const installer = installerArg.substr(12);
+const nodeInstallerArg = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
+const nodeInstaller = nodeInstallerArg.substr(12);
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
 });
 
-describe(`electron-forge API (with installer=${installer})`, () => {
+describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
   let dir;
   let dirID = Date.now();
 
@@ -161,7 +161,7 @@ describe(`electron-forge API (with installer=${installer})`, () => {
     before(async () => {
       await ensureTestDirIsNonexistent();
       await fs.mkdir(dir);
-      execSync(`${installer} init -y`, {
+      execSync(`${nodeInstaller} init -y`, {
         cwd: dir,
       });
     });
