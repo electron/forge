@@ -75,6 +75,7 @@ describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
       after(() => fs.remove(dir));
     });
   };
+
   forLintingMethod('airbnb');
   forLintingMethod('standard');
 
@@ -167,7 +168,31 @@ describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
     });
 
     it('works', async () => {
+      const packageJSON = await readPackageJSON(dir);
+      packageJSON.name = 'Name';
+      packageJSON.productName = 'Product Name';
+      packageJSON.customProp = 'propVal';
+      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
+
       await forge.import({ dir });
+
+      const {
+        config: {
+          forge: {
+            electronWinstallerConfig: { name: winstallerName },
+            windowsStoreConfig: { name: windowsStoreName },
+          },
+        },
+        customProp,
+      } = await readPackageJSON(dir);
+
+      expect(winstallerName).to.equal('Name');
+      expect(windowsStoreName).to.equal('Product Name');
+      expect(customProp).to.equal('propVal');
+    });
+
+    after(async () => {
+      await fs.remove(dir);
     });
   });
 
