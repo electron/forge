@@ -158,7 +158,8 @@
     "electron-installer-flatpak": "^0.8.0",
     "electron-installer-redhat": "^0.5.0",
     "electron-windows-store": "^0.12.0",
-    "electron-winstaller": "^2.5.0"
+    "electron-winstaller": "^2.5.0",
+    "electron-wix-msi": "^1.2.3"
   },
   "engines": {
     "node": ">= 6.0"
