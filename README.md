@@ -181,6 +181,7 @@ config object:
 | `zip`       | All                 | Zips your packaged application | None | Yes | `zip` on Darwin/Linux |
 | `squirrel`  | Windows             | Generates an installer and `.nupkg` files for Squirrel.Windows | [`electronWinstallerConfig`](https://github.com/electron/windows-installer#usage) | Yes |  |
 | `appx`      | Windows             | Generates a Windows Store package | [`windowsStoreConfig`](https://github.com/felixrieseberg/electron-windows-store#programmatic-usage) | No |  |
+| `wix`       | Windows             | Generates a traditional MSI file | [`electronWixMSIConfig`](https://github.com/felixrieseberg/electron-wix-msi#configuration) | No | [Wix Toolit](https://github.com/felixrieseberg/electron-wix-msi#prerequisites) |
 | `dmg`       | Darwin              | Generates a DMG file | [`electronInstallerDMG`](https://github.com/mongodb-js/electron-installer-dmg#api) | No |  |
 | `deb`       | Linux               | Generates a Debian package | [`electronInstallerDebian`](https://github.com/unindented/electron-installer-debian#options) | Yes | [`fakeroot` and `dpkg`](https://github.com/unindented/electron-installer-debian#requirements) |
 | `rpm`       | Linux               | Generates an RPM package | [`electronInstallerRedhat`](https://github.com/unindented/electron-installer-redhat#options) | Yes | [`rpm`](https://github.com/unindented/electron-installer-redhatn#requirements) |
