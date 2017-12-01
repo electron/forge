@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import parseAuthor from 'parse-author';
+import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
 import windowsStore from 'electron-windows-store';
 import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
 
-import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
-import { ensureDirectory } from '../../util/ensure-output';
 import configFn from '../../util/config-fn';
+import getNameFromAuthor from '../../util/author-name';
+import { ensureDirectory } from '../../util/ensure-output';
 
 // electron-windows-store doesn't set its 'os' field even though it only runs on
 // win32
@@ -48,22 +48,8 @@ export async function createDefaultCertificate(publisherName, { certFilePath, ce
   return await makeCert(makeCertOptions);
 }
 
-export function getDistinguishedNameFromAuthor(author) {
-  let publisher = author || '';
-
-  if (typeof publisher === 'string') {
-    publisher = parseAuthor(publisher);
-  }
-
-  if (typeof publisher.name === 'string') {
-    publisher = publisher.name;
-  }
-
-  if (typeof publisher !== 'string') {
-    publisher = '';
-  }
-
-  return `CN=${publisher}`;
+function getDistinguishedNameFromAuthor(author) {
+  return `CN=${getNameFromAuthor(author)}`;
 }
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
