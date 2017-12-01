@@ -3,7 +3,7 @@ import { join } from 'path';
 import fs from 'fs-extra';
 import { expect } from 'chai';
 
-import { getDistinguishedNameFromAuthor, createDefaultCertificate } from '../../../src/makers/win32/appx';
+import { createDefaultCertificate } from '../../../src/makers/win32/appx';
 
 describe('appx maker', () => {
   describe('createDefaultCertificate', () => {
@@ -34,30 +34,5 @@ describe('appx maker', () => {
         expect(fileContents.length).to.be.above(0);
       });
     }
-  });
-
-  describe('getDistinguishedNameFromAuthor', () => {
-    [{
-      author: 'First Last',
-      expectedReturnValue: 'CN=First Last',
-    }, {
-      author: 'First Last <first.last@example.com>',
-      expectedReturnValue: 'CN=First Last',
-    }, {
-      author: {
-        name: 'First Last',
-      },
-      expectedReturnValue: 'CN=First Last',
-    }, {
-      author: undefined,
-      expectedReturnValue: 'CN=',
-    }, {
-      author: '',
-      expectedReturnValue: 'CN=',
-    }].forEach((scenario) => {
-      it(`${JSON.stringify(scenario.author)} -> "${scenario.expectedReturnValue}"`, () => {
-        expect(getDistinguishedNameFromAuthor(scenario.author)).to.equal(scenario.expectedReturnValue);
-      });
-    });
   });
 });
