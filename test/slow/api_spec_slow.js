@@ -167,7 +167,7 @@ describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
       });
     });
 
-    it('works', async () => {
+    it('creates a forge config', async () => {
       const packageJSON = await readPackageJSON(dir);
       packageJSON.name = 'Name';
       packageJSON.productName = 'Product Name';
