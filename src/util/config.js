@@ -31,18 +31,18 @@ class BasicConfigStore {
     this._load();
     this._store[key] = value;
     d('setting key:', key, 'to value:', value);
-    fs.writeFileSync(this._path, JSON.stringify(this._store));
+    fs.writeJsonSync(this._path, this._store);
   }
 
   _load() {
     if (fs.existsSync(this._path)) {
-      this._store = JSON.parse(fs.readFileSync(this._path, 'utf8'));
+      this._store = fs.readJsonSync(this._path);
     }
   }
 
   reset() {
     this._store = {};
-    fs.writeFileSync(this._path, JSON.stringify(this._store));
+    fs.writeJsonSync(this._path, this._store);
   }
 }
 

@@ -135,7 +135,7 @@ export default async (providedOptions = {}) => {
 
   const writeChanges = async () => {
     await asyncOra('Writing modified package.json file', async () => {
-      await fs.writeFile(path.resolve(dir, 'package.json'), `${JSON.stringify(packageJSON, null, 2)}\n`);
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
     });
   };
 
@@ -208,7 +208,7 @@ export default async (providedOptions = {}) => {
   let babelConfig = packageJSON.babel;
   const babelPath = path.resolve(dir, '.babelrc');
   if (!babelConfig && await fs.pathExists(babelPath)) {
-    babelConfig = JSON.parse(await fs.readFile(babelPath, 'utf8'));
+    babelConfig = await fs.readJson(babelPath, 'utf8');
   }
 
   if (babelConfig) {
@@ -216,12 +216,12 @@ export default async (providedOptions = {}) => {
       let compileConfig = {};
       const compilePath = path.resolve(dir, '.compilerc');
       if (await fs.pathExists(compilePath)) {
-        compileConfig = JSON.parse(await fs.readFile(compilePath, 'utf8'));
+        compileConfig = await fs.readJson(compilePath, 'utf8');
       }
 
-      await fs.writeFile(compilePath, JSON.stringify(Object.assign(compileConfig, {
+      await fs.writeJson(compilePath, Object.assign(compileConfig, {
         'application/javascript': babelConfig,
-      }), null, 2));
+      }), { spaces: 2 });
     });
 
     info(interactive, 'NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2016` and `react` presets'.yellow);

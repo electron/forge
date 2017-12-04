@@ -31,9 +31,7 @@ export default async(originalDir, buildPath, electronVersion, pPlatform, pArch, 
       await fs.writeFile(path.join(appDir, 'es6-shim.js'),
         await fs.readFile(path.join(path.resolve(originalDir, 'node_modules/electron-compile/lib/es6-shim.js')), 'utf8'));
 
-      await fs.writeFile(
-        path.join(appDir, 'package.json'),
-        JSON.stringify(packageJSON, null, 2));
+      await fs.writeJson(path.join(appDir, 'package.json'), packageJSON, { spaces: 2 });
     }
 
     await compileAndShim(buildPath);

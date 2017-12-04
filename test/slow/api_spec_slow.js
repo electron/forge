@@ -64,7 +64,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
       it('should have set the .compilerc electron version to be a string', async () => {
         expectProjectPathExists('.compilerc', 'file');
-        const compilerc = JSON.parse(await fs.readFile(path.resolve(dir, '.compilerc')));
+        const compilerc = await fs.readJson(path.resolve(dir, '.compilerc'));
         const electronVersion = compilerc.env.development['application/javascript'].presets[0][1].targets.electron;
         expect(electronVersion).to.be.a('string');
         expect(electronVersion.split('.').length).to.equal(2);
@@ -242,7 +242,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       }
       packageJSON.homepage = 'http://www.example.com/';
       packageJSON.author = 'Test Author';
-      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
     });
 
     it('can package to outDir without errors', async () => {
@@ -258,7 +258,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     it('can make from custom outDir without errors', async () => {
       const packageJSON = await readPackageJSON(dir);
       packageJSON.config.forge.make_targets[process.platform] = ['zip'];
-      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
       await forge.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
 
@@ -276,7 +276,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     it('can package without errors', async () => {
       const packageJSON = await readPackageJSON(dir);
       packageJSON.config.forge.electronPackagerConfig.asar = true;
-      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
       await forge.package({ dir });
     });
