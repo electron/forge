@@ -175,7 +175,7 @@ export default async (providedOptions = {}) => {
 
     d('installing exactDevDependencies');
     await installDepList(dir, exactDevDeps.map((dep) => {
-      if (dep === 'electron-prebuild-compile') {
+      if (dep === 'electron-prebuilt-compile') {
         return `${dep}@${electronVersion || 'latest'}`;
       }
 
