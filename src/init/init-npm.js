@@ -36,7 +36,7 @@ export default async (dir, lintStyle) => {
         break;
     }
     d('writing package.json to:', dir);
-    await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 4));
+    await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
   });
 
   await asyncOra('Installing NPM Dependencies', async () => {
@@ -67,7 +67,7 @@ export default async (dir, lintStyle) => {
 
     // NB: For babel-preset-env to work correctly, it needs to know the
     // actual version of Electron that we installed
-    const content = JSON.parse(await fs.readFile(path.join(dir, '.compilerc'), 'utf8'));
+    const content = await fs.readJson(path.join(dir, '.compilerc'), 'utf8');
     const electronPrebuilt = require(
       path.join(dir, 'node_modules', 'electron-prebuilt-compile', 'package.json'));
 
@@ -78,6 +78,6 @@ export default async (dir, lintStyle) => {
       envTarget[1].targets.electron = parseFloat(electronPrebuilt.version).toString();
     }
 
-    await fs.writeFile(path.join(dir, '.compilerc'), JSON.stringify(content, null, 2), 'utf8');
+    await fs.writeJson(path.join(dir, '.compilerc'), content, { spaces: 2 });
   });
 };

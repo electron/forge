@@ -111,7 +111,7 @@ export default async (providedOptions = {}) => {
     if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
       delete copiedPackageJSON.config.forge;
     }
-    await fs.writeFile(path.resolve(buildPath, 'package.json'), JSON.stringify(copiedPackageJSON, null, 2));
+    await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
     done();
   });
 
