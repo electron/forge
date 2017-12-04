@@ -18,7 +18,7 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
 });
 
-describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
+describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   let dir;
   let dirID = Date.now();
 
@@ -172,7 +172,7 @@ describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
       packageJSON.name = 'Name';
       packageJSON.productName = 'Product Name';
       packageJSON.customProp = 'propVal';
-      await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON, null, 2));
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
       await forge.import({ dir });
 
@@ -189,6 +189,27 @@ describe(`electron-forge API (with nodeInstaller=${nodeInstaller})`, () => {
       expect(winstallerName).to.equal('Name');
       expect(windowsStoreName).to.equal('Product Name');
       expect(customProp).to.equal('propVal');
+    });
+
+    it('defaults windowsStoreConfig.name to packageJSON.name', async () => {
+      const packageJSON = await readPackageJSON(dir);
+      packageJSON.name = 'Name';
+      delete packageJSON.productName;
+      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+
+      await forge.import({ dir });
+
+      const {
+        config: {
+          forge: {
+            electronWinstallerConfig: { name: winstallerName },
+            windowsStoreConfig: { name: windowsStoreName },
+          },
+        },
+      } = await readPackageJSON(dir);
+
+      expect(winstallerName).to.equal('Name');
+      expect(windowsStoreName).to.equal('Name');
     });
 
     after(async () => {
