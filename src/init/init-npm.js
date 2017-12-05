@@ -75,7 +75,7 @@ export default async (dir, lintStyle) => {
       const envTarget = content.env[profile]['application/javascript'].presets.find(x => x[0] === 'env');
       // parseFloat strips the patch version
       // parseFloat('1.3.2') === 1.3
-      envTarget[1].targets.electron = parseFloat(electronPrebuilt.version);
+      envTarget[1].targets.electron = parseFloat(electronPrebuilt.version).toString();
     }
 
     await fs.writeFile(path.join(dir, '.compilerc'), JSON.stringify(content, null, 2), 'utf8');
