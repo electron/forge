@@ -62,10 +62,12 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-forge')), 'electron-forge should exist').to.equal(true);
       });
 
-      it('should have set the .compilerc electron version to be a float', async () => {
+      it('should have set the .compilerc electron version to be a string', async () => {
         expectProjectPathExists('.compilerc', 'file');
         const compilerc = JSON.parse(await fs.readFile(path.resolve(dir, '.compilerc')));
-        expect(compilerc.env.development['application/javascript'].presets[0][1].targets.electron).to.be.a('number');
+        const electronVersion = compilerc.env.development['application/javascript'].presets[0][1].targets.electron;
+        expect(electronVersion).to.be.a('string');
+        expect(electronVersion.split('.').length).to.equal(2);
       });
 
       describe('lint', () => {
