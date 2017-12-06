@@ -311,7 +311,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       });
 
       function getMakers(platform) {
-        return fs.readdirSync(path.resolve(__dirname, `../../src/makers/${platform}`)).map(file => path.parse(file).name).filter(name => name !== 'flatpak');
+        return fs.readdirSync(path.resolve(__dirname, `../../src/makers/${platform}`)).map(file => path.parse(file).name);
       }
 
       const goodMakers = [...getMakers(process.platform), ...getMakers('generic')];
