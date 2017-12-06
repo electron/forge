@@ -1,3 +1,16 @@
+#### [4.1.6](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.6) (2017-12-06)
+
+##### Bug Fixes
+
+* **importer:**
+  * Fix typo in dependency check ([24267fe4](https://github.com/electron-userland/electron-forge/commit/24267fe4))
+  * handle the case where productName doesn't exist ([23f191a8](https://github.com/electron-userland/electron-forge/commit/23f191a8))
+* **generic:** assume invalid semver package manager versions are incompatible ([076c78e1](https://github.com/electron-userland/electron-forge/commit/076c78e1))
+
+##### Refactors
+
+* **maker:** DRY up linux config transformations ([a39011b8](https://github.com/electron-userland/electron-forge/commit/a39011b8))
+
 #### [4.1.5](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.5) (2017-11-24)
 
 ##### Bug Fixes
