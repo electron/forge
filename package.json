@@ -16,7 +16,7 @@
     "commit": "git-cz",
     "docs": "esdoc",
     "install": "node tabtab-install.js",
-    "lint": "eslint src test gulpfile.babel.js",
+    "lint": "eslint src test gulpfile.babel.js tabtab-install.js",
     "prepublish": "gulp build",
     "pretest": "gulp build",
     "test": "npm run lint && npm run test-all",
