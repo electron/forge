@@ -10,7 +10,7 @@ describe('flatpak maker', () => {
   let flatpakModule;
   let flatpakMaker;
   let eidStub;
-  let ensureFileStub;
+  let ensureDirectoryStub;
   let forgeConfig;
 
   const dir = '/my/test/dir/out';
@@ -19,13 +19,14 @@ describe('flatpak maker', () => {
   const packageJSON = { version: '1.2.3' };
 
   beforeEach(() => {
-    ensureFileStub = stub().returns(Promise.resolve());
+    ensureDirectoryStub = stub().returns(Promise.resolve());
     eidStub = stub().callsArg(1);
     forgeConfig = { electronInstallerFlatpak: {} };
 
     flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../../../src/makers/linux/flatpak', {
+      'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
       './config-fn': config => config,
-      '../../util/ensure-output': { ensureFile: ensureFileStub },
+      '../../util/ensure-output': { ensureDirectory: ensureDirectoryStub },
       'electron-installer-flatpak': eidStub,
     });
     flatpakMaker = flatpakModule.default;
