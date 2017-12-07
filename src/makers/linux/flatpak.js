@@ -1,7 +1,8 @@
+import fs from 'fs-extra';
 import path from 'path';
 import pify from 'pify';
 
-import { ensureFile } from '../../util/ensure-output';
+import { ensureDirectory } from '../../util/ensure-output';
 import isInstalled from '../../util/is-installed';
 import { linuxConfig, populateConfig } from '../../util/linux-config';
 
@@ -17,21 +18,26 @@ export function flatpakArch(nodeArch) {
   }
 }
 
-export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
+export default async ({ dir, targetArch, forgeConfig }) => {
   const installer = require('electron-installer-flatpak');
 
   const arch = flatpakArch(targetArch);
   const config = populateConfig({ forgeConfig, configKey: 'electronInstallerFlatpak', targetArch });
-  const outPath = path.resolve(dir, '../make', `${packageJSON.name}_${packageJSON.version}_${arch}.flatpak`);
+  const outDir = path.resolve(dir, '../make');
 
-  await ensureFile(outPath);
+  await ensureDirectory(outDir);
   const flatpakConfig = linuxConfig({
     config,
     pkgArch: arch,
     dir,
-    outPath,
+    // electron-installer-flatpak uses a filename scheme with default config options that we don't
+    // have access to, so we need to detect the flatpak filename after it's created.
+    outPath: path.join(outDir, 'dummy.flatpak'),
   });
 
   await pify(installer)(flatpakConfig);
-  return [outPath];
+
+  return (await fs.readdir(outDir))
+    .filter(basename => basename.endsWith('.flatpak'))
+    .map(basename => path.join(outDir, basename));
 };
