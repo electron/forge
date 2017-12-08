@@ -5,7 +5,7 @@ environment:
   matrix:
   - node_installer: yarn
 cache:
-- '%APPDATA%\npm-cache'
+- 'node_modules'
 - '%USERPROFILE%\.electron'
 branches:
   only:
@@ -16,6 +16,7 @@ install:
 - npm install -g npm@4
 - set PATH=%APPDATA%\npm;%PATH%
 - npm install
+- npm update
 
 test_script:
 - node --version

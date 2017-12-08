@@ -7,6 +7,9 @@ os:
 dist: trusty
 osx_image: xcode8.3
 sudo: required
+cache:
+  directories:
+  - node_modules
 services:
 - docker
 env:
@@ -18,6 +21,9 @@ branches:
   - master
   - /^v\d+\.\d+\.\d+/
 before_install: if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm install -g yarn@0.23.3; fi
+install:
+- npm install
+- npm update
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
