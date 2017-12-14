@@ -180,7 +180,7 @@ config object:
 You can set `electronPackagerConfig` with any of the options from
 [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md), except:
 
-* `arch`
+* `arch` (use `--arch=...` command-line parameter so that it is available to each generator)
 * `asar.unpack` (use `asar.unpackDir` instead)
 * `dir`
 * `electronVersion` (uses the exact version specified for `electron-prebuilt-compile` in your `devDependencies`)
