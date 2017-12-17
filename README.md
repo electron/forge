@@ -180,12 +180,12 @@ config object:
 You can set `electronPackagerConfig` with any of the options from
 [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md), except:
 
-* `arch` (use `--arch=...` command-line parameter so that it is available to each generator)
+* `arch` (use the `--arch` Forge command line argument instead, so it's available to all of Forge)
 * `asar.unpack` (use `asar.unpackDir` instead)
-* `dir`
+* `dir` (use the `cwd` Forge command line argument instead, so it's available to all of Forge)
 * `electronVersion` (uses the exact version specified for `electron-prebuilt-compile` in your `devDependencies`)
 * `out`
-* `platform`
+* `platform` (use the `--platform` Forge command line argument instead, so it's available to all of Forge)
 * `quiet`
 
 **NOTE:** You can also set your `forge` config property of your package.json to point to a JS file that exports the config object:
