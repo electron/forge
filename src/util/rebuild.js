@@ -2,9 +2,13 @@ import rebuild from 'electron-rebuild';
 
 import asyncOra from '../util/ora-handler';
 
-export default async (buildPath, electronVersion, platform, arch) => {
+export default async (buildPath, electronVersion, platform, arch, config = {}) => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
-    const rebuilder = rebuild({ buildPath, electronVersion, arch });
+    const rebuilder = rebuild(Object.assign({}, config, {
+      buildPath,
+      electronVersion,
+      arch,
+    }));
     const { lifecycle } = rebuilder;
 
     let found = 0;

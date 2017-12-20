@@ -12,6 +12,7 @@ const defaults = {
   },
   electronInstallerDMG: {},
   electronPackagerConfig: {},
+  electronRebuildConfig: {},
   electronWinstallerConfig: {},
   electronInstallerDebian: {},
   electronInstallerRedhat: {},

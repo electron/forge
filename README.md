@@ -155,6 +155,7 @@ config object:
     "linux": ["deb", "rpm", "flatpak"] // An array of linux make targets
   },
   "electronPackagerConfig": {},
+  "electronRebuildConfig": {},
   "electronWinstallerConfig": {},
   "electronInstallerDMG": {},
   "electronInstallerFlatpak": {},
@@ -187,6 +188,13 @@ You can set `electronPackagerConfig` with any of the options from
 * `out`
 * `platform` (use the `--platform` Forge command line argument instead, so it's available to all of Forge)
 * `quiet`
+
+You can set `electronRebuildConfig` with any of the options from
+[Electron Rebuild](https://github.com/electron/electron-rebuild/), except:
+
+* `electronVersion`/`--version` (uses the exact version specified for `electron-prebuilt-compile` in your `devDependencies`)
+* `arch`/`--arch` (use the `--arch` Forge command line argument instead, so it's available to all of Forge)
+* `buildPath`/`--module-dir` (uses your project's `node_modules`)
 
 **NOTE:** You can also set your `forge` config property of your package.json to point to a JS file that exports the config object:
 

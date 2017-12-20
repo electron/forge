@@ -50,7 +50,9 @@ export default async (providedOptions = {}) => {
     throw `Please set your application's 'version' in '${dir}/package.json'.`;
   }
 
-  await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch);
+  const forgeConfig = await getForgeConfig(dir);
+
+  await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch, forgeConfig.electronRebuildConfig);
 
   const spawnOpts = {
     cwd: dir,
@@ -73,7 +75,6 @@ export default async (providedOptions = {}) => {
 
   let spawned;
 
-  const forgeConfig = await getForgeConfig(dir);
   await runHook(forgeConfig, 'generateAssets');
 
   await asyncOra('Launching Application', async () => {

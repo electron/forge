@@ -68,6 +68,7 @@ export default async (dir) => {
     make_targets: {},
     publish_targets: {},
     electronPackagerConfig: {},
+    electronRebuildConfig: {},
     electronWinstallerConfig: {},
     electronInstallerDebian: {},
     electronInstallerDMG: {},
