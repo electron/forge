@@ -89,7 +89,7 @@ export default async (providedOptions = {}) => {
   const pruneEnabled = !('prune' in forgeConfig.electronPackagerConfig) || forgeConfig.electronPackagerConfig.prune;
 
   const rebuildHookFn = async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    await rebuildHook(buildPath, electronVersion, pPlatform, pArch);
+    await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
     packagerSpinner = ora('Packaging Application').start();
     done();
   };
