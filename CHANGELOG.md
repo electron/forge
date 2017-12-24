@@ -1,3 +1,34 @@
+#### [4.1.7](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.7) (2017-12-24)
+
+##### Chores
+
+* **generic:**
+  *  don't nonzero-exit when trying to install tabtab completions ([0e18fe34](https://github.com/electron-userland/electron-forge/commit/0e18fe34))
+  *  don't use deprecated mocha CLI flag ([e13e6380](https://github.com/electron-userland/electron-forge/commit/e13e6380))
+* **tests:**
+  *  move default test config to mocha.opts file ([f681176c](https://github.com/electron-userland/electron-forge/commit/f681176c))
+  *  remove intermediate layer when running via Docker ([6282a115](https://github.com/electron-userland/electron-forge/commit/6282a115))
+  *  cache node_modules in CI ([fcef3826](https://github.com/electron-userland/electron-forge/commit/fcef3826))
+
+##### Documentation Changes
+
+* **packager:**
+  *  clarify why dir/platform can't be set in Packager config ([f2b5c4a3](https://github.com/electron-userland/electron-forge/commit/f2b5c4a3))
+  *  clarify why arch can't be set in Packager config ([df5a018e](https://github.com/electron-userland/electron-forge/commit/df5a018e))
+
+##### Bug Fixes
+
+* **packager:**  package spinner isn't defined when asar.unpack is checked ([435e83d0](https://github.com/electron-userland/electron-forge/commit/435e83d0))
+* **initializer:**  electron versions for babel-preset-env should be strings ([35120b1c](https://github.com/electron-userland/electron-forge/commit/35120b1c))
+
+##### Other Changes
+
+*  use yarn instead ([907a377e](https://github.com/electron-userland/electron-forge/commit/907a377e))
+
+##### Refactors
+
+* **generic:**  Use readJson and writeJson ([1a1884d1](https://github.com/electron-userland/electron-forge/commit/1a1884d1))
+
 #### [4.1.6](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.6) (2017-12-06)
 
 ##### Bug Fixes
