@@ -64,6 +64,9 @@ When changing the API documentation, here are some rules to keep in mind.
   * should be properly capitalized
   * should not be "This"
 
+For changes to the website ([electronforge.io](https://electronforge.io)), please file
+issues/pull requests at [its separate repository](https://github.com/electron-forge/electronforge.io).
+
 ## Filing Pull Requests
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
