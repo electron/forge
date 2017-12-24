@@ -267,6 +267,16 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       await fs.remove(path.resolve(dir, 'out'));
     });
 
+    it('throws an error when asar.unpack is set', async () => {
+      let packageJSON = await readPackageJSON(dir);
+      packageJSON.config.forge.electronPackagerConfig.asar = { unpack: 'somedir/**' };
+      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+      await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/electron-compile does not support asar\.unpack/);
+      packageJSON = await readPackageJSON(dir);
+      delete packageJSON.config.forge.electronPackagerConfig.asar;
+      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+    });
+
     it('can package without errors with native pre-gyp deps installed', async () => {
       await installDeps(dir, ['ref']);
       await forge.package({ dir });
