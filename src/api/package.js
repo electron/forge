@@ -139,7 +139,6 @@ export default async (providedOptions = {}) => {
   });
   packageOpts.quiet = true;
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
-    packagerSpinner.fail();
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
   }
 
