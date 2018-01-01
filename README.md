@@ -273,6 +273,18 @@ You must export a Function that returns a Promise.  Your function will be called
 
 You should use `ora` to indicate your publish progress.
 
+## Debugging your application on the command line
+
+If you're using Electron 1.7 or later, you can specify the `--inspect-electron` flag, which will
+set the [Electron `--inspect` flag](http://electronjs.org/docs/tutorial/debugging-main-process#--inspectport)
+with the default debugger port.
+
+For example:
+
+```shell
+electron-forge start --inspect-electron
+```
+
 ## Debugging your application through VS Code
 
 Debugging your Electron main process through VS Code is ridiculously
