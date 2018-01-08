@@ -190,7 +190,7 @@ You can set `electronPackagerConfig` with any of the options from
 * `quiet`
 
 You can set `electronRebuildConfig` with any of the options from
-[Electron Rebuild](https://github.com/electron/electron-rebuild/), except:
+[Electron Rebuild](https://github.com/electron/electron-rebuild#how-can-i-integrate-this-into-grunt--gulp--whatever), except:
 
 * `electronVersion`/`--version` (uses the exact version specified for `electron-prebuilt-compile` in your `devDependencies`)
 * `arch`/`--arch` (use the `--arch` Forge command line argument instead, so it's available to all of Forge)
