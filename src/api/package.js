@@ -39,6 +39,17 @@ function resolveHooks(hooks, dir) {
   return [];
 }
 
+function sequentialHooks(hooks) {
+  return [async (...args) => {
+    const done = args[args.length - 1];
+    const passedArgs = args.splice(0, args.length - 1);
+    for (const hook of hooks) {
+      await pify(hook)(...passedArgs);
+    }
+    done();
+  }];
+}
+
 /**
  * Package an Electron application into an platform dependent format.
  *
@@ -128,9 +139,9 @@ export default async (providedOptions = {}) => {
     asar: false,
     overwrite: true,
   }, forgeConfig.electronPackagerConfig, {
-    afterCopy: afterCopyHooks,
-    afterExtract: resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir),
-    afterPrune: afterPruneHooks,
+    afterCopy: sequentialHooks(afterCopyHooks),
+    afterExtract: sequentialHooks(resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir)),
+    afterPrune: sequentialHooks(afterPruneHooks),
     dir,
     arch,
     platform,
