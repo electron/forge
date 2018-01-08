@@ -1,3 +1,19 @@
+#### [4.1.8](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.8) (2018-01-08)
+
+##### Chores
+
+* **maker:** upgrade electron-installer-flatpak to 0.8.0 & re-enable its tests ([9c199e0d](https://github.com/electron-userland/electron-forge/commit/9c199e0d))
+
+##### Documentation Changes
+
+* **starter:** add note to readme about debugging on the command line ([26f347a6](https://github.com/electron-userland/electron-forge/commit/26f347a6))
+* **generic:** add link to electronforge.io repository in contributing docs ([c3332688](https://github.com/electron-userland/electron-forge/commit/c3332688))
+
+##### Bug Fixes
+
+* **generic:** tabtab install breaks in bash for windows ([a5f8b40f](https://github.com/electron-userland/electron-forge/commit/a5f8b40f))
+* **maker:** fix detection of flatpak artifact ([4d5378c2](https://github.com/electron-userland/electron-forge/commit/4d5378c2))
+
 #### [4.1.7](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.7) (2017-12-24)
 
 ##### Chores
