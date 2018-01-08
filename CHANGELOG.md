@@ -1,3 +1,10 @@
+### [4.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.2.0) (2018-01-08)
+
+##### New Features
+
+* **generic:**  allow specifying a build identifier that segregates build artifacts ([0e483659](https://github.com/electron-userland/electron-forge/commit/0e483659))
+* **rebuilder:**  allow configuration of electron-rebuild ([b986f264](https://github.com/electron-userland/electron-forge/commit/b986f264))
+
 #### [4.1.9](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.9) (2018-01-08)
 
 ##### Bug Fixes
