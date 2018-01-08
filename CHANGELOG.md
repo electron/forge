@@ -1,3 +1,9 @@
+#### [4.1.9](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.9) (2018-01-08)
+
+##### Bug Fixes
+
+* **packager:**  packager hooks should be executed sequentially ([e844b1d1](https://github.com/electron-userland/electron-forge/commit/e844b1d1))
+
 #### [4.1.8](https://github.com/electron-userland/electron-forge/releases/tag/v4.1.8) (2018-01-08)
 
 ##### Chores
