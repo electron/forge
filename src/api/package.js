@@ -16,6 +16,7 @@ import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
+import getCurrentOutDir from '../util/out-dir';
 
 const d = debug('electron-forge:packager');
 
@@ -67,7 +68,6 @@ export default async (providedOptions = {}) => {
 
   const ora = interactive ? realOra : fakeOra;
 
-  const outDir = providedOptions.outDir || path.resolve(dir, 'out');
   let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
   let prepareCounter = 0;
 
@@ -84,6 +84,7 @@ export default async (providedOptions = {}) => {
   }
 
   const forgeConfig = await getForgeConfig(dir);
+  const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
   let packagerSpinner;
 
   const pruneEnabled = !('prune' in forgeConfig.electronPackagerConfig) || forgeConfig.electronPackagerConfig.prune;
