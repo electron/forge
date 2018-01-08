@@ -9,6 +9,7 @@ import readPackageJSON from '../util/read-package-json';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import PublishState from '../util/publish-state';
+import getCurrentOutDir from '../util/out-dir';
 
 import make from './make';
 
@@ -48,9 +49,6 @@ const publish = async (providedOptions = {}) => {
   }, providedOptions);
   asyncOra.interactive = interactive;
 
-  const outDir = providedOptions.outDir || path.resolve(dir, 'out');
-  const dryRunDir = path.resolve(outDir, 'publish-dry-run');
-
   if (dryRun && dryRunResume) {
     throw 'Can\'t dry run and resume a dry run at the same time';
   }
@@ -61,6 +59,8 @@ const publish = async (providedOptions = {}) => {
   let packageJSON = await readPackageJSON(dir);
 
   const forgeConfig = await getForgeConfig(dir);
+  const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
+  const dryRunDir = path.resolve(outDir, 'publish-dry-run');
 
   if (dryRunResume) {
     d('attempting to resume from dry run');

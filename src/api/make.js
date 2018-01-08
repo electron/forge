@@ -11,6 +11,7 @@ import parseArchs from '../util/parse-archs';
 import readPackageJSON from '../util/read-package-json';
 import { requireSearchRaw } from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
+import getCurrentOutDir from '../util/out-dir';
 
 import packager from './package';
 
@@ -49,7 +50,6 @@ export default async (providedOptions = {}) => {
     platform: process.platform,
   }, providedOptions);
 
-  const outDir = providedOptions.outDir || path.resolve(dir, 'out');
   asyncOra.interactive = interactive;
 
   let forgeConfig;
@@ -61,6 +61,8 @@ export default async (providedOptions = {}) => {
 
     forgeConfig = await getForgeConfig(dir);
   });
+
+  const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
 
   const actualTargetPlatform = platform;
   platform = platform === 'mas' ? 'darwin' : platform;
