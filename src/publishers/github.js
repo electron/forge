@@ -1,3 +1,5 @@
+import fs from 'fs-extra';
+import mime from 'mime-types';
 import path from 'path';
 
 import asyncOra from '../util/ora-handler';
@@ -57,10 +59,10 @@ export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
           return done();
         }
         await github.getGitHub().repos.uploadAsset({
-          owner: forgeConfig.github_repository.owner,
-          repo: forgeConfig.github_repository.name,
-          id: release.id,
-          filePath: artifactPath,
+          url: release.upload_url,
+          file: fs.createReadStream(artifactPath),
+          contentType: mime.lookup(artifactPath) || 'application/octet-stream',
+          contentLength: (await fs.stat(artifactPath)).size,
           name: path.basename(artifactPath),
         });
         return done();
