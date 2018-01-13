@@ -148,6 +148,21 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[1].slice(2)).to.deep.equal(['--inspect'].concat(args));
   });
 
+  it('should pass --enable-sandbox at the start of the args if sandbox is set', async () => {
+    const args = ['magic'];
+    resolveStub.returnsArg(0);
+    spawnStub.returns(0);
+    await start({
+      dir: __dirname,
+      interactive: false,
+      args,
+      sandbox: true,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
+    expect(spawnStub.firstCall.args[1].slice(2)).to.deep.equal(['--enable-sandbox'].concat(args));
+  });
+
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
     spawnStub.returns('child');
