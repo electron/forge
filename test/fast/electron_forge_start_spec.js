@@ -140,6 +140,7 @@ describe('electron-forge start', () => {
       inspect: true,
       sandbox: false,
     });
+  });
 
   it('should handle enable-sandbox', async () => {
     await runCommand(['--enable-sandbox']);
