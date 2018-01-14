@@ -45,6 +45,7 @@ describe('electron-forge start', () => {
       enableLogging: false,
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -57,6 +58,7 @@ describe('electron-forge start', () => {
       enableLogging: false,
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -69,6 +71,7 @@ describe('electron-forge start', () => {
       enableLogging: false,
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -82,6 +85,7 @@ describe('electron-forge start', () => {
       enableLogging: false,
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -94,6 +98,7 @@ describe('electron-forge start', () => {
       interactive: true,
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -107,6 +112,7 @@ describe('electron-forge start', () => {
       args: ['-a', 'foo', '-l'],
       runAsNode: false,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -119,6 +125,7 @@ describe('electron-forge start', () => {
       interactive: true,
       runAsNode: true,
       inspect: false,
+      sandbox: false,
     });
   });
 
@@ -131,6 +138,20 @@ describe('electron-forge start', () => {
       interactive: true,
       runAsNode: false,
       inspect: true,
+      sandbox: false,
+    });
+  });
+
+  it('should handle enable-sandbox', async () => {
+    await runCommand(['--enable-sandbox']);
+    expect(startStub.callCount).to.equal(1);
+    expect(startStub.firstCall.args[0]).to.deep.equal({
+      dir: process.cwd(),
+      enableLogging: false,
+      interactive: true,
+      runAsNode: false,
+      inspect: false,
+      sandbox: true,
     });
   });
 

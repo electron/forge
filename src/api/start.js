@@ -26,7 +26,7 @@ import runHook from '../util/hook';
  */
 export default async (providedOptions = {}) => {
   // eslint-disable-next-line prefer-const, no-unused-vars
-  let { dir, interactive, enableLogging, appPath, args, runAsNode, inspect } = Object.assign({
+  let { dir, interactive, enableLogging, appPath, args, runAsNode, inspect, sandbox } = Object.assign({
     dir: process.cwd(),
     appPath: '.',
     interactive: false,
@@ -34,6 +34,7 @@ export default async (providedOptions = {}) => {
     args: [],
     runAsNode: false,
     inspect: false,
+    sandbox: false,
   }, providedOptions);
   asyncOra.interactive = interactive;
 
@@ -71,6 +72,10 @@ export default async (providedOptions = {}) => {
 
   if (inspect) {
     args = ['--inspect'].concat(args);
+  }
+
+  if (sandbox) {
+    args = ['--enable-sandbox'].concat(args);
   }
 
   let spawned;

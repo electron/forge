@@ -316,3 +316,15 @@ good to go.
   "cwd": "${workspaceRoot}"
 }
 ```
+
+
+## Enable the sandboxing mode on Electron
+
+If you wish to use the experimental sandboxing features, you can specify the `--enable-sandbox` flag, which will
+set the [Electron `--enable-sandbox` flag](https://electronjs.org/docs/api/sandbox-option).
+
+For example:
+
+```shell
+electron-forge start --enable-sandbox
+```
