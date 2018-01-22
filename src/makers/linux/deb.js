@@ -1,5 +1,4 @@
 import path from 'path';
-import pify from 'pify';
 
 import { ensureFile } from '../../util/ensure-output';
 import isInstalled from '../../util/is-installed';
@@ -34,6 +33,6 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
     outPath,
   });
 
-  await pify(installer)(debianConfig);
+  await installer(debianConfig);
   return [outPath];
 };

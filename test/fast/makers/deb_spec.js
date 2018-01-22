@@ -20,7 +20,7 @@ describe('deb maker', () => {
 
   beforeEach(() => {
     ensureFileStub = stub().returns(Promise.resolve());
-    eidStub = stub().callsArg(1);
+    eidStub = stub().resolves();
     forgeConfig = { electronInstallerDebian: {} };
 
     debModule = proxyquire.noPreserveCache().noCallThru().load('../../../src/makers/linux/deb', {
