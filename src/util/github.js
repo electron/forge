@@ -1,4 +1,4 @@
-import GitHubAPI from 'github';
+import GitHubAPI from '@octokit/rest';
 
 export default class GitHub {
   constructor(authToken, requireAuth) {
