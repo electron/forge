@@ -21,7 +21,7 @@ describe('GitHub', () => {
       }
     };
     GitHub = proxyquire.noCallThru().load('../../src/util/github', {
-      github: MockGitHub,
+      '@octokit/rest': MockGitHub,
     }).default;
   });
 

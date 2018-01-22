@@ -106,6 +106,7 @@
     "cache": true
   },
   "dependencies": {
+    "@octokit/rest": "^14.0.4",
     "aws-sdk": "^2.9.0",
     "babel-register": "^6.16.3",
     "bluebird": "^3.4.6",
@@ -121,7 +122,6 @@
     "electron-rebuild": "^1.6.0",
     "form-data": "^2.1.4",
     "fs-extra": "^5.0.0",
-    "github": "^13.1.0",
     "glob": "^7.1.1",
     "inquirer": "^5.0.0",
     "lodash.merge": "^4.6.0",
