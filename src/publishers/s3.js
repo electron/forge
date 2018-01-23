@@ -15,18 +15,22 @@ AWS.util.update(AWS.S3.prototype, {
 
 export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
   const s3Config = forgeConfig.s3;
+
   s3Config.secretAccessKey = s3Config.secretAccessKey || authToken;
-  if (!(s3Config.accessKeyId && s3Config.secretAccessKey && s3Config.bucket)) {
+
+  const s3Client = new AWS.S3({
+    accessKeyId: s3Config.accessKeyId,
+    secretAccessKey: s3Config.secretAccessKey,
+  });
+
+  if (!s3Client.config.credentials || !s3Config.bucket) {
     throw 'In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your forge config. See the docs for more info'; // eslint-disable-line
   }
 
   d('creating s3 client with options:', s3Config);
 
   const client = s3.createClient({
-    s3Client: new AWS.S3({
-      accessKeyId: s3Config.accessKeyId || process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: s3Config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
-    }),
+    s3Client,
   });
   client.s3.addExpect100Continue = () => {};
 
