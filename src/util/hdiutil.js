@@ -5,7 +5,7 @@ const d = debug('electron-forge:hdiutil');
 
 export const getMountedImages = async () => {
   const output = await spawnPromise('hdiutil', ['info']);
-  const mounts = output.split(/====\n/g);
+  const mounts = output.toString().split(/====\n/g);
   mounts.shift();
 
   const mountObjects = [];
@@ -26,8 +26,8 @@ export const getMountedImages = async () => {
 
 export const mountImage = async (filePath) => {
   d('mounting image:', filePath);
-  const output = await spawnPromise('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]).toString();
-  const mountPath = /\/Volumes\/(.+)\n/g.exec(output)[1];
+  const output = await spawnPromise('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]);
+  const mountPath = /\/Volumes\/(.+)\n/g.exec(output.toString())[1];
   d('mounted at:', mountPath);
 
   return {
