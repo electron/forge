@@ -14,6 +14,16 @@ Electron Forge unifies the existing (and well maintained) build tools for
 Electron development into a simple, easy to use package so that anyone can
 jump right in to Electron development.
 
+----
+
+[Website](https://electronforge.io) |
+[Goals](#project-goals) |
+[Usage](#usage) |
+[Configuration](#config) |
+[Support](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md) |
+[Contributing](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) |
+[Changelog](https://github.com/electron-userland/electron-forge/blob/master/CHANGELOG.md)
+
 # Getting Started
 
 **Note**: Electron Forge requires Node 6 or above, plus git installed.
