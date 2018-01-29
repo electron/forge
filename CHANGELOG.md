@@ -1,3 +1,22 @@
+#### [4.2.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.2.1) (2018-01-29)
+
+##### Chores
+
+* **generic:**
+  *  upgrade mocha to 5.x ([01857a8e](https://github.com/electron-userland/electron-forge/commit/01857a8e))
+  *  upgrade electron-installer-debian to 0.8.x ([0bcedfe8](https://github.com/electron-userland/electron-forge/commit/0bcedfe8))
+  *  replace node-github with @octokit/rest ([e1f26075](https://github.com/electron-userland/electron-forge/commit/e1f26075))
+  *  upgrade github to v13 ([a80ff504](https://github.com/electron-userland/electron-forge/commit/a80ff504))
+  *  upgrade fs-extra to v5 and inquirer to v5 ([0ecc57dd](https://github.com/electron-userland/electron-forge/commit/0ecc57dd))
+
+##### Documentation Changes
+
+* **generic:**  add support document & move debugging section there ([d3f610c4](https://github.com/electron-userland/electron-forge/commit/d3f610c4))
+
+##### Bug Fixes
+
+* **installer:**  hdiutil output should be a string ([e511206b](https://github.com/electron-userland/electron-forge/commit/e511206b))
+
 ### [4.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.2.0) (2018-01-08)
 
 ##### New Features
