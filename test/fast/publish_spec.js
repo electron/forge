@@ -52,15 +52,16 @@ describe('publish', () => {
       tag: 'my_special_tag',
     });
     expect(publisherSpy.callCount).to.equal(1);
-    expect(publisherSpy.firstCall.args).to.deep.equal([
-      ['artifact1', 'artifact2'],
-      require('../fixture/dummy_app/package.json'),
-      await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')),
-      'my_token',
-      'my_special_tag',
-      process.platform,
-      process.arch,
-    ]);
+    expect(publisherSpy.firstCall.args).to.deep.equal([{
+      dir: resolveStub(),
+      artifacts: ['artifact1', 'artifact2'],
+      packageJSON: require('../fixture/dummy_app/package.json'),
+      forgeConfig: await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')),
+      authToken: 'my_token',
+      tag: 'my_special_tag',
+      platform: process.platform,
+      arch: process.arch,
+    }]);
   });
 
   it('should default to publishing to github', async () => {
@@ -198,28 +199,26 @@ describe('publish', () => {
       it('should successfully restore values and pass them to publisher', () => {
         expect(makeStub.callCount).to.equal(0);
         expect(publisher.callCount).to.equal(2, 'should call once for each platform (make run)');
-        const darwinIndex = publisher.firstCall.args[5] === 'darwin' ? 0 : 1;
+        const darwinIndex = publisher.firstCall.args[0].platform === 'darwin' ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
-        expect(publisher.getCall(darwinIndex).args[1]).to.deep.equal({ state: 1 });
-        expect(publisher.getCall(darwinIndex).args.slice(3)).to.deep.equal([
-          undefined,
-          null,
-          'darwin',
-          'x64',
-        ]);
-        expect(publisher.getCall(darwinIndex).args[0].sort()).to.deep.equal(
+        const darwinArgs = publisher.getCall(darwinIndex).args[0];
+        expect(darwinArgs.artifacts.sort()).to.deep.equal(
           fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
-        expect(publisher.getCall(win32Index).args[1]).to.deep.equal({ state: 0 });
-        expect(publisher.getCall(win32Index).args.slice(3)).to.deep.equal([
-          undefined,
-          null,
-          'win32',
-          'x64',
-        ]);
-        expect(publisher.getCall(win32Index).args[0].sort()).to.deep.equal(
+        expect(darwinArgs.packageJSON).to.deep.equal({ state: 1 });
+        expect(darwinArgs.authToken).to.equal(undefined);
+        expect(darwinArgs.tag).to.equal(null);
+        expect(darwinArgs.platform).to.equal('darwin');
+        expect(darwinArgs.arch).to.equal('x64');
+        const win32Args = publisher.getCall(win32Index).args[0];
+        expect(win32Args.artifacts.sort()).to.deep.equal(
           fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
+        expect(win32Args.packageJSON).to.deep.equal({ state: 0 });
+        expect(win32Args.authToken).to.equal(undefined);
+        expect(win32Args.tag).to.equal(null);
+        expect(win32Args.platform).to.equal('win32');
+        expect(win32Args.arch).to.equal('x64');
       });
     });
 
