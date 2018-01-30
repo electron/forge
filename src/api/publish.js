@@ -139,7 +139,16 @@ const publish = async (providedOptions = {}) => {
       }
     });
 
-    await publisher(artifacts, packageJSON, forgeConfig, authToken, tag, makeOptions.platform || process.platform, makeOptions.arch || process.arch);
+    await publisher({
+      dir,
+      artifacts,
+      packageJSON,
+      forgeConfig,
+      authToken,
+      tag,
+      platform: makeOptions.platform || process.platform,
+      arch: makeOptions.arch || process.arch,
+    });
   }
 };
 

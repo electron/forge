@@ -13,7 +13,7 @@ AWS.util.update(AWS.S3.prototype, {
   },
 });
 
-export default async (artifacts, packageJSON, forgeConfig, authToken, tag) => {
+export default async ({ artifacts, packageJSON, forgeConfig, authToken, tag }) => {
   const s3Config = forgeConfig.s3;
 
   s3Config.secretAccessKey = s3Config.secretAccessKey || authToken;

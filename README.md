@@ -280,15 +280,16 @@ Your promise must resolve with an array of the artifacts you generated.
 
 ### API for `publish` targets
 
-You must export a Function that returns a Promise.  Your function will be called with the following parameters.
+You must export a `Function` that returns a `Promise`.  Your function will be called with the following keyword parameters:
 
-* artifactPaths - An array of absolute paths to artifacts to publish
-* packageJSON - An object representing the users package.json file
-* forgeConfig - An object representing the users forgeConfig
-* authToken - The value of `--auth-token`
-* tag - The value of `--tag`
-* platform - The platform you are publishing for
-* arch - The arch you are publishing for
+* `dir` - The application directory
+* `artifactPaths` - An array of absolute paths to artifacts to publish
+* `packageJSON` - An object representing the user's `package.json` file
+* `forgeConfig` - An object representing the user's [`forgeConfig`](#config)
+* `authToken` - The value of `--auth-token`
+* `tag` - The value of `--tag`
+* `platform` - The platform you are publishing for
+* `arch` - The arch you are publishing for
 
 You should use `ora` to indicate your publish progress.
 
