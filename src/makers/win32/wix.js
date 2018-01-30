@@ -3,9 +3,9 @@ import path from 'path';
 import { ensureDirectory } from '../../util/ensure-output';
 import getNameFromAuthor from '../../util/author-name';
 import configFn from '../../util/config-fn';
-import isInstalled from '../../util/is-installed';
 
-export const isSupportedOnCurrentPlatform = async () => isInstalled('electron-wix-msi');
+// electron-wix-msi doesn't set its 'os' field even though it only runs on win32
+export const isSupportedOnCurrentPlatform = async () => process.platform === 'win32';
 
 export default async ({ dir, appName, targetArch, forgeConfig, packageJSON }) => {
   const { MSICreator } = require('electron-wix-msi');

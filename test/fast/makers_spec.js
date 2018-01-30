@@ -10,6 +10,7 @@ describe('makers', () => {
       'linux/rpm': ['darwin', 'linux'],
       'win32/appx': ['win32'],
       'win32/squirrel': ['darwin', 'linux', 'win32'],
+      'win32/wix': ['win32'],
     };
 
     Object.keys(expected).forEach(async (maker) => {
