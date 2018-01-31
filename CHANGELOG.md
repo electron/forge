@@ -1,3 +1,21 @@
+### [4.3.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.3.0) (2018-01-31)
+
+##### New Features
+
+* **maker:**  add Wix support ([76166af3](https://github.com/electron-userland/electron-forge/commit/76166af3))
+
+##### Bug Fixes
+
+* **maker:**  wix only works on win32 currently ([707a1e33](https://github.com/electron-userland/electron-forge/commit/707a1e33))
+
+##### Other Changes
+
+*  add Wix to PATH ([52a64080](https://github.com/electron-userland/electron-forge/commit/52a64080))
+
+##### Refactors
+
+* **maker:**  extract author name parsing into its own function ([fa80cd3d](https://github.com/electron-userland/electron-forge/commit/fa80cd3d))
+
 #### [4.2.1](https://github.com/electron-userland/electron-forge/releases/tag/v4.2.1) (2018-01-29)
 
 ##### Chores
