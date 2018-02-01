@@ -1,3 +1,12 @@
+## [5.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.0.0) (2018-02-01)
+
+##### New Features
+
+* **publisher:**
+  *  add snapcraft publisher ([c5b7d0d7](https://github.com/electron-userland/electron-forge/commit/c5b7d0d7))
+  *  add dir to publisher args & convert args from positional to keyword ([45ace6cf](https://github.com/electron-userland/electron-forge/commit/45ace6cf))
+* **maker:**  add builtin snap support ([86f987d7](https://github.com/electron-userland/electron-forge/commit/86f987d7))
+
 ### [4.3.0](https://github.com/electron-userland/electron-forge/releases/tag/v4.3.0) (2018-01-31)
 
 ##### New Features
