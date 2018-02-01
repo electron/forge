@@ -274,7 +274,13 @@ For example:
 
 ## Custom `make` and `publish` targets
 
-You can make your own custom targets for the `make` and `publish` targets.  If you publish them as `electron-forge-publisher-{name}` or `electron-forge-maker-{name}` you can then just specify `{name}` as your make / publish target.  The API for each is documented below.
+You can make your own custom targets for the `make` and `publish` targets.  If you publish them as
+`electron-forge-publisher-{name}` or `electron-forge-maker-{name}`, they can be added to the app's
+`devDependencies` and can be specified as `{name}` in the make / publish targets. Publicly published
+third-party [makers](https://www.npmjs.com/search?q=electron%2Dforge%2Dmaker) and
+[publishers](https://www.npmjs.com/search?q=electron-forge-publisher) are available in the NPM registry.
+
+The API for each target type is documented below.
 
 ### API for `make` targets
 
