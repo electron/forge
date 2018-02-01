@@ -12,13 +12,13 @@ export default async ({ dir, artifacts, forgeConfig }) => {
   const snapArtifacts = artifacts.filter(artifact => artifact.endsWith('.snap'));
 
   if (snapArtifacts.length === 0) {
-    throw 'No snap files to upload!';
+    throw 'No snap files to upload. Please ensure that "snap" is listed in the "make_targets" in Forge config.';
   }
 
   const snapcraftCfgPath = path.join(dir, '.snapcraft', 'snapcraft.cfg');
 
   if (!await fs.pathExists(snapcraftCfgPath)) {
-    throw 'Snapcraft config not found!';
+    throw `Snapcraft config not found, expected to be at "${snapcraftCfgPath}".`;
   }
 
   await asyncOra('Pushing snap to the snap store', async () => {
