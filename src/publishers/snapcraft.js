@@ -18,7 +18,7 @@ export default async ({ dir, artifacts, forgeConfig }) => {
   const snapcraftCfgPath = path.join(dir, '.snapcraft', 'snapcraft.cfg');
 
   if (!await fs.pathExists(snapcraftCfgPath)) {
-    throw `Snapcraft credentials not found at "${snapcraftCfgPath}". It can be generated with the command "snapcraft export login".`;
+    throw `Snapcraft credentials not found at "${snapcraftCfgPath}". It can be generated with the command "snapcraft export-login".`;
   }
 
   await asyncOra('Pushing snap to the snap store', async () => {
