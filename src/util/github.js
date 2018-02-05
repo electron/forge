@@ -1,7 +1,13 @@
 import GitHubAPI from '@octokit/rest';
+import merge from 'lodash.merge';
 
 export default class GitHub {
-  constructor(authToken, requireAuth) {
+  constructor(authToken, requireAuth, options = {}) {
+    this.options = merge(
+      { protocol: 'https' },
+      options,
+      { headers: { 'user-agent': 'Electron Forge' } }
+    );
     if (authToken) {
       this.token = authToken;
     } else if (process.env.GITHUB_TOKEN) {
@@ -12,12 +18,7 @@ export default class GitHub {
   }
 
   getGitHub() {
-    const github = new GitHubAPI({
-      protocol: 'https',
-      headers: {
-        'user-agent': 'Electron Forge',
-      },
-    });
+    const github = new GitHubAPI(this.options);
     if (this.token) {
       github.authenticate({
         type: 'token',
