@@ -1,3 +1,9 @@
+### [5.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.0) (2018-02-05)
+
+##### New Features
+
+* **publisher:**  add GitHub Enterprise/HTTP proxy support to the GitHub publisher ([14151022](https://github.com/electron-userland/electron-forge/commit/14151022))
+
 ## [5.0.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.0.0) (2018-02-01)
 
 ##### New Features
