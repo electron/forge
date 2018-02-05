@@ -12,8 +12,9 @@ describe('GitHub', () => {
     gitHubSpy = sinon.spy();
     gitHubAuthSpy = sinon.spy();
     MockGitHub = class {
-      constructor() {
+      constructor(options) {
         gitHubSpy();
+        this.options = options;
       }
 
       authenticate() {
@@ -41,6 +42,32 @@ describe('GitHub', () => {
       expect(gitHubSpy.callCount).to.equal(0);
       gh.getGitHub();
       expect(gitHubSpy.callCount).to.equal(1);
+    });
+
+    it('should be able to set the Enterprise URL settings', () => {
+      const gh = new GitHub('1234', true, {
+        host: 'github.example.com',
+        port: 8443,
+        pathPrefix: '/enterprise',
+      });
+      const api = gh.getGitHub();
+
+      expect(api.options).to.deep.equal({
+        protocol: 'https',
+        host: 'github.example.com',
+        port: 8443,
+        pathPrefix: '/enterprise',
+        headers: {
+          'user-agent': 'Electron Forge',
+        },
+      });
+    });
+
+    it('should not override the user agent', () => {
+      const gh = new GitHub('1234', true, { headers: { 'user-agent': 'Something' } });
+      const api = gh.getGitHub();
+
+      expect(api.options.headers['user-agent']).to.equal('Electron Forge');
     });
 
     it('should authenticate if a token is present', () => {
