@@ -3,6 +3,7 @@ import path from 'path';
 import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
 import yarnOrNpm from './yarn-or-npm';
+import PluginInterface from './plugin-interface';
 
 const underscoreCase = str => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
@@ -10,7 +11,7 @@ const proxify = (object, envPrefix) => {
   const newObject = {};
 
   Object.keys(object).forEach((key) => {
-    if (typeof object[key] === 'object' && !Array.isArray(object[key])) {
+    if (typeof object[key] === 'object' && !Array.isArray(object[key]) && key !== 'pluginInterface') {
       newObject[key] = proxify(object[key], `${envPrefix}_${underscoreCase(key)}`);
     } else {
       newObject[key] = object[key];
@@ -76,6 +77,7 @@ export default async (dir) => {
     s3: {},
     github_repository: {},
     electronReleaseServer: {},
+    plugins: [],
   }, forgeConfig);
   forgeConfig.make_targets = Object.assign({
     win32: ['squirrel'],
@@ -105,6 +107,8 @@ export default async (dir) => {
   };
 
   template(forgeConfig);
+
+  forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
 
   return proxify(forgeConfig, 'ELECTRON_FORGE');
 };

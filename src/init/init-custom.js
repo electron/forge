@@ -11,7 +11,7 @@ import ora from '../util/ora';
 
 const d = debug('electron-forge:init:custom');
 
-export default async (dir, template, lintStyle) => {
+export default async (dir, template) => {
   let templateModulePath;
   await asyncOra(`Locating custom template: "${template}"`, async () => {
     try {
@@ -57,6 +57,6 @@ export default async (dir, template, lintStyle) => {
   });
 
   if (typeof templateModule.postCopy === 'function') {
-    await Promise.resolve(templateModule.postCopy(dir, ora, lintStyle));
+    await Promise.resolve(templateModule.postCopy(dir, ora));
   }
 };

@@ -2,6 +2,7 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
 import readPackageJSON from './read-package-json';
+import getElectronVersion from './electron-version';
 
 const d = debug('electron-forge:project-resolver');
 
@@ -15,12 +16,13 @@ export default async (dir) => {
     if (await fs.pathExists(testPath)) {
       const packageJSON = await readPackageJSON(mDir);
 
-      if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {
-        if (!/[0-9]/.test(packageJSON.devDependencies['electron-prebuilt-compile'][0])) {
-          throw 'You must depend on an EXACT version of "electron-prebuilt-compile" not a range';
+      const electronVersion = getElectronVersion(packageJSON);
+      if (electronVersion) {
+        if (!/[0-9]/.test(electronVersion[0])) {
+          throw `You must depend on an EXACT version of electron not a range (${electronVersion})`;
         }
       } else {
-        throw 'You must depend on "electron-prebuilt-compile" in your devDependencies';
+        throw 'You must depend on "electron" in your devDependencies';
       }
 
       if (packageJSON.config && packageJSON.config.forge) {

@@ -1,6 +1,5 @@
 import debug from 'debug';
 import fs from 'fs-extra';
-import inquirer from 'inquirer';
 import path from 'path';
 
 import initGit from '../init/init-git';
@@ -12,7 +11,6 @@ import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
 import confirmIfInteractive from '../util/confirm-if-interactive';
-import { yarnOrNpmSpawn, hasYarn } from '../util/yarn-or-npm';
 
 const d = debug('electron-forge:import');
 
@@ -27,7 +25,6 @@ const d = debug('electron-forge:import');
 /**
  * Attempt to import a given module directory to the Electron Forge standard.
  *
- * - Replaces the prebuilt electron package with the one that integrates with `electron-compile`
  * - Sets up `git` and the correct NPM dependencies
  * - Adds a template forge config to `package.json`
  *
@@ -68,18 +65,6 @@ export default async (providedOptions = {}) => {
     }
   }
 
-  // eslint-disable-next-line max-len
-  const shouldChangeMain = await confirmIfInteractive(interactive, 'Do you want us to change the "main" attribute of your package.json?  If you are currently using babel and pointing to a "build" directory say yes.', false);
-  if (shouldChangeMain) {
-    const { newMain } = await inquirer.createPromptModule()({
-      type: 'input',
-      name: 'newMain',
-      default: packageJSON.main,
-      message: 'Enter the relative path to your uncompiled main file',
-    });
-    packageJSON.main = newMain;
-  }
-
   packageJSON.dependencies = packageJSON.dependencies || {};
   packageJSON.devDependencies = packageJSON.devDependencies || {};
 
@@ -96,13 +81,8 @@ export default async (providedOptions = {}) => {
     'electron-winstaller': 'already uses this module as a transitive dependency',
   };
 
-  let electronName;
   for (const key of keys) {
-    if (key === 'electron' || key === 'electron-prebuilt') {
-      delete packageJSON.dependencies[key];
-      delete packageJSON.devDependencies[key];
-      electronName = key;
-    } else if (buildToolPackages[key]) {
+    if (buildToolPackages[key]) {
       const explanation = buildToolPackages[key];
       // eslint-disable-next-line max-len
       const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`);
@@ -139,33 +119,12 @@ export default async (providedOptions = {}) => {
     });
   };
 
-  let electronVersion;
-  if (electronName) {
-    const electronPackageJSON = await readPackageJSON(path.resolve(dir, 'node_modules', electronName));
-    electronVersion = electronPackageJSON.version;
-    packageJSON.devDependencies['electron-prebuilt-compile'] = electronVersion;
-  }
-
   await writeChanges();
-
-  if (electronName) {
-    await asyncOra('Pruning deleted modules', async () => {
-      d('attempting to prune node_modules in:', dir);
-      await yarnOrNpmSpawn(hasYarn() ? [] : ['prune'], {
-        cwd: dir,
-        stdio: 'ignore',
-      });
-    });
-  }
 
   await asyncOra('Installing dependencies', async () => {
     d('deleting old dependencies forcefully');
     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-
-    if (electronName) {
-      await fs.remove(path.resolve(dir, 'node_modules', electronName));
-    }
 
     d('installing dependencies');
     await installDepList(dir, deps);
@@ -174,13 +133,7 @@ export default async (providedOptions = {}) => {
     await installDepList(dir, devDeps, true);
 
     d('installing exactDevDependencies');
-    await installDepList(dir, exactDevDeps.map((dep) => {
-      if (dep === 'electron-prebuilt-compile') {
-        return `${dep}@${electronVersion || 'latest'}`;
-      }
-
-      return dep;
-    }), true, true);
+    await installDepList(dir, exactDevDeps, true, true);
   });
 
   packageJSON = await readPackageJSON(dir);
@@ -205,39 +158,9 @@ export default async (providedOptions = {}) => {
     }
   });
 
-  let babelConfig = packageJSON.babel;
-  const babelPath = path.resolve(dir, '.babelrc');
-  if (!babelConfig && await fs.pathExists(babelPath)) {
-    babelConfig = await fs.readJson(babelPath, 'utf8');
-  }
-
-  if (babelConfig) {
-    await asyncOra('Porting original babel config', async () => {
-      let compileConfig = {};
-      const compilePath = path.resolve(dir, '.compilerc');
-      if (await fs.pathExists(compilePath)) {
-        compileConfig = await fs.readJson(compilePath, 'utf8');
-      }
-
-      await fs.writeJson(compilePath, Object.assign(compileConfig, {
-        'application/javascript': babelConfig,
-      }), { spaces: 2 });
-    });
-
-    info(interactive, 'NOTE: You might be able to remove your `.compilerc` file completely if you are only using the `es2016` and `react` presets'.yellow);
-  }
-
   info(interactive, `
 
 We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
-Nothing much will have changed but we added the ${'"electron-prebuilt-compile"'.cyan} dependency.  This is \
-the dependency you must version bump to get newer versions of Electron.
-
-
-We also tried to import any build tooling you already had but we can't get everything.  You might need to convert any CLI/gulp/grunt tasks yourself.
-
-Also please note if you are using \`preload\` scripts you need to follow the steps outlined \
-at https://github.com/electron-userland/electron-forge/wiki/Using-%27preload%27-scripts
 
 Thanks for using ${'"electron-forge"'.green}!!!`);
 };

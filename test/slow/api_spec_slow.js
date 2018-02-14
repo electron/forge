@@ -42,44 +42,31 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(true);
   };
 
-  const forLintingMethod = (lintStyle) => {
-    describe(`init (with lintStyle=${lintStyle})`, () => {
-      beforeInitTest({ lintStyle });
+  describe('init', () => {
+    beforeInitTest();
 
-      it('should create a new folder with a npm module inside', async () => {
-        expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-        expectProjectPathExists('package.json', 'file');
-      });
-
-      it('should have initialized a git repository', async () => {
-        expectProjectPathExists('.git', 'folder');
-      });
-
-      it('should have installed the initial node_modules', async () => {
-        expectProjectPathExists('node_modules', 'folder');
-        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-prebuilt-compile')), 'electron-prebuilt-compile should exist').to.equal(true);
-        expect(await fs.pathExists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
-        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-forge')), 'electron-forge should exist').to.equal(true);
-      });
-
-      it('should have set the .compilerc electron version to be a string', async () => {
-        expectProjectPathExists('.compilerc', 'file');
-        const compilerc = await fs.readJson(path.resolve(dir, '.compilerc'));
-        const electronVersion = compilerc.env.development['application/javascript'].presets[0][1].targets.electron;
-        expect(electronVersion).to.be.a('string');
-        expect(electronVersion.split('.').length).to.equal(2);
-      });
-
-      describe('lint', () => {
-        it('should initially pass the linting process', () => forge.lint({ dir }));
-      });
-
-      after(() => fs.remove(dir));
+    it('should create a new folder with a npm module inside', async () => {
+      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+      expectProjectPathExists('package.json', 'file');
     });
-  };
 
-  forLintingMethod('airbnb');
-  forLintingMethod('standard');
+    it('should have initialized a git repository', async () => {
+      expectProjectPathExists('.git', 'folder');
+    });
+
+    it('should have installed the initial node_modules', async () => {
+      expectProjectPathExists('node_modules', 'folder');
+      expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
+      expect(await fs.pathExists(path.resolve(dir, 'node_modules/babel-core')), 'babel-core should exist').to.equal(true);
+      expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-forge')), 'electron-forge should exist').to.equal(true);
+    });
+
+    describe('lint', () => {
+      it('should initially pass the linting process', () => forge.lint({ dir }));
+    });
+
+    after(() => fs.remove(dir));
+  });
 
   describe('init with CI files enabled', () => {
     beforeInitTest({ copyCIFiles: true });
@@ -265,16 +252,6 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       // Cleanup here to ensure things dont break in the make tests
       await fs.remove(path.resolve(dir, 'foo'));
       await fs.remove(path.resolve(dir, 'out'));
-    });
-
-    it('throws an error when asar.unpack is set', async () => {
-      let packageJSON = await readPackageJSON(dir);
-      packageJSON.config.forge.electronPackagerConfig.asar = { unpack: 'somedir/**' };
-      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
-      await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/electron-compile does not support asar\.unpack/);
-      packageJSON = await readPackageJSON(dir);
-      delete packageJSON.config.forge.electronPackagerConfig.asar;
-      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
     });
 
     it('can package without errors with native pre-gyp deps installed', async () => {
