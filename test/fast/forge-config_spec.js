@@ -25,11 +25,14 @@ const defaults = {
   github_repository: {},
   s3: {},
   electronReleaseServer: {},
+  plugins: [],
 };
 
 describe('forge-config', () => {
   it('should resolve the object in package.json with defaults  if one exists', async () => {
-    expect(await findConfig(path.resolve(__dirname, '../fixture/dummy_app'))).to.be.deep.equal(Object.assign({}, defaults, {
+    const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
+    delete config.pluginInterface;
+    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
       electronWinstallerConfig: { windows: 'magic' },
       windowsStoreConfig: { packageName: 'test' },
       github_repository: {
@@ -37,6 +40,11 @@ describe('forge-config', () => {
         owner: 'dummy',
       },
     }));
+  });
+
+  it('should set a pluginInterface', async () => {
+    const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
+    expect(config).to.have.property('pluginInterface');
   });
 
   it('should allow access to built-ins of proxied objects', async () => {
@@ -63,7 +71,9 @@ describe('forge-config', () => {
 
 
   it('should resolve the JS file exports in config.forge points to a JS file', async () => {
-    expect(JSON.parse(JSON.stringify(await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))))).to.be.deep.equal(Object.assign({}, defaults, {
+    const config = JSON.parse(JSON.stringify(await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))));
+    delete config.pluginInterface;
+    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
       electronPackagerConfig: { foo: 'bar', baz: {} },
     }));
   });

@@ -11,12 +11,12 @@ import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { warn } from '../util/messages';
 import realOra, { fakeOra } from '../util/ora';
-import packagerCompileHook from '../util/compile-hook';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
+import getElectronVersion from '../util/electron-version';
 
 const d = debug('electron-forge:packager');
 
@@ -102,15 +102,15 @@ export default async (providedOptions = {}) => {
         prepareCounter += 1;
         prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
-      await fs.remove(path.resolve(buildPath, 'node_modules/electron-compile/test'));
       const bins = await pify(glob)(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
       }
       done();
-    }, async (...args) => {
+    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
       prepareSpinner.succeed();
-      await packagerCompileHook(dir, ...args);
+      await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
+      done();
     },
   ];
 
@@ -136,6 +136,11 @@ export default async (providedOptions = {}) => {
     afterPruneHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
   }
 
+  afterPruneHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
+    done();
+  });
+
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
@@ -147,12 +152,9 @@ export default async (providedOptions = {}) => {
     arch,
     platform,
     out: outDir,
-    electronVersion: packageJSON.devDependencies['electron-prebuilt-compile'],
+    electronVersion: getElectronVersion(packageJSON),
   });
   packageOpts.quiet = true;
-  if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
-    throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
-  }
 
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len

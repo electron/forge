@@ -3,19 +3,25 @@ import { stub } from 'sinon';
 
 import runHook from '../../src/util/hook';
 
+const fakeConfig = {
+  pluginInterface: {
+    triggerHook: async () => false,
+  },
+};
+
 describe('runHook', () => {
   it('should not error when running non existent hooks', async () => {
-    await runHook({}, 'magic');
+    await runHook(Object.assign({}, fakeConfig), 'magic');
   });
 
   it('should not error when running a hook that is not a function', async () => {
-    await runHook({ hooks: { myHook: 'abc' } }, 'abc');
+    await runHook(Object.assign({ hooks: { myHook: 'abc' } }, fakeConfig), 'abc');
   });
 
   it('should run the hook if it is provided as a function', async () => {
     const myStub = stub();
     myStub.returns(Promise.resolve());
-    await runHook({ hooks: { myHook: myStub } }, 'myHook');
+    await runHook(Object.assign({ hooks: { myHook: myStub } }, fakeConfig), 'myHook');
     expect(myStub.callCount).to.equal(1);
   });
 });

@@ -52,11 +52,16 @@ describe('publish', () => {
       tag: 'my_special_tag',
     });
     expect(publisherSpy.callCount).to.equal(1);
+    // pluginInterface will be a new instance so we ignore it
+    delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
+    const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+
+    delete testConfig.pluginInterface;
     expect(publisherSpy.firstCall.args).to.deep.equal([{
       dir: resolveStub(),
       artifacts: ['artifact1', 'artifact2'],
       packageJSON: require('../fixture/dummy_app/package.json'),
-      forgeConfig: await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')),
+      forgeConfig: testConfig,
       authToken: 'my_token',
       tag: 'my_special_tag',
       platform: process.platform,

@@ -29,6 +29,6 @@
     }
   },
   "devDependencies": {
-    "electron-prebuilt-compile": "9.9.9"
+    "electron": "9.9.9"
   }
 }

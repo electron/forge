@@ -8,6 +8,7 @@ import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
+import getElectronVersion from '../util/electron-version';
 
 /**
  * @typedef {Object} StartOptions
@@ -52,7 +53,21 @@ export default async (providedOptions = {}) => {
 
   const forgeConfig = await getForgeConfig(dir);
 
-  await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch, forgeConfig.electronRebuildConfig);
+  await rebuild(dir, getElectronVersion(packageJSON), process.platform, process.arch, forgeConfig.electronRebuildConfig);
+
+  await runHook(forgeConfig, 'generateAssets');
+
+  // If a plugin has taken over the start command let's stop here
+  const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
+    dir,
+    appPath,
+    interactive,
+    enableLogging,
+    args,
+    runAsNode,
+    inspect,
+  });
+  if (spawnedPluginChild) return spawnedPluginChild;
 
   const spawnOpts = {
     cwd: dir,
@@ -75,10 +90,8 @@ export default async (providedOptions = {}) => {
 
   let spawned;
 
-  await runHook(forgeConfig, 'generateAssets');
-
   await asyncOra('Launching Application', async () => {
-    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron-prebuilt-compile/lib/cli'), appPath].concat(args), spawnOpts);
+    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron/cli'), appPath].concat(args), spawnOpts);
   });
 
   return spawned;

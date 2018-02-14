@@ -12,6 +12,7 @@ import readPackageJSON from '../util/read-package-json';
 import { requireSearchRaw } from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
+import getElectronVersion from '../util/electron-version';
 
 import packager from './package';
 
@@ -129,7 +130,7 @@ export default async (providedOptions = {}) => {
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of parseArchs(platform, arch, packageJSON.devDependencies['electron-prebuilt-compile'])) {
+  for (const targetArch of parseArchs(platform, arch, getElectronVersion(packageJSON))) {
     const packageDir = path.resolve(outDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
