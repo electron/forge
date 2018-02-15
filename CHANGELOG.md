@@ -1,3 +1,10 @@
+#### [5.1.1](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.1) (2018-02-15)
+
+##### Chores
+
+* **packager:**  upgrade electron-packager to 11.0.0 ([dee72fd1](https://github.com/electron-userland/electron-forge/commit/dee72fd1))
+* **generic:**  upgrade node-fetch to 2.0.0 and fetch-mock to 6.0.0 ([42abee35](https://github.com/electron-userland/electron-forge/commit/42abee35))
+
 ### [5.1.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.0) (2018-02-05)
 
 ##### New Features
