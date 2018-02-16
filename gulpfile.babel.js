@@ -6,6 +6,8 @@ import babel from 'gulp-babel';
 import fs from 'fs';
 import path from 'path';
 
+console.log(process.cwd(), process.argv);
+
 gulp.task('transpile', () =>
     gulp.src('./src/**/*.js')
       .pipe(babel())

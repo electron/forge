@@ -20,10 +20,9 @@ branches:
   only:
   - master
   - /^v\d+\.\d+\.\d+/
-before_install: if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm install -g yarn@0.23.3; fi
 install:
-- npm install
-- npm update
+- yarn global add bolt
+- bolt
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:

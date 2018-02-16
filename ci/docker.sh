@@ -2,8 +2,8 @@
 
 NODE_INSTALLER="$1"
 
-if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm i -g yarn; fi
+npm i -g yarn
 
 cd /code
 
-CI=true npm run test -- --installer=$NODE_INSTALLER
+CI=true bolt ws test -- --installer=$NODE_INSTALLER
