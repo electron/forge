@@ -7,8 +7,7 @@
   "license": "MIT",
   "main": "dist/Installer.js",
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts",
-    "test-fast": "yarn test"
+    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",

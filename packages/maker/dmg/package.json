@@ -1,22 +1,27 @@
 {
-  "name": "@electron-forge/installer-exe",
+  "name": "@electron-forge/maker-dmg",
   "version": "6.0.0-beta.0",
-  "description": "EXE file installer for Electron Forge",
+  "description": "DMG maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/InstallerExe.js",
+  "main": "dist/Maker.js",
   "scripts": {
     "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
   },
   "devDependencies": {
+    "chai": "^4.0.0",
     "mocha": "^5.0.0"
   },
   "engines": {
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/installer-base": "^6.0.0-beta.0",
-    "opn": "^5.0.0"
+    "@electron-forge/maker-base": "^6.0.0-beta.0",
+    "fs-extra": "^5.0.0",
+    "pify": "^3.0.0"
+  },
+  "optionalDependencies": {
+    "electron-installer-dmg": "^0.2.0"
   }
 }

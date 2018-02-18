@@ -21,8 +21,7 @@
     "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
     "commit": "git-cz",
     "lint": "eslint packages/**/src packages/**/test",
-    "test": "bolt ws run test",
-    "test-fast": "bolt ws run test-fast"
+    "test": "bolt ws run test"
   },
   "dependencies": {
     "@octokit/rest": "^14.0.4",

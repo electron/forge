@@ -6,8 +6,7 @@
   "main": "dist/api/index.js",
   "scripts": {
     "docs": "esdoc",
-    "test": "mocha test/**/*_spec*.js test/**/**/*_spec*.js --opts ../../../mocha.opts",
-    "test-fast": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts --timeout 10000"
+    "test": "mocha test/**/*_spec*.js test/**/**/*_spec*.js --opts ../../../mocha.opts"
   },
   "author": "Samuel Attard",
   "license": "MIT",
