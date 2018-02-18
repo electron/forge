@@ -1,0 +1,22 @@
+{
+  "name": "@electron-forge/installer-deb",
+  "version": "6.0.0-beta.0",
+  "description": "Deb file installer for Electron Forge",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/InstallerDeb.js",
+  "scripts": {
+    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts",
+    "test-fast": "yarn test"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.0"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "dependencies": {
+    "@electron-forge/installer-linux": "^6.0.0-beta.0"
+  }
+}

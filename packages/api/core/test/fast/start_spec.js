@@ -175,34 +175,4 @@ describe('start', () => {
       enableLogging: true,
     })).to.eventually.equal('child');
   });
-
-  describe('cli', () => {
-    let argv;
-    let childExitCode;
-    let childStub;
-    beforeEach(() => {
-      argv = process.argv;
-      childExitCode = 0;
-      childStub = {
-        on: (event, cb) => cb(childExitCode),
-      };
-    });
-
-    it('should remove all "~" from args when in VSCode debug mode', (done) => {
-      process.argv = [argv[0], '--vscode', '--', '--foo', 'bar', 'this arg exists'];
-      proxyquire.noCallThru().load('../../src/electron-forge-start', {
-        './api': {
-          start: (startOptions) => {
-            expect(startOptions.args).to.deep.equal(['--foo', 'bar', 'this arg exists']);
-            done();
-            return Promise.resolve(childStub);
-          },
-        },
-      });
-    });
-
-    afterEach(() => {
-      process.argv = argv;
-    });
-  });
 });

@@ -2,15 +2,14 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
 
-import initGit from '../init/init-git';
-import { deps, devDeps, exactDevDeps } from '../init/init-npm';
+import initGit from './init-scripts/init-git';
+import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 import { setInitialForgeConfig } from '../util/forge-config';
 import asyncOra from '../util/ora-handler';
 import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';
-import confirmIfInteractive from '../util/confirm-if-interactive';
 
 const d = debug('electron-forge:import');
 
@@ -18,7 +17,10 @@ const d = debug('electron-forge:import');
  * @typedef {Object} ImportOptions
  * @property {string} [dir=process.cwd()] The path to the app to be imported
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
- * @property {boolean} [updateScripts=true] Whether to update the modules package.json scripts to be electron-forge commands
+ * @property {function} [confirmImport] An async function that returns true or false in order to confirm the start of importing
+ * @property {function} [shouldContinueOnExisting] An async function that returns whether the import should continue if it looks like a forge project already
+ * @property {function} [shouldRemoveDependency] An async function that returns whether the given dependency should be removed
+ * @property {function} [shouldUpdateScript] An async function that returns whether the given script should be overridden with a forge one
  * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
  */
 
@@ -32,10 +34,10 @@ const d = debug('electron-forge:import');
  * @return {Promise} Will resolve when the import process is complete
  */
 export default async (providedOptions = {}) => {
-  const { dir, interactive, updateScripts } = Object.assign({
+  const { dir, interactive, confirmImport,
+  shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript } = Object.assign({
     dir: process.cwd(),
     interactive: false,
-    updateScripts: true,
   }, providedOptions);
 
   const outDir = providedOptions.outDir || 'out';
@@ -47,10 +49,10 @@ export default async (providedOptions = {}) => {
   }
 
   // eslint-disable-next-line max-len
-  const confirm = await confirmIfInteractive(interactive, `WARNING: We will now attempt to import: "${dir}".  This will involve modifying some files, are you sure you want to continue?`);
-
-  if (!confirm) {
-    process.exit(0);
+  if (typeof confirmImport === 'function') {
+    if (!await confirmImport()) {
+      process.exit(0);
+    }
   }
 
   await initGit(dir);
@@ -58,10 +60,10 @@ export default async (providedOptions = {}) => {
   let packageJSON = await readPackageJSON(dir);
   if (packageJSON.config && packageJSON.config.forge) {
     warn(interactive, 'It looks like this project is already configured for "electron-forge"'.green);
-    const shouldContinue = await confirmIfInteractive(interactive, 'Are you sure you want to continue?');
-
-    if (!shouldContinue) {
-      process.exit(0);
+    if (typeof shouldContinueOnExisting === 'function') {
+      if (!await shouldContinueOnExisting()) {
+        process.exit(0);
+      }
     }
   }
 
@@ -85,9 +87,12 @@ export default async (providedOptions = {}) => {
     if (buildToolPackages[key]) {
       const explanation = buildToolPackages[key];
       // eslint-disable-next-line max-len
-      const shouldRemoveDependency = await confirmIfInteractive(interactive, `Do you want us to remove the "${key}" dependency in package.json? Electron Forge ${explanation}.`);
+      let remove = true;
+      if (typeof shouldRemoveDependency === 'function') {
+        remove = await shouldRemoveDependency(key, explanation);
+      }
 
-      if (shouldRemoveDependency) {
+      if (remove) {
         delete packageJSON.dependencies[key];
         delete packageJSON.devDependencies[key];
       }
@@ -100,8 +105,11 @@ export default async (providedOptions = {}) => {
   const updatePackageScript = async (scriptName, newValue) => {
     if (packageJSON.scripts[scriptName] !== newValue) {
       // eslint-disable-next-line max-len
-      const shouldUpdate = await confirmIfInteractive(interactive, `Do you want us to update the "${scriptName}" script to instead call the electron-forge task "${newValue}"`, updateScripts);
-      if (shouldUpdate) {
+      let update = true;
+      if (typeof shouldUpdateScript === 'function') {
+        update = await shouldUpdateScript(scriptName, newValue);
+      }
+      if (update) {
         packageJSON.scripts[scriptName] = newValue;
       }
     }

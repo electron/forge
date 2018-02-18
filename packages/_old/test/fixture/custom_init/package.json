@@ -1,0 +1,12 @@
+{
+  "name": "electron-forge-template-dummy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron-forge start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

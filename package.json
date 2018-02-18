@@ -4,8 +4,9 @@
   "bolt": {
     "workspaces": [
       "packages/api/*",
-      "packages/makers/*",
-      "packages/publishers/*"
+      "packages/maker/*",
+      "packages/publisher/*",
+      "packages/installer/*"
     ]
   },
   "config": {
@@ -17,14 +18,15 @@
     }
   },
   "scripts": {
+    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
     "commit": "git-cz",
-    "lint": "eslint packages/**/src packages/**/test gulpfile.babel.js"
+    "lint": "eslint packages/**/src packages/**/test",
+    "test": "bolt ws run test",
+    "test-fast": "bolt ws run test-fast"
   },
   "dependencies": {
     "@octokit/rest": "^14.0.4",
     "aws-sdk": "^2.9.0",
-    "babel-register": "^6.16.3",
-    "bluebird": "^3.4.6",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "cross-spawn-promise": "^0.10.1",
@@ -60,13 +62,14 @@
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/register": "^7.0.0-beta.40",
     "asar": "^0.14.0",
     "babel-eslint": "^7.0.0",
-    "babel-plugin-istanbul": "^4.0.0",
-    "babel-plugin-syntax-async-functions": "^6.13.0",
-    "babel-plugin-transform-async-to-module-method": "^6.16.0",
-    "babel-plugin-transform-runtime": "^6.15.0",
-    "babel-preset-env": "^1.6.0",
     "chai": "^4.0.0",
     "chai-as-promised": "^7.0.0",
     "commitizen": "^2.8.6",
@@ -82,8 +85,6 @@
     "eslint-plugin-mocha": "^4.8.0",
     "fetch-mock": "^6.0.0",
     "generate-changelog": "^1.0.2",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
     "mocha": "^5.0.0",
     "nodemon": "^1.11.0",
     "nyc": "^11.0.0",

@@ -1,23 +1,16 @@
 {
   "sourceMaps": "inline",
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread"
+  ],
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
         "targets": {
           "node": "6"
         }
-      }
-    ]
-  ],
-  "plugins": [
-    "transform-runtime",
-    "syntax-async-functions",
-    [
-      "transform-async-to-module-method",
-      {
-        "module": "bluebird",
-        "method": "coroutine"
       }
     ]
   ]

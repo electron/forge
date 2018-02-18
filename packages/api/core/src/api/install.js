@@ -2,21 +2,20 @@ import 'colors';
 import debug from 'debug';
 import fetch from 'node-fetch';
 import fs from 'fs-extra';
-import inquirer from 'inquirer';
 import nugget from 'nugget';
 import os from 'os';
 import path from 'path';
 import pify from 'pify';
 import semver from 'semver';
 
+import darwinDMGInstaller from '@electron-forge/installer-dmg';
+import darwinZipInstaller from '@electron-forge/installer-zip';
+import linuxDebInstaller from '@electron-forge/installer-deb';
+import linuxRPMInstaller from '@electron-forge/installer-rpm';
+import win32ExeInstaller from '@electron-forge/installer-exe';
+
 import asyncOra from '../util/ora-handler';
 import { info } from '../util/messages';
-
-import darwinDMGInstaller from '../installers/darwin/dmg';
-import darwinZipInstaller from '../installers/darwin/zip';
-import linuxDebInstaller from '../installers/linux/deb';
-import linuxRPMInstaller from '../installers/linux/rpm';
-import win32ExeInstaller from '../installers/win32/exe';
 
 const d = debug('electron-forge:install');
 
@@ -43,6 +42,10 @@ export default async (providedOptions = {}) => {
     prerelease: false,
   }, providedOptions);
   asyncOra.interactive = interactive;
+
+  if (typeof chooseAsset !== 'function') {
+    throw 'Expected chooseAsset to be a function in install call';
+  }
 
   let latestRelease;
   let possibleAssets = [];
@@ -105,24 +108,7 @@ export default async (providedOptions = {}) => {
 
   let targetAsset = possibleAssets[0];
   if (possibleAssets.length > 1) {
-    if (chooseAsset) {
-      targetAsset = await Promise.resolve(chooseAsset(possibleAssets));
-    } else if (interactive) {
-      const choices = [];
-      possibleAssets.forEach((asset) => {
-        choices.push({ name: asset.name, value: asset.id });
-      });
-      const { assetID } = await inquirer.createPromptModule()({
-        type: 'list',
-        name: 'assetID',
-        message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
-        choices,
-      });
-
-      targetAsset = possibleAssets.find(asset => asset.id === assetID);
-    } else {
-      throw 'expected a chooseAsset function to be provided but it was not';
-    }
+    targetAsset = await Promise.resolve(chooseAsset(possibleAssets));
   }
 
   const tmpdir = path.resolve(os.tmpdir(), 'forge-install');

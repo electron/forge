@@ -1,10 +1,10 @@
 import debug from 'debug';
 
-import initCustom from '../init/init-custom';
-import initDirectory from '../init/init-directory';
-import initGit from '../init/init-git';
-import initNPM from '../init/init-npm';
-import initStarter from '../init/init-starter-files';
+import initCustom from './init-scripts/init-custom';
+import initDirectory from './init-scripts/init-directory';
+import initGit from './init-scripts/init-git';
+import initNPM from './init-scripts/init-npm';
+import initStarter from './init-scripts/init-starter-files';
 
 import asyncOra from '../util/ora-handler';
 
@@ -36,7 +36,7 @@ export default async (providedOptions = {}) => {
 
   d(`Initializing in: ${dir}`);
 
-  await initDirectory(dir, interactive);
+  await initDirectory(dir);
   await initGit(dir);
   await initStarter(dir, { copyCIFiles });
   await initNPM(dir);

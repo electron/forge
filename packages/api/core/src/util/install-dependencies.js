@@ -1,8 +1,6 @@
 import debug from 'debug';
 import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
 
-import config from './config';
-
 const d = debug('electron-forge:dependency-installer');
 
 export default async (dir, deps, areDev = false, exact = false) => {
@@ -25,7 +23,7 @@ export default async (dir, deps, areDev = false, exact = false) => {
   try {
     await yarnOrNpmSpawn(cmd, {
       cwd: dir,
-      stdio: config.get('verbose') ? 'inherit' : 'pipe',
+      stdio: 'pipe',
     });
   } catch (err) {
     throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}`);
