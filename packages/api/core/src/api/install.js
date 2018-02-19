@@ -8,11 +8,11 @@ import path from 'path';
 import pify from 'pify';
 import semver from 'semver';
 
-import darwinDMGInstaller from '@electron-forge/installer-dmg';
-import darwinZipInstaller from '@electron-forge/installer-zip';
-import linuxDebInstaller from '@electron-forge/installer-deb';
-import linuxRPMInstaller from '@electron-forge/installer-rpm';
-import win32ExeInstaller from '@electron-forge/installer-exe';
+import DMGInstaller from '@electron-forge/installer-dmg';
+import ZipInstaller from '@electron-forge/installer-zip';
+import DebInstaller from '@electron-forge/installer-deb';
+import RPMInstaller from '@electron-forge/installer-rpm';
+import ExeInstaller from '@electron-forge/installer-exe';
 
 import asyncOra from '../util/ora-handler';
 import { info } from '../util/messages';
@@ -131,19 +131,21 @@ export default async (providedOptions = {}) => {
   await asyncOra('Installing Application', async (installSpinner) => {
     const installActions = {
       win32: {
-        '.exe': win32ExeInstaller,
+        '.exe': ExeInstaller,
       },
       darwin: {
-        '.zip': darwinZipInstaller,
-        '.dmg': darwinDMGInstaller,
+        '.zip': ZipInstaller,
+        '.dmg': DMGInstaller,
       },
       linux: {
-        '.deb': linuxDebInstaller,
-        '.rpm': linuxRPMInstaller,
+        '.deb': DebInstaller,
+        '.rpm': RPMInstaller,
       },
     };
 
     const suffixFnIdent = Object.keys(installActions[process.platform]).find(suffix => targetAsset.name.endsWith(suffix));
-    await installActions[process.platform][suffixFnIdent](fullFilePath, installSpinner);
+    const InstallerClass = installActions[process.platform][suffixFnIdent];
+    const installer = new InstallerClass();
+    await installer.install({ filePath: fullFilePath, installSpinner });
   });
 };

@@ -8,6 +8,7 @@ describe('yarn-or-npm', () => {
 
   beforeEach(() => {
     nodeInstaller = process.env.NODE_INSTALLER;
+    delete process.env.NODE_INSTALLER;
   });
 
   afterEach(() => {

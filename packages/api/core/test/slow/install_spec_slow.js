@@ -9,17 +9,15 @@ chai.use(chaiAsPromised);
 describe('install', () => {
   let install;
   let nuggetSpy;
-  let mockInquirer;
   let fetch;
-  const mockInstaller = () => Promise.resolve();
+  class MockInstaller {
+    async install() {}
+  }
   const chooseAsset = arr => arr[0];
 
   beforeEach(() => {
     fetch = fetchMock.sandbox();
     nuggetSpy = sinon.stub();
-    mockInquirer = {
-      createPromptModule: sinon.spy(() => sinon.spy(() => Promise.resolve({ assetID: 1 }))),
-    };
 
     install = proxyquire.noCallThru().load('../../src/api/install', {
       'node-fetch': fetch,
@@ -27,11 +25,11 @@ describe('install', () => {
         nuggetSpy(...args);
         args[args.length - 1]();
       },
-      '@electron-forge/installer-dmg': mockInstaller,
-      '@electron-forge/installer-zip': mockInstaller,
-      '.@electron-forge/installer-deb': mockInstaller,
-      '@electron-forge/installer-rpm': mockInstaller,
-      '@electron-forge/installer-exe': mockInstaller,
+      '@electron-forge/installer-dmg': MockInstaller,
+      '@electron-forge/installer-zip': MockInstaller,
+      '@electron-forge/installer-deb': MockInstaller,
+      '@electron-forge/installer-rpm': MockInstaller,
+      '@electron-forge/installer-exe': MockInstaller,
     }).default;
   });
 
