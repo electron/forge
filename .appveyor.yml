@@ -10,8 +10,6 @@ cache:
 branches:
   only:
   - master
-  - v6
-  - v6-api
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
