@@ -22,7 +22,8 @@ branches:
   - /^v6.*/
   - /^v\d+\.\d+\.\d+/
 install:
-- yarn global add bolt
+- npm i -g bolt
+- rm -rf node_modules
 - bolt
 script: ci/script.sh
 after_success: ci/coverage.sh

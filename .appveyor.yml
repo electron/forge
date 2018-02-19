@@ -16,7 +16,8 @@ branches:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
-- yarn global add bolt
+- npm i -g bolt
+- ps: Remove-Item -Recurse -Force node_modules
 - bolt
 - ps: |
     $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
