@@ -19,6 +19,7 @@ env:
 branches:
   only:
   - master
+  - /^v6.*/
   - /^v\d+\.\d+\.\d+/
 install:
 - yarn global add bolt
