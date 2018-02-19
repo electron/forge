@@ -1,1 +1,6 @@
-export default async () => 'i don\'t implement isSupportedOnCurrentPlatform()';
+
+export default class Maker {
+  async lol() {
+    // lol
+  }
+}

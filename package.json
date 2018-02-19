@@ -28,6 +28,7 @@
     "aws-sdk": "^2.9.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
+    "cross-spawn": "^6.0.4",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
     "electron-forge-template-angular2": "^1.0.3",

@@ -9,7 +9,6 @@ import runHook from '../util/hook';
 import { info, warn } from '../util/messages';
 import parseArchs from '../util/parse-archs';
 import readPackageJSON from '../util/read-package-json';
-import { requireSearchRaw } from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
@@ -17,11 +16,18 @@ import getElectronVersion from '../util/electron-version';
 import packager from './package';
 
 /**
+ * @typedef {Object} MakeTarget
+ * @property {string} [name] The module name that exports the maker
+ * @property {Array<string>} [platforms=[]] The platforms this make target should run on
+ * @property {Object} [config] The arbitrary config to pass to this make target
+ */
+
+/**
  * @typedef {Object} MakeOptions
  * @property {string} [dir=process.cwd()] The path to the app from which distributables are generated
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
  * @property {boolean} [skipPackage=false] Whether to skip the pre-make packaging step
- * @property {Array<string>} [overrideTargets] An array of make targets to override your forge config
+ * @property {Array<MakeTarget>} [overrideTargets] An array of make targets to override your forge config
  * @property {string} [arch=host architecture] The target architecture
  * @property {string} [platform=process.platform] The target platform.
  * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
@@ -72,28 +78,32 @@ export default async (providedOptions = {}) => {
   }
 
   const makers = {};
-  const targets = overrideTargets || forgeConfig.make_targets[platform];
+  const targets = (overrideTargets || forgeConfig.makers.filter(
+    maker => maker.platforms
+      ? maker.platforms.indexOf(platform) !== -1
+      : true
+  )).map(target => {
+    if (typeof target === 'string') {
+      return { name: target };
+    }
+    return target;
+  });
 
   for (const target of targets) {
-    const maker = requireSearchRaw(__dirname, [
-      `../makers/${platform}/${target}.js`,
-      `../makers/generic/${target}.js`,
-      `electron-forge-maker-${target}`,
-      target,
-      path.resolve(dir, target),
-      path.resolve(dir, 'node_modules', target),
-    ]);
-
-    if (!maker) {
-      throw new Error([
-        'Could not find a build target with the name: ',
-        `${target} for the platform: ${actualTargetPlatform}`,
-      ].join(''));
+    let makerModule;
+    try {
+      makerModule = require(target.name);
+    } catch (err) {
+      console.error(err);
+      throw `Could not find module with name: ${target.name}`;
     }
+
+    const MakerClass = makerModule.default || makerModule;
+    const maker = new MakerClass();
 
     if (!maker.isSupportedOnCurrentPlatform) {
       throw new Error([
-        `Maker for target ${target} is incompatible with this version of `,
+        `Maker for target ${maker.name} is incompatible with this version of `,
         'electron-forge, please upgrade or contact the maintainer ',
         '(needs to implement \'isSupportedOnCurrentPlatform)\')',
       ].join(''));
@@ -101,12 +111,12 @@ export default async (providedOptions = {}) => {
 
     if (!await maker.isSupportedOnCurrentPlatform()) {
       throw new Error([
-        `Cannot build for ${platform} target ${target}: the maker declared `,
+        `Cannot build for ${platform} and target ${maker.name}: the maker declared `,
         `that it cannot run on ${process.platform}`,
       ].join(''));
     }
 
-    makers[target] = maker.default || maker;
+    makers[target.name] = maker;
   }
 
   if (!skipPackage) {
@@ -125,7 +135,7 @@ export default async (providedOptions = {}) => {
   info(interactive, 'Making for the following targets:', `${targets.join(', ')}`.cyan);
 
   const packageJSON = await readPackageJSON(dir);
-  const appName = forgeConfig.electronPackagerConfig.name || packageJSON.productName || packageJSON.name;
+  const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
   let outputs = [];
 
   await runHook(forgeConfig, 'preMake');
@@ -137,16 +147,18 @@ export default async (providedOptions = {}) => {
     }
 
     for (const target of targets) {
-      const maker = makers[target];
+      const maker = makers[target.name];
 
       // eslint-disable-next-line no-loop-func
-      await asyncOra(`Making for target: ${target.cyan} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
+      await asyncOra(`Making for target: ${maker.name} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
-          const artifacts = await maker({
+          const artifacts = await maker.make({
             dir: packageDir,
+            makeDir: path.resolve(outDir, 'make'),
             appName,
             targetPlatform: actualTargetPlatform,
             targetArch,
+            config: target.config || {},
             forgeConfig,
             packageJSON,
           });
@@ -160,7 +172,7 @@ export default async (providedOptions = {}) => {
         } catch (err) {
           if (err) {
             throw {
-              message: `An error occured while making for target: ${target}`,
+              message: `An error occured while making for target: ${target.name}`,
               stack: `${err.message}\n${err.stack}`,
             };
           } else {

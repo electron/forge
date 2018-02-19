@@ -87,10 +87,10 @@ export default async (providedOptions = {}) => {
   const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
   let packagerSpinner;
 
-  const pruneEnabled = !('prune' in forgeConfig.electronPackagerConfig) || forgeConfig.electronPackagerConfig.prune;
+  const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
   const rebuildHookFn = async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
+    await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
     packagerSpinner = ora('Packaging Application').start();
     done();
   };
@@ -127,13 +127,13 @@ export default async (providedOptions = {}) => {
     done();
   });
 
-  afterCopyHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterCopy, dir));
+  afterCopyHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir));
 
   const afterPruneHooks = [];
 
   if (pruneEnabled) {
     afterPruneHooks.push(rebuildHookFn);
-    afterPruneHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
+    afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, dir));
   }
 
   afterPruneHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
@@ -144,9 +144,9 @@ export default async (providedOptions = {}) => {
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
-  }, forgeConfig.electronPackagerConfig, {
+  }, forgeConfig.packagerConfig, {
     afterCopy: sequentialHooks(afterCopyHooks),
-    afterExtract: sequentialHooks(resolveHooks(forgeConfig.electronPackagerConfig.afterExtract, dir)),
+    afterExtract: sequentialHooks(resolveHooks(forgeConfig.packagerConfig.afterExtract, dir)),
     afterPrune: sequentialHooks(afterPruneHooks),
     dir,
     arch,

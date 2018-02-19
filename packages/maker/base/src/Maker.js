@@ -22,7 +22,7 @@ export default class Maker {
    * If the issue is a missing dependency you should log out a HELPFUL error message
    * telling the developer exactly what is missing and if possible how to get it.
    */
-  async isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform() {
     throw new Error(`Maker ${this.name} did not implement the isSupportedOnCurrentPlatform method`);
   }
 
@@ -72,5 +72,19 @@ export default class Maker {
       await fs.remove(file);
     }
     await fs.mkdirs(path.dirname(file));
+  }
+
+  /**
+   * Checks if the given module is installed, used for testing if optional dependencies
+   * are installed or not
+   */
+  isInstalled(module) {
+    try {
+      require(module);
+      return true;
+    } catch (e) {
+      // Package doesn't exist -- must not be installable on this platform
+      return false;
+    }
   }
 }

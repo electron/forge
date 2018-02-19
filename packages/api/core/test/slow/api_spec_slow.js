@@ -4,14 +4,17 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import chaiAsPromised from 'chai-as-promised';
 
 // FIXME
-// import { createDefaultCertificate } from '../../src/makers/win32/appx';
+import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
+
+chai.use(chaiAsPromised);
 
 const nodeInstallerArg = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
 const nodeInstaller = nodeInstallerArg.substr(12);
@@ -117,11 +120,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       });
     });
 
-    it('should succeed in initializing an already initialized directory', async () => {
-      await forge.init({
+    it('should fail in initializing an already initialized directory', async () => {
+      await expect(forge.init({
         dir,
         template: 'react-typescript',
-      });
+      })).to.eventually.be.rejected;
     });
 
     it('should add a dependency on react', async () => {
@@ -169,37 +172,20 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const {
         config: {
           forge: {
-            electronWinstallerConfig: { name: winstallerName },
-            windowsStoreConfig: { name: windowsStoreName },
+            makers: [
+              {
+                config: {
+                  name: winstallerName,
+                },
+              },
+            ],
           },
         },
         customProp,
       } = await readPackageJSON(dir);
 
       expect(winstallerName).to.equal('Name');
-      expect(windowsStoreName).to.equal('Product Name');
       expect(customProp).to.equal('propVal');
-    });
-
-    it('defaults windowsStoreConfig.name to packageJSON.name', async () => {
-      const packageJSON = await readPackageJSON(dir);
-      packageJSON.name = 'Name';
-      delete packageJSON.productName;
-      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
-
-      await forge.import({ dir });
-
-      const {
-        config: {
-          forge: {
-            electronWinstallerConfig: { name: winstallerName },
-            windowsStoreConfig: { name: windowsStoreName },
-          },
-        },
-      } = await readPackageJSON(dir);
-
-      expect(winstallerName).to.equal('Name');
-      expect(windowsStoreName).to.equal('Name');
     });
 
     after(async () => {
@@ -208,6 +194,8 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   });
 
   describe('after init', () => {
+    let devCert;
+
     before(async () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
       dirID += 1;
@@ -216,18 +204,16 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const packageJSON = await readPackageJSON(dir);
       packageJSON.name = 'testapp';
       packageJSON.productName = 'Test App';
-      packageJSON.config.forge.electronPackagerConfig.asar = false;
-      packageJSON.config.forge.windowsStoreConfig.packageName = 'TestApp';
+      packageJSON.config.forge.packagerConfig.asar = false;
       if (process.platform === 'win32') {
         await fs.copy(
           path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
           path.join(dir, 'default.pvk')
         );
-        // FIXME
-        // packageJSON.config.forge.windowsStoreConfig.devCert = await createDefaultCertificate(
-        //   'CN=Test Author',
-        //   { certFilePath: dir }
-        // );
+        devCert = await createDefaultCertificate(
+          'CN=Test Author',
+          { certFilePath: dir }
+        );
       }
       packageJSON.homepage = 'http://www.example.com/';
       packageJSON.author = 'Test Author';
@@ -246,7 +232,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('can make from custom outDir without errors', async () => {
       const packageJSON = await readPackageJSON(dir);
-      packageJSON.config.forge.make_targets[process.platform] = ['zip'];
+      packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
       await forge.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
@@ -264,7 +250,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('can package without errors', async () => {
       const packageJSON = await readPackageJSON(dir);
-      packageJSON.config.forge.electronPackagerConfig.asar = true;
+      packageJSON.config.forge.packagerConfig.asar = true;
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
       await forge.package({ dir });
@@ -289,84 +275,112 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         expect(normalPackageJSON).to.have.nested.property('config.forge');
       });
 
-      function getMakers(platform) {
-        return fs.readdirSync(path.resolve(__dirname, `../../src/makers/${platform}`)).map(file => path.parse(file).name);
+      if (process.platform !== 'win32') {
+        process.env.DISABLE_SQUIRREL_TEST = 'true';
+      }
+
+      function getMakers(good) {
+        const allMakers = [
+          '@electron-forge/maker-appx',
+          '@electron-forge/maker-deb',
+          '@electron-forge/maker-dmg',
+          '@electron-forge/maker-flatpak',
+          '@electron-forge/maker-rpm',
+          '@electron-forge/maker-snap',
+          '@electron-forge/maker-squirrel',
+          '@electron-forge/maker-wix',
+          '@electron-forge/maker-zip',
+        ];
+        return allMakers.map(maker => require.resolve(maker))
+          .filter((makerPath) => {
+            const MakerClass = require(makerPath).default;
+            const maker = new MakerClass();
+            return maker.isSupportedOnCurrentPlatform() === good;
+          })
+          .map(makerPath => ({
+            name: makerPath,
+            config: {
+              devCert,
+            },
+          }));
       }
 
       // FIXME
-      // const goodMakers = [...getMakers(process.platform), ...getMakers('generic')];
-      // const badPlatforms = ['darwin', 'linux', 'win32'].filter(p => p !== process.platform);
-      // const badMakers = [];
-      // badPlatforms.forEach(platform => badMakers.push(...getMakers(platform)));
+      const goodMakers = getMakers(true);
+      const badMakers = getMakers(false);
 
-      // const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
-      //   describe(`make (with target=${target})`, async () => {
-      //     before(async () => {
-      //       const packageJSON = await readPackageJSON(dir);
-      //       packageJSON.config.forge.make_targets[process.platform] = [target];
-      //       await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
-      //     });
+      const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
+        describe(`make (with target=${path.basename(target.name)})`, async () => {
+          before(async () => {
+            const packageJSON = await readPackageJSON(dir);
+            packageJSON.config.forge.makers = [target];
+            await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
+          });
 
-      //     for (const optionsFetcher of options) {
-      //       if (shouldPass) {
-      //         it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-      //           const outputs = await forge.make(optionsFetcher());
-      //           for (const outputResult of outputs) {
-      //             for (const output of outputResult.artifacts) {
-      //               expect(await fs.exists(output)).to.equal(true);
-      //             }
-      //           }
-      //         });
-      //       } else {
-      //         it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
-      //           await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
-      //         });
-      //       }
-      //     }
-      //   });
-      // };
+          for (const optionsFetcher of options) {
+            if (shouldPass) {
+              it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                const outputs = await forge.make(optionsFetcher());
+                for (const outputResult of outputs) {
+                  for (const output of outputResult.artifacts) {
+                    expect(await fs.exists(output)).to.equal(true);
+                  }
+                }
+              });
+            } else {
+              it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+                await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
+              });
+            }
+          }
+        });
+      };
 
-      // const targetOptionFetcher = () => ({ dir, skipPackage: true });
-      // for (const maker of goodMakers) {
-      //   testMakeTarget(maker, true, targetOptionFetcher);
-      // }
+      const targetOptionFetcher = () => ({ dir, skipPackage: true });
+      for (const maker of goodMakers) {
+        testMakeTarget(maker, true, targetOptionFetcher);
+      }
 
-      // for (const maker of badMakers) {
-      //   testMakeTarget(maker, false, targetOptionFetcher);
-      // }
+      for (const maker of badMakers) {
+        testMakeTarget(maker, false, targetOptionFetcher);
+      }
 
-      // describe('make', () => {
-      //   it('throws an error when given an unrecognized platform', async () => {
-      //     await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
-      //   });
+      describe('make', () => {
+        it('throws an error when given an unrecognized platform', async () => {
+          await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
+        });
 
-      //   it('throws an error when the specified maker doesn\'t support the current platform', async () => {
-      //     const makerPath = `${process.cwd()}/test/fixture/maker-unsupported`;
-      //     await expect(forge.make({
-      //       dir,
-      //       overrideTargets: [makerPath],
-      //       skipPackage: true,
-      //     })).to.eventually.be.rejectedWith(/the maker declared that it cannot run/);
-      //   });
+        it('throws an error when the specified maker doesn\'t support the current platform', async () => {
+          const makerPath = `${process.cwd()}/test/fixture/maker-unsupported`;
+          await expect(forge.make({
+            dir,
+            overrideTargets: [{
+              name: makerPath,
+            }],
+            skipPackage: true,
+          })).to.eventually.be.rejectedWith(/the maker declared that it cannot run/);
+        });
 
-      //   it('throws an error when the specified maker doesn\'t implement isSupportedOnCurrentPlatform()', async () => {
-      //     const makerPath = `${process.cwd()}/test/fixture/maker-incompatible`;
-      //     await expect(forge.make({
-      //       dir,
-      //       overrideTargets: [makerPath],
-      //       skipPackage: true,
-      //     })).to.eventually.be.rejectedWith(/incompatible with this version/);
-      //   });
+        it('throws an error when the specified maker doesn\'t implement isSupportedOnCurrentPlatform()', async () => {
+          const makerPath = `${process.cwd()}/test/fixture/maker-incompatible`;
+          await expect(forge.make({
+            dir,
+            overrideTargets: [{
+              name: makerPath,
+            }],
+            skipPackage: true,
+          })).to.eventually.be.rejectedWith(/incompatible with this version/);
+        });
 
-      //   it('can make for the MAS platform successfully', async () => {
-      //     if (process.platform !== 'darwin') return;
-      //     await expect(forge.make({
-      //       dir,
-      //       overrideTargets: ['zip', 'dmg'],
-      //       platform: 'mas',
-      //     })).to.eventually.have.length(2);
-      //   });
-      // });
+        it('can make for the MAS platform successfully', async () => {
+          if (process.platform !== 'darwin') return;
+          await expect(forge.make({
+            dir,
+            overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
+            platform: 'mas',
+          })).to.eventually.have.length(2);
+        });
+      });
     });
 
     after(() => fs.remove(dir));

@@ -43,12 +43,11 @@ const proxify = (object, envPrefix) => {
  * Sets sensible defaults for the `config.forge` object.
  */
 export function setInitialForgeConfig(packageJSON) {
-  const { name = '', productName = name } = packageJSON;
+  const { name = '' } = packageJSON;
 
   /* eslint-disable no-param-reassign */
-  packageJSON.config.forge.electronWinstallerConfig.name = name.replace(/-/g, '_');
-  packageJSON.config.forge.windowsStoreConfig.name = productName.replace(/-/g, '');
-  packageJSON.config.forge.electronPackagerConfig.packageManager = yarnOrNpm();
+  packageJSON.config.forge.makers[0].config.name = name.replace(/-/g, '_');
+  packageJSON.config.forge.packagerConfig.packageManager = yarnOrNpm();
   /* eslint-enable no-param-reassign */
 }
 
@@ -66,31 +65,12 @@ export default async (dir) => {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
   }
   forgeConfig = Object.assign({
-    make_targets: {},
-    publish_targets: {},
-    electronPackagerConfig: {},
-    electronRebuildConfig: {},
-    electronWinstallerConfig: {},
-    electronInstallerDebian: {},
-    electronInstallerDMG: {},
-    electronInstallerRedhat: {},
-    s3: {},
-    github_repository: {},
-    electronReleaseServer: {},
+    packagerConfig: {},
+    rebuildConfig: {},
+    makers: [],
+    publishers: [],
     plugins: [],
   }, forgeConfig);
-  forgeConfig.make_targets = Object.assign({
-    win32: ['squirrel'],
-    darwin: ['zip'],
-    mas: ['zip'],
-    linux: ['deb', 'rpm'],
-  }, forgeConfig.make_targets);
-  forgeConfig.publish_targets = Object.assign({
-    win32: ['github'],
-    darwin: ['github'],
-    mas: ['github'],
-    linux: ['github'],
-  }, forgeConfig.publish_targets);
 
   const templateObj = Object.assign({}, packageJSON, { year: (new Date()).getFullYear() });
   const template = (obj) => {

@@ -1,0 +1,28 @@
+{
+  "name": "@electron-forge/maker-snap",
+  "version": "6.0.0-beta.0",
+  "description": "Snap maker for Electron Forge",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/MakerSnap.js",
+  "scripts": {
+    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+  },
+  "devDependencies": {
+    "chai": "^4.0.0",
+    "chai-as-promised": "^7.0.0",
+    "mocha": "^5.0.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^4.1.2"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "dependencies": {
+    "@electron-forge/maker-base": "^6.0.0-beta.0"
+  },
+  "optionalDependencies": {
+    "electron-installer-snap": "^2.0.0"
+  }
+}

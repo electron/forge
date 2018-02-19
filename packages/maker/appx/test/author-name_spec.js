@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import getNameFromAuthor from '../../src/util/author-name';
+import getNameFromAuthor from '../src/util/author-name';
 
 describe('author-name', () => {
   describe('getNameFromAuthor', () => {

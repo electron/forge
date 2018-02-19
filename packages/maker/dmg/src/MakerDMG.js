@@ -9,7 +9,7 @@ export default class MakerDMG extends MakerBase {
     super('dmg');
   }
 
-  async isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
   }
 

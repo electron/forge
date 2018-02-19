@@ -4,27 +4,10 @@ import path from 'path';
 import findConfig from '../../src/util/forge-config';
 
 const defaults = {
-  make_targets: {
-    win32: ['squirrel', 'appx'],
-    darwin: ['zip'],
-    linux: ['deb', 'rpm'],
-    mas: ['zip'],
-  },
-  electronInstallerDMG: {},
-  electronPackagerConfig: {},
-  electronRebuildConfig: {},
-  electronWinstallerConfig: {},
-  electronInstallerDebian: {},
-  electronInstallerRedhat: {},
-  publish_targets: {
-    win32: ['github'],
-    darwin: ['github'],
-    linux: ['github'],
-    mas: ['github'],
-  },
-  github_repository: {},
-  s3: {},
-  electronReleaseServer: {},
+  packagerConfig: {},
+  rebuildConfig: {},
+  makers: [],
+  publishers: [],
   plugins: [],
 };
 
@@ -33,12 +16,10 @@ describe('forge-config', () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
     delete config.pluginInterface;
     expect(config).to.be.deep.equal(Object.assign({}, defaults, {
-      electronWinstallerConfig: { windows: 'magic' },
-      windowsStoreConfig: { packageName: 'test' },
-      github_repository: {
-        name: 'project',
-        owner: 'dummy',
+      packagerConfig: {
+        baz: {},
       },
+      s3: {},
     }));
   });
 
@@ -49,7 +30,7 @@ describe('forge-config', () => {
 
   it('should allow access to built-ins of proxied objects', async () => {
     const conf = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
-    expect(conf.electronPackagerConfig.baz.hasOwnProperty).to.be.a('function');
+    expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
     // eslint-disable-next-line no-prototype-builtins
     expect(conf.s3.hasOwnProperty('secretAccessKey')).to.equal(true);
@@ -58,8 +39,8 @@ describe('forge-config', () => {
 
   it('should allow overwrite of properties in proxied objects', async () => {
     const conf = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
-    expect(conf.electronPackagerConfig.baz.hasOwnProperty).to.be.a('function');
-    expect(() => { conf.electronPackagerConfig.baz = 'bar'; }).to.not.throw();
+    expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
+    expect(() => { conf.packagerConfig.baz = 'bar'; }).to.not.throw();
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
     const descriptor = { writable: true, enumerable: true, configurable: true, value: 'SecretyThing' };
@@ -74,7 +55,9 @@ describe('forge-config', () => {
     const config = JSON.parse(JSON.stringify(await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))));
     delete config.pluginInterface;
     expect(config).to.be.deep.equal(Object.assign({}, defaults, {
-      electronPackagerConfig: { foo: 'bar', baz: {} },
+      packagerConfig: { foo: 'bar', baz: {} },
+      s3: {},
+      electronReleaseServer: {},
     }));
   });
 

@@ -12,20 +12,10 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "make_targets": {
-        "win32": ["squirrel", "appx"],
-        "darwin": ["zip"],
-        "linux": ["deb", "rpm"]
+      "packagerConfig": {
+        "baz": {}
       },
-      "electronPackagerConfig": {},
-      "electronInstallerRedhat": {},
-      "electronInstallerDebian": {},
-      "electronWinstallerConfig": { "windows": "magic" },
-      "windowsStoreConfig": { "packageName": "test" },
-      "github_repository": {
-        "owner": "dummy",
-        "name": "project"
-      }
+      "s3": {}
     }
   },
   "devDependencies": {
