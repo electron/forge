@@ -1,6 +1,0 @@
-dist
-node_modules
-docs
-.nyc_output
-coverage
-npm-debug.log
