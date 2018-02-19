@@ -7,8 +7,8 @@ npm i -g bolt
 
 cd /code
 
-rm -rf node_modules
 bolt
 bolt build
+bolt lint
 
 CI=true bolt ws test -- --installer=$NODE_INSTALLER
