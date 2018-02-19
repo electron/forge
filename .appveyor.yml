@@ -19,6 +19,7 @@ install:
 - npm i -g bolt
 - ps: Remove-Item -Recurse -Force node_modules
 - bolt
+- bolt build
 - ps: |
     $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
     $env:PATH = $env:PATH + $wixToolsetBinPath

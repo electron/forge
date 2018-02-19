@@ -25,6 +25,7 @@ install:
 - npm i -g bolt
 - rm -rf node_modules
 - bolt
+- bolt build
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
