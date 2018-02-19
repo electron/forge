@@ -1,6 +1,5 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
 

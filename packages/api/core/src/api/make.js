@@ -82,7 +82,7 @@ export default async (providedOptions = {}) => {
     maker => maker.platforms
       ? maker.platforms.indexOf(platform) !== -1
       : true
-  )).map(target => {
+  )).map((target) => {
     if (typeof target === 'string') {
       return { name: target };
     }

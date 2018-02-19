@@ -2,10 +2,11 @@
 import 'colors';
 import program from 'commander';
 import tabtab from 'tabtab';
+// FIXME: Deep imports like this are a bad idea
+import asyncOra from '@electron-forge/core/dist/util/ora-handler';
 
 import './util/terminate';
 
-import asyncOra from '@electron-forge/core/dist/util/ora-handler';
 import checkSystem from './util/check-system';
 
 const originalSC = program.executeSubCommand.bind(program);

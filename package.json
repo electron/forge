@@ -20,7 +20,7 @@
   "scripts": {
     "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
     "commit": "git-cz",
-    "lint": "eslint packages/**/src packages/**/test",
+    "lint": "bolt ws exec -- node_modules/.bin/eslint src test",
     "test": "bolt ws run test"
   },
   "dependencies": {

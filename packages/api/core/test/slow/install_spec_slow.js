@@ -11,7 +11,9 @@ describe('install', () => {
   let nuggetSpy;
   let fetch;
   class MockInstaller {
-    async install() {}
+    async install() {
+      return undefined;
+    }
   }
   const chooseAsset = arr => arr[0];
 

@@ -1,7 +1,8 @@
 import { expect } from 'chai';
+// FIXME: Deep imports like this are a bad idea
+import { fakeOra } from '@electron-forge/core/dist/util/ora';
 
 import checkSystem, { validPackageManagerVersion } from '../src/util/check-system';
-import { fakeOra } from '@electron-forge/core/dist/util/ora';
 
 describe('check-system', () => {
   it('should succeed on valid agents', async () => {
