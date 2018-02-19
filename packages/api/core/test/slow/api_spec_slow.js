@@ -8,7 +8,6 @@ import chai, { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import chaiAsPromised from 'chai-as-promised';
 
-// FIXME
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
@@ -305,7 +304,6 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           }));
       }
 
-      // FIXME
       const goodMakers = getMakers(true);
       const badMakers = getMakers(false);
 
