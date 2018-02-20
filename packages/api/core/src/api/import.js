@@ -1,3 +1,4 @@
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
@@ -6,7 +7,6 @@ import initGit from './init-scripts/init-git';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 import { setInitialForgeConfig } from '../util/forge-config';
-import asyncOra from '../util/ora-handler';
 import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
 import readPackageJSON from '../util/read-package-json';

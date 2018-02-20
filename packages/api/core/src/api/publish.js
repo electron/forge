@@ -1,12 +1,11 @@
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
 
-import asyncOra from '../util/ora-handler';
 import getForgeConfig from '../util/forge-config';
 import readPackageJSON from '../util/read-package-json';
-import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
@@ -16,12 +15,18 @@ import make from './make';
 const d = debug('electron-forge:publish');
 
 /**
+ * @typedef {Object} PublishTarget
+ * @property {string} [name]
+ * @property {Array<string>} [platforms=[process.platform]]
+ * @property {Object} [config={}]
+ */
+
+/**
  * @typedef {Object} PublishOptions
  * @property {string} [dir=process.cwd()] The path to the app to be published
  * @property {boolean} [interactive=false] Whether to use sensible defaults or prompt the user visually
- * @property {string} [authToken] An authentication token to use when publishing
  * @property {string} [tag=packageJSON.version] The string to tag this release with
- * @property {Array<string>} [publishTargets=[github]] The publish targets
+ * @property {Array<PublishTarget>} [publishTargets=[]] The publish targets
  * @property {MakeOptions} [makeOptions] Options object to passed through to make()
  * @property {string} [outDir=`${dir}/out`] The path to the directory containing generated distributables
  * @property {boolean} [dryRun=false] Whether to generate dry run meta data but not actually publish
@@ -120,31 +125,36 @@ const publish = async (providedOptions = {}) => {
     return accum;
   }, []);
 
+  const testPlatform = makeOptions.platform || process.platform;
   if (publishTargets === null) {
-    publishTargets = forgeConfig.publish_targets[makeOptions.platform || process.platform];
+    publishTargets = (forgeConfig.publishers || [])
+      .filter(publisher => publisher.platforms ? publisher.platforms.indexOf(testPlatform !== -1) : true);
   }
+  publishTargets = publishTargets.map((target) => {
+    if (typeof target === 'string') return { name: target };
+    return target;
+  });
 
   for (const publishTarget of publishTargets) {
-    let publisher;
-    await asyncOra(`Resolving publish target: ${`${publishTarget}`.cyan}`, async () => { // eslint-disable-line no-loop-func
-      publisher = requireSearch(__dirname, [
-        `../publishers/${publishTarget}.js`,
-        `electron-forge-publisher-${publishTarget}`,
-        publishTarget,
-        path.resolve(dir, publishTarget),
-        path.resolve(dir, 'node_modules', publishTarget),
-      ]);
-      if (!publisher) {
-        throw `Could not find a publish target with the name: ${publishTarget}`;
+    let publisherModule;
+    await asyncOra(`Resolving publish target: ${`${publishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
+      try {
+        publisherModule = require(publishTarget.name);
+      } catch (err) {
+        console.error(err);
+        throw `Could not find a publish target with the name: ${publishTarget.name}`;
       }
     });
 
-    await publisher({
+    const PublisherClass = publisherModule.default || publisherModule;
+    const publisher = new PublisherClass();
+
+    await publisher.publish({
       dir,
       artifacts,
       packageJSON,
+      config: publishTarget.config || {},
       forgeConfig,
-      authToken,
       tag,
       platform: makeOptions.platform || process.platform,
       arch: makeOptions.arch || process.arch,

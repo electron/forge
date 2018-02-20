@@ -1,4 +1,5 @@
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fetch from 'node-fetch';
 import fs from 'fs-extra';
@@ -14,7 +15,6 @@ import DebInstaller from '@electron-forge/installer-deb';
 import RPMInstaller from '@electron-forge/installer-rpm';
 import ExeInstaller from '@electron-forge/installer-exe';
 
-import asyncOra from '../util/ora-handler';
 import { info } from '../util/messages';
 
 const d = debug('electron-forge:install');

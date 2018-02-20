@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import program from 'commander';
 import tabtab from 'tabtab';
-// FIXME: Deep imports like this are a bad idea
-import asyncOra from '@electron-forge/core/dist/util/ora-handler';
 
 import './util/terminate';
 

@@ -1,3 +1,4 @@
+import { asyncOra, ora } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -5,9 +6,7 @@ import resolvePackage from 'resolve-package';
 import path from 'path';
 
 import { copy } from './init-starter-files';
-import asyncOra from '../../util/ora-handler';
 import installDepList from '../../util/install-dependencies';
-import ora from '../../util/ora';
 
 const d = debug('electron-forge:init:custom');
 

@@ -3,7 +3,7 @@ import debug from 'debug';
 import logSymbols from 'log-symbols';
 import realOra from 'ora';
 
-const d = debug('electron-forge:lifecycle');
+const d = debug('electron-forge:async-ora');
 
 const useFakeOra = (process.env.DEBUG && process.env.DEBUG.includes('electron-forge'));
 

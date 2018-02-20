@@ -1,8 +1,8 @@
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import { yarnOrNpmSpawn } from '../util/yarn-or-npm';
 
-import asyncOra from '../util/ora-handler';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:lint');

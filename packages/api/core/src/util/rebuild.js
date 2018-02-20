@@ -1,6 +1,5 @@
+import { asyncOra } from '@electron-forge/async-ora';
 import rebuild from 'electron-rebuild';
-
-import asyncOra from '../util/ora-handler';
 
 export default async (buildPath, electronVersion, platform, arch, config = {}) => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {

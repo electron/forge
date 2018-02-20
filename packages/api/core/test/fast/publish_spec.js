@@ -8,29 +8,44 @@ import sinon from 'sinon';
 
 chai.use(chaiAsPromised);
 
-describe.skip('publish', () => {
+describe('publish', () => {
   let publish;
   let makeStub;
-  let requireSearchStub;
   let resolveStub;
   let publisherSpy;
+  let voidStub;
+  let nowhereStub;
+  let publishers;
 
   beforeEach(() => {
-    requireSearchStub = sinon.stub();
     resolveStub = sinon.stub();
     makeStub = sinon.stub();
     publisherSpy = sinon.stub();
+    voidStub = sinon.stub();
+    nowhereStub = sinon.stub();
+    publishers = ['@electron-forge/publisher-test'];
+    const fakePublisher = stub => class {
+      constructor() {
+        this.publish = stub;
+      }
+    };
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
       './make': async (...args) => makeStub(...args),
       '../util/resolve-dir': async dir => resolveStub(dir),
       '../util/read-package-json': () => Promise.resolve(require('../fixture/dummy_app/package.json')),
-      '../util/forge-config': () => require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')),
-      '../util/require-search': requireSearchStub,
+      '../util/forge-config': async () => {
+        const config = await (require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')));
+
+        config.publishers = publishers;
+        return config;
+      },
+      '@electron-forge/publisher-test': fakePublisher(publisherSpy),
+      void: fakePublisher(voidStub),
+      nowhere: fakePublisher(nowhereStub),
     }).default;
 
     publisherSpy.returns(Promise.resolve());
-    requireSearchStub.returns(publisherSpy);
     resolveStub.returns(path.resolve(__dirname, '../fixture/dummy_app'));
     makeStub.returns([]);
   });
@@ -56,46 +71,50 @@ describe.skip('publish', () => {
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
     const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
 
+    testConfig.publishers = publishers;
+
     delete testConfig.pluginInterface;
     expect(publisherSpy.firstCall.args).to.deep.equal([{
       dir: resolveStub(),
       artifacts: ['artifact1', 'artifact2'],
       packageJSON: require('../fixture/dummy_app/package.json'),
       forgeConfig: testConfig,
-      authToken: 'my_token',
+      config: {},
       tag: 'my_special_tag',
       platform: process.platform,
       arch: process.arch,
     }]);
   });
 
-  it('should default to publishing to github', async () => {
+  it('should default to publishing nothing', async () => {
+    publishers = [];
     await publish({
       dir: __dirname,
       interactive: false,
     });
-    expect(requireSearchStub.firstCall.args[1][0]).to.equal('../publishers/github.js');
+    expect(publisherSpy.callCount).to.equal(0);
   });
 
   it('should resolve publishers when given a string name', async () => {
+    expect(voidStub.callCount).to.equal(0);
     await publish({
       dir: __dirname,
       interactive: false,
       publishTargets: ['void'],
     });
-    expect(requireSearchStub.firstCall.args[1][0]).to.equal('../publishers/void.js');
+    expect(voidStub.callCount).to.equal(1);
   });
 
   it('should resolve consecutive publishers when given an array of names', async () => {
+    expect(voidStub.callCount).to.equal(0);
+    expect(nowhereStub.callCount).to.equal(0);
     await publish({
       dir: __dirname,
       interactive: false,
-      publishTargets: ['void', 'nowhere', 'black_hole', 'everywhere'],
+      publishTargets: ['void', 'nowhere'],
     });
-    expect(requireSearchStub.getCall(0).args[1][0]).to.equal('../publishers/void.js');
-    expect(requireSearchStub.getCall(1).args[1][0]).to.equal('../publishers/nowhere.js');
-    expect(requireSearchStub.getCall(2).args[1][0]).to.equal('../publishers/black_hole.js');
-    expect(requireSearchStub.getCall(3).args[1][0]).to.equal('../publishers/everywhere.js');
+    expect(voidStub.callCount).to.equal(1);
+    expect(nowhereStub.callCount).to.equal(1);
   });
 
   describe('dry run', () => {
@@ -187,12 +206,7 @@ describe.skip('publish', () => {
     });
 
     describe('when resuming a dry run', () => {
-      let publisher;
-
       beforeEach(async () => {
-        publisher = sinon.stub();
-        publisher.returns(Promise.resolve());
-        requireSearchStub.returns(publisher);
         await publish({
           dir,
           interactive: false,
@@ -203,10 +217,10 @@ describe.skip('publish', () => {
 
       it('should successfully restore values and pass them to publisher', () => {
         expect(makeStub.callCount).to.equal(0);
-        expect(publisher.callCount).to.equal(2, 'should call once for each platform (make run)');
-        const darwinIndex = publisher.firstCall.args[0].platform === 'darwin' ? 0 : 1;
+        expect(publisherSpy.callCount).to.equal(2, 'should call once for each platform (make run)');
+        const darwinIndex = publisherSpy.firstCall.args[0].platform === 'darwin' ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
-        const darwinArgs = publisher.getCall(darwinIndex).args[0];
+        const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
         expect(darwinArgs.artifacts.sort()).to.deep.equal(
           fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
@@ -215,7 +229,7 @@ describe.skip('publish', () => {
         expect(darwinArgs.tag).to.equal(null);
         expect(darwinArgs.platform).to.equal('darwin');
         expect(darwinArgs.arch).to.equal('x64');
-        const win32Args = publisher.getCall(win32Index).args[0];
+        const win32Args = publisherSpy.getCall(win32Index).args[0];
         expect(win32Args.artifacts.sort()).to.deep.equal(
           fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );

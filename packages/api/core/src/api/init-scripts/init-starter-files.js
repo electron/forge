@@ -1,8 +1,7 @@
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
-
-import asyncOra from '../../util/ora-handler';
 
 const d = debug('electron-forge:init:starter-files');
 

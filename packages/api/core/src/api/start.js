@@ -1,8 +1,8 @@
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import { spawn } from 'child_process';
 import path from 'path';
 
-import asyncOra from '../util/ora-handler';
 import readPackageJSON from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';

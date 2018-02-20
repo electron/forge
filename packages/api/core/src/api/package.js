@@ -1,4 +1,5 @@
 import 'colors';
+import { ora as realOra, fakeOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -10,7 +11,6 @@ import { hostArch } from 'electron-packager/targets';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { warn } from '../util/messages';
-import realOra, { fakeOra } from '../util/ora';
 import readPackageJSON from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';

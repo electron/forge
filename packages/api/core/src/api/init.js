@@ -1,3 +1,4 @@
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 
 import initCustom from './init-scripts/init-custom';
@@ -5,8 +6,6 @@ import initDirectory from './init-scripts/init-directory';
 import initGit from './init-scripts/init-git';
 import initNPM from './init-scripts/init-npm';
 import initStarter from './init-scripts/init-starter-files';
-
-import asyncOra from '../util/ora-handler';
 
 const d = debug('electron-forge:init');
 

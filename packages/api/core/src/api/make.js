@@ -1,9 +1,9 @@
 import 'colors';
+import { asyncOra } from '@electron-forge/async-ora';
 import fs from 'fs-extra';
 import path from 'path';
 import { hostArch } from 'electron-packager/targets';
 
-import asyncOra from '../util/ora-handler';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { info, warn } from '../util/messages';

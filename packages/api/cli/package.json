@@ -19,6 +19,7 @@
     "mocha": "^5.0.0"
   },
   "dependencies": {
+    "@electron-forge/async-ora": "^6.0.0-beta.0",
     "@electron-forge/core": "^6.0.0-beta.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",

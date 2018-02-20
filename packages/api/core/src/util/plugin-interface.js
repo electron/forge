@@ -1,6 +1,5 @@
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-
-import asyncOra from './ora-handler';
 
 const d = debug('electron-forge:plugins');
 
