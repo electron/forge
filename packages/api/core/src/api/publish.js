@@ -62,6 +62,7 @@ const publish = async (providedOptions = {}) => {
   }
 
   let packageJSON = await readPackageJSON(dir);
+  if (tag === null ) tag = packageJSON.version;
 
   const forgeConfig = await getForgeConfig(dir);
   const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);

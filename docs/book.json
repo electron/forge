@@ -1,5 +1,5 @@
 {
-    "plugins": ["theme-api", "panel"],
+    "plugins": ["theme-api", "panel", "collapsible-menu", "ace"],
     "pluginsConfig": {
         "theme-api": {
             "theme": "dark"

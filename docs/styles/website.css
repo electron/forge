@@ -1,3 +1,11 @@
 .gitbook-link {
   display: none !important;
 }
+
+.ace {
+  border: none !important;
+}
+
+.api-method-code {
+  margin-top: 2em;
+}
