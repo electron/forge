@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 import asyncOra from '../util/ora-handler';
+import getElectronVersion from '../util/get-electron-version';
 import readPackageJSON from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
@@ -51,8 +52,9 @@ export default async (providedOptions = {}) => {
   }
 
   const forgeConfig = await getForgeConfig(dir);
+  const electronVersion = getElectronVersion(packageJSON);
 
-  await rebuild(dir, packageJSON.devDependencies['electron-prebuilt-compile'], process.platform, process.arch, forgeConfig.electronRebuildConfig);
+  await rebuild(dir, electronVersion, process.platform, process.arch, forgeConfig.electronRebuildConfig);
 
   const spawnOpts = {
     cwd: dir,

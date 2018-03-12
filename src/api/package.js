@@ -8,6 +8,7 @@ import packager from 'electron-packager';
 import { hostArch } from 'electron-packager/targets';
 
 import getForgeConfig from '../util/forge-config';
+import getElectronVersion from '../util/get-electron-version';
 import runHook from '../util/hook';
 import { warn } from '../util/messages';
 import realOra, { fakeOra } from '../util/ora';
@@ -136,6 +137,7 @@ export default async (providedOptions = {}) => {
     afterPruneHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
   }
 
+  const electronVersion = getElectronVersion(packageJSON);
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
@@ -147,7 +149,7 @@ export default async (providedOptions = {}) => {
     arch,
     platform,
     out: outDir,
-    electronVersion: packageJSON.devDependencies['electron-prebuilt-compile'],
+    electronVersion,
   });
   packageOpts.quiet = true;
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {

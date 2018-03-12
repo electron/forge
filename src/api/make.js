@@ -4,6 +4,7 @@ import path from 'path';
 import { hostArch } from 'electron-packager/targets';
 
 import asyncOra from '../util/ora-handler';
+import getElectronVersion from '../util/get-electron-version';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import { info, warn } from '../util/messages';
@@ -129,7 +130,8 @@ export default async (providedOptions = {}) => {
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of parseArchs(platform, arch, packageJSON.devDependencies['electron-prebuilt-compile'])) {
+  const electronVersion = getElectronVersion(packageJSON);
+  for (const targetArch of parseArchs(platform, arch, electronVersion)) {
     const packageDir = path.resolve(outDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
