@@ -130,7 +130,7 @@ export default async (providedOptions = {}) => {
 
   await runHook(forgeConfig, 'preMake');
 
-  const electronVersion = getElectronVersion(packageJSON);
+  const electronVersion = await getElectronVersion(dir);
   for (const targetArch of parseArchs(platform, arch, electronVersion)) {
     const packageDir = path.resolve(outDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {

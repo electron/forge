@@ -52,7 +52,7 @@ export default async (providedOptions = {}) => {
   }
 
   const forgeConfig = await getForgeConfig(dir);
-  const electronVersion = getElectronVersion(packageJSON);
+  const electronVersion = await getElectronVersion(dir);
 
   await rebuild(dir, electronVersion, process.platform, process.arch, forgeConfig.electronRebuildConfig);
 

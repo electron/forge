@@ -137,7 +137,6 @@ export default async (providedOptions = {}) => {
     afterPruneHooks.push(...resolveHooks(forgeConfig.electronPackagerConfig.afterPrune, dir));
   }
 
-  const electronVersion = getElectronVersion(packageJSON);
   const packageOpts = Object.assign({
     asar: false,
     overwrite: true,
@@ -149,7 +148,7 @@ export default async (providedOptions = {}) => {
     arch,
     platform,
     out: outDir,
-    electronVersion,
+    electronVersion: await getElectronVersion(dir),
   });
   packageOpts.quiet = true;
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
