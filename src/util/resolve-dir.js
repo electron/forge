@@ -1,5 +1,6 @@
 import debug from 'debug';
 import fs from 'fs-extra';
+import isExactVersion from 'exact-version';
 import path from 'path';
 import readPackageJSON from './read-package-json';
 
@@ -16,8 +17,9 @@ export default async (dir) => {
       const packageJSON = await readPackageJSON(mDir);
 
       if (packageJSON.devDependencies && packageJSON.devDependencies['electron-prebuilt-compile']) {
-        if (!/[0-9]/.test(packageJSON.devDependencies['electron-prebuilt-compile'][0])) {
-          throw 'You must depend on an EXACT version of "electron-prebuilt-compile" not a range';
+        const version = packageJSON.devDependencies['electron-prebuilt-compile'];
+        if (!isExactVersion(version)) {
+          throw `You must depend on an EXACT version of "electron-prebuilt-compile" not a range (got "${version}")`;
         }
       } else {
         throw 'You must depend on "electron-prebuilt-compile" in your devDependencies';
