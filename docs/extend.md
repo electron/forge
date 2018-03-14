@@ -7,6 +7,14 @@ each of those commands.  For everything else we have a Plugin API which allows
 you to hook into pretty much any part of forge's standard build process and do
 whatever you want.
 
+To briefly explain some terms:
+  * `maker`: A tool that takes a packaged Electron application and outputs a
+  certain kind of distributable.
+  * `publisher`: A tool that takes distributables and "publishes" (normally
+  just uploads) them somewhere.  Think GitHub releases.
+  * `plugin`: A tool that hooks into forge's internals and can inject logic
+  into your build process.
+
 If there is something you want to be able to do with a plugin/maker/publisher
 that isn't currently exposed, please don't hesitate to raise a Feature Request
 issue on our [GitHub Repository](https://github.com/electron-userland/electron-forge).
@@ -76,4 +84,119 @@ export default class MyPlugin extends PluginBase {
 
 ## Writing Makers
 
+An Electron Forge Maker has to export a single class that extends our base
+maker.  The base plugin can be depended on by installing
+`@electron-forge/maker-base`.
+
+The `MakerBase` class has some helper methods for your convenience.
+
+| Method | Description |
+|--------|-------------|
+| `ensureDirectory(path: string)` | Ensures the directory exists and is forced to be empty.<br />I.e. If the directory already exists it is deleted and recreated, this is a desctructive operation |
+| `ensureFile(path: string)` | Ensures the path to the file exists and the file does not exist<br />I.e. If the file already exists it is deleted and the path created |
+| `isInstalled(moduleName: string)` | Checks if the given module is installed, used for testing if optional dependencies are installed or not |
+
+Your maker must implement two methods:
+
+{% method %}
+### `isSupportedOnCurrentPlatform(): boolean`
+
+This method must syncronously return a boolean indicating whether or not this
+maker can run on the current platform.  Normally this is just a `process.platform`
+check but it can be a deeper check for dependencies like fake-root or other
+required external build tools.
+
+If the issue is a missing dependency you should log out a **helpful** error message
+telling the developer exactly what is missing and if possible how to get it.
+
+{% sample lang="javascript" %}
+{%ace edit=false, lang='javascript', check=false, theme="tomorrow_night" %}
+export default class MyMaker extends MakerBase {
+  isSupportedOnCurrentPlatform() {
+    return process.platform === 'linux' && this.isFakeRootInstalled();
+  }
+
+  isFakeRootInstalled() { ... }
+}
+{%endace%}
+
+{% endmethod %}
+
+{% method %}
+### `make(options): Promise<string[]>`
+
+Makers must implement this method and return an array of **absolute** paths to
+the artifacts this maker generated.  If an error occurs, simply reject the
+promise and Electron Forge will stop the make process.
+
+The options object has the following structure.
+
+| Key | Value |
+|-----|-------|
+| `dir` | The directory containing the packaged Electron application |
+| `makeDir` | The directory you should put all your artifacts in (potentially in sub folders)<br />NOTE: this directory is not guarunteed to already exist |
+| `appName` | The resolved human friendly name of the project |
+| `targetPlatform` | The target platform you should make for |
+| `targetArch` | The target architecture you should make for |
+| `config` | The configuration object designated for this maker |
+| `forgeConfig` | Fully resolved forge configuration, you shouldn't really need this |
+| `packageJSON` | The applications package.json file |
+
+{% sample lang="javascript" %}
+{%ace edit=false, lang='javascript', check=false, theme="tomorrow_night" %}
+export default class MyMaker extends MakerBase {
+  async make(opts) {
+    const pathToMagicInstaller = await makeMagicInstaller(opts.dir);
+    return [pathToMagicInstaller];
+  }
+}
+{%endace%}
+
+{% endmethod %}
+
 ## Writing Publishers
+
+An Electron Forge Publisher has to export a single class that extends our base
+maker.  The base plugin can be depended on by installing
+`@electron-forge/maker-base`.  Your maker must implement one method:
+
+{% method %}
+### `publish(options): Promise<void>`
+
+Publishers must implement this method to publish the artifacts returned from
+make calls.  If any errors occur you must throw them, failing silently or simply
+logging will not propagate issues up to forge.
+
+Please note for a given version publish will be called multiple times, once
+for each set of "platform" and "arch".  This means if you are publishing
+darwin and win32 artifacts to somewhere like GitHub on the first publish call
+you will have to create the version on GitHub and the second call will just
+be appending files to the existing version.
+
+The options object has the following structure.
+
+| Key | Value |
+|-----|-------|
+| `dir` | The base directory of the apps source code |
+| `artifacts` | An array of artifact objects, see the [MakeResult](https://docs.electronforge.io/typedef/index.html#static-typedef-MakeResult) object definition for details |
+| `packageJSON` | The packageJSON of the app |
+| `config` | The config that is dedicated for this publisher |
+| `forgeConfig` | The raw forgeConfig this app is using, you shouldn't really have to use this |
+| `platform` | The platform these artifacts are for |
+| `arch` | The arch these artifacts are for |
+
+{% sample lang="javascript" %}
+{%ace edit=false, lang='javascript', check=false, theme="tomorrow_night" %}
+export default class MyPublisher extends PublisherBase {
+  async publish(opts) {
+    for (const artifact of opts.artifacts) {
+      await createVersion(artifact.packageJSON.version);
+      for (const artifactPath of artifact.artifacts) {
+        await upload(artifact.packageJSON.version, artifactPath);
+      }
+    }
+  }
+}
+{%endace%}
+
+{% endmethod %}
