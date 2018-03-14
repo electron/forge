@@ -5,7 +5,21 @@ const d = debug('electron-forge:plugins');
 
 export default class PluginInterface {
   constructor(dir, forgeConfig) {
-    this.plugins = forgeConfig.plugins;
+    this.plugins = forgeConfig.plugins.map((plugin) => {
+      if (plugin.__isElectronForgePlugin) {
+        return plugin;
+      } else if (Array.isArray(plugin)) {
+        if (typeof plugin[0] !== 'string') {
+          throw `Expected plugin[0] to be a string but found ${plugin[0]}`;
+        }
+        let opts = {};
+        if (typeof plugin[1] !== 'undefined') opts = plugin[1]
+        const pluginModule = require(plugin[0]);
+        const Plugin = pluginModule.default || pluginModule;
+        return new Plugin(opts);
+      }
+      throw `Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`; // eslint-disable-line
+    });
     Object.defineProperty(this, 'config', {
       value: forgeConfig,
       enumerable: false,
