@@ -21,6 +21,9 @@
   "scripts": {
     "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
     "commit": "git-cz",
+    "docs:build": "cd docs && gitbook build",
+    "docs:install": "cd docs && gitbook install",
+    "docs:serve": "cd docs && gitbook serve",
     "lint": "bolt ws exec -- node_modules/.bin/eslint src test",
     "test": "bolt ws run test"
   },
@@ -40,6 +43,7 @@
     "electron-rebuild": "^1.6.0",
     "form-data": "^2.1.4",
     "fs-extra": "^5.0.0",
+    "gitbook-cli": "^2.3.2",
     "glob": "^7.1.1",
     "inquirer": "^5.0.0",
     "lodash.merge": "^4.6.0",
