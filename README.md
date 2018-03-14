@@ -299,7 +299,7 @@ Your promise must resolve with an array of the artifacts you generated.
 You must export a `Function` that returns a `Promise`.  Your function will be called with the following keyword parameters:
 
 * `dir` - The application directory
-* `artifactPaths` - An array of absolute paths to artifacts to publish
+* `artifacts` - An array of absolute paths to artifacts to publish
 * `packageJSON` - An object representing the user's `package.json` file
 * `forgeConfig` - An object representing the user's [`forgeConfig`](#config)
 * `authToken` - The value of `--auth-token`
