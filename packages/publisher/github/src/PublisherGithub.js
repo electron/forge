@@ -12,7 +12,12 @@ export default class PublisherGithub extends PublisherBase {
     super('github');
   }
 
-  async publish({ artifacts, packageJSON, config, tag }) {
+  async publish({ makeResults, packageJSON, config, tag }) {
+    const artifacts = makeResults.reduce((flat, makeResult) => {
+      flat.push(...makeResult.artifacts);
+      return flat;
+    }, []);
+
     if (!(config.repository && typeof config.repository === 'object' &&
       config.repository.owner && config.repository.name)) {
       throw 'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info'; // eslint-disable-line

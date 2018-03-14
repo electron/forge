@@ -178,7 +178,7 @@ The options object has the following structure.
 | Key | Value |
 |-----|-------|
 | `dir` | The base directory of the apps source code |
-| `artifacts` | An array of artifact objects, see the [MakeResult](https://docs.electronforge.io/typedef/index.html#static-typedef-MakeResult) object definition for details |
+| `makeResults` | An array of MakeResult objects, see the [MakeResult](https://docs.electronforge.io/typedef/index.html#static-typedef-MakeResult) object definition for details |
 | `packageJSON` | The packageJSON of the app |
 | `config` | The config that is dedicated for this publisher |
 | `forgeConfig` | The raw forgeConfig this app is using, you shouldn't really have to use this |

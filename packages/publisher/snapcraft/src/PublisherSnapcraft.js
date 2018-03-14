@@ -10,7 +10,12 @@ export default class PublisherSnapcraft extends PublisherBase {
     super('snapcraft');
   }
 
-  async publish({ dir, artifacts, config }) {
+  async publish({ dir, makeResults, config }) {
+    const artifacts = makeResults.reduce((flat, makeResult) => {
+      flat.push(...makeResult.artifacts);
+      return flat;
+    }, []);
+
     const snapArtifacts = artifacts.filter(artifact => artifact.endsWith('.snap'));
 
     if (snapArtifacts.length === 0) {

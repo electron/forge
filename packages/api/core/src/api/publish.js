@@ -121,11 +121,6 @@ const publish = async (providedOptions = {}) => {
     throw 'Failed to locate publishable Electron application';
   }
 
-  const artifacts = makeResults.reduce((accum, makeResult) => {
-    accum.push(...makeResult.artifacts);
-    return accum;
-  }, []);
-
   const testPlatform = makeOptions.platform || process.platform;
   if (publishTargets === null) {
     publishTargets = (forgeConfig.publishers || [])
@@ -152,7 +147,7 @@ const publish = async (providedOptions = {}) => {
 
     await publisher.publish({
       dir,
-      artifacts,
+      makeResults,
       packageJSON,
       config: publishTarget.config || {},
       forgeConfig,

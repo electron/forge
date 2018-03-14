@@ -23,7 +23,7 @@ export default class Publisher {
    */
   async publish({
     dir,            // The base directory of the apps source code
-    artifacts,      // An array of artifact objects, see the MakeResult object definition for details
+    makeResults,      // An array of MakeResult objects, see the MakeResult object definition for details
     packageJSON,    // The packageJSON of the app
     config,         // The config that is dedicated for this publisher
     forgeConfig,    // The raw forgeConfig this app is using, you shouldn't really have to use this

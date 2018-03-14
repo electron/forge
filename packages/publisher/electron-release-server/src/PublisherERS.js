@@ -27,7 +27,12 @@ export default class PublisherERS extends PublisherBase {
     super('electron-release-server');
   }
 
-  async publish({ artifacts, packageJSON, config, platform, arch }) {
+  async publish({ makeResults, packageJSON, config, platform, arch }) {
+    const artifacts = makeResults.reduce((flat, makeResult) => {
+      flat.push(...makeResult.artifacts);
+      return flat;
+    }, []);
+
     if (!(config.baseUrl && config.username && config.password)) {
       throw 'In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your forge config. See the docs for more info'; // eslint-disable-line
     }

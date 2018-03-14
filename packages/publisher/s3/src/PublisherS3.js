@@ -19,7 +19,12 @@ export default class PublisherS3 extends PublisherBase {
     super('s3');
   }
 
-  async publish({ artifacts, packageJSON, config, tag }) {
+  async publish({ makeResults, packageJSON, config, tag }) {
+    const artifacts = makeResults.reduce((flat, makeResult) => {
+      flat.push(...makeResult.artifacts);
+      return flat;
+    }, []);
+
     const s3Client = new AWS.S3({
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
