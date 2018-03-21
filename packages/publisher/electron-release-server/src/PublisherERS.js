@@ -60,10 +60,11 @@ export default class PublisherERS extends PublisherBase {
     const existingVersion = versions.find(version => version.name === packageJSON.version);
 
     let channel = 'stable';
-    if (packageJSON.version.indexOf('beta') !== -1) {
+    if (config.channel) {
+      channel = config.channel;
+    } else if (packageJSON.version.indexOf('beta') !== -1) {
       channel = 'beta';
-    }
-    if (packageJSON.version.indexOf('alpha') !== -1) {
+    } else if (packageJSON.version.indexOf('alpha') !== -1) {
       channel = 'alpha';
     }
 
