@@ -19,7 +19,7 @@ env:
 branches:
   only:
   - master
-  - /^v6.*/
+  - v6
   - /^v\d+\.\d+\.\d+/
 install:
 - npm i -g bolt
