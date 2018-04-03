@@ -116,6 +116,7 @@ export default class PublisherERS extends PublisherBase {
             d('upload successful for asset:', artifactPath);
             uploaded += 1;
             updateSpinner();
+            resolve();
           } catch (err) {
             reject(err);
           }
