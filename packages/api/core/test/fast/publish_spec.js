@@ -230,7 +230,6 @@ describe('publish', () => {
         );
         expect(darwinArgs.packageJSON).to.deep.equal({ state: 1 });
         expect(darwinArgs.authToken).to.equal(undefined);
-        console.log(darwinArgs);
         expect(darwinArgs.tag).to.equal('1.0.0');
         expect(darwinArgs.platform).to.equal('darwin');
         expect(darwinArgs.arch).to.equal('x64');
