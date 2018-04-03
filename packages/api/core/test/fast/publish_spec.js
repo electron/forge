@@ -76,7 +76,7 @@ describe('publish', () => {
     delete testConfig.pluginInterface;
     expect(publisherSpy.firstCall.args).to.deep.equal([{
       dir: resolveStub(),
-      artifacts: ['artifact1', 'artifact2'],
+      makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
       packageJSON: require('../fixture/dummy_app/package.json'),
       forgeConfig: testConfig,
       config: {},
@@ -221,21 +221,30 @@ describe('publish', () => {
         const darwinIndex = publisherSpy.firstCall.args[0].platform === 'darwin' ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
-        expect(darwinArgs.artifacts.sort()).to.deep.equal(
+        const darwinArtifacts = [];
+        for (const result of darwinArgs.makeResults) {
+          darwinArtifacts.push(...result.artifacts);
+        }
+        expect(darwinArtifacts.sort()).to.deep.equal(
           fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
         expect(darwinArgs.packageJSON).to.deep.equal({ state: 1 });
         expect(darwinArgs.authToken).to.equal(undefined);
-        expect(darwinArgs.tag).to.equal(null);
+        console.log(darwinArgs);
+        expect(darwinArgs.tag).to.equal('1.0.0');
         expect(darwinArgs.platform).to.equal('darwin');
         expect(darwinArgs.arch).to.equal('x64');
         const win32Args = publisherSpy.getCall(win32Index).args[0];
-        expect(win32Args.artifacts.sort()).to.deep.equal(
+        const win32Artifacts = [];
+        for (const result of win32Args.makeResults) {
+          win32Artifacts.push(...result.artifacts);
+        }
+        expect(win32Artifacts.sort()).to.deep.equal(
           fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
         );
         expect(win32Args.packageJSON).to.deep.equal({ state: 0 });
         expect(win32Args.authToken).to.equal(undefined);
-        expect(win32Args.tag).to.equal(null);
+        expect(win32Args.tag).to.equal('1.0.0');
         expect(win32Args.platform).to.equal('win32');
         expect(win32Args.arch).to.equal('x64');
       });
