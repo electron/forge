@@ -10,6 +10,7 @@ cache:
 branches:
   only:
   - master
+  - 5.x
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
