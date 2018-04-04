@@ -19,6 +19,7 @@ env:
 branches:
   only:
   - master
+  - 5.x
   - /^v\d+\.\d+\.\d+/
 before_install: if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm install -g yarn@0.23.3; fi
 install:
