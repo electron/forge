@@ -105,6 +105,7 @@ export default async ({ artifacts, packageJSON, forgeConfig, platform, arch }) =
           d('upload successful for asset:', artifactPath);
           uploaded += 1;
           updateSpinner();
+          resolve();
         } catch (err) {
           reject(err);
         }
