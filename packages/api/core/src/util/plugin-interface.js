@@ -13,7 +13,7 @@ export default class PluginInterface {
           throw `Expected plugin[0] to be a string but found ${plugin[0]}`;
         }
         let opts = {};
-        if (typeof plugin[1] !== 'undefined') opts = plugin[1]
+        if (typeof plugin[1] !== 'undefined') opts = plugin[1];
         const pluginModule = require(plugin[0]);
         const Plugin = pluginModule.default || pluginModule;
         return new Plugin(opts);
