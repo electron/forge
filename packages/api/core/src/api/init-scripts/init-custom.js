@@ -18,10 +18,25 @@ export default async (dir, template) => {
       d('using global template');
     } catch (err) {
       try {
-        templateModulePath = require.resolve(`electron-forge-template-${template}`);
-        d('using local template');
+        templateModulePath = await resolvePackage(`@electron-forge/template-${template}`);
+        d('using global template');
       } catch (err2) {
-        throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``;
+        try {
+          templateModulePath = require.resolve(`electron-forge-template-${template}`);
+          d('using local template');
+        } catch (err3) {
+          try {
+            templateModulePath = require.resolve(`@electron-forge/template-${template}`);
+            d('using local template');
+          } catch (err4) {
+            try {
+              templateModulePath = require.resolve(template);
+              d('using absolute template');
+            } catch (err5) {
+              throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge-template-${template}\``;
+            }
+          }
+        }
       }
     }
   });
