@@ -82,11 +82,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   });
 
   describe('init (with custom templater)', () => {
-    beforeInitTest({ template: 'dummy' }, () => {
-      execSync('npm link', {
-        cwd: path.resolve(__dirname, '../fixture/custom_init'),
-      });
-    });
+    beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
 
     it('should create dot files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
