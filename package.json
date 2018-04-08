@@ -62,7 +62,6 @@
     "s3": "^4.4.0",
     "semver": "^5.3.0",
     "sudo-prompt": "^8.0.0",
-    "tabtab": "^2.2.1",
     "username": "^3.0.0",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
