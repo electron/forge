@@ -1,11 +1,11 @@
 Electron Forge
 --------------
-[![Linux/macOS Build Status](https://travis-ci.org/electron-userland/electron-forge.svg?branch=master)](https://travis-ci.org/electron-userland/electron-forge)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/79ae80nek1eucyy3?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-forge)
+[![Linux/macOS Build Status](https://travis-ci.org/electron-userland/electron-forge.svg?branch=5.x)](https://travis-ci.org/electron-userland/electron-forge)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/79ae80nek1eucyy3/branch/5.x?svg=true)](https://ci.appveyor.com/project/electron-userland/electron-forge)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm version](https://badge.fury.io/js/electron-forge.svg)](https://www.npmjs.com/package/electron-forge)
 [![npm](https://img.shields.io/npm/dt/electron-forge.svg?maxAge=2592000)](https://www.npmjs.com/package/electron-forge)
-[![license](https://img.shields.io/github/license/electron-userland/electron-forge.svg)](https://github.com/electron-userland/electron-forge/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/electron-userland/electron-forge.svg)](https://github.com/electron-userland/electron-forge/blob/5.x/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
 A complete tool for building modern Electron applications.
