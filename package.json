@@ -1,6 +1,7 @@
 {
   "name": "electron-forge",
   "private": true,
+  "license": "MIT",
   "bolt": {
     "workspaces": [
       "packages/api/*",
