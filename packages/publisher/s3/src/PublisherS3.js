@@ -15,11 +15,11 @@ AWS.util.update(AWS.S3.prototype, {
 });
 
 export default class PublisherS3 extends PublisherBase {
-  constructor() {
-    super('s3');
-  }
+  name = 's3';
 
-  async publish({ makeResults, packageJSON, config, tag }) {
+  async publish({ makeResults, packageJSON, tag }) {
+    const { config } = this;
+
     const artifacts = makeResults.reduce((flat, makeResult) => {
       flat.push(...makeResult.artifacts);
       return flat;

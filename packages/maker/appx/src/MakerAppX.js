@@ -45,9 +45,7 @@ export async function createDefaultCertificate(publisherName, { certFilePath, ce
 }
 
 export default class MakerAppX extends MakerBase {
-  constructor() {
-    super('appx');
-  }
+  name = 'appx';
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
@@ -57,7 +55,6 @@ export default class MakerAppX extends MakerBase {
     dir,
     makeDir,
     appName,
-    config,
     packageJSON,
     targetArch,
   }) {
@@ -69,12 +66,12 @@ export default class MakerAppX extends MakerBase {
       flatten: false,
       deploy: false,
       packageVersion: `${packageJSON.version}.0`,
-      packageName: appName.replace(/-/g, ''),
+      packageName: packageJSON.name.replace(/-/g, ''),
       packageDisplayName: appName,
       packageDescription: packageJSON.description || appName,
       packageExecutable: `app\\${appName}.exe`,
-      windowsKit: config.windowsKit || path.dirname(findSdkTool('makeappx.exe')),
-    }, config, {
+      windowsKit: this.config.windowsKit || path.dirname(await findSdkTool('makeappx.exe')),
+    }, this.config, {
       inputDirectory: dir,
       outputDirectory: outPath,
     });

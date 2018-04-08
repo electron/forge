@@ -13,9 +13,7 @@ export function debianArch(nodeArch) {
 }
 
 export default class MakerDeb extends MakerBase {
-  constructor() {
-    super('dmg');
-  }
+  name = 'deb';
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-debian') && process.platform === 'linux';
@@ -25,13 +23,12 @@ export default class MakerDeb extends MakerBase {
     dir,
     makeDir,
     targetArch,
-    config,
     packageJSON,
   }) {
     const installer = require('electron-installer-debian');
 
     const arch = debianArch(targetArch);
-    const name = (config.options || {}).name || packageJSON.name;
+    const name = (this.config.options || {}).name || packageJSON.name;
     const versionedName = `${name}_${packageJSON.version}_${arch}`;
     const outPath = path.resolve(makeDir, `${versionedName}.deb`);
 
@@ -39,7 +36,7 @@ export default class MakerDeb extends MakerBase {
 
     await installer(Object.assign({
       options: {},
-    }, config, {
+    }, this.config, {
       src: dir,
       dest: path.dirname(outPath),
       arch,

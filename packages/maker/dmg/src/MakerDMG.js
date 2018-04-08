@@ -5,9 +5,7 @@ import path from 'path';
 import pify from 'pify';
 
 export default class MakerDMG extends MakerBase {
-  constructor() {
-    super('dmg');
-  }
+  name = 'dmg';
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
@@ -17,23 +15,22 @@ export default class MakerDMG extends MakerBase {
     dir,
     makeDir,
     appName,
-    config,
     packageJSON,
   }) {
     const electronDMG = require('electron-installer-dmg');
 
-    const outPath = path.resolve(makeDir, `${config.name || appName}.dmg`);
+    const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
     const wantedOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.dmg`);
     await this.ensureFile(outPath);
     const dmgConfig = Object.assign({
       overwrite: true,
       name: appName,
-    }, config, {
+    }, this.config, {
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
     });
     await pify(electronDMG)(dmgConfig);
-    if (!config.name) {
+    if (!this.config.name) {
       await fs.rename(outPath, wantedOutPath);
     }
     return [wantedOutPath];

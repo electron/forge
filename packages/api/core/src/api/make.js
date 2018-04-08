@@ -18,7 +18,7 @@ import packager from './package';
 /**
  * @typedef {Object} MakeTarget
  * @property {string} [name] The module name that exports the maker
- * @property {Array<string>} [platforms=[]] The platforms this make target should run on
+ * @property {Array<string>} [platforms=null] The platforms this make target should run on
  * @property {Object} [config] The arbitrary config to pass to this make target
  */
 
@@ -89,17 +89,23 @@ export default async (providedOptions = {}) => {
     return target;
   });
 
+  let targetId = 0;
   for (const target of targets) {
-    let makerModule;
-    try {
-      makerModule = require(target.name);
-    } catch (err) {
-      console.error(err);
-      throw `Could not find module with name: ${target.name}`;
-    }
+    let maker;
+    if (target.__isElectronForgeMaker) {
+      maker = target;
+    } else {
+      let makerModule;
+      try {
+        makerModule = require(target.name);
+      } catch (err) {
+        console.error(err);
+        throw `Could not find module with name: ${target.name}`;
+      }
 
-    const MakerClass = makerModule.default || makerModule;
-    const maker = new MakerClass();
+      const MakerClass = makerModule.default || makerModule;
+      maker = new MakerClass(target.config, target.platforms);
+    }
 
     if (!maker.isSupportedOnCurrentPlatform) {
       throw new Error([
@@ -116,7 +122,8 @@ export default async (providedOptions = {}) => {
       ].join(''));
     }
 
-    makers[target.name] = maker;
+    makers[targetId] = maker;
+    targetId += 1;
   }
 
   if (!skipPackage) {
@@ -146,8 +153,10 @@ export default async (providedOptions = {}) => {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
     }
 
+    targetId = 0;
     for (const target of targets) {
-      const maker = makers[target.name];
+      const maker = makers[targetId];
+      targetId += 1;
 
       // eslint-disable-next-line no-loop-func
       await asyncOra(`Making for target: ${maker.name} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
@@ -158,7 +167,6 @@ export default async (providedOptions = {}) => {
             appName,
             targetPlatform: actualTargetPlatform,
             targetArch,
-            config: target.config || {},
             forgeConfig,
             packageJSON,
           });

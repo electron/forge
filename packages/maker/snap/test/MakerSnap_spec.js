@@ -12,9 +12,10 @@ describe('MakerSnap', () => {
   let eisStub;
   let ensureDirectoryStub;
   let config;
+  let createMaker;
 
   const dir = '/my/test/dir/out/foo-linux-x64';
-  const makeDir = '/make/dir';
+  const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
@@ -27,12 +28,15 @@ describe('MakerSnap', () => {
     MakerSnapModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerSnap', {
       'electron-installer-snap': eisStub,
     });
-    maker = new MakerSnapModule.default(); // eslint-disable-line
-    maker.ensureDirectory = ensureDirectoryStub;
+    createMaker = () => {
+      maker = new MakerSnapModule.default(config); // eslint-disable-line
+      maker.ensureDirectory = ensureDirectoryStub;
+    };
+    createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,
@@ -46,8 +50,9 @@ describe('MakerSnap', () => {
       arch: 'overridden',
       description: 'Snap description',
     };
+    createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,

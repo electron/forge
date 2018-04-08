@@ -23,11 +23,11 @@ export const ersPlatform = (platform, arch) => {
 };
 
 export default class PublisherERS extends PublisherBase {
-  constructor() {
-    super('electron-release-server');
-  }
+  name = 'electron-release-server';
 
-  async publish({ makeResults, packageJSON, config, platform, arch }) {
+  async publish({ makeResults, packageJSON, platform, arch }) {
+    const { config } = this;
+
     const artifacts = makeResults.reduce((flat, makeResult) => {
       flat.push(...makeResult.artifacts);
       return flat;

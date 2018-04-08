@@ -12,9 +12,10 @@ describe('MakerFlatpak', () => {
   let eidStub;
   let ensureDirectoryStub;
   let config;
+  let createMaker;
 
   const dir = '/my/test/dir/out';
-  const makeDir = '/make/dir';
+  const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
@@ -28,12 +29,15 @@ describe('MakerFlatpak', () => {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
       'electron-installer-flatpak': eidStub,
     });
-    maker = new flatpakModule.default(); // eslint-disable-line
-    maker.ensureDirectory = ensureDirectoryStub;
+    createMaker = () => {
+      maker = new flatpakModule.default(config); // eslint-disable-line
+      maker.ensureDirectory = ensureDirectoryStub;
+    };
+    createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakModule.flatpakArch(process.arch),
@@ -49,8 +53,9 @@ describe('MakerFlatpak', () => {
         productName: 'Flatpak',
       },
     };
+    createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakModule.flatpakArch(process.arch),

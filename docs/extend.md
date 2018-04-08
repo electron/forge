@@ -129,6 +129,8 @@ Makers must implement this method and return an array of **absolute** paths to
 the artifacts this maker generated.  If an error occurs, simply reject the
 promise and Electron Forge will stop the make process.
 
+This `config` for the maker will be available on `this.config`.
+
 The options object has the following structure.
 
 | Key | Value |
@@ -138,7 +140,6 @@ The options object has the following structure.
 | `appName` | The resolved human friendly name of the project |
 | `targetPlatform` | The target platform you should make for |
 | `targetArch` | The target architecture you should make for |
-| `config` | The configuration object designated for this maker |
 | `forgeConfig` | Fully resolved forge configuration, you shouldn't really need this |
 | `packageJSON` | The applications package.json file |
 
@@ -173,6 +174,8 @@ darwin and win32 artifacts to somewhere like GitHub on the first publish call
 you will have to create the version on GitHub and the second call will just
 be appending files to the existing version.
 
+This `config` for the publisher will be available on `this.config`.
+
 The options object has the following structure.
 
 | Key | Value |
@@ -180,7 +183,6 @@ The options object has the following structure.
 | `dir` | The base directory of the apps source code |
 | `makeResults` | An array of MakeResult objects, see the [MakeResult](https://docs.electronforge.io/typedef/index.html#static-typedef-MakeResult) object definition for details |
 | `packageJSON` | The packageJSON of the app |
-| `config` | The config that is dedicated for this publisher |
 | `forgeConfig` | The raw forgeConfig this app is using, you shouldn't really have to use this |
 | `platform` | The platform these artifacts are for |
 | `arch` | The arch these artifacts are for |

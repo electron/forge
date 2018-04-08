@@ -8,11 +8,11 @@ import path from 'path';
 import GitHub from './util/github';
 
 export default class PublisherGithub extends PublisherBase {
-  constructor() {
-    super('github');
-  }
+  name = 'github';
 
-  async publish({ makeResults, packageJSON, config, tag }) {
+  async publish({ makeResults, packageJSON, tag }) {
+    const { config } = this;
+
     const artifacts = makeResults.reduce((flat, makeResult) => {
       flat.push(...makeResult.artifacts);
       return flat;

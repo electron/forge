@@ -4,9 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 export default class MakerSquirrel extends MakerBase {
-  constructor() {
-    super('squirel');
-  }
+  name = 'squirrel';
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-winstaller') && !process.env.DISABLE_SQUIRREL_TEST;
@@ -18,7 +16,6 @@ export default class MakerSquirrel extends MakerBase {
     targetArch,
     packageJSON,
     appName,
-    config,
   }) {
     const { createWindowsInstaller } = require('electron-winstaller');
 
@@ -26,11 +23,12 @@ export default class MakerSquirrel extends MakerBase {
     await this.ensureDirectory(outPath);
 
     const winstallerConfig = Object.assign({
-      name: appName,
+      name: packageJSON.name,
+      title: appName,
       noMsi: true,
       exe: `${appName}.exe`,
       setupExe: `${appName}-${packageJSON.version} Setup.exe`,
-    }, config, {
+    }, this.config, {
       appDirectory: dir,
       outputDirectory: outPath,
     });

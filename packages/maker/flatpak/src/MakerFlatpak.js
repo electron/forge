@@ -15,9 +15,7 @@ export function flatpakArch(nodeArch) {
 }
 
 export default class MakerFlatpak extends MakerBase {
-  constructor() {
-    super('flatpak');
-  }
+  name = 'flatpak';
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-flatpak') && process.platform === 'linux';
@@ -27,7 +25,6 @@ export default class MakerFlatpak extends MakerBase {
     dir,
     makeDir,
     targetArch,
-    config,
   }) {
     const installer = require('electron-installer-flatpak');
 
@@ -35,7 +32,7 @@ export default class MakerFlatpak extends MakerBase {
     const outDir = path.resolve(makeDir, 'flatpak');
 
     await this.ensureDirectory(outDir);
-    const flatpakConfig = Object.assign({}, config, {
+    const flatpakConfig = Object.assign({}, this.config, {
       arch,
       src: dir,
       dest: outDir,

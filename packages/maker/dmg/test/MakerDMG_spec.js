@@ -13,6 +13,7 @@ describe('MakerDMG', () => {
   let renameStub;
   let config;
   let maker;
+  let createMaker;
 
   const dir = '/my/test/dir/out';
   const makeDir = '/my/test/dir/make';
@@ -33,12 +34,15 @@ describe('MakerDMG', () => {
         rename: renameStub,
       },
     }).default;
-    maker = new MakerDMG();
-    maker.ensureFile = ensureFileStub;
+    createMaker = () => {
+      maker = new MakerDMG(config);
+      maker.ensureFile = ensureFileStub;
+    };
+    createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       overwrite: true,
@@ -49,19 +53,20 @@ describe('MakerDMG', () => {
   });
 
   it('should attempt to rename the DMG file if no custom name is set', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.callCount).to.equal(1);
     expect(renameStub.firstCall.args[1]).to.include('1.2.3');
   });
 
   it('should rename the DMG file to include the version if no custom name is set', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.firstCall.args[1]).to.include('1.2.3');
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {
     config.name = 'foobar';
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    createMaker();
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.callCount).to.equal(0);
   });
 });

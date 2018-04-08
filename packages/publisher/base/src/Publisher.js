@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 
 export default class Publisher {
-  constructor(name) {
-    this.name = name;
+  constructor(config = {}, platforms = null) {
+    this.config = config;
+    this.platforms = platforms;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
       enumerable: false,

@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
 
@@ -11,9 +12,10 @@ describe('MakerDeb', () => {
   let ensureFileStub;
   let config;
   let maker;
+  let createMaker;
 
   const dir = '/my/test/dir/out';
-  const makeDir = '/foo/bar/make';
+  const makeDir = path.resolve('/foo/bar/make');
   const appName = 'My Test App';
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
@@ -26,12 +28,15 @@ describe('MakerDeb', () => {
     MakerDeb = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDeb', {
       'electron-installer-debian': eidStub,
     });
-    maker = new MakerDeb.default(); // eslint-disable-line
-    maker.ensureFile = ensureFileStub;
+    createMaker = () => {
+      maker = new MakerDeb.default(config); // eslint-disable-line
+      maker.ensureFile = ensureFileStub;
+    };
+    createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: MakerDeb.debianArch(process.arch),
@@ -39,6 +44,7 @@ describe('MakerDeb', () => {
       src: dir,
       dest: makeDir,
     });
+    expect(maker.config).to.deep.equal(config);
   });
 
   it('should have config cascade correctly', async () => {
@@ -49,7 +55,9 @@ describe('MakerDeb', () => {
       },
     };
 
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    createMaker();
+
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: MakerDeb.debianArch(process.arch),

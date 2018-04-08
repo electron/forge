@@ -14,9 +14,7 @@ export function rpmArch(nodeArch) {
 }
 
 export default class MakerRpm extends MakerBase {
-  constructor() {
-    super('rpm');
-  }
+  name = 'rpm';
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-redhat') && process.platform === 'linux';
@@ -26,18 +24,17 @@ export default class MakerRpm extends MakerBase {
     dir,
     makeDir,
     targetArch,
-    config,
     packageJSON,
   }) {
     const installer = require('electron-installer-redhat');
 
     const arch = rpmArch(targetArch);
-    const name = (config.options || {}).name || packageJSON.name;
+    const name = (this.config.options || {}).name || packageJSON.name;
     const versionedName = `${name}-${packageJSON.version}.${arch}`;
     const outPath = path.resolve(makeDir, `${versionedName}.rpm`);
 
     await this.ensureFile(outPath);
-    const rpmConfig = Object.assign({}, config, {
+    const rpmConfig = Object.assign({}, this.config, {
       arch,
       src: dir,
       dest: path.dirname(outPath),

@@ -5,9 +5,7 @@ import path from 'path';
 import getNameFromAuthor from './util/author-name';
 
 export default class MakerWix extends MakerBase {
-  constructor() {
-    super('wix');
-  }
+  name = 'wix';
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
@@ -19,7 +17,6 @@ export default class MakerWix extends MakerBase {
     targetArch,
     packageJSON,
     appName,
-    config,
   }) {
     const { MSICreator } = require('electron-wix-msi');
 
@@ -32,7 +29,7 @@ export default class MakerWix extends MakerBase {
       version: packageJSON.version,
       manufacturer: getNameFromAuthor(packageJSON.author),
       exe: `${appName}.exe`,
-    }, config, {
+    }, this.config, {
       appDirectory: dir,
       outputDirectory: outPath,
     }));

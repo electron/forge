@@ -5,9 +5,7 @@ import path from 'path';
 import pify from 'pify';
 
 export default class MakerZIP extends MakerBase {
-  constructor() {
-    super('zip');
-  }
+  name = 'zip';
 
   isSupportedOnCurrentPlatform() {
     return true;

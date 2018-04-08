@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
+import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
 
@@ -11,9 +12,10 @@ describe('MakerRpm', () => {
   let eidStub;
   let ensureFileStub;
   let config;
+  let createMaker;
 
   const dir = '/my/test/dir/out';
-  const makeDir = '/make/dir';
+  const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
@@ -26,12 +28,15 @@ describe('MakerRpm', () => {
     rpmModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
       'electron-installer-redhat': eidStub,
     });
-    maker = new rpmModule.default(); // eslint-disable-line
-    maker.ensureFile = ensureFileStub;
+    createMaker = () => {
+      maker = new rpmModule.default(config); // eslint-disable-line
+      maker.ensureFile = ensureFileStub;
+    };
+    createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmModule.rpmArch(process.arch),
@@ -47,8 +52,9 @@ describe('MakerRpm', () => {
         productName: 'Redhat',
       },
     };
+    createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, config, packageJSON });
+    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmModule.rpmArch(process.arch),

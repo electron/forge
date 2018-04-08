@@ -62,7 +62,7 @@ const publish = async (providedOptions = {}) => {
   }
 
   let packageJSON = await readPackageJSON(dir);
-  if (tag === null ) tag = packageJSON.version;
+  if (tag === null) tag = packageJSON.version;
 
   const forgeConfig = await getForgeConfig(dir);
   const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
@@ -132,24 +132,28 @@ const publish = async (providedOptions = {}) => {
   });
 
   for (const publishTarget of publishTargets) {
-    let publisherModule;
-    await asyncOra(`Resolving publish target: ${`${publishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
-      try {
-        publisherModule = require(publishTarget.name);
-      } catch (err) {
-        console.error(err);
-        throw `Could not find a publish target with the name: ${publishTarget.name}`;
-      }
-    });
+    let publisher;
+    if (publishTarget.__isElectronForgePublisher) {
+      publisher = publishTarget;
+    } else {
+      let publisherModule;
+      await asyncOra(`Resolving publish target: ${`${publishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
+        try {
+          publisherModule = require(publishTarget.name);
+        } catch (err) {
+          console.error(err);
+          throw `Could not find a publish target with the name: ${publishTarget.name}`;
+        }
+      });
 
-    const PublisherClass = publisherModule.default || publisherModule;
-    const publisher = new PublisherClass();
+      const PublisherClass = publisherModule.default || publisherModule;
+      publisher = new PublisherClass(publishTarget.config || {}, publishTarget.platforms);
+    }
 
     await publisher.publish({
       dir,
       makeResults,
       packageJSON,
-      config: publishTarget.config || {},
       forgeConfig,
       tag,
       platform: makeOptions.platform || process.platform,

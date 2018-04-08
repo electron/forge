@@ -4,8 +4,9 @@ import fs from 'fs-extra';
 import path from 'path';
 
 export default class Maker {
-  constructor(name) {
-    this.name = name;
+  constructor(config = {}, platforms = null) {
+    this.config = config;
+    this.platforms = platforms;
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
