@@ -6,4 +6,4 @@ if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm i -g yarn; fi
 
 cd /code
 
-CI=true npm run test -- --installer=$NODE_INSTALLER
+DEBUG=electron-installer-snap:snapcraft CI=true npm run test -- --installer=$NODE_INSTALLER
