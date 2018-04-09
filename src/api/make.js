@@ -65,9 +65,9 @@ export default async (providedOptions = {}) => {
   const outDir = providedOptions.outDir || getCurrentOutDir(dir, forgeConfig);
 
   const actualTargetPlatform = platform;
-  platform = platform === 'mas' ? 'darwin' : platform;
-  if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
-    throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);
+  platform = platform === 'mac' ? 'darwin' : platform;
+  if (!['darwin', 'win32', 'linux', 'mac'].includes(actualTargetPlatform)) {
+    throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mac', 'win32' or 'linux'`);
   }
 
   const makers = {};
