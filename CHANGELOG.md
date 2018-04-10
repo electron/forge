@@ -12,6 +12,20 @@
 
 *  set snapcraft debug so the build doesn't time out ([fe897a49](https://github.com/electron-userland/electron-forge/commit/fe897a49))
 
+#### [5.1.2](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.2) (2018-04-10)
+
+##### Documentation Changes
+
+* **publisher:**  fix publisher api doc in readme ([f2094ca2](https://github.com/electron-userland/electron-forge/commit/f2094ca2))
+
+##### Bug Fixes
+
+* **publisher:**  call resolve() when electron-release-server publisher succeeds ([38c29d45](https://github.com/electron-userland/electron-forge/commit/38c29d45))
+
+##### Other Changes
+
+*  set snapcraft debug so the build doesn't time out ([fe897a49](https://github.com/electron-userland/electron-forge/commit/fe897a49))
+
 #### [5.1.1](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.1) (2018-02-15)
 
 ##### Chores
