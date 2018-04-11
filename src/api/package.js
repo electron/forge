@@ -169,5 +169,7 @@ export default async (providedOptions = {}) => {
 
   await runHook(forgeConfig, 'postPackage');
 
-  packagerSpinner.succeed();
+  if (packagerSpinner) {
+    packagerSpinner.succeed();
+  }
 };
