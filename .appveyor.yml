@@ -15,7 +15,7 @@ branches:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
-- npm i -g bolt
+- npm i -g bolt@0.20.1
 - ps: Remove-Item -Recurse -Force node_modules
 - bolt
 - bolt build

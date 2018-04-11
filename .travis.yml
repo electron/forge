@@ -22,7 +22,7 @@ branches:
   - v6
   - /^v\d+\.\d+\.\d+/
 install:
-- npm i -g bolt
+- npm i -g bolt@0.20.1
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
