@@ -1,2 +1,2 @@
 --require @babel/register
---timeout 300000
+--timeout 800000
