@@ -12,23 +12,23 @@ import getNameFromAuthor from './util/author-name';
 // but if we're running in a 32-bit node.js process, we're going to
 // be Wow64 redirected
 const windowsSdkPaths = [
+  'C:\\Program Files\\Windows Kits\\10\\bin\\x64',
   'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64',
-  'C:\\Program Files\\Windows Kits\\10\\bin\\x64'
 ];
 
 async function findSdkTool(exe) {
-  let sdkTool
+  let sdkTool;
   for (const testPath of windowsSdkPaths) {
     if (await fs.exists(testPath)) {
       let testExe = path.resolve(testPath, exe);
       if (await fs.exists(testExe)) {
-        sdkTool = testPath;
+        sdkTool = testExe;
         break;
       }
       const topDir = path.dirname(testPath);
       for (const subVersion of await fs.readdir(topDir)) {
-        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue;
-        if (subVersion.substr(0, 2) !== '10') continue;
+        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue; // eslint-disable-line no-continue
+        if (subVersion.substr(0, 2) !== '10') continue; // eslint-disable-line no-continue
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
         if (await fs.exists(testExe)) {
