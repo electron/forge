@@ -16,7 +16,8 @@ install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
 - npm i -g bolt@0.20.1
-- ps: Remove-Item -Recurse -Force node_modules
+- if not exist "node_modules" mkdir node_modules
+- ps: Remove-Item node_modules -Recurse -Force
 - bolt
 - bolt build
 - ps: |
