@@ -11,17 +11,38 @@ import getNameFromAuthor from './util/author-name';
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
 // be Wow64 redirected
-const windowsSdkPath = process.arch === 'x64' ?
-  'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64' :
-  'C:\\Program Files\\Windows Kits\\10\\bin\\x64';
+const windowsSdkPaths = [
+  'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64',
+  'C:\\Program Files\\Windows Kits\\10\\bin\\x64'
+];
 
 async function findSdkTool(exe) {
-  let sdkTool = path.join(windowsSdkPath, exe);
-  if (!await fs.exists(sdkTool)) {
-    sdkTool = resolveCommand(exe, true);
+  let sdkTool
+  for (const testPath of windowsSdkPaths) {
+    if (await fs.exists(testPath)) {
+      let testExe = path.resolve(testPath, exe);
+      if (await fs.exists(testExe)) {
+        sdkTool = testPath;
+        break;
+      }
+      const topDir = path.dirname(testPath);
+      for (const subVersion of await fs.readdir(topDir)) {
+        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue;
+        if (subVersion.substr(0, 2) !== '10') continue;
+
+        testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
+        if (await fs.exists(testExe)) {
+          sdkTool = testExe;
+          break;
+        }
+      }
+    }
+  }
+  if (!sdkTool || !await fs.exists(sdkTool)) {
+    sdkTool = resolveCommand({ command: exe, options: { cwd: null } }, true);
   }
 
-  if (!await fs.exists(sdkTool)) {
+  if (!sdkTool || !await fs.exists(sdkTool)) {
     throw `Can't find ${exe} in PATH. You probably need to install the Windows SDK.`;
   }
 

@@ -292,7 +292,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
             const maker = new MakerClass();
             return maker.isSupportedOnCurrentPlatform() === good;
           })
-          .map(makerPath => ({
+          .map(makerPath => () => ({
             name: makerPath,
             config: {
               devCert,
@@ -304,10 +304,10 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const badMakers = getMakers(false);
 
       const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
-        describe(`make (with target=${path.basename(target.name)})`, async () => {
+        describe(`make (with target=${path.basename(target().name)})`, async () => {
           before(async () => {
             const packageJSON = await readPackageJSON(dir);
-            packageJSON.config.forge.makers = [target];
+            packageJSON.config.forge.makers = [target()];
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });
 
