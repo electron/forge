@@ -50,10 +50,11 @@ export default async ({ artifacts, packageJSON, forgeConfig, platform, arch }) =
   const existingVersion = versions.find(version => version.name === packageJSON.version);
 
   let channel = 'stable';
-  if (packageJSON.version.indexOf('beta') !== -1) {
+  if (ersConfig.channel) {
+    channel = ersConfig.channel;
+  } else if (packageJSON.version.includes('beta')) {
     channel = 'beta';
-  }
-  if (packageJSON.version.indexOf('alpha') !== -1) {
+  } else if (packageJSON.version.includes('alpha')) {
     channel = 'alpha';
   }
 
