@@ -1,6 +1,4 @@
-dist
 node_modules
-docs
-.nyc_output
-coverage
-npm-debug.log
+dist
+yarn-error.log
+packages/.old

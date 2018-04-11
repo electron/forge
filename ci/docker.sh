@@ -2,8 +2,13 @@
 
 NODE_INSTALLER="$1"
 
-if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm i -g yarn; fi
+npm i -g yarn
+npm i -g bolt@0.20.1
 
 cd /code
 
-CI=true npm run test -- --installer=$NODE_INSTALLER
+bolt
+bolt build
+bolt lint
+
+DEBUG=electron-installer-snap:snapcraft CI=true bolt ws test -- --installer=$NODE_INSTALLER

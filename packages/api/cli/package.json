@@ -1,0 +1,33 @@
+{
+  "name": "@electron-forge/cli",
+  "version": "6.0.0-beta.0",
+  "description": "A complete tool for building modern Electron applications",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "bin": {
+    "electron-forge": "dist/electron-forge.js",
+    "forge": "dist/electron-forge.js",
+    "electron-forge-vscode-nix": "script/vscode.sh",
+    "electron-forge-vscode-win": "script/vscode.cmd"
+  },
+  "scripts": {
+    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+  },
+  "devDependencies": {
+    "chai": "^4.0.0",
+    "mocha": "^5.0.0"
+  },
+  "dependencies": {
+    "@electron-forge/async-ora": "^6.0.0-beta.0",
+    "@electron-forge/core": "^6.0.0-beta.0",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "debug": "^3.0.0",
+    "fs-extra": "^5.0.0",
+    "semver": "^5.3.0"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  }
+}

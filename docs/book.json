@@ -1,0 +1,11 @@
+{
+    "plugins": ["theme-api", "panel", "collapsible-menu", "ace"],
+    "pluginsConfig": {
+        "theme-api": {
+            "theme": "dark"
+        }
+    },
+    "styles": {
+        "website": "styles/website.css"
+    }
+}

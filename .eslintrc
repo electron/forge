@@ -4,6 +4,9 @@
   "plugins": [
     "mocha"
   ],
+  "env": {
+    "mocha": true
+  },
   "rules": {
     "consistent-return": 0,
     "global-require": 0,
@@ -16,6 +19,8 @@
     "mocha/no-exclusive-tests": "error",
     "no-console": 0,
     "no-throw-literal": 0,
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "class-methods-use-this": 0,
+    "no-confusing-arrow": 0
   }
 }

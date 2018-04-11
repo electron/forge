@@ -10,11 +10,16 @@ cache:
 branches:
   only:
   - master
+  - v6
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
-- yarn
+- npm i -g bolt@0.20.1
+- if not exist "node_modules" mkdir node_modules
+- ps: Remove-Item node_modules -Recurse -Force
+- bolt
+- bolt build
 - ps: |
     $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
     $env:PATH = $env:PATH + $wixToolsetBinPath
@@ -27,6 +32,6 @@ install:
 test_script:
 - node --version
 - yarn --version
-- yarn test --installer=%node_installer%
+- bolt ws test
 
 build: off

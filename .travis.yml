@@ -19,11 +19,10 @@ env:
 branches:
   only:
   - master
+  - v6
   - /^v\d+\.\d+\.\d+/
-before_install: if [[ "$NODE_INSTALLER" = "yarn" ]]; then npm install -g yarn@0.23.3; fi
 install:
-- npm install
-- npm update
+- npm i -g bolt@0.20.1
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:

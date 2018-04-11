@@ -1,117 +1,39 @@
 {
   "name": "electron-forge",
-  "version": "5.1.1",
-  "description": "A complete tool for building modern Electron applications",
-  "repository": "https://github.com/electron-userland/electron-forge",
-  "main": "dist/api/index.js",
-  "bin": {
-    "electron-forge": "dist/electron-forge.js",
-    "forge": "dist/electron-forge.js",
-    "electron-forge-vscode-nix": "script/vscode.sh",
-    "electron-forge-vscode-win": "script/vscode.cmd"
-  },
-  "scripts": {
-    "build": "gulp build",
-    "precommit": "npm run lint",
-    "commit": "git-cz",
-    "docs": "esdoc",
-    "install": "node tabtab-install.js",
-    "lint": "eslint src test gulpfile.babel.js tabtab-install.js",
-    "prepublish": "gulp build",
-    "pretest": "gulp build",
-    "test": "npm run lint && npm run test-all",
-    "test-coverage": "npm run lint && npm run test-all-coverage",
-    "test-all": "mocha test/**/*_spec*.js test/**/**/*_spec*.js",
-    "test-fast": "mocha test/**/*_spec.js test/**/**/*_spec.js --timeout=10000",
-    "test-all-coverage": "cross-env NODE_ENV=test nyc npm run test-all",
-    "test-fast-coverage": "cross-env NODE_ENV=test nyc npm run test-fast",
-    "release:patch": "changelog -p && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version patch && git push origin && git push origin --tags",
-    "release:minor": "changelog -m && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version minor && git push origin && git push origin --tags",
-    "release:major": "changelog -M && node ci/fix-changelog.js && git add CHANGELOG.md && git commit -m \"updated CHANGELOG.md\" && npm version major && git push origin && git push origin --tags",
-    "watch": "gulp watch",
-    "watch-link": "nodemon --watch src --exec \"npm link\""
-  },
-  "author": "Samuel Attard",
+  "private": true,
   "license": "MIT",
-  "devDependencies": {
-    "asar": "^0.14.0",
-    "babel-eslint": "^7.0.0",
-    "babel-plugin-istanbul": "^4.0.0",
-    "babel-plugin-syntax-async-functions": "^6.13.0",
-    "babel-plugin-transform-async-to-module-method": "^6.16.0",
-    "babel-plugin-transform-runtime": "^6.15.0",
-    "babel-preset-env": "^1.6.0",
-    "chai": "^4.0.0",
-    "chai-as-promised": "^7.0.0",
-    "commitizen": "^2.8.6",
-    "coveralls": "^3.0.0",
-    "cross-env": "^5.0.0",
-    "cz-customizable": "^5.0.0",
-    "esdoc": "^1.0.1",
-    "esdoc-importpath-plugin": "^1.0.0",
-    "esdoc-standard-plugin": "^1.0.0",
-    "eslint": "^3.7.1",
-    "eslint-config-airbnb-base": "^8.0.0",
-    "eslint-plugin-import": "^1.16.0",
-    "eslint-plugin-mocha": "^4.8.0",
-    "fetch-mock": "^6.0.0",
-    "generate-changelog": "^1.0.2",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "mocha": "^5.0.0",
-    "nodemon": "^1.11.0",
-    "nyc": "^11.0.0",
-    "proxyquire": "^1.7.10",
-    "sinon": "^4.1.2"
-  },
-  "babel": {
-    "sourceMaps": "inline",
-    "env": {
-      "test": {
-        "plugins": [
-          "istanbul"
-        ]
-      }
-    },
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "node": "6"
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      "transform-runtime",
-      "syntax-async-functions",
-      [
-        "transform-async-to-module-method",
-        {
-          "module": "bluebird",
-          "method": "coroutine"
-        }
-      ]
+  "bolt": {
+    "workspaces": [
+      "packages/api/*",
+      "packages/installer/*",
+      "packages/maker/*",
+      "packages/publisher/*",
+      "packages/utils/*"
     ]
   },
-  "nyc": {
-    "reporter": [
-      "lcov",
-      "text-summary",
-      "html"
-    ],
-    "sourceMap": false,
-    "instrument": false,
-    "cache": true
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "./.cz.js"
+    }
+  },
+  "scripts": {
+    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
+    "commit": "git-cz",
+    "docs:build": "cd docs && gitbook build",
+    "docs:install": "cd docs && gitbook install",
+    "docs:serve": "cd docs && gitbook serve",
+    "lint": "bolt ws exec -- node_modules/.bin/eslint src test",
+    "test": "bolt ws run test"
   },
   "dependencies": {
     "@octokit/rest": "^14.0.4",
     "aws-sdk": "^2.9.0",
-    "babel-register": "^6.16.3",
-    "bluebird": "^3.4.6",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
+    "cross-spawn": "^6.0.4",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
     "electron-forge-template-angular2": "^1.0.3",
@@ -122,6 +44,7 @@
     "electron-rebuild": "^1.6.0",
     "form-data": "^2.1.4",
     "fs-extra": "^5.0.0",
+    "gitbook-cli": "^2.3.2",
     "glob": "^7.1.1",
     "inquirer": "^5.0.0",
     "lodash.merge": "^4.6.0",
@@ -139,18 +62,39 @@
     "s3": "^4.4.0",
     "semver": "^5.3.0",
     "sudo-prompt": "^8.0.0",
-    "tabtab": "^2.2.1",
     "username": "^3.0.0",
     "yarn-or-npm": "^2.0.2",
     "zip-folder": "^1.0.0"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": "./.cz.js"
-    }
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/register": "^7.0.0-beta.40",
+    "asar": "^0.14.0",
+    "babel-eslint": "^7.0.0",
+    "chai": "^4.0.0",
+    "chai-as-promised": "^7.0.0",
+    "commitizen": "^2.8.6",
+    "coveralls": "^3.0.0",
+    "cross-env": "^5.0.0",
+    "cz-customizable": "^5.0.0",
+    "esdoc": "^1.0.1",
+    "esdoc-importpath-plugin": "^1.0.0",
+    "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^3.7.1",
+    "eslint-config-airbnb-base": "^8.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-mocha": "^4.8.0",
+    "fetch-mock": "^6.0.0",
+    "generate-changelog": "^1.0.2",
+    "mocha": "^5.0.0",
+    "nodemon": "^1.11.0",
+    "nyc": "^11.0.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^4.1.2"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^0.8.0",
@@ -161,8 +105,5 @@
     "electron-windows-store": "^0.12.0",
     "electron-winstaller": "^2.5.0",
     "electron-wix-msi": "^1.3.0"
-  },
-  "engines": {
-    "node": ">= 6.0"
   }
 }
