@@ -245,6 +245,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('can package without errors', async () => {
       const packageJSON = await readPackageJSON(dir);
+      delete packageJSON.dependencies.ref;
       packageJSON.config.forge.packagerConfig.asar = true;
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
