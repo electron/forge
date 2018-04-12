@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import _template from 'lodash.template';
 import readPackageJSON from './read-package-json';
-import yarnOrNpm from './yarn-or-npm';
 import PluginInterface from './plugin-interface';
 
 const underscoreCase = str => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
@@ -47,7 +46,6 @@ export function setInitialForgeConfig(packageJSON) {
 
   /* eslint-disable no-param-reassign */
   packageJSON.config.forge.makers[0].config.name = name.replace(/-/g, '_');
-  packageJSON.config.forge.packagerConfig.packageManager = yarnOrNpm();
   /* eslint-enable no-param-reassign */
 }
 
