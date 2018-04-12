@@ -62,9 +62,9 @@ export default class PublisherERS extends PublisherBase {
     let channel = 'stable';
     if (config.channel) {
       channel = config.channel;
-    } else if (packageJSON.version.indexOf('beta') !== -1) {
+    } else if (packageJSON.version.includes('beta')) {
       channel = 'beta';
-    } else if (packageJSON.version.indexOf('alpha') !== -1) {
+    } else if (packageJSON.version.includes('alpha')) {
       channel = 'alpha';
     }
 
