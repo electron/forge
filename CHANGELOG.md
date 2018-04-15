@@ -1,3 +1,15 @@
+### [5.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.0) (2018-04-15)
+
+##### New Features
+
+* **publisher:**  Allow custom release channel for ERS (#474) ([2f1888e7](https://github.com/electron-userland/electron-forge/commit/2f1888e7))
+* **generic:**  allow specifying electron-prebuilt-compile via URL ([05874ae9](https://github.com/electron-userland/electron-forge/commit/05874ae9))
+
+##### Refactors
+
+* **generic:**  incorporate changes requested in PR ([489a25ce](https://github.com/electron-userland/electron-forge/commit/489a25ce))
+* **packager:**  decouple electron version from packageJSON ([1075d68a](https://github.com/electron-userland/electron-forge/commit/1075d68a))
+
 #### [5.1.2](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.2) (2018-04-10)
 
 ##### Documentation Changes
