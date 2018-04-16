@@ -9,11 +9,11 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
 (async () => {
   // Check clean working dir
-  // if (childProcess.execSync('git status -s', {
-  //   cwd: BASE_DIR,
-  // }).toString() !== '') {
-  //   throw `Your working directory is not clean, please ensure you have a clean working directory before version bumping`.red;
-  // }
+  if (childProcess.execSync('git status -s', {
+    cwd: BASE_DIR,
+  }).toString() !== '') {
+    throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
+  }
 
   const version = process.argv[2];
   if (!version) {
