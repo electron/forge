@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-dmg",
-  "version": "6.0.0-beta.1",
+  "version": "6.0.0-beta.2",
   "description": "DMG file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -16,7 +16,7 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/installer-darwin": "^6.0.0-beta.0",
+    "@electron-forge/installer-darwin": "6.0.0-beta.2",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
     "fs-extra": "^5.0.0"
