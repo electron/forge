@@ -6,6 +6,7 @@ const semver = require('semver');
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
+const ELECTRON_FORGE_PREFIX = '@electron-forge/';
 
 (async () => {
   // Check clean working dir
@@ -38,6 +39,13 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     const pjPath = path.resolve(dir, 'package.json');
     const existingPJ = await fs.readJson(pjPath);
     existingPJ.version = version;
+    for (const type of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+      for (const depKey in existingPJ[type]) {
+        if (depKey.startsWith(ELECTRON_FORGE_PREFIX)) {
+          existingPJ[type][depKey] = version;
+        }
+      }
+    }
     await fs.writeJson(pjPath, existingPJ, {
       spaces: 2,
     });
