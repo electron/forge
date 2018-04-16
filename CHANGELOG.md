@@ -1,3 +1,14 @@
+#### 6.0.0-beta.1 (2018-04-16)
+
+##### Chores
+
+* **generic:**  upgrade to Electron Packager 12 (#478) ([cd4161a5](https://github.com/electron-userland/electron-forge/commit/cd4161a5))
+
+##### New Features
+
+* **core:**  V6 API (#433) ([364ba8d8](https://github.com/electron-userland/electron-forge/commit/364ba8d8))
+* **generic:**  remove electron-compile, make forge less opinionated and quite vanilla ([d59695ec](https://github.com/electron-userland/electron-forge/commit/d59695ec))
+
 #### [5.1.1](https://github.com/electron-userland/electron-forge/releases/tag/v5.1.1) (2018-02-15)
 
 ##### Chores

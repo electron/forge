@@ -25,18 +25,26 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
   console.info(`Setting version of all dependencies: ${version.cyan}`)
   const packages = [];
 
+  let lastVersion;
+  const dirsToUpdate = [BASE_DIR];
+
   for (const subDir of await fs.readdir(PACKAGES_DIR)) {
     for (const packageDir of await fs.readdir(path.resolve(PACKAGES_DIR, subDir))) {
-      const absPackageDir = path.resolve(PACKAGES_DIR, subDir, packageDir);
-      const existingPJ = await fs.readJson(path.resolve(absPackageDir, 'package.json'));
-      existingPJ.version = version;
-      await fs.writeJson(path.resolve(absPackageDir, 'package.json'), existingPJ, {
-        spaces: 2,
-      });
-      childProcess.execSync(`git add "${path.relative(BASE_DIR, absPackageDir)}"`, {
-        cwd: BASE_DIR,
-      });
+      dirsToUpdate.push(path.resolve(PACKAGES_DIR, subDir, packageDir));
     }
+  }
+
+  for (const dir of dirsToUpdate) {
+    const pjPath = path.resolve(dir, 'package.json');
+    const existingPJ = await fs.readJson(pjPath);
+    existingPJ.version = version;
+    await fs.writeJson(pjPath, existingPJ, {
+      spaces: 2,
+    });
+    childProcess.execSync(`git add "${path.relative(BASE_DIR, pjPath)}"`, {
+      cwd: BASE_DIR,
+    });
+    lastVersion = existingPJ.version;
   }
 
   childProcess.execSync(`git commit -m "Version Bump: ${version}"`, {
@@ -45,4 +53,8 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
   childProcess.execSync(`git tag v${version}`, {
     cwd: BASE_DIR,
   });
+  childProcess.execSync(`node_modules/.bin/changelog --tag=v${lastVersion}`, {
+    cwd: BASE_DIR,
+  });
+  require('../ci/fix-changelog');
 })().catch(console.error);
