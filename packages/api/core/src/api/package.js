@@ -89,12 +89,6 @@ export default async (providedOptions = {}) => {
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
-  const rebuildHookFn = async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
-    packagerSpinner = ora('Packaging Application').start();
-    done();
-  };
-
   const afterCopyHooks = [
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
       if (packagerSpinner) {
@@ -112,11 +106,12 @@ export default async (providedOptions = {}) => {
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
+      packagerSpinner = ora('Packaging Application').start();
+      done();
+    },
   ];
-
-  if (!pruneEnabled) {
-    afterCopyHooks.push(rebuildHookFn);
-  }
 
   afterCopyHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
     const copiedPackageJSON = await readPackageJSON(buildPath);
@@ -132,7 +127,6 @@ export default async (providedOptions = {}) => {
   const afterPruneHooks = [];
 
   if (pruneEnabled) {
-    afterPruneHooks.push(rebuildHookFn);
     afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, dir));
   }
 

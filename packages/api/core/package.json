@@ -41,7 +41,7 @@
     "colors": "^1.1.2",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
-    "electron-packager": "^11.0.0",
+    "electron-packager": "^12.0.1",
     "electron-rebuild": "^1.6.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
