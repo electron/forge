@@ -1,3 +1,18 @@
+const fs = require('fs');
+const path = require('path');
+
+const BASE_DIR = __dirname;
+const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
+
+const packages = [];
+for (const subDir of fs.readdirSync(PACKAGES_DIR)) {
+  for (const packageDir of fs.readdirSync(path.resolve(PACKAGES_DIR, subDir))) {
+    const pj = JSON.parse(fs.readFileSync(path.resolve(PACKAGES_DIR, subDir, packageDir, 'package.json')));
+    const name = pj.name.substr('@electron-forge/'.length);
+    packages.push(name);
+  }
+}
+
 module.exports = {
   types: [
     {value: 'feat',     name: 'feat:     A new feature'},
@@ -11,18 +26,7 @@ module.exports = {
     {value: 'revert',   name: 'revert:   Revert to a commit'},
     {value: 'WIP',      name: 'WIP:      Work in progress'},
   ],
-  scopes: [
-    { name: 'maker' },
-    { name: 'packager' },
-    { name: 'linter' },
-    { name: 'starter' },
-    { name: 'importer' },
-    { name: 'tests' },
-    { name: 'initializer' },
-    { name: 'publisher' },
-    { name: 'installer' },
-    { name: 'generic' },
-  ],
+  scopes: packages.map(package => ({ name: package })),
   allowCustomScopes: true,
   allowBreakingChanges: ['feat', 'fix'],
 }
