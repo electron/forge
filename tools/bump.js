@@ -65,4 +65,10 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
     cwd: BASE_DIR,
   });
   require('../ci/fix-changelog');
+  childProcess.execSync('git add CHANGELOG.md', {
+    cwd: BASE_DIR,
+  });
+  childProcess.execSync('git commit -m "Update CHANGELOG.md"', {
+    cwd: BASE_DIR,
+  });
 })().catch(console.error);
