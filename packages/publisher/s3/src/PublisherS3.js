@@ -17,7 +17,7 @@ AWS.util.update(AWS.S3.prototype, {
 export default class PublisherS3 extends PublisherBase {
   name = 's3';
 
-  async publish({ makeResults, packageJSON, tag }) {
+  async publish({ makeResults, packageJSON, tag, platform, arch }) {
     const { config } = this;
 
     const artifacts = makeResults.reduce((flat, makeResult) => {
@@ -62,7 +62,9 @@ export default class PublisherS3 extends PublisherBase {
             localFile: artifactPath,
             s3Params: {
               Bucket: config.bucket,
-              Key: `${folder}/${path.basename(artifactPath)}`,
+              Key: this.config.keyResolver
+                ? this.config.keyResolver(path.basename(artifactPath), platform, arch)
+                : `${folder}/${path.basename(artifactPath)}`,
               ACL: config.public ? 'public-read' : 'private',
             },
           });
