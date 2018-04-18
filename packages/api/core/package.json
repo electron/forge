@@ -38,7 +38,7 @@
     "@electron-forge/installer-exe": "6.0.0-beta.3",
     "@electron-forge/installer-rpm": "6.0.0-beta.3",
     "@electron-forge/installer-zip": "6.0.0-beta.3",
-    "colors": "^1.1.2",
+    "colors": "^1.2.0",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
     "electron-packager": "^12.0.1",

@@ -5,32 +5,40 @@ import realOra from 'ora';
 
 const d = debug('electron-forge:async-ora');
 
-const useFakeOra = (process.env.DEBUG && process.env.DEBUG.includes('electron-forge'));
+const useFakeOra = Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge'));
 
 if (useFakeOra) {
   console.warn('WARNING: DEBUG environment variable detected.  Progress indicators will be sent over electron-forge:lifecycle'.red);
 }
 
-export const fakeOra = (name) => {
+export const fakeOra = (name: string) => {
+  let _name = name;
   const fake = {
     start: () => {
-      d('Process Started:', name);
+      d('Process Started:', fake.text);
       return fake;
     },
-    warn: (msg) => {
+    warn: (msg: string) => {
       console.warn(logSymbols.warning, msg.yellow);
     },
     fail: () => {
-      d(`Process Failed: ${name}`.red);
+      d(`Process Failed: ${fake.text}`.red);
       return fake;
     },
     succeed: () => {
-      d('Process Succeeded:', name);
+      d('Process Succeeded:', fake.text);
       return fake;
     },
     stop: () => {
-      d('Process Stopped:', name);
+      d('Process Stopped:', fake.text);
       return fake;
+    },
+    get text() {
+      return _name;
+    },
+    set text(newName: string) {
+      d('Process Renamed:', _name, ' --> ', newName);
+      _name = newName;
     },
   };
   return fake;

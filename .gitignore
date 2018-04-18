@@ -2,3 +2,5 @@ node_modules
 dist
 yarn-error.log
 packages/.old
+**/tsconfig.json
+*/typings

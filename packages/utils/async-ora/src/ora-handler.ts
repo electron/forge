@@ -1,15 +1,22 @@
 import colors from 'colors';
 import ora from './ora';
 
-class MockOra {
+export class OraImpl {
+  constructor(public text: string = '') {}
+
   succeed() { return this; }
   fail() { return this; }
   start() { return this; }
   stop() { return this; }
 }
 
-const asyncOra = (initialOraValue, asyncFn, processExitFn = process.exit) => {
-  let fnOra = new MockOra();
+export interface AsyncOraMethod {
+  (initialOraValue: string, asyncFn: (ora: OraImpl) => Promise<void>, processExitFn?: (code: number) => void): Promise<void>;
+  interactive?: boolean;
+}
+
+const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = process.exit) => {
+  let fnOra = new OraImpl(initialOraValue);
   if (asyncOra.interactive) {
     fnOra = ora(initialOraValue).start();
   }

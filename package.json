@@ -21,7 +21,8 @@
     }
   },
   "scripts": {
-    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet",
+    "prebuild": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tsc --emitDeclarationOnly",
+    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\"",
     "commit": "git-cz",
     "docs:build": "cd docs && gitbook build",
     "docs:install": "cd docs && gitbook install",
@@ -32,7 +33,7 @@
   "dependencies": {
     "@octokit/rest": "^15.2.6",
     "aws-sdk": "^2.9.0",
-    "colors": "^1.1.2",
+    "colors": "^1.2.0",
     "commander": "^2.9.0",
     "cross-spawn": "^6.0.4",
     "cross-spawn-promise": "^0.10.1",
@@ -68,12 +69,18 @@
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.40",
-    "@babel/core": "^7.0.0-beta.40",
-    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
-    "@babel/preset-env": "^7.0.0-beta.40",
-    "@babel/register": "^7.0.0-beta.40",
+    "@babel/cli": "^7.0.0-beta.44",
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@babel/preset-typescript": "^7.0.0-beta.44",
+    "@babel/register": "^7.0.0-beta.44",
+    "@types/debug": "^0.0.30",
+    "@types/fs-extra": "^5.0.2",
+    "@types/log-symbols": "^2.0.0",
+    "@types/node": "^9.6.5",
+    "@types/ora": "^1.3.4",
     "asar": "^0.14.0",
     "babel-eslint": "^7.0.0",
     "chai": "^4.0.0",
@@ -95,7 +102,9 @@
     "nodemon": "^1.11.0",
     "nyc": "^11.0.0",
     "proxyquire": "^2.0.1",
-    "sinon": "^4.1.2"
+    "sinon": "^4.1.2",
+    "ts-node": "^6.0.0",
+    "typescript": "^2.8.1"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^0.8.0",

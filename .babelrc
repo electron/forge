@@ -12,6 +12,7 @@
           "node": "6"
         }
       }
-    ]
+    ],
+    "@babel/typescript"
   ]
 }

@@ -1,4 +1,4 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 
 import fs from 'fs-extra';
 import path from 'path';
@@ -16,12 +16,12 @@ const windowsSdkPaths = [
   'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64',
 ];
 
-async function findSdkTool(exe) {
-  let sdkTool;
+async function findSdkTool(exe: string) {
+  let sdkTool: string | undefined;
   for (const testPath of windowsSdkPaths) {
-    if (await fs.exists(testPath)) {
+    if (await fs.pathExists(testPath)) {
       let testExe = path.resolve(testPath, exe);
-      if (await fs.exists(testExe)) {
+      if (await fs.pathExists(testExe)) {
         sdkTool = testExe;
         break;
       }
@@ -31,25 +31,25 @@ async function findSdkTool(exe) {
         if (subVersion.substr(0, 2) !== '10') continue; // eslint-disable-line no-continue
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
-        if (await fs.exists(testExe)) {
+        if (await fs.pathExists(testExe)) {
           sdkTool = testExe;
           break;
         }
       }
     }
   }
-  if (!sdkTool || !await fs.exists(sdkTool)) {
+  if (!sdkTool || !await fs.pathExists(sdkTool)) {
     sdkTool = resolveCommand({ command: exe, options: { cwd: null } }, true);
   }
 
-  if (!sdkTool || !await fs.exists(sdkTool)) {
+  if (!sdkTool || !await fs.pathExists(sdkTool)) {
     throw `Can't find ${exe} in PATH. You probably need to install the Windows SDK.`;
   }
 
   return sdkTool;
 }
 
-export async function createDefaultCertificate(publisherName, { certFilePath, certFileName, install, program }) {
+export async function createDefaultCertificate(publisherName: string, { certFilePath, certFileName, install, program }) {
   const makeCertOptions = {
     publisherName,
     certFilePath: certFilePath || process.cwd(),
@@ -65,7 +65,11 @@ export async function createDefaultCertificate(publisherName, { certFilePath, ce
   return await makeCert(makeCertOptions);
 }
 
-export default class MakerAppX extends MakerBase {
+export interface MakerAppXConfig {
+
+}
+
+export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   name = 'appx';
 
   isSupportedOnCurrentPlatform() {
@@ -78,7 +82,7 @@ export default class MakerAppX extends MakerBase {
     appName,
     packageJSON,
     targetArch,
-  }) {
+  }: MakerOptions) {
     const outPath = path.resolve(makeDir, `appx/${targetArch}`);
     await this.ensureDirectory(outPath);
 
