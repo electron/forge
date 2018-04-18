@@ -12,14 +12,14 @@
   "devDependencies": {
     "chai": "^4.0.0",
     "mocha": "^5.0.0",
-    "proxyquire": "^1.7.10",
+    "proxyquire": "^2.0.1",
     "sinon": "^4.1.2"
   },
   "dependencies": {
     "colors": "^1.1.2",
     "debug": "^3.0.0",
     "log-symbols": "^2.0.0",
-    "ora": "^1.1.0"
+    "ora": "^2.0.0"
   },
   "engines": {
     "node": ">= 6.0"
