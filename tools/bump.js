@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 require('colors');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
@@ -18,13 +20,12 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
 
   const version = process.argv[2];
   if (!version) {
-    throw `Must provide a version in argv[1]`.red;
+    throw 'Must provide a version in argv[1]'.red;
   }
   if (!semver.valid(version)) {
     throw `Must provide a valid semver version in argv[1].  Got ${version}`.red;
   }
-  console.info(`Setting version of all dependencies: ${version.cyan}`)
-  const packages = [];
+  console.info(`Setting version of all dependencies: ${version.cyan}`);
 
   let lastVersion;
   const dirsToUpdate = [BASE_DIR];
@@ -64,7 +65,9 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
   childProcess.execSync(`node_modules/.bin/changelog --tag=v${lastVersion}`, {
     cwd: BASE_DIR,
   });
+
   require('../ci/fix-changelog');
+
   childProcess.execSync('git add CHANGELOG.md', {
     cwd: BASE_DIR,
   });

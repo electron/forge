@@ -1,11 +1,13 @@
+#### 6.0.0-beta.3 (2018-04-17)
+
 #### 6.0.0-beta.2 (2018-04-16)
 
 ##### Chores
 
-* **tools:**  update dependency version for electron-forge modules to be latest on bump (1029d32b)
-* **tooling:**  add publish script (c5b6c6a3)
-* **core:**  remote gitignore (c97b25dd)
-*  add missing files from 6.0.0-beta.1 (24cdcb55)
+* **tools:**  update dependency version for electron-forge modules to be latest on bump ([1029d32b](https://github.com/electron-userland/electron-forge/commit/1029d32b))
+* **tooling:**  add publish script ([c5b6c6a3](https://github.com/electron-userland/electron-forge/commit/c5b6c6a3))
+* **core:**  remote gitignore ([c97b25dd](https://github.com/electron-userland/electron-forge/commit/c97b25dd))
+*  add missing files from 6.0.0-beta.1 ([24cdcb55](https://github.com/electron-userland/electron-forge/commit/24cdcb55))
 
 #### 6.0.0-beta.1 (2018-04-16)
 
