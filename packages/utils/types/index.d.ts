@@ -20,6 +20,6 @@ declare module '@electron-forge/shared-types' {
     /**
      * The arch this make run was for
      */
-    arch: ForgePlatform;
+    arch: ForgeArch;
   }
 }

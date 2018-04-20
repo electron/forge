@@ -5,7 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherERS.js",
+  "main": "dist/src/PublisherERS.js",
+  "typings": "dist/PublisherERS.d.ts",
   "scripts": {
     "test": "exit 0"
   },
@@ -19,6 +20,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.3",
     "@electron-forge/publisher-base": "6.0.0-beta.3",
+    "@electron-forge/shared-types": "^6.0.0-beta.3",
     "debug": "^3.0.0",
     "form-data": "^2.1.4",
     "fs-extra": "^5.0.0",

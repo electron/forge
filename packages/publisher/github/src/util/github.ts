@@ -2,7 +2,10 @@ import GitHubAPI from '@octokit/rest';
 import merge from 'lodash.merge';
 
 export default class GitHub {
-  constructor(authToken, requireAuth, options = {}) {
+  private options: GitHubAPI.Options;
+  token?: string;
+
+  constructor(authToken: string | undefined = undefined, requireAuth: boolean = false, options: GitHubAPI.Options = {}) {
     this.options = merge(
       { protocol: 'https' },
       options,

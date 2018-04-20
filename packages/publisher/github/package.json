@@ -5,9 +5,10 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherGithub.js",
+  "main": "dist/src/PublisherGithub.js",
+  "typings": "dist/src/PublisherGithub.d.ts",
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",
@@ -19,6 +20,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.3",
     "@electron-forge/publisher-base": "6.0.0-beta.3",
+    "@electron-forge/shared-types": "^6.0.0-beta.3",
     "@octokit/rest": "^15.2.6",
     "fs-extra": "^5.0.0",
     "lodash.merge": "^4.6.0",

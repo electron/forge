@@ -1,18 +1,22 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import sinon, { SinonSpy } from 'sinon';
+
+import InternalGitHub from '../src/util/github';
 
 describe('GitHub', () => {
-  let GitHub;
-  let gitHubSpy;
-  let gitHubAuthSpy;
-  let MockGitHub;
+  let GitHub: typeof InternalGitHub;
+  let gitHubSpy: SinonSpy;
+  let gitHubAuthSpy: SinonSpy;
+  let MockGitHub: any;
 
   beforeEach(() => {
     gitHubSpy = sinon.spy();
     gitHubAuthSpy = sinon.spy();
     MockGitHub = class {
-      constructor(options) {
+      private options: any;
+
+      constructor(options: any) {
         gitHubSpy();
         this.options = options;
       }
@@ -52,7 +56,7 @@ describe('GitHub', () => {
       });
       const api = gh.getGitHub();
 
-      expect(api.options).to.deep.equal({
+      expect((api as any).options).to.deep.equal({
         protocol: 'https',
         host: 'github.example.com',
         port: 8443,
@@ -67,7 +71,7 @@ describe('GitHub', () => {
       const gh = new GitHub('1234', true, { headers: { 'user-agent': 'Something' } });
       const api = gh.getGitHub();
 
-      expect(api.options.headers['user-agent']).to.equal('Electron Forge');
+      expect((api as any).options.headers['user-agent']).to.equal('Electron Forge');
     });
 
     it('should authenticate if a token is present', () => {
@@ -86,7 +90,7 @@ describe('GitHub', () => {
 
     it('should throw an exception if a token is required', () => {
       expect(() => {
-        const gh = new GitHub(null, true);
+        const gh = new GitHub(undefined, true);
         gh.getGitHub();
       }).to.throw('Please set GITHUB_TOKEN in your environment to access these features');
     });

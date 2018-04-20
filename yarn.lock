@@ -602,19 +602,45 @@
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/@types/electron-winstaller/-/electron-winstaller-2.6.1.tgz#7acd7956bfe1a9e89602a7bb130384dd55f15508"
 
+"@types/form-data@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-2.2.1.tgz#ee2b3b8eaa11c0938289953606b745b738c54b1e"
+  dependencies:
+    "@types/node" "*"
+
 "@types/fs-extra@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-5.0.2.tgz#235a7e2b56452cc0a6a4809b53e1d1eaffff9c96"
   dependencies:
     "@types/node" "*"
 
+"@types/lodash.merge@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.merge/-/lodash.merge-4.6.3.tgz#a41c49fe404c4bfb653ae6dda76abeedeace14ff"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.14.107"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.107.tgz#b2d2ae3958bfb8ff828495cbe12214af9e4d035e"
+
 "@types/log-symbols@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/log-symbols/-/log-symbols-2.0.0.tgz#7919e2ec3c8d13879bfdcab310dd7a3f7fc9466d"
 
+"@types/mime-types@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/mime-types/-/mime-types-2.1.0.tgz#9ca52cda363f699c69466c2a6ccdaad913ea7a73"
+
 "@types/mocha@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.1.0.tgz#591f158012ec30de978b00065239a84fb1ce4380"
+  dependencies:
+    "@types/node" "*"
+
+"@types/node-fetch@^1.6.8":
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-1.6.8.tgz#a59d8c75b300ddc3ca3eef23d449d677f9486c3d"
   dependencies:
     "@types/node" "*"
 

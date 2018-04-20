@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "typings": "index.d.ts",
   "scripts": {
     "test": "echo No Tests For Shared Types"
