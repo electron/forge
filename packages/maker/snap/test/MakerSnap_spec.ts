@@ -1,18 +1,21 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import MakerBase from '@electron-forge/maker-base';
+
+import { expect } from 'chai';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { MakerSnapConfig } from '../src/Config';
+
+class MakerImpl extends MakerBase<MakerSnapConfig> { name = 'test'; defaultPlatforms = [] }
 
 describe('MakerSnap', () => {
-  let MakerSnapModule;
-  let maker;
-  let eisStub;
-  let ensureDirectoryStub;
-  let config;
-  let createMaker;
+  let MakerSnapModule: typeof MakerImpl;
+  let maker: MakerImpl;
+  let eisStub: SinonStub;
+  let ensureDirectoryStub: SinonStub;
+  let config: MakerSnapConfig;
+  let createMaker: () => void;
 
   const dir = '/my/test/dir/out/foo-linux-x64';
   const makeDir = path.resolve('/make/dir');
@@ -27,16 +30,16 @@ describe('MakerSnap', () => {
 
     MakerSnapModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerSnap', {
       'electron-installer-snap': eisStub,
-    });
+    }).default;
     createMaker = () => {
-      maker = new MakerSnapModule.default(config); // eslint-disable-line
+      maker = new MakerSnapModule(config); // eslint-disable-line
       maker.ensureDirectory = ensureDirectoryStub;
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,
@@ -49,10 +52,10 @@ describe('MakerSnap', () => {
     config = {
       arch: 'overridden',
       description: 'Snap description',
-    };
+    } as any;
     createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,

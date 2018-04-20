@@ -1,9 +1,12 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
 import pify from 'pify';
 
-export function rpmArch(nodeArch) {
+import { MakerRpmConfig } from './Config';
+
+export function rpmArch(nodeArch: ForgeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
@@ -13,8 +16,9 @@ export function rpmArch(nodeArch) {
   }
 }
 
-export default class MakerRpm extends MakerBase {
+export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   name = 'rpm';
+  defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-redhat') && process.platform === 'linux';
@@ -25,7 +29,7 @@ export default class MakerRpm extends MakerBase {
     makeDir,
     targetArch,
     packageJSON,
-  }) {
+  }: MakerOptions) {
     const installer = require('electron-installer-redhat');
 
     const arch = rpmArch(targetArch);
@@ -38,6 +42,7 @@ export default class MakerRpm extends MakerBase {
       arch,
       src: dir,
       dest: path.dirname(outPath),
+      rename: undefined,
     });
 
     await pify(installer)(rpmConfig);

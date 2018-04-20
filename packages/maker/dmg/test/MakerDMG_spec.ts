@@ -1,19 +1,22 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import MakerBase from '@electron-forge/maker-base';
+
+import { expect } from 'chai';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { MakerDMGConfig } from '../src/Config';
+
+class MakerImpl extends MakerBase<MakerDMGConfig> { name = 'test'; defaultPlatforms = [] }
 
 describe('MakerDMG', () => {
-  let MakerDMG;
-  let ensureFileStub;
-  let eidStub;
-  let renameStub;
-  let config;
-  let maker;
-  let createMaker;
+  let MakerDMG: typeof MakerImpl;
+  let ensureFileStub: SinonStub;
+  let eidStub: SinonStub;
+  let renameStub: SinonStub;
+  let config: MakerDMGConfig;
+  let maker: MakerImpl;
+  let createMaker: () => void;
 
   const dir = '/my/test/dir/out';
   const makeDir = '/my/test/dir/make';
@@ -42,7 +45,7 @@ describe('MakerDMG', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       overwrite: true,
@@ -53,20 +56,20 @@ describe('MakerDMG', () => {
   });
 
   it('should attempt to rename the DMG file if no custom name is set', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.callCount).to.equal(1);
     expect(renameStub.firstCall.args[1]).to.include('1.2.3');
   });
 
   it('should rename the DMG file to include the version if no custom name is set', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.firstCall.args[1]).to.include('1.2.3');
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {
     config.name = 'foobar';
     createMaker();
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     expect(renameStub.callCount).to.equal(0);
   });
 });

@@ -1,9 +1,13 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
 
-export default class MakerSnap extends MakerBase {
+import { MakerSnapConfig } from './Config';
+
+export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   name = 'snap';
+  defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'linux';
@@ -13,7 +17,7 @@ export default class MakerSnap extends MakerBase {
     dir,
     makeDir,
     targetArch,
-  }) {
+  }: MakerOptions) {
     const installer = require('electron-installer-snap');
 
     const outPath = path.resolve(makeDir, 'snap');

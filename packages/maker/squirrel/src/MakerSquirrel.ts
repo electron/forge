@@ -1,10 +1,18 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
+import { createWindowsInstaller, Options as ElectronWinstallerOptions } from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
-export default class MakerSquirrel extends MakerBase {
+// Hacks to fix make appDirectory optional
+export type Optional<T> = {
+  [K in keyof T]?: T[K];
+}
+
+export default class MakerSquirrel extends MakerBase<Optional<ElectronWinstallerOptions>> {
   name = 'squirrel';
+  defaultPlatforms: ForgePlatform[] = ['win32'];
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-winstaller') && !process.env.DISABLE_SQUIRREL_TEST;
@@ -16,9 +24,7 @@ export default class MakerSquirrel extends MakerBase {
     targetArch,
     packageJSON,
     appName,
-  }) {
-    const { createWindowsInstaller } = require('electron-winstaller');
-
+  }: MakerOptions) {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 

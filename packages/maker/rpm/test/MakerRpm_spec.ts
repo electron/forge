@@ -1,18 +1,23 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import MakerBase from '@electron-forge/maker-base';
+
+import { expect } from 'chai';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { MakerRpmConfig } from '../src/Config';
+import { rpmArch } from '../src/MakerRpm';
+import { ForgeArch } from '@electron-forge/shared-types';
+
+class MakerImpl extends MakerBase<MakerRpmConfig> { name = 'test'; defaultPlatforms = [] }
 
 describe('MakerRpm', () => {
-  let rpmModule;
-  let maker;
-  let eidStub;
-  let ensureFileStub;
-  let config;
-  let createMaker;
+  let rpmModule: typeof MakerImpl;
+  let maker: MakerImpl;
+  let eidStub: SinonStub;
+  let ensureFileStub: SinonStub;
+  let config: MakerRpmConfig;
+  let createMaker: () => void;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/make/dir');
@@ -27,21 +32,22 @@ describe('MakerRpm', () => {
 
     rpmModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
       'electron-installer-redhat': eidStub,
-    });
+    }).default;
     createMaker = () => {
-      maker = new rpmModule.default(config); // eslint-disable-line
+      maker = new rpmModule(config); // eslint-disable-line
       maker.ensureFile = ensureFileStub;
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: rpmModule.rpmArch(process.arch),
+      arch: rpmArch(process.arch as ForgeArch),
       src: dir,
       dest: makeDir,
+      rename: undefined,
     });
   });
 
@@ -51,40 +57,41 @@ describe('MakerRpm', () => {
       options: {
         productName: 'Redhat',
       },
-    };
+    } as any;
     createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: rpmModule.rpmArch(process.arch),
+      arch: rpmArch(process.arch as ForgeArch),
       options: {
         productName: 'Redhat',
       },
       src: dir,
       dest: makeDir,
+      rename: undefined,
     });
   });
 
   describe('rpmArch', () => {
     it('should convert ia32 to i386', () => {
-      expect(rpmModule.rpmArch('ia32')).to.equal('i386');
+      expect(rpmArch('ia32')).to.equal('i386');
     });
 
     it('should convert x64 to x86_64', () => {
-      expect(rpmModule.rpmArch('x64')).to.equal('x86_64');
+      expect(rpmArch('x64')).to.equal('x86_64');
     });
 
     it('should convert arm to armv6hl', () => {
-      expect(rpmModule.rpmArch('arm')).to.equal('armv6hl');
+      expect(rpmArch('arm')).to.equal('armv6hl');
     });
 
     it('should convert armv7l to armv7hl', () => {
-      expect(rpmModule.rpmArch('armv7l')).to.equal('armv7hl');
+      expect(rpmArch('armv7l')).to.equal('armv7hl');
     });
 
     it('should leave unknown values alone', () => {
-      expect(rpmModule.rpmArch('foo')).to.equal('foo');
+      expect(rpmArch('foo' as ForgeArch)).to.equal('foo');
     });
   });
 });

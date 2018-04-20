@@ -1,8 +1,9 @@
 import ora, { fakeOra } from './ora';
-import asyncOra from './ora-handler';
+import asyncOra, { OraImpl } from './ora-handler';
 
 export {
   ora,
   fakeOra,
   asyncOra,
+  OraImpl,
 };

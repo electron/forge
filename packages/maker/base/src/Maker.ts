@@ -26,14 +26,20 @@ export interface MakerOptions {
 
 export default abstract class Maker<C> {
   public abstract name: string;
+  public abstract defaultPlatforms: ForgePlatform[];
   __isElectronForgeMaker?: boolean;
 
-  constructor(protected config: C, public platforms: ForgePlatform[]) {
+  constructor(public config: C, protected _platforms?: ForgePlatform[]) {
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
       configurable: false,
     });
+  }
+
+  get platforms() {
+    if (this._platforms) return this._platforms;
+    return this.defaultPlatforms;
   }
 
   /**

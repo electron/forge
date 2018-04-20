@@ -1,4 +1,5 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 import fs from 'fs-extra';
 import path from 'path';
@@ -7,6 +8,7 @@ import windowsStore from 'electron-windows-store';
 import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
 
 import getNameFromAuthor from './util/author-name';
+import { MakerAppXConfig } from './Config';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
@@ -49,7 +51,14 @@ async function findSdkTool(exe: string) {
   return sdkTool;
 }
 
-export async function createDefaultCertificate(publisherName: string, { certFilePath, certFileName, install, program }) {
+export interface CreateDefaultCertOpts {
+  certFilePath?: string;
+  certFileName?: string;
+  program?: MakerAppXConfig;
+  install?: boolean;
+}
+
+export async function createDefaultCertificate(publisherName: string, { certFilePath, certFileName, install, program }: CreateDefaultCertOpts) {
   const makeCertOptions = {
     publisherName,
     certFilePath: certFilePath || process.cwd(),
@@ -65,12 +74,9 @@ export async function createDefaultCertificate(publisherName: string, { certFile
   return await makeCert(makeCertOptions);
 }
 
-export interface MakerAppXConfig {
-
-}
-
 export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   name = 'appx';
+  defaultPlatforms: ForgePlatform[] = ['win32'];
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';

@@ -17,7 +17,7 @@ describe('MakerApPX', () => {
       await fs.remove(tmpDir);
     });
 
-    let def = it;
+    let def: any = it;
     if (process.platform !== 'win32') {
       def = it.skip;
     }

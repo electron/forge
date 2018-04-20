@@ -1,8 +1,10 @@
-import MakerBase from '@electron-forge/maker-base';
-
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import path from 'path';
 
-export function debianArch(nodeArch) {
+import { MakerDebConfig } from './Config';
+
+export function debianArch(nodeArch: ForgeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'amd64';
@@ -12,8 +14,9 @@ export function debianArch(nodeArch) {
   }
 }
 
-export default class MakerDeb extends MakerBase {
+export default class MakerDeb extends MakerBase<MakerDebConfig> {
   name = 'deb';
+  defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-debian') && process.platform === 'linux';
@@ -24,7 +27,7 @@ export default class MakerDeb extends MakerBase {
     makeDir,
     targetArch,
     packageJSON,
-  }) {
+  }: MakerOptions) {
     const installer = require('electron-installer-debian');
 
     const arch = debianArch(targetArch);
@@ -40,6 +43,7 @@ export default class MakerDeb extends MakerBase {
       src: dir,
       dest: path.dirname(outPath),
       arch,
+      rename: undefined,
     }));
 
     return [outPath];

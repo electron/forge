@@ -1,10 +1,13 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import fs from 'fs-extra';
 import path from 'path';
 import pify from 'pify';
 
-export function flatpakArch(nodeArch) {
+import { MakerFlatpakConfig } from './Config';
+
+export function flatpakArch(nodeArch: ForgeArch) {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
@@ -14,8 +17,9 @@ export function flatpakArch(nodeArch) {
   }
 }
 
-export default class MakerFlatpak extends MakerBase {
+export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   name = 'flatpak';
+  defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-installer-flatpak') && process.platform === 'linux';
@@ -25,7 +29,7 @@ export default class MakerFlatpak extends MakerBase {
     dir,
     makeDir,
     targetArch,
-  }) {
+  }: MakerOptions) {
     const installer = require('electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);

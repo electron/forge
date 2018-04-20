@@ -5,8 +5,13 @@ import path from 'path';
 
 import MakerBase from '../src/Maker';
 
+class MakerImpl extends MakerBase<{}> {
+  name = 'test';
+  defaultPlatforms = [];
+}
+
 describe('ensure-output', () => {
-  const maker = new MakerBase('test');
+  const maker = new MakerImpl({}, []);
   const tmpPath = path.resolve(os.tmpdir(), 'forge-ensure');
 
   before(async () => {
@@ -16,7 +21,7 @@ describe('ensure-output', () => {
   describe('ensureDirectory', () => {
     it('should delete the directory contents if it exists', async () => {
       await fs.mkdirs(path.resolve(tmpPath, 'foo'));
-      fs.writeFileSync(path.resolve(tmpPath, 'foo', 'touchedFile'));
+      fs.writeFileSync(path.resolve(tmpPath, 'foo', 'touchedFile'), '');
       expect(await fs.pathExists(path.resolve(tmpPath, 'foo', 'touchedFile'))).to.equal(true);
       await maker.ensureDirectory(path.resolve(tmpPath, 'foo'));
       expect(await fs.pathExists(path.resolve(tmpPath, 'foo', 'touchedFile'))).to.equal(false);
@@ -32,7 +37,7 @@ describe('ensure-output', () => {
   describe('ensureFile', () => {
     it('should delete the file if it exists', async () => {
       await fs.mkdirs(path.resolve(tmpPath, 'foo'));
-      fs.writeFileSync(path.resolve(tmpPath, 'foo', 'touchedFile'));
+      fs.writeFileSync(path.resolve(tmpPath, 'foo', 'touchedFile'), '');
       expect(await fs.pathExists(path.resolve(tmpPath, 'foo', 'touchedFile'))).to.equal(true);
       await maker.ensureFile(path.resolve(tmpPath, 'foo'));
       expect(await fs.pathExists(path.resolve(tmpPath, 'foo', 'touchedFile'))).to.equal(false);

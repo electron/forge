@@ -1,11 +1,15 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
 
 import getNameFromAuthor from './util/author-name';
 
-export default class MakerWix extends MakerBase {
+import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
+
+export default class MakerWix extends MakerBase<MSICreatorOptions> {
   name = 'wix';
+  defaultPlatforms: ForgePlatform[] = ['win32'];
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
@@ -17,9 +21,7 @@ export default class MakerWix extends MakerBase {
     targetArch,
     packageJSON,
     appName,
-  }) {
-    const { MSICreator } = require('electron-wix-msi');
-
+  }: MakerOptions) {
     const outPath = path.resolve(makeDir, `/wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
@@ -32,7 +34,7 @@ export default class MakerWix extends MakerBase {
     }, this.config, {
       appDirectory: dir,
       outputDirectory: outPath,
-    }));
+    }) as MSICreatorOptions);
 
     await creator.create();
     const { msiFile } = await creator.compile();

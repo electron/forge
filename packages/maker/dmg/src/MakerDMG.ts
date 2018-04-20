@@ -1,11 +1,15 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
+
+import { MakerDMGConfig } from './Config';
 
 import fs from 'fs-extra';
 import path from 'path';
 import pify from 'pify';
 
-export default class MakerDMG extends MakerBase {
+export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   name = 'dmg';
+  defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
@@ -16,7 +20,7 @@ export default class MakerDMG extends MakerBase {
     makeDir,
     appName,
     packageJSON,
-  }) {
+  }: MakerOptions) {
     const electronDMG = require('electron-installer-dmg');
 
     const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);

@@ -1,18 +1,23 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import MakerBase from '@electron-forge/maker-base';
+
+import { expect } from 'chai';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { MakerDebConfig } from '../src/Config';
+import { debianArch } from '../src/MakerDeb';
+import { ForgeArch } from '@electron-forge/shared-types';
+
+class MakerImpl extends MakerBase<MakerDebConfig> { name = 'test'; defaultPlatforms = [] }
 
 describe('MakerDeb', () => {
-  let MakerDeb;
-  let eidStub;
-  let ensureFileStub;
-  let config;
-  let maker;
-  let createMaker;
+  let MakerDeb: typeof MakerImpl;
+  let eidStub: SinonStub;
+  let ensureFileStub: SinonStub;
+  let config: MakerDebConfig;
+  let maker: MakerImpl;
+  let createMaker: () => void;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/foo/bar/make');
@@ -27,22 +32,23 @@ describe('MakerDeb', () => {
 
     MakerDeb = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDeb', {
       'electron-installer-debian': eidStub,
-    });
+    }).default;
     createMaker = () => {
-      maker = new MakerDeb.default(config); // eslint-disable-line
+      maker = new MakerDeb(config, []); // eslint-disable-line
       maker.ensureFile = ensureFileStub;
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: MakerDeb.debianArch(process.arch),
+      arch: debianArch(process.arch as ForgeArch),
       options: {},
       src: dir,
       dest: makeDir,
+      rename: undefined,
     });
     expect(maker.config).to.deep.equal(config);
   });
@@ -53,41 +59,42 @@ describe('MakerDeb', () => {
       options: {
         productName: 'Debian',
       },
-    };
+    } as any;
 
     createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: MakerDeb.debianArch(process.arch),
+      arch: debianArch(process.arch as ForgeArch),
       options: {
         productName: 'Debian',
       },
       src: dir,
       dest: makeDir,
+      rename: undefined,
     });
   });
 
   describe('debianArch', () => {
     it('should convert ia32 to i386', () => {
-      expect(MakerDeb.debianArch('ia32')).to.equal('i386');
+      expect(debianArch('ia32')).to.equal('i386');
     });
 
     it('should convert x64 to amd64', () => {
-      expect(MakerDeb.debianArch('x64')).to.equal('amd64');
+      expect(debianArch('x64')).to.equal('amd64');
     });
 
     it('should convert arm to armel', () => {
-      expect(MakerDeb.debianArch('arm')).to.equal('armel');
+      expect(debianArch('arm')).to.equal('armel');
     });
 
     it('should convert armv7l to armhf', () => {
-      expect(MakerDeb.debianArch('armv7l')).to.equal('armhf');
+      expect(debianArch('armv7l')).to.equal('armhf');
     });
 
     it('should leave unknown values alone', () => {
-      expect(MakerDeb.debianArch('foo')).to.equal('foo');
+      expect(debianArch('foo' as ForgeArch)).to.equal('foo');
     });
   });
 });

@@ -1,11 +1,15 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 import { spawn } from 'child_process';
 import path from 'path';
 import pify from 'pify';
 
-export default class MakerZIP extends MakerBase {
+export type MakerZIPConfig = {};
+
+export default class MakerZIP extends MakerBase<MakerZIPConfig> {
   name = 'zip';
+  defaultPlatforms: ForgePlatform[] = ['darwin', 'mas', 'win32', 'linux'];
 
   isSupportedOnCurrentPlatform() {
     return true;
@@ -17,7 +21,7 @@ export default class MakerZIP extends MakerBase {
     appName,
     packageJSON,
     targetPlatform,
-  }) {
+  }: MakerOptions) {
     const zipFolder = require('zip-folder');
 
     const zipPath = path.resolve(makeDir, `${path.basename(dir)}-${packageJSON.version}.zip`);
@@ -39,8 +43,8 @@ export default class MakerZIP extends MakerBase {
     return [zipPath];
   }
 
-  zipPromise = (from, to) =>
-    new Promise((resolve, reject) => {
+  private zipPromise = (from: string, to: string) =>
+    new Promise<void>((resolve, reject) => {
       const child = spawn('zip', ['-r', '-y', to, path.basename(from)], {
         cwd: path.dirname(from),
       });
@@ -50,7 +54,7 @@ export default class MakerZIP extends MakerBase {
 
       child.on('close', (code) => {
         if (code === 0) return resolve();
-        reject(new Error(`Failed to zip, exitted with code: ${code}`));
+        reject(new Error(`Failed to zip, exited with code: ${code}`));
       });
     });
 }

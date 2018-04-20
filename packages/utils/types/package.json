@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "index.d.ts",
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+    "test": "echo No Tests For Shared Types"
   },
   "devDependencies": {
     "chai": "^4.0.0",

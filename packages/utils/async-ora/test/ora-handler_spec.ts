@@ -2,15 +2,18 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { asyncOra as ora, OraImpl } from '../src/index';
+
 describe('asyncOra', () => {
-  let asyncOra;
-  let MockOra;
-  let currentOra;
+  let asyncOra: typeof ora;
+  let MockOra: (text: string) => OraImpl | undefined;
+  let currentOra: OraImpl | undefined;
 
   beforeEach(() => {
     currentOra = undefined;
     MockOra = (text) => {
       currentOra = {
+        failed: false,
         start() {
           this.started = true;
           return currentOra;
@@ -23,16 +26,20 @@ describe('asyncOra', () => {
           this.failed = true;
           return currentOra;
         },
+        stop() {
+          this.failed = true;
+          return currentOra;
+        },
         get text() {
-          return currentOra._text;
+          return (currentOra! as any)._text;
         },
         set text(newText) {
-          currentOra._text = newText;
+          (currentOra! as any)._text = newText;
         },
-      };
-      currentOra.succeeded = false;
-      currentOra.failed = false;
-      currentOra._text = text;
+      } as any;
+      (currentOra as any).succeeded = false;
+      (currentOra as any).failed = false;
+      (currentOra as any)._text = text;
       return currentOra;
     };
     asyncOra = proxyquire.noCallThru().load('../src/ora-handler', {
@@ -43,7 +50,7 @@ describe('asyncOra', () => {
   it('should create an ora with an initial value', () => {
     asyncOra('say this first', async () => {});
     expect(currentOra).to.not.equal(undefined);
-    expect(currentOra.text).to.equal('say this first');
+    expect(currentOra!.text).to.equal('say this first');
   });
 
   it('should not create an ora when in non-interactive mode', () => {
@@ -64,16 +71,16 @@ describe('asyncOra', () => {
     await asyncOra('random text', async () => {
       if (2 + 2 === 5) console.error('Big brother is at it again'); // eslint-disable-line
     });
-    expect(currentOra.succeeded).to.equal(true);
-    expect(currentOra.failed).to.equal(false);
+    expect((currentOra as any).succeeded).to.equal(true);
+    expect((currentOra as any).failed).to.equal(false);
   });
 
   it('should fail the ora if the async fn throws', async () => {
     await asyncOra('this is gonna end badly', async () => {
       throw { message: 'Not an error', stack: 'No Stack - Not an error' }; // eslint-disable-line
     }, () => {});
-    expect(currentOra.succeeded).to.equal(false);
-    expect(currentOra.failed).to.equal(true);
+    expect((currentOra as any).succeeded).to.equal(false);
+    expect((currentOra as any).failed).to.equal(true);
   });
 
   it('should exit the process with status 1 if the async fn throws', async () => {

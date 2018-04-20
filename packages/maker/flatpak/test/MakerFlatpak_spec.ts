@@ -1,18 +1,24 @@
-import chai, { expect } from 'chai';
+import MakerBase from '@electron-forge/maker-base';
+
+import { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub } from 'sinon';
+import { stub, SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { flatpakArch } from '../src/MakerFlatpak';
+import { MakerFlatpakConfig } from '../src/Config';
+import { ForgeArch } from '@electron-forge/shared-types';
+
+class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPlatforms = [] }
 
 describe('MakerFlatpak', () => {
-  let flatpakModule;
-  let maker;
-  let eidStub;
-  let ensureDirectoryStub;
-  let config;
-  let createMaker;
+  let flatpakModule: typeof MakerImpl;
+  let maker: MakerImpl;
+  let eidStub: SinonStub;
+  let ensureDirectoryStub: SinonStub;
+  let config: MakerFlatpakConfig;
+  let createMaker: () => void;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/make/dir');
@@ -28,19 +34,19 @@ describe('MakerFlatpak', () => {
     flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
       'electron-installer-flatpak': eidStub,
-    });
+    }).default;
     createMaker = () => {
-      maker = new flatpakModule.default(config); // eslint-disable-line
+      maker = new flatpakModule(config); // eslint-disable-line
       maker.ensureDirectory = ensureDirectoryStub;
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: flatpakModule.flatpakArch(process.arch),
+      arch: flatpakArch(process.arch as ForgeArch),
       src: dir,
       dest: path.resolve(makeDir, 'flatpak'),
     });
@@ -52,13 +58,13 @@ describe('MakerFlatpak', () => {
       options: {
         productName: 'Flatpak',
       },
-    };
+    } as any;
     createMaker();
 
-    await maker.make({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
-      arch: flatpakModule.flatpakArch(process.arch),
+      arch: flatpakArch(process.arch as ForgeArch),
       options: {
         productName: 'Flatpak',
       },
