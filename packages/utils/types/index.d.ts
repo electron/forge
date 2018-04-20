@@ -4,4 +4,22 @@ declare module '@electron-forge/shared-types' {
   export interface ForgeConfig {
 
   }
+  export interface ForgeMakeResult {
+    /**
+     * An array of paths to artifacts generated for this make run
+     */
+    artifacts: Array<string>;
+    /**
+     * The state of the package.json file when the make happened
+     */
+    packageJSON: any;
+    /**
+     * The platform this make run was for
+     */
+    platform: ForgePlatform;
+    /**
+     * The arch this make run was for
+     */
+    arch: ForgePlatform;
+  }
 }

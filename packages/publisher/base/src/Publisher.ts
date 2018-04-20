@@ -1,14 +1,42 @@
+import { ForgePlatform, ForgeConfig, ForgeArch, ForgeMakeResult } from "@electron-forge/shared-types";
+
 /* eslint-disable no-unused-vars */
 
-export default class Publisher {
-  constructor(config = {}, platforms = null) {
+export interface PublisherOptions {
+  /**
+   * The base directory of the apps source code
+   */
+  dir: string;
+  /**
+   * The results from running the make command
+   */
+  makeResults: ForgeMakeResult[];
+  /**
+   * The raw forgeConfig this app is using.
+   * 
+   * You probably shouldn't use this
+   */
+  forgeConfig: ForgeConfig;
+}
+
+export default abstract class Publisher<C> {
+  public abstract name: string;
+  public defaultPlatforms?: ForgePlatform[];
+  __isElectronForgePublisher?: boolean;
+
+  constructor(public config: C, protected _platforms?: ForgePlatform[]) {
     this.config = config;
-    this.platforms = platforms;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
       enumerable: false,
       configurable: false,
     });
+  }
+
+  get platforms() {
+    if (this._platforms) return this._platforms;
+    if (this.defaultPlatforms) return this.defaultPlatforms;
+    return ['win32', 'linux', 'darwin', 'mas'];
   }
 
   /**
@@ -22,15 +50,7 @@ export default class Publisher {
    * you will have to create the version on GitHub and the second call will just
    * be appending files to the existing version.
    */
-  async publish({
-    dir,            // The base directory of the apps source code
-    makeResults,      // An array of MakeResult objects, see the MakeResult object definition for details
-    packageJSON,    // The packageJSON of the app
-    config,         // The config that is dedicated for this publisher
-    forgeConfig,    // The raw forgeConfig this app is using, you shouldn't really have to use this
-    platform,       // The platform these artifacts are for
-    arch,           // The arch these artifacts are for
-  }) {
+  async publish(opts: PublisherOptions) {
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }
