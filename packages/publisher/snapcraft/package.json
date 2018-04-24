@@ -5,7 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherSnapcraft.js",
+  "main": "dist/src/PublisherSnapcraft.js",
+  "typings": "dist/PublisherSnapcraft.d.ts",
   "scripts": {
     "test": "exit 0"
   },

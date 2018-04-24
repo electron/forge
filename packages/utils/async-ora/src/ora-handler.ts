@@ -4,10 +4,11 @@ import ora from './ora';
 export class OraImpl {
   constructor(public text: string = '') {}
 
-  succeed() { return this; }
-  fail() { return this; }
+  succeed(symbol?: string) { return this; }
+  fail(symbol?: string) { return this; }
   start() { return this; }
-  stop() { return this; }
+  stop(symbol?: string) { return this; }
+  warn(message: string) { return this; }
 }
 
 export interface AsyncOraMethod {

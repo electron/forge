@@ -17,8 +17,10 @@
     "sinon": "^4.1.2"
   },
   "dependencies": {
+    "@types/electron-packager": "^10.1.0",
     "colors": "^1.2.0",
     "debug": "^3.0.0",
+    "electron-rebuild": "^1.6.0",
     "log-symbols": "^2.0.0",
     "ora": "^1.1.0"
   },

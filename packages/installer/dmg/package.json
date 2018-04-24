@@ -5,7 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/InstallerDMG.js",
+  "main": "dist/src/InstallerDMG.js",
+  "typings": "dist/InstallerDMG.d.ts",
   "scripts": {
     "test": "exit 0"
   },

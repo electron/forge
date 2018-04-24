@@ -2,6 +2,7 @@ import 'colors';
 import debug from 'debug';
 import logSymbols from 'log-symbols';
 import realOra from 'ora';
+import { OraImpl } from './ora-handler';
 
 const d = debug('electron-forge:async-ora');
 
@@ -13,13 +14,10 @@ if (useFakeOra) {
 
 export const fakeOra = (name: string) => {
   let _name = name;
-  const fake = {
+  const fake: OraImpl = {
     start: () => {
       d('Process Started:', fake.text);
       return fake;
-    },
-    warn: (msg: string) => {
-      console.warn(logSymbols.warning, msg.yellow);
     },
     fail: () => {
       d(`Process Failed: ${fake.text}`.red);
@@ -31,6 +29,10 @@ export const fakeOra = (name: string) => {
     },
     stop: () => {
       d('Process Stopped:', fake.text);
+      return fake;
+    },
+    warn: (warning: string) => {
+      d('Process Warned:', warning);
       return fake;
     },
     get text() {

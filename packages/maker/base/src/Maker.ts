@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { ForgeArch, ForgeConfig, ForgePlatform } from '@electron-forge/shared-types';
+import { ForgeArch, ForgeConfig, ForgePlatform, IForgeMaker } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
 

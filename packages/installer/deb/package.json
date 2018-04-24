@@ -5,7 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/InstallerDeb.js",
+  "main": "dist/src/InstallerDeb.js",
+  "typings": "dist/InstallerDeb.d.ts",
   "scripts": {
     "test": "exit 0"
   },

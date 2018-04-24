@@ -3,10 +3,11 @@
   "version": "6.0.0-beta.3",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron-userland/electron-forge",
-  "main": "dist/api/index.js",
+  "main": "dist/src/api/index.js",
+  "typings": "dist/src/api/index.d.ts",
   "scripts": {
     "docs": "esdoc",
-    "test": "mocha test/**/*_spec*.js test/**/**/*_spec*.js --opts ../../../mocha.opts"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "author": "Samuel Attard",
   "license": "MIT",
@@ -38,6 +39,9 @@
     "@electron-forge/installer-exe": "6.0.0-beta.3",
     "@electron-forge/installer-rpm": "6.0.0-beta.3",
     "@electron-forge/installer-zip": "6.0.0-beta.3",
+    "@electron-forge/maker-base": "^6.0.0-beta.3",
+    "@electron-forge/publisher-base": "^6.0.0-beta.3",
+    "@electron-forge/shared-types": "^6.0.0-beta.3",
     "colors": "^1.2.0",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^3.0.0",
@@ -45,7 +49,6 @@
     "electron-rebuild": "^1.6.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
-    "lodash.merge": "^4.6.0",
     "lodash.template": "^4.4.0",
     "log-symbols": "^2.0.0",
     "node-fetch": "^2.0.0",
