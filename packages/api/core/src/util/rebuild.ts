@@ -9,7 +9,7 @@ export default async (
   electronVersion: string,
   platform: ForgePlatform,
   arch: ForgeArch,
-  config: RebuildOptions = {} as any
+  config: Partial<RebuildOptions> = {}
 ) => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
     const rebuilder = rebuild(Object.assign({}, config, {

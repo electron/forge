@@ -1,21 +1,20 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import sinon, { SinonStub, SinonSpy } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { PublishOptions } from '../../src/api';
 
 describe('publish', () => {
-  let publish;
-  let makeStub;
-  let resolveStub;
-  let publisherSpy;
-  let voidStub;
-  let nowhereStub;
-  let publishers;
+  let publish: (opts: PublishOptions) => Promise<void>;
+  let makeStub: SinonStub;
+  let resolveStub: SinonStub;
+  let publisherSpy: SinonStub;
+  let voidStub: SinonStub;
+  let nowhereStub: SinonStub;
+  let publishers: string[];
 
   beforeEach(() => {
     resolveStub = sinon.stub();
@@ -24,15 +23,16 @@ describe('publish', () => {
     voidStub = sinon.stub();
     nowhereStub = sinon.stub();
     publishers = ['@electron-forge/publisher-test'];
-    const fakePublisher = stub => class {
+    const fakePublisher = (stub: SinonStub) => class {
+      private publish: SinonStub;
       constructor() {
         this.publish = stub;
       }
     };
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
-      './make': async (...args) => makeStub(...args),
-      '../util/resolve-dir': async dir => resolveStub(dir),
+      './make': async (...args: any[]) => makeStub(...args),
+      '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': () => Promise.resolve(require('../fixture/dummy_app/package.json')),
       '../util/forge-config': async () => {
         const config = await (require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')));
@@ -63,8 +63,6 @@ describe('publish', () => {
     await publish({
       dir: __dirname,
       interactive: false,
-      authToken: 'my_token',
-      tag: 'my_special_tag',
     });
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
@@ -77,11 +75,7 @@ describe('publish', () => {
     expect(publisherSpy.firstCall.args).to.deep.equal([{
       dir: resolveStub(),
       makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      packageJSON: require('../fixture/dummy_app/package.json'),
       forgeConfig: testConfig,
-      tag: 'my_special_tag',
-      platform: process.platform,
-      arch: process.arch,
     }]);
   });
 
@@ -90,13 +84,12 @@ describe('publish', () => {
     await publish({
       dir: __dirname,
       interactive: false,
-      authToken: 'my_token',
-      tag: 'my_special_tag',
       // Fake instance of a publisher
       publishTargets: [{
         __isElectronForgePublisher: true,
         publish: publisherSpy,
-      }],
+        platforms: null,
+      } as any],
     });
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
@@ -109,11 +102,7 @@ describe('publish', () => {
     expect(publisherSpy.firstCall.args).to.deep.equal([{
       dir: resolveStub(),
       makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      packageJSON: require('../fixture/dummy_app/package.json'),
       forgeConfig: testConfig,
-      tag: 'my_special_tag',
-      platform: process.platform,
-      arch: process.arch,
     }]);
   });
 
@@ -149,9 +138,9 @@ describe('publish', () => {
   });
 
   describe('dry run', () => {
-    let dir;
+    let dir: string;
 
-    const fakeMake = (platform) => {
+    const fakeMake = (platform: string) => {
       const ret = [
         { artifacts: [
           path.resolve(dir, `out/make/artifact1-${platform}`),
@@ -187,17 +176,15 @@ describe('publish', () => {
         await publish({
           dir,
           interactive: false,
-          target: [],
           dryRun: true,
         });
-        expect(await fs.exists(path.resolve(dryPath, 'hash.json'))).to.equal(false, 'previous hashes should be erased');
+        expect(await fs.pathExists(path.resolve(dryPath, 'hash.json'))).to.equal(false, 'previous hashes should be erased');
         const backupDir = path.resolve(dir, 'out', 'backup');
         await fs.move(dryPath, backupDir);
         makeStub.returns(fakeMake('win32'));
         await publish({
           dir,
           interactive: false,
-          target: [],
           dryRun: true,
         });
         for (const backedUp of await fs.readdir(backupDir)) {
@@ -208,7 +195,7 @@ describe('publish', () => {
       it('should create dry run hash JSON files', async () => {
         expect(makeStub.callCount).to.equal(2);
         const dryRunFolder = path.resolve(dir, 'out', 'publish-dry-run');
-        expect(await fs.exists(dryRunFolder)).to.equal(true);
+        expect(await fs.pathExists(dryRunFolder)).to.equal(true);
 
         const hashFolders = await fs.readdir(dryRunFolder);
         expect(hashFolders).to.have.length(2, 'Should contain two hashes (two publishes)');
@@ -241,7 +228,7 @@ describe('publish', () => {
         await publish({
           dir,
           interactive: false,
-          target: [__filename],
+          publishTargets: ['@electron-forge/publisher-test'],
           dryRunResume: true,
         });
       });
@@ -249,7 +236,7 @@ describe('publish', () => {
       it('should successfully restore values and pass them to publisher', () => {
         expect(makeStub.callCount).to.equal(0);
         expect(publisherSpy.callCount).to.equal(2, 'should call once for each platform (make run)');
-        const darwinIndex = publisherSpy.firstCall.args[0].platform === 'darwin' ? 0 : 1;
+        const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.indexOf('darwin') !== -1) ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
         const darwinArtifacts = [];
@@ -257,26 +244,16 @@ describe('publish', () => {
           darwinArtifacts.push(...result.artifacts);
         }
         expect(darwinArtifacts.sort()).to.deep.equal(
-          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
+          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort()
         );
-        expect(darwinArgs.packageJSON).to.deep.equal({ state: 1 });
-        expect(darwinArgs.authToken).to.equal(undefined);
-        expect(darwinArgs.tag).to.equal('1.0.0');
-        expect(darwinArgs.platform).to.equal('darwin');
-        expect(darwinArgs.arch).to.equal('x64');
         const win32Args = publisherSpy.getCall(win32Index).args[0];
         const win32Artifacts = [];
         for (const result of win32Args.makeResults) {
           win32Artifacts.push(...result.artifacts);
         }
         expect(win32Artifacts.sort()).to.deep.equal(
-          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), []).sort()
+          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort()
         );
-        expect(win32Args.packageJSON).to.deep.equal({ state: 0 });
-        expect(win32Args.authToken).to.equal(undefined);
-        expect(win32Args.tag).to.equal('1.0.0');
-        expect(win32Args.platform).to.equal('win32');
-        expect(win32Args.arch).to.equal('x64');
       });
     });
 

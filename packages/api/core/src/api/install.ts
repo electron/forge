@@ -104,7 +104,7 @@ export default async ({
     searchSpinner.text = 'Searching for Releases'; // eslint-disable-line
 
     const assets = latestRelease.assets;
-    if (!assets || !Array.isArray(assets)) {
+    if (!assets || !Array.isArray(assets) || assets.length === 0) {
       throw 'Could not find any assets for the latest release';
     }
 

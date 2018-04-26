@@ -1,17 +1,17 @@
-import chai, { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import { expect } from 'chai';
+import { ChildProcess } from 'child_process';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
-chai.use(chaiAsPromised);
+import { StartOptions } from '../../src/api';
 
 describe('start', () => {
-  let start;
-  let packageJSON;
-  let resolveStub;
-  let spawnStub;
-  let shouldOverride;
+  let start: (opts: StartOptions) => Promise<ChildProcess>;
+  let packageJSON: any;
+  let resolveStub: SinonStub;
+  let spawnStub: SinonStub;
+  let shouldOverride: boolean;
 
   beforeEach(() => {
     resolveStub = sinon.stub();
@@ -26,7 +26,7 @@ describe('start', () => {
           triggerHook: async () => false,
         },
       }),
-      '../util/resolve-dir': async dir => resolveStub(dir),
+      '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': () => Promise.resolve(packageJSON),
       '../util/rebuild': () => Promise.resolve(),
       child_process: {
@@ -91,7 +91,7 @@ describe('start', () => {
     expect(spawnStub.callCount).to.equal(1);
     expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
     expect(spawnStub.firstCall.args[1][0]).to.contain(`electron${path.sep}cli`);
-    expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_ENABLE_LOGGING', true);
+    expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_ENABLE_LOGGING', 'true');
   });
 
   it('should enable RUN_AS_NODE if runAsNode=true', async () => {
@@ -102,7 +102,7 @@ describe('start', () => {
       runAsNode: true,
     });
     expect(spawnStub.callCount).to.equal(1);
-    expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_RUN_AS_NODE', true);
+    expect(spawnStub.firstCall.args[2].env).to.have.property('ELECTRON_RUN_AS_NODE', 'true');
   });
 
   it('should disable RUN_AS_NODE if runAsNode=false', async () => {
@@ -119,7 +119,7 @@ describe('start', () => {
   it('should throw if no dir could be found', async () => {
     resolveStub.returns(null);
 
-    await expect(start()).to.eventually.be.rejectedWith(
+    await expect(start({})).to.eventually.be.rejectedWith(
       'Failed to locate startable Electron application'
     );
   });

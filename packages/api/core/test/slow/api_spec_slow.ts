@@ -1,28 +1,27 @@
 import { execSync } from 'child_process';
-import asar from 'asar';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import chaiAsPromised from 'chai-as-promised';
 
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import installDeps from '../../src/util/install-dependencies';
 import readPackageJSON from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
+import { InitOptions } from '../../src/api';
 
-chai.use(chaiAsPromised);
+const asar = require('asar');
 
 const nodeInstallerArg = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
 const nodeInstaller = nodeInstallerArg.substr(12);
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
-});
+}).api;
 
 describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
-  let dir;
+  let dir: string;
   let dirID = Date.now();
 
   const ensureTestDirIsNonexistent = async () => {
@@ -31,7 +30,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     await fs.remove(dir);
   };
 
-  const beforeInitTest = (params, beforeInit) => {
+  const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: Function) => {
     before(async () => {
       await ensureTestDirIsNonexistent();
       if (beforeInit) {
@@ -41,7 +40,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   };
 
-  const expectProjectPathExists = async (subPath, pathType) => {
+  const expectProjectPathExists = async (subPath: string, pathType: string) => {
     expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(true);
   };
 
@@ -189,7 +188,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   });
 
   describe('after init', () => {
-    let devCert;
+    let devCert: string;
 
     before(async () => {
       dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
@@ -275,7 +274,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         process.env.DISABLE_SQUIRREL_TEST = 'true';
       }
 
-      function getMakers(good) {
+      function getMakers(good: boolean) {
         const allMakers = [
           '@electron-forge/maker-appx',
           '@electron-forge/maker-deb',
@@ -304,7 +303,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const goodMakers = getMakers(true);
       const badMakers = getMakers(false);
 
-      const testMakeTarget = function testMakeTarget(target, shouldPass, ...options) {
+      const testMakeTarget = function testMakeTarget(target: () => { name: string }, shouldPass: boolean, ...options: any[]) {
         describe(`make (with target=${path.basename(target().name)})`, async () => {
           before(async () => {
             const packageJSON = await readPackageJSON(dir);
@@ -314,16 +313,16 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
           for (const optionsFetcher of options) {
             if (shouldPass) {
-              it(`successfully makes for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+              it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {
-                    expect(await fs.exists(output)).to.equal(true);
+                    expect(await fs.pathExists(output)).to.equal(true);
                   }
                 }
               });
             } else {
-              it(`fails for config: ${JSON.stringify(optionsFetcher(), 2)}`, async () => {
+              it(`fails for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
               });
             }

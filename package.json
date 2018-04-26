@@ -84,6 +84,7 @@
     "@types/debug": "^0.0.30",
     "@types/electron-packager": "^10.1.0",
     "@types/electron-winstaller": "^2.6.1",
+    "@types/fetch-mock": "^6.0.1",
     "@types/form-data": "^2.2.1",
     "@types/fs-extra": "^5.0.2",
     "@types/glob": "^5.0.35",

@@ -31,7 +31,7 @@ export interface StartOptions {
   /**
    * Arguments to pass through to the launched Electron application
    */
-  args?: string[];
+  args?: (string | number)[];
   /**
    * Runs the Electron process as if it were node, disables all Electron API's
    */
@@ -95,8 +95,8 @@ export default async ({
     cwd: dir,
     stdio: 'inherit',
     env: Object.assign({}, process.env, enableLogging ? {
-      ELECTRON_ENABLE_LOGGING: true,
-      ELECTRON_ENABLE_STACK_DUMPING: true,
+      ELECTRON_ENABLE_LOGGING: 'true',
+      ELECTRON_ENABLE_STACK_DUMPING: 'true',
     } : {}) as NodeJS.ProcessEnv,
   };
 
@@ -107,13 +107,13 @@ export default async ({
   }
 
   if (inspect) {
-    args = ['--inspect'].concat(args);
+    args = ['--inspect' as (string|number)].concat(args);
   }
 
   let spawned!: ChildProcess;
 
   await asyncOra('Launching Application', async () => {
-    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron/cli'), appPath].concat(args), spawnOpts);
+    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron/cli'), appPath].concat(args as string[]), spawnOpts);
   });
 
   return spawned;

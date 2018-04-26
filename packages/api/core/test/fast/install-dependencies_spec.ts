@@ -1,14 +1,16 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import sinon, { SinonStub } from 'sinon';
+
+import installDependencies from '../../src/util/install-dependencies';
 
 describe('Install dependencies', () => {
-  let install;
-  let spawnSpy;
-  let hasYarnSpy;
-  let spawnPromise;
-  let spawnPromiseResolve;
-  let spawnPromiseReject;
+  let install: typeof installDependencies;
+  let spawnSpy: SinonStub;
+  let hasYarnSpy: SinonStub;
+  let spawnPromise: Promise<void>;
+  let spawnPromiseResolve: () => void;
+  let spawnPromiseReject: () => void;
 
   beforeEach(() => {
     spawnSpy = sinon.stub();

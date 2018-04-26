@@ -1,3 +1,5 @@
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
+import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
@@ -20,8 +22,8 @@ describe('rebuilder', () => {
     });
   }
 
-  async function doRebuild(config) {
-    await rebuild(testModulePath, '1.4.12', process.platform, process.arch, config);
+  async function doRebuild(config?: Partial<RebuildOptions>) {
+    await rebuild(testModulePath, '1.4.12', process.platform as ForgePlatform, process.arch as ForgeArch, config);
   }
 
   describe('no config', () => {

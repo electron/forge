@@ -7,7 +7,8 @@
   "typings": "dist/src/api/index.d.ts",
   "scripts": {
     "docs": "esdoc",
-    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
+    "test:fast": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts",
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts test/slow/*_spec_slow.ts --opts ../../../mocha.opts"
   },
   "author": "Samuel Attard",
   "license": "MIT",

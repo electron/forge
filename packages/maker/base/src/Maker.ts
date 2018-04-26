@@ -29,7 +29,7 @@ export default abstract class Maker<C> {
   public abstract defaultPlatforms: ForgePlatform[];
   __isElectronForgeMaker?: boolean;
 
-  constructor(public config: C, protected _platforms?: ForgePlatform[]) {
+  constructor(public config: C = {} as C, protected _platforms?: ForgePlatform[]) {
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
