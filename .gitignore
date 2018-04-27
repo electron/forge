@@ -4,3 +4,4 @@ yarn-error.log
 packages/.old
 **/tsconfig.json
 !/tsconfig.json
+.vscode
