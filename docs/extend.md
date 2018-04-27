@@ -24,7 +24,7 @@ issue on our [GitHub Repository](https://github.com/electron-userland/electron-f
 An Electron Forge Plugin has to export a single class that extends our base
 plugin.  The base plugin can be depended on by installing
 `@electron-forge/plugin-base`.  It can implement two methods, neither are
-required:
+required.
 
 {% method %}
 ### `getHook(hookName: string): Function`

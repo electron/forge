@@ -26,6 +26,10 @@
     "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\"",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
+    "docs": "bolt docs:api && bolt docs:install && bolt docs:build",
+    "docs:api": "bolt docs:api:generate && bolt docs:api:position",
+    "docs:api:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
+    "docs:api:position": "ts-node tools/position-docs.ts",
     "docs:build": "cd docs && gitbook build",
     "docs:install": "cd docs && gitbook install",
     "docs:serve": "cd docs && gitbook serve",
@@ -126,6 +130,7 @@
     "rimraf": "^2.6.2",
     "sinon": "^4.1.2",
     "ts-node": "^6.0.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.8.1"
   },
   "optionalDependencies": {

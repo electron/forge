@@ -5,12 +5,9 @@ import { createWindowsInstaller, Options as ElectronWinstallerOptions } from 'el
 import fs from 'fs-extra';
 import path from 'path';
 
-// Hacks to fix make appDirectory optional
-export type Optional<T> = {
-  [K in keyof T]?: T[K];
-}
+import { MakerSquirrelConfig } from './Config';
 
-export default class MakerSquirrel extends MakerBase<Optional<ElectronWinstallerOptions>> {
+export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
@@ -28,7 +25,7 @@ export default class MakerSquirrel extends MakerBase<Optional<ElectronWinstaller
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 
-    const winstallerConfig = Object.assign({
+    const winstallerConfig: ElectronWinstallerOptions = Object.assign({
       name: packageJSON.name,
       title: appName,
       noMsi: true,

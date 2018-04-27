@@ -1,8 +1,13 @@
 {
-    "plugins": ["theme-api", "panel", "collapsible-menu", "ace"],
+    "plugins": ["theme-api", "panel", "collapsible-menu", "ace", "otherlink"],
     "pluginsConfig": {
         "theme-api": {
             "theme": "dark"
+        },
+        "scripts": {
+            "files": [
+                "./scripts/rewrite.js"
+            ]
         }
     },
     "styles": {

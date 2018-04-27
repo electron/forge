@@ -7,7 +7,9 @@ import getNameFromAuthor from './util/author-name';
 
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 
-export default class MakerWix extends MakerBase<MSICreatorOptions> {
+import { MakerWixConfig } from './Config';
+
+export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
   defaultPlatforms: ForgePlatform[] = ['win32'];
 

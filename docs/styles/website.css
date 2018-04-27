@@ -9,3 +9,7 @@
 .api-method-code {
   margin-top: 2em;
 }
+
+.ace_active-line {
+  background: transparent !important;
+}
