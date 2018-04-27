@@ -5,8 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/MakerRpm.js",
-  "typings": "dist/src/MakerRpm.d.ts",
+  "main": "dist/MakerRpm.js",
+  "typings": "dist/MakerRpm.d.ts",
   "scripts": {
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },

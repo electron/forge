@@ -5,8 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/PublisherGithub.js",
-  "typings": "dist/src/PublisherGithub.d.ts",
+  "main": "dist/PublisherGithub.js",
+  "typings": "dist/PublisherGithub.d.ts",
   "scripts": {
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },

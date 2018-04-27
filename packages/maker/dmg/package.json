@@ -5,8 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/MakerDMG.js",
-  "typings": "dist/src/MakerDMG.d.ts",
+  "main": "dist/MakerDMG.js",
+  "typings": "dist/MakerDMG.d.ts",
   "scripts": {
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },

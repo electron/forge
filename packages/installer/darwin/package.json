@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/InstallerDarwin.js",
+  "main": "dist/InstallerDarwin.js",
   "typings": "dist/InstallerDarwin.d.ts",
   "scripts": {
     "test": "exit 0"

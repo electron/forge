@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/InstallerZip.js",
+  "main": "dist/InstallerZip.js",
   "typings": "dist/InstallerZip.d.ts",
   "scripts": {
     "test": "exit 0"

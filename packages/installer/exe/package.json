@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/InstallerExe.js",
+  "main": "dist/InstallerExe.js",
   "typings": "dist/InstallerExe.d.ts",
   "scripts": {
     "test": "exit 0"

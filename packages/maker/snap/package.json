@@ -5,8 +5,8 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/MakerSnap.js",
-  "typings": "dist/src/MakerSnap.d.ts",
+  "main": "dist/MakerSnap.js",
+  "typings": "dist/MakerSnap.d.ts",
   "scripts": {
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },

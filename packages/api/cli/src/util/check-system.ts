@@ -2,7 +2,7 @@ import { exec } from 'child_process';
 import debug from 'debug';
 import semver from 'semver';
 
-import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core/dist/src/util/yarn-or-npm';
+import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core/dist/util/yarn-or-npm';
 import { OraImpl } from '@electron-forge/async-ora';
 
 const d = debug('electron-forge:check-system');

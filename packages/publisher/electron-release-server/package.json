@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/PublisherERS.js",
+  "main": "dist/PublisherERS.js",
   "typings": "dist/PublisherERS.d.ts",
   "scripts": {
     "test": "exit 0"

@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/MakerZIP.js",
+  "main": "dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
   "scripts": {
     "test": "exit 0"

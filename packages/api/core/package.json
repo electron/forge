@@ -3,8 +3,8 @@
   "version": "6.0.0-beta.3",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron-userland/electron-forge",
-  "main": "dist/src/api/index.js",
-  "typings": "dist/src/api/index.d.ts",
+  "main": "dist/api/index.js",
+  "typings": "dist/api/index.d.ts",
   "scripts": {
     "docs": "esdoc",
     "test:fast": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts",

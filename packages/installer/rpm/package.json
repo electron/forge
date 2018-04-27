@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/InstallerRpm.js",
+  "main": "dist/InstallerRpm.js",
   "typings": "dist/InstallerRpm.d.ts",
   "scripts": {
     "test": "exit 0"

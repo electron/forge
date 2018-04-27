@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/InstallerLinux.js",
+  "main": "dist/InstallerLinux.js",
   "typings": "dist/InstallerLinux.d.ts",
   "scripts": {
     "test": "exit 0"

@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "bolt ws exec -- rimraf dist",
     "prebuild": "bolt clean && ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tsc --emitDeclarationOnly",
-    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist/src --quiet --extensions \".ts\"",
+    "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\"",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
     "docs:build": "cd docs && gitbook build",

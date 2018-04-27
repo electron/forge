@@ -5,7 +5,7 @@
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/src/MakerSquirrel.js",
+  "main": "dist/MakerSquirrel.js",
   "typings": "dist/MakerSquirrel.d.ts",
   "scripts": {
     "test": "exit 0"
