@@ -6,3 +6,5 @@ packages/.old
 !/tsconfig.json
 doc
 docs/ts
+docs/assets
+.vscode
