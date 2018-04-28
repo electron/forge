@@ -6,8 +6,9 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/MakerDeb.js",
+  "typings": "dist/MakerDeb.d.ts",
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",
@@ -20,6 +21,10 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.3"
+    "@electron-forge/maker-base": "6.0.0-beta.3",
+    "@electron-forge/shared-types": "^6.0.0-beta.3"
+  },
+  "optionalDependencies": {
+    "electron-installer-debian": "^0.8.0"
   }
 }

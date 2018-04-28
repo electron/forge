@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/MakerSquirrel.js",
+  "typings": "dist/MakerSquirrel.d.ts",
   "scripts": {
     "test": "exit 0"
   },
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.3",
+    "@electron-forge/shared-types": "^6.0.0-beta.3",
     "fs-extra": "^5.0.0"
   },
   "optionalDependencies": {

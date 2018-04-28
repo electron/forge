@@ -1,2 +1,3 @@
 --require @babel/register
+--require ../../../tools/test-setup.js
 --timeout 800000

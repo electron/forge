@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/InstallerRpm.js",
+  "typings": "dist/InstallerRpm.d.ts",
   "scripts": {
     "test": "exit 0"
   },

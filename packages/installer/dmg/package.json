@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/InstallerDMG.js",
+  "typings": "dist/InstallerDMG.d.ts",
   "scripts": {
     "test": "exit 0"
   },

@@ -6,8 +6,9 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",
@@ -16,7 +17,7 @@
     "sinon": "^4.1.2"
   },
   "dependencies": {
-    "colors": "^1.1.2",
+    "colors": "^1.2.0",
     "debug": "^3.0.0",
     "log-symbols": "^2.0.0",
     "ora": "^2.0.0"

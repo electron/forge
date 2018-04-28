@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/InstallerZip.js",
+  "typings": "dist/InstallerZip.d.ts",
   "scripts": {
     "test": "exit 0"
   },

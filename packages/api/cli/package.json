@@ -12,7 +12,7 @@
     "electron-forge-vscode-win": "script/vscode.cmd"
   },
   "scripts": {
-    "test": "mocha test/**/*_spec.js test/**/**/*_spec.js --opts ../../../mocha.opts"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",
@@ -21,10 +21,11 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.3",
     "@electron-forge/core": "6.0.0-beta.3",
-    "colors": "^1.1.2",
+    "colors": "^1.2.0",
     "commander": "^2.9.0",
     "debug": "^3.0.0",
     "fs-extra": "^5.0.0",
+    "inquirer": "^5.0.0",
     "semver": "^5.3.0"
   },
   "engines": {

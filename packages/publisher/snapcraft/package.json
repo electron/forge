@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/PublisherSnapcraft.js",
+  "typings": "dist/PublisherSnapcraft.d.ts",
   "scripts": {
     "test": "exit 0"
   },

@@ -6,6 +6,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/InstallerLinux.js",
+  "typings": "dist/InstallerLinux.d.ts",
   "scripts": {
     "test": "exit 0"
   },
