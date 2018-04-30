@@ -31,6 +31,7 @@
   * [GitHub](publishers.md#github)
   * [S3](publishers.md#s3)
   * [Snapcraft](publishers.md#snapcraft)
+* [Debugging](debugging.md)
 * [Extending Electron Forge](extend.md)
   * [Writing Plugins](extend.md#writing-plugins)
   * [Writing Makers](extend.md#writing-makers)

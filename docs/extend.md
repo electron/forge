@@ -34,7 +34,7 @@ and you must look at the `hookName` and either return a function to run for that
 hook or return a falsey value to indicate you have no hook to run.
 
 The possible `hookName` values and the parameters passed to the hook function
-you return are documented over in the [Configuration](config) section of the
+you return are documented over in the [Configuration](/config) section of the
 docs.
 
 {% sample lang="javascript" %}
@@ -66,7 +66,7 @@ watch the one you returned.  If you return `null` forge will spawn Electron
 itself but you could still run custom logic such as started compilation for
 code or downloading certain binaries before start.
 
-NOTE: `StartOptions` is documented [on our API site](https://docs.electronforge.io/typedef/index.html#static-typedef-StartOptions)
+NOTE: `StartOptions` is documented [on our API site](ref:///ts/api/core/interfaces/startoptions.html)
 
 {% sample lang="javascript" %}
 {%ace edit=false, lang='javascript', check=false, theme="tomorrow_night" %}
