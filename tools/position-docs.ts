@@ -32,7 +32,10 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     const htmlFiles = await new Promise<string[]>(resolve => Glob(path.resolve(docPath, '**', '*.html'), (e, l) => resolve(l)));
     for (const htmlFile of htmlFiles) {
       const content = await fs.readFile(htmlFile, 'utf8');
-      await fs.writeFile(htmlFile, content.replace(/=\"[^"]*assets\//gi, '="/assets/'));
+      await fs.writeFile(htmlFile, content
+        .replace(/=\"[^"]*assets\//gi, '="/assets/')
+        .replace(/(<a href="(?!(?:https?:\/\/)|\.|\/|\#))(.+?)"/gi, '$1./$2"')
+      );
     }
   }
 })();
