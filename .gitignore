@@ -7,3 +7,4 @@ packages/.old
 docs
 doc
 .vscode
+packages/utils/types/index.d.ts

@@ -5,22 +5,34 @@ import fs from 'fs-extra';
 import path from 'path';
 
 export interface MakerOptions {
-  /* The directory containing the packaged Electron application */
+  /**
+   * The directory containing the packaged Electron application
+   */
   dir: string;
-  /*
+  /**
    * The directory you should put all your artifacts in (potentially in sub folders)
    * NOTE: this directory is not guarunteed to already exist
    */
   makeDir: string
-  /* The resolved human friendly name of the project */
+  /**
+   * The resolved human friendly name of the project
+   */
   appName: string;
-  /* The target platform you should make for */
+  /**
+   * The target platform you should make for
+   */
   targetPlatform: ForgePlatform;
-  /* The target architecture you should make for */
+  /**
+   * The target architecture you should make for
+   */
   targetArch: ForgeArch;
-  /* Fully resolved forge configuration, you shouldn't really need this */
+  /**
+   * Fully resolved forge configuration, you shouldn't really need this
+   */
   forgeConfig: ForgeConfig;
-  /* The applications package.json file */
+  /**
+   * The applications package.json file
+   */
   packageJSON: any;
 }
 
