@@ -6,7 +6,7 @@ import mime from 'mime-types';
 import path from 'path';
 
 import GitHub from './util/github';
-import { PublisherGithubConfig } from './Config';
+import { PublisherGitHubConfig } from './Config';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 
 interface GitHubRelease {
@@ -17,7 +17,7 @@ interface GitHubRelease {
   upload_url: string;
 }
 
-export default class PublisherGithub extends PublisherBase<PublisherGithubConfig> {
+export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
   async publish({ makeResults }: PublisherOptions) {
@@ -64,7 +64,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGithubConfig
               repo: config.repository.name,
               tag_name: `v${releaseName}`,
               name: `v${releaseName}`,
-              draft: config.repository.draft !== false,
+              draft: config.draft !== false,
               prerelease: config.prerelease === true,
             })).data;
           } else {

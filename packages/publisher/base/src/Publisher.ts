@@ -22,7 +22,7 @@ export interface PublisherOptions {
 export default abstract class Publisher<C> {
   public abstract name: string;
   public defaultPlatforms?: ForgePlatform[];
-  __isElectronForgePublisher?: boolean;
+  __isElectronForgePublisher!: true;
 
   constructor(public config: C, protected _platforms?: ForgePlatform[]) {
     this.config = config;

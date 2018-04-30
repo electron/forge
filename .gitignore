@@ -4,4 +4,7 @@ yarn-error.log
 packages/.old
 **/tsconfig.json
 !/tsconfig.json
+docs
+doc
 .vscode
+packages/utils/types/index.d.ts

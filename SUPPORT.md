@@ -1,6 +1,6 @@
 # Support for Electron Forge
 
-If you have questions about usage, we encourage you to browse the [website](https://electronforge.io/),
+If you have questions about usage, we encourage you to browse the [website](https://v6.electronforge.io/),
 and visit one of the several [community-driven sites](https://github.com/electron/electron#community).
 
 ## Troubleshooting

@@ -22,13 +22,14 @@
   },
   "scripts": {
     "clean": "bolt ws exec -- rimraf dist",
-    "prebuild": "bolt clean && ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tsc --emitDeclarationOnly",
+    "prebuild": "bolt clean && ts-node tools/link-ts.ts && ts-node tools/copy-shared-types.ts && bolt ws exec -- node_modules/.bin/tsc --emitDeclarationOnly",
     "build": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\"",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
-    "docs:build": "cd docs && gitbook build",
-    "docs:install": "cd docs && gitbook install",
-    "docs:serve": "cd docs && gitbook serve",
+    "docs": "bolt docs:generate && bolt docs:position",
+    "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
+    "docs:position": "ts-node tools/position-docs.ts",
+    "docs:deploy": "bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "lint": "bolt ws exec -- node_modules/.bin/eslint src test",
     "test": "bolt ws run test"
   },
@@ -48,7 +49,6 @@
     "electron-rebuild": "^1.6.0",
     "form-data": "^2.1.4",
     "fs-extra": "^5.0.0",
-    "gitbook-cli": "^2.3.2",
     "glob": "^7.1.1",
     "inquirer": "^5.0.0",
     "lodash.merge": "^4.6.0",
@@ -126,6 +126,7 @@
     "rimraf": "^2.6.2",
     "sinon": "^4.1.2",
     "ts-node": "^6.0.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.8.1"
   },
   "optionalDependencies": {
