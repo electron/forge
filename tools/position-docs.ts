@@ -17,9 +17,10 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
   let copiedAssets = false;
   await fs.remove(path.resolve(DOCS_PATH, 'assets'));
-  await fs.remove(path.resolve(DOCS_PATH, 'ts'));
+  await fs.remove(path.resolve(DOCS_PATH));
   for (const dir of packageDirs) {
-    const docPath = path.resolve(DOCS_PATH, 'ts', path.basename(path.dirname(dir)), path.basename(dir));
+    const subPath = path.posix.join(path.basename(path.dirname(dir)), path.basename(dir));
+    const docPath = path.resolve(DOCS_PATH, subPath);
     if (!copiedAssets) {
       await fs.copy(path.resolve(dir, 'doc', 'assets'), path.resolve(DOCS_PATH, 'assets'));
       copiedAssets = true;
@@ -32,9 +33,12 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     const htmlFiles = await new Promise<string[]>(resolve => Glob(path.resolve(docPath, '**', '*.html'), (e, l) => resolve(l)));
     for (const htmlFile of htmlFiles) {
       const content = await fs.readFile(htmlFile, 'utf8');
+      const relative = path.relative(path.resolve(DOCS_PATH, subPath), path.dirname(htmlFile));
       await fs.writeFile(htmlFile, content
         .replace(/=\"[^"]*assets\//gi, '="/assets/')
-        .replace(/(<a href="(?!(?:https?:\/\/)|\.|\/|\#))(.+?)"/gi, '$1./$2"')
+        .replace(/(<a href="(?!(?:https?:\/\/)|\/|\#))(.+?)"/gi, (subString, m1: string, m2: string) => {
+          return `${m1}/${path.posix.join(subPath, relative, m2)}"`;
+        })
       );
     }
   }
