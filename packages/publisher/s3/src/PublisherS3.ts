@@ -43,8 +43,8 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     }
 
     const s3Client = new AWS.S3({
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
+      accessKeyId: config.accessKeyId || process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
     });
 
     if (!s3Client.config.credentials || !config.bucket) {

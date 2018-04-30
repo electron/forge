@@ -88,7 +88,9 @@ An Electron Forge Maker has to export a single class that extends our base
 maker.  The base plugin can be depended on by installing
 `@electron-forge/maker-base`.
 
-The `MakerBase` class has some helper methods for your convenience.
+The `MakerBase` class has some helper methods for your convenience.  Check out
+the interface of [`Makerbase`](ref:///ts/maker/base/classes/maker.html) for more
+advanced API details.
 
 | Method | Description |
 |--------|-------------|
@@ -159,7 +161,13 @@ export default class MyMaker extends MakerBase {
 
 An Electron Forge Publisher has to export a single class that extends our base
 maker.  The base plugin can be depended on by installing
-`@electron-forge/maker-base`.  Your maker must implement one method:
+`@electron-forge/maker-base`.
+
+Check out the interface of
+[`PublisherBase`](ref:///ts/publisher/base/classes/publisher.html) for more
+advanced API details.
+
+Your maker must implement one method:
 
 {% method %}
 ### `publish(options): Promise<void>`
