@@ -1,5 +1,14 @@
 # Plugins
 
+{% raw %} 
+
+<div style="background: #FC573A; padding: 16px; text-align: center; color: #fff; font-weight: bold; line-height: 2em; margin-bottom: 12px">
+  The Plugin system of Electron Forge V6 is still a Work In Progress<br />
+  If you need Electron Compile support we advise you remain on Electron Forge 5 and below
+</div>
+
+{% endraw %}
+
 Electron Forge has a plugin system which allows easy extensibility of the core
 functionality of forge.  By default forge takes a vanilla JS application and
 packages, makes and publishes it.  Through the use of plugins, some of which are
