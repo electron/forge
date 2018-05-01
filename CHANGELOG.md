@@ -1,6 +1,6 @@
-#### 6.0.0-beta.3 (2018-04-17)
+#### [6.0.0-beta.3](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.3) (2018-04-17)
 
-#### 6.0.0-beta.2 (2018-04-16)
+#### [6.0.0-beta.2](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.2) (2018-04-16)
 
 ##### Chores
 
