@@ -62,16 +62,18 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
   childProcess.execSync(`git tag v${version}`, {
     cwd: BASE_DIR,
   });
-  childProcess.execSync(`node_modules/.bin/changelog --tag=v${lastVersion}`, {
-    cwd: BASE_DIR,
-  });
+  setTimeout(() => {
+    childProcess.execSync(`node_modules/.bin/changelog --tag=v${lastVersion}`, {
+      cwd: BASE_DIR,
+    });
 
-  require('../ci/fix-changelog');
+    require('../ci/fix-changelog');
 
-  childProcess.execSync('git add CHANGELOG.md', {
-    cwd: BASE_DIR,
-  });
-  childProcess.execSync('git commit -m "Update CHANGELOG.md"', {
-    cwd: BASE_DIR,
-  });
+    childProcess.execSync('git add CHANGELOG.md', {
+      cwd: BASE_DIR,
+    });
+    childProcess.execSync('git commit -m "Update CHANGELOG.md"', {
+      cwd: BASE_DIR,
+    });
+  }, 2000);
 })().catch(console.error);

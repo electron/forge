@@ -1,3 +1,13 @@
+#### 6.0.0-beta.5 (2018-05-01)
+
+##### Documentation Changes
+
+*  fix changelog generation (3f9ec6b8)
+
+##### Bug Fixes
+
+* **core:**  fix make not respecting mas as a target platform (10b38765)
+
 #### [6.0.0-beta.4](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.4) (2018-05-01)
 
 ##### Chores
