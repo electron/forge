@@ -8,31 +8,40 @@ import PluginInterface from './plugin-interface';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
-const proxify = <T extends object>(object: T, envPrefix: string): T => {
-  const newObject: T = {} as any;
+const proxify = <T extends object>(buildIdentifier: string | (() => string), object: T, envPrefix: string): T => {
+  let newObject: T = {} as any;
+  if (Array.isArray(object)) {
+    newObject = [] as any;
+  }
 
   Object.keys(object).forEach((key) => {
-    if (typeof (object as any)[key] === 'object' && !Array.isArray((object as any)[key]) && key !== 'pluginInterface') {
-      (newObject as any)[key] = proxify((object as any)[key], `${envPrefix}_${underscoreCase(key)}`);
+    if (typeof (object as any)[key] === 'object' && key !== 'pluginInterface') {
+      (newObject as any)[key] = proxify(buildIdentifier, (object as any)[key], `${envPrefix}_${underscoreCase(key)}`);
     } else {
       (newObject as any)[key] = (object as any)[key];
     }
   });
 
   return new Proxy<T>(newObject, {
-    get(target, name) {
+    get(target, name, receiver) {
       // eslint-disable-next-line no-prototype-builtins
       if (!target.hasOwnProperty(name) && typeof name === 'string') {
         const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
         if (envValue) return envValue;
       }
-      return (target as any)[name];
+      const value = Reflect.get(target, name, receiver);
+
+      if (value && typeof value === 'object' && value.__isMagicBuildIdentifierMap) {
+        const identifier = typeof buildIdentifier === 'function' ? buildIdentifier() : buildIdentifier;
+        return value.map[identifier];
+      }
+      return value;
     },
     getOwnPropertyDescriptor(target, name) {
       const envValue = process.env[`${envPrefix}_${underscoreCase(name as string)}`];
       // eslint-disable-next-line no-prototype-builtins
       if (target.hasOwnProperty(name)) {
-        return Object.getOwnPropertyDescriptor(target, name);
+        return Reflect.getOwnPropertyDescriptor(target, name);
       } else if (envValue) {
         return { writable: true, enumerable: true, configurable: true, value: envValue };
       }
@@ -49,6 +58,13 @@ export function setInitialForgeConfig(packageJSON: any) {
   /* eslint-disable no-param-reassign */
   packageJSON.config.forge.makers[0].config.name = name.replace(/-/g, '_');
   /* eslint-enable no-param-reassign */
+}
+
+export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
+  return {
+    __isMagicBuildIdentifierMap: true,
+    map,
+  };
 }
 
 export default async (dir: string) => {
@@ -91,5 +107,5 @@ export default async (dir: string) => {
 
   forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
 
-  return proxify<ForgeConfig>(forgeConfig, 'ELECTRON_FORGE');
+  return proxify<ForgeConfig>(forgeConfig.buildIdentifier || '', forgeConfig, 'ELECTRON_FORGE');
 };

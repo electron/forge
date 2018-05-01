@@ -11,6 +11,8 @@ import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
 
+import { fromBuildIdentifier } from '../util/forge-config';
+
 export class ForgeAPI {
   /**
    * Attempt to import a given module directory to the Electron Forge standard.
@@ -72,7 +74,21 @@ export class ForgeAPI {
   }
 }
 
+export class ForgeUtils {
+  /**
+   * Helper for creating a dynamic config value that will get it's real value
+   * based on the "buildIdentifier" in your forge config.
+   *
+   * Usage:
+   * `fromBuildIdentifier({ stable: 'App', beta: 'App Beta' })`
+   */
+  fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
+    return fromBuildIdentifier(map);
+  }
+}
+
 const api = new ForgeAPI();
+const utils = new ForgeUtils();
 
 export {
   ForgeMakeResult,
@@ -86,4 +102,5 @@ export {
   PublishOptions,
   StartOptions,
   api,
+  utils,
 };

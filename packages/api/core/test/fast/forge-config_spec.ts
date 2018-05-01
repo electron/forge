@@ -11,7 +11,7 @@ const defaults = {
   plugins: [],
 };
 
-describe('forge-config', () => {
+describe.only('forge-config', () => {
   it('should resolve the object in package.json with defaults  if one exists', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
     delete config.pluginInterface;
@@ -54,7 +54,11 @@ describe('forge-config', () => {
   it('should resolve the JS file exports in config.forge points to a JS file', async () => {
     const config = JSON.parse(JSON.stringify(await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))));
     delete config.pluginInterface;
+    delete config.sub;
+    delete config.topLevelProp;
+    delete config.topLevelUndef;
     expect(config).to.be.deep.equal(Object.assign({}, defaults, {
+      buildIdentifier: 'beta',
       packagerConfig: { foo: 'bar', baz: {} },
       s3: {},
       electronReleaseServer: {},
@@ -77,5 +81,32 @@ describe('forge-config', () => {
     expect(conf.electronReleaseServer.baseUrl).to.equal('http://example.com');
     delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
     delete process.env.ELECTRON_FORGE_ELECTRON_RELEASE_SERVER_BASE_URL;
+  });
+
+  it('should resolve values fromBuildIdentifier', async () => {
+    const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(conf.topLevelProp).to.equal('foo');
+    expect(conf.sub).to.deep.equal({
+      prop: {
+        deep: {
+          prop: 'bar'
+        },
+        inArray: [
+          'arr',
+          'natural',
+          'array'
+        ]
+      },
+    });
+  });
+
+  it('should resolve undefined from fromBuildIdentifier if no value is provided', async () => {
+    const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(conf.topLevelUndef).to.equal(undefined);
+  });
+
+  it('should leave arrays intact', async () => {
+    const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(Array.isArray(conf.sub.prop.inArray)).to.equal(true, 'original array should be recognized as array');
   });
 });
