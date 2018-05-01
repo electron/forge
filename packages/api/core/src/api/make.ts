@@ -85,7 +85,7 @@ export default async ({
   } = {};
   const targets = (overrideTargets || forgeConfig.makers.filter(
     maker => maker.platforms
-      ? maker.platforms.indexOf(platform) !== -1
+      ? maker.platforms.indexOf(actualTargetPlatform) !== -1
       : true
   )).map((target) => {
     if (typeof target === 'string') {
@@ -145,7 +145,7 @@ export default async ({
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
 
-  info(interactive, `Making for the following targets: ${`${targets.join(', ')}`.cyan}`);
+  info(interactive, `Making for the following targets: ${`${targets.map((t, i) => makers[i].name).join(', ')}`.cyan}`);
 
   const packageJSON = await readPackageJSON(dir);
   const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
@@ -165,7 +165,7 @@ export default async ({
       targetId += 1;
 
       // eslint-disable-next-line no-loop-func
-      await asyncOra(`Making for target: ${maker.name} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
+      await asyncOra(`Making for target: ${maker.name.green} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
           const artifacts = await maker.make({
             dir: packageDir,
