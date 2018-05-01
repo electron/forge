@@ -93,6 +93,6 @@ Electron Compile.
 
 # Team
 
-| [![Samuel Attard](https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144)](https://samuelattard.com) | [![Malept](https://avatars2.githubusercontent.com/u/11417?s=460&v=4)](https://github.com/malept) |
+| <img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /> | <img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /> |
 |---| --- |
 | [Samuel Attard](https://samuelattard.com) | [Malept](https://github.com/malept) |
