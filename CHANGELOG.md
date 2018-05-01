@@ -1,26 +1,26 @@
-#### 6.0.0-beta.4 (2018-05-01)
+#### [6.0.0-beta.4](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.4) (2018-05-01)
 
 ##### Chores
 
 * **docs:**
-  *  fix changelog for last 2 versions (bc8620e0)
-  *  Fix image sizing in README (74fcd749)
-* **generic:**  upgrade @octokit/rest, ora, & proxyquire (#477) (825c7f2c)
+  *  fix changelog for last 2 versions ([bc8620e0](https://github.com/electron-userland/electron-forge/commit/bc8620e0))
+  *  Fix image sizing in README ([74fcd749](https://github.com/electron-userland/electron-forge/commit/74fcd749))
+* **generic:**  upgrade @octokit/rest, ora, & proxyquire (#477) ([825c7f2c](https://github.com/electron-userland/electron-forge/commit/825c7f2c))
 
 ##### New Features
 
 * **core:**
-  *  add fromBuildIdentifier helper for dynamic at-build-time config (dc6c9fce)
-  *  V6 Docs (#496) (dab06d9c)
-* **maker-pkg:**  add new maker for .pkg files on macOS (8728baa1)
+  *  add fromBuildIdentifier helper for dynamic at-build-time config ([dc6c9fce](https://github.com/electron-userland/electron-forge/commit/dc6c9fce))
+  *  V6 Docs (#496) ([dab06d9c](https://github.com/electron-userland/electron-forge/commit/dab06d9c))
+* **maker-pkg:**  add new maker for .pkg files on macOS ([8728baa1](https://github.com/electron-userland/electron-forge/commit/8728baa1))
 
 ##### Bug Fixes
 
-* **core:**  check packageJSON.main is set and don't enforce subdir rule (ebd9a958)
+* **core:**  check packageJSON.main is set and don't enforce subdir rule ([ebd9a958](https://github.com/electron-userland/electron-forge/commit/ebd9a958))
 
 ##### Refactors
 
-* **all:**  rewrote in typescript (a3faa619)
+* **all:**  rewrote in typescript ([a3faa619](https://github.com/electron-userland/electron-forge/commit/a3faa619))
 
 #### [6.0.0-beta.3](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.3) (2018-04-17)
 
@@ -33,7 +33,7 @@
 * **core:**  remote gitignore ([c97b25dd](https://github.com/electron-userland/electron-forge/commit/c97b25dd))
 *  add missing files from 6.0.0-beta.1 ([24cdcb55](https://github.com/electron-userland/electron-forge/commit/24cdcb55))
 
-#### 6.0.0-beta.1 (2018-04-16)
+#### [6.0.0-beta.1](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.1) (2018-04-16)
 
 ##### Chores
 
