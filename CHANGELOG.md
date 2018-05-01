@@ -1,3 +1,27 @@
+#### 6.0.0-beta.4 (2018-05-01)
+
+##### Chores
+
+* **docs:**
+  *  fix changelog for last 2 versions (bc8620e0)
+  *  Fix image sizing in README (74fcd749)
+* **generic:**  upgrade @octokit/rest, ora, & proxyquire (#477) (825c7f2c)
+
+##### New Features
+
+* **core:**
+  *  add fromBuildIdentifier helper for dynamic at-build-time config (dc6c9fce)
+  *  V6 Docs (#496) (dab06d9c)
+* **maker-pkg:**  add new maker for .pkg files on macOS (8728baa1)
+
+##### Bug Fixes
+
+* **core:**  check packageJSON.main is set and don't enforce subdir rule (ebd9a958)
+
+##### Refactors
+
+* **all:**  rewrote in typescript (a3faa619)
+
 #### [6.0.0-beta.3](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.3) (2018-04-17)
 
 #### [6.0.0-beta.2](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.2) (2018-04-16)
