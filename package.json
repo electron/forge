@@ -9,7 +9,8 @@
       "packages/installer/*",
       "packages/maker/*",
       "packages/publisher/*",
-      "packages/utils/*"
+      "packages/utils/*",
+      "packages/plugin/*"
     ]
   },
   "config": {

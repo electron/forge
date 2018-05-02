@@ -59,8 +59,7 @@ import { RebuildOptions } from "electron-rebuild/lib/src/rebuild";
 
     init(dir: string, forgeConfig: ForgeConfig): void;
     getHook?(hookName: string): ForgeHookFn | null;
-    /* FIXME: MarshallOfSound - Having any here is depressing */
-    startLogic?(opts: any): Promise<ChildProcess | false>;
+    startLogic?(opts: StartOptions): Promise<ChildProcess | false>;
   }
 
   export interface IForgeResolvableMaker {
@@ -83,5 +82,36 @@ import { RebuildOptions } from "electron-rebuild/lib/src/rebuild";
   export interface IForgePublisher {
     __isElectronForgePublisher: boolean;
     platforms?: undefined;
+  }
+
+  export interface StartOptions {
+    /**
+     * The path to the electron forge project to run
+     */
+    dir?: string;
+    /**
+     * The path (relative to dir) to the electron app to run relative to the project directory
+     */
+    appPath?: string;
+    /**
+     * Whether to use sensible defaults or prompt the user visually
+     */
+    interactive?: boolean;
+    /**
+     * Enables advanced internal Electron debug calls
+     */
+    enableLogging?: boolean;
+    /**
+     * Arguments to pass through to the launched Electron application
+     */
+    args?: (string | number)[];
+    /**
+     * Runs the Electron process as if it were node, disables all Electron API's
+     */
+    runAsNode?: boolean;
+    /**
+     * Enables the node inspector, you can connect to this from chrome://inspect
+     */
+    inspect?: boolean;
   }
 // }
