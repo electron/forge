@@ -17,6 +17,7 @@ import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
+import electronVersion from '../util/electron-version';
 
 const { hostArch }: { hostArch: () => ForgeArch | 'all'} = require('electron-packager/targets');
 
@@ -154,12 +155,18 @@ export default async ({
     done();
   }) as ElectronPackagerAfterCopyHook);
 
+  const afterExtractHooks = [(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
+    done();
+  }) as ElectronPackagerAfterCopyHook];
+  afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
+
   const packageOpts: packager.Options = Object.assign({
     asar: false,
     overwrite: true,
   }, forgeConfig.packagerConfig, {
     afterCopy: sequentialHooks(afterCopyHooks),
-    afterExtract: sequentialHooks(resolveHooks(forgeConfig.packagerConfig.afterExtract, dir)),
+    afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),
     dir,
     arch,

@@ -1,5 +1,6 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
+import { StartOptions } from '@electron-forge/shared-types';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
@@ -11,36 +12,7 @@ import runHook from '../util/hook';
 import getElectronVersion from '../util/electron-version';
 import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
-export interface StartOptions {
-  /**
-   * The path to the electron forge project to run
-   */
-  dir?: string;
-  /**
-   * The path (relative to dir) to the electron app to run relative to the project directory
-   */
-  appPath?: string;
-  /**
-   * Whether to use sensible defaults or prompt the user visually
-   */
-  interactive?: boolean;
-  /**
-   * Enables advanced internal Electron debug calls
-   */
-  enableLogging?: boolean;
-  /**
-   * Arguments to pass through to the launched Electron application
-   */
-  args?: (string | number)[];
-  /**
-   * Runs the Electron process as if it were node, disables all Electron API's
-   */
-  runAsNode?: boolean;
-  /**
-   * Enables the node inspector, you can connect to this from chrome://inspect
-   */
-  inspect?: boolean;
-}
+export { StartOptions };
 
 export default async ({
   dir = process.cwd(),
@@ -79,6 +51,8 @@ export default async ({
 
   await runHook(forgeConfig, 'generateAssets');
 
+  let electronExecPath = path.resolve(dir, 'node_modules/electron/cli');
+
   // If a plugin has taken over the start command let's stop here
   const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
     dir,
@@ -89,7 +63,11 @@ export default async ({
     runAsNode,
     inspect,
   });
-  if (spawnedPluginChild) return spawnedPluginChild;
+  if (typeof spawnedPluginChild === 'string') {
+    electronExecPath = spawnedPluginChild;
+  } else if (spawnedPluginChild) {
+    return spawnedPluginChild;
+  }
 
   const spawnOpts = {
     cwd: dir,
@@ -113,7 +91,7 @@ export default async ({
   let spawned!: ChildProcess;
 
   await asyncOra('Launching Application', async () => {
-    spawned = spawn(process.execPath, [path.resolve(dir, 'node_modules/electron/cli'), appPath].concat(args as string[]), spawnOpts);
+    spawned = spawn(process.execPath, [electronExecPath, appPath].concat(args as string[]), spawnOpts);
   });
 
   return spawned;

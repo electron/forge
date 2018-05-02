@@ -52,7 +52,6 @@ export default class PluginInterface implements IForgePluginInterface {
     }
   }
 
-  // FIXME: any
   async overrideStartLogic(opts: StartOptions) {
     let newStartFn;
     const claimed = [];
