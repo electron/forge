@@ -1,3 +1,9 @@
+#### [6.0.0-beta.8](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.8) (2018-05-03)
+
+##### Chores
+
+*  fix readme generation for info blocks ([7609a87c](https://github.com/electron-userland/electron-forge/commit/7609a87c))
+
 #### [6.0.0-beta.7](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.7) (2018-05-03)
 
 ##### Chores
