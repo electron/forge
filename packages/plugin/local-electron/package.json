@@ -8,10 +8,11 @@
   "main": "dist/LocalElectronPlugin.js",
   "typings": "dist/LocalElectronPlugin.d.ts",
   "scripts": {
-    "test": "exit 0"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
     "chai": "^4.0.0",
+    "fs-extra": "^5.0.0",
     "mocha": "^5.0.0"
   },
   "engines": {

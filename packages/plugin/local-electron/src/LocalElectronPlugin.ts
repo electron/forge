@@ -1,4 +1,4 @@
-import PluginBase, { StartOptions } from '@electron-forge/plugin-base';
+import PluginBase from '@electron-forge/plugin-base';
 import { spawn } from 'child_process';
 import fs from 'fs-extra';
 
@@ -7,7 +7,17 @@ import { LocalElectronPluginConfig } from './Config';
 export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginConfig> {
   name = 'local-electron';
 
-  async startLogic(startOpts: StartOptions) {
+  constructor(config: LocalElectronPluginConfig) {
+    super(config);
+    if (typeof this.config.enabled === 'undefined') {
+      this.config = {
+        ...this.config,
+        enabled: true,
+      };
+    }
+  }
+
+  async startLogic() {
     if (this.config.enabled) {
       this.checkPlatform(process.platform);
       process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
