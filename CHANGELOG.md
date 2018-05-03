@@ -1,3 +1,13 @@
+#### [6.0.0-beta.7](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.7) (2018-05-03)
+
+##### Chores
+
+*  set up README sync so that docs on the site are published to js.electronforge.io and to npm w ([513013e6](https://github.com/electron-userland/electron-forge/commit/513013e6))
+
+##### Bug Fixes
+
+*  remove unneeded 2 second timeout ([ab64142f](https://github.com/electron-userland/electron-forge/commit/ab64142f))
+
 #### [6.0.0-beta.6](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.6) (2018-05-03)
 
 ##### Chores
