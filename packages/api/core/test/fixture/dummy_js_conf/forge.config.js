@@ -1,4 +1,4 @@
-const { fromBuildIdentifier } = require('../../../src/api');
+const { utils: { fromBuildIdentifier } } = require('../../../src/api');
 
 module.exports = {
   buildIdentifier: 'beta',
