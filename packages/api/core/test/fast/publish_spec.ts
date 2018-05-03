@@ -244,7 +244,7 @@ describe('publish', () => {
           darwinArtifacts.push(...result.artifacts);
         }
         expect(darwinArtifacts.sort()).to.deep.equal(
-          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort()
+          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
         );
         const win32Args = publisherSpy.getCall(win32Index).args[0];
         const win32Artifacts = [];
@@ -252,7 +252,7 @@ describe('publish', () => {
           win32Artifacts.push(...result.artifacts);
         }
         expect(win32Artifacts.sort()).to.deep.equal(
-          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort()
+          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
         );
       });
     });

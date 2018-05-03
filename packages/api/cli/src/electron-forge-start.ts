@@ -20,7 +20,7 @@ import './util/terminate';
   program
     .version(require('../package.json').version)
     .arguments('[cwd]')
-    .option('-p, --app-path <path>', "Override the path to the Electron app to launch (defaults to '.')")
+    .option('-p, --app-path <path>', 'Override the path to the Electron app to launch (defaults to \'.\')')
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
     .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
     .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
@@ -36,11 +36,11 @@ import './util/terminate';
     .parse(commandArgs);
 
   program.on('--help', () => {
-    console.log("  Any arguments found after '--' will be passed to the Electron app, e.g.");
+    console.log('  Any arguments found after "--" will be passed to the Electron app, e.g.');
     console.log('');
     console.log('    $ electron-forge /path/to/project -l -- -d -f foo.txt');
     console.log('');
-    console.log("  will pass the arguments '-d -f foo.txt' to the Electron app");
+    console.log('  will pass the arguments "-d -f foo.txt" to the Electron app');
   });
 
   const opts: StartOptions = {

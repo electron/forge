@@ -1,4 +1,4 @@
-import { ForgePlatform, ForgeConfig, ForgeArch, ForgeMakeResult } from "@electron-forge/shared-types";
+import { ForgePlatform, ForgeConfig, ForgeArch, ForgeMakeResult } from '@electron-forge/shared-types';
 
 /* eslint-disable no-unused-vars */
 
@@ -22,9 +22,11 @@ export interface PublisherOptions {
 export default abstract class Publisher<C> {
   public abstract name: string;
   public defaultPlatforms?: ForgePlatform[];
+  /* tslint:disable variable-name */
   __isElectronForgePublisher!: true;
+  /* tslint:enable variable-name */
 
-  constructor(public config: C, protected _platforms?: ForgePlatform[]) {
+  constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {
     this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
@@ -34,7 +36,7 @@ export default abstract class Publisher<C> {
   }
 
   get platforms() {
-    if (this._platforms) return this._platforms;
+    if (this.providedPlatforms) return this.providedPlatforms;
     if (this.defaultPlatforms) return this.defaultPlatforms;
     return ['win32', 'linux', 'darwin', 'mas'];
   }

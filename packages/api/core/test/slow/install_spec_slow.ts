@@ -44,15 +44,15 @@ describe('install', () => {
   });
 
   it('should throw an error when given an invalid repository name', async () => {
-    await expect(install({ repo: 'foobar', interactive: false, chooseAsset })).to.eventually.be.rejected;
+    await expect(install({ chooseAsset, repo: 'foobar', interactive: false })).to.eventually.be.rejected;
   });
 
   it('should throw an error if the fetch fails', async () => {
     fetch.get('*', {
       throws: new Error('it broke'),
     });
-    await expect(install({ repo: 'a/b', interactive: false, chooseAsset })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "a/b".  Please check the name and try again.'
+    await expect(install({ chooseAsset, repo: 'a/b', interactive: false })).to.eventually.be.rejectedWith(
+      'Failed to find releases for repository "a/b".  Please check the name and try again.',
     );
   });
 
@@ -60,8 +60,8 @@ describe('install', () => {
     fetch.get('*', {
       message: 'Not Found',
     });
-    await expect(install({ repo: 'b/c', interactive: false, chooseAsset })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "b/c".  Please check the name and try again.'
+    await expect(install({ chooseAsset, repo: 'b/c', interactive: false })).to.eventually.be.rejectedWith(
+      'Failed to find releases for repository "b/c".  Please check the name and try again.',
     );
   });
 
@@ -69,8 +69,8 @@ describe('install', () => {
     fetch.get('*', {
       lolz: 'this aint no array',
     });
-    await expect(install({ repo: 'c/d', interactive: false, chooseAsset })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "c/d".  Please check the name and try again.'
+    await expect(install({ chooseAsset, repo: 'c/d', interactive: false })).to.eventually.be.rejectedWith(
+      'Failed to find releases for repository "c/d".  Please check the name and try again.',
     );
   });
 
@@ -81,8 +81,8 @@ describe('install', () => {
       { tag_name: 'v1.2.0' },
       { tag_name: '0.1.0' },
     ]);
-    await expect(install({ repo: 'e/f', interactive: false, chooseAsset })).to.eventually.be.rejectedWith(
-      'Could not find any assets for the latest release'
+    await expect(install({ chooseAsset, repo: 'e/f', interactive: false })).to.eventually.be.rejectedWith(
+      'Could not find any assets for the latest release',
     );
   });
 
@@ -97,8 +97,8 @@ describe('install', () => {
         ],
       },
     ]);
-    await expect(install({ repo: 'f/g', interactive: false, chooseAsset })).to.eventually.be.rejectedWith(
-      `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`
+    await expect(install({ chooseAsset, repo: 'f/g', interactive: false })).to.eventually.be.rejectedWith(
+      `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`,
     );
   });
 
@@ -118,7 +118,7 @@ describe('install', () => {
       },
     ]);
     expect(nuggetSpy.callCount).to.equal(0);
-    await install({ repo: 'g/h', interactive: false, chooseAsset });
+    await install({ chooseAsset, repo: 'g/h', interactive: false });
     expect(nuggetSpy.callCount).to.equal(1);
     expect(nuggetSpy.firstCall.args[0]).to.equal('fetch.it');
   });
@@ -140,7 +140,7 @@ describe('install', () => {
       },
     ]);
     await expect(install({ repo: 'h/i', interactive: false } as any)).to.eventually.be.rejectedWith(
-      'Expected chooseAsset to be a function in install call'
+      'Expected chooseAsset to be a function in install call',
     );
   });
 

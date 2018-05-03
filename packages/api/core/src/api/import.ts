@@ -164,7 +164,7 @@ export default async ({
   packageJSON = await readPackageJSON(dir);
 
   if (!packageJSON.version) {
-    warn(interactive, "Please set the 'version' in your application's package.json".yellow);
+    warn(interactive, 'Please set the "version" in your application\'s package.json'.yellow);
   }
 
   packageJSON.config = packageJSON.config || {};

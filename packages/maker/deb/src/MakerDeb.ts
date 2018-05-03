@@ -40,9 +40,9 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     await installer(Object.assign({
       options: {},
     }, this.config, {
+      arch,
       src: dir,
       dest: path.dirname(outPath),
-      arch,
       rename: undefined,
     }));
 

@@ -13,7 +13,7 @@ export interface MakerOptions {
    * The directory you should put all your artifacts in (potentially in sub folders)
    * NOTE: this directory is not guarunteed to already exist
    */
-  makeDir: string
+  makeDir: string;
   /**
    * The resolved human friendly name of the project
    */
@@ -39,9 +39,11 @@ export interface MakerOptions {
 export default abstract class Maker<C> {
   public abstract name: string;
   public abstract defaultPlatforms: ForgePlatform[];
+  /* tslint:disable variable-name */
   __isElectronForgeMaker!: true;
+  /* tslint:enable variable-name */
 
-  constructor(public config: C = {} as C, protected _platforms?: ForgePlatform[]) {
+  constructor(public config: C = {} as C, protected providedPlatforms?: ForgePlatform[]) {
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
@@ -50,7 +52,7 @@ export default abstract class Maker<C> {
   }
 
   get platforms() {
-    if (this._platforms) return this._platforms;
+    if (this.providedPlatforms) return this.providedPlatforms;
     return this.defaultPlatforms;
   }
 

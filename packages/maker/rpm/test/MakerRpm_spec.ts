@@ -9,7 +9,7 @@ import { MakerRpmConfig } from '../src/Config';
 import { rpmArch } from '../src/MakerRpm';
 import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerRpmConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerRpmConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerRpm', () => {
   let rpmModule: typeof MakerImpl;

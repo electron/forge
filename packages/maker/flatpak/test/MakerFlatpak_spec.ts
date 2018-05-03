@@ -10,7 +10,7 @@ import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
 import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerFlatpak', () => {
   let flatpakModule: typeof MakerImpl;

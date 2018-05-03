@@ -1,6 +1,6 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import { StartOptions } from '@electron-forge/shared-types';
+import { StartOptions, ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
@@ -10,7 +10,6 @@ import resolveDir from '../util/resolve-dir';
 import getForgeConfig from '../util/forge-config';
 import runHook from '../util/hook';
 import getElectronVersion from '../util/electron-version';
-import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
 export { StartOptions };
 
@@ -46,7 +45,7 @@ export default async ({
     getElectronVersion(packageJSON),
     process.platform as ForgePlatform,
     process.arch as ForgeArch,
-    forgeConfig.electronRebuildConfig
+    forgeConfig.electronRebuildConfig,
   );
 
   await runHook(forgeConfig, 'generateAssets');

@@ -7,7 +7,7 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerDMGConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerDMGConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerDMGConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerDMG', () => {
   let MakerDMG: typeof MakerImpl;

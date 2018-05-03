@@ -31,7 +31,7 @@
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
     "docs:position": "ts-node tools/position-docs.ts",
     "docs:deploy": "bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
-    "lint": "bolt ws exec -- node_modules/.bin/eslint src test",
+    "lint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
     "test": "bolt ws run test"
   },
   "dependencies": {
@@ -106,7 +106,6 @@
     "@types/semver": "^5.5.0",
     "@types/sinon": "^4.3.1",
     "asar": "^0.14.0",
-    "babel-eslint": "^7.0.0",
     "babel-plugin-source-map-support": "^2.0.1",
     "chai": "^4.0.0",
     "chai-as-promised": "^7.0.0",
@@ -117,10 +116,6 @@
     "esdoc": "^1.0.1",
     "esdoc-importpath-plugin": "^1.0.0",
     "esdoc-standard-plugin": "^1.0.0",
-    "eslint": "^3.7.1",
-    "eslint-config-airbnb-base": "^8.0.0",
-    "eslint-plugin-import": "^1.16.0",
-    "eslint-plugin-mocha": "^4.8.0",
     "fetch-mock": "^6.0.0",
     "generate-changelog": "^1.0.2",
     "mocha": "^5.0.0",
@@ -130,6 +125,8 @@
     "rimraf": "^2.6.2",
     "sinon": "^4.1.2",
     "ts-node": "^6.0.0",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.8.0",
     "typedoc": "^0.11.1",
     "typescript": "^2.8.1"
   },

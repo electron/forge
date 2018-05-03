@@ -13,7 +13,7 @@ if (useFakeOra) {
 }
 
 export const fakeOra = (name: string) => {
-  let _name = name;
+  let oraName = name;
   const fake: OraImpl = {
     start: () => {
       d('Process Started:', fake.text);
@@ -36,11 +36,11 @@ export const fakeOra = (name: string) => {
       return fake;
     },
     get text() {
-      return _name;
+      return oraName;
     },
     set text(newName: string) {
-      d('Process Renamed:', _name, ' --> ', newName);
-      _name = newName;
+      d('Process Renamed:', oraName, ' --> ', newName);
+      oraName = newName;
     },
   };
   return fake;

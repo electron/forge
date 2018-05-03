@@ -1,5 +1,6 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
+import InstallerBase from '@electron-forge/installer-base';
 import debug from 'debug';
 import fetch from 'node-fetch';
 import fs from 'fs-extra';
@@ -21,6 +22,8 @@ const nugget = require('nugget');
 const d = debug('electron-forge:install');
 
 const GITHUB_API = 'https://api.github.com';
+
+class InstallerImpl extends InstallerBase { name = 'impl'; }
 
 interface Release {
   tag_name: string;
@@ -58,7 +61,7 @@ export default async ({
   interactive = false,
   prerelease = false,
   repo,
-  chooseAsset
+  chooseAsset,
 }: InstallOptions) => {
   asyncOra.interactive = interactive;
 
@@ -156,7 +159,7 @@ export default async ({
   await asyncOra('Installing Application', async (installSpinner) => {
     const installActions: {
       [key: string]: {
-        [key: string]: any;
+        [key: string]: typeof InstallerImpl;
       };
     } = {
       win32: {
@@ -178,6 +181,6 @@ export default async ({
     }
     const InstallerClass = installActions[process.platform][suffixFnIdent];
     const installer = new InstallerClass();
-    await installer.install({ filePath: fullFilePath, installSpinner });
+    await installer.install({ installSpinner, filePath: fullFilePath });
   });
 };

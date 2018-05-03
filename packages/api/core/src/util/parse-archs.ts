@@ -5,7 +5,7 @@ const { allOfficialArchsForPlatformAndVersion } = require('electron-packager/tar
 export default function parseArchs(
   platform: ForgePlatform | string,
   declaredArch: ForgeArch | 'all' | string,
-  electronVersion: string
+  electronVersion: string,
 ): ForgeArch[] {
   if (declaredArch === 'all') {
     return allOfficialArchsForPlatformAndVersion(platform, electronVersion) || ['x64'];

@@ -1,6 +1,8 @@
-import { ChildProcess } from "child_process";
-import { Options } from "electron-packager";
-import { RebuildOptions } from "electron-rebuild/lib/src/rebuild";
+/* tslint:disable ter-indent */
+
+import { ChildProcess } from 'child_process';
+import { Options } from 'electron-packager';
+import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
 // declare module '@electron-forge/shared-types' {
   export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
@@ -38,7 +40,7 @@ import { RebuildOptions } from "electron-rebuild/lib/src/rebuild";
     /**
      * An array of paths to artifacts generated for this make run
      */
-    artifacts: Array<string>;
+    artifacts: string[];
     /**
      * The state of the package.json file when the make happened
      */

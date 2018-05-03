@@ -61,7 +61,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     let uploaded = 0;
     await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
       const updateSpinner = () => {
-        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line
+        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
       };
 
       await Promise.all(artifacts.map(artifact =>
@@ -91,10 +91,11 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
           uploader.on('error', (err: Error) => done(err));
           uploader.on('progress', () => {
-            d(`Upload Progress (${path.basename(artifact.path)}) ${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`);
+            const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
+            d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
           });
           uploader.on('end', () => done());
-        })
+        }),
       ));
     });
   }

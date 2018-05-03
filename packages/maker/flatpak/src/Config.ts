@@ -71,7 +71,7 @@ export interface MakerFlatpakOptionsConfig {
    * but this is a useful way to install things such as appstream metadata
    * for an app, or dbus configuration files.
    */
-  files: Array<[string, string]>;
+  files: [string, string][];
   /**
    * This option can be used to build extra software modules into the flatpak
    * application sandbox. Most electron applications will not need this, but

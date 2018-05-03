@@ -20,5 +20,5 @@ export default abstract class InstallerLinux extends InstallerBase {
       type,
       program,
       () => pify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
-    );
+    )
 }

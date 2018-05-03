@@ -9,7 +9,7 @@ import { MakerDebConfig } from '../src/Config';
 import { debianArch } from '../src/MakerDeb';
 import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerDebConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerDebConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerDeb', () => {
   let MakerDeb: typeof MakerImpl;

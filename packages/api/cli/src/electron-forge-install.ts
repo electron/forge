@@ -23,19 +23,19 @@ import './util/terminate';
       choices.push({ name: asset.name, value: asset.id });
     });
     const { assetID } = await inquirer.createPromptModule()<{ assetID: string }>({
+      choices,
       type: 'list',
       name: 'assetID',
       message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
-      choices,
     });
 
     return assets.find(asset => asset.id === assetID)!;
-  }
+  };
 
   await api.install({
+    chooseAsset,
     repo,
     interactive: true,
-    chooseAsset,
     prerelease: program.prerelease,
   });
 })();

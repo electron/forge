@@ -26,6 +26,7 @@ export default async ({
     if (!resolvedDir) {
       throw 'Failed to locate lintable Electron application';
     }
+
     dir = resolvedDir;
 
     d('executing "run lint" in dir:', dir);

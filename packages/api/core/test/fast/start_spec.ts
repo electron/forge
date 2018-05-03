@@ -58,7 +58,7 @@ describe('start', () => {
     expect(spawnStub.callCount).to.equal(0);
   });
 
-  it("should pass electron '.' as the app path if not specified", async () => {
+  it('should pass electron \'.\' as the app path if not specified', async () => {
     resolveStub.returnsArg(0);
     await start({
       dir: __dirname,
@@ -120,7 +120,7 @@ describe('start', () => {
     resolveStub.returns(null);
 
     await expect(start({})).to.eventually.be.rejectedWith(
-      'Failed to locate startable Electron application'
+      'Failed to locate startable Electron application',
     );
   });
 
@@ -132,7 +132,7 @@ describe('start', () => {
       dir: __dirname,
       interactive: false,
     })).to.eventually.be.rejectedWith(
-      `Please set your application's 'version' in '${__dirname}/package.json'.`
+      `Please set your application's 'version' in '${__dirname}/package.json'.`,
     );
   });
 
@@ -141,9 +141,9 @@ describe('start', () => {
     resolveStub.returnsArg(0);
     spawnStub.returns(0);
     await start({
+      args,
       dir: __dirname,
       interactive: false,
-      args,
     });
     expect(spawnStub.callCount).to.equal(1);
     expect(spawnStub.firstCall.args[0]).to.equal(process.execPath);
@@ -155,9 +155,9 @@ describe('start', () => {
     resolveStub.returnsArg(0);
     spawnStub.returns(0);
     await start({
+      args,
       dir: __dirname,
       interactive: false,
-      args,
       inspect: true,
     });
     expect(spawnStub.callCount).to.equal(1);

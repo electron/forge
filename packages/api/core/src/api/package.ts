@@ -17,7 +17,6 @@ import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
-import electronVersion from '../util/electron-version';
 
 const { hostArch }: { hostArch: () => ForgeArch | 'all'} = require('electron-packager/targets');
 
@@ -165,12 +164,12 @@ export default async ({
     asar: false,
     overwrite: true,
   }, forgeConfig.packagerConfig, {
-    afterCopy: sequentialHooks(afterCopyHooks),
-    afterExtract: sequentialHooks(afterExtractHooks),
-    afterPrune: sequentialHooks(afterPruneHooks),
     dir,
     arch,
     platform,
+    afterCopy: sequentialHooks(afterCopyHooks),
+    afterExtract: sequentialHooks(afterExtractHooks),
+    afterPrune: sequentialHooks(afterPruneHooks),
     out: calculatedOutDir,
     electronVersion: getElectronVersion(packageJSON),
   });
@@ -178,7 +177,7 @@ export default async ({
 
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len
-    warn(interactive, "Please set 'version' or 'config.forge.packagerConfig.appVersion' in your application's package.json so auto-updates work properly".yellow);
+    warn(interactive, 'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow);
   }
 
   await runHook(forgeConfig, 'generateAssets');

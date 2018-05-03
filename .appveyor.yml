@@ -32,6 +32,7 @@ install:
 test_script:
 - node --version
 - yarn --version
-- bolt ws test
+- bolt lint
+- bolt test
 
 build: off

@@ -37,10 +37,10 @@ describe('LocalElectronPlugin', () => {
     });
 
     it('should always return false', async () => {
-      let p = new LocalElectronPlugin({ electronPath: 'test/bar' })
+      let p = new LocalElectronPlugin({ electronPath: 'test/bar' });
       expect(await p.startLogic()).to.equal(false);
 
-      p = new LocalElectronPlugin({ enabled: false, electronPath: 'test/bar' })
+      p = new LocalElectronPlugin({ enabled: false, electronPath: 'test/bar' });
       expect(await p.startLogic()).to.equal(false);
     });
   });
@@ -67,7 +67,7 @@ describe('LocalElectronPlugin', () => {
 
       afterEach(() => {
         return fs.remove(tmpDir);
-      })
+      });
 
       it('should return a function for packageAfterExtract', () => {
         expect(p.getHook('packageAfterExtract')).to.be.a('function');

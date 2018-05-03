@@ -93,15 +93,20 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       }
 
       let uploaded = 0;
-      await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
+      const getText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
+
+      await asyncOra(getText(), async (uploadSpinner) => {
         const updateSpinner = () => {
-          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`; // eslint-disable-line no-param-reassign
+          uploadSpinner.text = getText();
         };
 
         await Promise.all(artifacts.map(artifactPath =>
           new Promise(async (resolve, reject) => {
             if (existingVersion) {
-              const existingAsset = existingVersion.assets.find(asset => asset.name === path.basename(artifactPath));
+              const existingAsset = existingVersion.assets.find(
+                asset => asset.name === path.basename(artifactPath),
+              );
+
               if (existingAsset) {
                 d('asset at path:', artifactPath, 'already exists on server');
                 uploaded += 1;
@@ -128,7 +133,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
             } catch (err) {
               reject(err);
             }
-          })
+          }),
         ));
       });
     }

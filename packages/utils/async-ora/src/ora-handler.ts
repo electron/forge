@@ -12,7 +12,11 @@ export class OraImpl {
 }
 
 export interface AsyncOraMethod {
-  (initialOraValue: string, asyncFn: (ora: OraImpl) => Promise<void>, processExitFn?: (code: number) => void): Promise<void>;
+  (
+    initialOraValue: string,
+    asyncFn: (ora: OraImpl) => Promise<void>,
+    processExitFn?: (code: number) => void,
+  ): Promise<void>;
   interactive?: boolean;
 }
 
@@ -37,8 +41,8 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
           console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
         }
         processExitFn(1);
-        // If the process is still alive we should continue because either something went really wrong
-        // or we are testing this function
+        // If the process is still alive we should continue because either
+        // something went really wrong or we are testing this function
         setTimeout(() => resolve(), 500);
       } else {
         reject(err);

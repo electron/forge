@@ -95,7 +95,9 @@ const publish = async ({
       });
     }
     return;
-  } else if (!makeResults) {
+  }
+  
+  if (!makeResults) {
     d('triggering make');
     makeResults = await make(Object.assign({
       dir,
@@ -133,7 +135,7 @@ const publish = async ({
 
   const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
   if (!publishTargets) {
-    publishTargets = (forgeConfig.publishers || [])
+    publishTargets = (forgeConfig.publishers || []);
       // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms) ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
   }
   publishTargets = publishTargets.map((target) => {

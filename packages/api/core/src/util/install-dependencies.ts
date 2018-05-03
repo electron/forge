@@ -7,7 +7,7 @@ export default async (
   dir: string,
   deps: string[],
   areDev = false,
-  exact = false
+  exact = false,
 ) => {
   d('installing', JSON.stringify(deps), 'in:', dir, `dev=${areDev},exact=${exact},withYarn=${hasYarn()}`);
   if (deps.length === 0) {

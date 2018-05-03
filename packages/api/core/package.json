@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.5",
+    "@electron-forge/installer-base": "^6.0.0-beta.5",
     "@electron-forge/installer-deb": "6.0.0-beta.5",
     "@electron-forge/installer-dmg": "6.0.0-beta.5",
     "@electron-forge/installer-exe": "6.0.0-beta.5",

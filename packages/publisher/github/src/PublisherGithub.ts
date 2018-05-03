@@ -25,15 +25,15 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     const perReleaseArtifacts: {
       [release: string]: ForgeMakeResult[];
-     } = {};
+    } = {};
 
-     for (const makeResult of makeResults) {
-       const release = makeResult.packageJSON.version;
-       if (!perReleaseArtifacts[release]) {
-         perReleaseArtifacts[release] = [];
-       }
-       perReleaseArtifacts[release].push(makeResult);
-     }
+    for (const makeResult of makeResults) {
+      const release = makeResult.packageJSON.version;
+      if (!perReleaseArtifacts[release]) {
+        perReleaseArtifacts[release] = [];
+      }
+      perReleaseArtifacts[release].push(makeResult);
+    }
 
     if (!(config.repository && typeof config.repository === 'object' &&
       config.repository.owner && config.repository.name)) {
@@ -103,7 +103,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               name: path.basename(artifactPath),
             });
             return done();
-          })
+          }),
         ));
       });
     }

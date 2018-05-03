@@ -9,7 +9,7 @@ export default class GitHub {
     this.options = merge(
       { protocol: 'https' },
       options,
-      { headers: { 'user-agent': 'Electron Forge' } }
+      { headers: { 'user-agent': 'Electron Forge' } },
     );
     if (authToken) {
       this.token = authToken;

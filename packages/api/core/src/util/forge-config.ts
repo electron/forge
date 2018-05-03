@@ -42,7 +42,8 @@ const proxify = <T extends object>(buildIdentifier: string | (() => string), obj
       // eslint-disable-next-line no-prototype-builtins
       if (target.hasOwnProperty(name)) {
         return Reflect.getOwnPropertyDescriptor(target, name);
-      } else if (envValue) {
+      }
+      if (envValue) {
         return { writable: true, enumerable: true, configurable: true, value: envValue };
       }
     },
@@ -62,8 +63,8 @@ export function setInitialForgeConfig(packageJSON: any) {
 
 export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
   return {
-    __isMagicBuildIdentifierMap: true,
     map,
+    __isMagicBuildIdentifierMap: true,
   };
 }
 

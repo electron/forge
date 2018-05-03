@@ -89,13 +89,13 @@ describe.only('forge-config', () => {
     expect(conf.sub).to.deep.equal({
       prop: {
         deep: {
-          prop: 'bar'
+          prop: 'bar',
         },
         inArray: [
           'arr',
           'natural',
-          'array'
-        ]
+          'array',
+        ],
       },
     });
   });

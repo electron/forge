@@ -34,13 +34,13 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
 
   private checkPlatform = (platform: string) => {
     if ((this.config.electronPlatform || process.platform) !== platform) {
-      throw `Can not use local Electron version, required platform "${platform}" but local platform is "${this.config.electronPlatform || process.platform}"`
+      throw `Can not use local Electron version, required platform "${platform}" but local platform is "${this.config.electronPlatform || process.platform}"`;
     }
   }
 
   private checkArch = (arch: string) => {
     if ((this.config.electronArch || process.arch) !== arch) {
-      throw `Can not use local Electron version, required arch "${arch}" but local arch is "${this.config.electronArch || process.arch}"`
+      throw `Can not use local Electron version, required arch "${arch}" but local arch is "${this.config.electronArch || process.arch}"`;
     }
   }
 

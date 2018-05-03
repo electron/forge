@@ -7,7 +7,7 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerSnapConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerSnapConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerSnapConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerSnap', () => {
   let MakerSnapModule: typeof MakerImpl;

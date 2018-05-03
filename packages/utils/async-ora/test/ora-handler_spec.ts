@@ -6,12 +6,12 @@ import { asyncOra as ora, OraImpl } from '../src/index';
 
 describe('asyncOra', () => {
   let asyncOra: typeof ora;
-  let MockOra: (text: string) => OraImpl | undefined;
+  let mockOra: (text: string) => OraImpl | undefined;
   let currentOra: OraImpl | undefined;
 
   beforeEach(() => {
     currentOra = undefined;
-    MockOra = (text) => {
+    mockOra = (text) => {
       currentOra = {
         failed: false,
         start() {
@@ -43,7 +43,7 @@ describe('asyncOra', () => {
       return currentOra;
     };
     asyncOra = proxyquire.noCallThru().load('../src/ora-handler', {
-      './ora': MockOra,
+      './ora': mockOra,
     }).default;
   });
 

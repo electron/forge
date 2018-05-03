@@ -86,7 +86,7 @@ export default async ({
   const targets = (overrideTargets || forgeConfig.makers.filter(
     maker => maker.platforms
       ? maker.platforms.indexOf(actualTargetPlatform) !== -1
-      : true
+      : true,
   )).map((target) => {
     if (typeof target === 'string') {
       return { name: target };
@@ -168,13 +168,13 @@ export default async ({
       await asyncOra(`Making for target: ${maker.name.green} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
           const artifacts = await maker.make({
-            dir: packageDir,
-            makeDir: path.resolve(actualOutDir, 'make'),
             appName,
-            targetPlatform: actualTargetPlatform,
-            targetArch,
             forgeConfig,
             packageJSON,
+            targetArch,
+            dir: packageDir,
+            makeDir: path.resolve(actualOutDir, 'make'),
+            targetPlatform: actualTargetPlatform,
           });
 
           outputs.push({

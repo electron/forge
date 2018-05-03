@@ -7,7 +7,7 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerPKGConfig> { name = 'test'; defaultPlatforms = [] }
+class MakerImpl extends MakerBase<MakerPKGConfig> { name = 'test'; defaultPlatforms = []; }
 
 describe('MakerPKG', () => {
   let MakerDMG: typeof MakerImpl;
@@ -47,17 +47,17 @@ describe('MakerPKG', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, targetPlatform: 'mas', packageJSON });
+    await (maker.make as any)({ packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas' });
     const opts = eosStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       app: path.resolve(`${dir}/My Test App.app`),
       pkg: path.resolve(`${dir.substr(0, dir.length - 4)}/make/My Test App-1.2.3.pkg`),
-      platform: 'mas'
+      platform: 'mas',
     });
   });
 
   it('should throw an error on invalid platform', async () => {
-    await expect((maker.make as any)({ dir, makeDir, appName, targetArch, targetPlatform: 'win32', packageJSON }))
+    await expect((maker.make as any)({ packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32' }))
       .to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
   });
 });

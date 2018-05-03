@@ -115,7 +115,7 @@ export interface MakerDebConfigOptions {
     postinst?: string;
     prerm?: string;
     postrm?: string;
-  }
+  };
   /**
    * The absolute path to a custom template for the generated FreeDesktop.org desktop entry file.
    */
