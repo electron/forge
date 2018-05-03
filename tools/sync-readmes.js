@@ -21,14 +21,14 @@ const sanitize = (gb) => {
     .replace('{% endcode-tabs %}', '')
     .replace(/{% code-tabs-item title=".+?" %}/g, '')
     .replace('{% endcode-tabs-item %}', '')
-    .replace('{% endhint %}', '</b>')
+    .replace('{% endhint %}', '\n--------')
     .replace(/{% hint style="(.+?)" %}\n/g, (_, style) => {
       const styleMap = {
         warning: '⚠️',
         info: 'ℹ️',
         danger: '🚨',
       };
-      return `${styleMap[style] || 'ℹ️'} <b>`;
+      return `\n--------\n\n${styleMap[style] || 'ℹ️'} `;
     });
 };
 
