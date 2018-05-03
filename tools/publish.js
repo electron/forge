@@ -20,6 +20,9 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     cwd: BASE_DIR,
   });
 
+  console.info('Fetching README\'s');
+  await require('./sync-readmes')();
+
   console.info('Publishing all packages');
 
   const dirsToPublish = [];

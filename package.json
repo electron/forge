@@ -30,7 +30,7 @@
     "docs": "bolt docs:generate && bolt docs:position",
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
     "docs:position": "ts-node tools/position-docs.ts",
-    "docs:deploy": "bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
+    "docs:deploy": "node tools/sync-readmes.js && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "lint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
     "test": "bolt ws run test"
   },

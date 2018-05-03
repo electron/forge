@@ -10,3 +10,8 @@ docs
 doc
 .vscode
 packages/utils/types/index.d.ts
+packages/maker/**/README.md
+packages/publisher/**/README.md
+packages/plugin/**/README.md
+!packages/**/base/README.md
+!/README.md
