@@ -39,6 +39,7 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
   for (const dir of dirsToUpdate) {
     const pjPath = path.resolve(dir, 'package.json');
     const existingPJ = await fs.readJson(pjPath);
+    lastVersion = existingPJ.version;
     existingPJ.version = version;
     for (const type of ['dependencies', 'devDependencies', 'optionalDependencies']) {
       for (const depKey in existingPJ[type]) {
@@ -53,7 +54,6 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
     childProcess.execSync(`git add "${path.relative(BASE_DIR, pjPath)}"`, {
       cwd: BASE_DIR,
     });
-    lastVersion = existingPJ.version;
   }
 
   childProcess.execSync(`git commit -m "Version Bump: ${version}"`, {
