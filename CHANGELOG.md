@@ -1,12 +1,47 @@
-#### 6.0.0-beta.5 (2018-05-01)
+#### [6.0.0-beta.6](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.6) (2018-05-03)
+
+##### Chores
+
+* **maker-zip:**  update yarn.lock ([9714be38](https://github.com/electron-userland/electron-forge/commit/9714be38))
 
 ##### Documentation Changes
 
-*  fix changelog generation (3f9ec6b8)
+* **plugin-local-electron:**  add docs for the config options ([ebcd4c13](https://github.com/electron-userland/electron-forge/commit/ebcd4c13))
+
+##### New Features
+
+* **publisher-nucleus:**  add publisher-nucleus to add nucleus upload support to v6 ([131665cb](https://github.com/electron-userland/electron-forge/commit/131665cb))
+* **generic:**  add source-map-support for better stacktraces ([77077ce2](https://github.com/electron-userland/electron-forge/commit/77077ce2))
+* **plugin-local-electron:**  add plugin-local-electron ([8af92682](https://github.com/electron-userland/electron-forge/commit/8af92682))
 
 ##### Bug Fixes
 
-* **core:**  fix make not respecting mas as a target platform (10b38765)
+*  fix changelog generation ([faeec5a6](https://github.com/electron-userland/electron-forge/commit/faeec5a6))
+* **core:**
+  *  fromBuildIdentifier moved to the utils object ([46aaf7ac](https://github.com/electron-userland/electron-forge/commit/46aaf7ac))
+  *  fix error log for package for new path to packagerConfig ([fef9bcd5](https://github.com/electron-userland/electron-forge/commit/fef9bcd5))
+
+##### Refactors
+
+* **maker:**  replace zip-folder with cross-zip (#325) ([e06aa0b7](https://github.com/electron-userland/electron-forge/commit/e06aa0b7))
+
+##### Code Style Changes
+
+*  set-up tslint ([40484e16](https://github.com/electron-userland/electron-forge/commit/40484e16))
+
+##### Tests
+
+* **plugin-local-electron:**  add tests for the local electron plugin ([61b36329](https://github.com/electron-userland/electron-forge/commit/61b36329))
+
+#### [6.0.0-beta.5](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.5) (2018-05-01)
+
+##### Documentation Changes
+
+*  fix changelog generation ([3f9ec6b8](https://github.com/electron-userland/electron-forge/commit/3f9ec6b8))
+
+##### Bug Fixes
+
+* **core:**  fix make not respecting mas as a target platform ([10b38765](https://github.com/electron-userland/electron-forge/commit/10b38765))
 
 #### [6.0.0-beta.4](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.4) (2018-05-01)
 
