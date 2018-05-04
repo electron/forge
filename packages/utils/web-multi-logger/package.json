@@ -1,0 +1,22 @@
+{
+  "name": "@electron-forge/web-multi-logger",
+  "version": "6.0.0-beta.10",
+  "description": "A helper utility for wrapping async functions in an ora",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/Logger.js",
+  "typings": "dist/Logger.d.ts",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "express": "^4.16.2",
+    "express-ws": "^3.0.0",
+    "xterm": "^3.3.0"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  }
+}

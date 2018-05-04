@@ -4,12 +4,17 @@ export interface WebpackPluginEntryPoint {
   html: string;
   js: string;
   name: string;
+  prefixedEntries?: string[];
+  preload?: WebpackPreloadEntryPoint;
+}
+
+export interface WebpackPreloadEntryPoint {
+  js: string;
+  prefixedEntries?: string[];
 }
 
 export interface WebpackPluginRendererConfig {
   config: WebpackConfiguration | string;
-
-  prefixedEntries?: string[];
 
   entryPoints: WebpackPluginEntryPoint[];
 }

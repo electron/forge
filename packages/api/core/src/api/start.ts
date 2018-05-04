@@ -65,6 +65,7 @@ export default async ({
   if (typeof spawnedPluginChild === 'string') {
     electronExecPath = spawnedPluginChild;
   } else if (spawnedPluginChild) {
+    await runHook(forgeConfig, 'postStart', spawnedPluginChild);
     return spawnedPluginChild;
   }
 
@@ -93,5 +94,6 @@ export default async ({
     spawned = spawn(process.execPath, [electronExecPath, appPath].concat(args as string[]), spawnOpts);
   });
 
+  await runHook(forgeConfig, 'postStart', spawned);
   return spawned;
 };

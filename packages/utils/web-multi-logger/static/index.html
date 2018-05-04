@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Electron Forge Logger</title>
+  <link rel="stylesheet" href="/xterm/xterm.css" />
+  <style>
+  body {
+    padding: 0;
+    margin: 0;
+    background: #002B36;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  }
+
+  .tabs {
+    height: 48px;
+    background: #eee8d5;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .tabs .tab {
+    padding: 0 16px 6px 16px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    transition: background 0.4s ease-in-out, color 0.4s ease-in-out;
+    background: #eee8d5;
+    color: #073642;
+    cursor: pointer;
+  }
+
+  .tabs .tab:hover, .tabs .tab.selected-tab {
+    background: #586e75;
+    color: #eee8d5;
+  }
+
+  .tabs .tab.selected-tab {
+    font-weight: bold;
+  }
+
+  #terminal {
+    margin-top: 20px;
+    height: calc(100vh - 88px);
+    padding-left: 16px;
+  }
+  </style>
+</head>
+<body>
+  <div class="tabs"></div>
+
+  <div id="terminal"></div>
+
+  <script src="/xterm/xterm.js"></script> 
+  <script src="/xterm/addons/fit/fit.js"></script>
+  <script src="/xterm/addons/search/search.js"></script>
+  <script src="/main.js"></script>
+</body>
+</html>
