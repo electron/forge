@@ -28,7 +28,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   private resolveConfig = (config: Configuration | string) => {
-    if (typeof config === 'string') return require(config) as Configuration;
+    if (typeof config === 'string') return require(path.resolve(path.dirname(this.baseDir), config)) as Configuration;
     return config;
   }
 
