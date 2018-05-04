@@ -1,3 +1,9 @@
+#### [6.0.0-beta.9](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.9) (2018-05-04)
+
+##### New Features
+
+* **plugin-webpack:**  new webpack plugin ([531d3c80](https://github.com/electron-userland/electron-forge/commit/531d3c80))
+
 #### [6.0.0-beta.8](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.8) (2018-05-03)
 
 ##### Chores
