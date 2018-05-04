@@ -95,4 +95,4 @@ Electron Compile.
 
 | <img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /> | <img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /> |
 |---| --- |
-| [Samuel Attard](https://samuelattard.com) | [Malept](https://github.com/malept) |
+| [Samuel Attard](https://samuelattard.com) | [Mark Lee](https://github.com/malept) |
