@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-flatpak",
-  "version": "6.0.0-beta.9",
+  "version": "6.0.0-beta.10",
   "description": "Flatpak maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -18,8 +18,8 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.9",
-    "@electron-forge/shared-types": "6.0.0-beta.9",
+    "@electron-forge/maker-base": "6.0.0-beta.10",
+    "@electron-forge/shared-types": "6.0.0-beta.10",
     "fs-extra": "^5.0.0",
     "pify": "^3.0.0"
   },
