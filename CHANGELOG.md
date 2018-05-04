@@ -1,3 +1,9 @@
+#### [6.0.0-beta.10](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.10) (2018-05-04)
+
+##### Bug Fixes
+
+* **plugin-webpack:**  ensure methods are bound to class instance ([0ee2dbb5](https://github.com/electron-userland/electron-forge/commit/0ee2dbb5))
+
 #### [6.0.0-beta.9](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.9) (2018-05-04)
 
 ##### New Features
