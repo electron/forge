@@ -46,17 +46,12 @@ describe('GitHub', () => {
 
     it('should be able to set the Enterprise URL settings', () => {
       const gh = new GitHub('1234', true, {
-        host: 'github.example.com',
-        port: 8443,
-        pathPrefix: '/enterprise',
+        baseUrl: 'https://github.example.com:8443/enterprise',
       });
       const api = gh.getGitHub();
 
       expect(api.options).to.deep.equal({
-        protocol: 'https',
-        host: 'github.example.com',
-        port: 8443,
-        pathPrefix: '/enterprise',
+        baseUrl: 'https://github.example.com:8443/enterprise',
         headers: {
           'user-agent': 'Electron Forge',
         },

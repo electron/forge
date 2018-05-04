@@ -4,7 +4,6 @@ import merge from 'lodash.merge';
 export default class GitHub {
   constructor(authToken, requireAuth, options = {}) {
     this.options = merge(
-      { protocol: 'https' },
       options,
       { headers: { 'user-agent': 'Electron Forge' } }
     );
