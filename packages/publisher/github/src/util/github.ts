@@ -7,7 +7,6 @@ export default class GitHub {
 
   constructor(authToken: string | undefined = undefined, requireAuth: boolean = false, options: GitHubAPI.Options = {}) {
     this.options = merge(
-      { protocol: 'https' },
       options,
       { headers: { 'user-agent': 'Electron Forge' } },
     );
