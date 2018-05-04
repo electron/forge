@@ -15,10 +15,17 @@ import { WebpackPluginConfig, WebpackPluginEntryPoint } from './Config';
 
 const BASE_PORT = 3000;
 
-export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
+export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
   private isProd = false;
   private baseDir!: string;
+
+  constructor(c: WebpackPluginConfig) {
+    super(c);
+
+    this.startLogic = this.startLogic.bind(this);
+    this.getHook = this.getHook.bind(this);
+  }
 
   private resolveConfig = (config: Configuration | string) => {
     if (typeof config === 'string') return require(config) as Configuration;
@@ -41,7 +48,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return null;
   }
 
-  async getMainConfig() {
+  getMainConfig = async () => {
     const mainConfig = this.resolveConfig(this.config.mainConfig);
 
     if (!mainConfig.entry) {
@@ -75,7 +82,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }, mainConfig || {});
   }
 
-  async getRendererConfig(entryPoint: WebpackPluginEntryPoint) {
+  getRendererConfig = async (entryPoint: WebpackPluginEntryPoint) => {
     const rendererConfig = this.resolveConfig(this.config.renderer.config);
     const prefixedEntries = this.config.renderer.prefixedEntries || [];
     return merge.smart({
@@ -101,7 +108,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }, rendererConfig);
   }
 
-  async compileMain() {
+  compileMain = async () => {
     await asyncOra('Compiling Main Process Code', async () => {
       await new Promise(async (resolve, reject) => {
         webpack(await this.getMainConfig()).run((err, stats) => {
@@ -112,7 +119,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     });
   }
 
-  async compileRenderers() {
+  compileRenderers = async () => {
     for (const entryPoint of this.config.renderer.entryPoints) {
       await asyncOra(`Compiling Renderer Template: ${entryPoint.name}`, async () => {
         await new Promise(async (resolve, reject) => {
@@ -125,7 +132,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  async launchDevServers() {
+  launchDevServers = async () => {
     await asyncOra('Launch Dev Servers', async () => {
       let index = 0;
       for (const entryPoint of this.config.renderer.entryPoints) {
@@ -146,7 +153,7 @@ export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     });
   }
 
-  async spinDev() {
+  async startLogic(): Promise<false> {
     await this.compileMain();
     await this.launchDevServers();
     return false;
