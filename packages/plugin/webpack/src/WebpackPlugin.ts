@@ -1,0 +1,154 @@
+import { asyncOra } from '@electron-forge/async-ora';
+import PluginBase from '@electron-forge/plugin-base';
+import fs from 'fs-extra';
+import merge from 'webpack-merge';
+import path from 'path';
+import { spawnPromise } from 'spawn-rx';
+import webpack, { Configuration } from 'webpack';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import express from 'express';
+
+import HtmlWebpackPlugin, { Config } from 'html-webpack-plugin';
+
+import { WebpackPluginConfig, WebpackPluginEntryPoint } from './Config';
+
+const BASE_PORT = 3000;
+
+export class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
+  name = 'webpack';
+  private isProd = false;
+  private baseDir!: string;
+
+  private resolveConfig = (config: Configuration | string) => {
+    if (typeof config === 'string') return require(config) as Configuration;
+    return config;
+  }
+
+  init = (dir: string) => {
+    this.baseDir = path.resolve(dir, '.webpack');
+  }
+
+  getHook(name: string) {
+    switch (name) {
+      case 'prePackage':
+        this.isProd = true;
+        return async () => {
+          await this.compileMain();
+          await this.compileRenderers();
+        };
+    }
+    return null;
+  }
+
+  async getMainConfig() {
+    const mainConfig = this.resolveConfig(this.config.mainConfig);
+
+    if (!mainConfig.entry) {
+      throw new Error('Required config option "entry" has not been defined');
+    }
+
+    const defines: { [key: string]: string; } = {};
+    let index = 0;
+    for (const entryPoint of this.config.renderer.entryPoints) {
+      defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
+        this.isProd
+        ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'index.html')\}\``
+        : `'http://localhost:${BASE_PORT + index}'`;
+      index += 1;
+    }
+    return merge.smart({
+      devtool: 'source-map',
+      target: 'electron-main',
+      output: {
+        path: path.resolve(this.baseDir, 'main'),
+        filename: 'index.js',
+        libraryTarget: 'commonjs2',
+      },
+      plugins: [
+        new webpack.DefinePlugin(defines),
+      ],
+      node: {
+        __dirname: false,
+        __filename: false,
+      },
+    }, mainConfig || {});
+  }
+
+  async getRendererConfig(entryPoint: WebpackPluginEntryPoint) {
+    const rendererConfig = this.resolveConfig(this.config.renderer.config);
+    const prefixedEntries = this.config.renderer.prefixedEntries || [];
+    return merge.smart({
+      devtool: 'inline-source-map',
+      target: 'electron-renderer',
+      entry: prefixedEntries.concat([
+        entryPoint.js,
+      ]).concat(this.isProd ? [] : ['webpack-hot-middleware/client']),
+      output: {
+        path: path.resolve(this.baseDir, 'renderer', entryPoint.name),
+        filename: 'index.js',
+      },
+      node: {
+        __dirname: false,
+        __filename: false,
+      },
+      plugins: [
+        new HtmlWebpackPlugin({
+          title: entryPoint.name,
+          template: entryPoint.html,
+        }),
+      ].concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]),
+    }, rendererConfig);
+  }
+
+  async compileMain() {
+    await asyncOra('Compiling Main Process Code', async () => {
+      await new Promise(async (resolve, reject) => {
+        webpack(await this.getMainConfig()).run((err, stats) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
+    });
+  }
+
+  async compileRenderers() {
+    for (const entryPoint of this.config.renderer.entryPoints) {
+      await asyncOra(`Compiling Renderer Template: ${entryPoint.name}`, async () => {
+        await new Promise(async (resolve, reject) => {
+          webpack(await this.getRendererConfig(entryPoint)).run((err, stats) => {
+            if (err) return reject(err);
+            resolve();
+          });
+        });
+      });
+    }
+  }
+
+  async launchDevServers() {
+    await asyncOra('Launch Dev Servers', async () => {
+      let index = 0;
+      for (const entryPoint of this.config.renderer.entryPoints) {
+        const config = await this.getRendererConfig(entryPoint);
+        const compiler = webpack(config);
+        const server = webpackDevMiddleware(compiler, {
+          logLevel: 'silent',
+          publicPath: '/',
+          hot: true,
+          historyApiFallback: true,
+        } as any);
+        const app = express();
+        app.use(server);
+        app.use(webpackHotMiddleware(compiler))
+        app.listen(BASE_PORT + index);
+        index += 1;
+      }
+    });
+  }
+
+  async spinDev() {
+    await this.compileMain();
+    await this.launchDevServers();
+    return false;
+  }
+}
