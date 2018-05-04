@@ -146,7 +146,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         } as any);
         const app = express();
         app.use(server);
-        app.use(webpackHotMiddleware(compiler))
+        app.use(webpackHotMiddleware(compiler));
         app.listen(BASE_PORT + index);
         index += 1;
       }
