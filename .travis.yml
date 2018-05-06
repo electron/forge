@@ -7,9 +7,6 @@ os:
 dist: trusty
 osx_image: xcode8.3
 sudo: required
-cache:
-  directories:
-  - node_modules
 services:
 - docker
 env:
