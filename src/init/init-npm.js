@@ -75,7 +75,8 @@ export default async (dir, lintStyle) => {
       const envTarget = content.env[profile]['application/javascript'].presets.find(x => x[0] === 'env');
       // parseFloat strips the patch version
       // parseFloat('1.3.2') === 1.3
-      envTarget[1].targets.electron = parseFloat(electronPrebuilt.version).toString();
+      // Note: This won't work if the minor version ever gets higher than 9
+      envTarget[1].targets.electron = parseFloat(electronPrebuilt.version).toFixed(1).toString();
     }
 
     await fs.writeJson(path.join(dir, '.compilerc'), content, { spaces: 2 });
