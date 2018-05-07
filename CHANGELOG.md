@@ -1,3 +1,13 @@
+#### [6.0.0-beta.13](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.13) (2018-05-07)
+
+##### Bug Fixes
+
+* **web-multi-logger:**  fix xterm path resolution ([39509d9c](https://github.com/electron-userland/electron-forge/commit/39509d9c))
+
+##### Code Style Changes
+
+* **plugin-webpack:**  add missing semi ([cbe2c182](https://github.com/electron-userland/electron-forge/commit/cbe2c182))
+
 #### [6.0.0-beta.12](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.12) (2018-05-07)
 
 ##### New Features
