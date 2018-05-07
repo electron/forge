@@ -73,6 +73,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
   }
 
+  private loggedOutputUrl = false;
+
   getHook(name: string) {
     switch (name) {
       case 'prePackage':
@@ -83,9 +85,15 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         };
       case 'postStart':
         return async (_: any, child: ChildProcess) => {
-          console.info('\n\nWebpack Output Available: http://localhost:9000\n');
+          if (!this.loggedOutputUrl) {
+            console.info(`\n\nWebpack Output Available: ${'http://localhost:9000'.cyan}\n`);
+            this.loggedOutputUrl = true;
+          }
           d('hooking electron process exit');
-          child.on('exit', () => this.exitHandler({ cleanup: true, exit: true }));
+          child.on('exit', () => {
+            if ((child as any).restarted) return;
+            this.exitHandler({ cleanup: true, exit: true })
+          });
         };
     }
     return null;
@@ -286,7 +294,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     });
   }
 
+  private alreadyStarted = false;
+
   async startLogic(): Promise<false> {
+    if (this.alreadyStarted) return false;
+    this.alreadyStarted = true;
+
     const logger = new Logger();
     this.loggers.push(logger);
     await this.compileMain(true, logger);

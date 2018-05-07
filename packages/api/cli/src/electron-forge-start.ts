@@ -65,6 +65,7 @@ import './util/terminate';
 
   await new Promise((resolve) => {
     spawned.on('exit', (code: number) => {
+      if ((spawned as any).restarted) return;
       if (code !== 0) {
         process.exit(code);
       }

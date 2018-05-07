@@ -50,50 +50,70 @@ export default async ({
 
   await runHook(forgeConfig, 'generateAssets');
 
-  let electronExecPath = path.resolve(dir, 'node_modules/electron/cli');
+  let lastSpawned: ChildProcess | null = null;
 
-  // If a plugin has taken over the start command let's stop here
-  const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
-    dir,
-    appPath,
-    interactive,
-    enableLogging,
-    args,
-    runAsNode,
-    inspect,
-  });
-  if (typeof spawnedPluginChild === 'string') {
-    electronExecPath = spawnedPluginChild;
-  } else if (spawnedPluginChild) {
-    await runHook(forgeConfig, 'postStart', spawnedPluginChild);
-    return spawnedPluginChild;
-  }
-
-  const spawnOpts = {
-    cwd: dir,
-    stdio: 'inherit',
-    env: Object.assign({}, process.env, enableLogging ? {
-      ELECTRON_ENABLE_LOGGING: 'true',
-      ELECTRON_ENABLE_STACK_DUMPING: 'true',
-    } : {}) as NodeJS.ProcessEnv,
+  const forgeSpawnWrapper = async () => {
+    lastSpawned = await forgeSpawn();
+    return lastSpawned;
   };
 
-  if (runAsNode) {
-    spawnOpts.env.ELECTRON_RUN_AS_NODE = 'true';
-  } else {
-    delete spawnOpts.env.ELECTRON_RUN_AS_NODE;
-  }
+  const forgeSpawn = async () => {
+    let electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
 
-  if (inspect) {
-    args = ['--inspect' as (string|number)].concat(args);
-  }
+    // If a plugin has taken over the start command let's stop here
+    const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
+      dir,
+      appPath,
+      interactive,
+      enableLogging,
+      args,
+      runAsNode,
+      inspect,
+    });
+    if (typeof spawnedPluginChild === 'string') {
+      electronExecPath = spawnedPluginChild;
+    } else if (spawnedPluginChild) {
+      await runHook(forgeConfig, 'postStart', spawnedPluginChild);
+      return spawnedPluginChild;
+    }
 
-  let spawned!: ChildProcess;
+    const spawnOpts = {
+      cwd: dir,
+      stdio: 'inherit',
+      env: Object.assign({}, process.env, enableLogging ? {
+        ELECTRON_ENABLE_LOGGING: 'true',
+        ELECTRON_ENABLE_STACK_DUMPING: 'true',
+      } : {}) as NodeJS.ProcessEnv,
+    };
 
-  await asyncOra('Launching Application', async () => {
-    spawned = spawn(process.execPath, [electronExecPath, appPath].concat(args as string[]), spawnOpts);
+    if (runAsNode) {
+      spawnOpts.env.ELECTRON_RUN_AS_NODE = 'true';
+    } else {
+      delete spawnOpts.env.ELECTRON_RUN_AS_NODE;
+    }
+
+    if (inspect) {
+      args = ['--inspect' as (string|number)].concat(args);
+    }
+
+    let spawned!: ChildProcess;
+
+    await asyncOra('Launching Application', async () => {
+      spawned = spawn(electronExecPath, [appPath].concat(args as string[]), spawnOpts);
+    });
+
+    await runHook(forgeConfig, 'postStart', spawned);
+    return spawned;
+  };
+
+  process.stdin.on('data', (data) => {
+    if (data.toString().trim() === 'rs' && lastSpawned) {
+      console.info('\nRestarting App\n'.cyan);
+      (lastSpawned as any).restarted = true;
+      lastSpawned.kill('SIGTERM');
+      forgeSpawnWrapper();
+    }
   });
 
-  await runHook(forgeConfig, 'postStart', spawned);
-  return spawned;
+  return forgeSpawnWrapper();
 };
