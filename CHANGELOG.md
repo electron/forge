@@ -1,3 +1,9 @@
+#### [6.0.0-beta.12](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.12) (2018-05-07)
+
+##### New Features
+
+* **core:**  add support for restarting the Electron process quickly from terminal ([24aab4fd](https://github.com/electron-userland/electron-forge/commit/24aab4fd))
+
 #### [6.0.0-beta.11](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.11) (2018-05-07)
 
 ##### New Features
