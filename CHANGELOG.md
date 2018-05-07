@@ -1,3 +1,16 @@
+#### [6.0.0-beta.11](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.11) (2018-05-07)
+
+##### New Features
+
+* **plugin-webpack:**
+  *  log out the web logger URL on start ([cdd4cde1](https://github.com/electron-userland/electron-forge/commit/cdd4cde1))
+  *  capture logs into web ui, handle preload scripts ([e800049b](https://github.com/electron-userland/electron-forge/commit/e800049b))
+
+##### Bug Fixes
+
+* **publisher-github:**  remove deprecated option from @octokit/rest params (#505) ([8ffab0b4](https://github.com/electron-userland/electron-forge/commit/8ffab0b4))
+* **plugin-webpack:**  fix config resolution when providing a string ([576844e5](https://github.com/electron-userland/electron-forge/commit/576844e5))
+
 #### [6.0.0-beta.10](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.10) (2018-05-04)
 
 ##### Bug Fixes
