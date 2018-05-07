@@ -1,3 +1,10 @@
+#### [5.2.1](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.1) (2018-05-07)
+
+##### Bug Fixes
+
+* **publisher:**  remove deprecated option from @octokit/rest params ([15a6879f](https://github.com/electron-userland/electron-forge/commit/15a6879f))
+* **initializer:**  fix setting Electron version in.compilerc when it's x.0 (#506) ([e26de71c](https://github.com/electron-userland/electron-forge/commit/e26de71c))
+
 ### [5.2.0](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.0) (2018-04-15)
 
 ##### New Features
