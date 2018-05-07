@@ -92,7 +92,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           d('hooking electron process exit');
           child.on('exit', () => {
             if ((child as any).restarted) return;
-            this.exitHandler({ cleanup: true, exit: true })
+            this.exitHandler({ cleanup: true, exit: true });
           });
         };
     }
