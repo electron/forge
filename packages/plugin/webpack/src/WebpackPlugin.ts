@@ -83,8 +83,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         };
       case 'postStart':
         return async (_: any, child: ChildProcess) => {
-          console.log(child);
-          console.log(Object.keys(child));
+          console.info('\n\nWebpack Output Available: http://localhost:9000\n');
           d('hooking electron process exit');
           child.on('exit', () => this.exitHandler({ cleanup: true, exit: true }));
         };
