@@ -11,7 +11,7 @@ const defaults = {
   plugins: [],
 };
 
-describe.only('forge-config', () => {
+describe('forge-config', () => {
   it('should resolve the object in package.json with defaults  if one exists', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
     delete config.pluginInterface;
