@@ -21,7 +21,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     packageJSON,
     targetPlatform,
   }: MakerOptions) {
-    const zip = require('cross-zip');
+    const { zip } = require('cross-zip');
 
     const zipDir = ['darwin', 'mas'].includes(targetPlatform) ? path.resolve(dir, `${appName}.app`) : dir;
 
