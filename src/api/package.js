@@ -151,6 +151,9 @@ export default async (providedOptions = {}) => {
     electronVersion: await getElectronVersion(dir),
   });
   packageOpts.quiet = true;
+  if (packageOpts.all) {
+    throw new Error('electronPackagerConfig.all is not supported by Electron Forge.');
+  }
   if (typeof packageOpts.asar === 'object' && packageOpts.asar.unpack) {
     throw new Error('electron-compile does not support asar.unpack yet.  Please use asar.unpackDir');
   }
