@@ -267,6 +267,16 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       await fs.remove(path.resolve(dir, 'out'));
     });
 
+    it('throws an error when all is set', async () => {
+      let packageJSON = await readPackageJSON(dir);
+      packageJSON.config.forge.electronPackagerConfig.all = true;
+      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+      await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/electronPackagerConfig\.all is not supported by Electron Forge/);
+      packageJSON = await readPackageJSON(dir);
+      delete packageJSON.config.forge.electronPackagerConfig.all;
+      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+    });
+
     it('throws an error when asar.unpack is set', async () => {
       let packageJSON = await readPackageJSON(dir);
       packageJSON.config.forge.electronPackagerConfig.asar = { unpack: 'somedir/**' };

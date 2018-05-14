@@ -194,6 +194,7 @@ config object:
 You can set `electronPackagerConfig` with any of the options from
 [Electron Packager](https://github.com/electron-userland/electron-packager/blob/master/docs/api.md), except:
 
+* `all`
 * `arch` (use the `--arch` Forge command line argument instead, so it's available to all of Forge)
 * `asar.unpack` (use `asar.unpackDir` instead)
 * `dir` (use the `cwd` Forge command line argument instead, so it's available to all of Forge)
