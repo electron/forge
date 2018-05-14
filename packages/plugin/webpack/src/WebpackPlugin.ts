@@ -279,7 +279,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       this.servers.push(app.listen(BASE_PORT));
     });
 
-    await asyncOra('Compile Preload Scripts', async () => {
+    await asyncOra('Compiling Preload Scripts', async () => {
       for (const entryPoint of this.config.renderer.entryPoints) {
         if (entryPoint.preload) {
           await new Promise(async (resolve, reject) => {
