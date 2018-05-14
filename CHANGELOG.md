@@ -1,3 +1,9 @@
+#### [5.2.2](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.2) (2018-05-14)
+
+##### Bug Fixes
+
+* **packager:**  disable the all option (#509) ([602f030f](https://github.com/electron-userland/electron-forge/commit/602f030f))
+
 #### [5.2.1](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.1) (2018-05-07)
 
 ##### Bug Fixes
