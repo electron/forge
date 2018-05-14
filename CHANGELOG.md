@@ -1,3 +1,21 @@
+#### [6.0.0-beta.14](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.14) (2018-05-14)
+
+##### New Features
+
+* **plugin-webpack:**  upgrade to webpack 4 ([8807c451](https://github.com/electron-userland/electron-forge/commit/8807c451))
+
+##### Bug Fixes
+
+* **core:**
+  *  stop specs hanging due to pending process.stdin listener ([b747c99b](https://github.com/electron-userland/electron-forge/commit/b747c99b))
+  *  fix start specs ([987161e5](https://github.com/electron-userland/electron-forge/commit/987161e5))
+* **maker-zip:**  adjust cross-zip require ([bd35ecd0](https://github.com/electron-userland/electron-forge/commit/bd35ecd0))
+*  remove .only from specs ([86ea1942](https://github.com/electron-userland/electron-forge/commit/86ea1942))
+
+##### Refactors
+
+* **plugin-webpack:**  use a single webpack compiler for all renderer process's ([674c5f22](https://github.com/electron-userland/electron-forge/commit/674c5f22))
+
 #### [6.0.0-beta.13](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.13) (2018-05-07)
 
 ##### Bug Fixes
