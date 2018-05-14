@@ -106,14 +106,16 @@ export default async ({
     return spawned;
   };
 
-  process.stdin.on('data', (data) => {
-    if (data.toString().trim() === 'rs' && lastSpawned) {
-      console.info('\nRestarting App\n'.cyan);
-      (lastSpawned as any).restarted = true;
-      lastSpawned.kill('SIGTERM');
-      forgeSpawnWrapper();
-    }
-  });
+  if (interactive) {
+    process.stdin.on('data', (data) => {
+      if (data.toString().trim() === 'rs' && lastSpawned) {
+        console.info('\nRestarting App\n'.cyan);
+        (lastSpawned as any).restarted = true;
+        lastSpawned.kill('SIGTERM');
+        forgeSpawnWrapper();
+      }
+    });
+  }
 
   return forgeSpawnWrapper();
 };

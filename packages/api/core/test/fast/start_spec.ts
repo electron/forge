@@ -12,6 +12,7 @@ describe('start', () => {
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
   let shouldOverride: boolean;
+  let processOn: SinonStub;
 
   beforeEach(() => {
     resolveStub = sinon.stub();
@@ -34,6 +35,11 @@ describe('start', () => {
         spawn: spawnStub,
       },
     }).default;
+    processOn = sinon.stub(process.stdin, 'on');
+  });
+
+  afterEach(() => {
+    processOn.restore();
   });
 
   it('should spawn electron in the correct dir', async () => {
