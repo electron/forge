@@ -25,7 +25,7 @@ export default class Tab {
     }
   }
 
-  toJSON() {
+  private toJSON() {
     return {
       id: this.id,
       name: this.name,

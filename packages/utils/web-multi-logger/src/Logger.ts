@@ -15,7 +15,7 @@ export default class Logger {
     this.registerRoutes();
   }
 
-  registerRoutes() {
+  private registerRoutes() {
     this.ws = ews(this.app);
     this.app.get('/rest/tabs', (req, res) => {
       return res.json(this.tabs);
