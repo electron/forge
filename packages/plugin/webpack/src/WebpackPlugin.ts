@@ -128,6 +128,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return merge.smart({
       devtool: 'source-map',
       target: 'electron-main',
+      mode: this.isProd ? 'production' : 'development',
       output: {
         path: path.resolve(this.baseDir, 'main'),
         filename: 'index.js',
@@ -157,6 +158,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return merge.smart({
       devtool: 'inline-source-map',
       target: 'electron-renderer',
+      mode: this.isProd ? 'production' : 'development',
       entry: prefixedEntries.concat([
         entryPoint.js,
       ]),
@@ -185,6 +187,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       entry,
       devtool: 'inline-source-map',
       target: 'electron-renderer',
+      mode: this.isProd ? 'production' : 'development',
       output: {
         path: path.resolve(this.baseDir, 'renderer'),
         filename: '[name]/index.js',
