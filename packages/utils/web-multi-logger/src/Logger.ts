@@ -26,18 +26,28 @@ export default class Logger {
     (this.app as any).ws('/sub', () => {});
   }
 
+  /**
+   * Creates a new tab with the given name, the name should be human readable
+   * it will be used as the tab title in the front end.
+   */
   createTab(name: string) {
     const tab = new Tab(name, this.ws);
     this.tabs.push(tab);
     return tab;
   }
 
+  /**
+   * Start the HTTP server hosting the web UI
+   */
   start() {
     return new Promise<number>((resolve) => {
       this.server = this.app.listen(this.port, () => resolve(this.port));
     });
   }
 
+  /**
+   * Stop the HTTP server hosting the web UI
+   */
   stop() {
     if (this.server) this.server.close();
   }
