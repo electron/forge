@@ -1,3 +1,9 @@
+#### [6.0.0-beta.15](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.15) (2018-05-15)
+
+##### Bug Fixes
+
+* **plugin-webpack:**  ensure production mode is only enabled when packaging ([dcb2b9ba](https://github.com/electron-userland/electron-forge/commit/dcb2b9ba))
+
 #### [6.0.0-beta.14](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.14) (2018-05-14)
 
 ##### New Features
