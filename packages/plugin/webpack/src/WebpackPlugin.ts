@@ -99,23 +99,23 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return null;
   }
 
-  getMainConfig = async () => {
-    const mainConfig = this.resolveConfig(this.config.mainConfig);
-
-    if (!mainConfig.entry) {
-      throw new Error('Required config option "entry" has not been defined');
-    }
-
+  getDefines = (upOneMore = false) => {
     const defines: { [key: string]: string; } = {};
-    let index = 0;
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
-      defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-        this.isProd
-        ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'index.html')\}\``
-        : `'http://localhost:${BASE_PORT}/${entryPoint.name}'`;
+      if (entryPoint.html) {
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
+          this.isProd
+          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
+          : `'http://localhost:${BASE_PORT}/${entryPoint.name}'`;
+      } else {
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
+          this.isProd
+          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
+          : `'http://localhost:${BASE_PORT}/${entryPoint.name}/index.js'`;
+      }
 
       if (entryPoint.preload) {
         defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] =
@@ -123,8 +123,18 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')\}\``
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js')}'`;
       }
-      index += 1;
     }
+    return defines;
+  }
+
+  getMainConfig = async () => {
+    const mainConfig = this.resolveConfig(this.config.mainConfig);
+
+    if (!mainConfig.entry) {
+      throw new Error('Required config option "entry" has not been defined');
+    }
+
+    const defines = this.getDefines();
     return merge.smart({
       devtool: 'source-map',
       target: 'electron-main',
@@ -180,9 +190,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       const prefixedEntries = entryPoint.prefixedEntries || [];
       entry[entryPoint.name] = prefixedEntries
         .concat([entryPoint.js])
-        .concat(this.isProd ? [] : ['webpack-hot-middleware/client']);
+        .concat(this.isProd || !Boolean(entryPoint.html) ? [] : ['webpack-hot-middleware/client']);
     }
 
+    const defines = this.getDefines(true);
     return merge.smart({
       entry,
       devtool: 'inline-source-map',
@@ -191,19 +202,20 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       output: {
         path: path.resolve(this.baseDir, 'renderer'),
         filename: '[name]/index.js',
+        globalObject: 'self',
       },
       node: {
         __dirname: false,
         __filename: false,
       },
-      plugins: entryPoints.map(entryPoint =>
+      plugins: entryPoints.filter(entryPoint => Boolean(entryPoint.html)).map(entryPoint =>
         new HtmlWebpackPlugin({
           title: entryPoint.name,
           template: entryPoint.html,
           filename: `${entryPoint.name}/index.html`,
           chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
         }),
-      ).concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]),
+      ).concat([new webpack.DefinePlugin(defines)]).concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]),
     }, rendererConfig);
   }
 

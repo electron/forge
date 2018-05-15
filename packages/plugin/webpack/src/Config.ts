@@ -3,8 +3,11 @@ import { Configuration as WebpackConfiguration } from 'webpack';
 export interface WebpackPluginEntryPoint {
   /**
    * Relative or absolute path to the HTML template file for this entry point
+   *
+   * If this is a window, you MUST provide this.  Only leave it unset for things
+   * like WebWorker scripts.
    */
-  html: string;
+  html?: string;
   /**
    * Relative or absolute path to the main JS file for this entry point
    */
