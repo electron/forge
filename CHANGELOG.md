@@ -1,3 +1,29 @@
+#### [6.0.0-beta.16](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.16) (2018-05-17)
+
+##### Chores
+
+* **plugin-local-electron:**  remove duplicate dep ([d0eacbcc](https://github.com/electron-userland/electron-forge/commit/d0eacbcc))
+* **web-multi-logger:**  set some methods as private for docs ([0d737ae7](https://github.com/electron-userland/electron-forge/commit/0d737ae7))
+
+##### Documentation Changes
+
+* **web-multi-logger:**
+  *  add doc comments for js API site ([a79931f8](https://github.com/electron-userland/electron-forge/commit/a79931f8))
+  *  basic usage and README ([70801f63](https://github.com/electron-userland/electron-forge/commit/70801f63))
+
+##### New Features
+
+* **plugin-auto-unpack-natives:**  add plugin/auto-unpack-natives for automative native node module h ([0280d0fa](https://github.com/electron-userland/electron-forge/commit/0280d0fa))
+* **core:**  add resolveForgeConfig hook ([c2f4cfa6](https://github.com/electron-userland/electron-forge/commit/c2f4cfa6))
+* **plugin-webpack:**  support web workers by defining entry points without HTML files ([a85ce4eb](https://github.com/electron-userland/electron-forge/commit/a85ce4eb))
+
+##### Bug Fixes
+
+* **core:**
+  *  make packagerConfig and rebuildConfig partial (all things optional) ([d499d650](https://github.com/electron-userland/electron-forge/commit/d499d650))
+  *  remove default values from template package.json makers ([7d1bdf2b](https://github.com/electron-userland/electron-forge/commit/7d1bdf2b))
+  *  init with required makers as well ([04ead91c](https://github.com/electron-userland/electron-forge/commit/04ead91c))
+
 #### [6.0.0-beta.15](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.15) (2018-05-15)
 
 ##### Bug Fixes
