@@ -5,6 +5,7 @@ import _template from 'lodash.template';
 
 import readPackageJSON from './read-package-json';
 import PluginInterface from './plugin-interface';
+import runHook from './hook';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
@@ -107,6 +108,8 @@ export default async (dir: string) => {
   template(forgeConfig);
 
   forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
+
+  await runHook(forgeConfig, 'resolveForgeConfig', forgeConfig);
 
   return proxify<ForgeConfig>(forgeConfig.buildIdentifier || '', forgeConfig, 'ELECTRON_FORGE');
 };
