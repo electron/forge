@@ -31,8 +31,8 @@ import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
      * An array of forge plugins or a tuple consisting of [pluginName, pluginOptions]
      */
     plugins: (IForgePlugin | [string, any])[];
-    electronRebuildConfig: RebuildOptions;
-    packagerConfig: Options;
+    electronRebuildConfig: Partial<RebuildOptions>;
+    packagerConfig: Partial<Options>;
     makers: (IForgeResolvableMaker | IForgeMaker)[];
     publishers: (IForgeResolvablePublisher | IForgePublisher | string)[];
   }
