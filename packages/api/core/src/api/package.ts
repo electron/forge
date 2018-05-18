@@ -175,6 +175,10 @@ export default async ({
   });
   packageOpts.quiet = true;
 
+  if (packageOpts.all) {
+    throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
+  }
+
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len
     warn(interactive, 'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow);
