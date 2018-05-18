@@ -13,6 +13,9 @@ export default class Tab {
     idCounter += 1;
   }
 
+  /**
+   * Log a line to the web UI, a new line is automatically appended to the line
+   */
   log(line: string) {
     const log = new Log(line, new Date());
     this.logs.push(log);
@@ -25,7 +28,7 @@ export default class Tab {
     }
   }
 
-  toJSON() {
+  private toJSON() {
     return {
       id: this.id,
       name: this.name,

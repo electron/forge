@@ -11,7 +11,13 @@ import readPackageJSON from '../../util/read-package-json';
 const d = debug('electron-forge:init:npm');
 
 export const deps = ['electron-squirrel-startup'];
-export const devDeps = ['@electron-forge/cli'];
+export const devDeps = [
+  '@electron-forge/cli',
+  '@electron-forge/maker-squirrel',
+  '@electron-forge/maker-zip',
+  '@electron-forge/maker-deb',
+  '@electron-forge/maker-rpm',
+];
 export const exactDevDeps = ['electron'];
 
 export default async (dir: string) => {
