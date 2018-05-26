@@ -9,9 +9,9 @@ import pify from 'pify';
 import packager from 'electron-packager';
 
 import getForgeConfig from '../util/forge-config';
-import runHook from '../util/hook';
+import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
-import readPackageJSON from '../util/read-package-json';
+import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
@@ -96,13 +96,13 @@ export default async ({
   }
   dir = resolvedDir;
 
-  const packageJSON = await readPackageJSON(dir);
+  const forgeConfig = await getForgeConfig(dir);
+  const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   if (!packageJSON.main) {
     throw 'packageJSON.main must be set to a valid entry point for your Electron app';
   }
 
-  const forgeConfig = await getForgeConfig(dir);
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
   let packagerSpinner: OraImpl | null = null;
 
@@ -133,7 +133,7 @@ export default async ({
   ];
 
   afterCopyHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    const copiedPackageJSON = await readPackageJSON(buildPath);
+    const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
     if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
       delete copiedPackageJSON.config.forge;
     }

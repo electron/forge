@@ -6,7 +6,7 @@ import username from 'username';
 
 import { setInitialForgeConfig } from '../../util/forge-config';
 import installDepList from '../../util/install-dependencies';
-import readPackageJSON from '../../util/read-package-json';
+import { readRawPackageJson } from '../../util/read-package-json';
 
 const d = debug('electron-forge:init:npm');
 
@@ -22,7 +22,7 @@ export const exactDevDeps = ['electron'];
 
 export default async (dir: string) => {
   await asyncOra('Initializing NPM Module', async () => {
-    const packageJSON = await readPackageJSON(path.resolve(__dirname, '../../../tmpl'));
+    const packageJSON = await readRawPackageJson(path.resolve(__dirname, '../../../tmpl'));
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
     packageJSON.author = await username();
     setInitialForgeConfig(packageJSON);

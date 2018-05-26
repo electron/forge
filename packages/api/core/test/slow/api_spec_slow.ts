@@ -8,7 +8,7 @@ import proxyquire from 'proxyquire';
 
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import installDeps from '../../src/util/install-dependencies';
-import readPackageJSON from '../../src/util/read-package-json';
+import { readRawPackageJson } from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 import { InitOptions } from '../../src/api';
 
@@ -155,7 +155,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     it('creates a forge config', async () => {
-      const packageJSON = await readPackageJSON(dir);
+      const packageJSON = await readRawPackageJson(dir);
       packageJSON.name = 'Name';
       packageJSON.productName = 'Product Name';
       packageJSON.customProp = 'propVal';
@@ -176,7 +176,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           },
         },
         customProp,
-      } = await readPackageJSON(dir);
+      } = await readRawPackageJson(dir);
 
       expect(winstallerName).to.equal('Name');
       expect(customProp).to.equal('propVal');
@@ -195,7 +195,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       dirID += 1;
       await forge.init({ dir });
 
-      const packageJSON = await readPackageJSON(dir);
+      const packageJSON = await readRawPackageJson(dir);
       packageJSON.name = 'testapp';
       packageJSON.productName = 'Test App';
       packageJSON.config.forge.packagerConfig.asar = false;
@@ -215,11 +215,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     it('throws an error when all is set', async () => {
-      let packageJSON = await readPackageJSON(dir);
+      let packageJSON = await readRawPackageJson(dir);
       packageJSON.config.forge.packagerConfig.all = true;
       await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
-      packageJSON = await readPackageJSON(dir);
+      packageJSON = await readRawPackageJson(dir);
       delete packageJSON.config.forge.packagerConfig.all;
       await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
     });
@@ -235,7 +235,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     it('can make from custom outDir without errors', async () => {
-      const packageJSON = await readPackageJSON(dir);
+      const packageJSON = await readRawPackageJson(dir);
       packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
@@ -253,7 +253,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     it('can package without errors', async () => {
-      const packageJSON = await readPackageJSON(dir);
+      const packageJSON = await readRawPackageJson(dir);
       delete packageJSON.dependencies.ref;
       packageJSON.config.forge.packagerConfig.asar = true;
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
@@ -276,7 +276,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       });
 
       it('should not affect the actual forge config', async () => {
-        const normalPackageJSON = await readPackageJSON(dir);
+        const normalPackageJSON = await readRawPackageJson(dir);
         expect(normalPackageJSON).to.have.nested.property('config.forge');
       });
 
@@ -316,7 +316,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const testMakeTarget = function testMakeTarget(target: () => { name: string }, shouldPass: boolean, ...options: any[]) {
         describe(`make (with target=${path.basename(target().name)})`, async () => {
           before(async () => {
-            const packageJSON = await readPackageJSON(dir);
+            const packageJSON = await readRawPackageJson(dir);
             packageJSON.config.forge.makers = [target()];
             await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
           });

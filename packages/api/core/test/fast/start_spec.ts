@@ -29,7 +29,9 @@ describe('start', () => {
       }),
       [path.resolve(__dirname, 'node_modules/electron')]: 'fake_electron_path',
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
-      '../util/read-package-json': () => Promise.resolve(packageJSON),
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(packageJSON),
+      },
       '../util/rebuild': () => Promise.resolve(),
       child_process: {
         spawn: spawnStub,

@@ -7,9 +7,10 @@ import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 // declare module '@electron-forge/shared-types' {
   export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
   export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm'; 
-  export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<void>;
+  export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
   export interface IForgePluginInterface {
     triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
+    triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
     overrideStartLogic(opts: any): Promise<ChildProcess | false>;
   }
   export interface ForgeConfig {

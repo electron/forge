@@ -9,7 +9,7 @@ import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 import { setInitialForgeConfig } from '../util/forge-config';
 import { info, warn } from '../util/messages';
 import installDepList from '../util/install-dependencies';
-import readPackageJSON from '../util/read-package-json';
+import { readRawPackageJson } from '../util/read-package-json';
 
 const d = debug('electron-forge:import');
 
@@ -72,7 +72,7 @@ export default async ({
 
   await initGit(dir);
 
-  let packageJSON = await readPackageJSON(dir);
+  let packageJSON = await readRawPackageJson(dir);
   if (packageJSON.config && packageJSON.config.forge) {
     warn(interactive, 'It looks like this project is already configured for "electron-forge"'.green);
     if (typeof shouldContinueOnExisting === 'function') {
@@ -161,14 +161,14 @@ export default async ({
     await installDepList(dir, exactDevDeps, true, true);
   });
 
-  packageJSON = await readPackageJSON(dir);
+  packageJSON = await readRawPackageJson(dir);
 
   if (!packageJSON.version) {
     warn(interactive, 'Please set the "version" in your application\'s package.json'.yellow);
   }
 
   packageJSON.config = packageJSON.config || {};
-  const templatePackageJSON = await readPackageJSON(path.resolve(__dirname, '../../tmpl'));
+  const templatePackageJSON = await readRawPackageJson(path.resolve(__dirname, '../../tmpl'));
   packageJSON.config.forge = templatePackageJSON.config.forge;
   setInitialForgeConfig(packageJSON);
 

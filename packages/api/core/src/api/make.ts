@@ -6,10 +6,10 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import getForgeConfig from '../util/forge-config';
-import runHook from '../util/hook';
+import { runHook, runMutatingHook } from '../util/hook';
 import { info, warn } from '../util/messages';
 import parseArchs from '../util/parse-archs';
-import readPackageJSON from '../util/read-package-json';
+import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
@@ -147,9 +147,9 @@ export default async ({
 
   info(interactive, `Making for the following targets: ${`${targets.map((t, i) => makers[i].name).join(', ')}`.cyan}`);
 
-  const packageJSON = await readPackageJSON(dir);
+  const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
   const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
-  let outputs: ForgeMakeResult[] = [];
+  const outputs: ForgeMakeResult[] = [];
 
   await runHook(forgeConfig, 'preMake');
 
@@ -197,12 +197,7 @@ export default async ({
     }
   }
 
-  const result = await runHook(forgeConfig, 'postMake', outputs) as ForgeMakeResult[] | undefined;
   // If the postMake hooks modifies the locations / names of the outputs it must return
   // the new locations so that the publish step knows where to look
-  if (Array.isArray(result)) {
-    outputs = result;
-  }
-
-  return outputs;
+  return await runMutatingHook(forgeConfig, 'postMake', outputs);
 };
