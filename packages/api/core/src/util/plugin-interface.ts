@@ -54,6 +54,18 @@ export default class PluginInterface implements IForgePluginInterface {
     }
   }
 
+  async triggerMutatingHook<T>(hookName: string, item: T) {
+    for (const plugin of this.plugins) {
+      if (typeof plugin.getHook === 'function') {
+        const hook = plugin.getHook(hookName);
+        if (hook) {
+          item = await hook(this.config, item);
+        }
+      }
+    }
+    return item;
+  }
+
   async overrideStartLogic(opts: StartOptions) {
     let newStartFn;
     const claimed = [];

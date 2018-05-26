@@ -33,7 +33,9 @@ describe('publish', () => {
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
       './make': async (...args: any[]) => makeStub(...args),
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
-      '../util/read-package-json': () => Promise.resolve(require('../fixture/dummy_app/package.json')),
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(require('../fixture/dummy_app/package.json')),
+      },
       '../util/forge-config': async () => {
         const config = await (require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')));
 

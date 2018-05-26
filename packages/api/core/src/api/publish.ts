@@ -7,7 +7,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import getForgeConfig from '../util/forge-config';
-import readPackageJSON from '../util/read-package-json';
+import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
@@ -73,9 +73,9 @@ const publish = async ({
     throw 'Can\'t resume a dry run and use the provided makeResults at the same time';
   }
 
-  let packageJSON = await readPackageJSON(dir);
-
   const forgeConfig = await getForgeConfig(dir);
+  let packageJSON = await readMutatedPackageJson(dir, forgeConfig);
+
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
   const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
 

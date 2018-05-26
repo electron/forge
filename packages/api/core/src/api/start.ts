@@ -4,11 +4,11 @@ import { StartOptions, ForgePlatform, ForgeArch } from '@electron-forge/shared-t
 import { spawn, ChildProcess } from 'child_process';
 import path from 'path';
 
-import readPackageJSON from '../util/read-package-json';
+import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
 import getForgeConfig from '../util/forge-config';
-import runHook from '../util/hook';
+import { runHook } from '../util/hook';
 import getElectronVersion from '../util/electron-version';
 
 export { StartOptions };
@@ -32,13 +32,12 @@ export default async ({
     dir = resolvedDir;
   });
 
-  const packageJSON = await readPackageJSON(dir);
+  const forgeConfig = await getForgeConfig(dir);
+  const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   if (!packageJSON.version) {
     throw `Please set your application's 'version' in '${dir}/package.json'.`;
   }
-
-  const forgeConfig = await getForgeConfig(dir);
 
   await rebuild(
     dir,

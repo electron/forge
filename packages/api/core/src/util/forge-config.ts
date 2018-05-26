@@ -3,9 +3,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import _template from 'lodash.template';
 
-import readPackageJSON from './read-package-json';
+import { readRawPackageJson } from './read-package-json';
 import PluginInterface from './plugin-interface';
-import runHook from './hook';
+import { runMutatingHook } from './hook';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
@@ -70,7 +70,7 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
 }
 
 export default async (dir: string) => {
-  const packageJSON = await readPackageJSON(dir);
+  const packageJSON = await readRawPackageJson(dir);
   let forgeConfig: ForgeConfig | string = packageJSON.config.forge;
 
   if (typeof forgeConfig === 'string' && (await fs.pathExists(path.resolve(dir, forgeConfig)) || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)))) {
@@ -109,7 +109,7 @@ export default async (dir: string) => {
 
   forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
 
-  await runHook(forgeConfig, 'resolveForgeConfig', forgeConfig);
+  forgeConfig = await runMutatingHook(forgeConfig, 'resolveForgeConfig', forgeConfig);
 
   return proxify<ForgeConfig>(forgeConfig.buildIdentifier || '', forgeConfig, 'ELECTRON_FORGE');
 };

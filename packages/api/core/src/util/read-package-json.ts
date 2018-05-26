@@ -1,5 +1,11 @@
+import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
 
-export default async (dir: string) =>
+import { runMutatingHook } from './hook';
+
+export const readRawPackageJson =  async (dir: string) =>
   await fs.readJson(path.resolve(dir, 'package.json'));
+
+export const readMutatedPackageJson = async (dir: string, forgeConfig: ForgeConfig) => 
+  runMutatingHook(forgeConfig, 'readPackageJson', await readRawPackageJson(dir));
