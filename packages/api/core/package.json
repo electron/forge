@@ -42,6 +42,7 @@
     "@electron-forge/installer-rpm": "6.0.0-beta.16",
     "@electron-forge/installer-zip": "6.0.0-beta.16",
     "@electron-forge/maker-base": "6.0.0-beta.16",
+    "@electron-forge/plugin-base": "^6.0.0-beta.16",
     "@electron-forge/publisher-base": "6.0.0-beta.16",
     "@electron-forge/shared-types": "6.0.0-beta.16",
     "colors": "^1.2.0",

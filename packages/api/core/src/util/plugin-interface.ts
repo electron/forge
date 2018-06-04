@@ -1,4 +1,5 @@
 import { asyncOra } from '@electron-forge/async-ora';
+import PluginBase from '@electron-forge/plugin-base';
 import { IForgePluginInterface, ForgeConfig, IForgePlugin } from '@electron-forge/shared-types';
 import { ChildProcess } from 'child_process';
 import debug from 'debug';
@@ -70,7 +71,7 @@ export default class PluginInterface implements IForgePluginInterface {
     let newStartFn;
     const claimed = [];
     for (const plugin of this.plugins) {
-      if (typeof plugin.startLogic === 'function') {
+      if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
         claimed.push(plugin.name);
         newStartFn = plugin.startLogic;
       }
