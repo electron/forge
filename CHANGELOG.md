@@ -1,3 +1,15 @@
+#### [6.0.0-beta.17](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.17) (2018-06-04)
+
+##### New Features
+
+* **core:**  allow mutating packageJSON on load ([1b7e4117](https://github.com/electron-userland/electron-forge/commit/1b7e4117))
+
+##### Bug Fixes
+
+* **core:**
+  *  allow multiple plugins, fix bad startLogic check ([9164ec51](https://github.com/electron-userland/electron-forge/commit/9164ec51))
+  *  disable the packagerConfig.all option (#510) ([ce363562](https://github.com/electron-userland/electron-forge/commit/ce363562))
+
 #### [6.0.0-beta.16](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.16) (2018-05-17)
 
 ##### Chores
