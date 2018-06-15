@@ -1,0 +1,22 @@
+{
+  "name": "@electron-forge/plugin-bundler-base",
+  "version": "6.0.0-beta.17",
+  "description": "A base plugin to support things like webpack / parcel bundlers",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/BundlerBasePlugin.js",
+  "typings": "dist/BundlerBasePlugin.d.ts",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "dependencies": {
+    "@electron-forge/plugin-base": "6.0.0-beta.17",
+    "@electron-forge/web-multi-logger": "6.0.0-beta.17",
+    "debug": "^3.0.0"
+  }
+}

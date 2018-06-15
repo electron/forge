@@ -1,13 +1,11 @@
 import { asyncOra } from '@electron-forge/async-ora';
-import PluginBase from '@electron-forge/plugin-base';
+import BundlerBasePlugin, { BundlerWatchWrapper } from '@electron-forge/plugin-bundler-base';
 import Logger from '@electron-forge/web-multi-logger';
 import Tab from '@electron-forge/web-multi-logger/dist/Tab';
-import { ChildProcess } from 'child_process';
 import debug from 'debug';
 import fs from 'fs-extra';
 import merge from 'webpack-merge';
 import path from 'path';
-import { spawnPromise } from 'spawn-rx';
 import webpack, { Configuration } from 'webpack';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -22,82 +20,8 @@ import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint 
 const d = debug('electron-forge:plugin:webpack');
 const BASE_PORT = 3000;
 
-export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
+export default class WebpackPlugin extends BundlerBasePlugin<WebpackPluginConfig, Configuration, webpack.Compiler.Watching> {
   name = 'webpack';
-  private isProd = false;
-  private baseDir!: string;
-  private watchers: webpack.Compiler.Watching[] = [];
-  private servers: http.Server[] = [];
-  private loggers: Logger[] = [];
-
-  constructor(c: WebpackPluginConfig) {
-    super(c);
-
-    this.startLogic = this.startLogic.bind(this);
-    this.getHook = this.getHook.bind(this);
-  }
-
-  private resolveConfig = (config: Configuration | string) => {
-    if (typeof config === 'string') return require(path.resolve(path.dirname(this.baseDir), config)) as Configuration;
-    return config;
-  }
-
-  private exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
-    d('handling process exit with:', options);
-    if (options.cleanup) {
-      for (const watcher of this.watchers) {
-        d('cleaning webpack watcher');
-        watcher.close(() => {});
-      }
-      this.watchers = [];
-      for (const server of this.servers) {
-        d('cleaning http server');
-        server.close();
-      }
-      this.servers = [];
-      for (const logger of this.loggers) {
-        d('stopping logger');
-        logger.stop();
-      }
-      this.loggers = [];
-    }
-    if (err) console.error(err.stack);
-    if (options.exit) process.exit();
-  }
-
-  init = (dir: string) => {
-    this.baseDir = path.resolve(dir, '.webpack');
-
-    d('hooking process events');
-    process.on('exit', this.exitHandler.bind(this, { cleanup: true }));
-    process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
-  }
-
-  private loggedOutputUrl = false;
-
-  getHook(name: string) {
-    switch (name) {
-      case 'prePackage':
-        this.isProd = true;
-        return async () => {
-          await this.compileMain();
-          await this.compileRenderers();
-        };
-      case 'postStart':
-        return async (_: any, child: ChildProcess) => {
-          if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${'http://localhost:9000'.cyan}\n`);
-            this.loggedOutputUrl = true;
-          }
-          d('hooking electron process exit');
-          child.on('exit', () => {
-            if ((child as any).restarted) return;
-            this.exitHandler({ cleanup: true, exit: true });
-          });
-        };
-    }
-    return null;
-  }
 
   getDefines = (upOneMore = false) => {
     const defines: { [key: string]: string; } = {};
@@ -239,7 +163,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           onceResolve();
         };
         if (watch) {
-          this.watchers.push(compiler.watch({}, cb));
+          this.watchers.push(
+            new BundlerWatchWrapper(
+              compiler.watch({}, cb),
+              (w, fn) => w.close(fn || (() => {})),
+            ),
+          );
         } else {
           compiler.run(cb);
         }
@@ -308,24 +237,15 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
               if (err) return onceReject(err);
               onceResolve();
             };
-            this.watchers.push(webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!)).watch({}, cb));
+            this.watchers.push(
+              new BundlerWatchWrapper(
+                webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!)).watch({}, cb),
+                (w, fn) => w.close(fn || (() => {})),
+              ),
+            );
           });
         }
       }
     });
-  }
-
-  private alreadyStarted = false;
-
-  async startLogic(): Promise<false> {
-    if (this.alreadyStarted) return false;
-    this.alreadyStarted = true;
-
-    const logger = new Logger();
-    this.loggers.push(logger);
-    await this.compileMain(true, logger);
-    await this.launchDevServers(logger);
-    await logger.start();
-    return false;
   }
 }
