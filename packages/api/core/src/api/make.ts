@@ -167,6 +167,20 @@ export default async ({
       // eslint-disable-next-line no-loop-func
       await asyncOra(`Making for target: ${maker.name.green} - On platform: ${actualTargetPlatform.cyan} - For arch: ${targetArch.cyan}`, async () => {
         try {
+          /**
+           * WARNING: DO NOT ATTEMPT TO PARALLELIZE MAKERS
+           *
+           * Currently it is assumed we have 1 maker per make call but that is
+           * not enforced.  It is technically possible to have 1 maker be called
+           * multiple times.  The "prepareConfig" method however implicitly
+           * requires a lock that is not enforced.  There are two options:
+           *
+           *   * Provide makers a getConfig() method
+           *   * Remove support for config being provided as a method
+           *   * Change the entire API of maker from a single constructor to
+           *     providing a MakerFactory
+           */
+          maker.prepareConfig(targetArch);
           const artifacts = await maker.make({
             appName,
             forgeConfig,
