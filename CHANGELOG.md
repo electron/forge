@@ -1,3 +1,9 @@
+#### [6.0.0-beta.18](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.18) (2018-06-18)
+
+##### Bug Fixes
+
+* **core:**  re-implement the config fetcher syntax from forge, undocumented so we can remove at any t ([ebac71c1](https://github.com/electron-userland/electron-forge/commit/ebac71c1))
+
 #### [6.0.0-beta.17](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.17) (2018-06-04)
 
 ##### New Features
