@@ -38,7 +38,7 @@ are looking for the 5.x series (the version currently published to NPM), please 
 **Note**: Electron Forge requires Node 6 or above, plus git installed.
 
 ```bash
-npm install -g @electron-forge/cli
+npm install -g @electron-forge/cli@beta
 electron-forge init my-new-app
 cd my-new-app
 npm start
@@ -50,7 +50,7 @@ or
 [`yarn create`](https://yarnpkg.com/blog/2017/05/12/introducing-yarn/).
 
 ```bash
-npx @electron-forge/cli init my-new-app
+npx @electron-forge/cli@beta init my-new-app
 # or
 yarn create electron-app my-new-app
 
