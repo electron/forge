@@ -1,5 +1,8 @@
 import { exec } from 'child_process';
 import debug from 'debug';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
 import semver from 'semver';
 
 import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core/dist/util/yarn-or-npm';
@@ -67,7 +70,23 @@ async function checkPackageManagerVersion(ora: OraImpl) {
     });
 }
 
-export default async function (ora: OraImpl) {
-  return (await Promise.all([checkGitExists(), checkNodeVersion(), checkPackageManagerVersion(ora)]))
-    .every(check => check);
+/**
+ * Some people know there is system is OK and don't appreciate the 800ms lag in
+ * start up that these checks (in particular the package manager check) costs.
+ *
+ * Simply creating this flag file in your home directory will skip these checks
+ * and shave ~800ms off your forge start time.
+ *
+ * This is specifically not documented or everyone would make it.
+ */
+const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check');
+
+export default async function (ora: OraImpl): Promise<boolean> {
+  if (!await fs.pathExists(SKIP_SYSTEM_CHECK)) {
+    d('checking system, create ~/.skip-forge-system-check to stop doing this');
+    return (await Promise.all([checkGitExists(), checkNodeVersion(), checkPackageManagerVersion(ora)]))
+      .every(check => check);
+  }
+  d('skipping system check');
+  return true;
 }
