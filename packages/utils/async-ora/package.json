@@ -11,6 +11,7 @@
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
+    "@types/pretty-ms": "^3.0.0",
     "chai": "^4.0.0",
     "mocha": "^5.0.0",
     "proxyquire": "^2.0.1",
@@ -20,7 +21,8 @@
     "colors": "^1.2.0",
     "debug": "^3.0.0",
     "log-symbols": "^2.0.0",
-    "ora": "^2.0.0"
+    "ora": "^2.0.0",
+    "pretty-ms": "^3.2.0"
   },
   "engines": {
     "node": ">= 6.0"
