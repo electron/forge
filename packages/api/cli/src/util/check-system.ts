@@ -71,7 +71,7 @@ async function checkPackageManagerVersion(ora: OraImpl) {
 }
 
 /**
- * Some people know there is system is OK and don't appreciate the 800ms lag in
+ * Some people know their is system is OK and don't appreciate the 800ms lag in
  * start up that these checks (in particular the package manager check) costs.
  *
  * Simply creating this flag file in your home directory will skip these checks
