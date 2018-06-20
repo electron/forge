@@ -83,11 +83,7 @@ export default async ({
   const makers: {
     [key: number]: MakerBase<any>;
   } = {};
-  const targets = (overrideTargets || forgeConfig.makers.filter(
-    maker => maker.platforms
-      ? maker.platforms.indexOf(actualTargetPlatform) !== -1
-      : true,
-  )).map((target) => {
+  let targets = (overrideTargets || forgeConfig.makers).map((target) => {
     if (typeof target === 'string') {
       return { name: target };
     }
@@ -99,6 +95,7 @@ export default async ({
     let maker: MakerBase<any>;
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
+      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       let makerModule;
@@ -111,6 +108,7 @@ export default async ({
 
       const MakerClass = makerModule.default || makerModule;
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms);
+      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     }
 
     if (!maker.isSupportedOnCurrentPlatform) {
@@ -123,7 +121,7 @@ export default async ({
 
     if (!await maker.isSupportedOnCurrentPlatform()) {
       throw new Error([
-        `Cannot build for ${platform} and target ${maker.name}: the maker declared `,
+        `Cannot make for ${platform} and target ${maker.name}: the maker declared `,
         `that it cannot run on ${process.platform}`,
       ].join(''));
     }
@@ -144,6 +142,8 @@ export default async ({
   } else {
     warn(interactive, 'WARNING: Skipping the packaging step, this could result in an out of date build'.red);
   }
+
+  targets = targets.filter((_, i) => makers[i]);
 
   info(interactive, `Making for the following targets: ${`${targets.map((t, i) => makers[i].name).join(', ')}`.cyan}`);
 
