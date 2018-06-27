@@ -1,3 +1,9 @@
+#### [6.0.0-beta.20](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.20) (2018-06-27)
+
+##### Refactors
+
+*  update publish tooling to be nicer to people publishing forge itself ([4137bda4](https://github.com/electron-userland/electron-forge/commit/4137bda4))
+
 #### [6.0.0-beta.19](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.19) (2018-06-27)
 
 ##### Chores
