@@ -1,3 +1,22 @@
+#### [6.0.0-beta.19](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.19) (2018-06-27)
+
+##### Chores
+
+*  remove unused gitignore files ([816d59e3](https://github.com/electron-userland/electron-forge/commit/816d59e3))
+
+##### New Features
+
+* **cli:**  dont check system if the marker file is created ([ce5a4a2e](https://github.com/electron-userland/electron-forge/commit/ce5a4a2e))
+
+##### Bug Fixes
+
+*  add prepareConfig calls to tests ([085c75d3](https://github.com/electron-userland/electron-forge/commit/085c75d3))
+* **core:**  do platform filtering later in the make chain to ensure that default platforms are respec ([19e0543e](https://github.com/electron-userland/electron-forge/commit/19e0543e))
+
+##### Performance Improvements
+
+*  measure performance of async oras when in debug mode ([3b625ded](https://github.com/electron-userland/electron-forge/commit/3b625ded))
+
 #### [6.0.0-beta.18](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.18) (2018-06-18)
 
 ##### Bug Fixes
