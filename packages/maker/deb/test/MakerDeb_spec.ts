@@ -36,6 +36,7 @@ describe('MakerDeb', () => {
     createMaker = () => {
       maker = new MakerDeb(config, []); // eslint-disable-line
       maker.ensureFile = ensureFileStub;
+      maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });

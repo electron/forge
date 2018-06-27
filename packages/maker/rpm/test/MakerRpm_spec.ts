@@ -36,6 +36,7 @@ describe('MakerRpm', () => {
     createMaker = () => {
       maker = new rpmModule(config); // eslint-disable-line
       maker.ensureFile = ensureFileStub;
+      maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });

@@ -38,6 +38,7 @@ describe('MakerFlatpak', () => {
     createMaker = () => {
       maker = new flatpakModule(config); // eslint-disable-line
       maker.ensureDirectory = ensureDirectoryStub;
+      maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });

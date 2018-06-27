@@ -6778,7 +6778,7 @@ pretty-ms@^3.2.0:
   dependencies:
     parse-ms "^1.0.0"
 
-private@^0.1.6, private@^0.1.8:
+private@^0.1.6:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/private/-/private-0.1.8.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
 

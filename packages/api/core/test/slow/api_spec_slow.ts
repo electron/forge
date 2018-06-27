@@ -304,6 +304,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           })
           .map(makerPath => () => ({
             name: makerPath,
+            platforms: [process.platform],
             config: {
               devCert,
             },

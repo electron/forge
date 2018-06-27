@@ -34,6 +34,7 @@ describe('MakerSnap', () => {
     createMaker = () => {
       maker = new MakerSnapModule(config); // eslint-disable-line
       maker.ensureDirectory = ensureDirectoryStub;
+      maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });
@@ -49,10 +50,10 @@ describe('MakerSnap', () => {
   });
 
   it('should have config cascade correctly', async () => {
-    config = {
+    Object.assign(config, {
       arch: 'overridden',
       description: 'Snap description',
-    } as any;
+    } as any);
     createMaker();
 
     await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });

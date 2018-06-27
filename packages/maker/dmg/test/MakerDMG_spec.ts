@@ -40,6 +40,7 @@ describe('MakerDMG', () => {
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
+      maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });
