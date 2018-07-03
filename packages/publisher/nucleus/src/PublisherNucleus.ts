@@ -14,11 +14,30 @@ const d = debug('electron-forge:publish:nucleus');
 export default class PublisherNucleus extends PublisherBase<PublisherNucleusConfig> {
   name = 'nucleus';
 
+  private collapseMakeResults = (makeResults: PublisherOptions['makeResults']) => {
+    const newMakeResults: typeof makeResults = [];
+    for (const result of makeResults) {
+      const existingResult = newMakeResults.find((nResult) => {
+        return nResult.arch === result.arch
+          && nResult.platform === result.platform
+          && nResult.packageJSON.version === result.packageJSON.version;
+      });
+      if (existingResult) {
+        existingResult.artifacts.push(...result.artifacts);
+      } else {
+        newMakeResults.push({ ...result });
+      }
+    }
+    return newMakeResults;
+  }
+
   async publish({ makeResults }: PublisherOptions) {
     const { config } = this;
 
-    for (const [i, makeResult] of makeResults.entries()) {
-      const msg = `Uploading result (${i}/${makeResults.length})`;
+    const collapsedResults = this.collapseMakeResults(makeResults);
+
+    for (const [i, makeResult] of collapsedResults.entries()) {
+      const msg = `Uploading result (${i + 1}/${collapsedResults.length})`;
       d(msg);
 
       await asyncOra(msg, async () => {
