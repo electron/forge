@@ -1,3 +1,9 @@
+#### [6.0.0-beta.21](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.21) (2018-07-03)
+
+##### Performance Improvements
+
+* **publisher-nucleus:**  merge make results when arch/platform/version are all the same to speed up ([fbc4db42](https://github.com/electron-userland/electron-forge/commit/fbc4db42))
+
 #### [6.0.0-beta.20](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.20) (2018-06-27)
 
 ##### Refactors
