@@ -7,4 +7,8 @@ else
     bolt build
     bolt lint
     bolt ws test
+    echo "$NODE_INSTALLER-$TRAVIS_SECURE_ENV_VARS-$TRAVIS_BRANCH"
+    if [[ "$NODE_INSTALLER-$TRAVIS_SECURE_ENV_VARS-$TRAVIS_BRANCH" = "yarn-true-master" ]]; then
+        bolt docs:deploy
+    fi
 fi
