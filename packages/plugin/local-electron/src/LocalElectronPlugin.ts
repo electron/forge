@@ -7,18 +7,15 @@ import { LocalElectronPluginConfig } from './Config';
 export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginConfig> {
   name = 'local-electron';
 
-  constructor(config: LocalElectronPluginConfig) {
-    super(config);
+  get enabled() {
     if (typeof this.config.enabled === 'undefined') {
-      this.config = {
-        ...this.config,
-        enabled: true,
-      };
+      return true;
     }
+    return this.config.enabled;
   }
 
   async startLogic() {
-    if (this.config.enabled) {
+    if (this.enabled) {
       this.checkPlatform(process.platform);
       process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
     }
@@ -45,7 +42,7 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   }
 
   private afterExtract = async (_: any, buildPath: string, __: any, platform: string, arch: string) => {
-    if (!this.config.enabled) return;
+    if (!this.enabled) return;
 
     this.checkPlatform(platform);
     this.checkArch(arch);
