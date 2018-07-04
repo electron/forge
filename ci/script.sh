@@ -10,6 +10,6 @@ else
     echo "$NODE_INSTALLER-$TRAVIS_SECURE_ENV_VARS-$TRAVIS_BRANCH"
     if [[ "$NODE_INSTALLER-$TRAVIS_SECURE_ENV_VARS-$TRAVIS_BRANCH" = "yarn-true-master" ]]; then
         npm i -g now
-        bolt docs:deploy
+        bolt docs:deploy:ci
     fi
 fi
