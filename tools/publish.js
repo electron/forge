@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const spawnPromise = require('cross-spawn-promise');
 const Listr = require('listr');
+require('ts-node').register();
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');

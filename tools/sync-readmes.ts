@@ -1,9 +1,9 @@
-const fetch = require('node-fetch');
-const fs = require('fs-extra');
-const Listr = require('listr');
-const path = require('path');
+import fetch from 'node-fetch';
+import * as fs from 'fs-extra';
+import Listr from 'listr';
+import * as path from 'path';
 
-const workspaceMappings = {
+const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined }} = {
   maker: {
     wix: 'wix-msi',
     squirrel: 'squirrel.windows',
@@ -16,7 +16,7 @@ const workspaceMappings = {
 const BASE_DIR = path.resolve(__dirname, '..');
 const DOCS_BASE = 'https://raw.githubusercontent.com/MarshallOfSound/electron-forge-docs/v6';
 
-const sanitize = (gb) => {
+const sanitize = (gb: string) => {
   return gb
     .replace('{% code-tabs %}', '')
     .replace('{% endcode-tabs %}', '')
@@ -24,7 +24,7 @@ const sanitize = (gb) => {
     .replace('{% endcode-tabs-item %}', '')
     .replace('{% endhint %}', '\n--------')
     .replace(/{% hint style="(.+?)" %}\n/g, (_, style) => {
-      const styleMap = {
+      const styleMap: { [style: string]: string | undefined } = {
         warning: '⚠️',
         info: 'ℹ️',
         danger: '🚨',
@@ -33,11 +33,15 @@ const sanitize = (gb) => {
     });
 };
 
+interface SyncContext {
+  packageKeys: [string, string, string, string][];
+}
+
 const sync = () => {
   return new Listr([
     {
       title: 'Collecting package keys',
-      task: async (ctx) => {
+      task: async (ctx: SyncContext) => {
         ctx.packageKeys = [];
 
         for (const workspace of Object.keys(workspaceMappings)) {
@@ -53,7 +57,7 @@ const sync = () => {
     },
     {
       title: 'Fetching READMEs',
-      task: (ctx) => new Listr(ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
+      task: (ctx: SyncContext) => new Listr(ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
         title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
         task: async () => {
           const r = await fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
