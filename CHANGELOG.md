@@ -1,3 +1,13 @@
+#### [6.0.0-beta.22](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.22) (2018-07-04)
+
+##### New Features
+
+* **plugin-compile:**  add the electron compile plugin into the monorepo ([5907de5d](https://github.com/electron-userland/electron-forge/commit/5907de5d))
+
+##### Bug Fixes
+
+* **plugin-local-electron:**  new config setup means that a configfetcher is passed to the plugin not ([37a1e071](https://github.com/electron-userland/electron-forge/commit/37a1e071))
+
 #### [6.0.0-beta.21](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.21) (2018-07-03)
 
 ##### Performance Improvements
