@@ -1,0 +1,25 @@
+{
+  "name": "@electron-forge/plugin-compile",
+  "version": "6.0.0-beta.21",
+  "description": "Electron Compile plugin for Electron Forge",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/CompilePlugin.js",
+  "typings": "dist/CompilePlugin.d.ts",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "devDependencies": {
+    "chai": "^4.0.0",
+    "mocha": "^5.0.0"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "dependencies": {
+    "@electron-forge/async-ora": "6.0.0-beta.21",
+    "@electron-forge/plugin-base": "6.0.0-beta.21",
+    "fs-extra": "^5.0.0"
+  }
+}

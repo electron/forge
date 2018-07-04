@@ -21,7 +21,7 @@ export default abstract class Plugin<C> {
     return null;
   }
 
-  async startLogic(startOpts: StartOptions): Promise<ChildProcess | string | false> {
+  async startLogic(startOpts: StartOptions): Promise<ChildProcess | string | string[] | false> {
     return false;
   }
 }

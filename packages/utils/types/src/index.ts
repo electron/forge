@@ -11,7 +11,7 @@ import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
   export interface IForgePluginInterface {
     triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
     triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
-    overrideStartLogic(opts: any): Promise<ChildProcess | false>;
+    overrideStartLogic(opts: any): Promise<ChildProcess | string | string[] | false>;
   }
   export interface ForgeConfig {
     /**

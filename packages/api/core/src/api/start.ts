@@ -69,8 +69,12 @@ export default async ({
       runAsNode,
       inspect,
     });
+    let prefixArgs: string[] = [];
     if (typeof spawnedPluginChild === 'string') {
       electronExecPath = spawnedPluginChild;
+    } else if (Array.isArray(spawnedPluginChild)) {
+      electronExecPath = spawnedPluginChild[0];
+      prefixArgs = spawnedPluginChild.slice(1);
     } else if (spawnedPluginChild) {
       await runHook(forgeConfig, 'postStart', spawnedPluginChild);
       return spawnedPluginChild;
@@ -98,7 +102,7 @@ export default async ({
     let spawned!: ChildProcess;
 
     await asyncOra('Launching Application', async () => {
-      spawned = spawn(electronExecPath, [appPath].concat(args as string[]), spawnOpts);
+      spawned = spawn(electronExecPath, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts);
     });
 
     await runHook(forgeConfig, 'postStart', spawned);
