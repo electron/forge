@@ -1,3 +1,19 @@
+#### [6.0.0-beta.23](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.23) (2018-07-05)
+
+##### Chores
+
+*  fix sync-readmes running on node 6 ([19613388](https://github.com/electron-userland/electron-forge/commit/19613388))
+*  set up auto deploy of the JS API site ([4466904b](https://github.com/electron-userland/electron-forge/commit/4466904b))
+
+##### Continuous Integration
+
+*  use NOW_TOKEN on travis to deploy ([bdaf564e](https://github.com/electron-userland/electron-forge/commit/bdaf564e))
+*  install now globally for ci ([6b29c325](https://github.com/electron-userland/electron-forge/commit/6b29c325))
+
+##### Bug Fixes
+
+* **core:**  makers, publishers and plugins should be resolved relative to current dir not install dir ([74e6ac8d](https://github.com/electron-userland/electron-forge/commit/74e6ac8d))
+
 #### [6.0.0-beta.22](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.22) (2018-07-04)
 
 ##### New Features
