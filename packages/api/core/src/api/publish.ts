@@ -13,6 +13,7 @@ import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
 
 import make, { MakeOptions } from './make';
+import requireSearch from '../util/require-search';
 
 const d = debug('electron-forge:publish');
 
@@ -149,17 +150,14 @@ const publish = async ({
       publisher = publishTarget as any;
     } else {
       const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
-      let publisherModule: any;
+      let PublisherClass: any;
       await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
-        try {
-          publisherModule = require(resolvablePublishTarget.name);
-        } catch (err) {
-          console.error(err);
+        PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
+        if (!PublisherClass) {
           throw `Could not find a publish target with the name: ${resolvablePublishTarget.name}`;
         }
       });
 
-      const PublisherClass = publisherModule.default || publisherModule;
       publisher = new PublisherClass(resolvablePublishTarget.config || {}, resolvablePublishTarget.platforms);
     }
 

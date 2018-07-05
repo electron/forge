@@ -13,10 +13,13 @@ import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
+import requireSearch from '../util/require-search';
 
 import packager from './package';
 
 const { hostArch } = require('electron-packager/targets');
+
+class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; };
 
 export interface MakeOptions {
   /**
@@ -98,16 +101,12 @@ export default async ({
       if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
-      let makerModule;
-      try {
-        makerModule = require(resolvableTarget.name);
-      } catch (err) {
-        console.error(err);
+      const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
+      if (!MakerClass) {
         throw `Could not find module with name: ${resolvableTarget.name}`;
       }
 
-      const MakerClass = makerModule.default || makerModule;
-      maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms);
+      maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
       if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     }
 

@@ -42,9 +42,16 @@ describe('publish', () => {
         config.publishers = publishers;
         return config;
       },
-      '@electron-forge/publisher-test': fakePublisher(publisherSpy),
-      void: fakePublisher(voidStub),
-      nowhere: fakePublisher(nowhereStub),
+      '../util/require-search': (_: string, [name]: [string]) => {
+        if (name === 'void') {
+          return fakePublisher(voidStub);
+        } else if (name === 'nowhere') {
+          return fakePublisher(nowhereStub);
+        } else if (name === '@electron-forge/publisher-test') {
+          return fakePublisher(publisherSpy);
+        }
+        return null;
+      },
     }).default;
 
     publisherSpy.returns(Promise.resolve());

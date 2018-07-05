@@ -1,9 +1,10 @@
-import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
 import { IForgePluginInterface, ForgeConfig, IForgePlugin } from '@electron-forge/shared-types';
 import { ChildProcess } from 'child_process';
 import debug from 'debug';
+
 import { StartOptions } from '../api';
+import requireSearch from './require-search';
 
 const d = debug('electron-forge:plugins');
 
@@ -23,8 +24,10 @@ export default class PluginInterface implements IForgePluginInterface {
         }
         let opts = {};
         if (typeof plugin[1] !== 'undefined') opts = plugin[1];
-        const pluginModule = require(plugin[0]);
-        const Plugin = pluginModule.default || pluginModule;
+        const Plugin = requireSearch<any>(dir, [plugin[0]]);
+        if (!Plugin) {
+          throw `Could not find module with name: ${plugin[0]}`;
+        }
         return new Plugin(opts);
       }
       throw `Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`; // eslint-disable-line
