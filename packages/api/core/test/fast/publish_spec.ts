@@ -45,9 +45,11 @@ describe('publish', () => {
       '../util/require-search': (_: string, [name]: [string]) => {
         if (name === 'void') {
           return fakePublisher(voidStub);
-        } else if (name === 'nowhere') {
+        }
+        if (name === 'nowhere') {
           return fakePublisher(nowhereStub);
-        } else if (name === '@electron-forge/publisher-test') {
+        }
+        if (name === '@electron-forge/publisher-test') {
           return fakePublisher(publisherSpy);
         }
         return null;
