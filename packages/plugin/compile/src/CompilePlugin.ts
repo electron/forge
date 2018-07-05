@@ -8,18 +8,18 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
   name = 'electron-compile';
   private dir!: string;
 
-  init(dir: string) {
+  init = (dir: string) => {
     this.dir = dir;
   }
 
-  getHook(hookName: string) {
+  getHook = (hookName: string) => {
     if (hookName === 'packageAfterCopy') {
       return createCompileHook(this.dir);
     }
     return null;
   }
 
-  async startLogic(opts: StartOptions) {
+  startLogic = async (opts: StartOptions) => {
     return [process.execPath, path.resolve(this.dir, 'node_modules/electron-prebuilt-compile/lib/cli')];
   }
 }
