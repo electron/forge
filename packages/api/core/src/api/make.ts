@@ -19,7 +19,7 @@ import packager from './package';
 
 const { hostArch } = require('electron-packager/targets');
 
-class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; };
+class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; }
 
 export interface MakeOptions {
   /**
