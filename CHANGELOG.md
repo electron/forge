@@ -1,3 +1,30 @@
+#### [6.0.0-beta.25](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.25) (2018-07-12)
+
+##### Chores
+
+* **core:**  add *.ts to .editorconfig (#527) ([ae0bf4a0](https://github.com/electron-userland/electron-forge/commit/ae0bf4a0))
+
+##### New Features
+
+* **maker-dmg:**  update electron-installer-dmg for new features ([766259fa](https://github.com/electron-userland/electron-forge/commit/766259fa))
+
+#### [6.0.0-beta.24](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.24) (2018-07-06)
+
+##### Build System / Dependencies
+
+*  fixup publish script ([21aceca2](https://github.com/electron-userland/electron-forge/commit/21aceca2))
+
+##### Chores
+
+*  fix linting for else if return syntax ([ad061fb1](https://github.com/electron-userland/electron-forge/commit/ad061fb1))
+
+##### Bug Fixes
+
+* **plugin-compile:**
+  *  bind in constructor to make TS happy ([5cb74d4c](https://github.com/electron-userland/electron-forge/commit/5cb74d4c))
+  *  use correctly bound methods in CompilePlugin ([df2acc73](https://github.com/electron-userland/electron-forge/commit/df2acc73))
+* **cli:**  use scoped package path in vscode debugger scripts (#524) ([f1b90b67](https://github.com/electron-userland/electron-forge/commit/f1b90b67))
+
 #### [6.0.0-beta.23](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.23) (2018-07-05)
 
 ##### Chores

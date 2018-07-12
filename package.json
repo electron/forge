@@ -1,6 +1,6 @@
 {
   "name": "electron-forge",
-  "version": "6.0.0-beta.23",
+  "version": "6.0.0-beta.25",
   "private": true,
   "license": "MIT",
   "bolt": {
@@ -153,7 +153,7 @@
   },
   "optionalDependencies": {
     "electron-installer-debian": "^0.8.0",
-    "electron-installer-dmg": "^0.2.0",
+    "electron-installer-dmg": "^2.0.0",
     "electron-installer-flatpak": "^0.8.0",
     "electron-installer-redhat": "^0.5.0",
     "electron-installer-snap": "^2.0.0",
