@@ -1361,11 +1361,12 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-appdmg@^0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/appdmg/-/appdmg-0.4.5.tgz#47a827865b8a0be48abb3522567e3493d2f1b838"
+appdmg@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/appdmg/-/appdmg-0.5.2.tgz#85732299b508f040473fa43ab6f6bce8b7eadc98"
   dependencies:
     async "^1.4.2"
+    buffer-alloc "^1.1.0"
     cp-file "^3.1.0"
     ds-store "^0.1.5"
     execa "^0.4.0"
@@ -1978,6 +1979,21 @@ browserslist@^3.0.0:
 btoa-lite@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/btoa-lite/-/btoa-lite-1.0.0.tgz#337766da15801210fdd956c22e9c6891ab9d0337"
+
+buffer-alloc-unsafe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
+
+buffer-alloc@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
+  dependencies:
+    buffer-alloc-unsafe "^1.1.0"
+    buffer-fill "^1.0.0"
+
+buffer-fill@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
 
 buffer-from@^0.1.1:
   version "0.1.1"
@@ -3140,14 +3156,15 @@ electron-installer-debian@^0.8.0:
     word-wrap "^1.2.3"
     yargs "^10.0.3"
 
-electron-installer-dmg@^0.2.0:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-0.2.1.tgz#de835f02009b83f82e408036ac31462c3d6cb249"
+electron-installer-dmg@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-2.0.0.tgz#a38916476261e0b3a3bc318d5dcc8a80e634dedf"
   dependencies:
-    debug "^2.2.0"
+    debug "^3.1.0"
+    fs-extra "^6.0.1"
     minimist "^1.1.1"
   optionalDependencies:
-    appdmg "^0.4.5"
+    appdmg "^0.5.2"
 
 electron-installer-flatpak@^0.8.0:
   version "0.8.0"
@@ -4070,6 +4087,14 @@ fs-extra@^4.0.0, fs-extra@^4.0.1, fs-extra@^4.0.2:
 fs-extra@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-5.0.0.tgz#414d0110cdd06705734d055652c5411260c31abd"
+  dependencies:
+    graceful-fs "^4.1.2"
+    jsonfile "^4.0.0"
+    universalify "^0.1.0"
+
+fs-extra@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-6.0.1.tgz#8abc128f7946e310135ddc93b98bddb410e7a34b"
   dependencies:
     graceful-fs "^4.1.2"
     jsonfile "^4.0.0"

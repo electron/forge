@@ -1,3 +1,38 @@
+export interface CodeSignOptions {
+  'signing-identity': string;
+  identifier?: string;
+}
+
+export interface DMGContents {
+  x: number;
+  y: number;
+  type: 'link' | 'file' | 'position';
+  path: string;
+  name: string;
+}
+
+export interface WindowPositionOptions {
+  x: number;
+  y: number;
+}
+
+export interface WindowSizeOptions {
+  width: number;
+  height: number;
+}
+
+export interface WindowOptions {
+  position?: WindowPositionOptions;
+  size?: WindowSizeOptions;
+}
+
+export interface AdditionalDMGOptions {
+  'background-color'?: string;
+  'icon-size'?: number;
+  window?: WindowOptions;
+  'code-sign'?: CodeSignOptions;
+}
+
 export interface MakerDMGConfig {
   /**
    * The application name
@@ -22,11 +57,21 @@ export interface MakerDMGConfig {
   /**
    * How big to make the icon for the app in the DMG
    */
-  'icon-size'?: number;
+  iconSize?: number;
   /**
    * Disk image format
    * 
    * Default: UDZO
    */
   format?: 'UDRW' | 'UDRO' | 'UDCO' | 'UDZO' | 'UDBZ' | 'ULFO';
+  /**
+   * Override the contents of the DMG, has a reasonable default
+   */
+  contents?: DMGContents[] | ((opts: MakerDMGConfig & AdditionalDMGOptions) => DMGContents[]);
+  /**
+   * Additional options to pass through to node-appdmng
+   *
+   * All available options are available in the [`appdmg` docs](https://github.com/LinusU/node-appdmg)
+   */
+  additionalDMGOptions?: AdditionalDMGOptions;
 }

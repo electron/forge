@@ -26,7 +26,6 @@
     "pify": "^3.0.0"
   },
   "optionalDependencies": {
-    "electron-installer-dmg": "^0.2.0",
     "electron-windows-store": "^0.12.0"
   }
 }
