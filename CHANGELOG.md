@@ -1,3 +1,13 @@
+#### [6.0.0-beta.25](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.25) (2018-07-12)
+
+##### Chores
+
+* **core:**  add *.ts to .editorconfig (#527) ([ae0bf4a0](https://github.com/electron-userland/electron-forge/commit/ae0bf4a0))
+
+##### New Features
+
+* **maker-dmg:**  update electron-installer-dmg for new features ([766259fa](https://github.com/electron-userland/electron-forge/commit/766259fa))
+
 #### [6.0.0-beta.24](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.24) (2018-07-06)
 
 ##### Build System / Dependencies
