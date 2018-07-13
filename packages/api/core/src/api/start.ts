@@ -57,7 +57,7 @@ export default async ({
   };
 
   const forgeSpawn = async () => {
-    let electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
+    let electronExecPath: string | null = null;
 
     // If a plugin has taken over the start command let's stop here
     const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
@@ -78,6 +78,10 @@ export default async ({
     } else if (spawnedPluginChild) {
       await runHook(forgeConfig, 'postStart', spawnedPluginChild);
       return spawnedPluginChild;
+    }
+
+    if (!electronExecPath) {
+      electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
     }
 
     const spawnOpts = {
