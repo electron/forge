@@ -7,16 +7,17 @@ import username from 'username';
 import { setInitialForgeConfig } from '../../util/forge-config';
 import installDepList from '../../util/install-dependencies';
 import { readRawPackageJson } from '../../util/read-package-json';
+import { version } from '../../../package.json';
 
 const d = debug('electron-forge:init:npm');
 
 export const deps = ['electron-squirrel-startup'];
 export const devDeps = [
-  '@electron-forge/cli',
-  '@electron-forge/maker-squirrel',
-  '@electron-forge/maker-zip',
-  '@electron-forge/maker-deb',
-  '@electron-forge/maker-rpm',
+  '@electron-forge/cli@' + version,
+  '@electron-forge/maker-squirrel@' + version,
+  '@electron-forge/maker-zip@' + version,
+  '@electron-forge/maker-deb@' + version,
+  '@electron-forge/maker-rpm@' + version,
 ];
 export const exactDevDeps = ['electron'];
 
