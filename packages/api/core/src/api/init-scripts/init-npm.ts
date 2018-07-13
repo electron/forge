@@ -11,13 +11,17 @@ import { version } from '../../../package.json';
 
 const d = debug('electron-forge:init:npm');
 
+function siblingDep(name: string) {
+  return `@electron-forge/${name}@${version}`;
+}
+
 export const deps = ['electron-squirrel-startup'];
 export const devDeps = [
-  '@electron-forge/cli@' + version,
-  '@electron-forge/maker-squirrel@' + version,
-  '@electron-forge/maker-zip@' + version,
-  '@electron-forge/maker-deb@' + version,
-  '@electron-forge/maker-rpm@' + version,
+  siblingDep('cli'),
+  siblingDep('maker-squirrel'),
+  siblingDep('maker-zip'),
+  siblingDep('maker-deb'),
+  siblingDep('maker-rpm'),
 ];
 export const exactDevDeps = ['electron'];
 
