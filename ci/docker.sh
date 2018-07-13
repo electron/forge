@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 NODE_INSTALLER="$1"
 
 npm i -g yarn
