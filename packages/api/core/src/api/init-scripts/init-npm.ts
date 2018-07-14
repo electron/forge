@@ -7,12 +7,12 @@ import username from 'username';
 import { setInitialForgeConfig } from '../../util/forge-config';
 import installDepList from '../../util/install-dependencies';
 import { readRawPackageJson } from '../../util/read-package-json';
-import { version } from '../../../package.json';
 
 const d = debug('electron-forge:init:npm');
+const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
 
 function siblingDep(name: string) {
-  return `@electron-forge/${name}@${version}`;
+  return `@electron-forge/${name}@${corePackage.version}`;
 }
 
 export const deps = ['electron-squirrel-startup'];
