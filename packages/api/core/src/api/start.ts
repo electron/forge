@@ -106,7 +106,7 @@ export default async ({
     let spawned!: ChildProcess;
 
     await asyncOra('Launching Application', async () => {
-      spawned = spawn(electronExecPath, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts);
+      spawned = spawn(electronExecPath!, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts);
     });
 
     await runHook(forgeConfig, 'postStart', spawned);
