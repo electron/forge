@@ -9,7 +9,7 @@ require('ts-node').register();
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
-const publisher = new Listr([
+const prepare = new Listr([
   {
     title: 'Checking working directory',
     task: async () => {
@@ -30,6 +30,9 @@ const publisher = new Listr([
     title: 'Fetching README\'s',
     task: require('./sync-readmes'),
   },
+]);
+
+const publisher = new Listr([
   {
     title: 'Collecting directories to publish',
     task: async (ctx) => {
@@ -51,7 +54,7 @@ const publisher = new Listr([
           title: `Publishing: ${`${name}@${version}`.cyan} (beta=${isBeta ? 'true'.green : 'red'.red})`,
           task: async () => {
             try {
-              await spawnPromise('npm', ['publish', '--access=public', `${isBeta ? '--tag=beta' : ''}`], {
+              await spawnPromise('npm', ['publish', '--access=public', `${isBeta ? '--tag=beta' : ''}`, `--otp=${ctx.otp}`], {
                 cwd: dir,
               });
             } catch (err) {
@@ -64,7 +67,22 @@ const publisher = new Listr([
   },
 ]);
 
-publisher.run().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const runPublisher = async () => {
+  const otp = await new Promise((resolve) => {
+    process.stdin.once('data', (chunk) => {
+      process.stdin.pause();
+      resolve(chunk.toString());
+    });
+    process.stdout.write('Enter OTP: ');
+    process.stdin.read();
+  });
+  publisher.run({ otp });
+}
+
+prepare
+  .run()
+  .then(runPublisher)
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
