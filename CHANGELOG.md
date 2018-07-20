@@ -1,3 +1,21 @@
+#### [6.0.0-beta.26](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.26) (2018-07-20)
+
+##### Chores
+
+* **core:**  fix TS build ([b9ea8bd4](https://github.com/electron-userland/electron-forge/commit/b9ea8bd4))
+* **maker-snap:**  upgrade electron-installer-snap to ^3.0.0 ([e55a9d5b](https://github.com/electron-userland/electron-forge/commit/e55a9d5b))
+*  ensure failures on CI actually fail CI ([91ede6fa](https://github.com/electron-userland/electron-forge/commit/91ede6fa))
+
+##### Bug Fixes
+
+* **core:**
+  *  append current version to each sibling dependency of `@electron-forge` in the boilerplate (#537) ([051026da](https://github.com/electron-userland/electron-forge/commit/051026da))
+  *  wait for overrideStartLogic before attempting to resolve the location of the Electron mod ([7e74206d](https://github.com/electron-userland/electron-forge/commit/7e74206d))
+
+##### Code Style Changes
+
+* **core:**  remove unnecessary semicolon from class definition in make.ts (#530) ([8ccff56d](https://github.com/electron-userland/electron-forge/commit/8ccff56d))
+
 #### [6.0.0-beta.25](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.25) (2018-07-12)
 
 ##### Chores
