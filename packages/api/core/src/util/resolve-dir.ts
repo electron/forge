@@ -11,6 +11,9 @@ const d = debug('electron-forge:project-resolver');
 //        the dir without calling getElectronVersion
 export default async (dir: string) => {
   let mDir = dir;
+  let bestGuessDir: string | null = null;
+  let lastError: string | null = null;
+
   let prevDir;
   while (prevDir !== mDir) {
     prevDir = mDir;
@@ -24,18 +27,27 @@ export default async (dir: string) => {
       const electronVersion = getElectronVersion(packageJSON);
       if (electronVersion) {
         if (!/[0-9]/.test(electronVersion[0])) {
-          throw `You must depend on an EXACT version of electron not a range (${electronVersion})`;
+          lastError = `You must depend on an EXACT version of electron not a range (${electronVersion})`;
         }
       } else {
-        throw 'You must depend on "electron" in your devDependencies';
+        lastError = 'You must depend on "electron" in your devDependencies';
       }
 
       if (packageJSON.config && packageJSON.config.forge) {
         d('electron-forge compatible package.json found in', testPath);
         return mDir;
       }
+
+      bestGuessDir = mDir;
     }
     mDir = path.dirname(mDir);
+  }
+  if (bestGuessDir) {
+    d('guessing on the best electron-forge package.json found in', bestGuessDir);
+    return bestGuessDir;
+  }
+  if (lastError) {
+    throw lastError;
   }
   return null;
 };
