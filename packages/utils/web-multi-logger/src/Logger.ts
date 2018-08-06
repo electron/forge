@@ -21,7 +21,7 @@ export default class Logger {
       return res.json(this.tabs);
     });
 
-    this.app.use('/xterm', express.static(path.resolve(require.resolve('xterm'), '../../dist')));
+    this.app.use('/xterm', express.static(path.resolve(require.resolve('xterm'), '../../../dist')));
     this.app.use(express.static(path.resolve(__dirname, '..', 'static')));
     (this.app as any).ws('/sub', () => {});
   }
