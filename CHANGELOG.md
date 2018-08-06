@@ -1,3 +1,17 @@
+#### [6.0.0-beta.27](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.27) (2018-08-06)
+
+##### Chores
+
+*  add OTP support to the publish script ([a5bec3a8](https://github.com/electron-userland/electron-forge/commit/a5bec3a8))
+
+##### New Features
+
+* **core:**  allow no config to be present, default to an empty object (#543) ([c71ef163](https://github.com/electron-userland/electron-forge/commit/c71ef163))
+
+##### Bug Fixes
+
+* **web-multi-logger:**  fix path to xterm static files ([803a22fc](https://github.com/electron-userland/electron-forge/commit/803a22fc))
+
 #### [6.0.0-beta.26](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.26) (2018-07-20)
 
 ##### Chores
