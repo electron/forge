@@ -1,7 +1,7 @@
 export interface PublisherERSConfig {
   /**
    * The base URL of your instance of ERS.
-   * 
+   *
    * E.g. https://my-update.server.com
    */
   baseUrl: string;
@@ -16,10 +16,10 @@ export interface PublisherERSConfig {
   /**
    * The release channel you want to send artifacts to, normally something like
    * "stable", "beta" or "alpha".
-   * 
+   *
    * If left unspecified we will try to infer the channel from your version
    * field in your package.json.
-   * 
+   *
    * Default: stable
    */
   channel?: string;

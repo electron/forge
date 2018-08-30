@@ -16,11 +16,11 @@ describe('hooks', () => {
     it('should not error when running non existent hooks', async () => {
       await runHook(Object.assign({}, fakeConfig), 'magic');
     });
-  
+
     it('should not error when running a hook that is not a function', async () => {
       await runHook(Object.assign({ hooks: { myHook: 'abc' } }, fakeConfig), 'abc');
     });
-  
+
     it('should run the hook if it is provided as a function', async () => {
       const myStub = stub();
       myStub.returns(Promise.resolve());

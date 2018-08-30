@@ -50,7 +50,7 @@ export interface MakerRpmConfigOptions {
   compressionLevel?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
   /**
    * Relative path to the executable that will act as binary for the application, used in the Exec field of the desktop specification.
-   * 
+   *
    * Defaults to options.name
    */
   bin?: string;
@@ -64,9 +64,9 @@ export interface MakerRpmConfigOptions {
   icon?: string;
   /**
    * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
-   * 
+   *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
-   * 
+   *
    * `(${$$('.informaltable tr td:first-child').map(td => `'${td.innerText}'`).join(' | ')})[]`
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];

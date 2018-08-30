@@ -21,7 +21,7 @@ export interface MakerSnapConfig {
   appSlots?: string[];
   /**
    * See the [Snapcraft documentation](https://snapcraft.io/docs/reference/confinement).
-   * 
+   *
    * Default: devmode
    */
   confinement?: 'strict' | 'devmode' | 'classic';
@@ -57,7 +57,7 @@ export interface MakerSnapConfig {
     browserSandbox?: true;
     /**
      * [MPRIS](https://specifications.freedesktop.org/mpris-spec/latest/) support.
-     * 
+     *
      * If enabled, the interface name must be specified as the feature value.
      */
     mpris?: string;

@@ -16,7 +16,7 @@ import './util/terminate';
       repo = repository;
     })
     .parse(process.argv);
-  
+
   const chooseAsset = async (assets: InstallAsset[]) => {
     const choices: { name: string, value: string }[] = [];
     assets.forEach((asset) => {

@@ -2,9 +2,9 @@ export interface MakerDebConfigOptions {
   /**
    * Name of the package (e.g. atom), used in the Package field of the control
    * specification.
-   * 
+   *
    * Package names [...] must consist only of lower case letters (a-z), digits
-   * (0-9), plus (+) and minus (-) signs, and periods (.). They must be at 
+   * (0-9), plus (+) and minus (-) signs, and periods (.). They must be at
    * least two characters long and must start with an alphanumeric character.
    */
   name?: string;
@@ -34,15 +34,15 @@ export interface MakerDebConfigOptions {
   revision?: string;
   /**
    * Application area into which the package has been classified.
-   * 
+   *
    * Possible sections.  Generated on https://packages.debian.org/unstable/ with:
-   * 
+   *
    * $$('#content dt a').map(n => {const ss = n.href.split('/'); return `'${ss[ss.length - 2]}'`; }).sort().join(' | ')
    */
   section?: 'admin' | 'cli-mono' | 'comm' | 'database' | 'debian-installer' | 'debug' | 'devel' | 'doc' | 'editors' | 'education' | 'electronics' | 'embedded' | 'fonts' | 'games' | 'gnome' | 'gnu-r' | 'gnustep' | 'graphics' | 'hamradio' | 'haskell' | 'httpd' | 'interpreters' | 'introspection' | 'java' | 'javascript' | 'kde' | 'kernel' | 'libdevel' | 'libs' | 'lisp' | 'localization' | 'mail' | 'math' | 'metapackages' | 'misc' | 'net' | 'news' | 'ocaml' | 'oldlibs' | 'otherosfs' | 'perl' | 'php' | 'python' | 'ruby' | 'rust' | 'science' | 'shells' | 'sound' | 'tasks' | 'tex' | 'text' | 'utils' | 'vcs' | 'video' | 'virtual' | 'web' | 'x11' | 'xfce' | 'zope';
   /**
    * How important is it to have the package installed.
-   * 
+   *
    * You can read more: https://www.debian.org/doc/debian-policy/#priorities
    */
   priority?: 'required' | 'important' | 'standard' | 'optional';
@@ -81,7 +81,7 @@ export interface MakerDebConfigOptions {
   homepage?: string;
   /**
    * Relative path to the executable that will act as binary for the application, used in the Exec field of the desktop specification.
-   * 
+   *
    * Defaults to options.name
    */
   bin?: string;
@@ -91,9 +91,9 @@ export interface MakerDebConfigOptions {
   icon?: string;
   /**
    * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
-   * 
+   *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
-   * 
+   *
    * `(${$$('.informaltable tr td:first-child').map(td => `'${td.innerText}'`).join(' | ')})[]`
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
@@ -107,7 +107,7 @@ export interface MakerDebConfigOptions {
   lintianOverrides?: string[];
   /**
    * Path to package maintainer scripts with their corresponding name, used in the installation procedure:
-   * 
+   *
    * Read More: https://www.debian.org/doc/debian-policy/#package-maintainer-scripts-and-installation-procedure
    */
   scripts?: {

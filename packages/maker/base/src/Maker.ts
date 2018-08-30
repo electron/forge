@@ -90,7 +90,6 @@ export default abstract class Maker<C> {
     return [];
   }
 
-
   /**
    * Helpers
    */

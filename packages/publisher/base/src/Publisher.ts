@@ -13,7 +13,7 @@ export interface PublisherOptions {
   makeResults: ForgeMakeResult[];
   /**
    * The raw forgeConfig this app is using.
-   * 
+   *
    * You probably shouldn't use this
    */
   forgeConfig: ForgeConfig;

@@ -60,7 +60,7 @@ export interface MakerDMGConfig {
   iconSize?: number;
   /**
    * Disk image format
-   * 
+   *
    * Default: UDZO
    */
   format?: 'UDRW' | 'UDRO' | 'UDCO' | 'UDZO' | 'UDBZ' | 'ULFO';

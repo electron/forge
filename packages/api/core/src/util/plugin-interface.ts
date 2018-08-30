@@ -17,7 +17,7 @@ export default class PluginInterface implements IForgePluginInterface {
       if ((plugin as IForgePlugin).__isElectronForgePlugin) {
         return plugin;
       }
-      
+
       if (Array.isArray(plugin)) {
         if (typeof plugin[0] !== 'string') {
           throw `Expected plugin[0] to be a string but found ${plugin[0]}`;

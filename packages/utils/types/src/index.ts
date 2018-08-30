@@ -6,7 +6,7 @@ import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
 // declare module '@electron-forge/shared-types' {
   export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
-  export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm'; 
+  export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm';
   export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
   export interface IForgePluginInterface {
     triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
@@ -17,7 +17,7 @@ import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
     /**
      * A string to uniquely identify artifacts of this build, will be appended
      * to the out dir to generate a nested directory.  E.g. out/current-timestamp
-     * 
+     *
      * If a function is provided it must syncronously return the buildIdentifier
      */
     buildIdentifier?: string | (() => string);

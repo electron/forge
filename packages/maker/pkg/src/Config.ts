@@ -1,7 +1,7 @@
 export interface MakerPKGConfig {
   /**
    * Name of certificate to use when signing.
-   * 
+   *
    * Default to be selected with respect to platform from keychain or keychain
    * by system default.
    */
@@ -9,7 +9,7 @@ export interface MakerPKGConfig {
   /**
    * Flag to enable/disable validation for signing identity. If enabled, the
    * identity provided will be validated in the keychain specified.
-   * 
+   *
    * Default: `true`.
    */
   'identity-validation'?: boolean;
@@ -19,7 +19,7 @@ export interface MakerPKGConfig {
   install?: string;
   /**
    * The keychain name.
-   * 
+   *
    * Default: System default keychain.
    */
   keychain?: string;

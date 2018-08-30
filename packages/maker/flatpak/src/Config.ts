@@ -1,7 +1,7 @@
 export interface MakerFlatpakOptionsConfig {
   /**
    * App id of the flatpak, used in the id field of a flatpak-builder manifest.
-   * 
+   *
    * Default: io.atom.electron
    */
   id?: string;
@@ -19,19 +19,19 @@ export interface MakerFlatpakOptionsConfig {
   description?: string;
   /**
    * Release branch of the flatpak, used in the branch field of a flatpak-builder manifest.
-   * 
+   *
    * Default: master
    */
   branch?: string;
   /**
    * Base app to use when building the flatpak, used in the base field of a flatpak-builder manifest.
-   * 
+   *
    * Default: io.atom.electron.BaseApp
    */
   base?: string;
   /**
    * Base app version, used in the base-version field of a flatpak-builder manifest.
-   * 
+   *
    * Default: master
    */
   baseVersion?: string;
@@ -41,19 +41,19 @@ export interface MakerFlatpakOptionsConfig {
   baseFlatpakref?: string;
   /**
    * Runtime id, used in the runtime field of a flatpak-builder manifest.
-   * 
+   *
    * Default: org.freedesktop.Platform
    */
   runtime?: string;
   /**
    * Runtime version, used in the runtime-version field of a flatpak-builder manifest.
-   * 
+   *
    * Default: 1.4
    */
   runtimeVersion?: string;
   /**
    * Sdk id, used in the sdk field of a flatpak-builder manifest.
-   * 
+   *
    * Default: org.freedesktop.Sdk
    */
   sdk?: string;
@@ -66,7 +66,7 @@ export interface MakerFlatpakOptionsConfig {
    * Source should be a relative/absolute path to a file/directory to copy
    * into the flatpak, and dest should be the path inside the app install
    * prefix (e.g. /share/applications/)
-   * 
+   *
    * Application assets and code will be fully handled by electron-packager,
    * but this is a useful way to install things such as appstream metadata
    * for an app, or dbus configuration files.
@@ -89,9 +89,9 @@ export interface MakerFlatpakOptionsConfig {
   icon?: string;
   /**
    * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
-   * 
+   *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
-   * 
+   *
    * `(${$$('.informaltable tr td:first-child').map(td => `'${td.innerText}'`).join(' | ')})[]`
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];

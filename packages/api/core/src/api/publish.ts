@@ -45,7 +45,7 @@ export interface PublishOptions {
   dryRun?: boolean;
   /**
    * Whether or not to attempt to resume a previously saved `dryRun` and publish
-   * 
+   *
    * You can't use this combination at the same time as dryRun=true
    */
   dryRunResume?: boolean;
@@ -97,7 +97,7 @@ const publish = async ({
     }
     return;
   }
-  
+
   if (!makeResults) {
     d('triggering make');
     makeResults = await make(Object.assign({
