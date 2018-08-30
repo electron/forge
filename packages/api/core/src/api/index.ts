@@ -16,7 +16,7 @@ import { fromBuildIdentifier } from '../util/forge-config';
 export class ForgeAPI {
   /**
    * Attempt to import a given module directory to the Electron Forge standard.
-   * 
+   *
    * * Sets up `git` and the correct NPM dependencies
    * * Adds a template forge config to `package.json`
    */
@@ -31,7 +31,7 @@ export class ForgeAPI {
   }
   /**
    * Install an Electron application from GitHub.
-   * 
+   *
    * Works on all three platforms for all major distributable types.
    */
   install(opts: InstallOptions) {
@@ -39,7 +39,7 @@ export class ForgeAPI {
   }
   /**
    * Lint a local Electron application.
-   * 
+   *
    * The promise will be rejected with the stdout+stderr of the linting process
    * if linting fails or will be resolved if it succeeds.
    */
@@ -66,7 +66,7 @@ export class ForgeAPI {
   }
   /**
    * Start an Electron application.
-   * 
+   *
    * Handles things like native module rebuilding for you on the fly
    */
   start(opts: StartOptions) {

@@ -53,7 +53,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
           data.append('file' + i, fs.createReadStream(artifactPath));
           i += 1;
         }
-    
+
         const response = await fetch(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`, {
           headers: {
             Authorization: config.token,
@@ -61,7 +61,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
           method: 'POST',
           body: data,
         });
-        
+
         if (response.status !== 200) {
           throw `Unexpected response code from Nucleus: ${response.status}\n\nBody:\n${await response.text()}`;
         }

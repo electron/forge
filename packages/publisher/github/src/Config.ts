@@ -20,7 +20,7 @@ export interface PublisherGitHubConfig {
   /**
    * An authorization token with permission to upload releases to this
    * repository.
-   * 
+   *
    * You can set the GITHUB_TOKEN environment variable if you don't want to hard
    * code this into your config.
    */

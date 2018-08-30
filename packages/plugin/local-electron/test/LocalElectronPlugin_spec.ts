@@ -47,7 +47,7 @@ describe('LocalElectronPlugin', () => {
 
   describe('hooks', () => {
     let p: LocalElectronPlugin;
-    
+
     beforeEach(() => {
       p = new LocalElectronPlugin({ electronPath: 'test/foo' });
     });

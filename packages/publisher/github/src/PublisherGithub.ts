@@ -73,7 +73,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           }
         }
       });
-  
+
       let uploaded = 0;
       await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`, async (uploadSpinner) => {
         const updateSpinner = () => {
@@ -84,7 +84,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
         for (const artifact of artifacts) {
           flatArtifacts.push(...artifact.artifacts);
         }
-  
+
         await Promise.all(flatArtifacts.map(artifactPath =>
           new Promise(async (resolve) => {
             const done = () => {
