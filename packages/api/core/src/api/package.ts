@@ -189,7 +189,7 @@ export default async ({
 
   d('packaging with options', packageOpts);
 
-  await (packager as (opts: packager.Options) => Promise<void>)(packageOpts);
+  await packager(packageOpts);
 
   await runHook(forgeConfig, 'postPackage');
 
