@@ -50,7 +50,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
         for (const artifactPath of makeResult.artifacts) {
           // Skip the RELEASES file, it is automatically generated on the server
           if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
-          data.append('file' + i, fs.createReadStream(artifactPath));
+          data.append(`file${i}`, fs.createReadStream(artifactPath));
           i += 1;
         }
 
