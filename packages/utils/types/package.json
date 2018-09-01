@@ -11,7 +11,7 @@
     "test": "echo No Tests For Shared Types"
   },
   "dependencies": {
-    "@types/electron-packager": "^10.1.0",
+    "@types/electron-packager": "^12.0.0",
     "electron-rebuild": "^1.6.0",
     "ora": "^2.0.0"
   },
