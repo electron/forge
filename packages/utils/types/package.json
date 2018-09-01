@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/electron-packager": "^12.0.0",
     "electron-rebuild": "^1.6.0",
-    "ora": "^2.0.0"
+    "ora": "^3.0.0"
   },
   "engines": {
     "node": ">= 6.0"

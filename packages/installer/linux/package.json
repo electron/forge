@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@electron-forge/installer-base": "6.0.0-beta.27",
-    "pify": "^3.0.0",
+    "pify": "^4.0.0",
     "sudo-prompt": "^8.0.0"
   }
 }

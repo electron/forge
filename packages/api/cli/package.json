@@ -24,8 +24,8 @@
     "colors": "^1.2.0",
     "commander": "^2.9.0",
     "debug": "^3.0.0",
-    "fs-extra": "^5.0.0",
-    "inquirer": "^5.0.0",
+    "fs-extra": "^7.0.0",
+    "inquirer": "^6.2.0",
     "semver": "^5.3.0"
   },
   "engines": {
