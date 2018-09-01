@@ -1,7 +1,7 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import { StartOptions, ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, ChildProcess, SpawnOptions } from 'child_process';
 import path from 'path';
 
 import { readMutatedPackageJson } from '../util/read-package-json';
@@ -106,7 +106,7 @@ export default async ({
     let spawned!: ChildProcess;
 
     await asyncOra('Launching Application', async () => {
-      spawned = spawn(electronExecPath!, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts);
+      spawned = spawn(electronExecPath!, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts as SpawnOptions);
     });
 
     await runHook(forgeConfig, 'postStart', spawned);
