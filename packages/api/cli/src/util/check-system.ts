@@ -49,10 +49,8 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
   if (!validPackageManagerVersion(packageManager, versionString, versions, ora)) {
-    ora.warn!(
-      `You are using ${packageManager}, but not a known good version.\n` +
-      `The known versions that work with Electron Forge are: ${versions}`,
-    );
+    ora.warn!(`You are using ${packageManager}, but not a known good version.
+The known versions that work with Electron Forge are: ${versions}`);
   }
 }
 
