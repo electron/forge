@@ -5,7 +5,7 @@ set -e
 NODE_INSTALLER="$1"
 
 npm i -g yarn
-npm i -g bolt@0.20.1
+npm i -g bolt@0.21.2
 
 cd /code
 
