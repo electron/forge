@@ -57,6 +57,7 @@ describe('forge-config', () => {
     delete config.sub;
     delete config.topLevelProp;
     delete config.topLevelUndef;
+    delete config.regexp;
     expect(config).to.be.deep.equal(Object.assign({}, defaults, {
       buildIdentifier: 'beta',
       packagerConfig: { foo: 'bar', baz: {} },
