@@ -10,6 +10,7 @@ module.exports = {
   magicFn: () => 'magic result',
   topLevelProp: fromBuildIdentifier({ beta: 'foo' }),
   topLevelUndef: fromBuildIdentifier({ stable: 'heya' }),
+  regexp: /foo/,
   sub: {
     prop: {
       inArray: [

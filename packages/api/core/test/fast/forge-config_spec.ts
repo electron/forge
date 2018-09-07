@@ -109,4 +109,11 @@ describe('forge-config', () => {
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(Array.isArray(conf.sub.prop.inArray)).to.equal(true, 'original array should be recognized as array');
   });
+
+  it('should leave regexps intact', async () => {
+    const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
+    expect(conf.regexp).to.be.instanceOf(RegExp);
+    expect(conf.regexp.test('foo')).to.equal(true, 'regexp should match foo');
+    expect(conf.regexp.test('bar')).to.equal(false, 'regexp should not match bar');
+  });
 });
