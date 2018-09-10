@@ -14,7 +14,8 @@ describe('publish', () => {
   let publisherSpy: SinonStub;
   let voidStub: SinonStub;
   let nowhereStub: SinonStub;
-  let publishers: string[];
+  let publishers: any[];
+  let fooPublisher: { name: string, providedConfig: any };
 
   beforeEach(() => {
     resolveStub = sinon.stub();
@@ -23,9 +24,11 @@ describe('publish', () => {
     voidStub = sinon.stub();
     nowhereStub = sinon.stub();
     publishers = ['@electron-forge/publisher-test'];
-    const fakePublisher = (stub: SinonStub) => class {
+    const fakePublisher = (stub: SinonStub, name: string = 'default') => class X {
       private publish: SinonStub;
-      constructor() {
+      public name = name;
+      constructor(public providedConfig: any) {
+        fooPublisher = this;
         this.publish = stub;
       }
     };
@@ -52,6 +55,9 @@ describe('publish', () => {
         if (name === '@electron-forge/publisher-test') {
           return fakePublisher(publisherSpy);
         }
+        if (name === '@electron-forge/publisher-foo') {
+          return fakePublisher(publisherSpy, name);
+        }
         return null;
       },
     }).default;
@@ -67,6 +73,25 @@ describe('publish', () => {
       interactive: false,
     });
     expect(makeStub.callCount).to.equal(1);
+  });
+
+  it('should resolve publishers from the forge config if provided', async () => {
+    publishers = [{
+      name: 'bad',
+      config: 'foo',
+    }, {
+      name: '@electron-forge/publisher-foo',
+      config: 'resolved',
+    }];
+    await publish({
+      dir: __dirname,
+      interactive: false,
+      publishTargets: ['@electron-forge/publisher-foo'],
+    });
+    expect(publisherSpy.callCount).to.equal(1);
+
+    expect(fooPublisher.name).to.equal('@electron-forge/publisher-foo');
+    expect(fooPublisher.providedConfig).to.equal('resolved');
   });
 
   it('should call the resolved publisher with the appropriate args', async () => {

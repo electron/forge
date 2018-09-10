@@ -140,7 +140,13 @@ const publish = async ({
       // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms) ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
   }
   publishTargets = publishTargets.map((target) => {
-    if (typeof target === 'string') return { name: target };
+    if (typeof target === 'string') {
+      return (forgeConfig.publishers || []).find((p) => {
+        if (typeof p === 'string') return false;
+        if ((p as IForgePublisher).__isElectronForgePublisher) return false;
+        return (p as IForgeResolvablePublisher).name === target;
+      }) || { name: target };
+    }
     return target;
   }) as (IForgeResolvablePublisher | IForgePublisher)[];
 
