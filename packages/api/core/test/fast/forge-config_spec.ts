@@ -71,6 +71,12 @@ describe('forge-config', () => {
     expect(conf.magicFn()).to.be.equal('magic result');
   });
 
+  it('should resolve the JS file exports of forge.config.js if config.forge does not exist points', async () => {
+    const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_default_js_conf'));
+    expect(conf.buildIdentifier).to.equal('default');
+    expect(conf.defaultResolved).to.equal(true);
+  });
+
   it('should magically map properties to environment variables', async () => {
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.s3.secretAccessKey).to.equal(undefined);

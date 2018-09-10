@@ -10,9 +10,6 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "config": {
-    "forge": "./forge.different.config.js"
-  },
   "devDependencies": {
     "electron-prebuilt": "9.9.9"
   }

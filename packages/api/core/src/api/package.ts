@@ -82,7 +82,7 @@ export default async ({
   dir = process.cwd(),
   interactive = false,
   arch = hostArch(),
-  platform = process.platform,
+  platform = process.platform as ForgePlatform,
   outDir,
 }: PackageOptions) => {
   const ora = interactive ? realOra : fakeOra;
