@@ -1,5 +1,6 @@
 import { api, StartOptions } from '@electron-forge/core';
 
+import { ChildProcess } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 import program from 'commander';
@@ -64,12 +65,26 @@ import './util/terminate';
   const spawned = await api.start(opts);
 
   await new Promise((resolve) => {
-    spawned.on('exit', (code: number) => {
-      if ((spawned as any).restarted) return;
-      if (code !== 0) {
-        process.exit(code);
-      }
-      resolve();
-    });
+    const listenForExit = (child: ChildProcess) => {
+      const removeListeners = () => {
+        child.removeListener('exit', onExit);
+        child.removeListener('restarted', onRestart);
+      };
+      const onExit = (code: number) => {
+        removeListeners();
+        if ((spawned as any).restarted) return;
+        if (code !== 0) {
+          process.exit(code);
+        }
+        resolve();
+      };
+      const onRestart = (newChild: ChildProcess) => {
+        removeListeners();
+        listenForExit(newChild);
+      };
+      child.on('exit', onExit);
+      child.on('restarted', onRestart);
+    };
+    listenForExit(spawned);
   });
 })();
