@@ -11,7 +11,7 @@ describe('start', () => {
   let packageJSON: any;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
-  let shouldOverride: boolean;
+  let shouldOverride: any;
   let processOn: SinonStub;
 
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe('start', () => {
 
   it('should not spawn if a plugin overrides the start command', async () => {
     resolveStub.returnsArg(0);
-    shouldOverride = true;
+    shouldOverride = { on: () => {} };
     await start({
       dir: __dirname,
       interactive: false,
@@ -172,12 +172,13 @@ describe('start', () => {
 
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
-    spawnStub.returns('child');
+    const fakeChild = { on: () => {} };
+    spawnStub.returns(fakeChild);
 
     await expect(start({
       dir: __dirname,
       interactive: false,
       enableLogging: true,
-    })).to.eventually.equal('child');
+    })).to.eventually.equal(fakeChild);
   });
 });
