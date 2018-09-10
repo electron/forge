@@ -19,7 +19,7 @@ install:
 - if not exist "node_modules" mkdir node_modules
 - ps: Remove-Item node_modules -Recurse -Force
 - bolt
-- bolt build
+- yarn build
 - ps: |
     $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
     $env:PATH = $env:PATH + $wixToolsetBinPath
@@ -32,7 +32,7 @@ install:
 test_script:
 - node --version
 - yarn --version
-- bolt lint
-- bolt test
+- yarn lint
+- yarn test
 
 build: off
