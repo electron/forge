@@ -72,7 +72,15 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
 
 export default async (dir: string) => {
   const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string = (packageJSON.config && packageJSON.config.forge) ? packageJSON.config.forge : {};
+  let forgeConfig: ForgeConfig | string | null = (packageJSON.config && packageJSON.config.forge) ? packageJSON.config.forge : null;
+
+  if (!forgeConfig) {
+    if (await fs.pathExists(path.resolve(dir, 'forge.config.js'))) {
+      forgeConfig = 'forge.config.js';
+    } else {
+      forgeConfig = {} as any as ForgeConfig;
+    }
+  }
 
   if (typeof forgeConfig === 'string' && (await fs.pathExists(path.resolve(dir, forgeConfig)) || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)))) {
     try {
