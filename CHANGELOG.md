@@ -1,3 +1,23 @@
+#### [6.0.0-beta.28](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.28) (2018-09-10)
+
+##### Chores
+
+*  use yarn to run commands on CI to make output better ([12209b00](https://github.com/electron-userland/electron-forge/commit/12209b00))
+*  upgrade tslint-config-airbnb ([3618e991](https://github.com/electron-userland/electron-forge/commit/3618e991))
+* **core:**  upgrade @types/electron-packager ([2bab74c7](https://github.com/electron-userland/electron-forge/commit/2bab74c7))
+
+##### New Features
+
+* **core:**  resolve forge.config.js by default if it exists (#569) ([5431dfa1](https://github.com/electron-userland/electron-forge/commit/5431dfa1))
+
+##### Bug Fixes
+
+*  bumps bolt version in Travis (was already bumped in docker and appveyor (#570) ([640ba77b](https://github.com/electron-userland/electron-forge/commit/640ba77b))
+* **core:**
+  *  keep track of application restarts and close stdin pipe correctly (#567) ([eb29dd6d](https://github.com/electron-userland/electron-forge/commit/eb29dd6d))
+  *  resolve publisher config correctly when given a publisher name (#568) ([f37476bf](https://github.com/electron-userland/electron-forge/commit/f37476bf))
+  *  stops breaking regexps in the config parser ([8f1d4105](https://github.com/electron-userland/electron-forge/commit/8f1d4105))
+
 #### [6.0.0-beta.27](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.27) (2018-08-06)
 
 ##### Chores
