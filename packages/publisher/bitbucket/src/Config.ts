@@ -1,4 +1,3 @@
-
 export interface BitbucketRepository {
   /**
    * The name of your repository
@@ -38,4 +37,8 @@ export interface PublisherBitbucketConfig {
    * User details for uploading releases
    */
   auth: BitbucketAuth;
+  /**
+   * If true, will replace an existing files of the same name (will throw an error otherwise).
+   */
+  replaceExistingFiles?: boolean;
 }
