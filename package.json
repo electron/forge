@@ -152,7 +152,7 @@
     "typescript": "^2.8.1"
   },
   "optionalDependencies": {
-    "electron-installer-debian": "^0.8.0",
+    "electron-installer-debian": "^1.0.0",
     "electron-installer-dmg": "^2.0.0",
     "electron-installer-flatpak": "^0.8.0",
     "electron-installer-redhat": "^0.5.0",

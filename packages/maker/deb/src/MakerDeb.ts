@@ -32,7 +32,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
 
     const arch = debianArch(targetArch);
     const name = (this.config.options || {}).name || packageJSON.name;
-    const versionedName = `${name}_${packageJSON.version}_${arch}`;
+    const versionedName = `${name}_${installer.transformVersion(packageJSON.version)}_${arch}`;
     const outPath = path.resolve(makeDir, `${versionedName}.deb`);
 
     await this.ensureFile(outPath);
