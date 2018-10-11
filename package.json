@@ -33,7 +33,9 @@
     "docs:position": "ts-node tools/position-docs.ts",
     "docs:deploy": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
-    "lint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
+    "eslint": "eslint --ext .ts .",
+    "tslint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
+    "lint": "bolt eslint && bolt tslint",
     "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts' --opts mocha.opts"
   },
   "dependencies": {
@@ -136,6 +138,8 @@
     "coveralls": "^3.0.0",
     "cross-env": "^5.0.0",
     "cz-customizable": "^5.0.0",
+    "eslint": "^5.6.1",
+    "eslint-plugin-mocha": "^5.2.0",
     "fetch-mock": "^7.2.5",
     "generate-changelog": "^1.0.2",
     "listr": "^0.14.1",
@@ -150,7 +154,8 @@
     "tslint": "5.12.0",
     "tslint-config-airbnb": "^5.11.0",
     "typedoc": "0.13.0",
-    "typescript": "3.2.2"
+    "typescript": "3.2.2",
+    "typescript-eslint-parser": "^20.0.0"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^1.1.0",

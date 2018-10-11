@@ -1,0 +1,17 @@
+{
+  "parser": "typescript-eslint-parser",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "mocha"
+  ],
+  "env": {
+    "mocha": true,
+    "node": true
+  },
+  "rules": {
+    "mocha/no-exclusive-tests": "error"
+  }
+}
