@@ -9,6 +9,8 @@ packages/.old
 docs
 doc
 .vscode
+**/.npmignore
+!/.npmignore
 packages/utils/types/index.d.ts
 packages/maker/**/README.md
 packages/publisher/**/README.md

@@ -1,4 +1,4 @@
+*-error.log
 src
-test
-.travis.yml
-ci
+doc
+README.md
