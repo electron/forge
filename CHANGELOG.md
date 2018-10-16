@@ -1,3 +1,18 @@
+#### [6.0.0-beta.29](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.29) (2018-10-16)
+
+##### Chores
+
+*  add .npmignore when publishing ([380762e9](https://github.com/electron-userland/electron-forge/commit/380762e9))
+
+##### New Features
+
+*  auto-ignore everything that is not webpack output during the webpack build.  Fixes #593 ([51a22f74](https://github.com/electron-userland/electron-forge/commit/51a22f74))
+* **publisher-bitbucket:**  initial publish publisher-bitbucket (#571) ([82e8c85e](https://github.com/electron-userland/electron-forge/commit/82e8c85e))
+
+##### Bug Fixes
+
+* **maker-deb:**  return the correct outPath with a prerelease version (#584) ([a4fbc0a7](https://github.com/electron-userland/electron-forge/commit/a4fbc0a7))
+
 #### [6.0.0-beta.28](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.28) (2018-09-10)
 
 ##### Chores
