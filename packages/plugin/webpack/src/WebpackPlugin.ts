@@ -1,5 +1,6 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
+import { ForgeConfig } from '@electron-forge/shared-types';
 import Logger from '@electron-forge/web-multi-logger';
 import Tab from '@electron-forge/web-multi-logger/dist/Tab';
 import { ChildProcess } from 'child_process';
@@ -25,6 +26,7 @@ const BASE_PORT = 3000;
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
   private isProd = false;
+  private projectDir!: string;
   private baseDir!: string;
   private watchers: webpack.Compiler.Watching[] = [];
   private servers: http.Server[] = [];
@@ -66,6 +68,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   init = (dir: string) => {
+    this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
 
     d('hooking process events');
@@ -95,8 +98,49 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             this.exitHandler({ cleanup: true, exit: true });
           });
         };
+      case 'resolveForgeConfig':
+        return this.resolveForgeConfig;
+      case 'packageAfterCopy':
+        return this.packageAfterCopy;
     }
     return null;
+  }
+
+  resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
+    if (!forgeConfig.packagerConfig) {
+      forgeConfig.packagerConfig = {};
+    }
+    if (forgeConfig.packagerConfig.ignore) {
+      console.error('You have set packagerConfig.ignore, the electron forge webpack plugin normally sets this automatically.\n\
+\
+Your packaged app may be larger than expected if you dont ignore everything other than the `.webpack` folder'.red);
+      return forgeConfig;
+    }
+    forgeConfig.packagerConfig.ignore = (file: string) => {
+      if (!file) return false;
+
+      return !/^[\/\\]\.webpack($|[\/\\]).*$/.test(file);
+    };
+    return forgeConfig;
+  }
+
+  packageAfterCopy = async (_: any, buildPath: string) => {
+    const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+    delete pj.config.forge;
+    pj.devDependencies = {};
+    pj.dependencies = {};
+    pj.optionalDependencies = {};
+    pj.peerDependencies = {};
+
+    await fs.writeJson(
+      path.resolve(buildPath, 'package.json'),
+      pj,
+      {
+        spaces: 2,
+      },
+    );
+
+    await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
   getDefines = (upOneMore = false) => {
