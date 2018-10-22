@@ -8,7 +8,7 @@
   "main": "dist/PublisherBitbucket.js",
   "typings": "dist/PublisherBitbucket.d.ts",
   "devDependencies": {
-    "chai": "^4.0.0",
+    "chai": "4.2.0",
     "mocha": "^5.0.0"
   },
   "engines": {
@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.29",
     "@electron-forge/publisher-base": "6.0.0-beta.29",
-    "form-data": "^2.1.4",
+    "form-data": "2.3.3",
     "fs-extra": "^7.0.0",
     "node-fetch": "^2.0.0"
   }

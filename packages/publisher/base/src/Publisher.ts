@@ -1,4 +1,4 @@
-import { ForgePlatform, ForgeConfig, ForgeArch, ForgeMakeResult } from '@electron-forge/shared-types';
+import { ForgePlatform, ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
 
 /* eslint-disable no-unused-vars */
 

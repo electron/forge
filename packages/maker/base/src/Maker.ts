@@ -60,7 +60,11 @@ export default abstract class Maker<C> {
   // TODO: Remove this, it is an eye-sore and is a nasty hack to provide forge
   //       v5 style functionality in the new API
   prepareConfig(targetArch: ForgeArch) {
-    this.config = typeof this.configFetcher === 'function' ? this.configFetcher(targetArch) : this.configFetcher;
+    if (typeof this.configFetcher === 'function') {
+      this.config = (this.configFetcher as any as ((arch: ForgeArch) => C))(targetArch);
+    } else {
+      this.config = this.configFetcher as C;
+    }
   }
 
   /**

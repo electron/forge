@@ -15,7 +15,7 @@
     "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
   "devDependencies": {
-    "chai": "^4.0.0",
+    "chai": "4.2.0",
     "mocha": "^5.0.0"
   },
   "dependencies": {

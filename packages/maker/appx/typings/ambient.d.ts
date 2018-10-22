@@ -1,6 +1,6 @@
 declare module 'parse-author' {
   export type AuthorType = string | {
-    name: string
+    name: string;
   } | undefined;
   interface ParseAuthor {
     (author: AuthorType): AuthorType;

@@ -6,5 +6,5 @@ const SHARED_TYPES_DIR = path.resolve(BASE_DIR, 'packages', 'utils', 'types');
 
 (async () => {
   const content = await fs.readFile(path.resolve(SHARED_TYPES_DIR, 'src', 'index.ts'), 'utf8');
-  await fs.writeFile(path.resolve(SHARED_TYPES_DIR, 'index.d.ts'), content.replace(/\/\/ /g, ''));
-})()
+  await fs.writeFile(path.resolve(SHARED_TYPES_DIR, 'index.d.ts'), content);
+})();
