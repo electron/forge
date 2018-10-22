@@ -83,6 +83,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'prePackage':
         this.isProd = true;
         return async () => {
+          await fs.remove(this.baseDir);
           await this.compileMain();
           await this.compileRenderers();
         };
@@ -364,6 +365,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   async startLogic(): Promise<false> {
     if (this.alreadyStarted) return false;
     this.alreadyStarted = true;
+
+    await fs.remove(this.baseDir);
 
     const logger = new Logger();
     this.loggers.push(logger);
