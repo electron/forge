@@ -8,7 +8,7 @@ import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 import { setInitialForgeConfig } from '../util/forge-config';
 import { info, warn } from '../util/messages';
-import installDepList from '../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
 const d = debug('electron-forge:import');
@@ -155,10 +155,10 @@ export default async ({
     await installDepList(dir, deps);
 
     d('installing devDependencies');
-    await installDepList(dir, devDeps, true);
+    await installDepList(dir, devDeps, DepType.DEV);
 
     d('installing exactDevDependencies');
-    await installDepList(dir, exactDevDeps, true, true);
+    await installDepList(dir, exactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
   });
 
   packageJSON = await readRawPackageJson(dir);

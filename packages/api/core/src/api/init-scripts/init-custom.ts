@@ -1,4 +1,4 @@
-import { asyncOra, ora } from '@electron-forge/async-ora';
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -6,7 +6,9 @@ import resolvePackage from 'resolve-package';
 import path from 'path';
 
 import { copy } from './init-starter-files';
-import installDepList from '../../util/install-dependencies';
+import installDepList, { DepType } from '../../util/install-dependencies';
+import { PossibleModule } from '../../util/require-search';
+import { ForgeTemplate } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:init:custom');
 
@@ -41,7 +43,7 @@ export default async (dir: string, template: string) => {
     }
   });
 
-  let templateModule = require(templateModulePath);
+  let templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
   templateModule = templateModule.default || templateModule;
 
@@ -49,7 +51,7 @@ export default async (dir: string, template: string) => {
     d('installing dependencies');
     await installDepList(dir, templateModule.dependencies || []);
     d('installing devDependencies');
-    await installDepList(dir, templateModule.devDependencies || [], true);
+    await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
   });
 
   await asyncOra('Copying Template Files', async () => {
@@ -71,6 +73,6 @@ export default async (dir: string, template: string) => {
   });
 
   if (typeof templateModule.postCopy === 'function') {
-    await Promise.resolve(templateModule.postCopy(dir, ora));
+    await Promise.resolve(templateModule.postCopy(dir));
   }
 };

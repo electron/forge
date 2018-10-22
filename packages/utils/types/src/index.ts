@@ -1,5 +1,4 @@
-/* tslint:disable ter-indent */
-
+import { OraImpl } from '@electron-forge/async-ora';
 import { ChildProcess } from 'child_process';
 import { Options } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
@@ -115,4 +114,11 @@ export interface StartOptions {
    * Enables the node inspector, you can connect to this from chrome://inspect
    */
   inspect?: boolean;
+}
+
+export interface ForgeTemplate {
+  dependencies?: string[];
+  devDependencies?: string[];
+  templateDirectory?: string;
+  postCopy?: (dir: string) => void;
 }

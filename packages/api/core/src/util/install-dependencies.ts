@@ -3,13 +3,23 @@ import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
 
 const d = debug('electron-forge:dependency-installer');
 
+export enum DepType {
+  PROD = 'PROD',
+  DEV = 'DEV',
+}
+
+export enum DepVersionRestriction {
+  EXACT = 'EXACT',
+  RANGE = 'RANGE',
+}
+
 export default async (
   dir: string,
   deps: string[],
-  areDev = false,
-  exact = false,
+  depType = DepType.PROD,
+  versionRestriction = DepVersionRestriction.RANGE,
 ) => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `dev=${areDev},exact=${exact},withYarn=${hasYarn()}`);
+  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
@@ -17,12 +27,12 @@ export default async (
   let cmd = ['install'].concat(deps);
   if (hasYarn()) {
     cmd = ['add'].concat(deps);
-    if (areDev) cmd.push('--dev');
-    if (exact) cmd.push('--exact');
+    if (depType === DepType.DEV) cmd.push('--dev');
+    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
   } else {
-    if (exact) cmd.push('--save-exact');
-    if (areDev) cmd.push('--save-dev');
-    if (!areDev) cmd.push('--save');
+    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
+    if (depType === DepType.DEV) cmd.push('--save-dev');
+    if (depType === DepType.PROD) cmd.push('--save');
   }
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {

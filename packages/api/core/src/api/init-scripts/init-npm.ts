@@ -5,7 +5,7 @@ import path from 'path';
 import username from 'username';
 
 import { setInitialForgeConfig } from '../../util/forge-config';
-import installDepList from '../../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../../util/install-dependencies';
 import { readRawPackageJson } from '../../util/read-package-json';
 
 const d = debug('electron-forge:init:npm');
@@ -43,11 +43,11 @@ export default async (dir: string) => {
     await installDepList(dir, deps);
 
     d('installing devDependencies');
-    await installDepList(dir, devDeps, true);
+    await installDepList(dir, devDeps, DepType.DEV);
 
-    d('installing exact dependencies');
+    d('installing exact devDependencies');
     for (const packageName of exactDevDeps) {
-      await installDepList(dir, [packageName], true, true);
+      await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
     }
   });
 };

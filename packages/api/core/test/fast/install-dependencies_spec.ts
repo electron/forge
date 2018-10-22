@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon, { SinonStub } from 'sinon';
 
-import installDependencies from '../../src/util/install-dependencies';
+import installDependencies, { DepType, DepVersionRestriction } from '../../src/util/install-dependencies';
 
 describe('Install dependencies', () => {
   let install: typeof installDependencies;
@@ -58,17 +58,17 @@ describe('Install dependencies', () => {
     });
 
     it('should install dev deps', () => {
-      install('mydir', ['eslint'], true);
+      install('mydir', ['eslint'], DepType.DEV);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--dev']);
     });
 
     it('should install exact deps', () => {
-      install('mydir', ['react-dom'], false, true);
+      install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--exact']);
     });
 
     it('should install exact dev deps', () => {
-      install('mydir', ['mocha'], true, true);
+      install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--dev', '--exact']);
     });
   });
@@ -84,17 +84,17 @@ describe('Install dependencies', () => {
     });
 
     it('should install dev deps', () => {
-      install('mydir', ['eslint'], true);
+      install('mydir', ['eslint'], DepType.DEV);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'eslint', '--save-dev']);
     });
 
     it('should install exact deps', () => {
-      install('mydir', ['react-dom'], false, true);
+      install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react-dom', '--save-exact', '--save']);
     });
 
     it('should install exact dev deps', () => {
-      install('mydir', ['mocha'], true, true);
+      install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'mocha', '--save-exact', '--save-dev']);
     });
   });
