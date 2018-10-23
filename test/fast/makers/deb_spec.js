@@ -21,6 +21,7 @@ describe('deb maker', () => {
   beforeEach(() => {
     ensureFileStub = stub().returns(Promise.resolve());
     eidStub = stub().resolves();
+    eidStub.transformVersion = version => version;
     forgeConfig = { electronInstallerDebian: {} };
 
     debModule = proxyquire.noPreserveCache().noCallThru().load('../../../src/makers/linux/deb', {
@@ -61,4 +62,14 @@ describe('deb maker', () => {
       dest: path.resolve(dir, '..', 'make'),
     });
   });
+
+  if (process.platform === 'linux') {
+    it('should return the proper pre-release version in the outPath', async () => {
+      eidStub.transformVersion = require('electron-installer-debian').transformVersion;
+
+      packageJSON.version = '1.2.3-beta.4';
+      const outPath = await debMaker({ dir, appName, targetArch, forgeConfig, packageJSON });
+      expect(outPath).to.match(/1\.2\.3~beta\.4/);
+    });
+  }
 });

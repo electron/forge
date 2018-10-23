@@ -22,7 +22,7 @@ export default async ({ dir, targetArch, forgeConfig, packageJSON }) => {
   const arch = debianArch(targetArch);
   const config = populateConfig({ forgeConfig, configKey: 'electronInstallerDebian', targetArch });
   const name = config.options.name || packageJSON.name;
-  const versionedName = `${name}_${packageJSON.version}_${arch}`;
+  const versionedName = `${name}_${installer.transformVersion(packageJSON.version)}_${arch}`;
   const outPath = path.resolve(dir, '../make', `${versionedName}.deb`);
 
   await ensureFile(outPath);
