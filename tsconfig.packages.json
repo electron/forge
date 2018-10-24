@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "packages"
+  },
+	"exclude": [
+    "dist",
+    "node_modules",
+    "ci",
+    "tools",
+    "**/dist",
+    "**/node_modules",
+		"**/test",
+    "packages/installer/**/typings/ambient.d.ts",
+    "packages/maker/wix/typings/ambient.d.ts",
+	]
+}

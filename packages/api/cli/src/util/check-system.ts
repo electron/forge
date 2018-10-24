@@ -5,7 +5,7 @@ import os from 'os';
 import path from 'path';
 import semver from 'semver';
 
-import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core/dist/util/yarn-or-npm';
+import { utils as forgeUtils } from '@electron-forge/core';
 import { OraImpl } from '@electron-forge/async-ora';
 
 const d = debug('electron-forge:check-system');
@@ -55,10 +55,10 @@ The known versions that work with Electron Forge are: ${versions}`);
 }
 
 async function checkPackageManagerVersion(ora: OraImpl) {
-  return yarnOrNpmSpawn(['--version'])
+  return forgeUtils.yarnOrNpmSpawn(['--version'])
     .then((version) => {
       const versionString = version.toString();
-      if (hasYarn()) {
+      if (forgeUtils.hasYarn()) {
         warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_WHITELISTED_VERSIONS, ora);
       } else {
         warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_WHITELISTED_VERSIONS, ora);

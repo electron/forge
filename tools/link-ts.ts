@@ -17,5 +17,17 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     await fs.copy(path.resolve(BASE_DIR, 'tsconfig.json'), path.resolve(dir, 'tsconfig.json'));
     await fs.copy(path.resolve(BASE_DIR, 'tslint.json'), path.resolve(dir, 'tslint.json'));
     await fs.copy(path.resolve(BASE_DIR, '.npmignore'), path.resolve(dir, '.npmignore'));
+    const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+    if (pj.main) {
+      const mainFile = pj.main.replace('dist', 'src').replace('.js', '.ts');
+      const importableFile = mainFile.replace('.ts', '');
+      const hasDefault = (await fs.readFile(path.resolve(dir, mainFile), 'utf8')).includes('export default');
+
+      if (hasDefault) {
+        await fs.writeFile(path.resolve(dir, 'index.ts'), `import d from './${importableFile}';\nexport default d;\nexport * from './${importableFile}';\n`);
+      } else {
+        await fs.writeFile(path.resolve(dir, 'index.ts'), `export * from './${importableFile}';\n`);
+      }
+    }
   }
 })();

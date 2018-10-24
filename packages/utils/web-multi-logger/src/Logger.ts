@@ -5,6 +5,8 @@ import http from 'http';
 
 import Tab from './Tab';
 
+export { Tab };
+
 export default class Logger {
   private app = express();
   private ws!: ews.Instance;

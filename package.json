@@ -22,8 +22,8 @@
     }
   },
   "scripts": {
-    "clean": "bolt ws exec -- rimraf dist",
-    "prebuild": "bolt clean && ts-node tools/link-ts.ts && ts-node tools/copy-shared-types.ts && bolt ws exec -- node_modules/.bin/tsc --emitDeclarationOnly",
+    "clean": "rimraf dist && bolt ws exec -- rimraf dist",
+    "prebuild": "bolt clean && ts-node tools/link-ts.ts && ts-node tools/copy-shared-types.ts && tsc --project ./tsconfig.packages.json --emitDeclarationOnly && ts-node tools/copy-types.ts",
     "build": "yarn build:quick",
     "build:quick": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\" --config-file ../../../.babelrc",
     "postbuild": "ts-node tools/test-dist",

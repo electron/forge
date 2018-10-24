@@ -12,6 +12,7 @@ import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
 
 import { fromBuildIdentifier } from '../util/forge-config';
+import { hasYarn, yarnOrNpmSpawn } from '../util/yarn-or-npm';
 
 export class ForgeAPI {
   /**
@@ -85,6 +86,9 @@ export class ForgeUtils {
   fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
     return fromBuildIdentifier(map);
   }
+
+  hasYarn = hasYarn;
+  yarnOrNpmSpawn = yarnOrNpmSpawn;
 }
 
 const api = new ForgeAPI();

@@ -1,8 +1,7 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
 import { ForgeConfig } from '@electron-forge/shared-types';
-import Logger from '@electron-forge/web-multi-logger';
-import Tab from '@electron-forge/web-multi-logger/dist/Tab';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import { ChildProcess } from 'child_process';
 import debug from 'debug';
 import fs from 'fs-extra';
