@@ -30,7 +30,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       title: appName,
       noMsi: true,
       exe: `${appName}.exe`,
-      setupExe: `${appName}-${packageJSON.version} Setup.exe`,
+      setupExe: `${appName}-${packageJSON.version}-${targetArch}-Setup.exe`,
     }, this.config, {
       appDirectory: dir,
       outputDirectory: outPath,
@@ -41,7 +41,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     const artifacts = [
       path.resolve(outPath, 'RELEASES'),
       path.resolve(outPath, winstallerConfig.setupExe || `${appName}Setup.exe`),
-      path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-full.nupkg`),
+      path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-${targetArch}-full.nupkg`),
     ];
     const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-delta.nupkg`);
     if (winstallerConfig.remoteReleases || await fs.pathExists(deltaPath)) {
