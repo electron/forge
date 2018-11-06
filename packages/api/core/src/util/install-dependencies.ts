@@ -41,6 +41,6 @@ export default async (
       stdio: 'pipe',
     });
   } catch (err) {
-    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}`);
+    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr.toString()}`);
   }
 };
