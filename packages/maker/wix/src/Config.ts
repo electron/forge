@@ -1,3 +1,5 @@
+import { MSICreator } from 'electron-wix-msi/lib/creator';
+
 export interface MakerWixConfig {
   /**
    * String to set as appUserModelId on the shortcut. If none is passed, it'll
@@ -68,6 +70,10 @@ export interface MakerWixConfig {
    * The password to decrypt the certificate given in `certificateFile`.
    */
   certificatePassword?: string;
+  /**
+   * Allows for the modification of the MSICreator before create is called.
+   */
+  beforeCreate?: (creator: MSICreator) => Promise<void> | void;
 }
 export interface UIOptions {
   /**
