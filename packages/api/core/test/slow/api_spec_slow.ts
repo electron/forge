@@ -329,6 +329,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {
                     expect(await fs.pathExists(output)).to.equal(true);
+                    expect(output.startsWith(path.resolve(dir, 'out', 'make'))).to.equal(true);
                   }
                 }
               });
