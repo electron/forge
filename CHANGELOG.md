@@ -1,3 +1,13 @@
+#### [5.2.3](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.3) (2018-11-17)
+
+##### Chores
+
+* **maker:**  upgrade electron-wix-msi to 2.x ([8d16b207](https://github.com/electron-userland/electron-forge/commit/8d16b207))
+
+##### Bug Fixes
+
+* **maker:**  return the correct outPath for a deb prerelease version (#589) ([d194f6ea](https://github.com/electron-userland/electron-forge/commit/d194f6ea))
+
 #### [5.2.2](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.2) (2018-05-14)
 
 ##### Bug Fixes
