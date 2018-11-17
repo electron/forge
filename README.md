@@ -108,7 +108,7 @@ bolt build
 **NOTE:** Please ensure that all changes are committed using semantic commits, we expose a helper `bolt commit`
 to make this easier.
 
-For more information you should check out our [Contributing](CONTRIBUTING.MD) guide.
+For more information you should check out our [Contributing](CONTRIBUTING.md) guide.
 
 # Team
 
