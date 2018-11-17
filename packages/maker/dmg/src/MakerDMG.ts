@@ -5,7 +5,6 @@ import { MakerDMGConfig } from './Config';
 
 import fs from 'fs-extra';
 import path from 'path';
-import pify from 'pify';
 
 export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   name = 'dmg';
@@ -24,7 +23,8 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     const electronDMG = require('electron-installer-dmg');
 
     const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
-    const wantedOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.dmg`);
+    const forgeDefaultOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.dmg`);
+
     await this.ensureFile(outPath);
     const dmgConfig = Object.assign({
       overwrite: true,
@@ -33,10 +33,13 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
     });
-    await pify(electronDMG)(dmgConfig);
+    const opts = await electronDMG.p(dmgConfig);
     if (!this.config.name) {
-      await fs.rename(outPath, wantedOutPath);
+      await this.ensureFile(forgeDefaultOutPath);
+      await fs.rename(outPath, forgeDefaultOutPath);
+      return [forgeDefaultOutPath];
     }
-    return [wantedOutPath];
+
+    return [opts.dmgPath];
   }
 }
