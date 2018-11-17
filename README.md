@@ -91,6 +91,25 @@ to do some fancy build tool stuff you should check out the [plugins](https://v6.
 section of our docs site.  We currently have plugins for Webpack, Parcel and
 Electron Compile.
 
+# Contributing
+
+Getting the code base running locally requires the `bolt` command installed globally.  An example is given below.
+
+```bash
+npm i -g bolt
+git clone https://github.com/electron-userland/electron-forge
+cd electron-forge
+# Installs all dependencies, don't run "yarn" or "npm install" yourself
+bolt
+# Builds all the TS code
+bolt build
+```
+
+**NOTE:** Please ensure that all changes are committed using semantic commits, we expose a helper `bolt commit`
+to make this easier.
+
+For more information you should check out our [Contributing](CONTRIBUTING.MD) guide.
+
 # Team
 
 | <img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /> | <img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /> |
