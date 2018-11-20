@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-deb",
-  "version": "6.0.0-beta.29",
+  "version": "6.0.0-beta.30",
   "description": "Deb file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -17,6 +17,6 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/installer-linux": "6.0.0-beta.29"
+    "@electron-forge/installer-linux": "6.0.0-beta.30"
   }
 }
