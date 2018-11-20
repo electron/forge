@@ -1,3 +1,33 @@
+#### [6.0.0-beta.30](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.30) (2018-11-20)
+
+##### Chores
+
+*  add yarn integrity SHA's to lock file ([e1ea4c3e](https://github.com/electron-userland/electron-forge/commit/e1ea4c3e))
+*  make type checking faster, type check entire repo at once ([00c5769f](https://github.com/electron-userland/electron-forge/commit/00c5769f))
+*  make templates work in v6 ([22549d92](https://github.com/electron-userland/electron-forge/commit/22549d92))
+*  update dependencies ([cddfb1f5](https://github.com/electron-userland/electron-forge/commit/cddfb1f5))
+*  remove .npmignore from git ([61884d33](https://github.com/electron-userland/electron-forge/commit/61884d33))
+* **cli:**  chmod +x src/electron-forge.js so the compiled file is also executable ([ca60a3fd](https://github.com/electron-userland/electron-forge/commit/ca60a3fd))
+
+##### Documentation Changes
+
+*  fix CONTRIBUTING.md link in README ([01e715fd](https://github.com/electron-userland/electron-forge/commit/01e715fd))
+*  add contributing docs ([80259589](https://github.com/electron-userland/electron-forge/commit/80259589))
+
+##### Bug Fixes
+
+* **maker-dmg:**  return correct path from dmg maker (#631) ([b6c523c9](https://github.com/electron-userland/electron-forge/commit/b6c523c9))
+* **maker-wix:**  correct path to distributable ([5eee34f4](https://github.com/electron-userland/electron-forge/commit/5eee34f4))
+* **core:**
+  *  rename maker fixtures so they will get compiled by babel/typescript (#630) ([dabd5956](https://github.com/electron-userland/electron-forge/commit/dabd5956))
+  *  show the package manager stderr when installing deps fails ([2dfde761](https://github.com/electron-userland/electron-forge/commit/2dfde761))
+*  fix build failing due to ts-node bug ([19f0c03f](https://github.com/electron-userland/electron-forge/commit/19f0c03f))
+*  clean up the .webpack folder before builds.  Fixes #596 ([c64b11ce](https://github.com/electron-userland/electron-forge/commit/c64b11ce))
+
+##### Tests
+
+* **core:**  assert that makers' output files are in the correct directory ([50a4f06f](https://github.com/electron-userland/electron-forge/commit/50a4f06f))
+
 #### [6.0.0-beta.29](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.29) (2018-10-16)
 
 ##### Chores
