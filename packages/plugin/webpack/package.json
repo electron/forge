@@ -8,9 +8,12 @@
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "scripts": {
-    "test": "exit 0"
+    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "4.2.0",
+    "mocha": "^5.0.0"
+  },
   "engines": {
     "node": ">= 6.0"
   },

@@ -24,7 +24,7 @@ const BASE_PORT = 3000;
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
-  private isProd = false;
+  isProd = false;
   private projectDir!: string;
   private baseDir!: string;
   private watchers: webpack.Compiler.Watching[] = [];
@@ -164,8 +164,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       if (entryPoint.preload) {
         defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] =
           this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')\}\``
-          : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js')}'`;
+          ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
+          : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
       }
     }
     return defines;
