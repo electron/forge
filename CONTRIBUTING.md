@@ -51,6 +51,27 @@ When changing the API documentation, here are some rules to keep in mind.
 For changes to the website ([electronforge.io](https://v6.electronforge.io)), please file
 issues/pull requests at this repository in the "docs" folder.
 
+## Running the Tests
+
+The Electron Forge repository has a lot of tests some mof which take a decent
+amount of time to run, if you only want to run the fast tests or just the tests
+for a specific package we've provided some helpers to make it easy for you
+to do so.
+
+```bash
+# Test everything (fast, slow, all packages)
+yarn test
+
+# Test just the fast things
+yarn test --fast
+
+# Test just the things in the webpack package
+yarn test --match=webpack
+
+# Test just the fast things in the core package
+yarn test --match=core --fast
+```
+
 ## Filing Pull Requests
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
