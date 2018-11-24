@@ -13,6 +13,19 @@ describe('Publisher', () => {
     expect(publisher).to.have.property('__isElectronForgePublisher', true);
   });
 
+  it('__isElectronForgePublisher should not be settable', () => {
+    const publisher = new PublisherImpl(null);
+    expect(() => {
+      (publisher as any).__isElectronForgePublisher = false;
+    }).to.throw();
+    expect(() => {
+      Object.defineProperty(publisher, '__isElectronForgePublisher', {
+        value: false,
+      });
+    }).to.throw();
+    expect(publisher).to.have.property('__isElectronForgePublisher', true);
+  });
+
   it('should throw an error when publish is called is called', (done) => {
     const publisher = new PublisherImpl(null);
     publisher.publish({} as any).catch(() => done());
