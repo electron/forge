@@ -357,7 +357,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         });
 
         it('throws an error when the specified maker doesn\'t support the current platform', async () => {
-          const makerPath = `${process.cwd()}/test/fixture/maker-unsupported`;
+          const makerPath = path.resolve(__dirname, '../fixture/maker-unsupported');
           await expect(forge.make({
             dir,
             overrideTargets: [{
@@ -368,7 +368,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         });
 
         it('throws an error when the specified maker doesn\'t implement isSupportedOnCurrentPlatform()', async () => {
-          const makerPath = `${process.cwd()}/test/fixture/maker-incompatible`;
+          const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
           await expect(forge.make({
             dir,
             overrideTargets: [{
