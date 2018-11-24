@@ -19,7 +19,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.30",
     "@electron-forge/shared-types": "6.0.0-beta.30",
     "aws-sdk": "^2.9.0",
-    "debug": "^3.0.0",
+    "debug": "^4.1.0",
     "s3": "^4.4.0"
   }
 }

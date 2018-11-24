@@ -23,6 +23,6 @@
     "pify": "^4.0.0"
   },
   "optionalDependencies": {
-    "electron-windows-store": "^0.12.0"
+    "electron-windows-store": "^2.1.0"
   }
 }
