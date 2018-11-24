@@ -22,7 +22,7 @@ import { getPackageInfo } from './utils';
 
         if (deps[depKey] !== allDeps[depKey]) {
           console.error(p.name, depKey, deps[depKey], '-->', allDeps[depKey]);
-          deps[depKey] = allDeps[depKey]
+          deps[depKey] = allDeps[depKey];
         }
       }
     }
