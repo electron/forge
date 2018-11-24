@@ -11,9 +11,6 @@
     "electron-forge-vscode-nix": "script/vscode.sh",
     "electron-forge-vscode-win": "script/vscode.cmd"
   },
-  "scripts": {
-    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
-  },
   "devDependencies": {
     "chai": "4.2.0",
     "mocha": "^5.0.0"

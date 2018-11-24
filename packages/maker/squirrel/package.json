@@ -7,9 +7,6 @@
   "license": "MIT",
   "main": "dist/MakerSquirrel.js",
   "typings": "dist/MakerSquirrel.d.ts",
-  "scripts": {
-    "test": "exit 0"
-  },
   "devDependencies": {
     "chai": "4.2.0",
     "mocha": "^5.0.0"

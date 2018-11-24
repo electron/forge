@@ -7,9 +7,6 @@
   "license": "MIT",
   "main": "dist/InstallerExe.js",
   "typings": "dist/InstallerExe.d.ts",
-  "scripts": {
-    "test": "exit 0"
-  },
   "devDependencies": {
     "mocha": "^5.0.0"
   },

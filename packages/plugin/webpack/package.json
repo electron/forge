@@ -7,9 +7,6 @@
   "license": "MIT",
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
-  "scripts": {
-    "test": "exit 0"
-  },
   "devDependencies": {},
   "engines": {
     "node": ">= 6.0"

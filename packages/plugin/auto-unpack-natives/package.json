@@ -7,9 +7,6 @@
   "license": "MIT",
   "main": "dist/AutoUnpackNativesPlugin.js",
   "typings": "dist/AutoUnpackNativesPlugin.d.ts",
-  "scripts": {
-    "test": "exit 0"
-  },
   "engines": {
     "node": ">= 6.0"
   },
