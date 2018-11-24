@@ -1,3 +1,5 @@
+--require ts-node/register
 --require @babel/register
---require ../../../tools/test-setup.js
+--require ../../../tools/test-setup.ts
 --timeout 800000
+--recursive

@@ -1,24 +1,18 @@
 import * as fs from 'fs-extra';
 import Glob from 'glob';
 import * as path from 'path';
+import { getPackageInfo } from './utils';
 
 const DOCS_PATH = path.resolve(__dirname, '..', 'docs');
-const BASE_DIR = path.resolve(__dirname, '..');
-const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
 (async () => {
-  const packageDirs = [];
-
-  for (const subDir of await fs.readdir(PACKAGES_DIR)) {
-    for (const packageDir of await fs.readdir(path.resolve(PACKAGES_DIR, subDir))) {
-      packageDirs.push(path.resolve(PACKAGES_DIR, subDir, packageDir));
-    }
-  }
+  const packages = await getPackageInfo();
 
   let copiedAssets = false;
   await fs.remove(path.resolve(DOCS_PATH, 'assets'));
   await fs.remove(path.resolve(DOCS_PATH));
-  for (const dir of packageDirs) {
+  for (const p of packages) {
+    const dir = p.path;
     const subPath = path.posix.join(path.basename(path.dirname(dir)), path.basename(dir));
     const docPath = path.resolve(DOCS_PATH, subPath);
     if (!copiedAssets) {
@@ -38,7 +32,7 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
         .replace(/=\"[^"]*assets\//gi, '="/assets/')
         .replace(/(<a href="(?!(?:https?:\/\/)|\/|\#))(.+?)"/gi, (subString, m1: string, m2: string) => {
           return `${m1}/${path.posix.join(subPath, relative, m2)}"`;
-        })
+        }),
       );
     }
   }

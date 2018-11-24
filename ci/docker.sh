@@ -13,4 +13,4 @@ bolt
 bolt build
 bolt lint
 
-DEBUG=electron-installer-snap:snapcraft CI=true bolt ws test -- --installer=$NODE_INSTALLER
+DEBUG=electron-installer-snap:snapcraft CI=true bolt test -- --installer=$NODE_INSTALLER
