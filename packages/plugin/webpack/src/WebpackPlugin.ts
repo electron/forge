@@ -24,7 +24,7 @@ const BASE_PORT = 3000;
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
-  isProd = false;
+  private isProd = false;
   private projectDir!: string;
   private baseDir!: string;
   private watchers: webpack.Compiler.Watching[] = [];

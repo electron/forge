@@ -21,15 +21,15 @@ describe('WebpackPlugin', () => {
         },
       });
       p.init(process.platform === 'win32' ? 'C:\\baseDir' : '/baseDir');
-      p.isProd = false;
       const defines = p.getDefines();
 
       if (process.platform === 'win32') {
-        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.be.eq("'C:\\\\baseDir\\\\.webpack\\\\renderer\\\\window\\\\preload.js'");
+        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.be.eq(String.raw`'C:\\baseDir\\.webpack\\renderer\\window\\preload.js'`);
       } else {
         expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.be.eq("'/baseDir/.webpack/renderer/window/preload.js'");
       }
     });
+
     it('should assign an expression to resolve the preload script in production', () => {
       const p = new WebpackPlugin({
         mainConfig: {},
@@ -47,7 +47,7 @@ describe('WebpackPlugin', () => {
         },
       });
       p.init(process.platform === 'win32' ? 'C:\\baseDir' : '/baseDir');
-      p.isProd = true;
+      (p as any).isProd = true;
       const defines = p.getDefines();
       expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.be.eq("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
     });
