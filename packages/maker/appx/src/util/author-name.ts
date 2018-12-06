@@ -1,4 +1,8 @@
-import parseAuthor, { AuthorType } from 'parse-author';
+import parseAuthor from 'parse-author';
+
+type AuthorType = string | {
+  name: string;
+} | undefined;
 
 export default function getNameFromAuthor(author: AuthorType) {
   let publisher: AuthorType = author || '';

@@ -4,13 +4,7 @@ import { ForgeConfig } from '@electron-forge/shared-types';
 import { AutoUnpackNativesConfig } from './Config';
 
 export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNativesConfig> {
-  private dir!: string;
-  private cachedGlob: Promise<string> | null = null;
   name = 'auto-unpack-natives';
-
-  init(dir: string) {
-    this.dir = dir;
-  }
 
   getHook(hookName: string) {
     if (hookName === 'resolveForgeConfig') {

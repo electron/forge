@@ -8,6 +8,7 @@ import path from 'path';
 import GitHub from './util/github';
 import { PublisherGitHubConfig } from './Config';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { ReposListReleasesResponseItem } from '@octokit/rest';
 
 interface GitHubRelease {
   tag_name: string;
@@ -43,12 +44,12 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     const github = new GitHub(config.authToken, true, config.octokitOptions);
 
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
-      let release: GitHubRelease;
+      let release: ReposListReleasesResponseItem | undefined = undefined;
       const artifacts = perReleaseArtifacts[releaseName];
 
       await asyncOra(`Searching for target release: ${releaseName}`, async () => {
         try {
-          release = (await github.getGitHub().repos.getReleases({
+          release = (await github.getGitHub().repos.listReleases({
             owner: config.repository.owner,
             repo: config.repository.name,
             per_page: 100,
@@ -92,14 +93,16 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               updateSpinner();
               resolve();
             };
-            if (release.assets.find(asset => asset.name === path.basename(artifactPath))) {
+            if (release!.assets.find(asset => asset.name === path.basename(artifactPath))) {
               return done();
             }
-            await github.getGitHub().repos.uploadAsset({
-              url: release.upload_url,
+            await github.getGitHub().repos.uploadReleaseAsset({
+              url: release!.upload_url,
               file: fs.createReadStream(artifactPath),
-              contentType: mime.lookup(artifactPath) || 'application/octet-stream',
-              contentLength: (await fs.stat(artifactPath)).size,
+              headers: {
+                'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
+                'content-length': (await fs.stat(artifactPath)).size,
+              },
               name: path.basename(artifactPath),
             });
             return done();

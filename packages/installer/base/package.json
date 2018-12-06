@@ -1,15 +1,12 @@
 {
   "name": "@electron-forge/installer-base",
-  "version": "6.0.0-beta.29",
+  "version": "6.0.0-beta.30",
   "description": "Base installer helper for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/Installer.js",
   "typings": "dist/Installer.d.ts",
-  "scripts": {
-    "test": "mocha --require ts-node/register test/**/*_spec.ts test/**/**/*_spec.ts --opts ../../../mocha.opts"
-  },
   "devDependencies": {
     "chai": "4.2.0",
     "mocha": "^5.0.0"
@@ -18,6 +15,6 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.29"
+    "@electron-forge/async-ora": "6.0.0-beta.30"
   }
 }

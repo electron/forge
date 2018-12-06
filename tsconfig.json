@@ -9,7 +9,7 @@
 			"es7"
 		],
 		"sourceMap": true,
-		"rootDir": "src",
+		"rootDir": ".",
 		"experimentalDecorators": true,
 		"strict": true,
 		"esModuleInterop": true,
