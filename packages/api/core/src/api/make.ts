@@ -17,7 +17,7 @@ import requireSearch from '../util/require-search';
 
 import packager from './package';
 
-const { hostArch } = require('electron-packager/targets');
+const { host: hostArch }: { host: () => ForgeArch } = require('electron-download/lib/arch');
 
 class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; }
 

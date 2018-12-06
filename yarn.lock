@@ -792,10 +792,10 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-0.0.31.tgz#bac8d8aab6a823e91deb7f79083b2a35fa638f33"
   integrity sha512-LS1MCPaQKqspg7FvexuhmDbWUhE2yIJ+4AgVIyObfc06/UKZ8REgxGNjZc82wPLWmbeOm7S+gSsLgo75TanG4A==
 
-"@types/electron-packager@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@types/electron-packager/-/electron-packager-12.0.0.tgz#acbcf3c5895c1eeda3d2a325c2feeded6a639b1f"
-  integrity sha512-IocNGjkMkUm/lcUVXCYw0mIqXkoce1NEZ4oV4Td4LwHKXZqWzxdKlPjwnP52LNX6ghddjjXUPukPeKHMHMpxEA==
+"@types/electron-packager@^13.0.0":
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/@types/electron-packager/-/electron-packager-13.0.0.tgz#d391366bc9722587f4c5e254f4071a2c71fc960c"
+  integrity sha512-Q0e/ja/TfSSPM5rV9RxaPz8yew7dWSSufFsziw08hCZYQuafXkbhxs83UvQ/Hte3+c3U+ogLQKXFasGn1umn5A==
   dependencies:
     "@types/node" "*"
 
@@ -1797,11 +1797,6 @@ base32-encode@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/base32-encode/-/base32-encode-0.1.1.tgz#7510f6aa44e2c695b7efcb2673a454f8f8505ea0"
   integrity sha512-jjc+6TC8PXrsxJ4CQr9ibioNhhAM1p/RvS9hy3Q+cxPphvXmLnFSkXoen2XXzNBrYjdmzajRtbFDl1x28F5F4A==
-
-base64-js@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.2.0.tgz#a39992d723584811982be5e290bb6a53d86700f1"
-  integrity sha1-o5mS1yNYSBGYK+XikLtqU9hnAPE=
 
 base64-js@^1.0.2, base64-js@^1.2.3:
   version "1.3.0"
@@ -3204,7 +3199,15 @@ electron-installer-snap@^3.0.0:
     which "^1.3.0"
     yargs "^11.0.0"
 
-electron-osx-sign@^0.4.1, electron-osx-sign@^0.4.10:
+electron-notarize@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/electron-notarize/-/electron-notarize-0.0.5.tgz#d9e95c763a6af853ce16d31dde72d73cb25b0703"
+  integrity sha512-YzrqZ6RDQ7Wt2RWlxzRoQUuxnTeXrfp7laH7XKcmQqrZ6GaAr50DMPvFMpqDKdrZSHSbcgZgB7ktIQbjvITmCQ==
+  dependencies:
+    debug "^4.1.0"
+    fs-extra "^7.0.0"
+
+electron-osx-sign@^0.4.10, electron-osx-sign@^0.4.11:
   version "0.4.11"
   resolved "https://registry.yarnpkg.com/electron-osx-sign/-/electron-osx-sign-0.4.11.tgz#8377732fe7b207969f264b67582ee47029ce092f"
   integrity sha512-VVd40nrnVqymvFrY9ZkOYgHJOvexHHYTR3di/SN+mjJ0OWhR1I8BRVj3U+Yamw6hnkZZNKZp52rqL5EFAAPFkQ==
@@ -3216,28 +3219,28 @@ electron-osx-sign@^0.4.1, electron-osx-sign@^0.4.10:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@^12.0.1:
-  version "12.2.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-12.2.0.tgz#e38e0702a12e5f62a00a03aabd0b9ad28aebab4b"
-  integrity sha512-T5W/FIK4VXhYIOWxkehmz6zXt2S/sA9JZ3AL+/jeKCicQY6QVQ0K8B7W801L+GPTwbgTPycHjO+iqEf1BhZ+Iw==
+electron-packager@^13.0.0:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-13.0.1.tgz#126b697aa2006d8e5df9eb28faa303b6167b08d4"
+  integrity sha512-fXfldaZ1wihpPaMTSGMxvCeETJwVArlnMmKafVXLJbbZwS+WTjY4iL7ju9WMQ0LNGuiiIwSMCQFxt5iA087mqg==
   dependencies:
     asar "^0.14.0"
-    debug "^3.0.0"
+    debug "^4.0.1"
     electron-download "^4.1.1"
-    electron-osx-sign "^0.4.1"
+    electron-notarize "^0.0.5"
+    electron-osx-sign "^0.4.11"
     extract-zip "^1.0.3"
-    fs-extra "^5.0.0"
+    fs-extra "^7.0.0"
     galactus "^0.2.1"
     get-package-info "^1.0.0"
-    nodeify "^1.0.1"
     parse-author "^2.0.0"
-    pify "^3.0.0"
-    plist "^2.0.0"
+    pify "^4.0.0"
+    plist "^3.0.0"
     rcedit "^1.0.0"
     resolve "^1.1.6"
     sanitize-filename "^1.6.0"
     semver "^5.3.0"
-    yargs-parser "^10.0.0"
+    yargs-parser "^11.0.0"
 
 electron-rebuild@^1.6.0:
   version "1.8.2"
@@ -4788,7 +4791,7 @@ is-buffer@^1.1.5:
 
 is-builtin-module@^1.0.0:
   version "1.0.0"
-  resolved "http://registry.npmjs.org/is-builtin-module/-/is-builtin-module-1.0.0.tgz#540572d34f7ac3119f8f76c30cbc1b1e037affbe"
+  resolved "https://registry.yarnpkg.com/is-builtin-module/-/is-builtin-module-1.0.0.tgz#540572d34f7ac3119f8f76c30cbc1b1e037affbe"
   integrity sha1-VAVy0096wxGfj3bDDLwbHgN6/74=
   dependencies:
     builtin-modules "^1.0.0"
@@ -5407,7 +5410,7 @@ load-json-file@^1.0.0:
 
 load-json-file@^2.0.0:
   version "2.0.0"
-  resolved "http://registry.npmjs.org/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
+  resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
   integrity sha1-eUfkIUmvgNaWy/eXvKq8/h/inKg=
   dependencies:
     graceful-fs "^4.1.2"
@@ -5894,7 +5897,7 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
 
 minimist@0.0.8:
   version "0.0.8"
-  resolved "http://registry.npmjs.org/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
   integrity sha1-hX/Kv8M5fSYluCKCYuhqp6ARsF0=
 
 minimist@1.2.0, minimist@^1.1.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0:
@@ -6837,7 +6840,7 @@ performance-now@^2.1.0:
 
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
-  resolved "http://registry.npmjs.org/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
+  resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
   integrity sha1-7RQaasBDqEnqWISY59yosVMw6Qw=
 
 pify@^3.0.0:
@@ -6888,16 +6891,7 @@ pkginfo@0.3.x:
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.3.1.tgz#5b29f6a81f70717142e09e765bbeab97b4f81e21"
   integrity sha1-Wyn2qB9wcXFC4J52W76rl7T4HiE=
 
-plist@^2.0.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/plist/-/plist-2.1.0.tgz#57ccdb7a0821df21831217a3cad54e3e146a1025"
-  integrity sha1-V8zbeggh3yGDEhejytVOPhRqECU=
-  dependencies:
-    base64-js "1.2.0"
-    xmlbuilder "8.2.2"
-    xmldom "0.1.x"
-
-plist@^3.0.1:
+plist@^3.0.0, plist@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/plist/-/plist-3.0.1.tgz#a9b931d17c304e8912ef0ba3bdd6182baf2e1f8c"
   integrity sha512-GpgvHHocGRyQm74b6FWEZZVRroHKE1I0/BTjAmySaohK+cUn+hZpbqXkc3KWgW3gQYkqcQej35FohcT0FRlkRQ==
@@ -6984,7 +6978,7 @@ promise-inflight@^1.0.1:
 
 promise@~1.3.0:
   version "1.3.0"
-  resolved "http://registry.npmjs.org/promise/-/promise-1.3.0.tgz#e5cc9a4c8278e4664ffedc01c7da84842b040175"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-1.3.0.tgz#e5cc9a4c8278e4664ffedc01c7da84842b040175"
   integrity sha1-5cyaTIJ45GZP/twBx9qEhCsEAXU=
   dependencies:
     is-promise "~1"
@@ -7887,9 +7881,9 @@ spawn-wrap@^1.4.2:
     which "^1.3.0"
 
 spdx-correct@^3.0.0:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.0.2.tgz#19bb409e91b47b1ad54159243f7312a858db3c2e"
-  integrity sha512-q9hedtzyXHr5S0A1vEPoK/7l8NpfkFYTq6iCY+Pno2ZbdZR6WexZFtqeVGkGxW3TEJMN914Z55EnAGMmenlIQQ==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/spdx-correct/-/spdx-correct-3.1.0.tgz#fb83e504445268f154b074e218c87c003cd31df4"
+  integrity sha512-lr2EZCctC2BNR7j7WzJ2FpDznxky1sjfxvvYEyzxNyb6lZXHODmEoJeFu4JupYlkfha1KZpJyoqiJ7pgA1qq8Q==
   dependencies:
     spdx-expression-parse "^3.0.0"
     spdx-license-ids "^3.0.0"
@@ -9056,11 +9050,6 @@ xmlbuilder@0.4.2:
   resolved "http://registry.npmjs.org/xmlbuilder/-/xmlbuilder-0.4.2.tgz#1776d65f3fdbad470a08d8604cdeb1c4e540ff83"
   integrity sha1-F3bWXz/brUcKCNhgTN6xxOVA/4M=
 
-xmlbuilder@8.2.2:
-  version "8.2.2"
-  resolved "http://registry.npmjs.org/xmlbuilder/-/xmlbuilder-8.2.2.tgz#69248673410b4ba42e1a6136551d2922335aa773"
-  integrity sha1-aSSGc0ELS6QuGmE2VR0pIjNap3M=
-
 xmlbuilder@^9.0.7, xmlbuilder@~9.0.1:
   version "9.0.7"
   resolved "http://registry.npmjs.org/xmlbuilder/-/xmlbuilder-9.0.7.tgz#132ee63d2ec5565c557e20f4c22df9aca686b10d"
@@ -9103,14 +9092,7 @@ yallist@^3.0.0, yallist@^3.0.2:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-3.0.3.tgz#b4b049e314be545e3ce802236d6cd22cd91c3de9"
   integrity sha512-S+Zk8DEWE6oKpV+vI3qWkaK+jSbIK86pCwe2IF/xwIpQ8jEuxpw9NyaGjmp9+BoJv5FV2piqCDcoCtStppiq2A==
 
-yargs-parser@^10.0.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-10.1.0.tgz#7202265b89f7e9e9f2e5765e0fe735a905edbaa8"
-  integrity sha512-VCIyR1wJoEBZUqk5PA+oOBF6ypbwh5aNB3I50guxAL/quggdfs4TtNHQrSazFA3fYZ+tEqfs0zIGlv0c/rgjbQ==
-  dependencies:
-    camelcase "^4.1.0"
-
-yargs-parser@^11.1.1:
+yargs-parser@^11.0.0, yargs-parser@^11.1.1:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
   integrity sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
