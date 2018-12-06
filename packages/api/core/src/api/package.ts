@@ -18,7 +18,7 @@ import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import getElectronVersion from '../util/electron-version';
 
-const { hostArch }: { hostArch: () => ForgeArch | 'all'} = require('electron-packager/targets');
+const { host: hostArch }: { host: () => ForgeArch | 'all' } = require('electron-download/lib/arch');
 
 const d = debug('electron-forge:packager');
 
@@ -182,6 +182,10 @@ export default async ({
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len
     warn(interactive, 'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow);
+  }
+
+  if (packageOpts.prebuiltAsar) {
+    throw new Error('config.forge.packagerConfig.prebuiltAsar is not supported by Electron Forge');
   }
 
   await runHook(forgeConfig, 'generateAssets');
