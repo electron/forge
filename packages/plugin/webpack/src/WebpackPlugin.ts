@@ -270,7 +270,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     await asyncOra('Compiling Main Process Code', async () => {
       await new Promise(async (resolve, reject) => {
-        const mainConfig = await this.getMainConfig()
+        const mainConfig = await this.getMainConfig();
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
         const cb: webpack.ICompiler.Handler = async (err, stats: Stats) => {
@@ -285,7 +285,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             await fs.writeFile(
               jsonStatsFilename,
               JSON.stringify(jsonStats),
-              { encoding: 'utf8' }
+              { encoding: 'utf8' },
             );
           }
 
@@ -312,7 +312,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             await fs.writeFile(
               jsonStatsFilename,
               JSON.stringify(jsonStats),
-              { encoding: 'utf8' }
+              { encoding: 'utf8' },
             );
           }
           if (err) return reject(err);
