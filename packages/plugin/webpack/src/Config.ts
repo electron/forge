@@ -53,6 +53,11 @@ export interface WebpackPluginRendererConfig {
    */
   config: WebpackConfiguration | string;
   /**
+   * Instructs webpack to emit a JSON file containing statistics about
+   * modules, the dependency graph and various other build information for the renderer process.
+   */
+  jsonStats?: boolean
+  /**
    * Array of entry points, these should map to the windows your app needs to
    * open.  Each window requires it's own entry point
    */
@@ -64,6 +69,11 @@ export interface WebpackPluginConfig {
    * The webpack config for your main process
    */
   mainConfig: WebpackConfiguration | string;
+  /**
+   * Instructs webpack to emit a JSON file containing statistics about
+   * modules, the dependency graph and various other build information for the main process. 
+   */
+  jsonStats?: boolean
   /**
    * Electron Forge webpack configuration for your renderer process
    */

@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 import merge from 'webpack-merge';
 import path from 'path';
 import { spawnPromise } from 'spawn-rx';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration, Stats } from 'webpack';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import express from 'express';
@@ -270,13 +270,23 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     await asyncOra('Compiling Main Process Code', async () => {
       await new Promise(async (resolve, reject) => {
-        const compiler = webpack(await this.getMainConfig());
+        const mainConfig = await this.getMainConfig()
+        const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = (err, stats) => {
+        const cb: webpack.ICompiler.Handler = async (err, stats: Stats) => {
           if (tab) {
             tab.log(stats.toString({
               colors: true,
             }));
+          }
+          if (this.config.jsonStats) {
+            const jsonStats = stats.toJson(mainConfig.stats);
+            const jsonStatsFilename = path.resolve(this.baseDir, 'main', 'stats.json');
+            await fs.writeFile(
+              jsonStatsFilename,
+              JSON.stringify(jsonStats),
+              { encoding: 'utf8' }
+            );
           }
 
           if (err) return onceReject(err);
@@ -294,7 +304,17 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   compileRenderers = async (watch = false) => {
     await asyncOra('Compiling Renderer Template', async () => {
       await new Promise(async (resolve, reject) => {
-        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err, stats) => {
+        const rendererConfig = await this.getRendererConfig(this.config.renderer.entryPoints);
+        webpack(rendererConfig).run(async (err, stats: Stats) => {
+          if (this.config.renderer.jsonStats) {
+            const jsonStats = stats.toJson(rendererConfig.stats);
+            const jsonStatsFilename = path.resolve(this.baseDir, 'renderer', 'stats.json');
+            await fs.writeFile(
+              jsonStatsFilename,
+              JSON.stringify(jsonStats),
+              { encoding: 'utf8' }
+            );
+          }
           if (err) return reject(err);
           resolve();
         });
