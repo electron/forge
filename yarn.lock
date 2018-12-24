@@ -928,10 +928,10 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/fetch-mock@6.0.4":
-  version "6.0.4"
-  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-6.0.4.tgz#fbe20ab0cc151fe67b2e1b71e7ef29a986a90f1f"
-  integrity sha512-vp98XcO7wVv2Ky7/2wW9WpGyhlMCNCxGay5fVuvimiTq3aB/bfxclsAHc2z6uIajNeFeUXX1aQmSlrWdTDCouw==
+"@types/fetch-mock@7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.2.0.tgz#5f0310e03177d452eeebe9b07975c1fed2a41dba"
+  integrity sha512-p73N4iZbQSEToxVY86R9CHVI4THKM+I9UsFxN10c2EuguSygzDdXXNkicRL/45oIF80u2XE6XDKuCo2NNikDqA==
 
 "@types/form-data@^2.2.1":
   version "2.2.1"
@@ -1101,10 +1101,10 @@
   resolved "https://registry.yarnpkg.com/@types/pify/-/pify-3.0.2.tgz#1bc75dac43e31dba981c37e0a08edddc1b49cd39"
   integrity sha512-a5AKF1/9pCU3HGMkesgY6LsBdXHUY3WU+I2qgpU0J+I8XuJA1aFr59eS84/HP0+dxsyBSNbt+4yGI2adUpHwSg==
 
-"@types/pretty-ms@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@types/pretty-ms/-/pretty-ms-3.2.0.tgz#cdd35f7edac2310bbe2af86f5244625db7a101b1"
-  integrity sha512-jF8PYR5Nm2w148Icj+Xf4CcVO+YrrpVyRSZPmSG67W2H3WrAAET7jP22txHpk6rnwPGJ8asW7syiyQTPcWWPAQ==
+"@types/pretty-ms@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/pretty-ms/-/pretty-ms-4.0.0.tgz#5e5177b9e447fbc8446e6fd2b09aea045971f11d"
+  integrity sha512-l5aIszYIm3s4jIL4wLDwajEml1w3E4zqGDDUgvnroX1ux6YAxsCrgRHLUafgrHFGTHlx7TpwiwSwcHV8IBvccw==
 
 "@types/proxyquire@^1.3.28":
   version "1.3.28"
@@ -1243,10 +1243,10 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/sinon@5.0.7":
-  version "5.0.7"
-  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-5.0.7.tgz#0d9f89dd0c9988c4f1505a92a3a324ee7bdb18a6"
-  integrity sha512-opwMHufhUwkn/UUDk35LDbKJpA2VBsZT8WLU8NjayvRLGPxQkN+8XmfC2Xl35MAscBE8469koLLBjaI3XLEIww==
+"@types/sinon@7.0.2":
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/@types/sinon/-/sinon-7.0.2.tgz#234c03dd39bfa97616b28215caea3de043c63310"
+  integrity sha512-YvJOqPk4kh1eQyxuASDD4MDK27XWAhtw6hJ7rRayEOkkTpZkqDWpDb4OjLVzFGdapOuUgZdnqO+71Q3utCJtcA==
 
 "@types/tapable@*":
   version "1.0.4"
