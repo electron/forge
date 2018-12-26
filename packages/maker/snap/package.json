@@ -22,6 +22,6 @@
     "@electron-forge/shared-types": "6.0.0-beta.30"
   },
   "optionalDependencies": {
-    "electron-installer-snap": "^3.0.0"
+    "electron-installer-snap": "^3.0.1"
   }
 }
