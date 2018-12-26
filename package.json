@@ -157,7 +157,7 @@
     "electron-installer-dmg": "^2.0.0",
     "electron-installer-flatpak": "^0.8.0",
     "electron-installer-redhat": "^0.5.0",
-    "electron-installer-snap": "^3.0.0",
+    "electron-installer-snap": "^3.0.1",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^2.5.0",
     "electron-wix-msi": "^2.1.1"
