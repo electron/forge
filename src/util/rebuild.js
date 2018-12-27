@@ -3,6 +3,10 @@ import rebuild from 'electron-rebuild';
 import asyncOra from '../util/ora-handler';
 
 export default async (buildPath, electronVersion, platform, arch, config = {}) => {
+  if (!electronVersion) {
+    throw new Error("Could not determine Electron version. Make sure that 'npm install' (or 'yarn') has been run before invoking electron-forge.");
+  }
+
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
     const rebuilder = rebuild(Object.assign({}, config, {
       buildPath,
