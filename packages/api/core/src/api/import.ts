@@ -1,3 +1,4 @@
+import _merge from 'lodash.merge';
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -10,8 +11,28 @@ import { setInitialForgeConfig } from '../util/forge-config';
 import { info, warn } from '../util/messages';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
+import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from'../util/upgrade-forge-config';
 
 const d = debug('electron-forge:import');
+
+function findElectronDep(dep: string): boolean {
+  return ['electron', 'electron-prebuilt', 'electron-prebuilt-compile'].includes(dep);
+}
+
+function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
+  if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
+    exact = exact.filter(dep => dep !== 'electron');
+  } else {
+    const electronKey = Object.keys(packageJSON.dependencies).find(findElectronDep);
+    if (electronKey) {
+      d(`Moving ${electronKey} from dependencies to devDependencies`);
+      dev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
+      delete packageJSON.dependencies[electronKey];
+    }
+  }
+
+  return [dev, exact];
+}
 
 export interface ImportOptions {
   /**
@@ -72,18 +93,32 @@ export default async ({
 
   await initGit(dir);
 
+  const importDeps = ([] as string[]).concat(deps);
+  let importDevDeps = ([] as string[]).concat(devDeps);
+  let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
+
   let packageJSON = await readRawPackageJson(dir);
   if (packageJSON.config && packageJSON.config.forge) {
-    warn(interactive, 'It looks like this project is already configured for "electron-forge"'.green);
-    if (typeof shouldContinueOnExisting === 'function') {
-      if (!await shouldContinueOnExisting()) {
-        process.exit(0);
+    if (packageJSON.config.forge.makers) {
+      warn(interactive, 'It looks like this project is already configured for Electron Forge'.green);
+      if (typeof shouldContinueOnExisting === 'function') {
+        if (!await shouldContinueOnExisting()) {
+          process.exit(0);
+        }
       }
+    } else if (typeof packageJSON.config.forge === 'string') {
+      warn(interactive, "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway".yellow);
+    } else {
+      d('Upgrading an Electron Forge < 6 project');
+      packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge);
+      importDevDeps = updateUpgradedForgeDevDeps(packageJSON, importDevDeps);
     }
   }
 
   packageJSON.dependencies = packageJSON.dependencies || {};
   packageJSON.devDependencies = packageJSON.devDependencies || {};
+
+  [importDevDeps, importExactDevDeps] = updateElectronDependency(packageJSON, importDevDeps, importExactDevDeps);
 
   const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
   const buildToolPackages: {
@@ -91,6 +126,7 @@ export default async ({
   } = {
     'electron-builder': 'provides mostly equivalent functionality',
     'electron-download': 'already uses this module as a transitive dependency',
+    'electron-forge': 'replaced with @electron-forge/cli',
     'electron-installer-debian': 'already uses this module as a transitive dependency',
     'electron-installer-dmg': 'already uses this module as a transitive dependency',
     'electron-installer-flatpak': 'already uses this module as a transitive dependency',
@@ -152,13 +188,13 @@ export default async ({
     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
 
     d('installing dependencies');
-    await installDepList(dir, deps);
+    await installDepList(dir, importDeps);
 
     d('installing devDependencies');
-    await installDepList(dir, devDeps, DepType.DEV);
+    await installDepList(dir, importDevDeps, DepType.DEV);
 
     d('installing exactDevDependencies');
-    await installDepList(dir, exactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
+    await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
   });
 
   packageJSON = await readRawPackageJson(dir);
@@ -169,8 +205,17 @@ export default async ({
 
   packageJSON.config = packageJSON.config || {};
   const templatePackageJSON = await readRawPackageJson(path.resolve(__dirname, '../../tmpl'));
-  packageJSON.config.forge = templatePackageJSON.config.forge;
-  setInitialForgeConfig(packageJSON);
+  if (packageJSON.config.forge) {
+    if (typeof packageJSON.config.forge !== 'string') {
+      packageJSON.config.forge = _merge(templatePackageJSON.config.forge, packageJSON.config.forge);
+    }
+  } else {
+    packageJSON.config.forge = templatePackageJSON.config.forge;
+  }
+
+  if (typeof packageJSON.config.forge !== 'string') {
+    setInitialForgeConfig(packageJSON);
+  }
 
   await writeChanges();
 

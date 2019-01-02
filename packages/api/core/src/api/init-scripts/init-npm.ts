@@ -11,7 +11,7 @@ import { readRawPackageJson } from '../../util/read-package-json';
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
 
-function siblingDep(name: string) {
+export function siblingDep(name: string) {
   return `@electron-forge/${name}@${corePackage.version}`;
 }
 
