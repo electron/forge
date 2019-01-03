@@ -7,6 +7,7 @@ import path from 'path';
 import initGit from './init-scripts/init-git';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
+import { updateElectronDependency } from '../util/electron-version';
 import { setInitialForgeConfig } from '../util/forge-config';
 import { info, warn } from '../util/messages';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
@@ -14,25 +15,6 @@ import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from'../util/upgrade-forge-config';
 
 const d = debug('electron-forge:import');
-
-function findElectronDep(dep: string): boolean {
-  return ['electron', 'electron-prebuilt', 'electron-prebuilt-compile'].includes(dep);
-}
-
-function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
-  if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
-    exact = exact.filter(dep => dep !== 'electron');
-  } else {
-    const electronKey = Object.keys(packageJSON.dependencies).find(findElectronDep);
-    if (electronKey) {
-      d(`Moving ${electronKey} from dependencies to devDependencies`);
-      dev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
-      delete packageJSON.dependencies[electronKey];
-    }
-  }
-
-  return [dev, exact];
-}
 
 export interface ImportOptions {
   /**

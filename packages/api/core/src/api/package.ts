@@ -16,7 +16,7 @@ import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
-import getElectronVersion from '../util/electron-version';
+import { getElectronVersion } from '../util/electron-version';
 
 const { host: hostArch }: { host: () => ForgeArch | 'all' } = require('electron-download/lib/arch');
 

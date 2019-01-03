@@ -12,7 +12,7 @@ import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
-import getElectronVersion from '../util/electron-version';
+import { getElectronVersion } from '../util/electron-version';
 import requireSearch from '../util/require-search';
 
 import packager from './package';
