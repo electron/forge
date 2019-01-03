@@ -20,7 +20,7 @@ describe('updateElectronDependency', () => {
   });
   it('moves an Electron dependency from dependencies to devDependencies', () => {
     const packageJSON = {
-      dependencies: { electron: '0.37.0'},
+      dependencies: { electron: '0.37.0' },
       devDependencies: { },
     };
     const [dev, exact] = updateElectronDependency(packageJSON, devDeps, exactDevDeps);
@@ -54,7 +54,7 @@ describe('getElectronVersion', () => {
 
   it('works with electron', () => {
     const packageJSON = {
-      devDependencies: { 'electron': '1.0.0' },
+      devDependencies: { electron: '1.0.0' },
     };
     expect(getElectronVersion(packageJSON)).to.be.equal('1.0.0');
   });

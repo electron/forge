@@ -12,7 +12,7 @@ function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
 }
 
-export function getElectronVersion (packageJSON: any) {
+export function getElectronVersion(packageJSON: any) {
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies'.red);
   }
@@ -21,7 +21,7 @@ export function getElectronVersion (packageJSON: any) {
     throw new Error('Could not find any Electron packages in devDependencies');
   }
   return packageJSON.devDependencies[packageName];
-};
+}
 
 export function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
   if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
