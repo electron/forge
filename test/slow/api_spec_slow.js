@@ -229,7 +229,9 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       packageJSON.name = 'testapp';
       packageJSON.productName = 'Test App';
       packageJSON.config.forge.electronPackagerConfig.asar = false;
-      packageJSON.config.forge.electronPackagerConfig.executableName = 'testapp';
+      if (process.platform === 'linux') {
+        packageJSON.config.forge.electronPackagerConfig.executableName = 'testapp';
+      }
       packageJSON.config.forge.windowsStoreConfig.packageName = 'TestApp';
       if (process.platform === 'win32') {
         await fs.copy(
