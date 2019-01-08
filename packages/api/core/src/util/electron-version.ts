@@ -5,6 +5,7 @@ const d = debug('electron-forge:electron-version');
 const electronPackageNames = [
   'electron-prebuilt-compile',
   'electron-prebuilt',
+  'electron-nightly',
   'electron',
 ];
 

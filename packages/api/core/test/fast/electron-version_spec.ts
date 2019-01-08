@@ -52,6 +52,13 @@ describe('getElectronVersion', () => {
     expect(getElectronVersion(packageJSON)).to.be.equal('1.0.0');
   });
 
+  it('works with electron-nightly', () => {
+    const packageJSON = {
+      devDependencies: { 'electron-nightly': '5.0.0-nightly.20190107' },
+    };
+    expect(getElectronVersion(packageJSON)).to.be.equal('5.0.0-nightly.20190107');
+  });
+
   it('works with electron', () => {
     const packageJSON = {
       devDependencies: { electron: '1.0.0' },
