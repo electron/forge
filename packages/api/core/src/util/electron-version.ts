@@ -25,17 +25,19 @@ export function getElectronVersion(packageJSON: any) {
 }
 
 export function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
+  const alteredDev = ([] as string[]).concat(dev);
+  let alteredExact = ([] as string[]).concat(exact);
   if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
-    exact = exact.filter(dep => dep !== 'electron');
+    alteredExact = alteredExact.filter(dep => dep !== 'electron');
   } else {
     const electronKey = Object.keys(packageJSON.dependencies).find(findElectronDep);
     if (electronKey) {
-      exact = exact.filter(dep => dep !== 'electron');
+      alteredExact = alteredExact.filter(dep => dep !== 'electron');
       d(`Moving ${electronKey} from dependencies to devDependencies`);
-      dev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
+      alteredDev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
       delete packageJSON.dependencies[electronKey];
     }
   }
 
-  return [dev, exact];
+  return [alteredDev, alteredExact];
 }
