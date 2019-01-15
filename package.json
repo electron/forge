@@ -1,6 +1,6 @@
 {
   "name": "electron-forge",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron-userland/electron-forge",
   "main": "dist/api/index.js",
