@@ -1,3 +1,15 @@
+#### [5.2.4](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.4) (2019-01-15)
+
+##### Chores
+
+* **maker:**
+  *  force bump debian and snap dependencies to bring in fixes ([91003136](https://github.com/electron-userland/electron-forge/commit/91003136))
+  *  upgrade electron-installer-snap to ^3.0.1 for Electron 4 support ([1522dc57](https://github.com/electron-userland/electron-forge/commit/1522dc57))
+
+##### Bug Fixes
+
+* **generic:**  throw an error when there is no node_modules folder in the project ([9e18ad9c](https://github.com/electron-userland/electron-forge/commit/9e18ad9c))
+
 #### [5.2.3](https://github.com/electron-userland/electron-forge/releases/tag/v5.2.3) (2018-11-17)
 
 ##### Chores
