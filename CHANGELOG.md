@@ -1,3 +1,9 @@
+#### [6.0.0-beta.32](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.32) (2019-01-15)
+
+##### Bug Fixes
+
+* **core:**  add lodash.merge to package.json ([803bb362](https://github.com/electron-userland/electron-forge/commit/803bb362))
+
 #### [6.0.0-beta.31](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.31) (2019-01-15)
 
 ##### Chores
