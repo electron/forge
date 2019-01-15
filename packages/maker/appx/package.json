@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-appx",
-  "version": "6.0.0-beta.30",
+  "version": "6.0.0-beta.31",
   "description": "AppX maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.30",
-    "@electron-forge/shared-types": "6.0.0-beta.30",
+    "@electron-forge/maker-base": "6.0.0-beta.31",
+    "@electron-forge/shared-types": "6.0.0-beta.31",
     "cross-spawn": "^6.0.4",
     "fs-extra": "^7.0.0",
     "parse-author": "^2.0.0",
