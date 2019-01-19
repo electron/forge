@@ -1,7 +1,9 @@
+/* eslint "global-require": "off", "import/no-dynamic-require": "off" */
 import minimist from 'minimist';
 import * as path from 'path';
-import { getPackageInfoSync } from './utils';
 import Glob from 'glob';
+
+import { getPackageInfoSync } from './utils';
 
 const argv = minimist(
   process.argv.slice(
