@@ -16,6 +16,7 @@ export function debianArch(nodeArch: ForgeArch) {
 
 export default class MakerDeb extends MakerBase<MakerDebConfig> {
   name = 'deb';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
@@ -28,6 +29,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     targetArch,
     packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const installer = require('electron-installer-debian');
 
     const arch = debianArch(targetArch);

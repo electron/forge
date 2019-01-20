@@ -13,15 +13,18 @@ export interface MakerDebConfigOptions {
    */
   productName?: string;
   /**
-   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the desktop specification.
+   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the
+   * desktop specification.
    */
   genericName?: string;
   /**
-   * Short description of the application, used in the Description field of the control specification.
+   * Short description of the application, used in the Description field of the control
+   * specification.
    */
   description?: string;
   /**
-   * Long description of the application, used in the Description field of the control specification.
+   * Long description of the application, used in the Description field of the control
+   * specification.
    */
   productDescription?: string;
   /**
@@ -37,7 +40,12 @@ export interface MakerDebConfigOptions {
    *
    * Possible sections.  Generated on https://packages.debian.org/unstable/ with:
    *
-   * $$('#content dt a').map(n => {const ss = n.href.split('/'); return `'${ss[ss.length - 2]}'`; }).sort().join(' | ')
+   * ```javascript
+   * $$('#content dt a').map(n => {
+   *   const ss = n.href.split('/');
+   *   return `'${ss[ss.length - 2]}'`;
+   * }).sort().join(' | ')
+   * ```
    */
   section?: 'admin' | 'cli-mono' | 'comm' | 'database' | 'debian-installer' | 'debug' | 'devel' | 'doc' | 'editors' | 'education' | 'electronics' | 'embedded' | 'fonts' | 'games' | 'gnome' | 'gnu-r' | 'gnustep' | 'graphics' | 'hamradio' | 'haskell' | 'httpd' | 'interpreters' | 'introspection' | 'java' | 'javascript' | 'kde' | 'kernel' | 'libdevel' | 'libs' | 'lisp' | 'localization' | 'mail' | 'math' | 'metapackages' | 'misc' | 'net' | 'news' | 'ocaml' | 'oldlibs' | 'otherosfs' | 'perl' | 'php' | 'python' | 'ruby' | 'rust' | 'science' | 'shells' | 'sound' | 'tasks' | 'tex' | 'text' | 'utils' | 'vcs' | 'video' | 'virtual' | 'web' | 'x11' | 'xfce' | 'zope';
   /**
@@ -80,7 +88,8 @@ export interface MakerDebConfigOptions {
    */
   homepage?: string;
   /**
-   * Relative path to the executable that will act as binary for the application, used in the Exec field of the desktop specification.
+   * Relative path to the executable that will act as binary for the application, used in the Exec
+   * field of the desktop specification.
    *
    * Defaults to options.name
    */
@@ -90,7 +99,8 @@ export interface MakerDebConfigOptions {
    */
   icon?: string;
   /**
-   * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
+   * Categories in which the application should be shown in a menu, used in the Categories field
+   * of the desktop specification.
    *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
    *
@@ -98,7 +108,8 @@ export interface MakerDebConfigOptions {
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
   /**
-   * MIME types the application is able to open, used in the MimeType field of the desktop specification.
+   * MIME types the application is able to open, used in the MimeType field of the desktop
+   * specification.
    */
   mimeType?: string[];
   /**
@@ -106,9 +117,11 @@ export interface MakerDebConfigOptions {
    */
   lintianOverrides?: string[];
   /**
-   * Path to package maintainer scripts with their corresponding name, used in the installation procedure:
+   * Path to package maintainer scripts with their corresponding name, used in the installation
+   * procedure.
    *
-   * Read More: https://www.debian.org/doc/debian-policy/#package-maintainer-scripts-and-installation-procedure
+   * Read More:
+   * https://www.debian.org/doc/debian-policy/#package-maintainer-scripts-and-installation-procedure
    */
   scripts?: {
     preinst?: string;

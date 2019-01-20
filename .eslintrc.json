@@ -26,6 +26,15 @@
     }],
     "@typescript-eslint/no-unused-vars": "error"
   },
+  "overrides": [
+    {
+      "files": ["packages/*/*/test/**/*_spec*.ts"],
+      "rules": {
+        "global-require": "off",
+        "import/no-dynamic-require": "off"
+      }
+    }
+  ],
   "settings": {
     "import/resolver": {
       "node": {
