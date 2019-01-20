@@ -1,11 +1,15 @@
 import { api } from '@electron-forge/core';
 
-import createProgram, { workingDir } from './util/commander';
+import fs from 'fs-extra';
+import program from 'commander';
+
 import './util/terminate';
+import workingDir from './util/working-dir';
 
 (async () => {
   let dir = process.cwd();
-  (await createProgram())
+  program
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[name]')
     .action((name) => { dir = workingDir(dir, name, false); })
     .parse(process.argv);

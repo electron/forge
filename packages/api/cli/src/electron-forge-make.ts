@@ -1,13 +1,16 @@
 import { api, MakeOptions } from '@electron-forge/core';
 
-import createProgram, { workingDir } from './util/commander';
+import fs from 'fs-extra';
+import program from 'commander';
+
 import './util/terminate';
+import workingDir from './util/working-dir';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function getMakeOptions() {
   let dir = process.cwd();
-  const program = await createProgram();
   program
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[cwd]')
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')

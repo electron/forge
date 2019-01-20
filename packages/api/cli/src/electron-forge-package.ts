@@ -1,12 +1,15 @@
 import { api, PackageOptions } from '@electron-forge/core';
 
-import createProgram, { workingDir } from './util/commander';
+import fs from 'fs-extra';
+import program from 'commander';
+
 import './util/terminate';
+import workingDir from './util/working-dir';
 
 (async () => {
   let dir: string = process.cwd();
-  const program = await createProgram();
   program
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[cwd]')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')

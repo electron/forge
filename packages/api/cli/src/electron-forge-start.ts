@@ -1,9 +1,11 @@
 import { api, StartOptions } from '@electron-forge/core';
 
 import { ChildProcess } from 'child_process';
+import fs from 'fs-extra';
+import program from 'commander';
 
-import createProgram, { workingDir } from './util/commander';
 import './util/terminate';
+import workingDir from './util/working-dir';
 
 (async () => {
   let commandArgs = process.argv;
@@ -16,8 +18,8 @@ import './util/terminate';
   }
 
   let dir = process.cwd();
-  const program = await createProgram();
   program
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[cwd]')
     .option('-p, --app-path <path>', 'Override the path to the Electron app to launch (defaults to \'.\')')
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')

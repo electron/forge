@@ -1,19 +1,22 @@
 import { api, PublishOptions } from '@electron-forge/core';
 
-import createProgram from './util/commander';
+import fs from 'fs-extra';
+import program from 'commander';
+
 import './util/terminate';
+import workingDir from './util/working-dir';
 import { getMakeOptions } from './electron-forge-make';
 
 (async () => {
   let dir = process.cwd();
-  const program = await createProgram();
   program
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[cwd]')
     .option('--target [target[,target...]]', 'The comma-separated deployment targets, defaults to "github"')
     .option('--dry-run', 'Triggers a publish dry run which saves state and doesn\'t upload anything')
     .option('--from-dry-run', 'Attempts to publish artifacts from the last saved dry run')
     .allowUnknownOption(true)
-    .action((cwd) => { dir = program.workingDir(dir, cwd); })
+    .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(process.argv);
 
   const publishOpts: PublishOptions = {
