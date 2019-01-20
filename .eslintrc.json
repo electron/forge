@@ -5,13 +5,36 @@
     "sourceType": "module"
   },
   "plugins": [
-    "mocha"
+    "mocha",
+    "typescript"
   ],
   "env": {
     "mocha": true,
     "node": true
   },
+  "extends": [
+    "airbnb"
+  ],
   "rules": {
-    "mocha/no-exclusive-tests": "error"
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["packages/**/test/**/*_spec.ts"] }],
+    "mocha/no-exclusive-tests": "error",
+    "no-unused-vars": ["error", {
+      "args": "after-used",
+      "argsIgnorePattern": "^_",
+      "ignoreRestSiblings": true,
+      "vars": "all"
+    }],
+    "typescript/no-unused-vars": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".json", ".ts"]
+      }
+    },
+    "import/extensions": [
+      ".js",
+      ".ts"
+    ]
   }
 }
