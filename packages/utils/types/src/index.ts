@@ -1,5 +1,5 @@
-import { OraImpl } from '@electron-forge/async-ora';
 import { ChildProcess } from 'child_process';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Options } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
