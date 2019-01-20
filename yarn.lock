@@ -1319,7 +1319,7 @@
     "@typescript-eslint/parser" "0.2.1"
     requireindex "^1.2.0"
 
-"@typescript-eslint/parser@0.2.1", "@typescript-eslint/parser@^0.2.1":
+"@typescript-eslint/parser@0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-0.2.1.tgz#1fef98c0d5058b9e73ec2ee55d2eae7a8b4f0d13"
   integrity sha512-RTrqxoSNU5QYAxa4K7FjdO5mbdSRizHhUrWxkPg2anKzM9bRYZEsA5OhwNFNhTX00nvwA+wCuXD2Lr6qq+UkYA==

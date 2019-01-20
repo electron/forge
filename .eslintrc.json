@@ -1,12 +1,12 @@
 {
-  "parser": "typescript-eslint-parser",
+  "parser": "@typescript-eslint/eslint-plugin/parser",
   "parserOptions": {
     "ecmaVersion": 8,
     "sourceType": "module"
   },
   "plugins": [
     "mocha",
-    "typescript"
+    "@typescript-eslint"
   ],
   "env": {
     "mocha": true,
@@ -24,7 +24,7 @@
       "ignoreRestSiblings": true,
       "vars": "all"
     }],
-    "typescript/no-unused-vars": "error"
+    "@typescript-eslint/no-unused-vars": "error"
   },
   "settings": {
     "import/resolver": {
