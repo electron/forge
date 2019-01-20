@@ -71,8 +71,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     this.baseDir = path.resolve(dir, '.webpack');
 
     d('hooking process events');
-    process.on('exit', this.exitHandler.bind(this, { cleanup: true }));
-    process.on('SIGINT', this.exitHandler.bind(this, { exit: true }));
+    process.on('exit', code => this.exitHandler({ cleanup: true }));
+    process.on('SIGINT' as NodeJS.Signals, signal => this.exitHandler({ exit: true }));
   }
 
   private loggedOutputUrl = false;

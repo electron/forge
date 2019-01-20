@@ -37,16 +37,16 @@ export default class PublishState {
     const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
       artifact.artifacts = artifact.artifacts.map(artifactPath => path.relative(rootDir, artifactPath));
-      const state = new PublishState(path.resolve(directory, id, 'null'), false);
-      state.setState(artifact);
-      await state.saveToDisk();
+      const publishState = new PublishState(path.resolve(directory, id, 'null'), false);
+      publishState.state = artifact;
+      await publishState.saveToDisk();
     }
   }
 
   private dir: string;
   private path: string;
   private hasHash: boolean;
-  private state: ForgeMakeResult = {} as any;
+  public state: ForgeMakeResult = {} as ForgeMakeResult;
 
   constructor(filePath: string, hasHash = true) {
     this.dir = path.dirname(filePath);
@@ -57,10 +57,6 @@ export default class PublishState {
   generateHash() {
     const content = JSON.stringify(this.state || {});
     return crypto.createHash('SHA256').update(content).digest('hex');
-  }
-
-  setState(state: ForgeMakeResult) {
-    this.state = state;
   }
 
   async load() {
