@@ -1,10 +1,8 @@
 import { api, StartOptions } from '@electron-forge/core';
 
 import { ChildProcess } from 'child_process';
-import fs from 'fs-extra';
-import path from 'path';
-import program from 'commander';
 
+import createProgram, { workingDir } from './util/commander';
 import './util/terminate';
 
 (async () => {
@@ -18,22 +16,15 @@ import './util/terminate';
   }
 
   let dir = process.cwd();
+  const program = await createProgram();
   program
-    .version(require('../package.json').version)
     .arguments('[cwd]')
     .option('-p, --app-path <path>', 'Override the path to the Electron app to launch (defaults to \'.\')')
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
     .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
     .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
     .option('-i, --inspect-electron', 'Triggers inspect mode on Electron to allow debugging the main process.  Electron >1.7 only')
-    .action((cwd) => {
-      if (!cwd) return;
-      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
-        dir = cwd;
-      } else if (fs.existsSync(path.resolve(dir, cwd))) {
-        dir = path.resolve(dir, cwd);
-      }
-    })
+    .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(commandArgs);
 
   program.on('--help', () => {
@@ -66,11 +57,13 @@ import './util/terminate';
 
   await new Promise((resolve) => {
     const listenForExit = (child: ChildProcess) => {
+      let onExit: NodeJS.ExitListener;
+      let onRestart: (newChild: ChildProcess) => void;
       const removeListeners = () => {
         child.removeListener('exit', onExit);
         child.removeListener('restarted', onRestart);
       };
-      const onExit = (code: number) => {
+      onExit = (code: number) => {
         removeListeners();
         if ((spawned as any).restarted) return;
         if (code !== 0) {
@@ -78,7 +71,7 @@ import './util/terminate';
         }
         resolve();
       };
-      const onRestart = (newChild: ChildProcess) => {
+      onRestart = (newChild: ChildProcess) => {
         removeListeners();
         listenForExit(newChild);
       };

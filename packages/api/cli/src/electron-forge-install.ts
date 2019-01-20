@@ -1,15 +1,14 @@
 import { api, InstallAsset } from '@electron-forge/core';
 import inquirer from 'inquirer';
 
-import program from 'commander';
-
+import createProgram from './util/commander';
 import './util/terminate';
 
 (async () => {
   let repo!: string;
 
+  const program = await createProgram();
   program
-    .version(require('../package.json').version)
     .arguments('[repository]')
     .option('--prerelease', 'Fetch prerelease versions')
     .action((repository) => {

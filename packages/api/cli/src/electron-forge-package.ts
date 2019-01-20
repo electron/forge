@@ -1,27 +1,16 @@
 import { api, PackageOptions } from '@electron-forge/core';
 
-import fs from 'fs-extra';
-import path from 'path';
-import program from 'commander';
-
+import createProgram, { workingDir } from './util/commander';
 import './util/terminate';
 
 (async () => {
-  let dir = process.cwd();
-
+  let dir: string = process.cwd();
+  const program = await createProgram();
   program
-    .version(require('../package.json').version)
     .arguments('[cwd]')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
-    .action((cwd) => {
-      if (!cwd) return;
-      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
-        dir = cwd;
-      } else if (fs.existsSync(path.resolve(dir, cwd))) {
-        dir = path.resolve(dir, cwd);
-      }
-    })
+    .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(process.argv);
 
   const packageOpts: PackageOptions = {

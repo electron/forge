@@ -12,10 +12,7 @@ const d = debug('electron-forge:check-system');
 
 async function checkGitExists() {
   return new Promise<boolean>((resolve) => {
-    exec('git --version', (err) => {
-      if (err) return resolve(false);
-      resolve(true);
-    });
+    exec('git --version', err => resolve(!err));
   });
 }
 
@@ -34,7 +31,12 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
-export function validPackageManagerVersion(packageManager: string, version: string, whitelistedVersions: string, ora: OraImpl) {
+export function validPackageManagerVersion(
+  packageManager: string,
+  version: string,
+  whitelistedVersions: string,
+  ora: OraImpl,
+) {
   try {
     return semver.satisfies(version, whitelistedVersions);
   } catch (e) {
@@ -44,7 +46,12 @@ export function validPackageManagerVersion(packageManager: string, version: stri
   }
 }
 
-function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, version: string, whitelistedVersions: { [key: string]: string }, ora: OraImpl) {
+function warnIfPackageManagerIsntAKnownGoodVersion(
+  packageManager: string,
+  version: string,
+  whitelistedVersions: { [key: string]: string },
+  ora: OraImpl,
+) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
@@ -82,8 +89,11 @@ const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check')
 export default async function (ora: OraImpl): Promise<boolean> {
   if (!await fs.pathExists(SKIP_SYSTEM_CHECK)) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
-    return (await Promise.all([checkGitExists(), checkNodeVersion(), checkPackageManagerVersion(ora)]))
-      .every(check => check);
+    return (await Promise.all([
+      checkGitExists(),
+      checkNodeVersion(),
+      checkPackageManagerVersion(ora),
+    ])).every(check => check);
   }
   d('skipping system check');
   return true;

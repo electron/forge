@@ -1,23 +1,13 @@
 import { api } from '@electron-forge/core';
 
-import path from 'path';
-import program from 'commander';
-
+import createProgram, { workingDir } from './util/commander';
 import './util/terminate';
 
 (async () => {
   let dir = process.cwd();
-  program
-    .version(require('../package.json').version)
+  (await createProgram())
     .arguments('[name]')
-    .action((name) => {
-      if (!name) return;
-      if (path.isAbsolute(name)) {
-        dir = name;
-      } else {
-        dir = path.resolve(dir, name);
-      }
-    })
+    .action((name) => { dir = workingDir(dir, name, false); })
     .parse(process.argv);
 
   await api.import({
