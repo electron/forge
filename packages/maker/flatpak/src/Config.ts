@@ -10,7 +10,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   productName?: string;
   /**
-   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the desktop specification.
+   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the
+   * desktop specification.
    */
   genericName?: string;
   /**
@@ -24,7 +25,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   branch?: string;
   /**
-   * Base app to use when building the flatpak, used in the base field of a flatpak-builder manifest.
+   * Base app to use when building the flatpak, used in the base field of a
+   * flatpak-builder manifest.
    *
    * Default: io.atom.electron.BaseApp
    */
@@ -58,7 +60,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   sdk?: string;
   /**
-   * Arguments to use when call flatpak build-finish, use in the finish-args field of a flatpak-builder manifest.
+   * Arguments to use when call flatpak build-finish, use in the finish-args field of a
+   * flatpak-builder manifest.
    */
   finishArgs?: string[];
   /**
@@ -80,7 +83,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   modules?: any[];
   /**
-   * Relative path to the executable that will act as binary for the application, used in the Exec field of the desktop specification.
+   * Relative path to the executable that will act as binary for the application, used in the
+   * Exec field of the desktop specification.
    */
   bin?: string;
   /**
@@ -88,7 +92,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   icon?: string;
   /**
-   * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
+   * Categories in which the application should be shown in a menu, used in the Categories field
+   * of the desktop specification.
    *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
    *
@@ -96,7 +101,8 @@ export interface MakerFlatpakOptionsConfig {
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
   /**
-   * MIME types the application is able to open, used in the MimeType field of the desktop specification.
+   * MIME types the application is able to open, used in the MimeType field of the desktop
+   * specification.
    */
   mimeType?: string[];
 }

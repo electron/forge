@@ -1,16 +1,20 @@
 import MakerBase from '@electron-forge/maker-base';
 
 import { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import 'chai-as-promised';
 import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
+import { ForgeArch } from '@electron-forge/shared-types';
 import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
-import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerFlatpakConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerFlatpak', () => {
   let flatpakModule: typeof MakerImpl;
@@ -44,7 +48,9 @@ describe('MakerFlatpak', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakArch(process.arch as ForgeArch),
@@ -62,7 +68,9 @@ describe('MakerFlatpak', () => {
     } as any;
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakArch(process.arch as ForgeArch),

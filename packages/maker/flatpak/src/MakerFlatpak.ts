@@ -19,6 +19,7 @@ export function flatpakArch(nodeArch: ForgeArch) {
 
 export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   name = 'flatpak';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
@@ -30,6 +31,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     makeDir,
     targetArch,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const installer = require('electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);
