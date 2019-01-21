@@ -2,14 +2,16 @@ import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { flatAsync } from 'electron-osx-sign';
 
+import path from 'path';
 import { MakerPKGConfig } from './Config';
 
-import path from 'path';
 
 export default class MakerDMG extends MakerBase<MakerPKGConfig> {
   name = 'pkg';
+
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
+  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
   }
@@ -22,7 +24,7 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
     targetPlatform,
   }: MakerOptions) {
     if (!['darwin', 'mas'].includes(targetPlatform)) {
-      throw `The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "${targetPlatform}"`;
+      throw new Error(`The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "${targetPlatform}"`);
     }
 
     const outPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.pkg`);
