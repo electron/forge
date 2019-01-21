@@ -34,13 +34,13 @@
         "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
       }
     ],
-    "no-unused-vars": ["error", {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", {
       "args": "after-used",
       "argsIgnorePattern": "^_",
       "ignoreRestSiblings": true,
       "vars": "all"
-    }],
-    "@typescript-eslint/no-unused-vars": "error"
+    }]
   },
   "overrides": [
     {
