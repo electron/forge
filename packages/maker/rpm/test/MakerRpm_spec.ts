@@ -5,11 +5,15 @@ import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
+import { ForgeArch } from '@electron-forge/shared-types';
 import { MakerRpmConfig } from '../src/Config';
 import { rpmArch } from '../src/MakerRpm';
-import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerRpmConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerRpmConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerRpm', () => {
   let rpmModule: typeof MakerImpl;
@@ -42,7 +46,9 @@ describe('MakerRpm', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
@@ -61,7 +67,9 @@ describe('MakerRpm', () => {
     } as any;
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),

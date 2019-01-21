@@ -9,7 +9,8 @@ export interface MakerRpmConfigOptions {
    */
   productName?: string;
   /**
-   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the desktop specification.
+   * Generic name of the application (e.g. Text Editor), used in the GenericName field of the
+   * desktop specification.
    */
   genericName?: string;
   /**
@@ -37,7 +38,8 @@ export interface MakerRpmConfigOptions {
    */
   group?: string;
   /**
-   * Packages that are required when the program starts, used in the Requires field of the spec file.
+   * Packages that are required when the program starts, used in the Requires field of the
+   * spec file.
    */
   requires?: string[];
   /**
@@ -49,13 +51,15 @@ export interface MakerRpmConfigOptions {
    */
   compressionLevel?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
   /**
-   * Relative path to the executable that will act as binary for the application, used in the Exec field of the desktop specification.
+   * Relative path to the executable that will act as binary for the application, used in the
+   * Exec field of the desktop specification.
    *
    * Defaults to options.name
    */
   bin?: string;
   /**
-   * Command-line arguments to pass to the executable. Will be added to the Exec field of the desktop specification.
+   * Command-line arguments to pass to the executable. Will be added to the Exec field of the
+   * desktop specification.
    */
   execArguments?: string[];
   /**
@@ -63,7 +67,8 @@ export interface MakerRpmConfigOptions {
    */
   icon?: string;
   /**
-   * Categories in which the application should be shown in a menu, used in the Categories field of the desktop specification.
+   * Categories in which the application should be shown in a menu, used in the Categories field of
+   * the desktop specification.
    *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
    *
@@ -71,7 +76,8 @@ export interface MakerRpmConfigOptions {
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
   /**
-   * MIME types the application is able to open, used in the MimeType field of the desktop specification.
+   * MIME types the application is able to open, used in the MimeType field of the desktop
+   * specification.
    */
   mimeType?: string[];
 }

@@ -17,6 +17,7 @@ export function rpmArch(nodeArch: ForgeArch) {
 
 export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   name = 'rpm';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
@@ -29,6 +30,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     targetArch,
     packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const installer = require('electron-installer-redhat');
 
     const arch = rpmArch(targetArch);
