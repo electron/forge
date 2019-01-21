@@ -3,16 +3,18 @@ import { ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
 
+import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 import getNameFromAuthor from './util/author-name';
 
-import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 
 import { MakerWixConfig } from './Config';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
+
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
+  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
   }
