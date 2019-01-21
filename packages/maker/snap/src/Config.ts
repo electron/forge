@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export interface MakerSnapConfig {
   /**
    * [Additional Snapcraft configuration](https://docs.snapcraft.io/build-snaps/syntax#app-name) for the Electron app.
