@@ -29,7 +29,7 @@ async function findSdkTool(exe: string) {
       }
       const topDir = path.dirname(testPath);
       for (const subVersion of await fs.readdir(topDir)) {
-        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue; // eslint-disable-line no-continue
+        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue; // eslint-disable-line max-len, no-continue
         if (subVersion.substr(0, 2) !== '10') continue; // eslint-disable-line no-continue
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
@@ -45,7 +45,7 @@ async function findSdkTool(exe: string) {
   }
 
   if (!sdkTool || !await fs.pathExists(sdkTool)) {
-    throw `Can't find ${exe} in PATH. You probably need to install the Windows SDK.`;
+    throw new Error(`Can't find ${exe} in PATH. You probably need to install the Windows SDK.`);
   }
 
   return sdkTool;
@@ -58,7 +58,9 @@ export interface CreateDefaultCertOpts {
   install?: boolean;
 }
 
-export async function createDefaultCertificate(publisherName: string, { certFilePath, certFileName, install, program }: CreateDefaultCertOpts) {
+export async function createDefaultCertificate(publisherName: string, {
+  certFilePath, certFileName, install, program,
+}: CreateDefaultCertOpts) {
   const makeCertOptions = {
     publisherName,
     certFilePath: certFilePath || process.cwd(),
@@ -71,13 +73,15 @@ export async function createDefaultCertificate(publisherName: string, { certFile
     throw new Error(`Received invalid publisher name: '${publisherName}' did not conform to X.500 distinguished name syntax for MakeCert.`);
   }
 
-  return await makeCert(makeCertOptions);
+  return makeCert(makeCertOptions);
 }
 
 export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   name = 'appx';
+
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
+  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
   }
@@ -108,11 +112,16 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     });
 
     if (!opts.publisher) {
-      throw 'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target';
+      throw new Error(
+        'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target',
+      );
     }
 
     if (!opts.devCert) {
-      opts.devCert = await createDefaultCertificate(opts.publisher, { certFilePath: outPath, program: opts });
+      opts.devCert = await createDefaultCertificate(
+        opts.publisher,
+        { certFilePath: outPath, program: opts },
+      );
     }
 
     if (opts.packageVersion.match(/-/)) {
@@ -120,9 +129,11 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
         const noBeta = opts.packageVersion.replace(/-.*/, '');
         opts.packageVersion = `${noBeta}.0`;
       } else {
-        throw 'Windows Store version numbers don\'t support semver beta tags. To' +
-          'automatically fix this, set makeVersionWinStoreCompatible to true or ' +
-          'explicitly set packageVersion to a version of the format X.Y.Z.A';
+        throw new Error(
+          "Windows Store version numbers don't support semver beta tags. To "
+          + 'automatically fix this, set makeVersionWinStoreCompatible to true or '
+          + 'explicitly set packageVersion to a version of the format X.Y.Z.A',
+        );
       }
     }
 
