@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export interface MakerSquirrelConfig {
   /**
    * The local path to a `.gif` file to display during install.
@@ -24,7 +25,8 @@ export interface MakerSquirrelConfig {
   /**
    * The name of your app's main `.exe` file.
    *
-   * This uses the `name` field in your app's package.json file with an added `.exe` extension when unspecified.
+   * This uses the `name` field in your app's package.json file with an added `.exe` extension
+   * when unspecified.
    */
   exe?: string;
   /**
@@ -42,7 +44,8 @@ export interface MakerSquirrelConfig {
   /**
    * The title value for the nuget package metadata.
    *
-   * Defaults to the `productName` field and then the `name` field from your app's package.json file when unspecified.
+   * Defaults to the `productName` field and then the `name` field from your app's package.json
+   * file when unspecified.
    */
   title?: string;
   /**
@@ -66,7 +69,8 @@ export interface MakerSquirrelConfig {
    */
   signWithParams?: string;
   /**
-   * A URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
+   * A URL to an ICO file to use as the application icon (displayed in Control Panel > Programs
+   * and Features).
    *
    * Defaults to the Atom icon.
    */
