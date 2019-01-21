@@ -1,15 +1,17 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerDMGConfig } from './Config';
 
 import fs from 'fs-extra';
 import path from 'path';
+import { MakerDMGConfig } from './Config';
 
 export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   name = 'dmg';
+
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
+  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
   }
@@ -20,6 +22,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     appName,
     packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const electronDMG = require('electron-installer-dmg');
 
     const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
