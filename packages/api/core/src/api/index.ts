@@ -1,7 +1,6 @@
 /* eslint "class-methods-use-this": "off" */
 import 'colors';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
-import { ChildProcess } from 'child_process';
 
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
