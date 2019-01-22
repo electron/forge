@@ -6,7 +6,6 @@ import debug from 'debug';
 import path from 'path';
 
 import { PublisherS3Config } from './Config';
-import { ForgePlatform } from '@electron-forge/shared-types';
 
 // FIXME: Drop usage of s3 module in favor of AWS-sdk
 const s3 = require('s3');
@@ -61,42 +60,41 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     let uploaded = 0;
     await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
       const updateSpinner = () => {
+        // eslint-disable-next-line no-param-reassign
         uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
       };
 
-      await Promise.all(artifacts.map(artifact =>
-        new Promise(async (resolve, reject) => {
-          const done = (err?: Error) => {
-            if (err) return reject(err);
-            uploaded += 1;
-            updateSpinner();
-            resolve();
-          };
+      await Promise.all(artifacts.map(artifact => new Promise(async (resolve, reject) => {
+        const done = (err?: Error) => {
+          if (err) return reject(err);
+          uploaded += 1;
+          updateSpinner();
+          return resolve();
+        };
 
-          const uploader = client.uploadFile({
-            localFile: artifact.path,
-            s3Params: {
-              Bucket: config.bucket,
-              Key: this.config.keyResolver
-                ? this.config.keyResolver(
-                  path.basename(artifact.path),
-                  artifact.platform,
-                  artifact.arch,
-                )
-                : `${artifact.keyPrefix}/${path.basename(artifact.path)}`,
-              ACL: config.public ? 'public-read' : 'private',
-            },
-          });
-          d('uploading:', artifact.path);
+        const uploader = client.uploadFile({
+          localFile: artifact.path,
+          s3Params: {
+            Bucket: config.bucket,
+            Key: this.config.keyResolver
+              ? this.config.keyResolver(
+                path.basename(artifact.path),
+                artifact.platform,
+                artifact.arch,
+              )
+              : `${artifact.keyPrefix}/${path.basename(artifact.path)}`,
+            ACL: config.public ? 'public-read' : 'private',
+          },
+        });
+        d('uploading:', artifact.path);
 
-          uploader.on('error', (err: Error) => done(err));
-          uploader.on('progress', () => {
-            const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
-            d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
-          });
-          uploader.on('end', () => done());
-        }),
-      ));
+        uploader.on('error', (err: Error) => done(err));
+        uploader.on('progress', () => {
+          const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
+          d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
+        });
+        uploader.on('end', () => done());
+      })));
     });
   }
 }

@@ -21,6 +21,7 @@ describe('GitHub', () => {
         this.options = options;
       }
 
+      // eslint-disable-next-line class-methods-use-this
       authenticate() {
         gitHubAuthSpy();
       }

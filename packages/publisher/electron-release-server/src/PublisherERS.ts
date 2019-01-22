@@ -55,10 +55,10 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       },
     })).json();
 
-    const authFetch = (apiPath: string, options?: any) =>
-      fetch(api(apiPath), Object.assign({}, options || {}, {
-        headers: Object.assign({}, (options || {}).headers, { Authorization: `Bearer ${token}` }),
-      }));
+    // eslint-disable-next-line max-len
+    const authFetch = (apiPath: string, options?: any) => fetch(api(apiPath), Object.assign({}, options || {}, {
+      headers: Object.assign({}, (options || {}).headers, { Authorization: `Bearer ${token}` }),
+    }));
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 
@@ -69,6 +69,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
       let channel = 'stable';
       if (config.channel) {
+        // eslint-disable-next-line prefer-destructuring
         channel = config.channel;
       } else if (packageJSON.version.includes('beta')) {
         channel = 'beta';
@@ -97,44 +98,43 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
       await asyncOra(getText(), async (uploadSpinner) => {
         const updateSpinner = () => {
+          // eslint-disable-next-line no-param-reassign
           uploadSpinner.text = getText();
         };
 
-        await Promise.all(artifacts.map(artifactPath =>
-          new Promise(async (resolve, reject) => {
-            if (existingVersion) {
-              const existingAsset = existingVersion.assets.find(
-                asset => asset.name === path.basename(artifactPath),
-              );
+        await Promise.all(artifacts.map(artifactPath => new Promise(async (resolve, reject) => {
+          if (existingVersion) {
+            const existingAsset = existingVersion.assets.find(
+              asset => asset.name === path.basename(artifactPath),
+            );
 
-              if (existingAsset) {
-                d('asset at path:', artifactPath, 'already exists on server');
-                uploaded += 1;
-                updateSpinner();
-                return;
-              }
-            }
-            try {
-              d('attempting to upload asset:', artifactPath);
-              const artifactForm = new FormData();
-              artifactForm.append('token', token);
-              artifactForm.append('version', packageJSON.version);
-              artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
-              artifactForm.append('file', fs.createReadStream(artifactPath));
-              await authFetch('api/asset', {
-                method: 'POST',
-                body: artifactForm,
-                headers: artifactForm.getHeaders(),
-              });
-              d('upload successful for asset:', artifactPath);
+            if (existingAsset) {
+              d('asset at path:', artifactPath, 'already exists on server');
               uploaded += 1;
               updateSpinner();
-              resolve();
-            } catch (err) {
-              reject(err);
+              return;
             }
-          }),
-        ));
+          }
+          try {
+            d('attempting to upload asset:', artifactPath);
+            const artifactForm = new FormData();
+            artifactForm.append('token', token);
+            artifactForm.append('version', packageJSON.version);
+            artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
+            artifactForm.append('file', fs.createReadStream(artifactPath));
+            await authFetch('api/asset', {
+              method: 'POST',
+              body: artifactForm,
+              headers: artifactForm.getHeaders(),
+            });
+            d('upload successful for asset:', artifactPath);
+            uploaded += 1;
+            updateSpinner();
+            resolve();
+          } catch (err) {
+            reject(err);
+          }
+        })));
       });
     }
   }
