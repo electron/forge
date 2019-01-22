@@ -3,6 +3,7 @@ import colors from 'colors';
 import ora from './ora';
 
 export class OraImpl {
+  // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(public text: string = '') {}
 
   succeed(_symbol?: string) { return this; }
