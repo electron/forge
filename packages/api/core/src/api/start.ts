@@ -27,8 +27,9 @@ export default async ({
   await asyncOra('Locating Application', async () => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
-      throw 'Failed to locate startable Electron application';
+      throw new Error('Failed to locate startable Electron application');
     }
+    // eslint-disable-next-line no-param-reassign
     dir = resolvedDir;
   });
 
@@ -36,7 +37,7 @@ export default async ({
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   if (!packageJSON.version) {
-    throw `Please set your application's 'version' in '${dir}/package.json'.`;
+    throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
   }
 
   await rebuild(
@@ -50,26 +51,6 @@ export default async ({
   await runHook(forgeConfig, 'generateAssets');
 
   let lastSpawned: ChildProcess | null = null;
-
-  const forgeSpawnWrapper = async () => {
-    lastSpawned = await forgeSpawn();
-    // When the child app is closed we should stop listening for stdin
-    if (lastSpawned) {
-      if (interactive && process.stdin.isPaused()) {
-        process.stdin.resume();
-      }
-      lastSpawned.on('exit', () => {
-        if ((lastSpawned as any).restarted) return;
-
-        if (!process.stdin.isPaused()) process.stdin.pause();
-      });
-    } else {
-      if (interactive && !process.stdin.isPaused()) {
-        process.stdin.pause();
-      }
-    }
-    return lastSpawned;
-  };
 
   const forgeSpawn = async () => {
     let electronExecPath: string | null = null;
@@ -88,14 +69,14 @@ export default async ({
     if (typeof spawnedPluginChild === 'string') {
       electronExecPath = spawnedPluginChild;
     } else if (Array.isArray(spawnedPluginChild)) {
-      electronExecPath = spawnedPluginChild[0];
-      prefixArgs = spawnedPluginChild.slice(1);
+      [electronExecPath, ...prefixArgs] = spawnedPluginChild;
     } else if (spawnedPluginChild) {
       await runHook(forgeConfig, 'postStart', spawnedPluginChild);
       return spawnedPluginChild;
     }
 
     if (!electronExecPath) {
+      // eslint-disable-next-line import/no-dynamic-require, global-require
       electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
     }
 
@@ -115,22 +96,46 @@ export default async ({
     }
 
     if (inspect) {
+      // eslint-disable-next-line no-param-reassign
       args = ['--inspect' as (string|number)].concat(args);
     }
 
     let spawned!: ChildProcess;
 
     await asyncOra('Launching Application', async () => {
-      spawned = spawn(electronExecPath!, prefixArgs.concat([appPath]).concat(args as string[]), spawnOpts as SpawnOptions);
+      spawned = spawn(
+        electronExecPath!,
+        prefixArgs.concat([appPath]).concat(args as string[]),
+        spawnOpts as SpawnOptions,
+      );
     });
 
     await runHook(forgeConfig, 'postStart', spawned);
     return spawned;
   };
 
+  const forgeSpawnWrapper = async () => {
+    lastSpawned = await forgeSpawn();
+    // When the child app is closed we should stop listening for stdin
+    if (lastSpawned) {
+      if (interactive && process.stdin.isPaused()) {
+        process.stdin.resume();
+      }
+      lastSpawned.on('exit', () => {
+        if ((lastSpawned as any).restarted) return;
+
+        if (!process.stdin.isPaused()) process.stdin.pause();
+      });
+    } else if (interactive && !process.stdin.isPaused()) {
+      process.stdin.pause();
+    }
+    return lastSpawned;
+  };
+
   if (interactive) {
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
+        // eslint-disable-next-line no-console
         console.info('\nRestarting App\n'.cyan);
         (lastSpawned as any).restarted = true;
         lastSpawned.kill('SIGTERM');

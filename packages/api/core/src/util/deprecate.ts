@@ -1,3 +1,4 @@
+/* eslint "no-console": "off" */
 import 'colors';
 import logSymbols from 'log-symbols';
 

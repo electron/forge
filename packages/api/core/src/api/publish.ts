@@ -1,13 +1,17 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import { IForgeResolvablePublisher, IForgePublisher, ForgeMakeResult, ForgePlatform } from '@electron-forge/shared-types';
+import {
+  IForgeResolvablePublisher,
+  IForgePublisher,
+  ForgeMakeResult,
+  // ForgePlatform,
+} from '@electron-forge/shared-types';
 import PublisherBase from '@electron-forge/publisher-base';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
 
 import getForgeConfig from '../util/forge-config';
-import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
@@ -68,14 +72,13 @@ const publish = async ({
   asyncOra.interactive = interactive;
 
   if (dryRun && dryRunResume) {
-    throw 'Can\'t dry run and resume a dry run at the same time';
+    throw new Error("Can't dry run and resume a dry run at the same time");
   }
   if (dryRunResume && makeResults) {
-    throw 'Can\'t resume a dry run and use the provided makeResults at the same time';
+    throw new Error("Can't resume a dry run and use the provided makeResults at the same time");
   }
 
   const forgeConfig = await getForgeConfig(dir);
-  let packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
   const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
@@ -100,6 +103,7 @@ const publish = async ({
 
   if (!makeResults) {
     d('triggering make');
+    // eslint-disable-next-line no-param-reassign
     makeResults = await make(Object.assign({
       dir,
       interactive,
@@ -109,13 +113,14 @@ const publish = async ({
     d('restoring publish settings from dry run');
 
     for (const makeResult of makeResults) {
-      packageJSON = makeResult.packageJSON;
+      // eslint-disable-next-line no-param-reassign
       makeOptions.platform = makeResult.platform;
+      // eslint-disable-next-line no-param-reassign
       makeOptions.arch = makeResult.arch;
 
       for (const makePath of makeResult.artifacts) {
         if (!await fs.pathExists(makePath)) {
-          throw `Attempted to resume a dry run but an artifact (${makePath}) could not be found`;
+          throw new Error(`Attempted to resume a dry run but an artifact (${makePath}) could not be found`);
         }
       }
     }
@@ -130,19 +135,24 @@ const publish = async ({
 
   const resolvedDir = await resolveDir(dir);
   if (!resolvedDir) {
-    throw 'Failed to locate publishable Electron application';
+    throw new Error('Failed to locate publishable Electron application');
   }
+  // eslint-disable-next-line no-param-reassign
   dir = resolvedDir;
 
-  const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
+  // const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
   if (!publishTargets) {
+    // eslint-disable-next-line no-param-reassign
     publishTargets = (forgeConfig.publishers || []);
-      // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms) ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
+    // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
+    //   ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
   }
+  // eslint-disable-next-line no-param-reassign
   publishTargets = publishTargets.map((target) => {
     if (typeof target === 'string') {
       return (forgeConfig.publishers || []).find((p) => {
         if (typeof p === 'string') return false;
+        // eslint-disable-next-line no-underscore-dangle
         if ((p as IForgePublisher).__isElectronForgePublisher) return false;
         return (p as IForgeResolvablePublisher).name === target;
       }) || { name: target };
@@ -152,6 +162,7 @@ const publish = async ({
 
   for (const publishTarget of publishTargets) {
     let publisher: PublisherBase<any>;
+    // eslint-disable-next-line no-underscore-dangle
     if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
       publisher = publishTarget as any;
     } else {
@@ -160,11 +171,14 @@ const publish = async ({
       await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {
-          throw `Could not find a publish target with the name: ${resolvablePublishTarget.name}`;
+          throw new Error(`Could not find a publish target with the name: ${resolvablePublishTarget.name}`);
         }
       });
 
-      publisher = new PublisherClass(resolvablePublishTarget.config || {}, resolvablePublishTarget.platforms);
+      publisher = new PublisherClass(
+        resolvablePublishTarget.config || {},
+        resolvablePublishTarget.platforms,
+      );
     }
 
     await publisher.publish({

@@ -52,14 +52,17 @@
     }
   ],
   "settings": {
+    "import/extensions": [
+      ".js",
+      ".ts"
+    ],
+    "import/parsers": {
+      "@typescript-eslint/eslint-plugin/parser": [".ts"]
+    },
     "import/resolver": {
       "node": {
         "extensions": [".js", ".json", ".ts"]
       }
-    },
-    "import/extensions": [
-      ".js",
-      ".ts"
-    ]
+    }
   }
 }

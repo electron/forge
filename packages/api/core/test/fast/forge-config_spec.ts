@@ -43,7 +43,9 @@ describe('forge-config', () => {
     expect(() => { conf.packagerConfig.baz = 'bar'; }).to.not.throw();
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
-    const descriptor = { writable: true, enumerable: true, configurable: true, value: 'SecretyThing' };
+    const descriptor = {
+      writable: true, enumerable: true, configurable: true, value: 'SecretyThing',
+    };
     expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).to.be.deep.equal(descriptor);
     expect(() => { conf.s3.secretAccessKey = 'bar'; }).to.not.throw();
     expect(conf.s3.secretAccessKey).to.equal('bar');

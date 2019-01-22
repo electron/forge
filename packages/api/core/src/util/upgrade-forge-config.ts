@@ -1,3 +1,4 @@
+/* eslint "no-param-reassign": "off" */
 import {
   ForgeConfig,
   ForgePlatform,
@@ -11,7 +12,7 @@ function mapMakeTargets(forge5Config: any): Map<string, ForgePlatform[]> {
   const makeTargets = new Map<string, ForgePlatform[]>();
   if (forge5Config.makeTargets) {
     // TODO: Use object.entries when dropping Node 6
-    for (const platform in forge5Config.makeTargets) {
+    for (const platform of Object.keys(forge5Config.makeTargets)) {
       for (const target of forge5Config.makeTargets[platform]) {
         let platforms = makeTargets.get(target);
         if (platforms === undefined) {
@@ -74,6 +75,21 @@ const forge5PublisherMappings = new Map<string, string>([
 ]);
 
 /**
+ * Transforms v5 GitHub publisher config to v6 syntax.
+ */
+function transformGitHubPublisherConfig(config: any) {
+  const {
+    name, owner, options, ...gitHubConfig
+  } = config;
+  gitHubConfig.repository = { name, owner };
+  if (options) {
+    gitHubConfig.octokitOptions = options;
+  }
+
+  return gitHubConfig;
+}
+
+/**
  * Converts Forge v5 publisher config to v6.
  */
 function generateForgePublisherConfig(forge5Config: any): IForgeResolvablePublisher[] {
@@ -94,19 +110,6 @@ function generateForgePublisherConfig(forge5Config: any): IForgeResolvablePublis
   }
 
   return publishers;
-}
-
-/**
- * Transforms v5 GitHub publisher config to v6 syntax.
- */
-function transformGitHubPublisherConfig(config: any) {
-  const { name, owner, options, ...gitHubConfig } = config;
-  gitHubConfig.repository = { name, owner };
-  if (options) {
-    gitHubConfig.octokitOptions = options;
-  }
-
-  return gitHubConfig;
 }
 
 /**
@@ -131,7 +134,9 @@ export default function upgradeForgeConfig(forge5Config: any): ForgeConfig {
 export function updateUpgradedForgeDevDeps(packageJSON: any, devDeps: string[]): string[] {
   const forgeConfig = packageJSON.config.forge;
   devDeps = devDeps.filter(dep => !dep.startsWith('@electron-forge/maker-'));
+  // eslint-disable-next-line max-len
   devDeps = devDeps.concat(forgeConfig.makers.map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
+  // eslint-disable-next-line max-len
   devDeps = devDeps.concat(forgeConfig.publishers.map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name))));
 
   if (Object.keys(packageJSON.devDependencies).find((dep: string) => dep === 'electron-prebuilt-compile')) {

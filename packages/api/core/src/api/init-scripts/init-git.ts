@@ -14,11 +14,11 @@ export default async (dir: string) => {
         return resolve();
       }
       d('executing "git init" in directory:', dir);
-      exec('git init', {
+      return exec('git init', {
         cwd: dir,
       }, (err) => {
         if (err) return reject(err);
-        resolve();
+        return resolve();
       });
     });
   });

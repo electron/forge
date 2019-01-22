@@ -24,7 +24,11 @@ export function getElectronVersion(packageJSON: any) {
   return packageJSON.devDependencies[packageName];
 }
 
-export function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
+export function updateElectronDependency(
+  packageJSON: any,
+  dev: string[],
+  exact: string[],
+): [string[], string[]] {
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
   if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
@@ -35,7 +39,7 @@ export function updateElectronDependency(packageJSON: any, dev: string[], exact:
       alteredExact = alteredExact.filter(dep => dep !== 'electron');
       d(`Moving ${electronKey} from dependencies to devDependencies`);
       alteredDev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
-      delete packageJSON.dependencies[electronKey];
+      delete packageJSON.dependencies[electronKey]; // eslint-disable-line no-param-reassign
     }
   }
 

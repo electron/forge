@@ -9,7 +9,12 @@ import { runMutatingHook } from './hook';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
-const proxify = <T extends object>(buildIdentifier: string | (() => string), object: T, envPrefix: string): T => {
+// eslint-disable-next-line arrow-parens
+const proxify = <T extends object>(
+  buildIdentifier: string | (() => string),
+  object: T,
+  envPrefix: string,
+): T => {
   let newObject: T = {} as any;
   if (Array.isArray(object)) {
     newObject = [] as any;
@@ -33,6 +38,7 @@ const proxify = <T extends object>(buildIdentifier: string | (() => string), obj
       }
       const value = Reflect.get(target, name, receiver);
 
+      // eslint-disable-next-line no-underscore-dangle
       if (value && typeof value === 'object' && value.__isMagicBuildIdentifierMap) {
         const identifier = typeof buildIdentifier === 'function' ? buildIdentifier() : buildIdentifier;
         return value.map[identifier];
@@ -45,9 +51,17 @@ const proxify = <T extends object>(buildIdentifier: string | (() => string), obj
       if (target.hasOwnProperty(name)) {
         return Reflect.getOwnPropertyDescriptor(target, name);
       }
+
       if (envValue) {
-        return { writable: true, enumerable: true, configurable: true, value: envValue };
+        return {
+          writable: true,
+          enumerable: true,
+          configurable: true,
+          value: envValue,
+        };
       }
+
+      return null;
     },
   });
 };
@@ -70,9 +84,19 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
   };
 }
 
+async function forgeConfigIsValidFilePath(dir, forgeConfig) {
+  return typeof forgeConfig === 'string'
+    && (
+      await fs.pathExists(path.resolve(dir, forgeConfig))
+      || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
+    );
+}
+
 export default async (dir: string) => {
   const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string | null = (packageJSON.config && packageJSON.config.forge) ? packageJSON.config.forge : null;
+  let forgeConfig: ForgeConfig | string | null = (packageJSON.config && packageJSON.config.forge)
+    ? packageJSON.config.forge
+    : null;
 
   if (!forgeConfig) {
     if (await fs.pathExists(path.resolve(dir, 'forge.config.js'))) {
@@ -82,10 +106,12 @@ export default async (dir: string) => {
     }
   }
 
-  if (typeof forgeConfig === 'string' && (await fs.pathExists(path.resolve(dir, forgeConfig)) || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)))) {
+  if (forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
+      // eslint-disable-next-line global-require, import/no-dynamic-require
       forgeConfig = require(path.resolve(dir, forgeConfig)) as ForgeConfig;
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(`Failed to load: ${path.resolve(dir, forgeConfig)}`);
       throw err;
     }

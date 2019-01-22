@@ -1,7 +1,6 @@
 import _merge from 'lodash.merge';
 import { IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import path from 'path';
 
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../../src/util/upgrade-forge-config';
 

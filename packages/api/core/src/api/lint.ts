@@ -24,9 +24,10 @@ export default async ({
   await asyncOra('Linting Application', async (lintSpinner) => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
-      throw 'Failed to locate lintable Electron application';
+      throw new Error('Failed to locate lintable Electron application');
     }
 
+    // eslint-disable-next-line no-param-reassign
     dir = resolvedDir;
 
     d('executing "run lint" in dir:', dir);

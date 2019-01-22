@@ -1,6 +1,6 @@
 import 'colors';
 import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
-import { ForgeArch, ForgePlatform, ForgeConfig } from '@electron-forge/shared-types';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -22,8 +22,13 @@ const { host: hostArch }: { host: () => ForgeArch | 'all' } = require('electron-
 
 const d = debug('electron-forge:packager');
 
-type ElectronPackagerAfterCopyHook =
-  (buildPath: string, electronVersion: string, pPlatform: ForgePlatform, pArch: ForgeArch, done: (err?: Error) => void) => void;
+type ElectronPackagerAfterCopyHook = (
+  buildPath: string,
+  electronVersion: string,
+  pPlatform: ForgePlatform,
+  pArch: ForgeArch,
+  done: (err?: Error) => void
+) => void;
 
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
@@ -32,8 +37,8 @@ function resolveHooks(hooks: (string | ElectronPackagerAfterCopyHook)[] | undefi
   if (hooks) {
     return hooks.map(hook => (
       typeof hook === 'string'
-      ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
-      : hook
+        ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
+        : hook
     ));
   }
 
@@ -92,15 +97,16 @@ export default async ({
 
   const resolvedDir = await resolveDir(dir);
   if (!resolvedDir) {
-    throw 'Failed to locate compilable Electron application';
+    throw new Error('Failed to locate compilable Electron application');
   }
+  // eslint-disable-next-line no-param-reassign
   dir = resolvedDir;
 
   const forgeConfig = await getForgeConfig(dir);
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   if (!packageJSON.main) {
-    throw 'packageJSON.main must be set to a valid entry point for your Electron app';
+    throw new Error('packageJSON.main must be set to a valid entry point for your Electron app');
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
@@ -126,7 +132,13 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
+      await rebuildHook(
+        buildPath,
+        electronVersion,
+        pPlatform,
+        pArch,
+        forgeConfig.electronRebuildConfig,
+      );
       packagerSpinner = ora('Packaging Application').start();
       done();
     },

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
-import { deps, devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {

@@ -1,6 +1,8 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult } from '@electron-forge/shared-types';
+import {
+  IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult,
+} from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
@@ -19,7 +21,11 @@ import packager from './package';
 
 const { host: hostArch }: { host: () => ForgeArch } = require('electron-download/lib/arch');
 
-class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<any> {
+ name = 'impl';
+
+ defaultPlatforms = [];
+}
 
 export interface MakeOptions {
   /**
@@ -61,15 +67,15 @@ export default async ({
   overrideTargets,
   outDir,
 }: MakeOptions) => {
-
   asyncOra.interactive = interactive;
 
   let forgeConfig!: ForgeConfig;
   await asyncOra('Resolving Forge Config', async () => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
-      throw 'Failed to locate makeable Electron application';
+      throw new Error('Failed to locate makeable Electron application');
     }
+    // eslint-disable-next-line no-param-reassign
     dir = resolvedDir;
 
     forgeConfig = await getForgeConfig(dir);
@@ -78,6 +84,7 @@ export default async ({
   const actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
 
   const actualTargetPlatform = platform;
+  // eslint-disable-next-line no-param-reassign
   platform = platform === 'mas' ? 'darwin' : platform;
   if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
     throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);
@@ -96,17 +103,20 @@ export default async ({
   let targetId = 0;
   for (const target of targets) {
     let maker: MakerBase<any>;
+    // eslint-disable-next-line no-underscore-dangle
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
+      // eslint-disable-next-line no-continue
       if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw `Could not find module with name: ${resolvableTarget.name}`;
+        throw new Error(`Could not find module with name: ${resolvableTarget.name}`);
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
+      // eslint-disable-next-line no-continue
       if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
     }
 
@@ -159,7 +169,8 @@ export default async ({
     }
 
     targetId = 0;
-    for (const target of targets) {
+    // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-unused-vars
+    for (const _target of targets) {
       const maker = makers[targetId];
       targetId += 1;
 
@@ -198,6 +209,7 @@ export default async ({
           });
         } catch (err) {
           if (err) {
+            // eslint-disable-next-line no-throw-literal
             throw {
               message: `An error occured while making for target: ${maker.name}`,
               stack: `${err.message}\n${err.stack}`,
@@ -212,5 +224,5 @@ export default async ({
 
   // If the postMake hooks modifies the locations / names of the outputs it must return
   // the new locations so that the publish step knows where to look
-  return await runMutatingHook(forgeConfig, 'postMake', outputs);
+  return runMutatingHook(forgeConfig, 'postMake', outputs);
 };

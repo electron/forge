@@ -47,6 +47,7 @@
     "cross-spawn-promise": "^0.10.1",
     "cross-zip": "^2.1.5",
     "debug": "^4.1.0",
+    "electron-download": "^4.1.1",
     "electron-forge-template-angular2": "^1.0.3",
     "electron-forge-template-react": "^1.0.2",
     "electron-forge-template-react-typescript": "^1.0.3",
