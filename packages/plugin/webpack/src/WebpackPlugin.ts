@@ -1,3 +1,4 @@
+/* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
 import { ForgeConfig } from '@electron-forge/shared-types';
@@ -7,14 +8,13 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import merge from 'webpack-merge';
 import path from 'path';
-import { spawnPromise } from 'spawn-rx';
 import webpack, { Configuration } from 'webpack';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import express from 'express';
 import http from 'http';
 
-import HtmlWebpackPlugin, { Config } from 'html-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 import once from './util/once';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
@@ -24,11 +24,17 @@ const BASE_PORT = 3000;
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
+
   private isProd = false;
+
   private projectDir!: string;
+
   private baseDir!: string;
+
   private watchers: webpack.Compiler.Watching[] = [];
+
   private servers: http.Server[] = [];
+
   private loggers: Logger[] = [];
 
   constructor(c: WebpackPluginConfig) {
@@ -39,6 +45,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   private resolveConfig = (config: Configuration | string) => {
+    // eslint-disable-next-line import/no-dynamic-require, global-require
     if (typeof config === 'string') return require(path.resolve(path.dirname(this.baseDir), config)) as Configuration;
     return config;
   }
@@ -71,8 +78,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     this.baseDir = path.resolve(dir, '.webpack');
 
     d('hooking process events');
-    process.on('exit', code => this.exitHandler({ cleanup: true }));
-    process.on('SIGINT' as NodeJS.Signals, signal => this.exitHandler({ exit: true }));
+    process.on('exit', _code => this.exitHandler({ cleanup: true }));
+    process.on('SIGINT' as NodeJS.Signals, _signal => this.exitHandler({ exit: true }));
   }
 
   private loggedOutputUrl = false;
@@ -102,24 +109,27 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         return this.resolveForgeConfig;
       case 'packageAfterCopy':
         return this.packageAfterCopy;
+      default:
+        return null;
     }
-    return null;
   }
 
   resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
     if (!forgeConfig.packagerConfig) {
+      // eslint-disable-next-line no-param-reassign
       forgeConfig.packagerConfig = {};
     }
     if (forgeConfig.packagerConfig.ignore) {
-      console.error('You have set packagerConfig.ignore, the electron forge webpack plugin normally sets this automatically.\n\
-\
-Your packaged app may be larger than expected if you dont ignore everything other than the `.webpack` folder'.red);
+      console.error(`You have set packagerConfig.ignore, the electron forge webpack plugin normally sets this automatically.
+
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red);
       return forgeConfig;
     }
+    // eslint-disable-next-line no-param-reassign
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
-      return !/^[\/\\]\.webpack($|[\/\\]).*$/.test(file);
+      return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
   }
@@ -150,20 +160,17 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
+          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')}\``
           : `'http://localhost:${BASE_PORT}/${entryPoint.name}'`;
       } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
+          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')}\``
           : `'http://localhost:${BASE_PORT}/${entryPoint.name}/index.js'`;
       }
 
       if (entryPoint.preload) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] =
-          this.isProd
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] = this.isProd
           ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
       }
@@ -205,7 +212,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }, mainConfig || {});
   }
 
-  getPreloadRendererConfig = async (parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint) => {
+  getPreloadRendererConfig = async (
+    parentPoint: WebpackPluginEntryPoint,
+    entryPoint: WebpackPreloadEntryPoint,
+  ) => {
     const rendererConfig = this.resolveConfig(this.config.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
@@ -234,7 +244,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const prefixedEntries = entryPoint.prefixedEntries || [];
       entry[entryPoint.name] = prefixedEntries
         .concat([entryPoint.js])
-        .concat(this.isProd || !Boolean(entryPoint.html) ? [] : ['webpack-hot-middleware/client']);
+        .concat(this.isProd || !entryPoint.html ? [] : ['webpack-hot-middleware/client']);
     }
 
     const defines = this.getDefines(true);
@@ -252,14 +262,14 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         __dirname: false,
         __filename: false,
       },
-      plugins: entryPoints.filter(entryPoint => Boolean(entryPoint.html)).map(entryPoint =>
-        new HtmlWebpackPlugin({
+      plugins: entryPoints.filter(entryPoint => Boolean(entryPoint.html))
+        .map(entryPoint => new HtmlWebpackPlugin({
           title: entryPoint.name,
           template: entryPoint.html,
           filename: `${entryPoint.name}/index.html`,
           chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-        }),
-      ).concat([new webpack.DefinePlugin(defines)]).concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]),
+        })).concat([new webpack.DefinePlugin(defines)])
+        .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]),
     }, rendererConfig);
   }
 
@@ -280,7 +290,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           }
 
           if (err) return onceReject(err);
-          onceResolve();
+          return onceResolve();
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -291,12 +301,12 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     });
   }
 
-  compileRenderers = async (watch = false) => {
+  compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
     await asyncOra('Compiling Renderer Template', async () => {
       await new Promise(async (resolve, reject) => {
-        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err, stats) => {
+        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err) => {
           if (err) return reject(err);
-          resolve();
+          return resolve();
         });
       });
     });
@@ -305,10 +315,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
           await new Promise(async (resolve, reject) => {
-            webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!)).run((err, stats) => {
-              if (err) return reject(err);
-              resolve();
-            });
+            webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!))
+              .run((err) => {
+                if (err) return reject(err);
+                return resolve();
+              });
           });
         });
       }
@@ -350,9 +361,12 @@ Your packaged app may be larger than expected if you dont ignore everything othe
               }));
 
               if (err) return onceReject(err);
-              onceResolve();
+              return onceResolve();
             };
-            this.watchers.push(webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!)).watch({}, cb));
+            this.watchers.push(webpack(await this.getPreloadRendererConfig(
+              entryPoint,
+              entryPoint.preload!,
+            )).watch({}, cb));
           });
         }
       }
