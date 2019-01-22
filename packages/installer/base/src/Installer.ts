@@ -7,6 +7,7 @@ export interface InstallerOptions {
 
 export default abstract class Installer {
   abstract name: string;
+
   /* tslint:disable variable-name */
   __isElectronForgeInstaller!: boolean;
   /* tslint:enable variable-name */
@@ -23,7 +24,7 @@ export default abstract class Installer {
    * Installers must implement this method and install the given filePath
    * when called.  This method must return a promise
    */
-  async install(opts: InstallerOptions) {
+  async install(_opts: InstallerOptions) {
     throw new Error(`Installer ${this.name} did not implement the install method`);
   }
 }

@@ -15,10 +15,9 @@ export default abstract class InstallerLinux extends InstallerBase {
     }
   }
 
-  sudo = (type: string, program: string, args: string) =>
-    this.which(
-      type,
-      program,
-      () => pify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
-    )
+  sudo = (type: string, program: string, args: string) => this.which(
+    type,
+    program,
+    () => pify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
+  )
 }
