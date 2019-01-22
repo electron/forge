@@ -116,7 +116,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
     if (!forgeConfig.packagerConfig) {
-      // eslint-disable-next-line no-param-reassign
       forgeConfig.packagerConfig = {};
     }
     if (forgeConfig.packagerConfig.ignore) {
@@ -125,7 +124,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red);
       return forgeConfig;
     }
-    // eslint-disable-next-line no-param-reassign
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 

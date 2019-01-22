@@ -98,7 +98,6 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
       await asyncOra(getText(), async (uploadSpinner) => {
         const updateSpinner = () => {
-          // eslint-disable-next-line no-param-reassign
           uploadSpinner.text = getText();
         };
 

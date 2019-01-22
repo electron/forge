@@ -7,9 +7,7 @@ export { StartOptions };
 export default abstract class Plugin<C> {
   public abstract name: string;
 
-  /* tslint:disable variable-name */
   __isElectronForgePlugin!: true;
-  /* tslint:enable variable-name */
 
   constructor(public config: C) {
     Object.defineProperty(this, '__isElectronForgePlugin', {

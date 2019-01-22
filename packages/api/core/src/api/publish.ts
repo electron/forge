@@ -103,7 +103,6 @@ const publish = async ({
 
   if (!makeResults) {
     d('triggering make');
-    // eslint-disable-next-line no-param-reassign
     makeResults = await make(Object.assign({
       dir,
       interactive,
@@ -113,9 +112,7 @@ const publish = async ({
     d('restoring publish settings from dry run');
 
     for (const makeResult of makeResults) {
-      // eslint-disable-next-line no-param-reassign
       makeOptions.platform = makeResult.platform;
-      // eslint-disable-next-line no-param-reassign
       makeOptions.arch = makeResult.arch;
 
       for (const makePath of makeResult.artifacts) {
@@ -137,17 +134,14 @@ const publish = async ({
   if (!resolvedDir) {
     throw new Error('Failed to locate publishable Electron application');
   }
-  // eslint-disable-next-line no-param-reassign
   dir = resolvedDir;
 
   // const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
   if (!publishTargets) {
-    // eslint-disable-next-line no-param-reassign
     publishTargets = (forgeConfig.publishers || []);
     // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
     //   ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
   }
-  // eslint-disable-next-line no-param-reassign
   publishTargets = publishTargets.map((target) => {
     if (typeof target === 'string') {
       return (forgeConfig.publishers || []).find((p) => {

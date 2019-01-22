@@ -60,7 +60,6 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     let uploaded = 0;
     await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
       const updateSpinner = () => {
-        // eslint-disable-next-line no-param-reassign
         uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
       };
 

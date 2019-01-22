@@ -1,4 +1,3 @@
-/* eslint "no-param-reassign": "off" */
 import {
   ForgeConfig,
   ForgePlatform,

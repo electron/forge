@@ -1,8 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ForgePlatform, ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
 
-/* eslint-disable no-unused-vars */
-
 export interface PublisherOptions {
   /**
    * The base directory of the apps source code
@@ -25,9 +23,7 @@ export default abstract class Publisher<C> {
 
   public defaultPlatforms?: ForgePlatform[];
 
-  /* tslint:disable variable-name */
   __isElectronForgePublisher!: true;
-  /* tslint:enable variable-name */
 
   constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {
     this.config = config;

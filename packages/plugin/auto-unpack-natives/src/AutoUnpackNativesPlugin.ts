@@ -1,4 +1,3 @@
-/* eslint "no-param-reassign": "off" */
 import PluginBase from '@electron-forge/plugin-base';
 import { ForgeConfig } from '@electron-forge/shared-types';
 

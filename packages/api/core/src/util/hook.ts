@@ -27,7 +27,7 @@ export async function runMutatingHook<T>(
       d('calling mutating hook:', hookName, 'with item:', item);
       const result = await hooks[hookName](forgeConfig, item);
       if (typeof result !== 'undefined') {
-        item = result; // eslint-disable-line no-param-reassign
+        item = result;
       }
     }
   }

@@ -99,7 +99,6 @@ export default async ({
   if (!resolvedDir) {
     throw new Error('Failed to locate compilable Electron application');
   }
-  // eslint-disable-next-line no-param-reassign
   dir = resolvedDir;
 
   const forgeConfig = await getForgeConfig(dir);

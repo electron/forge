@@ -8,9 +8,7 @@ export interface InstallerOptions {
 export default abstract class Installer {
   abstract name: string;
 
-  /* tslint:disable variable-name */
   __isElectronForgeInstaller!: boolean;
-  /* tslint:enable variable-name */
 
   constructor() {
     Object.defineProperty(this, '__isElectronForgeInstaller', {

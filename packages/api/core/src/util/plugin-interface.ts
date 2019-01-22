@@ -63,7 +63,6 @@ export default class PluginInterface implements IForgePluginInterface {
       if (typeof plugin.getHook === 'function') {
         const hook = plugin.getHook(hookName);
         if (hook) {
-          // eslint-disable-next-line no-param-reassign
           item = await hook(this.config, item);
         }
       }

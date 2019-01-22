@@ -39,7 +39,7 @@ export function updateElectronDependency(
       alteredExact = alteredExact.filter(dep => dep !== 'electron');
       d(`Moving ${electronKey} from dependencies to devDependencies`);
       alteredDev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
-      delete packageJSON.dependencies[electronKey]; // eslint-disable-line no-param-reassign
+      delete packageJSON.dependencies[electronKey];
     }
   }
 

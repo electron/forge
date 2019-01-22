@@ -33,9 +33,7 @@
     "docs:position": "ts-node tools/position-docs.ts",
     "docs:deploy": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
-    "eslint": "eslint --ext .ts .",
-    "tslint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
-    "lint": "bolt eslint && bolt tslint",
+    "lint": "eslint --ext .ts .",
     "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts' --opts mocha.opts"
   },
   "dependencies": {
@@ -157,8 +155,6 @@
     "rimraf": "^2.6.2",
     "sinon": "^7.1.1",
     "ts-node": "^7.0.1",
-    "tslint": "5.12.0",
-    "tslint-config-airbnb": "^5.11.0",
     "typedoc": "0.13.0",
     "typescript": "3.2.2"
   },

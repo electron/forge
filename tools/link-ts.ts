@@ -15,7 +15,6 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
   for (const dir of dirsToLink) {
     await fs.copy(path.resolve(BASE_DIR, 'tsconfig.json'), path.resolve(dir, 'tsconfig.json'));
-    await fs.copy(path.resolve(BASE_DIR, 'tslint.json'), path.resolve(dir, 'tslint.json'));
     await fs.copy(path.resolve(BASE_DIR, '.npmignore'), path.resolve(dir, '.npmignore'));
     const pj = await fs.readJson(path.resolve(dir, 'package.json'));
     if (pj.main) {

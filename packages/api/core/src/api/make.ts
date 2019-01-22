@@ -75,7 +75,6 @@ export default async ({
     if (!resolvedDir) {
       throw new Error('Failed to locate makeable Electron application');
     }
-    // eslint-disable-next-line no-param-reassign
     dir = resolvedDir;
 
     forgeConfig = await getForgeConfig(dir);
@@ -84,7 +83,6 @@ export default async ({
   const actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
 
   const actualTargetPlatform = platform;
-  // eslint-disable-next-line no-param-reassign
   platform = platform === 'mas' ? 'darwin' : platform;
   if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
     throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);

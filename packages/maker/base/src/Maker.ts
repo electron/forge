@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import {
   ForgeArch, ForgeConfig, ForgePlatform,
 } from '@electron-forge/shared-types';
@@ -45,9 +43,7 @@ export default abstract class Maker<C> {
 
   public abstract defaultPlatforms: ForgePlatform[];
 
-  /* tslint:disable variable-name */
   __isElectronForgeMaker!: true;
-  /* tslint:enable variable-name */
 
   constructor(
     private configFetcher: (C | ((arch: ForgeArch) => C)) = {} as C,

@@ -72,9 +72,7 @@ const proxify = <T extends object>(
 export function setInitialForgeConfig(packageJSON: any) {
   const { name = '' } = packageJSON;
 
-  /* eslint-disable no-param-reassign */
   packageJSON.config.forge.makers[0].config.name = name.replace(/-/g, '_');
-  /* eslint-enable no-param-reassign */
 }
 
 export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {

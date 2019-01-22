@@ -29,7 +29,6 @@ export default async ({
     if (!resolvedDir) {
       throw new Error('Failed to locate startable Electron application');
     }
-    // eslint-disable-next-line no-param-reassign
     dir = resolvedDir;
   });
 
@@ -96,7 +95,6 @@ export default async ({
     }
 
     if (inspect) {
-      // eslint-disable-next-line no-param-reassign
       args = ['--inspect' as (string|number)].concat(args);
     }
 
