@@ -61,7 +61,7 @@ const proxify = <T extends object>(
         };
       }
 
-      return null;
+      return undefined;
     },
   });
 };
@@ -82,7 +82,7 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
   };
 }
 
-async function forgeConfigIsValidFilePath(dir, forgeConfig) {
+async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
   return typeof forgeConfig === 'string'
     && (
       await fs.pathExists(path.resolve(dir, forgeConfig))
@@ -107,10 +107,10 @@ export default async (dir: string) => {
   if (forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
       // eslint-disable-next-line global-require, import/no-dynamic-require
-      forgeConfig = require(path.resolve(dir, forgeConfig)) as ForgeConfig;
+      forgeConfig = require(path.resolve(dir, forgeConfig as string)) as ForgeConfig;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`Failed to load: ${path.resolve(dir, forgeConfig)}`);
+      console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
     }
   } else if (typeof forgeConfig !== 'object') {
