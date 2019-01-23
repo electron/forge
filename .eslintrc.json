@@ -1,5 +1,5 @@
 {
-  "parser": "@typescript-eslint/eslint-plugin/parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 8,
     "sourceType": "module"
@@ -61,7 +61,7 @@
       ".ts"
     ],
     "import/parsers": {
-      "@typescript-eslint/eslint-plugin/parser": [".ts"]
+      "@typescript-eslint/parser": [".ts"]
     },
     "import/resolver": {
       "node": {
