@@ -11,7 +11,6 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
-  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
   }

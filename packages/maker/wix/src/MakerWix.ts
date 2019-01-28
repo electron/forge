@@ -14,7 +14,6 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
   }

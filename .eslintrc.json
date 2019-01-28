@@ -16,6 +16,7 @@
     "airbnb"
   ],
   "rules": {
+    "class-methods-use-this": "off",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": ["packages/**/test/**/*_spec.ts"] }],
     "mocha/no-exclusive-tests": "error",
     "no-await-in-loop": "off",

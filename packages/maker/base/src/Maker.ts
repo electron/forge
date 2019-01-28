@@ -108,7 +108,7 @@ export default abstract class Maker<C> {
    * I.e. If the directory already exists it is deleted and recreated, this
    * is a destructive operation
    */
-  async ensureDirectory(dir: string): Promise<void> { // eslint-disable-line class-methods-use-this
+  async ensureDirectory(dir: string): Promise<void> {
     if (await fs.pathExists(dir)) {
       await fs.remove(dir);
     }
@@ -120,7 +120,7 @@ export default abstract class Maker<C> {
    *
    * I.e. If the file already exists it is deleted and the path created
    */
-  async ensureFile(file: string): Promise<void> { // eslint-disable-line class-methods-use-this
+  async ensureFile(file: string): Promise<void> {
     if (await fs.pathExists(file)) {
       await fs.remove(file);
     }
@@ -131,7 +131,7 @@ export default abstract class Maker<C> {
    * Checks if the given module is installed, used for testing if optional dependencies
    * are installed or not
    */
-  isInstalled(module: string): boolean { // eslint-disable-line class-methods-use-this
+  isInstalled(module: string): boolean {
     try {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       require(module);

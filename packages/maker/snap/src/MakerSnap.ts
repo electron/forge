@@ -10,7 +10,6 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
-  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return process.platform === 'linux';
   }

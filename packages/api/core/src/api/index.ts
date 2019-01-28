@@ -1,4 +1,3 @@
-/* eslint "class-methods-use-this": "off" */
 import 'colors';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 

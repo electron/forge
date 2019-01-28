@@ -11,7 +11,6 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas', 'win32', 'linux'];
 
-  // eslint-disable-next-line class-methods-use-this
   isSupportedOnCurrentPlatform() {
     return true;
   }

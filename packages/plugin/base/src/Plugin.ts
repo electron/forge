@@ -1,4 +1,3 @@
-/* eslint "class-methods-use-this": "off" */
 import { ForgeHookFn, StartOptions } from '@electron-forge/shared-types';
 import { ChildProcess } from 'child_process';
 

@@ -10,7 +10,6 @@ import { exec } from 'child_process';
 export { InstallerOptions };
 
 export default abstract class InstallerDarwin extends InstallerBase {
-  // eslint-disable-next-line class-methods-use-this
   async moveApp(
     appPath: string,
     targetApplicationPath: string,
