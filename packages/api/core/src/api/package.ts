@@ -171,7 +171,7 @@ export default async ({
     afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),
     out: calculatedOutDir,
-    electronVersion: getElectronVersion(packageJSON),
+    electronVersion: await getElectronVersion(dir, packageJSON),
   });
   packageOpts.quiet = true;
 
