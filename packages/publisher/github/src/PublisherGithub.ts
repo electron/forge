@@ -38,7 +38,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     if (!(config.repository && typeof config.repository === 'object'
       && config.repository.owner && config.repository.name)) {
-      throw 'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info'; // eslint-disable-line
+      throw new Error('In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info');
     }
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);
@@ -79,7 +79,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
       let uploaded = 0;
       await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`, async (uploadSpinner) => {
         const updateSpinner = () => {
-          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`; // eslint-disable-line
+          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`;
         };
 
         const flatArtifacts: string[] = [];

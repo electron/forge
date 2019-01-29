@@ -30,7 +30,7 @@ export default class PluginInterface implements IForgePluginInterface {
         }
         return new Plugin(opts);
       }
-      throw `Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`; // eslint-disable-line
+      throw new Error(`Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`);
     });
     // Fix linting
     this.config = null as any;

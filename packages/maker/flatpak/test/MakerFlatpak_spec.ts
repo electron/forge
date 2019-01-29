@@ -17,7 +17,7 @@ class MakerImpl extends MakerBase<MakerFlatpakConfig> {
 }
 
 describe('MakerFlatpak', () => {
-  let flatpakModule: typeof MakerImpl;
+  let MakerFlatpak: typeof MakerImpl;
   let maker: MakerImpl;
   let eidStub: SinonStub;
   let ensureDirectoryStub: SinonStub;
@@ -35,12 +35,12 @@ describe('MakerFlatpak', () => {
     eidStub = stub().callsArg(1);
     config = {};
 
-    flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
+    MakerFlatpak = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
       'electron-installer-flatpak': eidStub,
     }).default;
     createMaker = () => {
-      maker = new flatpakModule(config); // eslint-disable-line
+      maker = new MakerFlatpak(config);
       maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };

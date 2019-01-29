@@ -130,9 +130,10 @@ export default async (dir: string) => {
       if (typeof obj[objKey] === 'object' && obj !== null) {
         template(obj[objKey]);
       } else if (typeof obj[objKey] === 'string') {
-        obj[objKey] = _template(obj[objKey])(templateObj); // eslint-disable-line
+        obj[objKey] = _template(obj[objKey])(templateObj);
         if (obj[objKey].startsWith('require:')) {
-          obj[objKey] = require(path.resolve(dir, obj[objKey].substr(8))); // eslint-disable-line
+          // eslint-disable-next-line global-require, import/no-dynamic-require
+          obj[objKey] = require(path.resolve(dir, obj[objKey].substr(8)));
         }
       }
     });

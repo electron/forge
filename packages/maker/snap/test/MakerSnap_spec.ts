@@ -36,7 +36,7 @@ describe('MakerSnap', () => {
       'electron-installer-snap': eisStub,
     }).default;
     createMaker = () => {
-      maker = new MakerSnapModule(config); // eslint-disable-line
+      maker = new MakerSnapModule(config);
       maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };

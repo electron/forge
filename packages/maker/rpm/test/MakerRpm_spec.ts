@@ -16,7 +16,7 @@ class MakerImpl extends MakerBase<MakerRpmConfig> {
 }
 
 describe('MakerRpm', () => {
-  let rpmModule: typeof MakerImpl;
+  let MakerRpm: typeof MakerImpl;
   let eirStub: SinonStub;
   let ensureFileStub: SinonStub;
   let config: MakerRpmConfig;
@@ -34,11 +34,11 @@ describe('MakerRpm', () => {
     eirStub = stub().resolves();
     config = {};
 
-    rpmModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
+    MakerRpm = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
       'electron-installer-redhat': eirStub,
     }).default;
     createMaker = () => {
-      maker = new rpmModule(config); // eslint-disable-line
+      maker = new MakerRpm(config);
       maker.ensureFile = ensureFileStub;
       maker.prepareConfig(targetArch as any);
     };

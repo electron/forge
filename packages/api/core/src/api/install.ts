@@ -106,7 +106,7 @@ export default async ({
     // eslint-disable-next-line prefer-destructuring
     latestRelease = sortedReleases[0];
 
-    searchSpinner.text = 'Searching for Releases'; // eslint-disable-line
+    searchSpinner.text = 'Searching for Releases';
 
     const { assets } = latestRelease;
     if (!assets || !Array.isArray(assets) || assets.length === 0) {

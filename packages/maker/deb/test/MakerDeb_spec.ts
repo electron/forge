@@ -39,7 +39,7 @@ describe('MakerDeb', () => {
       'electron-installer-debian': eidStub,
     }).default;
     createMaker = () => {
-      maker = new MakerDeb(config, []); // eslint-disable-line
+      maker = new MakerDeb(config, []);
       maker.ensureFile = ensureFileStub;
       maker.prepareConfig(targetArch as any);
     };
