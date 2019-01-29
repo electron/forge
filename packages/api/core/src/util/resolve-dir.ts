@@ -24,13 +24,11 @@ export default async (dir: string) => {
 
       // TODO: Move this check to inside the forge config resolver and use
       //       mutatedPackageJson reader
-      const electronVersion = getElectronVersion(packageJSON);
-      if (electronVersion) {
-        if (!/[0-9]/.test(electronVersion[0])) {
-          lastError = `You must depend on an EXACT version of electron not a range (${electronVersion})`;
-        }
-      } else {
-        lastError = 'You must depend on "electron" in your devDependencies';
+      let electronVersion;
+      try {
+        electronVersion = await getElectronVersion(mDir, packageJSON);
+      } catch (err) {
+        lastError = err.message;
       }
 
       if (packageJSON.config && packageJSON.config.forge) {

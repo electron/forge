@@ -1,4 +1,8 @@
 import debug from 'debug';
+import fs from 'fs-extra';
+import path from 'path';
+import semver from 'semver';
+import yarnOrNpm from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');
 
@@ -13,7 +17,7 @@ function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
 }
 
-export function getElectronVersion(packageJSON: any) {
+export async function getElectronVersion(dir: string, packageJSON: any): Promise<string> {
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies'.red);
   }
@@ -21,7 +25,20 @@ export function getElectronVersion(packageJSON: any) {
   if (packageName === undefined) {
     throw new Error('Could not find any Electron packages in devDependencies');
   }
-  return packageJSON.devDependencies[packageName];
+
+  let version = packageJSON.devDependencies[packageName];
+  if (!semver.valid(version)) {
+    // It's not an exact version, find it in the actual module
+    const electronPackageJSONPath = path.join(dir, 'node_modules', packageName, 'package.json');
+    if (await fs.pathExists(electronPackageJSONPath)) {
+      const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
+      version = electronPackageJSON.version;
+    } else {
+      throw new Error(`Cannot find the package "${packageName}". Perhaps you need to run "${yarnOrNpm()} install" in "${dir}"?`);
+    }
+  }
+
+  return version;
 }
 
 export function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {

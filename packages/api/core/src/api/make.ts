@@ -152,7 +152,7 @@ export default async ({
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of parseArchs(platform, arch, getElectronVersion(packageJSON))) {
+  for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
     const packageDir = path.resolve(actualOutDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
