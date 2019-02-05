@@ -36,7 +36,7 @@ export interface MakerOptions {
   packageJSON: any;
 }
 
-export default abstract class Maker<C> {
+export default abstract class Maker<C> implements IForgeMaker {
   public config!: C;
   public abstract name: string;
   public abstract defaultPlatforms: ForgePlatform[];
