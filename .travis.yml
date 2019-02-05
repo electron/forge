@@ -29,7 +29,7 @@ branches:
   - master
   - /^v\d+\.\d+\.\d+/
 install:
-- npm i -g bolt@0.22.5
+- if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then npm install -g bolt@0.22.6; fi
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:

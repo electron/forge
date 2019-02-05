@@ -10,14 +10,11 @@ cache:
 branches:
   only:
   - master
-  - v6
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
-- npm i -g bolt@0.21.2
-- if not exist "node_modules" mkdir node_modules
-- ps: Remove-Item node_modules -Recurse -Force
+- npm i -g bolt@0.22.6
 - bolt
 - yarn build
 - ps: |
