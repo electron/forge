@@ -161,11 +161,16 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           : `'http://localhost:${BASE_PORT}/${entryPoint.name}/index.js'`;
       }
 
+      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
       if (entryPoint.preload) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] =
+        defines[preloadDefineKey] =
           this.isProd
           ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+      } else {
+        // If this entry-point has no configured preload script just map this constant to `undefined`
+        // so that any code using it still works.  This makes quick-start / docs simpler.
+        defines[preloadDefineKey] = 'undefined';
       }
     }
     return defines;
