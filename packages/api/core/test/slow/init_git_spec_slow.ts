@@ -43,4 +43,26 @@ describe('init-git', () => {
 
     expect(after, 'the config file in the repository').to.equal(before);
   });
+
+  it('skips when run in subdirectory of Git repository', async () => {
+    await execSync('git init', { cwd: dir });
+
+    const gitDir = path.join(dir, '.git');
+    const config = path.join(gitDir, 'config');
+    const statBefore = await fs.lstat(config);
+    const before = statBefore.mtimeMs;
+
+    const subdir = path.join(dir, 'some', 'other', 'folder');
+    const innerGitDir = path.join(subdir, '.git');
+
+    await fs.mkdirp(subdir);
+
+    await initGit(subdir);
+
+    const statAfter = await fs.lstat(config);
+    const after = statAfter.mtimeMs;
+
+    expect(after, 'the config file in the repository').to.equal(before);
+    expect(await fs.pathExists(innerGitDir), 'a nested .git directory inside the repository').to.equal(false);
+  });
 });
