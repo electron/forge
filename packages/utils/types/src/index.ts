@@ -60,7 +60,7 @@ export interface IForgePlugin {
 
   init(dir: string, forgeConfig: ForgeConfig): void;
   getHook?(hookName: string): ForgeHookFn | null;
-  startLogic?(opts: StartOptions): Promise<ChildProcess | false>;
+  startLogic?(opts: StartOptions): Promise<ChildProcess | string | string[] | false>;
 }
 
 export interface IForgeResolvableMaker {
@@ -71,7 +71,7 @@ export interface IForgeResolvableMaker {
 
 export interface IForgeMaker {
   __isElectronForgeMaker: boolean;
-  platforms?: undefined;
+  readonly platforms?: ForgePlatform[];
 }
 
 export interface IForgeResolvablePublisher {
@@ -82,7 +82,7 @@ export interface IForgeResolvablePublisher {
 
 export interface IForgePublisher {
   __isElectronForgePublisher: boolean;
-  platforms?: undefined;
+  readonly platforms?: ForgePlatform[];
 }
 
 export interface StartOptions {

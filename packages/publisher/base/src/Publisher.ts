@@ -1,4 +1,4 @@
-import { ForgePlatform, ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
+import { ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher } from '@electron-forge/shared-types';
 
 /* eslint-disable no-unused-vars */
 
@@ -19,7 +19,7 @@ export interface PublisherOptions {
   forgeConfig: ForgeConfig;
 }
 
-export default abstract class Publisher<C> {
+export default abstract class Publisher<C> implements IForgePublisher {
   public abstract name: string;
   public defaultPlatforms?: ForgePlatform[];
   /* tslint:disable variable-name */
@@ -38,7 +38,7 @@ export default abstract class Publisher<C> {
   get platforms() {
     if (this.providedPlatforms) return this.providedPlatforms;
     if (this.defaultPlatforms) return this.defaultPlatforms;
-    return ['win32', 'linux', 'darwin', 'mas'];
+    return ['win32', 'linux', 'darwin', 'mas'] as ForgePlatform[];
   }
 
   /**
