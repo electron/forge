@@ -103,7 +103,7 @@ export default async ({
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw `Could not find module with name: ${resolvableTarget.name}`;
+        throw `Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`;
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
