@@ -160,7 +160,7 @@ const publish = async ({
       await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {
-          throw `Could not find a publish target with the name: ${resolvablePublishTarget.name}`;
+          throw `Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`;
         }
       });
 
