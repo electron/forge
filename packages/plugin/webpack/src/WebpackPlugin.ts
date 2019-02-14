@@ -36,7 +36,13 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     super(c);
 
     if (c.port) {
-      this.port = c.port;
+      if (c.port < 1024) {
+        throw new Error(`Cannot specify port (${c.port}) below 1024, as they are privileged`);
+      } else if (c.port > 65535) {
+        throw new Error(`Port specified (${c.port}) is not a valid TCP port.`);
+      } else {
+        this.port = c.port;
+      }
     }
 
     this.startLogic = this.startLogic.bind(this);
