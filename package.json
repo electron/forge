@@ -34,7 +34,7 @@
     "docs:deploy": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
     "lint": "ts-node tools/link-ts.ts && bolt ws exec -- node_modules/.bin/tslint src/**/*.ts test/**/*.ts",
-    "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts' --opts mocha.opts"
+    "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'"
   },
   "dependencies": {
     "@octokit/rest": "^16.0.1",
@@ -140,7 +140,7 @@
     "generate-changelog": "^1.0.2",
     "listr": "^0.14.1",
     "minimist": "^1.2.0",
-    "mocha": "^5.0.0",
+    "mocha": "^6.0.0",
     "nodemon": "^1.11.0",
     "nyc": "^13.0.1",
     "proxyquire": "^2.0.1",

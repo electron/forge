@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^5.0.0"
+    "mocha": "^6.0.0"
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.33",
