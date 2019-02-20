@@ -17,7 +17,7 @@
     "@electron-forge/maker-squirrel": "6.0.0-beta.33",
     "@electron-forge/maker-wix": "6.0.0-beta.33",
     "@electron-forge/maker-zip": "6.0.0-beta.33",
-    "asar": "^0.14.0",
+    "asar": "^1.0.0",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
     "fetch-mock": "^7.2.5",
