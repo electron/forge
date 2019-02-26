@@ -285,6 +285,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           }
 
           if (err) return onceReject(err);
+          if (!watch && stats.hasErrors()) {
+            return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+          }
+
           onceResolve();
         };
         if (watch) {
@@ -301,6 +305,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       await new Promise(async (resolve, reject) => {
         webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err, stats) => {
           if (err) return reject(err);
+          if (!watch && stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the renderer: ${stats.toString()}`));
+          }
+
           resolve();
         });
       });
