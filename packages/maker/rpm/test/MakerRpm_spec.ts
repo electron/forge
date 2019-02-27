@@ -13,10 +13,10 @@ class MakerImpl extends MakerBase<MakerRpmConfig> { name = 'test'; defaultPlatfo
 
 describe('MakerRpm', () => {
   let rpmModule: typeof MakerImpl;
-  let maker: MakerImpl;
-  let eidStub: SinonStub;
+  let eirStub: SinonStub;
   let ensureFileStub: SinonStub;
   let config: MakerRpmConfig;
+  let maker: MakerImpl;
   let createMaker: () => void;
 
   const dir = '/my/test/dir/out';
@@ -27,11 +27,11 @@ describe('MakerRpm', () => {
 
   beforeEach(() => {
     ensureFileStub = stub().returns(Promise.resolve());
-    eidStub = stub().callsArg(1);
+    eirStub = stub().resolves();
     config = {};
 
     rpmModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
-      'electron-installer-redhat': eidStub,
+      'electron-installer-redhat': eirStub,
     }).default;
     createMaker = () => {
       maker = new rpmModule(config); // eslint-disable-line
@@ -43,7 +43,7 @@ describe('MakerRpm', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       src: dir,
@@ -62,7 +62,7 @@ describe('MakerRpm', () => {
     createMaker();
 
     await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       options: {

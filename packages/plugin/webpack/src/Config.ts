@@ -78,4 +78,8 @@ export interface WebpackPluginConfig {
    * Electron Forge webpack configuration for your renderer process
    */
   renderer: WebpackPluginRendererConfig;
+  /**
+   * The TCP port for the dev servers. Defaults to 3000.
+   */
+  port?: number;
 }

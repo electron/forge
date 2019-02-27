@@ -12,12 +12,12 @@ import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
-import getElectronVersion from '../util/electron-version';
+import { getElectronVersion } from '../util/electron-version';
 import requireSearch from '../util/require-search';
 
 import packager from './package';
 
-const { hostArch } = require('electron-packager/targets');
+const { host: hostArch }: { host: () => ForgeArch } = require('electron-download/lib/arch');
 
 class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; }
 
@@ -103,7 +103,7 @@ export default async ({
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw `Could not find module with name: ${resolvableTarget.name}`;
+        throw `Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`;
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
@@ -152,7 +152,7 @@ export default async ({
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of parseArchs(platform, arch, getElectronVersion(packageJSON))) {
+  for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
     const packageDir = path.resolve(actualOutDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);

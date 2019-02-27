@@ -2,7 +2,6 @@ import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
-import pify from 'pify';
 
 import { MakerRpmConfig } from './Config';
 
@@ -45,7 +44,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
       rename: undefined,
     });
 
-    await pify(installer)(rpmConfig);
+    await installer(rpmConfig);
     return [outPath];
   }
 }

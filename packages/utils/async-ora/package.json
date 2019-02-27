@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/async-ora",
-  "version": "6.0.0-beta.30",
+  "version": "6.0.0-beta.33",
   "description": "A helper utility for wrapping async functions in an ora",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "devDependencies": {
-    "@types/pretty-ms": "^3.2.0",
+    "@types/pretty-ms": "^4.0.0",
     "chai": "4.2.0",
     "mocha": "^5.0.0",
     "proxyquire": "^2.0.1",

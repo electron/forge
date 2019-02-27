@@ -9,7 +9,7 @@ import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
-import getElectronVersion from '../util/electron-version';
+import { getElectronVersion } from '../util/electron-version';
 
 export { StartOptions };
 
@@ -41,7 +41,7 @@ export default async ({
 
   await rebuild(
     dir,
-    getElectronVersion(packageJSON),
+    await getElectronVersion(dir, packageJSON),
     process.platform as ForgePlatform,
     process.arch as ForgeArch,
     forgeConfig.electronRebuildConfig,

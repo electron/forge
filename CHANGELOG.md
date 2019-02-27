@@ -1,3 +1,69 @@
+#### [6.0.0-beta.33](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.33) (2019-02-08)
+
+##### Chores
+
+* **core:**  upgrade electron-rebuild to 1.8.3 ([45d454a4](https://github.com/electron-userland/electron-forge/commit/45d454a4))
+*  upgrade typescript to 3.2.2 (#649) ([7abaf7f7](https://github.com/electron-userland/electron-forge/commit/7abaf7f7))
+
+##### New Features
+
+* **core:**  add basic support for non-exact Electron versions ([177012e9](https://github.com/electron-userland/electron-forge/commit/177012e9))
+
+##### Bug Fixes
+
+*  use git to check that you're in a Git repository (#689) ([72b8eea4](https://github.com/electron-userland/electron-forge/commit/72b8eea4))
+*  abstract base classes should implement shared type interfaces (#684) ([d15a8cc2](https://github.com/electron-userland/electron-forge/commit/d15a8cc2))
+* **plugin-webpack:**  make the PRELOAD_ENTRY variable map to undefined when there is no preload ([2e71061a](https://github.com/electron-userland/electron-forge/commit/2e71061a))
+
+##### Other Changes
+
+*  use NPM cache ([1e3cb109](https://github.com/electron-userland/electron-forge/commit/1e3cb109))
+
+#### [6.0.0-beta.32](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.32) (2019-01-15)
+
+##### Bug Fixes
+
+* **core:**  add lodash.merge to package.json ([803bb362](https://github.com/electron-userland/electron-forge/commit/803bb362))
+
+#### [6.0.0-beta.31](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.31) (2019-01-15)
+
+##### Chores
+
+* **maker:**  update debian/redhat/snap installer dependencies ([2c22f1be](https://github.com/electron-userland/electron-forge/commit/2c22f1be))
+*  run now with Node 8 in a separate Travis CI stage ([f93da7a5](https://github.com/electron-userland/electron-forge/commit/f93da7a5))
+*  update dependencies ([3b5b8044](https://github.com/electron-userland/electron-forge/commit/3b5b8044))
+*  use cross-env for windows support in test helper ([91c35869](https://github.com/electron-userland/electron-forge/commit/91c35869))
+*  fix linting issue in tools ([ec34411a](https://github.com/electron-userland/electron-forge/commit/ec34411a))
+*  update all package.json refs to match top level package.json ([07fc2aa4](https://github.com/electron-userland/electron-forge/commit/07fc2aa4))
+*  update all deps for v6 ([d0bdf611](https://github.com/electron-userland/electron-forge/commit/d0bdf611))
+* **core:**  upgrade to Electron Packager 13 ([ba612bc4](https://github.com/electron-userland/electron-forge/commit/ba612bc4))
+
+##### Documentation Changes
+
+*  add docs on using the new testing helpers ([06c4602b](https://github.com/electron-userland/electron-forge/commit/06c4602b))
+
+##### New Features
+
+* **core:**
+  *  add support for electron-nightly ([a74169ee](https://github.com/electron-userland/electron-forge/commit/a74169ee))
+  *  add basic Forge v5 to v6 importer ([648ef333](https://github.com/electron-userland/electron-forge/commit/648ef333))
+
+##### Bug Fixes
+
+* **plugin-webpack:**  fix incorrect PRELOAD_WEBPACK_ENTRY. (#635) ([6eae1b5c](https://github.com/electron-userland/electron-forge/commit/6eae1b5c))
+
+##### Refactors
+
+*  make running tests better with --fast and --match utils ([fb776e19](https://github.com/electron-userland/electron-forge/commit/fb776e19))
+* **plugin-auto-unpack-natives:**  clean up plugin impl ([a05e2dc0](https://github.com/electron-userland/electron-forge/commit/a05e2dc0))
+
+##### Tests
+
+* **core:**
+  *  add tests for updateElectronDependency and getElectronVersion ([cc93be9e](https://github.com/electron-userland/electron-forge/commit/cc93be9e))
+  *  fix fixture resolution for core tests ([7a0dfe9b](https://github.com/electron-userland/electron-forge/commit/7a0dfe9b))
+* **publisher-base:**  add __is test for base publisher ([503f3025](https://github.com/electron-userland/electron-forge/commit/503f3025))
+
 #### [6.0.0-beta.30](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.30) (2018-11-20)
 
 ##### Chores

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-rpm",
-  "version": "6.0.0-beta.30",
+  "version": "6.0.0-beta.33",
   "description": "Rpm maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -18,11 +18,10 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.30",
-    "@electron-forge/shared-types": "6.0.0-beta.30",
-    "pify": "^4.0.0"
+    "@electron-forge/maker-base": "6.0.0-beta.33",
+    "@electron-forge/shared-types": "6.0.0-beta.33"
   },
   "optionalDependencies": {
-    "electron-installer-redhat": "^0.5.0"
+    "electron-installer-redhat": "^1.0.0"
   }
 }

@@ -1,28 +1,35 @@
 language: node_js
-node_js:
-- '6'
-os:
-- linux
-- osx
-dist: trusty
+node_js: '6'
+dist: xenial
 osx_image: xcode8.3
-sudo: required
-cache:
-  directories:
-  - node_modules
+cache: npm
 services:
 - docker
-env:
-  matrix:
-  - NODE_INSTALLER=npm
-  - NODE_INSTALLER=yarn
+jobs:
+  include:
+  - stage: test
+    os: linux
+    env: NODE_INSTALLER=npm
+  - os: linux
+    env: NODE_INSTALLER=yarn
+  - os: osx
+    env: NODE_INSTALLER=npm
+  - os: osx
+    env: NODE_INSTALLER=yarn
+  - stage: docs
+    os: linux
+    node_js: '8'
+    script: ci/docs.sh
+stages:
+- test
+- name: docs
+  if: branch = master
 branches:
   only:
   - master
-  - v6
   - /^v\d+\.\d+\.\d+/
 install:
-- npm i -g bolt@0.21.2
+- npm i -g bolt@0.22.5
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
