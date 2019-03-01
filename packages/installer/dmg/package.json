@@ -8,7 +8,7 @@
   "main": "dist/InstallerDMG.js",
   "typings": "dist/InstallerDMG.d.ts",
   "devDependencies": {
-    "mocha": "^5.0.0"
+    "mocha": "^6.0.0"
   },
   "engines": {
     "node": ">= 6.0"

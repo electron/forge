@@ -1,0 +1,9 @@
+{
+  "require": [
+    "ts-node/register",
+    "@babel/register",
+    "./tools/test-setup.ts"
+  ],
+  "timeout": 800000,
+  "recursive": true
+}

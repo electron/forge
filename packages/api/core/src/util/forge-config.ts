@@ -86,7 +86,7 @@ export default async (dir: string) => {
     try {
       forgeConfig = require(path.resolve(dir, forgeConfig)) as ForgeConfig;
     } catch (err) {
-      console.error(`Failed to load: ${path.resolve(dir, forgeConfig)}`);
+      console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
     }
   } else if (typeof forgeConfig !== 'object') {
