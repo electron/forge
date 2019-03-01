@@ -1597,19 +1597,6 @@ arrify@^1.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
 
-asar@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-0.11.0.tgz#b926e792c315f8c048c43371e325b09c97a76464"
-  integrity sha1-uSbnksMV+MBIxDNx4yWwnJenZGQ=
-  dependencies:
-    chromium-pickle-js "^0.1.0"
-    commander "^2.9.0"
-    cuint "^0.2.1"
-    glob "^6.0.4"
-    minimatch "^3.0.0"
-    mkdirp "^0.5.0"
-    mksnapshot "^0.3.0"
-
 asar@^0.12.0:
   version "0.12.4"
   resolved "https://registry.yarnpkg.com/asar/-/asar-0.12.4.tgz#2dd3f116882eab8c0f23b754792a82a7d9fce171"
@@ -1855,7 +1842,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.0.6, bluebird@^3.1.1, bluebird@^3.3.4, bluebird@^3.5.0, bluebird@^3.5.3:
+bluebird@^3.0.6, bluebird@^3.1.1, bluebird@^3.5.0, bluebird@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.3.tgz#7d01c6f9616c9a51ab0f8c549a79dfe6ec33efa7"
   integrity sha512-/qKPUQlaW1OyR51WeCPBvRnAlnZFUJkCSG5HzGnuIqhgyJtF+T94lFnn33eiazjRm2LAHVy2guNnaq48X9SJuw==
@@ -2262,11 +2249,6 @@ chrome-trace-event@^1.0.0:
   integrity sha512-xDbVgyfDTT2piup/h8dK/y4QZfJRSa73bw1WZ8b4XM1o7fsFubUVGYcE+1ANtOzJJELGpYoG2961z0Z6OAld9A==
   dependencies:
     tslib "^1.9.0"
-
-chromium-pickle-js@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/chromium-pickle-js/-/chromium-pickle-js-0.1.0.tgz#1d48b107d82126a2f3e211c2ea25f803ba551b21"
-  integrity sha1-HUixB9ghJqLz4hHC6iX4A7pVGyE=
 
 chromium-pickle-js@^0.2.0:
   version "0.2.0"
@@ -3256,17 +3238,17 @@ electron-windows-store@^2.1.0:
     multiline "^2.0.0"
     path-exists "^3.0.0"
 
-electron-winstaller@^2.5.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/electron-winstaller/-/electron-winstaller-2.7.0.tgz#55fb64901bcdeeb9b3facd825e1ef2658b94a27d"
-  integrity sha512-WKRUTyGzTQbM2Q6dYm/iQqdYRQRTMiFakPxqOCJrH29YPVelGG9vNldal68fnq2yL+FFsoQi/3+qb6jDk143mw==
+electron-winstaller@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/electron-winstaller/-/electron-winstaller-3.0.0.tgz#e09e216b859a9a83b06280fcfd253c4b10760c74"
+  integrity sha512-+OZb2BEA3q7oVH/mOl4ludEAWlOtzxjx5SqjXHptVX2VJwmZVysmwL/duZaXFhTQmucjs3a4vB2h7g1qNHaHwQ==
   dependencies:
-    asar "^0.11.0"
-    bluebird "^3.3.4"
-    debug "^2.2.0"
-    fs-extra "^2.1.2"
+    asar "^1.0.0"
+    debug "^4.1.1"
+    fs-extra "^7.0.1"
     lodash.template "^4.2.2"
-    temp "^0.8.3"
+    pify "^4.0.1"
+    temp "^0.9.0"
 
 electron-wix-msi@^2.1.1:
   version "2.1.1"
@@ -3926,14 +3908,6 @@ fs-extra@^0.30.0:
     klaw "^1.0.0"
     path-is-absolute "^1.0.0"
     rimraf "^2.2.8"
-
-fs-extra@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-2.1.2.tgz#046c70163cef9aad46b0e4a7fa467fb22d71de35"
-  integrity sha1-BGxwFjzvmq1GsOSn+kZ/si1x3jU=
-  dependencies:
-    graceful-fs "^4.1.2"
-    jsonfile "^2.1.0"
 
 fs-extra@^4.0.0, fs-extra@^4.0.1:
   version "4.0.3"
@@ -7297,7 +7271,7 @@ right-pad@^1.0.1:
   resolved "https://registry.yarnpkg.com/right-pad/-/right-pad-1.0.1.tgz#8ca08c2cbb5b55e74dafa96bf7fd1a27d568c8d0"
   integrity sha1-jKCMLLtbVedNr6lr9/0aJ9VoyNA=
 
-rimraf@2, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2, rimraf@^2.6.3:
+rimraf@2, rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2, rimraf@^2.6.3, rimraf@~2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
@@ -7961,6 +7935,13 @@ temp@0.8.3, temp@^0.8.3:
   dependencies:
     os-tmpdir "^1.0.0"
     rimraf "~2.2.6"
+
+temp@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/temp/-/temp-0.9.0.tgz#61391795a11bd9738d4c4d7f55f012cb8f55edaa"
+  integrity sha512-YfUhPQCJoNQE5N+FJQcdPz63O3x3sdT4Xju69Gj4iZe0lBKOtnAMi0SLj9xKhGkcGhsxThvTJ/usxtFPo438zQ==
+  dependencies:
+    rimraf "~2.6.2"
 
 term-size@^1.2.0:
   version "1.2.0"
