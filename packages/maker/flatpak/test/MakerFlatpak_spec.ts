@@ -33,7 +33,7 @@ describe('MakerFlatpak', () => {
 
     flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
-      'electron-installer-flatpak': eidStub,
+      '@malept/electron-installer-flatpak': eidStub,
     }).default;
     createMaker = () => {
       maker = new flatpakModule(config); // eslint-disable-line
