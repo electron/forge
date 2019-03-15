@@ -160,29 +160,34 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
-          : `'http://localhost:${this.port}/${entryPoint.name}'`;
-      } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
+      const entryVariableKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`;
+
+      let entryValue = this.isProd
+        ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
+        : `'http://localhost:${this.port}/${entryPoint.name}'`;
+
+      if (!entryPoint.html) {
+        entryValue = this.isProd
           ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
           : `'http://localhost:${this.port}/${entryPoint.name}/index.js'`;
       }
 
-      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
+      defines[entryVariableKey] = entryValue;
+      defines[`process.env.${entryVariableKey}`] = entryValue;
+
+      let preloadValue = null;
       if (entryPoint.preload) {
-        defines[preloadDefineKey] =
-          this.isProd
+        preloadValue = this.isProd
           ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
-      } else {
-        // If this entry-point has no configured preload script just map this constant to `undefined`
-        // so that any code using it still works.  This makes quick-start / docs simpler.
-        defines[preloadDefineKey] = 'undefined';
       }
+
+      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
+
+      // If this entry-point has no configured preload script just map this constant to `undefined`
+      // so that any code using it still works.  This makes quick-start / docs simpler.
+      defines[preloadDefineKey] = preloadValue || 'undefined';
+      defines[`process.env.${preloadDefineKey}`] = preloadValue || 'undefined';
     }
     return defines;
   }
