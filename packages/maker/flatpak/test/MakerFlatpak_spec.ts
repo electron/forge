@@ -15,7 +15,7 @@ class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPl
 describe('MakerFlatpak', () => {
   let flatpakModule: typeof MakerImpl;
   let maker: MakerImpl;
-  let eidStub: SinonStub;
+  let eifStub: SinonStub;
   let ensureDirectoryStub: SinonStub;
   let config: MakerFlatpakConfig;
   let createMaker: () => void;
@@ -28,12 +28,12 @@ describe('MakerFlatpak', () => {
 
   beforeEach(() => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
-    eidStub = stub().callsArg(1);
+    eifStub = stub().resolves();
     config = {};
 
     flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
-      '@malept/electron-installer-flatpak': eidStub,
+      '@malept/electron-installer-flatpak': eifStub,
     }).default;
     createMaker = () => {
       maker = new flatpakModule(config); // eslint-disable-line
@@ -45,7 +45,7 @@ describe('MakerFlatpak', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    const opts = eifStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakArch(process.arch as ForgeArch),
       src: dir,
@@ -63,7 +63,7 @@ describe('MakerFlatpak', () => {
     createMaker();
 
     await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    const opts = eifStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: flatpakArch(process.arch as ForgeArch),
       options: {
