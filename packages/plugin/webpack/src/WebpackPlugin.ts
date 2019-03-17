@@ -154,9 +154,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
-  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, upOneMore: boolean, basename: string) => {
+  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string) => {
     if (this.isProd) {
-      return `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', '${basename}')\}\``;
+      return `\`file://\$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')\}\``;
     } else {
       const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
       if (basename !== 'index.html') {
@@ -167,7 +167,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
   }
 
-  getDefines = (upOneMore = false) => {
+  getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {};
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
@@ -175,9 +175,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     for (const entryPoint of this.config.renderer.entryPoints) {
       const entryKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`;
       if (entryPoint.html) {
-        defines[entryKey] = this.rendererEntryPoint(entryPoint, upOneMore, 'index.html');
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.html');
       } else {
-        defines[entryKey] = this.rendererEntryPoint(entryPoint, upOneMore, 'index.js');
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
       }
 
       const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
@@ -261,7 +261,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         .concat(this.isProd || !Boolean(entryPoint.html) ? [] : ['webpack-hot-middleware/client']);
     }
 
-    const defines = this.getDefines(true);
+    const defines = this.getDefines(false);
     return merge.smart({
       entry,
       devtool: 'inline-source-map',
