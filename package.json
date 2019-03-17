@@ -160,7 +160,7 @@
     "electron-installer-redhat": "^1.0.0",
     "electron-installer-snap": "^3.1.0",
     "electron-windows-store": "^2.1.0",
-    "electron-winstaller": "^3.0.0",
+    "electron-winstaller": "^3.0.4",
     "electron-wix-msi": "^2.1.1"
   }
 }

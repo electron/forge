@@ -632,6 +632,13 @@
     pirates "^4.0.0"
     source-map-support "^0.5.9"
 
+"@babel/runtime@^7.3.4":
+  version "7.3.4"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.3.4.tgz#73d12ba819e365fcf7fd152aed56d6df97d21c83"
+  integrity sha512-IvfvnMdSaLBateu0jfsYIpZTxAc2cKEXEMiezGGN75QcBcecDUKd3PgLAncT0oOgxKy8dd8hrJKj9MfzgfZd6g==
+  dependencies:
+    regenerator-runtime "^0.12.0"
+
 "@babel/template@^7.0.0", "@babel/template@^7.1.0", "@babel/template@^7.1.2", "@babel/template@^7.2.2":
   version "7.2.2"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.2.2.tgz#005b3fdf0ed96e88041330379e0da9a708eb2907"
@@ -3238,11 +3245,12 @@ electron-windows-store@^2.1.0:
     multiline "^2.0.0"
     path-exists "^3.0.0"
 
-electron-winstaller@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/electron-winstaller/-/electron-winstaller-3.0.0.tgz#e09e216b859a9a83b06280fcfd253c4b10760c74"
-  integrity sha512-+OZb2BEA3q7oVH/mOl4ludEAWlOtzxjx5SqjXHptVX2VJwmZVysmwL/duZaXFhTQmucjs3a4vB2h7g1qNHaHwQ==
+electron-winstaller@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/electron-winstaller/-/electron-winstaller-3.0.4.tgz#29294e323499147ecc8f47d6d2befd6e4ab9ba8c"
+  integrity sha512-u3wTQUzBBBGWbExkKvgKt69EMoF0xC8uLQS5vTXtwr97BH8ffSW8CcHvVGWRyRDIhg2AA+togKOKWr41wgCeiA==
   dependencies:
+    "@babel/runtime" "^7.3.4"
     asar "^1.0.0"
     debug "^4.1.1"
     fs-extra "^7.0.1"
@@ -7065,6 +7073,11 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
+
+regenerator-runtime@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.12.1.tgz#fa1a71544764c036f8c49b13a08b2594c9f8a0de"
+  integrity sha512-odxIc1/vDlo4iZcfXqRYFj0vpXFNoGdKMAUieAlFYO6m/nl5e9KR/beGf41z4a1FI+aQgtjhuaSlDxQ0hmkrHg==
 
 regenerator-transform@^0.13.4:
   version "0.13.4"
