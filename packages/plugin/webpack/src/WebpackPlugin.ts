@@ -154,7 +154,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
-  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string) => {
+  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string => {
     if (this.isProd) {
       return `\`file://\$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')\}\``;
     } else {
@@ -167,20 +167,25 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
   }
 
+  toEnvironmentVariable = (entryPoint: WebpackPluginEntryPoint, preload = false): string => {
+    const suffix = preload ? '_PRELOAD_WEBPACK_ENTRY' : '_WEBPACK_ENTRY';
+    return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
+  }
+
   getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {};
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
-      const entryKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`;
+      const entryKey = this.toEnvironmentVariable(entryPoint);
       if (entryPoint.html) {
         defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.html');
       } else {
         defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
       }
 
-      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
+      const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
       if (entryPoint.preload) {
         defines[preloadDefineKey] =
           this.isProd
