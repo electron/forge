@@ -172,6 +172,20 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
   }
 
+  getPreloadDefine = (entryPoint: WebpackPluginEntryPoint): string => {
+      if (entryPoint.preload) {
+        if (this.isProd) {
+          return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+        } else {
+          return `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+        }
+      } else {
+        // If this entry-point has no configured preload script just map this constant to `undefined`
+        // so that any code using it still works.  This makes quick-start / docs simpler.
+        return 'undefined';
+      }
+  }
+
   getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {};
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
@@ -186,17 +200,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       }
 
       const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
-      if (entryPoint.preload) {
-        if (this.isProd) {
-          defines[preloadDefineKey] = `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
-        } else {
-          defines[preloadDefineKey] = `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
-        }
-      } else {
-        // If this entry-point has no configured preload script just map this constant to `undefined`
-        // so that any code using it still works.  This makes quick-start / docs simpler.
-        defines[preloadDefineKey] = 'undefined';
-      }
+      defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
     }
     return defines;
   }
