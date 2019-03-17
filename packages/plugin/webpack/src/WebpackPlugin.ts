@@ -187,10 +187,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
       const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
       if (entryPoint.preload) {
-        defines[preloadDefineKey] =
-          this.isProd
-          ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
-          : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+        if (this.isProd) {
+          defines[preloadDefineKey] = `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+        } else {
+          defines[preloadDefineKey] = `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+        }
       } else {
         // If this entry-point has no configured preload script just map this constant to `undefined`
         // so that any code using it still works.  This makes quick-start / docs simpler.
