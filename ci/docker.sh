@@ -1,11 +1,10 @@
-#!/bin/bash
-
-set -e
+#!/bin/bash -e
 
 NODE_INSTALLER="$1"
+BOLT_VERSION="$2"
 
 npm i -g yarn
-npm i -g bolt@0.22.6
+npm i -g bolt@$BOLT_VERSION
 
 cd /code
 

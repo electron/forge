@@ -5,6 +5,9 @@ osx_image: xcode8.3
 cache: npm
 services:
 - docker
+env:
+  global:
+  - BOLT_VERSION: "0.22.6"
 jobs:
   include:
   - stage: test
@@ -29,7 +32,7 @@ branches:
   - master
   - /^v\d+\.\d+\.\d+/
 install:
-- if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then npm install -g bolt@0.22.6; fi
+- if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then npm install -g bolt@$BOLT_VERSION; fi
 script: ci/script.sh
 after_success: ci/coverage.sh
 notifications:
