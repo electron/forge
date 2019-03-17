@@ -154,22 +154,30 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
+  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, upOneMore: boolean, basename: string) => {
+    if (this.isProd) {
+      return `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', '${basename}')\}\``;
+    } else {
+      const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
+      if (basename !== 'index.html') {
+        return `'${baseUrl}/${basename}'`;
+      } else {
+        return `'${baseUrl}'`;
+      }
+    }
+  }
+
   getDefines = (upOneMore = false) => {
     const defines: { [key: string]: string; } = {};
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
+      const entryKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`;
       if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
-          : `'http://localhost:${this.port}/${entryPoint.name}'`;
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, upOneMore, 'index.html');
       } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
-          : `'http://localhost:${this.port}/${entryPoint.name}/index.js'`;
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, upOneMore, 'index.js');
       }
 
       const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
