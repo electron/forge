@@ -13,4 +13,8 @@ bolt
 bolt build
 bolt lint
 
+# For flatpak
+mkdir -p /var/run/dbus
+dbus-daemon --system
+
 DEBUG=electron-installer-snap:snapcraft CI=true bolt test -- --installer=$NODE_INSTALLER

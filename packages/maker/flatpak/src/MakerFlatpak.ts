@@ -3,7 +3,6 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import fs from 'fs-extra';
 import path from 'path';
-import pify from 'pify';
 
 import { MakerFlatpakConfig } from './Config';
 
@@ -23,7 +22,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
-    return this.isInstalled('electron-installer-flatpak') && process.platform === 'linux';
+    return this.isInstalled('@malept/electron-installer-flatpak') && process.platform === 'linux';
   }
 
   async make({
@@ -32,7 +31,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     targetArch,
   }: MakerOptions) {
     // eslint-disable-next-line global-require
-    const installer = require('electron-installer-flatpak');
+    const installer = require('@malept/electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);
     const outDir = path.resolve(makeDir, 'flatpak');
@@ -44,7 +43,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
       dest: outDir,
     });
 
-    await pify(installer)(flatpakConfig);
+    await installer(flatpakConfig);
 
     return (await fs.readdir(outDir))
       .filter(basename => basename.endsWith('.flatpak'))

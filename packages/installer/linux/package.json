@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-linux",
-  "version": "6.0.0-beta.32",
+  "version": "6.0.0-beta.33",
   "description": "Base linux file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,13 +8,13 @@
   "main": "dist/InstallerLinux.js",
   "typings": "dist/InstallerLinux.d.ts",
   "devDependencies": {
-    "mocha": "^5.0.0"
+    "mocha": "^6.0.0"
   },
   "engines": {
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/installer-base": "6.0.0-beta.32",
+    "@electron-forge/installer-base": "6.0.0-beta.33",
     "pify": "^4.0.0",
     "sudo-prompt": "^8.0.0"
   }

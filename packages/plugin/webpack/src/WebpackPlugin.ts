@@ -20,7 +20,7 @@ import once from './util/once';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
 
 const d = debug('electron-forge:plugin:webpack');
-const BASE_PORT = 3000;
+const DEFAULT_PORT = 3000;
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -36,9 +36,20 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   private servers: http.Server[] = [];
 
   private loggers: Logger[] = [];
+  private port = DEFAULT_PORT;
 
   constructor(c: WebpackPluginConfig) {
     super(c);
+
+    if (c.port) {
+      if (c.port < 1024) {
+        throw new Error(`Cannot specify port (${c.port}) below 1024, as they are privileged`);
+      } else if (c.port > 65535) {
+        throw new Error(`Port specified (${c.port}) is not a valid TCP port.`);
+      } else {
+        this.port = c.port;
+      }
+    }
 
     this.startLogic = this.startLogic.bind(this);
     this.getHook = this.getHook.bind(this);
@@ -158,19 +169,27 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
-          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')}\``
-          : `'http://localhost:${BASE_PORT}/${entryPoint.name}'`;
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
+          this.isProd
+          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
+          : `'http://localhost:${this.port}/${entryPoint.name}'`;
       } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
-          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')}\``
-          : `'http://localhost:${BASE_PORT}/${entryPoint.name}/index.js'`;
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
+          this.isProd
+          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
+          : `'http://localhost:${this.port}/${entryPoint.name}/index.js'`;
       }
 
+      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
       if (entryPoint.preload) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`] = this.isProd
+        defines[preloadDefineKey] =
+          this.isProd
           ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+      } else {
+        // If this entry-point has no configured preload script just map this constant to `undefined`
+        // so that any code using it still works.  This makes quick-start / docs simpler.
+        defines[preloadDefineKey] = 'undefined';
       }
     }
     return defines;
@@ -288,7 +307,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           }
 
           if (err) return onceReject(err);
-          return onceResolve();
+          if (!watch && stats.hasErrors()) {
+            return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+          }
+
+          onceResolve();
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -302,9 +325,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
     await asyncOra('Compiling Renderer Template', async () => {
       await new Promise(async (resolve, reject) => {
-        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err) => {
+        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err, stats) => {
           if (err) return reject(err);
-          return resolve();
+          if (!watch && stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the renderer: ${stats.toString()}`));
+          }
+
+          resolve();
         });
       });
     });
@@ -344,7 +371,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const app = express();
       app.use(server);
       app.use(webpackHotMiddleware(compiler));
-      this.servers.push(app.listen(BASE_PORT));
+      this.servers.push(app.listen(this.port));
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {

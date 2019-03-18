@@ -26,7 +26,7 @@ export default class PluginInterface implements IForgePluginInterface {
         }
         const Plugin = requireSearch<any>(dir, [pluginName]);
         if (!Plugin) {
-          throw new Error(`Could not find module with name: ${pluginName}`);
+          throw new Error(`Could not find module with name: ${plugin[0]}. Make sure it's listed in the devDependencies of your package.json`);
         }
         return new Plugin(opts);
       }

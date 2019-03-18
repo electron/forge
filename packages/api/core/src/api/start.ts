@@ -41,7 +41,7 @@ export default async ({
 
   await rebuild(
     dir,
-    getElectronVersion(packageJSON),
+    await getElectronVersion(dir, packageJSON),
     process.platform as ForgePlatform,
     process.arch as ForgeArch,
     forgeConfig.electronRebuildConfig,

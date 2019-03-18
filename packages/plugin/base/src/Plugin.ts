@@ -1,9 +1,9 @@
-import { ForgeHookFn, StartOptions } from '@electron-forge/shared-types';
+import { ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions } from '@electron-forge/shared-types';
 import { ChildProcess } from 'child_process';
 
 export { StartOptions };
 
-export default abstract class Plugin<C> {
+export default abstract class Plugin<C> implements IForgePlugin {
   public abstract name: string;
 
   __isElectronForgePlugin!: true;
@@ -14,6 +14,9 @@ export default abstract class Plugin<C> {
       enumerable: false,
       configurable: false,
     });
+  }
+
+  init(dir: string, config: ForgeConfig) {
   }
 
   getHook(_hookName: string): ForgeHookFn | null {

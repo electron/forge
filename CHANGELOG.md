@@ -1,3 +1,24 @@
+#### [6.0.0-beta.33](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.33) (2019-02-08)
+
+##### Chores
+
+* **core:**  upgrade electron-rebuild to 1.8.3 ([45d454a4](https://github.com/electron-userland/electron-forge/commit/45d454a4))
+*  upgrade typescript to 3.2.2 (#649) ([7abaf7f7](https://github.com/electron-userland/electron-forge/commit/7abaf7f7))
+
+##### New Features
+
+* **core:**  add basic support for non-exact Electron versions ([177012e9](https://github.com/electron-userland/electron-forge/commit/177012e9))
+
+##### Bug Fixes
+
+*  use git to check that you're in a Git repository (#689) ([72b8eea4](https://github.com/electron-userland/electron-forge/commit/72b8eea4))
+*  abstract base classes should implement shared type interfaces (#684) ([d15a8cc2](https://github.com/electron-userland/electron-forge/commit/d15a8cc2))
+* **plugin-webpack:**  make the PRELOAD_ENTRY variable map to undefined when there is no preload ([2e71061a](https://github.com/electron-userland/electron-forge/commit/2e71061a))
+
+##### Other Changes
+
+*  use NPM cache ([1e3cb109](https://github.com/electron-userland/electron-forge/commit/1e3cb109))
+
 #### [6.0.0-beta.32](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.32) (2019-01-15)
 
 ##### Bug Fixes

@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import path from 'path';
 import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
 import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
 
@@ -31,38 +32,48 @@ describe('updateElectronDependency', () => {
 
 describe('getElectronVersion', () => {
   it('fails without devDependencies', () => {
-    expect(() => getElectronVersion({})).to.throw('does not have any devDependencies');
+    return expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies');
   });
 
   it('fails without electron devDependencies', () => {
-    expect(() => getElectronVersion({ devDependencies: {} })).to.throw('Electron packages in devDependencies');
+    return expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies');
+  });
+
+  it('fails with a non-exact version and no electron installed', () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
+    return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
+  });
+
+  it('works with a non-exact version with electron installed', () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'non-exact');
+    return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal('4.0.9');
   });
 
   it('works with electron-prebuilt-compile', () => {
     const packageJSON = {
       devDependencies: { 'electron-prebuilt-compile': '1.0.0' },
     };
-    expect(getElectronVersion(packageJSON)).to.be.equal('1.0.0');
+    return expect(getElectronVersion('', packageJSON)).to.eventually.equal('1.0.0');
   });
 
-  it('works with electron-prebuilt', () => {
+  it('works with electron-prebuilt', async () => {
     const packageJSON = {
       devDependencies: { 'electron-prebuilt': '1.0.0' },
     };
-    expect(getElectronVersion(packageJSON)).to.be.equal('1.0.0');
+    return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
   });
 
-  it('works with electron-nightly', () => {
+  it('works with electron-nightly', async () => {
     const packageJSON = {
       devDependencies: { 'electron-nightly': '5.0.0-nightly.20190107' },
     };
-    expect(getElectronVersion(packageJSON)).to.be.equal('5.0.0-nightly.20190107');
+    return expect(await getElectronVersion('', packageJSON)).to.be.equal('5.0.0-nightly.20190107');
   });
 
-  it('works with electron', () => {
+  it('works with electron', async () => {
     const packageJSON = {
       devDependencies: { electron: '1.0.0' },
     };
-    expect(getElectronVersion(packageJSON)).to.be.equal('1.0.0');
+    return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
   });
 });

@@ -110,7 +110,7 @@ export default async ({
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw new Error(`Could not find module with name: ${resolvableTarget.name}`);
+        throw new Error(`Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`);
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
@@ -160,7 +160,7 @@ export default async ({
 
   await runHook(forgeConfig, 'preMake');
 
-  for (const targetArch of parseArchs(platform, arch, getElectronVersion(packageJSON))) {
+  for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
     const packageDir = path.resolve(actualOutDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
     if (!(await fs.pathExists(packageDir))) {
       throw new Error(`Couldn't find packaged app at: ${packageDir}`);
