@@ -83,10 +83,10 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
 }
 
 async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
-  return typeof forgeConfig === 'string'
+  return typeof(forgeConfig) === 'string'
     && (
       await fs.pathExists(path.resolve(dir, forgeConfig))
-      || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
+      || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
     );
 }
 
@@ -104,7 +104,7 @@ export default async (dir: string) => {
     }
   }
 
-  if (forgeConfigIsValidFilePath(dir, forgeConfig)) {
+  if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
       // eslint-disable-next-line global-require, import/no-dynamic-require
       forgeConfig = require(path.resolve(dir, forgeConfig as string)) as ForgeConfig;
