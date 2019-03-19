@@ -1,5 +1,5 @@
 import {
-  ForgeArch, ForgeConfig, ForgePlatform,
+  ForgeArch, ForgeConfig, ForgePlatform, IForgeMaker,
 } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
