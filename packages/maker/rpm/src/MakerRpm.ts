@@ -30,7 +30,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     targetArch,
     packageJSON,
   }: MakerOptions) {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 
     const arch = rpmArch(targetArch);

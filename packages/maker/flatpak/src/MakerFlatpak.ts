@@ -30,7 +30,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     makeDir,
     targetArch,
   }: MakerOptions) {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('@malept/electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);

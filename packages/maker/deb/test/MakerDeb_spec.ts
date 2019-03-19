@@ -88,6 +88,7 @@ describe('MakerDeb', () => {
 
   if (process.platform === 'linux') {
     it('should return the proper pre-release version in the outPath', async () => {
+      // eslint-disable-next-line import/no-unresolved
       (eidStub as any).transformVersion = require('electron-installer-debian').transformVersion;
       packageJSON.version = '1.2.3-beta.4';
       const outPath = await (maker.make as any)({

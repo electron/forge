@@ -29,7 +29,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     targetArch,
     packageJSON,
   }: MakerOptions) {
-    // eslint-disable-next-line global-require
+    // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-debian');
 
     const arch = debianArch(targetArch);
