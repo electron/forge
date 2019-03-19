@@ -157,14 +157,12 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string => {
     if (this.isProd) {
       return `\`file://\$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')\}\``;
-    } else {
-      const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
-      if (basename !== 'index.html') {
-        return `'${baseUrl}/${basename}'`;
-      } else {
-        return `'${baseUrl}'`;
-      }
     }
+    const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
+    if (basename !== 'index.html') {
+      return `'${baseUrl}/${basename}'`;
+    }
+    return `'${baseUrl}'`;
   }
 
   toEnvironmentVariable = (entryPoint: WebpackPluginEntryPoint, preload = false): string => {
@@ -173,17 +171,15 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   }
 
   getPreloadDefine = (entryPoint: WebpackPluginEntryPoint): string => {
-      if (entryPoint.preload) {
-        if (this.isProd) {
-          return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
-        } else {
-          return `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
-        }
-      } else {
-        // If this entry-point has no configured preload script just map this constant to `undefined`
-        // so that any code using it still works.  This makes quick-start / docs simpler.
-        return 'undefined';
+    if (entryPoint.preload) {
+      if (this.isProd) {
+        return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
       }
+      return `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+    }
+    // If this entry-point has no configured preload script just map this constant to `undefined`
+    // so that any code using it still works.  This makes quick-start / docs simpler.
+    return 'undefined';
   }
 
   getDefines = (inRendererDir = true) => {
