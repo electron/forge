@@ -49,7 +49,7 @@ describe('MakerFlatpak', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON
+      dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
     expect(opts).to.deep.equal({

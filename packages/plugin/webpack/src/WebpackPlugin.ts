@@ -36,6 +36,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   private servers: http.Server[] = [];
 
   private loggers: Logger[] = [];
+
   private port = DEFAULT_PORT;
 
   constructor(c: WebpackPluginConfig) {
@@ -169,26 +170,24 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')\}\``
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
+          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')}\``
           : `'http://localhost:${this.port}/${entryPoint.name}'`;
       } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] =
-          this.isProd
-          ? `\`file://\$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')\}\``
+        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
+          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')}\``
           : `'http://localhost:${this.port}/${entryPoint.name}/index.js'`;
       }
 
       const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
       if (entryPoint.preload) {
-        defines[preloadDefineKey] =
-          this.isProd
+        defines[preloadDefineKey] = this.isProd
           ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
           : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
       } else {
-        // If this entry-point has no configured preload script just map this constant to `undefined`
-        // so that any code using it still works.  This makes quick-start / docs simpler.
+        // If this entry-point has no configured preload script just map this constant to
+        // `undefined` so that any code using it still works.  This makes
+        // quick-start / docs simpler.
         defines[preloadDefineKey] = 'undefined';
       }
     }
@@ -311,7 +310,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
           }
 
-          onceResolve();
+          return onceResolve();
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -325,14 +324,15 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
     await asyncOra('Compiling Renderer Template', async () => {
       await new Promise(async (resolve, reject) => {
-        webpack(await this.getRendererConfig(this.config.renderer.entryPoints)).run((err, stats) => {
-          if (err) return reject(err);
-          if (!watch && stats.hasErrors()) {
-            return reject(new Error(`Compilation errors in the renderer: ${stats.toString()}`));
-          }
+        webpack(await this.getRendererConfig(this.config.renderer.entryPoints))
+          .run((err, stats) => {
+            if (err) return reject(err);
+            if (!watch && stats.hasErrors()) {
+              return reject(new Error(`Compilation errors in the renderer: ${stats.toString()}`));
+            }
 
-          resolve();
-        });
+            return resolve();
+          });
       });
     });
 

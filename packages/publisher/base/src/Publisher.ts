@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher } from '@electron-forge/shared-types';
+import {
+  ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher,
+} from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**
