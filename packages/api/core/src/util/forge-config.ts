@@ -83,10 +83,10 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
 }
 
 async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
-  return typeof(forgeConfig) === 'string'
+  return typeof forgeConfig === 'string'
     && (
       await fs.pathExists(path.resolve(dir, forgeConfig))
-      || await fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
+      || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
     );
 }
 
