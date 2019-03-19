@@ -11,10 +11,12 @@ import GitHub from './util/github';
 import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
+  // eslint-disable-next-line camelcase
   tag_name: string;
   assets: {
     name: string;
   }[];
+  // eslint-disable-next-line camelcase
   upload_url: string;
 }
 
