@@ -198,9 +198,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       } else {
         defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
       }
+      defines[`process.env.${entryKey}`] = defines[entryKey];
 
       const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
       defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
+      defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
     }
     return defines;
   }
