@@ -1,3 +1,20 @@
+#### [6.0.0-beta.34](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.34) (2019-03-21)
+
+##### Chores
+
+*  temporarily release stable tags for V6 beta ([be1cf7b0](https://github.com/electron-userland/electron-forge/commit/be1cf7b0))
+*  switch flatpak maker to @malept/electron-installer-flatpak (#714) ([02ddd848](https://github.com/electron-userland/electron-forge/commit/02ddd848))
+*  upgrade electron-winstaller to ^3.0.4 ([d3e7305c](https://github.com/electron-userland/electron-forge/commit/d3e7305c))
+*  fix ps1 issue on windows CI ([5c13df3b](https://github.com/electron-userland/electron-forge/commit/5c13df3b))
+*  upgrade dependencies (#701) ([83bfe971](https://github.com/electron-userland/electron-forge/commit/83bfe971))
+
+##### Bug Fixes
+
+* **plugin-webpack:**
+  *  allow port to be configurable (#693) ([4da0230f](https://github.com/electron-userland/electron-forge/commit/4da0230f))
+  *  throw an error if webpack generates compilation errors when packaging (#695) ([696b11d9](https://github.com/electron-userland/electron-forge/commit/696b11d9))
+* **core:**  be more descriptive when a plugin/maker/publisher module isn't found ([788412e3](https://github.com/electron-userland/electron-forge/commit/788412e3))
+
 #### [6.0.0-beta.33](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.33) (2019-02-08)
 
 ##### Chores
