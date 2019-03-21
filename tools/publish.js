@@ -53,10 +53,10 @@ const publisher = new Listr([
         // const isBeta = version.includes('beta');
         const isBeta = false;
         return {
-          title: `Publishing: ${`${name}@${version}`.cyan} (beta=${isBeta ? 'true'.green : 'red'.red})`,
+          title: `Publishing: ${`${name}@${version}`.cyan} (beta=${isBeta ? 'true'.green : 'false'.red})`,
           task: async () => {
             try {
-              await spawnPromise('npm', ['publish', '--access=public', `${isBeta ? '--tag=beta' : ''}`, `--otp=${ctx.otp}`], {
+              await spawnPromise('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
                 cwd: dir,
               });
             } catch (err) {
