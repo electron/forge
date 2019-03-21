@@ -15,6 +15,7 @@ packages/utils/types/index.d.ts
 packages/maker/**/README.md
 packages/publisher/**/README.md
 packages/plugin/**/README.md
+packages/api/cli/README.md
 !packages/**/base/README.md
 !/README.md
 packages/*/*/index.ts
