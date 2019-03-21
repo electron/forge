@@ -11,6 +11,9 @@ const workspaceMappings: { [space: string]: { [packageName: string]: string | un
   },
   publisher: {},
   plugin: {},
+  api: {
+    core: 'does-not-exist-plz-no-readme',
+  },
 };
 
 const BASE_DIR = path.resolve(__dirname, '..');
@@ -60,13 +63,19 @@ const sync = () => {
       task: (ctx: SyncContext) => new Listr(ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
         title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
         task: async () => {
-          const r = await fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
+          let rp: ReturnType<typeof fetch>;
+          if (workspace !== 'api') {
+            rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
+          } else {
+            rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
+          }
+          const r = await rp;
           if (r.status !== 200) return;
 
           const md = sanitize(await r.text());
           await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
         },
-      })), { concurrent: 5 }),
+      })), { concurrent: 3 }),
     },
   ]);
 };
