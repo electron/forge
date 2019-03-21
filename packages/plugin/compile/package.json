@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-compile",
-  "version": "6.0.0-beta.33",
+  "version": "6.0.0-beta.34",
   "description": "Electron Compile plugin for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 6.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.33",
-    "@electron-forge/plugin-base": "6.0.0-beta.33",
+    "@electron-forge/async-ora": "6.0.0-beta.34",
+    "@electron-forge/plugin-base": "6.0.0-beta.34",
     "fs-extra": "^7.0.0"
   }
 }
