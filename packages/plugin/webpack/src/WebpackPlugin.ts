@@ -163,33 +163,52 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
-  getDefines = (upOneMore = false) => {
+  // eslint-disable-next-line max-len
+  rendererEntryPoint = (entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string => {
+    if (this.isProd) {
+      return `\`file://$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')}\``;
+    }
+    const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
+    if (basename !== 'index.html') {
+      return `'${baseUrl}/${basename}'`;
+    }
+    return `'${baseUrl}'`;
+  }
+
+  toEnvironmentVariable = (entryPoint: WebpackPluginEntryPoint, preload = false): string => {
+    const suffix = preload ? '_PRELOAD_WEBPACK_ENTRY' : '_WEBPACK_ENTRY';
+    return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
+  }
+
+  getPreloadDefine = (entryPoint: WebpackPluginEntryPoint): string => {
+    if (entryPoint.preload) {
+      if (this.isProd) {
+        return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+      }
+      return `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+    }
+    // If this entry-point has no configured preload script just map this constant to `undefined`
+    // so that any code using it still works.  This makes quick-start / docs simpler.
+    return 'undefined';
+  }
+
+  getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {};
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.config.renderer.entryPoints) {
+      const entryKey = this.toEnvironmentVariable(entryPoint);
       if (entryPoint.html) {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
-          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.html')}\``
-          : `'http://localhost:${this.port}/${entryPoint.name}'`;
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.html');
       } else {
-        defines[`${entryPoint.name.toUpperCase().replace(/ /g, '_')}_WEBPACK_ENTRY`] = this.isProd
-          ? `\`file://$\{require('path').resolve(__dirname, '../renderer', '${upOneMore ? '..' : '.'}', '${entryPoint.name}', 'index.js')}\``
-          : `'http://localhost:${this.port}/${entryPoint.name}/index.js'`;
+        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
       }
+      defines[`process.env.${entryKey}`] = defines[entryKey];
 
-      const preloadDefineKey = `${entryPoint.name.toUpperCase().replace(/ /g, '_')}_PRELOAD_WEBPACK_ENTRY`;
-      if (entryPoint.preload) {
-        defines[preloadDefineKey] = this.isProd
-          ? `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`
-          : `'${path.resolve(this.baseDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
-      } else {
-        // If this entry-point has no configured preload script just map this constant to
-        // `undefined` so that any code using it still works.  This makes
-        // quick-start / docs simpler.
-        defines[preloadDefineKey] = 'undefined';
-      }
+      const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
+      defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
+      defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
     }
     return defines;
   }
@@ -263,7 +282,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         .concat(this.isProd || !entryPoint.html ? [] : ['webpack-hot-middleware/client']);
     }
 
-    const defines = this.getDefines(true);
+    const defines = this.getDefines(false);
     return merge.smart({
       entry,
       devtool: 'inline-source-map',
