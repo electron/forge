@@ -1,6 +1,5 @@
 import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import { asyncOra } from '@electron-forge/async-ora';
-import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 import debug from 'debug';
 import FormData from 'form-data';
 import fs from 'fs';
@@ -17,11 +16,9 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
   private collapseMakeResults = (makeResults: PublisherOptions['makeResults']) => {
     const newMakeResults: typeof makeResults = [];
     for (const result of makeResults) {
-      const existingResult = newMakeResults.find((nResult) => {
-        return nResult.arch === result.arch
+      const existingResult = newMakeResults.find(nResult => nResult.arch === result.arch
           && nResult.platform === result.platform
-          && nResult.packageJSON.version === result.packageJSON.version;
-      });
+          && nResult.packageJSON.version === result.packageJSON.version);
       if (existingResult) {
         existingResult.artifacts.push(...result.artifacts);
       } else {
@@ -36,8 +33,8 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
 
     const collapsedResults = this.collapseMakeResults(makeResults);
 
-    for (const [i, makeResult] of collapsedResults.entries()) {
-      const msg = `Uploading result (${i + 1}/${collapsedResults.length})`;
+    for (const [resultIdx, makeResult] of collapsedResults.entries()) {
+      const msg = `Uploading result (${resultIdx + 1}/${collapsedResults.length})`;
       d(msg);
 
       await asyncOra(msg, async () => {
@@ -46,12 +43,13 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
         data.append('arch', makeResult.arch);
         data.append('version', makeResult.packageJSON.version);
 
-        let i = 0;
+        let artifactIdx = 0;
         for (const artifactPath of makeResult.artifacts) {
           // Skip the RELEASES file, it is automatically generated on the server
+          // eslint-disable-next-line no-continue
           if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
-          data.append(`file${i}`, fs.createReadStream(artifactPath));
-          i += 1;
+          data.append(`file${artifactIdx}`, fs.createReadStream(artifactPath));
+          artifactIdx += 1;
         }
 
         const response = await fetch(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`, {
@@ -63,7 +61,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
         });
 
         if (response.status !== 200) {
-          throw `Unexpected response code from Nucleus: ${response.status}\n\nBody:\n${await response.text()}`;
+          throw new Error(`Unexpected response code from Nucleus: ${response.status}\n\nBody:\n${await response.text()}`);
         }
       });
     }

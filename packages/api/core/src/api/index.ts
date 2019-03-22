@@ -1,6 +1,5 @@
 import 'colors';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
-import { ChildProcess } from 'child_process';
 
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
@@ -24,12 +23,14 @@ export class ForgeAPI {
   import(opts: ImportOptions) {
     return _import(opts);
   }
+
   /**
    * Initialize a new Electron Forge template project in the given directory.
    */
   init(opts: InitOptions) {
     return init(opts);
   }
+
   /**
    * Install an Electron application from GitHub.
    *
@@ -38,6 +39,7 @@ export class ForgeAPI {
   install(opts: InstallOptions) {
     return install(opts);
   }
+
   /**
    * Lint a local Electron application.
    *
@@ -47,24 +49,28 @@ export class ForgeAPI {
   lint(opts: LintOptions) {
     return lint(opts);
   }
+
   /**
    * Make distributables for an Electron application
    */
   make(opts: MakeOptions) {
     return make(opts);
   }
+
   /**
    * Resolves hooks if they are a path to a file (instead of a `Function`)
    */
   package(opts: PackageOptions) {
     return _package(opts);
   }
+
   /**
    * Publish an Electron application into the given target service
    */
   publish(opts: PublishOptions) {
     return publish(opts);
   }
+
   /**
    * Start an Electron application.
    *
@@ -88,6 +94,7 @@ export class ForgeUtils {
   }
 
   hasYarn = hasYarn;
+
   yarnOrNpmSpawn = yarnOrNpmSpawn;
 }
 

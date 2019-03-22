@@ -12,7 +12,7 @@ import { setInitialForgeConfig } from '../util/forge-config';
 import { info, warn } from '../util/messages';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
-import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from'../util/upgrade-forge-config';
+import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
 
 const d = debug('electron-forge:import');
 
@@ -63,7 +63,7 @@ export default async ({
 
   d(`Attempting to import project in: ${dir}`);
   if (!await fs.pathExists(dir) || !await fs.pathExists(path.resolve(dir, 'package.json'))) {
-    throw `We couldn't find a project in: ${dir}`;
+    throw new Error(`We couldn't find a project in: ${dir}`);
   }
 
   // eslint-disable-next-line max-len
@@ -100,9 +100,14 @@ export default async ({
   packageJSON.dependencies = packageJSON.dependencies || {};
   packageJSON.devDependencies = packageJSON.devDependencies || {};
 
-  [importDevDeps, importExactDevDeps] = updateElectronDependency(packageJSON, importDevDeps, importExactDevDeps);
+  [importDevDeps, importExactDevDeps] = updateElectronDependency(
+    packageJSON,
+    importDevDeps,
+    importExactDevDeps,
+  );
 
-  const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
+  const keys = Object.keys(packageJSON.dependencies)
+    .concat(Object.keys(packageJSON.devDependencies));
   const buildToolPackages: {
     [key: string]: string | undefined;
   } = {

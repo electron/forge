@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export interface MakerPKGConfig {
   /**
    * Name of certificate to use when signing.

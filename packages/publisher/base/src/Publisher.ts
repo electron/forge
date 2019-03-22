@@ -1,6 +1,7 @@
-import { ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher } from '@electron-forge/shared-types';
-
-/* eslint-disable no-unused-vars */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher,
+} from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**
@@ -21,10 +22,10 @@ export interface PublisherOptions {
 
 export default abstract class Publisher<C> implements IForgePublisher {
   public abstract name: string;
+
   public defaultPlatforms?: ForgePlatform[];
-  /* tslint:disable variable-name */
+
   __isElectronForgePublisher!: true;
-  /* tslint:enable variable-name */
 
   constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {
     this.config = config;
@@ -52,7 +53,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * you will have to create the version on GitHub and the second call will just
    * be appending files to the existing version.
    */
-  async publish(opts: PublisherOptions) {
+  async publish(opts: PublisherOptions) { // eslint-disable-line @typescript-eslint/no-unused-vars
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }

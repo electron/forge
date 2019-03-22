@@ -316,7 +316,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       const goodMakers = getMakers(true);
       const badMakers = getMakers(false);
 
-      const testMakeTarget = function testMakeTarget(target: () => { name: string }, shouldPass: boolean, ...options: any[]) {
+      const testMakeTarget = function testMakeTarget(
+        target: () => { name: string },
+        shouldPass: boolean,
+        ...options: any[]
+      ) {
         describe(`make (with target=${path.basename(target().name)})`, async () => {
           before(async () => {
             const packageJSON = await readRawPackageJson(dir);
@@ -326,6 +330,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
           for (const optionsFetcher of options) {
             if (shouldPass) {
+              // eslint-disable-next-line no-loop-func
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {

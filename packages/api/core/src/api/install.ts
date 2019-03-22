@@ -26,6 +26,7 @@ const GITHUB_API = 'https://api.github.com';
 class InstallerImpl extends InstallerBase { name = 'impl'; }
 
 interface Release {
+  // eslint-disable-next-line camelcase
   tag_name: string;
   prerelease: boolean;
   assets: Asset[];
@@ -35,6 +36,7 @@ export interface Asset {
   id: string;
   name: string;
   size: number;
+  // eslint-disable-next-line camelcase
   browser_download_url: string;
 }
 
@@ -52,7 +54,8 @@ export interface InstallOptions {
    */
   repo: string;
   /**
-   * A function that must return the asset to use/install from a provided array of compatible GitHub assets
+   * A function that must return the asset to use/install from a provided array of compatible
+   * GitHub assets.
    */
   chooseAsset: (assets: Asset[]) => Promise<Asset> | Asset;
 }
@@ -66,7 +69,7 @@ export default async ({
   asyncOra.interactive = interactive;
 
   if (typeof chooseAsset !== 'function') {
-    throw 'Expected chooseAsset to be a function in install call';
+    throw new Error('Expected chooseAsset to be a function in install call');
   }
 
   let latestRelease!: Release;
@@ -74,7 +77,7 @@ export default async ({
 
   await asyncOra('Searching for Application', async (searchSpinner) => {
     if (!repo || repo.indexOf('/') === -1) {
-      throw 'Invalid repository name, must be in the format owner/name';
+      throw new Error('Invalid repository name, must be in the format owner/name');
     }
 
     d('searching for repo:', repo);
@@ -86,11 +89,11 @@ export default async ({
     }
 
     if (!releases || (releases as any).message === 'Not Found' || !Array.isArray(releases)) {
-      throw `Failed to find releases for repository "${repo}".  Please check the name and try again.`;
+      throw new Error(`Failed to find releases for repository "${repo}".  Please check the name and try again.`);
     }
 
     if (releases.length === 0) {
-      throw `Repository "${repo}" has no releases`;
+      throw new Error(`Repository "${repo}" has no releases`);
     }
 
     releases = releases.filter(release => !release.prerelease || prerelease);
@@ -102,13 +105,14 @@ export default async ({
       if (tagB.substr(0, 1) === 'v') tagB = tagB.substr(1);
       return (semver.gt(tagB, tagA) ? 1 : -1);
     });
+    // eslint-disable-next-line prefer-destructuring
     latestRelease = sortedReleases[0];
 
-    searchSpinner.text = 'Searching for Releases'; // eslint-disable-line
+    searchSpinner.text = 'Searching for Releases';
 
-    const assets = latestRelease.assets;
+    const { assets } = latestRelease;
     if (!assets || !Array.isArray(assets) || assets.length === 0) {
-      throw 'Could not find any assets for the latest release';
+      throw new Error('Could not find any assets for the latest release');
     }
 
     const installTargets: {
@@ -128,7 +132,7 @@ export default async ({
     });
 
     if (possibleAssets.length === 0) {
-      throw `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`;
+      throw new Error(`Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`);
     }
   });
 
@@ -144,7 +148,8 @@ export default async ({
   const filename = `${pathSafeRepo}-${latestRelease.tag_name}-${targetAsset.name}`;
 
   const fullFilePath = path.resolve(tmpdir, filename);
-  if (!await fs.pathExists(fullFilePath) || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
+  if (!await fs.pathExists(fullFilePath)
+      || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
     await fs.mkdirs(tmpdir);
 
     const nuggetOpts = {
@@ -175,9 +180,10 @@ export default async ({
       },
     };
 
-    const suffixFnIdent = Object.keys(installActions[process.platform]).find(suffix => targetAsset.name.endsWith(suffix));
+    const suffixFnIdent = Object.keys(installActions[process.platform])
+      .find(suffix => targetAsset.name.endsWith(suffix));
     if (!suffixFnIdent) {
-      throw `No installer to handle "${targetAsset.name}"`;
+      throw new Error(`No installer to handle "${targetAsset.name}"`);
     }
     const InstallerClass = installActions[process.platform][suffixFnIdent];
     const installer = new InstallerClass();

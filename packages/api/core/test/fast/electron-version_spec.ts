@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import path from 'path';
 import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
-import { deps, devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
@@ -31,13 +31,9 @@ describe('updateElectronDependency', () => {
 });
 
 describe('getElectronVersion', () => {
-  it('fails without devDependencies', () => {
-    return expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies');
-  });
+  it('fails without devDependencies', () => expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
-  it('fails without electron devDependencies', () => {
-    return expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies');
-  });
+  it('fails without electron devDependencies', () => expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   it('fails with a non-exact version and no electron installed', () => {
     const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');

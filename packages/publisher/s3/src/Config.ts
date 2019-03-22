@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/prefer-default-export
 export interface PublisherS3Config {
   /**
    * Your AWS Access Key ID

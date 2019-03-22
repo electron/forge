@@ -18,7 +18,7 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
       forgeConfig.packagerConfig = {};
     }
     if (!forgeConfig.packagerConfig.asar) {
-      throw 'The AutoUnpackNatives plugin requires asar to be truthy or an object';
+      throw new Error('The AutoUnpackNatives plugin requires asar to be truthy or an object');
     }
     if (forgeConfig.packagerConfig.asar === true) {
       forgeConfig.packagerConfig.asar = {};

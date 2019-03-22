@@ -1,6 +1,7 @@
 import { api, InstallAsset } from '@electron-forge/core';
-import inquirer from 'inquirer';
 
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import program from 'commander';
 
 import './util/terminate';
@@ -9,12 +10,10 @@ import './util/terminate';
   let repo!: string;
 
   program
-    .version(require('../package.json').version)
+    .version((await fs.readJson('../package.json')).version)
     .arguments('[repository]')
     .option('--prerelease', 'Fetch prerelease versions')
-    .action((repository) => {
-      repo = repository;
-    })
+    .action((repository) => { repo = repository; })
     .parse(process.argv);
 
   const chooseAsset = async (assets: InstallAsset[]) => {

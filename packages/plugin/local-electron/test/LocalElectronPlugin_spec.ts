@@ -65,9 +65,7 @@ describe('LocalElectronPlugin', () => {
         await fs.writeFile(path.resolve(tmpDir, 'touch'), 'hey');
       });
 
-      afterEach(() => {
-        return fs.remove(tmpDir);
-      });
+      afterEach(() => fs.remove(tmpDir));
 
       it('should return a function for packageAfterExtract', () => {
         expect(p.getHook('packageAfterExtract')).to.be.a('function');

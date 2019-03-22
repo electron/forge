@@ -4,7 +4,7 @@ import debug from 'debug';
 const d = debug('electron-forge:hook');
 
 export const runHook = async (forgeConfig: ForgeConfig, hookName: string, ...hookArgs: any[]) => {
-  const hooks = forgeConfig.hooks;
+  const { hooks } = forgeConfig;
   if (hooks) {
     d(`hook triggered: ${hookName}`);
     if (typeof hooks[hookName] === 'function') {
@@ -15,8 +15,12 @@ export const runHook = async (forgeConfig: ForgeConfig, hookName: string, ...hoo
   await forgeConfig.pluginInterface.triggerHook(hookName, hookArgs);
 };
 
-export async function runMutatingHook<T>(forgeConfig: ForgeConfig, hookName: string, item: T): Promise<T> {
-  const hooks = forgeConfig.hooks;
+export async function runMutatingHook<T>(
+  forgeConfig: ForgeConfig,
+  hookName: string,
+  item: T,
+): Promise<T> {
+  const { hooks } = forgeConfig;
   if (hooks) {
     d(`hook triggered: ${hookName}`);
     if (typeof hooks[hookName] === 'function') {
@@ -27,5 +31,5 @@ export async function runMutatingHook<T>(forgeConfig: ForgeConfig, hookName: str
       }
     }
   }
-  return await forgeConfig.pluginInterface.triggerMutatingHook(hookName, item);
+  return forgeConfig.pluginInterface.triggerMutatingHook(hookName, item);
 }

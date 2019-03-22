@@ -1,9 +1,11 @@
+/* eslint "no-console": "off" */
 import 'colors';
 import debug from 'debug';
-import logSymbols from 'log-symbols';
+import 'log-symbols';
 import realOra from 'ora';
-import { OraImpl } from './ora-handler';
 import prettyMs from 'pretty-ms';
+
+import { OraImpl } from './ora-handler';
 
 const d = debug('electron-forge:async-ora');
 
@@ -16,10 +18,7 @@ if (useFakeOra) {
 export const fakeOra = (name: string) => {
   let oraName = name;
   let startTime: number | null = null;
-  const timing = () => {
-    if (!startTime) return;
-    return `-- after ${`${prettyMs(Date.now() - startTime)}`.cyan}`;
-  };
+  const timing = () => (startTime ? `-- after ${`${prettyMs(Date.now() - startTime)}`.cyan}` : null);
   const fake: OraImpl = {
     start: () => {
       startTime = Date.now();

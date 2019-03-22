@@ -32,6 +32,7 @@ export async function getElectronVersion(dir: string, packageJSON: any): Promise
     const electronPackageJSONPath = path.join(dir, 'node_modules', packageName, 'package.json');
     if (await fs.pathExists(electronPackageJSONPath)) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
+      // eslint-disable-next-line prefer-destructuring
       version = electronPackageJSON.version;
     } else {
       throw new Error(`Cannot find the package "${packageName}". Perhaps you need to run "${yarnOrNpm()} install" in "${dir}"?`);
@@ -41,7 +42,11 @@ export async function getElectronVersion(dir: string, packageJSON: any): Promise
   return version;
 }
 
-export function updateElectronDependency(packageJSON: any, dev: string[], exact: string[]): [string[], string[]] {
+export function updateElectronDependency(
+  packageJSON: any,
+  dev: string[],
+  exact: string[],
+): [string[], string[]] {
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
   if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {

@@ -1,3 +1,4 @@
+/* eslint "no-console": "off" */
 export function info(interactive: boolean, message: string) {
   if (interactive) {
     console.info(message);

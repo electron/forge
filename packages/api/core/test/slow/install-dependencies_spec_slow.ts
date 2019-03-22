@@ -18,6 +18,6 @@ if (!(process.platform === 'linux' && process.env.CI)) {
       expect(packageJSON.version).to.not.equal('2.0.0');
     });
 
-    after(async () => await fs.remove(installDir));
+    after(async () => fs.remove(installDir));
   });
 }

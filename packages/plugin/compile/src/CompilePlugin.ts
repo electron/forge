@@ -6,9 +6,10 @@ import { createCompileHook } from './lib/compile-hook';
 
 export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig> {
   name = 'electron-compile';
+
   private dir!: string;
 
-  constructor(c: CompilePluginConfig)  {
+  constructor(c: CompilePluginConfig) {
     super(c);
 
     this.init = this.init.bind(this);
@@ -27,7 +28,7 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
     return null;
   }
 
-  async startLogic(opts: StartOptions) {
+  async startLogic(_opts: StartOptions) {
     return [process.execPath, path.resolve(this.dir, 'node_modules/electron-prebuilt-compile/lib/cli')];
   }
 }

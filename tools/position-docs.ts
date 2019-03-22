@@ -5,6 +5,17 @@ import { getPackageInfo } from './utils';
 
 const DOCS_PATH = path.resolve(__dirname, '..', 'docs');
 
+async function normalizeLinks(htmlFile: string, subPath: string): Promise<string> {
+  const content: string = await fs.readFile(htmlFile, 'utf8');
+  const relative: string = path.relative(path.resolve(DOCS_PATH, subPath), path.dirname(htmlFile));
+  return content
+    .replace(/="[^"]*assets\//gi, '="/assets/')
+    .replace(
+      /(<a href="(?!(?:https?:\/\/)|\/|#))(.+?)"/gi,
+      (subString: string, m1: string, m2: string) => `${m1}/${path.posix.join(subPath, relative, m2)}"`,
+    );
+}
+
 (async () => {
   const packages = await getPackageInfo();
 
@@ -26,14 +37,7 @@ const DOCS_PATH = path.resolve(__dirname, '..', 'docs');
     // otherwise each module will have it's own unique JS file :(
     const htmlFiles = await new Promise<string[]>(resolve => Glob(path.resolve(docPath, '**', '*.html'), (e, l) => resolve(l)));
     for (const htmlFile of htmlFiles) {
-      const content = await fs.readFile(htmlFile, 'utf8');
-      const relative = path.relative(path.resolve(DOCS_PATH, subPath), path.dirname(htmlFile));
-      await fs.writeFile(htmlFile, content
-        .replace(/=\"[^"]*assets\//gi, '="/assets/')
-        .replace(/(<a href="(?!(?:https?:\/\/)|\/|\#))(.+?)"/gi, (subString, m1: string, m2: string) => {
-          return `${m1}/${path.posix.join(subPath, relative, m2)}"`;
-        }),
-      );
+      await fs.writeFile(htmlFile, await normalizeLinks(htmlFile, subPath));
     }
   }
 })();

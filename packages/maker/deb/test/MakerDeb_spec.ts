@@ -5,11 +5,15 @@ import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
+import { ForgeArch } from '@electron-forge/shared-types';
 import { MakerDebConfig } from '../src/Config';
 import { debianArch } from '../src/MakerDeb';
-import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerDebConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerDebConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerDeb', () => {
   let MakerDeb: typeof MakerImpl;
@@ -35,7 +39,7 @@ describe('MakerDeb', () => {
       'electron-installer-debian': eidStub,
     }).default;
     createMaker = () => {
-      maker = new MakerDeb(config, []); // eslint-disable-line
+      maker = new MakerDeb(config, []);
       maker.ensureFile = ensureFileStub;
       maker.prepareConfig(targetArch as any);
     };
@@ -43,7 +47,9 @@ describe('MakerDeb', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: debianArch(process.arch as ForgeArch),
@@ -65,7 +71,9 @@ describe('MakerDeb', () => {
 
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: debianArch(process.arch as ForgeArch),
@@ -80,9 +88,12 @@ describe('MakerDeb', () => {
 
   if (process.platform === 'linux') {
     it('should return the proper pre-release version in the outPath', async () => {
+      // eslint-disable-next-line import/no-unresolved
       (eidStub as any).transformVersion = require('electron-installer-debian').transformVersion;
       packageJSON.version = '1.2.3-beta.4';
-      const outPath = await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+      const outPath = await (maker.make as any)({
+        dir, makeDir, appName, targetArch, packageJSON,
+      });
       expect(outPath).to.match(/1\.2\.3~beta\.4/);
     });
   }

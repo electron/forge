@@ -7,7 +7,11 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerPKGConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerPKGConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerPKG', () => {
   let MakerDMG: typeof MakerImpl;
@@ -48,7 +52,9 @@ describe('MakerPKG', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas' });
+    await (maker.make as any)({
+      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas',
+    });
     const opts = eosStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       app: path.resolve(`${dir}/My Test App.app`),
@@ -58,7 +64,9 @@ describe('MakerPKG', () => {
   });
 
   it('should throw an error on invalid platform', async () => {
-    await expect((maker.make as any)({ packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32' }))
+    await expect((maker.make as any)({
+      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32',
+    }))
       .to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
   });
 });

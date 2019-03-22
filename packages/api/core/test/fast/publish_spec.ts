@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub, SinonSpy } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 import { PublishOptions } from '../../src/api';
 
@@ -26,7 +26,9 @@ describe('publish', () => {
     publishers = ['@electron-forge/publisher-test'];
     const fakePublisher = (stub: SinonStub, name: string = 'default') => class X {
       private publish: SinonStub;
+
       public name = name;
+
       constructor(public providedConfig: any) {
         fooPublisher = this;
         this.publish = stub;
@@ -178,15 +180,21 @@ describe('publish', () => {
 
     const fakeMake = (platform: string) => {
       const ret = [
-        { artifacts: [
-          path.resolve(dir, `out/make/artifact1-${platform}`),
-          path.resolve(dir, `out/make/artifact2-${platform}`),
-        ] }, { artifacts: [
-          path.resolve(dir, `out/make/artifact3-${platform}`),
-        ] },
-        { artifacts: [
-          path.resolve(dir, `out/make/artifact4-${platform}`),
-        ] },
+        {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact1-${platform}`),
+            path.resolve(dir, `out/make/artifact2-${platform}`),
+          ],
+        }, {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact3-${platform}`),
+          ],
+        },
+        {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact4-${platform}`),
+          ],
+        },
       ];
       const state = {
         platform,

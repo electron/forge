@@ -1,4 +1,5 @@
 // TODO: Upstream this to electron-windows-store
+// eslint-disable-next-line import/prefer-default-export
 export interface MakerAppXConfig {
   containerVirtualization?: boolean;
   flatten?: boolean;

@@ -40,6 +40,7 @@
     "colors": "^1.2.0",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^4.1.0",
+    "electron-download": "^4.1.1",
     "electron-packager": "^13.0.0",
     "electron-rebuild": "^1.6.0",
     "fs-extra": "^7.0.0",

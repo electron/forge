@@ -28,6 +28,7 @@ export const exactDevDeps = ['electron'];
 export default async (dir: string) => {
   await asyncOra('Initializing NPM Module', async () => {
     const packageJSON = await readRawPackageJson(path.resolve(__dirname, '../../../tmpl'));
+    // eslint-disable-next-line no-multi-assign
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
     packageJSON.author = await username();
     setInitialForgeConfig(packageJSON);

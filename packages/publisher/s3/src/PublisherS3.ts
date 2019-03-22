@@ -6,7 +6,6 @@ import debug from 'debug';
 import path from 'path';
 
 import { PublisherS3Config } from './Config';
-import { ForgePlatform } from '@electron-forge/shared-types';
 
 // FIXME: Drop usage of s3 module in favor of AWS-sdk
 const s3 = require('s3');
@@ -48,7 +47,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     });
 
     if (!s3Client.config.credentials || !config.bucket) {
-      throw 'In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your forge config. See the docs for more info'; // eslint-disable-line
+      throw new Error('In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your forge config. See the docs for more info');
     }
 
     d('creating s3 client with options:', config);
@@ -64,39 +63,37 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
       };
 
-      await Promise.all(artifacts.map(artifact =>
-        new Promise(async (resolve, reject) => {
-          const done = (err?: Error) => {
-            if (err) return reject(err);
-            uploaded += 1;
-            updateSpinner();
-            resolve();
-          };
+      await Promise.all(artifacts.map(artifact => new Promise(async (resolve, reject) => {
+        const done = (err?: Error) => {
+          if (err) return reject(err);
+          uploaded += 1;
+          updateSpinner();
+          return resolve();
+        };
 
-          const uploader = client.uploadFile({
-            localFile: artifact.path,
-            s3Params: {
-              Bucket: config.bucket,
-              Key: this.config.keyResolver
-                ? this.config.keyResolver(
-                  path.basename(artifact.path),
-                  artifact.platform,
-                  artifact.arch,
-                )
-                : `${artifact.keyPrefix}/${path.basename(artifact.path)}`,
-              ACL: config.public ? 'public-read' : 'private',
-            },
-          });
-          d('uploading:', artifact.path);
+        const uploader = client.uploadFile({
+          localFile: artifact.path,
+          s3Params: {
+            Bucket: config.bucket,
+            Key: this.config.keyResolver
+              ? this.config.keyResolver(
+                path.basename(artifact.path),
+                artifact.platform,
+                artifact.arch,
+              )
+              : `${artifact.keyPrefix}/${path.basename(artifact.path)}`,
+            ACL: config.public ? 'public-read' : 'private',
+          },
+        });
+        d('uploading:', artifact.path);
 
-          uploader.on('error', (err: Error) => done(err));
-          uploader.on('progress', () => {
-            const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
-            d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
-          });
-          uploader.on('end', () => done());
-        }),
-      ));
+        uploader.on('error', (err: Error) => done(err));
+        uploader.on('progress', () => {
+          const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
+          d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
+        });
+        uploader.on('end', () => done());
+      })));
     });
   }
 }

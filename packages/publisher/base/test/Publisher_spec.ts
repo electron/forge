@@ -4,6 +4,7 @@ import Publisher from '../src/Publisher';
 
 class PublisherImpl extends Publisher<null> {
   defaultPlatforms = [];
+
   name = 'test';
 }
 
@@ -16,6 +17,7 @@ describe('Publisher', () => {
   it('__isElectronForgePublisher should not be settable', () => {
     const publisher = new PublisherImpl(null);
     expect(() => {
+      // eslint-disable-next-line no-underscore-dangle
       (publisher as any).__isElectronForgePublisher = false;
     }).to.throw();
     expect(() => {

@@ -14,7 +14,7 @@ export default async (dir: string) => {
     if (files.length !== 0) {
       d('found', files.length, 'files in the directory.  warning the user');
       initSpinner.stop(logSymbols.warning);
-      throw `The specified path: "${dir}" is not empty, do you wish to continue?`;
+      throw new Error(`The specified path: "${dir}" is not empty, do you wish to continue?`);
     }
   });
 };

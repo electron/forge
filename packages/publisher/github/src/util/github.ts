@@ -3,9 +3,14 @@ import merge from 'lodash.merge';
 
 export default class GitHub {
   private options: GitHubAPI.Options;
+
   token?: string;
 
-  constructor(authToken: string | undefined = undefined, requireAuth: boolean = false, options: GitHubAPI.Options = {}) {
+  constructor(
+    authToken: string | undefined = undefined,
+    requireAuth: boolean = false,
+    options: GitHubAPI.Options = {},
+  ) {
     this.options = merge(
       options,
       { headers: { 'user-agent': 'Electron Forge' } },
@@ -15,7 +20,7 @@ export default class GitHub {
     } else if (process.env.GITHUB_TOKEN) {
       this.token = process.env.GITHUB_TOKEN;
     } else if (requireAuth) {
-      throw 'Please set GITHUB_TOKEN in your environment to access these features';
+      throw new Error('Please set GITHUB_TOKEN in your environment to access these features');
     }
   }
 

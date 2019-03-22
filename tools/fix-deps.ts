@@ -3,12 +3,16 @@ import * as path from 'path';
 
 import { getPackageInfo } from './utils';
 
-(async() => {
+(async () => {
   const packages = await getPackageInfo();
 
   const baseJson = await fs.readJson(path.resolve(__dirname, '..', 'package.json'));
 
-  const allDeps = { ...baseJson.dependencies, ...baseJson.devDependencies, ...baseJson.optionalDependencies };
+  const allDeps = {
+    ...baseJson.dependencies,
+    ...baseJson.devDependencies,
+    ...baseJson.optionalDependencies,
+  };
 
   for (const p of packages) {
     const json = await fs.readJson(path.resolve(p.path, 'package.json'));

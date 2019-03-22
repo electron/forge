@@ -9,6 +9,7 @@ import { MakerSquirrelConfig } from './Config';
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';
+
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
   isSupportedOnCurrentPlatform() {

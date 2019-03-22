@@ -5,10 +5,12 @@ import glob from 'glob';
 import resolvePackage from 'resolve-package';
 import path from 'path';
 
+import { ForgeTemplate } from '@electron-forge/shared-types';
 import { copy } from './init-starter-files';
 import installDepList, { DepType } from '../../util/install-dependencies';
+// https://github.com/benmosher/eslint-plugin-import/issues/1120
+// eslint-disable-next-line import/named
 import { PossibleModule } from '../../util/require-search';
-import { ForgeTemplate } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:init:custom');
 
@@ -35,7 +37,7 @@ export default async (dir: string, template: string) => {
               templateModulePath = require.resolve(template);
               d('using absolute template');
             } catch (err5) {
-              throw `Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge-template-${template}\``;
+              throw new Error(`Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge-template-${template}\``);
             }
           }
         }
@@ -43,6 +45,7 @@ export default async (dir: string, template: string) => {
     }
   });
 
+  // eslint-disable-next-line import/no-dynamic-require, global-require
   let templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
   templateModule = templateModule.default || templateModule;
@@ -55,11 +58,11 @@ export default async (dir: string, template: string) => {
   });
 
   await asyncOra('Copying Template Files', async () => {
-    const templateDirectory = templateModule.templateDirectory;
+    const { templateDirectory } = templateModule;
     if (templateDirectory) {
       const tmplPath = templateDirectory;
       if (!path.isAbsolute(templateDirectory)) {
-        throw `Custom template path needs to be absolute, this is an issue with "electron-forge-template-${template}"`;
+        throw new Error(`Custom template path needs to be absolute, this is an issue with "electron-forge-template-${template}"`);
       }
 
       const files = glob.sync(path.resolve(tmplPath, '**/*'));
