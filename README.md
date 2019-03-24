@@ -27,7 +27,7 @@ are looking for the 5.x series (the version currently published to NPM), please 
 
 [Website](https://v6.electronforge.io) |
 [Goals](#project-goals) |
-[Usage](#usage) |
+[Docs and Usage](#docs-and-usage) |
 [Configuration](https://v6.electronforge.io/configuration) |
 [Support](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md) |
 [Contributing](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) |
