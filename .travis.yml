@@ -23,7 +23,7 @@ jobs:
 stages:
 - test
 - name: docs
-  if: branch = master
+  if: branch = master AND fork = false
 branches:
   only:
   - master
