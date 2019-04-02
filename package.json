@@ -116,7 +116,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.1.0",
-    "@types/node": "^11.9.4",
+    "@types/node": "^11.13.0",
     "@types/node-fetch": "^2.1.2",
     "@types/opn": "^5.1.0",
     "@types/pify": "^3.0.1",
