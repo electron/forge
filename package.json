@@ -118,7 +118,7 @@
     "@types/mocha": "^5.1.0",
     "@types/node": "^11.13.0",
     "@types/node-fetch": "^2.1.2",
-    "@types/opn": "^5.1.0",
+    "@types/opn": "^5.5.0",
     "@types/pify": "^3.0.1",
     "@types/pretty-ms": "^4.0.0",
     "@types/proxyquire": "^1.3.28",
