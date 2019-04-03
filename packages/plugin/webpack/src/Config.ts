@@ -72,4 +72,8 @@ export interface WebpackPluginConfig {
    * The TCP port for the dev servers. Defaults to 3000.
    */
   port?: number;
+  /**
+   * The TCP port for web-multi-logger. Defaults to 9000.
+   */
+  LoggerPort?: number;
 }
