@@ -50,9 +50,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         this.port = c.port;
       }
     }
-    if (c.LoggerPort) {
-      if (this.isValidPort(c.LoggerPort)) {
-        this.loggerPort = c.LoggerPort;
+    if (c.loggerPort) {
+      if (this.isValidPort(c.loggerPort)) {
+        this.loggerPort = c.loggerPort;
       }
     }
 
