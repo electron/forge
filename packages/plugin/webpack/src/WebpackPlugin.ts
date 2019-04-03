@@ -122,7 +122,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'postStart':
         return async (_: any, child: ChildProcess) => {
           if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${'http://localhost:'.cyan}${this.loggerPort}\n`);
+            console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
