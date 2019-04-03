@@ -21,6 +21,7 @@ import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint 
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
+const DEFAULT_LOGGER_PORT = 9000;
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -39,21 +40,34 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private port = DEFAULT_PORT;
 
+  private loggerPort = DEFAULT_LOGGER_PORT;
+
   constructor(c: WebpackPluginConfig) {
     super(c);
 
     if (c.port) {
-      if (c.port < 1024) {
-        throw new Error(`Cannot specify port (${c.port}) below 1024, as they are privileged`);
-      } else if (c.port > 65535) {
-        throw new Error(`Port specified (${c.port}) is not a valid TCP port.`);
-      } else {
+      if (this.isValidPort(c.port)) {
         this.port = c.port;
+      }
+    }
+    if (c.LoggerPort) {
+      if (this.isValidPort(c.LoggerPort)) {
+        this.loggerPort = c.LoggerPort;
       }
     }
 
     this.startLogic = this.startLogic.bind(this);
     this.getHook = this.getHook.bind(this);
+  }
+
+  private isValidPort = (port: number) => {
+    if (port < 1024) {
+      throw new Error(`Cannot specify port (${port}) below 1024, as they are privileged`);
+    } else if (port > 65535) {
+      throw new Error(`Port specified (${port}) is not a valid TCP port.`);
+    } else {
+      return true;
+    }
   }
 
   private resolveConfig = (config: Configuration | string) => {
@@ -108,7 +122,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'postStart':
         return async (_: any, child: ChildProcess) => {
           if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${'http://localhost:9000'.cyan}\n`);
+            console.info(`\n\nWebpack Output Available: ${'http://localhost:'.cyan}${this.loggerPort}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
@@ -425,7 +439,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
     await fs.remove(this.baseDir);
 
-    const logger = new Logger();
+    const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
     await this.compileMain(true, logger);
     await this.launchDevServers(logger);
