@@ -2727,14 +2727,15 @@ cz-conventional-changelog@2.1.0:
     right-pad "^1.0.1"
     word-wrap "^1.0.3"
 
-cz-customizable@^5.0.0:
-  version "5.5.3"
-  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-5.5.3.tgz#0e424deab6adbe07c579aaa0f8b9aa4c3ecbc877"
-  integrity sha512-5OUgx+5xjKgysQUs/fxOSGrrl3YWUeMRik2SvtX8mKS6+DaohWloftKFkb84go6eoOYtiuBDzxm1j5N7I4tQMg==
+cz-customizable@^5.7.0:
+  version "5.7.0"
+  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-5.7.0.tgz#43aa664d3ed7d5ecbb295233f6ba5fe72f255287"
+  integrity sha512-ye/CYRj0tEXZUGE2grOKtm9Uurt76Y3XLHrIHTnU/EAcxAyL8H0AfDdI85Zp7gPb1ki71pUpW5Bm26J4EgFfSA==
   dependencies:
     editor "1.0.0"
     find-config "^1.0.0"
     inquirer "^6.2.2"
+    lodash "^4.17.11"
     temp "^0.9.0"
     word-wrap "^1.2.3"
 
