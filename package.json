@@ -41,7 +41,7 @@
     "@octokit/rest": "^16.0.1",
     "aws-sdk": "^2.9.0",
     "colors": "^1.2.0",
-    "commander": "^2.9.0",
+    "commander": "^2.20.0",
     "cross-spawn": "^6.0.4",
     "cross-spawn-promise": "^0.10.1",
     "cross-zip": "^2.1.5",
