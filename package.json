@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^16.0.1",
-    "aws-sdk": "^2.9.0",
+    "aws-sdk": "^2.435.0",
     "colors": "^1.2.0",
     "commander": "^2.9.0",
     "cross-spawn": "^6.0.4",
