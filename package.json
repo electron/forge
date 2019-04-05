@@ -138,7 +138,7 @@
     "commitizen": "^3.0.4",
     "coveralls": "^3.0.0",
     "cross-env": "^5.0.0",
-    "cz-customizable": "^5.0.0",
+    "cz-customizable": "^5.9.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.15.0",
