@@ -9,7 +9,7 @@
   "typings": "dist/PublisherGithub.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^6.0.0",
+    "mocha": "^6.1.1",
     "proxyquire": "^2.0.1",
     "sinon": "^7.1.1"
   },
