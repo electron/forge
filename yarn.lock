@@ -2747,10 +2747,10 @@ cz-conventional-changelog@2.1.0:
     right-pad "^1.0.1"
     word-wrap "^1.0.3"
 
-cz-customizable@^5.9.0:
-  version "5.9.0"
-  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-5.9.0.tgz#a1bfa3115e8aa438d9279cc4096ad3e4f24821ff"
-  integrity sha512-KhBnDStwaCgAXMdVIUfDxF95TzQE2lZI3FoQEs90j4otD/vO8XOGDeYiBC+SlslA0KUKIz2Fy3yau2iAKzQGAA==
+cz-customizable@^5.10.0:
+  version "5.10.0"
+  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-5.10.0.tgz#e7f820a09dd569f1ee7ea69ecd3a3510f4e0ec60"
+  integrity sha512-8fzzmoXXAg3ydu5Uhx4g+XwgWNdjmvm/zycKzZejnhQn8Z+kvnqKwXhwm9thmFE67MIXDMS7n+A1wuMAEplddQ==
   dependencies:
     editor "1.0.0"
     find-config "^1.0.0"
