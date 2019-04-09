@@ -8,7 +8,7 @@
   "main": "dist/InstallerRpm.js",
   "typings": "dist/InstallerRpm.d.ts",
   "devDependencies": {
-    "mocha": "^6.1.1"
+    "mocha": "^6.1.2"
   },
   "engines": {
     "node": ">= 6.0"
