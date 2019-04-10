@@ -11,8 +11,8 @@ import { getMakeOptions } from './electron-forge-make';
   program
     .version(require('../package.json').version)
     .arguments('[cwd]')
-    .option('--auth-token', 'Authorization token for your publisher target (if required)')
-    .option('--tag', 'The tag to publish to on GitHub')
+    .option('--auth-token [auth-token]', 'Authorization token for your publisher target (if required)')
+    .option('--tag [tag]', 'The tag to publish to on GitHub')
     .option('--target [target[,target...]]', 'The comma-separated deployment targets, defaults to "github"')
     .option('--dry-run', 'Triggers a publish dry run which saves state and doesn\'t upload anything')
     .option('--from-dry-run', 'Attempts to publish artifacts from the last saved dry run')
