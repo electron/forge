@@ -117,7 +117,7 @@
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.1.0",
     "@types/node": "^11.13.4",
-    "@types/node-fetch": "^2.3.0",
+    "@types/node-fetch": "^2.3.1",
     "@types/opn": "^5.1.0",
     "@types/pify": "^3.0.1",
     "@types/pretty-ms": "^4.0.0",
