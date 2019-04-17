@@ -38,7 +38,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1"
   },
   "dependencies": {
-    "@octokit/rest": "^16.24.1",
+    "@octokit/rest": "^16.24.3",
     "aws-sdk": "^2.9.0",
     "colors": "^1.2.0",
     "commander": "^2.9.0",
