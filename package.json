@@ -65,7 +65,7 @@
     "lodash.merge": "^4.6.0",
     "lodash.template": "^4.4.0",
     "log-symbols": "^2.0.0",
-    "mime-types": "^2.1.22",
+    "mime-types": "^2.1.23",
     "node-fetch": "^2.0.0",
     "node-gyp": "^3.4.0",
     "nugget": "^2.0.1",
