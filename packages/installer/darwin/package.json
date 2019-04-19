@@ -8,7 +8,7 @@
   "main": "dist/InstallerDarwin.js",
   "typings": "dist/InstallerDarwin.d.ts",
   "devDependencies": {
-    "mocha": "^6.1.3"
+    "mocha": "^6.1.4"
   },
   "engines": {
     "node": ">= 6.0"
