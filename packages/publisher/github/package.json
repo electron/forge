@@ -23,6 +23,6 @@
     "@octokit/rest": "^16.25.0",
     "fs-extra": "^7.0.0",
     "lodash.merge": "^4.6.0",
-    "mime-types": "^2.1.23"
+    "mime-types": "^2.1.24"
   }
 }
