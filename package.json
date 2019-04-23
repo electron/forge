@@ -145,7 +145,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-react": "^7.11.0",
-    "fetch-mock": "^7.2.5",
+    "fetch-mock": "^7.3.3",
     "generate-changelog": "^1.0.2",
     "listr": "^0.14.1",
     "minimist": "^1.2.0",
