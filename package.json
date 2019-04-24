@@ -67,7 +67,7 @@
     "log-symbols": "^2.0.0",
     "mime-types": "^2.1.24",
     "node-fetch": "^2.0.0",
-    "node-gyp": "^3.4.0",
+    "node-gyp": "^4.0.0",
     "nugget": "^2.0.1",
     "opn": "^5.0.0",
     "ora": "^3.0.0",
