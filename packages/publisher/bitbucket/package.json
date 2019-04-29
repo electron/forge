@@ -19,6 +19,6 @@
     "@electron-forge/publisher-base": "6.0.0-beta.34",
     "form-data": "2.3.3",
     "fs-extra": "^7.0.0",
-    "node-fetch": "^2.0.0"
+    "node-fetch": "^2.4.1"
   }
 }
