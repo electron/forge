@@ -3105,20 +3105,19 @@ electron-installer-common@^0.6.1, electron-installer-common@^0.6.2:
     semver "^5.6.0"
     tmp-promise "^1.0.5"
 
-electron-installer-debian@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-1.1.1.tgz#3c1e1ffd497381bd7843e9e62526ede9c591949c"
-  integrity sha512-2r27a1AhB6iCy3dmdm6aoS9Mn42UW0Y9KhCWUgf2Xd8zIB58Ew1ALTaB8xevVU0nOW5s+quq6McPS633PPHQIA==
+electron-installer-debian@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-1.2.0.tgz#1cb3c457cd4fc5e5adaae4d587170eca3a85a219"
+  integrity sha512-gowfDlBY4NPZ6dMLsoSJzEeXlEa650NAjvtnYk6/Ikq9tFtS7xCs+Oyk91gNGDbFczA8QAelmR4KX4hV/eebKQ==
   dependencies:
     debug "^4.1.1"
-    electron-installer-common "^0.6.1"
+    electron-installer-common "^0.6.2"
     fs-extra "^7.0.1"
     get-folder-size "^2.0.1"
     lodash "^4.17.4"
     pify "^4.0.1"
-    semver "^5.6.0"
     word-wrap "^1.2.3"
-    yargs "^12.0.5"
+    yargs "^13.2.2"
 
 electron-installer-dmg@^2.0.0:
   version "2.0.0"
