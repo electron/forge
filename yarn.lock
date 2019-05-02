@@ -3131,18 +3131,18 @@ electron-installer-dmg@^2.0.0:
   optionalDependencies:
     appdmg "^0.5.2"
 
-electron-installer-redhat@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-1.0.1.tgz#b6bcae1f656a13726eccc9e69a6daf8b198509d6"
-  integrity sha512-fwdhvA7HvcObq5/+wLC08MVwCGHw8EvhjolsUDuefXoQIfOVNCfbhSIzfMMYHL9lfSeYCuQzZjVv1/gwbSLuOQ==
+electron-installer-redhat@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-1.1.0.tgz#d8f20839fdb567946b33372d78101ff6d60aacb5"
+  integrity sha512-wea1fZ1VOEZBJ5Y+/D2So04PnhfwoEPFW4rD9UlP/ODIggkDHY6ZLsXj0SRPGKGJqmTzP16Taoj7YNsmxYEL2g==
   dependencies:
     debug "^4.1.1"
-    electron-installer-common "^0.6.1"
+    electron-installer-common "^0.6.2"
     fs-extra "^7.0.1"
     lodash "^4.17.4"
     nodeify "^1.0.1"
     word-wrap "^1.2.3"
-    yargs "^12.0.5"
+    yargs "^13.2.2"
 
 electron-installer-snap@^3.1.0:
   version "3.1.1"
