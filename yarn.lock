@@ -3089,10 +3089,10 @@ electron-forge-template-vue@^1.0.2:
   resolved "https://registry.yarnpkg.com/electron-forge-template-vue/-/electron-forge-template-vue-1.0.3.tgz#58a11ec972a0f0518e1306da7a573fbaf6b4ac50"
   integrity sha1-WKEeyXKg8FGOEwbaelc/uva0rFA=
 
-electron-installer-common@^0.6.1, electron-installer-common@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.6.2.tgz#1ca8f11a2d428eb523d2c1c9a3078ebcfbfebe64"
-  integrity sha512-k/uB9+rYxQx5sxCNlmdn5fqjWRbDCGIQjdDi9101mVHr0dUkrupLjtgjaaXbvdtUxHTYTbk53l77YnXM6ZGbHg==
+electron-installer-common@^0.6.2, electron-installer-common@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.6.3.tgz#d17f5062890acaef0c7dd7972aae3a746bca921f"
+  integrity sha512-ylecrLzz2Qmfv9QgFBoQAcB7i51ROUXguA0EExo70LVeJznDi94vCwVSoKotC7BslmUH6Iz1vYZOyqMon8PhcA==
   dependencies:
     asar "^1.0.0"
     cross-spawn-promise "^0.10.1"
@@ -3102,7 +3102,7 @@ electron-installer-common@^0.6.1, electron-installer-common@^0.6.2:
     glob-promise "^3.4.0"
     lodash "^4.17.11"
     parse-author "^2.0.0"
-    semver "^5.6.0"
+    semver "^6.0.0"
     tmp-promise "^1.0.5"
 
 electron-installer-debian@^1.2.0:
@@ -3143,14 +3143,14 @@ electron-installer-redhat@^1.1.0:
     word-wrap "^1.2.3"
     yargs "^13.2.2"
 
-electron-installer-snap@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-3.1.1.tgz#7f0a7e2eb321fa20141247a1016ea150ce627408"
-  integrity sha512-kqFogM3sXbD0RUuitAAVtGrStjNq/NCdnjUvYWylKNR51U0C+hVi4X3x6Mu47XmB4y08NA4qi6SEIBVfLrYNlQ==
+electron-installer-snap@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-3.2.0.tgz#42bce8e96daebb158540d113158e14e9ba3fdb94"
+  integrity sha512-rWGlRBOHGDD6kZvr+wi0+6dQfv89mjoa6Ak9j1/M2VTphRhZWISmbQMzCCjStRlGPyTHbggYoCL9FyIaHie3Iw==
   dependencies:
     cross-spawn-promise "^0.10.1"
     debug "^4.1.1"
-    electron-installer-common "^0.6.1"
+    electron-installer-common "^0.6.3"
     fs-extra "^7.0.1"
     js-yaml "^3.10.0"
     lodash.filter "^4.6.0"
@@ -3158,9 +3158,10 @@ electron-installer-snap@^3.1.0:
     lodash.pull "^4.1.0"
     nodeify "^1.0.1"
     pify "^4.0.1"
+    semver "^6.0.0"
     tmp-promise "^1.0.3"
     which "^1.3.0"
-    yargs "^12.0.5"
+    yargs "^13.2.2"
 
 electron-notarize@^0.0.5:
   version "0.0.5"
