@@ -758,9 +758,9 @@
     tmp-promise "^1.0.5"
 
 "@octokit/endpoint@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.1.0.tgz#242e32e9d5e2aa9a3075a3de086f198f423d7e39"
-  integrity sha512-H2DQxteNHrZ2infTlaHPFd6OC+4+erPXwYWDlp/Ey+64FI0kBk7uO2CL6VYNTJdVEoD4OGV+4uyHZgJTkvobIw==
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.1.1.tgz#bd96a67d141bd897fd5357501fcea44791870925"
+  integrity sha512-kCv3ZyqFTWGYmvuU0TETzC4jPGzyLCJrjXp65kRe9DHyQULZak+dpwmEbT7M2rpdr/O2im8ivrPGT6J+2WsKNg==
   dependencies:
     deepmerge "3.2.0"
     is-plain-object "^3.0.0"
@@ -8458,9 +8458,9 @@ unique-string@^1.0.0:
     crypto-random-string "^1.0.0"
 
 universal-user-agent@^2.0.0, universal-user-agent@^2.0.1:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/universal-user-agent/-/universal-user-agent-2.0.3.tgz#9f6f09f9cc33de867bb720d84c08069b14937c6c"
-  integrity sha512-eRHEHhChCBHrZsA4WEhdgiOKgdvgrMIHwnwnqD0r5C6AO8kwKcG7qSku3iXdhvHL3YvsS9ZkSGN8h/hIpoFC8g==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/universal-user-agent/-/universal-user-agent-2.1.0.tgz#5abfbcc036a1ba490cb941f8fd68c46d3669e8e4"
+  integrity sha512-8itiX7G05Tu3mGDTdNY2fB4KJ8MgZLS54RdG6PkkfwMAavrXu1mV/lls/GABx9O3Rw4PnTtasxrvbMQoBYY92Q==
   dependencies:
     os-name "^3.0.0"
 
