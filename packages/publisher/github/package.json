@@ -14,7 +14,7 @@
     "sinon": "^7.3.2"
   },
   "engines": {
-    "node": ">= 6.0"
+    "node": ">= 8.0"
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.34",
