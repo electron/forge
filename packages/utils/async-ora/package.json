@@ -17,9 +17,9 @@
   "dependencies": {
     "colors": "^1.2.0",
     "debug": "^4.1.0",
-    "log-symbols": "^2.0.0",
+    "log-symbols": "^3.0.0",
     "ora": "^3.0.0",
-    "pretty-ms": "^4.0.0"
+    "pretty-ms": "^5.0.0"
   },
   "engines": {
     "node": ">= 8.0"
