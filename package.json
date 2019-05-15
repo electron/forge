@@ -112,7 +112,7 @@
     "@types/listr": "^0.14.0",
     "@types/lodash.merge": "^4.6.4",
     "@types/lodash.template": "^4.4.4",
-    "@types/log-symbols": "^2.0.0",
+    "@types/log-symbols": "^3.0.0",
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.1.0",
