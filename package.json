@@ -66,7 +66,7 @@
     "lodash.template": "^4.4.0",
     "log-symbols": "^2.0.0",
     "mime-types": "^2.1.24",
-    "node-fetch": "^2.5.0",
+    "node-fetch": "^2.6.0",
     "node-gyp": "^4.0.0",
     "nugget": "^2.0.1",
     "opn": "^5.0.0",
