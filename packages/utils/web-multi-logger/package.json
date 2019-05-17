@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "4.16.4",
     "express-ws": "^4.0.0",
-    "xterm": "^3.13.0"
+    "xterm": "^3.13.1"
   },
   "engines": {
     "node": ">= 6.0"
