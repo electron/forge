@@ -1,6 +1,6 @@
 import InstallerBase, { InstallerOptions } from '@electron-forge/installer-base';
 
-import opn from 'opn';
+import open from 'open';
 
 export default class InstallerExe extends InstallerBase {
   name = 'exe';
@@ -8,6 +8,6 @@ export default class InstallerExe extends InstallerBase {
   async install({
     filePath,
   }: InstallerOptions) {
-    await opn(filePath, { wait: false });
+    await open(filePath, { wait: false });
   }
 }
