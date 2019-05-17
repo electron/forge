@@ -48,7 +48,7 @@
     "lodash.merge": "^4.6.0",
     "lodash.template": "^4.4.0",
     "log-symbols": "^2.0.0",
-    "node-fetch": "^2.5.0",
+    "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
     "pify": "^4.0.0",
     "resolve-package": "^1.0.1",
