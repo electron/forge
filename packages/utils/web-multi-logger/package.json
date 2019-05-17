@@ -9,7 +9,7 @@
   "typings": "dist/Logger.d.ts",
   "devDependencies": {},
   "dependencies": {
-    "express": "4.16.4",
+    "express": "^4.17.0",
     "express-ws": "^4.0.0",
     "xterm": "^3.13.0"
   },
