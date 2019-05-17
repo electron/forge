@@ -21,6 +21,6 @@
     "debug": "^4.1.0",
     "form-data": "2.3.3",
     "fs-extra": "^7.0.0",
-    "node-fetch": "^2.5.0"
+    "node-fetch": "^2.6.0"
   }
 }
