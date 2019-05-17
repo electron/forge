@@ -1,5 +1,5 @@
 language: node_js
-node_js: '6'
+node_js: '8'
 dist: xenial
 osx_image: xcode8.3
 cache: npm
@@ -27,6 +27,7 @@ stages:
 branches:
   only:
   - master
+  - node-8
   - /^v\d+\.\d+\.\d+/
 install:
 - npm i -g bolt@0.22.5
