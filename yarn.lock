@@ -788,10 +788,10 @@
     once "^1.4.0"
     universal-user-agent "^2.1.0"
 
-"@octokit/rest@^16.25.6":
-  version "16.25.6"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.25.6.tgz#6bc3a7da834d0c6f6076c384a89158b892dbeb2d"
-  integrity sha512-pUM6n8OKo2lyr8zxdgkeWrqRZvnKhor420KrbcrhD7L2tJJ9VEjE/yVGySfswbMjOKJMcIGWDHfA7b3JuuueEw==
+"@octokit/rest@^16.26.0":
+  version "16.26.0"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.26.0.tgz#5c12b28763219045e1c9a15182e8dfaed10004e8"
+  integrity sha512-NBpzre44ZAQWZhlH+zUYTgqI0pHN+c9rNj4d+pCydGEiKTGc1HKmoTghEUyr9GxazDyoAvmpx9nL0I7QS1Olvg==
   dependencies:
     "@octokit/request" "^4.0.1"
     "@octokit/request-error" "^1.0.2"
