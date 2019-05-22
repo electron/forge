@@ -937,10 +937,10 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/fetch-mock@^7.2.5":
-  version "7.2.5"
-  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.2.5.tgz#512f8beec4007a90db6269660b6b4f5e04682d87"
-  integrity sha512-iJSYZ4PjDdBShaEUWOy7wXWRlI6fHLDVHd+AnUggNjjNsict7qJOeZiejnFDSETECxFgdQ7BSBEFhR4U+k0FHw==
+"@types/fetch-mock@^7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@types/fetch-mock/-/fetch-mock-7.3.0.tgz#b56bafcb60fcd7f77d6464227ac18e99acb53e83"
+  integrity sha512-pkvJyDRlf36Z2GVFWXGlR6wbOWwoqu2G7fpb9eY8ji4zD/u8YIqew+J8lYLg2LSch3Pfk/kHKNKz6byLR+nKkw==
 
 "@types/form-data@^2.2.1":
   version "2.2.1"
