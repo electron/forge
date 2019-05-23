@@ -3,6 +3,7 @@ import { api, InstallAsset } from '@electron-forge/core';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import program from 'commander';
+import path from 'path';
 
 import './util/terminate';
 
@@ -10,7 +11,7 @@ import './util/terminate';
   let repo!: string;
 
   program
-    .version((await fs.readJson('../package.json')).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[repository]')
     .option('--prerelease', 'Fetch prerelease versions')
     .action((repository) => { repo = repository; })

@@ -2,6 +2,7 @@ import { api, MakeOptions } from '@electron-forge/core';
 
 import fs from 'fs-extra';
 import program from 'commander';
+import path from 'path';
 
 import './util/terminate';
 import workingDir from './util/working-dir';
@@ -10,7 +11,7 @@ import workingDir from './util/working-dir';
 export async function getMakeOptions() {
   let dir = process.cwd();
   program
-    .version((await fs.readJson('../package.json')).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[cwd]')
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
