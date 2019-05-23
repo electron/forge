@@ -7,7 +7,6 @@
   "license": "MIT",
   "bin": {
     "electron-forge": "dist/electron-forge.js",
-    "forge": "dist/electron-forge.js",
     "electron-forge-vscode-nix": "script/vscode.sh",
     "electron-forge-vscode-win": "script/vscode.cmd"
   },
