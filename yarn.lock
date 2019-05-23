@@ -3117,26 +3117,6 @@ electron-download@^4.1.1:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-forge-template-angular2@^1.0.3:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/electron-forge-template-angular2/-/electron-forge-template-angular2-1.0.6.tgz#c5411ff3732116885bff5fafa5d1728a5809a2b1"
-  integrity sha1-xUEf83MhFohb/1+vpdFyilgJorE=
-
-electron-forge-template-react-typescript@^1.0.3:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/electron-forge-template-react-typescript/-/electron-forge-template-react-typescript-1.0.6.tgz#55988260c11ae45eff688fd47749afe1d75a5b23"
-  integrity sha1-VZiCYMEa5F7/aI/Ud0mv4ddaWyM=
-
-electron-forge-template-react@^1.0.2:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/electron-forge-template-react/-/electron-forge-template-react-1.0.4.tgz#7fbc8345380f348c34387ea2130d275ce6682e20"
-  integrity sha1-f7yDRTgPNIw0OH6iEw0nXOZoLiA=
-
-electron-forge-template-vue@^1.0.2:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/electron-forge-template-vue/-/electron-forge-template-vue-1.0.3.tgz#58a11ec972a0f0518e1306da7a573fbaf6b4ac50"
-  integrity sha1-WKEeyXKg8FGOEwbaelc/uva0rFA=
-
 electron-installer-common@^0.6.2, electron-installer-common@^0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.6.3.tgz#d17f5062890acaef0c7dd7972aae3a746bca921f"
