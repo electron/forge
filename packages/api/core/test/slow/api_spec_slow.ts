@@ -104,7 +104,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with built-in templater)', () => {
+  describe.skip('init (with built-in templater)', () => {
     before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing', async () => {
