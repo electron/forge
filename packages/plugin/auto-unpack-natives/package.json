@@ -8,7 +8,7 @@
   "main": "dist/AutoUnpackNativesPlugin.js",
   "typings": "dist/AutoUnpackNativesPlugin.d.ts",
   "engines": {
-    "node": ">= 6.0"
+    "node": ">= 8.0"
   },
   "dependencies": {
     "@electron-forge/plugin-base": "6.0.0-beta.34",

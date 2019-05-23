@@ -1,7 +1,7 @@
 platform:
 - x64
 environment:
-  nodejs_version: "6"
+  nodejs_version: "8"
   matrix:
   - node_installer: yarn
 cache:
@@ -10,7 +10,6 @@ cache:
 branches:
   only:
   - master
-  - v6
 
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
