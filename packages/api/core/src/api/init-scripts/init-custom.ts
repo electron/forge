@@ -57,25 +57,7 @@ export default async (dir: string, template: string) => {
     await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
   });
 
-  await asyncOra('Copying Template Files', async () => {
-    const { templateDirectory } = templateModule;
-    if (templateDirectory) {
-      const tmplPath = templateDirectory;
-      if (!path.isAbsolute(templateDirectory)) {
-        throw new Error(`Custom template path needs to be absolute, this is an issue with "electron-forge-template-${template}"`);
-      }
-
-      const files = glob.sync(path.resolve(tmplPath, '**/*'));
-
-      for (const file of files) {
-        if ((await fs.stat(file)).isFile()) {
-          await copy(file, path.resolve(dir, path.relative(tmplPath, file).replace(/^_/, '.')));
-        }
-      }
-    }
-  });
-
-  if (typeof templateModule.postCopy === 'function') {
-    await Promise.resolve(templateModule.postCopy(dir));
+  if (typeof templateModule.initializeTemplate === 'function') {
+    await Promise.resolve(templateModule.initializeTemplate(dir));
   }
 };

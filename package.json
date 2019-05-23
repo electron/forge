@@ -10,7 +10,8 @@
       "packages/maker/*",
       "packages/publisher/*",
       "packages/utils/*",
-      "packages/plugin/*"
+      "packages/plugin/*",
+      "packages/template/*"
     ]
   },
   "config": {

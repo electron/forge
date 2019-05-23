@@ -119,6 +119,5 @@ export interface StartOptions {
 export interface ForgeTemplate {
   dependencies?: string[];
   devDependencies?: string[];
-  templateDirectory?: string;
-  postCopy?: (dir: string) => void;
+  initializeTemplate?: (dir: string) => void;
 }
