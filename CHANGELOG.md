@@ -1,3 +1,9 @@
+#### [6.0.0-beta.38](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.38) (2019-05-24)
+
+##### Bug Fixes
+
+*  add missing @ symbol in webpack template ([84f61a7d](https://github.com/electron-userland/electron-forge/commit/84f61a7d))
+
 #### [6.0.0-beta.37](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.37) (2019-05-24)
 
 ##### Bug Fixes
