@@ -23,6 +23,8 @@ const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
 const DEFAULT_LOGGER_PORT = 9000;
 
+type EntryType = string | string[] | Record<string, string | string[]>;
+
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
 
@@ -209,8 +211,14 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {
       ASSET_RELOCATOR_BASE_DIR: this.isProd
-        ? 'process.resourcesPath + "/" + (__filename.indexOf(".asar") === -1 ? "app" : "app.asar") + "/.webpack/renderer/native_modules"'
-        : JSON.stringify(path.resolve(this.baseDir, 'renderer', 'native_modules')),
+        ? `process.resourcesPath + "/" + (__filename.indexOf(".asar") === -1 ? "app" : "app.asar") + "/.webpack/${inRendererDir ? 'main' : 'renderer/any_folder'}"`
+        : JSON.stringify(
+          path.resolve(
+            this.baseDir,
+            inRendererDir ? 'main' : 'renderer',
+            inRendererDir ? '.' : 'any_folder',
+          ),
+        ),
     };
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
@@ -237,6 +245,21 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     if (!mainConfig.entry) {
       throw new Error('Required config option "entry" has not been defined');
     }
+    const fix = (item: EntryType): EntryType => {
+      if (typeof item === 'string') return (fix([item]) as string[])[0];
+      if (Array.isArray(item)) {
+        return item.map((val) => {
+          if (val.indexOf('./') === 0) return path.resolve(this.projectDir, val);
+          return val;
+        });
+      }
+      const ret: Record<string, string | string[]> = {};
+      for (const key of Object.keys(item)) {
+        ret[key] = fix(item[key]) as string | string[];
+      }
+      return ret;
+    };
+    mainConfig.entry = fix(mainConfig.entry as EntryType);
 
     const defines = this.getDefines();
     return merge.smart({

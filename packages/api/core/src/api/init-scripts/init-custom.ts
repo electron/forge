@@ -1,12 +1,8 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-import fs from 'fs-extra';
-import glob from 'glob';
 import resolvePackage from 'resolve-package';
-import path from 'path';
 
 import { ForgeTemplate } from '@electron-forge/shared-types';
-import { copy } from './init-starter-files';
 import installDepList, { DepType } from '../../util/install-dependencies';
 // https://github.com/benmosher/eslint-plugin-import/issues/1120
 // eslint-disable-next-line import/named

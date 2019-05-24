@@ -45,7 +45,7 @@ class WebpackTemplate implements ForgeTemplate {
       await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.rules.js'), path.resolve(directory, 'webpack.rules.js'));
       await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'renderer.js'), path.resolve(directory, 'src', 'renderer.js'));
       let indexContents = await fs.readFile(path.resolve(directory, 'src', 'index.js'), 'utf8');
-      indexContents = indexContents.split('\n').map(line => {
+      indexContents = indexContents.split('\n').map((line) => {
         if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
         return line;
       }).join('\n');
