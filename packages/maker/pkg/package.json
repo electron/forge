@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-pkg",
-  "version": "6.0.0-beta.35",
+  "version": "6.0.0-beta.36",
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -18,8 +18,8 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.35",
-    "@electron-forge/shared-types": "6.0.0-beta.35",
+    "@electron-forge/maker-base": "6.0.0-beta.36",
+    "@electron-forge/shared-types": "6.0.0-beta.36",
     "electron-osx-sign": "^0.4.10"
   }
 }

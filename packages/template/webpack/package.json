@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-webpack",
-  "version": "6.0.0-beta.35",
+  "version": "6.0.0-beta.36",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,7 +14,7 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.35",
-    "@electron-forge/shared-types": "6.0.0-beta.35"
+    "@electron-forge/async-ora": "6.0.0-beta.36",
+    "@electron-forge/shared-types": "6.0.0-beta.36"
   }
 }
