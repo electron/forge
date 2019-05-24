@@ -1,8 +1,9 @@
 import debug from 'debug';
+import findUp from 'find-up';
 import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
-import yarnOrNpm from './yarn-or-npm';
+import yarnOrNpm, { hasYarn } from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');
 
@@ -17,6 +18,34 @@ function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
 }
 
+async function findAncestorNodeModulesPath(dir: string): Promise<string | undefined> {
+  if (hasYarn()) {
+    const yarnLockPath = await findUp('yarn.lock', { cwd: dir, type: 'file' });
+    if (yarnLockPath) {
+      const nodeModulesPath = path.join(path.dirname(yarnLockPath), 'node_modules');
+      if (await fs.pathExists(nodeModulesPath)) {
+        return nodeModulesPath;
+      }
+    }
+  }
+
+  return Promise.resolve(undefined);
+}
+
+async function determineNodeModulesPath(dir: string): Promise<string | undefined> {
+  const nodeModulesPath: string | undefined = path.join(dir, 'node_modules');
+  if (await fs.pathExists(nodeModulesPath)) {
+    return nodeModulesPath;
+  }
+  return findAncestorNodeModulesPath(dir);
+}
+
+export class PackageNotFoundError extends Error {
+  constructor(packageName: string, dir: string) {
+    super(`Cannot find the package "${packageName}". Perhaps you need to run "${yarnOrNpm()} install" in "${dir}"?`);
+  }
+}
+
 export async function getElectronVersion(dir: string, packageJSON: any): Promise<string> {
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies'.red);
@@ -27,15 +56,18 @@ export async function getElectronVersion(dir: string, packageJSON: any): Promise
   }
 
   let version = packageJSON.devDependencies[packageName];
-  if (!semver.valid(version)) {
-    // It's not an exact version, find it in the actual module
-    const electronPackageJSONPath = path.join(dir, 'node_modules', packageName, 'package.json');
+  if (!semver.valid(version)) { // It's not an exact version, find it in the actual module
+    const nodeModulesPath = await determineNodeModulesPath(dir);
+    if (!nodeModulesPath) {
+      throw new PackageNotFoundError(packageName, dir);
+    }
+    const electronPackageJSONPath = path.join(nodeModulesPath, packageName, 'package.json');
     if (await fs.pathExists(electronPackageJSONPath)) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
       // eslint-disable-next-line prefer-destructuring
       version = electronPackageJSON.version;
     } else {
-      throw new Error(`Cannot find the package "${packageName}". Perhaps you need to run "${yarnOrNpm()} install" in "${dir}"?`);
+      throw new PackageNotFoundError(packageName, dir);
     }
   }
 
