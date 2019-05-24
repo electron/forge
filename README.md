@@ -50,7 +50,7 @@ or
 [`yarn create`](https://yarnpkg.com/blog/2017/05/12/introducing-yarn/).
 
 ```bash
-npx @electron-forge/cli@beta init my-new-app
+npx create-electron-app my-new-app
 # or
 yarn create electron-app my-new-app
 
