@@ -1,3 +1,9 @@
+#### [6.0.0-beta.39](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.39) (2019-05-24)
+
+##### Bug Fixes
+
+*  handle native modules in the main process correctly in the webpack plugin ([8d688b81](https://github.com/electron-userland/electron-forge/commit/8d688b81))
+
 #### [6.0.0-beta.38](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.38) (2019-05-24)
 
 ##### Bug Fixes
