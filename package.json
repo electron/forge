@@ -39,7 +39,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
-    "@octokit/rest": "^16.26.0",
+    "@octokit/rest": "^16.27.0",
     "aws-sdk": "^2.9.0",
     "colors": "^1.2.0",
     "commander": "^2.9.0",
