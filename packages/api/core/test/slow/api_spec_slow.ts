@@ -121,8 +121,8 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       })).to.eventually.be.rejected;
     });
 
-    it('should add a dependency on react', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('@electron-forge/plugin-webpack');
+    it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
     });
 
     after(async () => {
