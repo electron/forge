@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-exe",
-  "version": "6.0.0-beta.37",
+  "version": "6.0.0-beta.38",
   "description": "EXE file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,7 +14,7 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/installer-base": "6.0.0-beta.37",
+    "@electron-forge/installer-base": "6.0.0-beta.38",
     "open": "^6.0.0"
   }
 }
