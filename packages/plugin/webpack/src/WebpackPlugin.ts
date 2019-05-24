@@ -207,7 +207,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   }
 
   getDefines = (inRendererDir = true) => {
-    const defines: { [key: string]: string; } = {};
+    const defines: { [key: string]: string; } = {
+      ASSET_RELOCATOR_BASE_DIR: this.isProd
+        ? 'process.resourcesPath + "/" + (__filename.indexOf(".asar") === -1 ? "app" : "app.asar") + "/.webpack/renderer/native_modules"'
+        : JSON.stringify(path.resolve(this.baseDir, 'renderer', 'native_modules')),
+    };
     if (!this.config.renderer.entryPoints || !Array.isArray(this.config.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
@@ -400,6 +404,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         publicPath: '/',
         hot: true,
         historyApiFallback: true,
+        writeToDisk: true,
       } as any);
       const app = express();
       app.use(server);
