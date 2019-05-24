@@ -43,7 +43,7 @@
     "debug": "^4.1.0",
     "electron-download": "^4.1.1",
     "electron-packager": "^13.0.0",
-    "electron-rebuild": "^1.6.0",
+    "electron-rebuild": "^1.8.5",
     "fs-extra": "^7.0.0",
     "glob": "^7.1.4",
     "lodash.merge": "^4.6.0",
