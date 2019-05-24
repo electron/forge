@@ -1,3 +1,9 @@
+#### [6.0.0-beta.36](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.36) (2019-05-24)
+
+##### New Features
+
+*  support native modules in webpack template ([ed5fd371](https://github.com/electron-userland/electron-forge/commit/ed5fd371))
+
 #### [6.0.0-beta.35](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.35) (2019-05-23)
 
 ##### Build System / Dependencies
