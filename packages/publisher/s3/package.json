@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-s3",
-  "version": "6.0.0-beta.36",
+  "version": "6.0.0-beta.37",
   "description": "S3 publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,9 +15,9 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.36",
-    "@electron-forge/publisher-base": "6.0.0-beta.36",
-    "@electron-forge/shared-types": "6.0.0-beta.36",
+    "@electron-forge/async-ora": "6.0.0-beta.37",
+    "@electron-forge/publisher-base": "6.0.0-beta.37",
+    "@electron-forge/shared-types": "6.0.0-beta.37",
     "aws-sdk": "^2.9.0",
     "debug": "^4.1.0",
     "s3": "^4.4.0"
