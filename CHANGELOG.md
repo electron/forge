@@ -1,3 +1,9 @@
+#### [6.0.0-beta.37](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.37) (2019-05-24)
+
+##### Bug Fixes
+
+*  use the forked version of the asset relocator ([05429a9c](https://github.com/electron-userland/electron-forge/commit/05429a9c))
+
 #### [6.0.0-beta.36](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.36) (2019-05-24)
 
 ##### New Features
