@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.39",
     "@electron-forge/shared-types": "6.0.0-beta.39",
-    "fs-extra": "^7.0.0"
+    "fs-extra": "^8.0.1"
   },
   "optionalDependencies": {
     "electron-winstaller": "^3.0.4"

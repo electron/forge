@@ -21,7 +21,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.39",
     "@electron-forge/shared-types": "6.0.0-beta.39",
     "@octokit/rest": "^16.27.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.0.1",
     "lodash.merge": "^4.6.0",
     "mime-types": "^2.1.24"
   }
