@@ -104,25 +104,25 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe.skip('init (with built-in templater)', () => {
+  describe('init (with built-in templater)', () => {
     before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing', async () => {
       await forge.init({
         dir,
-        template: 'react-typescript',
+        template: 'webpack',
       });
     });
 
     it('should fail in initializing an already initialized directory', async () => {
       await expect(forge.init({
         dir,
-        template: 'react-typescript',
+        template: 'webpack',
       })).to.eventually.be.rejected;
     });
 
-    it('should add a dependency on react', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('react');
+    it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
     });
 
     after(async () => {
