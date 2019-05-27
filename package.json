@@ -150,7 +150,7 @@
     "proxyquire": "^2.0.1",
     "rimraf": "^2.6.2",
     "sinon": "^7.3.2",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.2.0",
     "typedoc": "^0.14.2",
     "typescript": "3.4.5"
   },
