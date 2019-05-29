@@ -73,7 +73,7 @@
     "pretty-ms": "^5.0.0",
     "resolve-package": "^1.0.1",
     "s3": "^4.4.0",
-    "semver": "^6.1.0",
+    "semver": "^6.1.1",
     "source-map-support": "^0.5.12",
     "sudo-prompt": "^8.0.0",
     "username": "^5.0.0",
