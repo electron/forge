@@ -111,7 +111,7 @@
     "@types/lodash.template": "^4.4.4",
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/mocha": "^5.1.0",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.3",
     "@types/node-fetch": "^2.3.4",
     "@types/pify": "^3.0.1",
