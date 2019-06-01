@@ -82,7 +82,7 @@ describe('getElectronVersion', () => {
     if (hasYarn()) {
       expect(await getElectronVersion(fixtureDir, packageJSON)).to.be.equal('4.0.9');
     } else {
-      expect(getElectronVersion(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package')
+      expect(getElectronVersion(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
     }
   });
 });
