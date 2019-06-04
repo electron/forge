@@ -8899,10 +8899,10 @@ xtend@~2.1.1:
   dependencies:
     object-keys "~0.4.0"
 
-xterm@^3.14.0:
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.14.1.tgz#67bf03cf571b1331a1b7fc76daf90c0ab0911dfa"
-  integrity sha512-T6ZPbOXoow1V6LPnmj+wQZrKOscbQFk2we9oPmal56ArdpCJPasyb+6DxgIkBaf56Pw1ariw/dN03OLMC4A9jQ==
+xterm@^3.14.2:
+  version "3.14.2"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.14.2.tgz#f1285288bdc7df7056ef4bde64311900748c3e5d"
+  integrity sha512-L50XMhfAC953/3EzmL+lq8jyD6CQ3SZ83UDrxalpKzE3d7Wo5JqehSd4yOrHYZYrijOT3pX6kBsZEI9uuZ1lmQ==
 
 "y18n@^3.2.1 || ^4.0.0", y18n@^4.0.0:
   version "4.0.0"

@@ -81,7 +81,7 @@
     "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.1.1",
-    "xterm": "^3.14.0",
+    "xterm": "^3.14.2",
     "yarn-or-npm": "^2.0.2"
   },
   "devDependencies": {
