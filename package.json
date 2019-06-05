@@ -39,7 +39,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
-    "@octokit/rest": "^16.27.1",
+    "@octokit/rest": "^16.27.3",
     "aws-sdk": "^2.9.0",
     "colors": "^1.2.0",
     "commander": "^2.9.0",
@@ -81,7 +81,7 @@
     "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.1.1",
-    "xterm": "^3.13.2",
+    "xterm": "^3.14.0",
     "yarn-or-npm": "^2.0.2"
   },
   "devDependencies": {
@@ -111,8 +111,8 @@
     "@types/lodash.template": "^4.4.4",
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/mocha": "^5.1.0",
-    "@types/node": "^12.0.3",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.4",
     "@types/node-fetch": "^2.3.4",
     "@types/pify": "^3.0.1",
     "@types/pretty-ms": "^4.0.0",
