@@ -55,7 +55,7 @@
     "resolve-package": "^1.0.1",
     "semver": "^6.1.1",
     "source-map-support": "^0.5.12",
-    "sudo-prompt": "^8.0.0",
+    "sudo-prompt": "^9.0.0",
     "username": "^5.0.0",
     "yarn-or-npm": "^2.0.2"
   },
