@@ -36,7 +36,7 @@ describe('MakerDMG', () => {
 
     MakerDMG = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDMG', {
       '../../util/ensure-output': { ensureFile: ensureFileStub },
-      'electron-installer-dmg': { p: eidStub },
+      'electron-installer-dmg': eidStub,
       'fs-extra': {
         rename: renameStub,
       },
