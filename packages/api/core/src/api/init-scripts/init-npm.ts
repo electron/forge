@@ -2,6 +2,8 @@ import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
+import { exec } from 'child_process';
+import util from 'util';
 import username from 'username';
 
 import { setInitialForgeConfig } from '../../util/forge-config';
@@ -25,12 +27,35 @@ export const devDeps = [
 ];
 export const exactDevDeps = ['electron'];
 
+const execAndTrimResult = async (command: string) => {
+  const { stdout } = await util.promisify(exec)(command);
+  return stdout.trim();
+};
+
+const getAuthor = async () => {
+  let author: { name: string, email: string } | string | undefined;
+
+  // Try to get author info from git config
+  try {
+    const name = await execAndTrimResult('git config --get user.name');
+    const email = await execAndTrimResult('git config --get user.email');
+    author = { name, email };
+  } catch {
+    // Ignore errors
+  }
+
+  if (!author) {
+    author = await username();
+  }
+  return author;
+};
+
 export default async (dir: string) => {
   await asyncOra('Initializing NPM Module', async () => {
     const packageJSON = await readRawPackageJson(path.resolve(__dirname, '../../../tmpl'));
     // eslint-disable-next-line no-multi-assign
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
-    packageJSON.author = await username();
+    packageJSON.author = await getAuthor();
     setInitialForgeConfig(packageJSON);
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
