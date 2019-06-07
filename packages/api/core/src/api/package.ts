@@ -3,6 +3,7 @@ import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import { getHostArch } from '@electron/get';
 import glob from 'glob';
 import path from 'path';
 import pify from 'pify';
@@ -17,8 +18,6 @@ import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import { getElectronVersion } from '../util/electron-version';
-
-const { host: hostArch }: { host: () => ForgeArch | 'all' } = require('electron-download/lib/arch');
 
 const d = debug('electron-forge:packager');
 
@@ -86,7 +85,7 @@ export interface PackageOptions {
 export default async ({
   dir = process.cwd(),
   interactive = false,
-  arch = hostArch(),
+  arch = getHostArch(),
   platform = process.platform as ForgePlatform,
   outDir,
 }: PackageOptions) => {

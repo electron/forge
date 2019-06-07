@@ -1,5 +1,6 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
+import { getHostArch } from '@electron/get';
 import {
   IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult,
 } from '@electron-forge/shared-types';
@@ -18,8 +19,6 @@ import { getElectronVersion } from '../util/electron-version';
 import requireSearch from '../util/require-search';
 
 import packager from './package';
-
-const { host: hostArch }: { host: () => ForgeArch } = require('electron-download/lib/arch');
 
 class MakerImpl extends MakerBase<any> {
  name = 'impl';
@@ -62,7 +61,7 @@ export default async ({
   dir = process.cwd(),
   interactive = false,
   skipPackage = false,
-  arch = hostArch(),
+  arch = getHostArch(),
   platform = process.platform as ForgePlatform,
   overrideTargets,
   outDir,
