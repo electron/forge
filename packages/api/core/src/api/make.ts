@@ -61,7 +61,7 @@ export default async ({
   dir = process.cwd(),
   interactive = false,
   skipPackage = false,
-  arch = getHostArch(),
+  arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   overrideTargets,
   outDir,

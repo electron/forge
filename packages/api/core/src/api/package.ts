@@ -85,7 +85,7 @@ export interface PackageOptions {
 export default async ({
   dir = process.cwd(),
   interactive = false,
-  arch = getHostArch(),
+  arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   outDir,
 }: PackageOptions) => {
