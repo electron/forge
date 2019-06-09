@@ -2,8 +2,9 @@ import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
-import { exec } from 'child_process';
-import util from 'util';
+import childProcess from 'child_process';
+import { PackagePerson } from '@electron-forge/shared-types';
+import { promisify } from 'util';
 import username from 'username';
 
 import { setInitialForgeConfig } from '../../util/forge-config';
@@ -11,6 +12,7 @@ import installDepList, { DepType, DepVersionRestriction } from '../../util/insta
 import { readRawPackageJson } from '../../util/read-package-json';
 
 const d = debug('electron-forge:init:npm');
+const exec = promisify(childProcess.exec);
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
 
 export function siblingDep(name: string) {
@@ -28,26 +30,22 @@ export const devDeps = [
 export const exactDevDeps = ['electron'];
 
 const execAndTrimResult = async (command: string) => {
-  const { stdout } = await util.promisify(exec)(command);
+  const { stdout } = await exec(command);
   return stdout.trim();
 };
 
-const getAuthor = async () => {
-  let author: { name: string, email: string } | string | undefined;
-
-  // Try to get author info from git config
+const getAuthorFromGitConfig = async (): Promise<PackagePerson> => {
   try {
     const name = await execAndTrimResult('git config --get user.name');
     const email = await execAndTrimResult('git config --get user.email');
-    author = { name, email };
+    return { name, email };
   } catch {
     // Ignore errors
   }
+}
 
-  if (!author) {
-    author = await username();
-  }
-  return author;
+const getAuthor = async () => {
+  return (await getAuthorFromGitConfig()) || (await username());
 };
 
 export default async (dir: string) => {

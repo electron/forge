@@ -121,3 +121,9 @@ export interface ForgeTemplate {
   devDependencies?: string[];
   initializeTemplate?: (dir: string) => void;
 }
+
+export type PackagePerson = undefined | string | {
+  name: string;
+  email?: string;
+  url?: string;
+};
