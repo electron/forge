@@ -87,7 +87,7 @@ For Electron Forge documentation and usage you should check out our website:
 ## How do I use this with `webpack`/`babel`/`typescript`/`random build tool`?
 
 As of Electron Forge 6+ by default we only do vanilla JavaScript but if you want
-to do some fancy build tool stuff you should check out the [plugins](https://v6.electronforge.io/plugins)
+to do some fancy build tool stuff you should check out the [plugins](https://v6.electronforge.io/config/plugins)
 section of our docs site.  We currently have plugins for Webpack, Parcel and
 Electron Compile.
 
