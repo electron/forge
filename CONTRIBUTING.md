@@ -48,7 +48,7 @@ When changing the API documentation, here are some rules to keep in mind.
   * should be properly capitalized
   * should not be "This"
 
-For changes to the website ([electronforge.io](https://v6.electronforge.io)), please file
+For changes to the website ([electronforge.io](https://www.electronforge.io)), please file
 issues/pull requests at this repository in the "docs" folder.
 
 ## Running the Tests

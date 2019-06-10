@@ -25,10 +25,10 @@ are looking for the 5.x series (the version currently published to NPM), please 
 
 ----
 
-[Website](https://v6.electronforge.io) |
+[Website](https://www.electronforge.io) |
 [Goals](#project-goals) |
 [Docs and Usage](#docs-and-usage) |
-[Configuration](https://v6.electronforge.io/configuration) |
+[Configuration](https://www.electronforge.io/configuration) |
 [Support](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md) |
 [Contributing](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) |
 [Changelog](https://github.com/electron-userland/electron-forge/blob/master/CHANGELOG.md)
@@ -80,14 +80,14 @@ With these goals in mind, under the hood this project uses, among others:
 # Docs and Usage
 
 For Electron Forge documentation and usage you should check out our website:
-[electronforge.io](https://v6.electronforge.io)
+[electronforge.io](https://www.electronforge.io)
 
 # FAQ
 
 ## How do I use this with `webpack`/`babel`/`typescript`/`random build tool`?
 
 As of Electron Forge 6+ by default we only do vanilla JavaScript but if you want
-to do some fancy build tool stuff you should check out the [plugins](https://v6.electronforge.io/config/plugins)
+to do some fancy build tool stuff you should check out the [plugins](https://www.electronforge.io/config/plugins)
 section of our docs site.  We currently have plugins for Webpack, Parcel and
 Electron Compile.
 
