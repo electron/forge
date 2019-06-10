@@ -16,10 +16,8 @@ const getAuthorFromGitConfig = async (): Promise<PackagePerson> => {
     const email = await execAndTrimResult('git config --get user.email');
     return { name, email };
   } catch {
-    // Ignore errors
+    return undefined;
   }
-}
-
-export default async () => {
-  return (await getAuthorFromGitConfig()) || (await username());
 };
+
+export default async () => (await getAuthorFromGitConfig()) || username();
