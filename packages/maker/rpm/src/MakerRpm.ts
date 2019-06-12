@@ -1,6 +1,5 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-
 import path from 'path';
 
 import { MakerRpmConfig } from './Config';
@@ -28,25 +27,20 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     dir,
     makeDir,
     targetArch,
-    packageJSON,
   }: MakerOptions) {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 
-    const arch = rpmArch(targetArch);
-    const name = (this.config.options || {}).name || packageJSON.name;
-    const versionedName = `${name}-${packageJSON.version}.${arch}`;
-    const outPath = path.resolve(makeDir, `${versionedName}.rpm`);
+    const outDir = path.resolve(makeDir);
 
-    await this.ensureFile(outPath);
-    const rpmConfig = Object.assign({}, this.config, {
-      arch,
+    await this.ensureDirectory(outDir);
+    const { packagePaths } = await installer({
+      ...this.config,
+      arch: rpmArch(targetArch),
       src: dir,
-      dest: path.dirname(outPath),
+      dest: outDir,
       rename: undefined,
     });
-
-    await installer(rpmConfig);
-    return [outPath];
+    return packagePaths;
   }
 }
