@@ -18,7 +18,7 @@ class MakerImpl extends MakerBase<MakerDebConfig> {
 describe('MakerDeb', () => {
   let MakerDeb: typeof MakerImpl;
   let eidStub: SinonStub;
-  let ensureFileStub: SinonStub;
+  let ensureDirectoryStub: SinonStub;
   let config: MakerDebConfig;
   let maker: MakerImpl;
   let createMaker: () => void;
@@ -30,9 +30,8 @@ describe('MakerDeb', () => {
   const packageJSON = { version: '1.2.3' };
 
   beforeEach(() => {
-    ensureFileStub = stub().returns(Promise.resolve());
-    eidStub = stub().resolves();
-    (eidStub as any).transformVersion = (version: string) => version;
+    ensureDirectoryStub = stub().returns(Promise.resolve());
+    eidStub = stub().returns({ packagePaths: ['/foo/bar.deb'] });
     config = {};
 
     MakerDeb = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDeb', {
@@ -40,7 +39,7 @@ describe('MakerDeb', () => {
     }).default;
     createMaker = () => {
       maker = new MakerDeb(config, []);
-      maker.ensureFile = ensureFileStub;
+      maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };
     createMaker();
@@ -85,18 +84,6 @@ describe('MakerDeb', () => {
       rename: undefined,
     });
   });
-
-  if (process.platform === 'linux') {
-    it('should return the proper pre-release version in the outPath', async () => {
-      // eslint-disable-next-line import/no-unresolved
-      (eidStub as any).transformVersion = require('electron-installer-debian').transformVersion;
-      packageJSON.version = '1.2.3-beta.4';
-      const outPath = await (maker.make as any)({
-        dir, makeDir, appName, targetArch, packageJSON,
-      });
-      expect(outPath).to.match(/1\.2\.3~beta\.4/);
-    });
-  }
 
   describe('debianArch', () => {
     it('should convert ia32 to i386', () => {

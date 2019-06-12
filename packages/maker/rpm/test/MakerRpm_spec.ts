@@ -18,7 +18,7 @@ class MakerImpl extends MakerBase<MakerRpmConfig> {
 describe('MakerRpm', () => {
   let MakerRpm: typeof MakerImpl;
   let eirStub: SinonStub;
-  let ensureFileStub: SinonStub;
+  let ensureDirectoryStub: SinonStub;
   let config: MakerRpmConfig;
   let maker: MakerImpl;
   let createMaker: () => void;
@@ -30,8 +30,8 @@ describe('MakerRpm', () => {
   const packageJSON = { version: '1.2.3' };
 
   beforeEach(() => {
-    ensureFileStub = stub().returns(Promise.resolve());
-    eirStub = stub().resolves();
+    ensureDirectoryStub = stub().returns(Promise.resolve());
+    eirStub = stub().returns(Promise.resolve({ packagePaths: ['/foo/bar.rpm'] }));
     config = {};
 
     MakerRpm = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
@@ -39,7 +39,7 @@ describe('MakerRpm', () => {
     }).default;
     createMaker = () => {
       maker = new MakerRpm(config);
-      maker.ensureFile = ensureFileStub;
+      maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };
     createMaker();
