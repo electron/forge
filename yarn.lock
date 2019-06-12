@@ -3095,9 +3095,9 @@ electron-installer-common@^0.6.2, electron-installer-common@^0.6.3:
     tmp-promise "^1.0.5"
 
 electron-installer-common@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.7.1.tgz#878977832e39270053777250b2d201afd52bb3ec"
-  integrity sha512-aZSqCJXlBeKY/NKwPaBA+9v+WvcqDMP7WiosZjeBs+PjBeP2RBz1+UPBEj48rloQcy6d8M7jKTHmnASFFVsLow==
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.7.2.tgz#034ffb3a3e393f2637a4fad29a7dfc65f1d47517"
+  integrity sha512-oe4HMkxB/BV7waa+LMj47aTTyjLFfkOP3Omz8rengoXhQYaSGmf2hNG058NoqzbozXM5Tjiwgh7dShUAPaVhdw==
   dependencies:
     asar "^2.0.1"
     cross-spawn-promise "^0.10.1"
