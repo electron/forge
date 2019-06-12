@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
 import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { hasYarn } from '../../src/util/yarn-or-npm';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
@@ -71,5 +72,17 @@ describe('getElectronVersion', () => {
       devDependencies: { electron: '1.0.0' },
     };
     return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
+  });
+
+  it('works with a non-exact version and yarn workspaces', async () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace', 'packages', 'subpackage');
+    const packageJSON = {
+      devDependencies: { electron: '^4.0.4' },
+    };
+    if (hasYarn()) {
+      expect(await getElectronVersion(fixtureDir, packageJSON)).to.be.equal('4.0.9');
+    } else {
+      expect(getElectronVersion(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
+    }
   });
 });
