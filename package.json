@@ -157,7 +157,7 @@
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.9.0",
-    "electron-installer-debian": "^1.2.0",
+    "electron-installer-debian": "^2.0.0",
     "electron-installer-dmg": "^3.0.0",
     "electron-installer-redhat": "^1.1.0",
     "electron-installer-snap": "^3.2.0",
