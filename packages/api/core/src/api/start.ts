@@ -129,7 +129,7 @@ export default async ({
     }
 
     lastSpawned = spawned;
-    return spawned;
+    return lastSpawned;
   };
 
   if (interactive) {
