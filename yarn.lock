@@ -3094,6 +3094,21 @@ electron-installer-common@^0.6.2, electron-installer-common@^0.6.3:
     semver "^6.0.0"
     tmp-promise "^1.0.5"
 
+electron-installer-common@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.7.1.tgz#878977832e39270053777250b2d201afd52bb3ec"
+  integrity sha512-aZSqCJXlBeKY/NKwPaBA+9v+WvcqDMP7WiosZjeBs+PjBeP2RBz1+UPBEj48rloQcy6d8M7jKTHmnASFFVsLow==
+  dependencies:
+    asar "^2.0.1"
+    cross-spawn-promise "^0.10.1"
+    debug "^4.1.1"
+    fs-extra "^8.0.1"
+    glob "^7.1.4"
+    lodash "^4.17.11"
+    parse-author "^2.0.0"
+    semver "^6.0.0"
+    tmp-promise "^2.0.1"
+
 electron-installer-debian@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-1.2.0.tgz#1cb3c457cd4fc5e5adaae4d587170eca3a85a219"
@@ -3119,16 +3134,15 @@ electron-installer-dmg@^3.0.0:
   optionalDependencies:
     appdmg "^0.6.0"
 
-electron-installer-redhat@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-1.1.0.tgz#d8f20839fdb567946b33372d78101ff6d60aacb5"
-  integrity sha512-wea1fZ1VOEZBJ5Y+/D2So04PnhfwoEPFW4rD9UlP/ODIggkDHY6ZLsXj0SRPGKGJqmTzP16Taoj7YNsmxYEL2g==
+electron-installer-redhat@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-2.0.0.tgz#a83563f6267aed64a619592cd0a6305ffa97ba6b"
+  integrity sha512-kf7+/t8XIp1I6LIV9v6K38rBHzmY6bUr3TunJZKdlIKQ7j6wyjjpgbpxSBcg3S7pgzq1kkgCYZvpr8CsLFVivw==
   dependencies:
     debug "^4.1.1"
-    electron-installer-common "^0.6.2"
-    fs-extra "^7.0.1"
+    electron-installer-common "^0.7.1"
+    fs-extra "^8.0.1"
     lodash "^4.17.4"
-    nodeify "^1.0.1"
     word-wrap "^1.2.3"
     yargs "^13.2.2"
 
@@ -8161,12 +8175,26 @@ tmp-promise@^1.0.3, tmp-promise@^1.0.5:
     bluebird "^3.5.0"
     tmp "0.0.33"
 
+tmp-promise@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/tmp-promise/-/tmp-promise-2.0.1.tgz#8856f057e782fc9c363a76335cf6165b8eddae19"
+  integrity sha512-2A0lDPWiuu+92AVO19p5D6eq2egvCPiVUkzR11jE+GG4QMjj4YQ4glr2RqzYT0TMeMs2tIXLPDYo4wWh2/WoSg==
+  dependencies:
+    tmp "0.1.0"
+
 tmp@0.0.33, tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
   integrity sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==
   dependencies:
     os-tmpdir "~1.0.2"
+
+tmp@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.1.0.tgz#ee434a4e22543082e294ba6201dcc6eafefa2877"
+  integrity sha512-J7Z2K08jbGcdA1kkQpJSqLF6T0tdQqpR2pnSUXsIchbPdTI9v3e85cLW0d6WDhwuAleOV71j2xWs8qMPfK7nKw==
+  dependencies:
+    rimraf "^2.6.3"
 
 tn1150@^0.1.0:
   version "0.1.0"
