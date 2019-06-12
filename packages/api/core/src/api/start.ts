@@ -113,20 +113,22 @@ export default async ({
   };
 
   const forgeSpawnWrapper = async () => {
-    lastSpawned = await forgeSpawn();
+    const spawned = await forgeSpawn();
     // When the child app is closed we should stop listening for stdin
-    if (lastSpawned) {
+    if (spawned) {
       if (interactive && process.stdin.isPaused()) {
         process.stdin.resume();
       }
-      lastSpawned.on('exit', () => {
-        if ((lastSpawned as any).restarted) return;
+      spawned.on('exit', () => {
+        if ((spawned as any).restarted) return;
 
         if (!process.stdin.isPaused()) process.stdin.pause();
       });
     } else if (interactive && !process.stdin.isPaused()) {
       process.stdin.pause();
     }
+
+    lastSpawned = spawned;
     return lastSpawned;
   };
 
