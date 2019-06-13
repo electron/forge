@@ -1107,10 +1107,10 @@
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-5.2.7.tgz#315d570ccb56c53452ff8638738df60726d5b6ea"
   integrity sha512-NYrtPht0wGzhwe9+/idPaBB+TqkY9AhTvOLMkThm0IoEfLaiVQZwBwyJ5puCkO3AUCWrmcoePjp2mbFocKy4SQ==
 
-"@types/node-fetch@^2.3.5":
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.3.5.tgz#e25e5b6715f377f46a82783817acceef29121d6e"
-  integrity sha512-Sh6FFmu7t4ccxKTplwKgEeg4fYWi9Ib1uVq3eSEndj6ckM6GaJnHp5mxHmMOq3JsU+lIq5I5GYCLVEpWXoAucA==
+"@types/node-fetch@^2.3.6":
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.3.6.tgz#761f30134f62c9fd30174603a97348a0477e5dc2"
+  integrity sha512-KuQEir6FTxAdrdPsTVPDukPRRJmZyVldu/1+ua6kF26lyvhK9Elq1mQJgDl7773H9XxCu8H8oEC0yQM06Cy3kg==
   dependencies:
     "@types/node" "*"
 
