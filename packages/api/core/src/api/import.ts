@@ -111,6 +111,7 @@ export default async ({
   const buildToolPackages: {
     [key: string]: string | undefined;
   } = {
+    '@electron/get': 'already uses this module as a transitive dependency',
     'electron-builder': 'provides mostly equivalent functionality',
     'electron-download': 'already uses this module as a transitive dependency',
     'electron-forge': 'replaced with @electron-forge/cli',

@@ -39,6 +39,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
+    "@electron/get": "^1.2.0",
     "@octokit/rest": "^16.28.1",
     "aws-sdk": "^2.472.0",
     "colors": "^1.2.0",
@@ -47,7 +48,6 @@
     "cross-spawn-promise": "^0.10.1",
     "cross-zip": "^2.1.5",
     "debug": "^4.1.0",
-    "electron-download": "^4.1.1",
     "electron-osx-sign": "^0.4.10",
     "electron-packager": "^13.0.0",
     "electron-rebuild": "^1.8.5",
