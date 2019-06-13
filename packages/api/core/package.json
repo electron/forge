@@ -26,7 +26,6 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@electron/get": "^1.1.0",
     "@electron-forge/async-ora": "6.0.0-beta.39",
     "@electron-forge/installer-base": "6.0.0-beta.39",
     "@electron-forge/installer-deb": "6.0.0-beta.39",
@@ -39,6 +38,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.39",
     "@electron-forge/shared-types": "6.0.0-beta.39",
     "@electron-forge/template-webpack": "6.0.0-beta.39",
+    "@electron/get": "^1.2.0",
     "colors": "^1.2.0",
     "cross-spawn-promise": "^0.10.1",
     "debug": "^4.1.0",
