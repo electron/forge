@@ -76,7 +76,7 @@
     "semver": "^6.1.1",
     "source-map-support": "^0.5.12",
     "sudo-prompt": "^9.0.0",
-    "username": "^5.0.0",
+    "username": "^5.1.0",
     "webpack": "^4.33.0",
     "webpack-dev-middleware": "^3.7.0",
     "webpack-hot-middleware": "^2.25.0",
