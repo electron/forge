@@ -3,7 +3,7 @@ import InstallerBase, { InstallerOptions } from '@electron-forge/installer-base'
 
 import fs from 'fs-extra';
 import path from 'path';
-import pify from 'pify';
+import { promisify } from 'util';
 import sudo from 'sudo-prompt';
 import { exec } from 'child_process';
 
@@ -30,9 +30,9 @@ export default abstract class InstallerDarwin extends InstallerBase {
 
     const moveCommand = `${copyInstead ? 'cp -r' : 'mv'} "${appPath}" "${targetApplicationPath}"`;
     if (writeAccess) {
-      await pify(exec)(moveCommand);
+      await promisify(exec)(moveCommand);
     } else {
-      await pify(sudo.exec)(moveCommand, {
+      await promisify(sudo.exec)(moveCommand, {
         name: 'Electron Forge',
       });
     }

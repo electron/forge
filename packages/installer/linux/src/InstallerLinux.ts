@@ -1,7 +1,7 @@
 import InstallerBase, { InstallerOptions } from '@electron-forge/installer-base';
 
 import { spawnSync } from 'child_process';
-import pify from 'pify';
+import { promisify } from 'util';
 import sudoPrompt from 'sudo-prompt';
 
 export { InstallerOptions };
@@ -18,6 +18,6 @@ export default abstract class InstallerLinux extends InstallerBase {
   sudo = (type: string, program: string, args: string) => this.which(
     type,
     program,
-    () => pify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
+    () => promisify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
   )
 }

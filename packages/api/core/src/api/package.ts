@@ -5,9 +5,9 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import { getHostArch } from '@electron/get';
 import glob from 'glob';
-import path from 'path';
-import pify from 'pify';
 import packager from 'electron-packager';
+import path from 'path';
+import { promisify } from 'util';
 
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
@@ -53,7 +53,7 @@ function sequentialHooks(hooks: Function[]) {
     const done = args[args.length - 1];
     const passedArgs = args.splice(0, args.length - 1);
     for (const hook of hooks) {
-      await pify(hook)(...passedArgs);
+      await promisify(hook)(...passedArgs);
     }
     done();
   }] as [(...args: any[]) => Promise<void>];
@@ -119,7 +119,7 @@ export default async ({
         prepareCounter += 1;
         prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
-      const bins = await pify(glob)(path.join(buildPath, '**/.bin/**/*'));
+      const bins = await promisify(glob)(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
       }
