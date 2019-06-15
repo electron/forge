@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import pify from 'pify';
+import { promisify } from 'util';
 import semver from 'semver';
 
 import DMGInstaller from '@electron-forge/installer-dmg';
@@ -158,7 +158,7 @@ export default async ({
       resume: true,
       strictSSL: true,
     };
-    await pify(nugget)(targetAsset.browser_download_url, nuggetOpts);
+    await promisify(nugget)(targetAsset.browser_download_url, nuggetOpts);
   }
 
   await asyncOra('Installing Application', async (installSpinner) => {

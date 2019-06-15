@@ -2,7 +2,7 @@ import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
-import pify from 'pify';
+import { promisify } from 'util';
 
 export type MakerZIPConfig = {};
 
@@ -30,7 +30,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     const zipPath = path.resolve(makeDir, `${path.basename(dir)}-${packageJSON.version}.zip`);
 
     await this.ensureFile(zipPath);
-    await pify(zip)(zipDir, zipPath);
+    await promisify(zip)(zipDir, zipPath);
 
     return [zipPath];
   }
