@@ -8,6 +8,7 @@ describe('determineAuthor', () => {
   let determineAuthor: () => Promise<PackagePerson>;
   let returnGitUsername = true;
   let returnGitEmail = true;
+  // eslint-disable-next-line max-len
   const fakeExec = (cmd: string, callback: (err: Error | null, result?: { stdout?: string, stderr?: string }) => void) => {
     if (cmd.includes('user.name')) {
       if (returnGitUsername) {
@@ -28,8 +29,8 @@ describe('determineAuthor', () => {
 
   beforeEach(() => {
     determineAuthor = proxyquire.noCallThru().load('../../src/util/determine-author', {
-      'child_process': { exec: sinon.stub().callsFake(fakeExec) },
-      username: sinon.stub().resolves('fromUsername')
+      child_process: { exec: sinon.stub().callsFake(fakeExec) },
+      username: sinon.stub().resolves('fromUsername'),
     }).default;
   });
 
