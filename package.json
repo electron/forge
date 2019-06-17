@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@electron/get": "^1.2.0",
-    "@octokit/rest": "^16.28.1",
+    "@octokit/rest": "^16.28.2",
     "aws-sdk": "^2.472.0",
     "colors": "^1.2.0",
     "commander": "^2.9.0",
