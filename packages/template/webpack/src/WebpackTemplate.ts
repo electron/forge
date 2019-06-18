@@ -39,7 +39,7 @@ class WebpackTemplate implements ForgeTemplate {
       });
     });
     await asyncOra('Setting up webpack configuration', async () => {
-      await fs.appendFile(path.resolve(directory, '.gitignore'), '.webpack\n');
+      await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'README.md'), path.resolve(directory, 'README.md'));
       await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.main.config.js'), path.resolve(directory, 'webpack.main.config.js'));
       await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.renderer.config.js'), path.resolve(directory, 'webpack.renderer.config.js'));
       await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.rules.js'), path.resolve(directory, 'webpack.rules.js'));
