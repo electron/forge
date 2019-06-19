@@ -30,7 +30,7 @@ export default async (dir: string) => {
     const packageJSON = await readRawPackageJson(path.resolve(__dirname, '../../../tmpl'));
     // eslint-disable-next-line no-multi-assign
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
-    packageJSON.author = await determineAuthor();
+    packageJSON.author = await determineAuthor(dir);
     setInitialForgeConfig(packageJSON);
 
     packageJSON.scripts.lint = 'echo "No linting configured"';

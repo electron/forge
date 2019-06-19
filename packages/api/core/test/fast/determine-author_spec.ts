@@ -5,11 +5,11 @@ import sinon from 'sinon';
 import { PackagePerson } from '@electron-forge/shared-types';
 
 describe('determineAuthor', () => {
-  let determineAuthor: () => Promise<PackagePerson>;
+  let determineAuthor: (dir: string) => Promise<PackagePerson>;
   let returnGitUsername = true;
   let returnGitEmail = true;
   // eslint-disable-next-line max-len
-  const fakeExec = (cmd: string, callback: (err: Error | null, result?: { stdout?: string, stderr?: string }) => void) => {
+  const fakeExec = (cmd: string, options: { cwd: string }, callback: (err: Error | null, result?: { stdout?: string, stderr?: string }) => void) => {
     if (cmd.includes('user.name')) {
       if (returnGitUsername) {
         callback(null, { stdout: 'Foo Bar\n' });
@@ -37,18 +37,18 @@ describe('determineAuthor', () => {
   it('returns git config if both name and email are set', async () => {
     returnGitUsername = true;
     returnGitEmail = true;
-    expect(await determineAuthor()).to.deep.equal({ name: 'Foo Bar', email: 'foo@example.com' });
+    expect(await determineAuthor('foo')).to.deep.equal({ name: 'Foo Bar', email: 'foo@example.com' });
   });
 
   it('returns username if only name is set', async () => {
     returnGitUsername = true;
     returnGitEmail = false;
-    expect(await determineAuthor()).to.equal('fromUsername');
+    expect(await determineAuthor('foo')).to.equal('fromUsername');
   });
 
   it('returns username if only name is set', async () => {
     returnGitUsername = false;
     returnGitEmail = true;
-    expect(await determineAuthor()).to.equal('fromUsername');
+    expect(await determineAuthor('foo')).to.equal('fromUsername');
   });
 });
