@@ -1,6 +1,6 @@
 import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
-const { allOfficialArchsForPlatformAndVersion } = require('electron-packager/targets');
+const { allOfficialArchsForPlatformAndVersion } = require('electron-packager/src/targets');
 
 export default function parseArchs(
   platform: ForgePlatform | string,
