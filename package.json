@@ -59,7 +59,7 @@
     "glob": "^7.1.4",
     "global": "^4.3.2",
     "html-webpack-plugin": "^3.2.0",
-    "inquirer": "^6.3.1",
+    "inquirer": "^6.4.0",
     "lodash.merge": "^4.6.0",
     "lodash.template": "^4.4.0",
     "log-symbols": "^3.0.0",
