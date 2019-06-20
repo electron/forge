@@ -733,10 +733,10 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@electron/get@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.2.0.tgz#1d2da0b00ad750e0824772d41826baa90c7906a6"
-  integrity sha512-gZ/YnhraLpDEV5mKhBruAM9FN2FQ23VhTuOD8rT72VgunOJCs8oCdaY3Rvn5DOJmcPiRhKHGvymA0qTT/sU1QQ==
+"@electron/get@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.3.0.tgz#c00386b383a00ee3a7af38b515dab5b5016dc8a8"
+  integrity sha512-FWmYLGp88YZR7f4nJQfJVf6QfrndF9hwFQw0AvGXzC1YiH20K6/WrYlmRbBftX+eszvYi5ZV4Bp0SQKMNOLcOg==
   dependencies:
     debug "^4.1.1"
     env-paths "^2.2.0"
