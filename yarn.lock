@@ -916,10 +916,10 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.4.tgz#56eec47706f0fd0b7c694eae2f3172e6b0b769da"
   integrity sha512-D9MyoQFI7iP5VdpEyPZyjjqIJ8Y8EDNQFIFVLOmeg1rI1xiHOChyUPMPRUVfqFCerxfE+yS3vMyj37F6IdtOoQ==
 
-"@types/electron-packager@^13.0.0":
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/@types/electron-packager/-/electron-packager-13.0.0.tgz#d391366bc9722587f4c5e254f4071a2c71fc960c"
-  integrity sha512-Q0e/ja/TfSSPM5rV9RxaPz8yew7dWSSufFsziw08hCZYQuafXkbhxs83UvQ/Hte3+c3U+ogLQKXFasGn1umn5A==
+"@types/electron-packager@^13.0.1":
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/@types/electron-packager/-/electron-packager-13.0.1.tgz#55ec6fdfac1c2db86adcbfbc8e486b0ff8c2a8ee"
+  integrity sha512-K9CCdarh7JdWvIIWM+xCWoROYXgcRFmX3OgjgwaFIFOb87bMTvtQVLyVi8LO0NroURadaae5L1AaK1BxKhytoA==
   dependencies:
     "@types/node" "*"
 
