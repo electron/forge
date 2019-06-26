@@ -138,7 +138,7 @@
     "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-react": "^7.14.2",
     "fetch-mock": "^7.3.3",
-    "generate-changelog": "^1.0.2",
+    "generate-changelog": "^1.8.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.0",
     "mocha": "^6.1.4",
