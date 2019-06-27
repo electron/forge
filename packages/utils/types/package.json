@@ -9,7 +9,7 @@
   "typings": "index.d.ts",
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.39",
-    "@types/electron-packager": "^13.0.0",
+    "@types/electron-packager": "^14.0.0",
     "electron-rebuild": "^1.8.5",
     "ora": "^3.0.0"
   },
