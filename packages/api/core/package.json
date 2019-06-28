@@ -45,7 +45,7 @@
     "electron-packager": "^14.0.0",
     "electron-rebuild": "^1.8.5",
     "find-up": "^4.1.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
     "lodash.merge": "^4.6.0",
     "lodash.template": "^4.4.0",

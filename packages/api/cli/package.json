@@ -20,7 +20,7 @@
     "colors": "^1.2.0",
     "commander": "^2.9.0",
     "debug": "^4.1.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.1.0",
     "inquirer": "^6.4.1",
     "semver": "^6.1.2"
   },
