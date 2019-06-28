@@ -18,7 +18,7 @@
     "@electron-forge/async-ora": "6.0.0-beta.39",
     "@electron-forge/publisher-base": "6.0.0-beta.39",
     "form-data": "2.4.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.0"
   }
 }

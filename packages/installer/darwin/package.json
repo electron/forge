@@ -16,7 +16,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.39",
     "@electron-forge/installer-base": "6.0.0-beta.39",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^8.1.0",
     "sudo-prompt": "^9.0.0"
   }
 }
