@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "@electron-forge/installer-base": "6.0.0-beta.39",
-    "open": "^6.0.0"
+    "open": "^6.4.0"
   }
 }
