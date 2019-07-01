@@ -2,11 +2,11 @@ import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
-import username from 'username';
 
-import { setInitialForgeConfig } from '../../util/forge-config';
+import determineAuthor from '../../util/determine-author';
 import installDepList, { DepType, DepVersionRestriction } from '../../util/install-dependencies';
 import { readRawPackageJson } from '../../util/read-package-json';
+import { setInitialForgeConfig } from '../../util/forge-config';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
@@ -30,7 +30,7 @@ export default async (dir: string) => {
     const packageJSON = await readRawPackageJson(path.resolve(__dirname, '../../../tmpl'));
     // eslint-disable-next-line no-multi-assign
     packageJSON.productName = packageJSON.name = path.basename(dir).toLowerCase();
-    packageJSON.author = await username();
+    packageJSON.author = await determineAuthor(dir);
     setInitialForgeConfig(packageJSON);
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
