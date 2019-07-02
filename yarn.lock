@@ -3204,9 +3204,9 @@ electron-osx-sign@^0.4.10, electron-osx-sign@^0.4.11:
     plist "^3.0.1"
 
 electron-packager@^14.0.0:
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.0.tgz#4bf446e54c18078c19be92df508e096b96cbcb4b"
-  integrity sha512-7GmpTAvMx9OR1/AZfcEmreVszMM0d64nzDyzzQytrjejZqygRyXOlRrQlR/TkLfymx9vZ5BHyo3KXokImdhhvA==
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.1.tgz#a0e027448877c25294428f1348a2257b6685b155"
+  integrity sha512-KS+oKTmrfTGuTHixMOd6o+nA0VIMg8ogdOYJ8N0OtALxazXKRQCFusXH53+QnzZt+NATav+f9Eh7S2n7fiUArA==
   dependencies:
     "@electron/get" "^1.3.0"
     asar "^2.0.1"
@@ -3214,7 +3214,7 @@ electron-packager@^14.0.0:
     debug "^4.0.1"
     electron-notarize "^0.1.1"
     electron-osx-sign "^0.4.11"
-    fs-extra "^7.0.0"
+    fs-extra "^8.1.0"
     galactus "^0.2.1"
     get-package-info "^1.0.0"
     junk "^3.1.0"
