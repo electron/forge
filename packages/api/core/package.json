@@ -53,7 +53,7 @@
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
     "resolve-package": "^1.0.1",
-    "semver": "^6.1.2",
+    "semver": "^6.2.0",
     "source-map-support": "^0.5.12",
     "sudo-prompt": "^9.0.0",
     "username": "^5.1.0",
