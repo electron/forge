@@ -1764,10 +1764,10 @@ author-regex@^1.0.0:
   resolved "https://registry.yarnpkg.com/author-regex/-/author-regex-1.0.0.tgz#d08885be6b9bbf9439fe087c76287245f0a81450"
   integrity sha1-0IiFvmubv5Q5/gh8dihyRfCoFFA=
 
-aws-sdk@^2.472.0:
-  version "2.485.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.485.0.tgz#4c34791f9660e476cf55ac8bcb334105673c783f"
-  integrity sha512-VTmsIPrf9yblghjM5P7hCUG9ysYB+m67mo6/laWeJeGWLxePwtfvVAjhmmXkOJIv0JFSwNfJJ5KpI3Mtu0avsQ==
+aws-sdk@^2.487.0:
+  version "2.487.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.487.0.tgz#ac22c071db17b236498e5765e32f74528135808a"
+  integrity sha512-bdImYaIzvRL4nn8DEvI39VCrQYPDeC/PTYg++EBobhaFh8ksbsTzBnIFAn5IxtlRsXWUzaZVyOgRTGqiiS6YHA==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
