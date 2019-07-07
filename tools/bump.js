@@ -4,17 +4,22 @@ require('colors');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
+const { promisify } = require('util');
 const semver = require('semver');
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 const ELECTRON_FORGE_PREFIX = '@electron-forge/';
 
+const exec = promisify(childProcess.exec);
+
+async function run(command) {
+  return exec(command, { cwd: BASE_DIR });
+}
+
 (async () => {
   // Check clean working dir
-  if (childProcess.execSync('git status -s', {
-    cwd: BASE_DIR,
-  }).toString() !== '') {
+  if ((await run('git status -s')).toString() !== '') {
     throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
   }
 
@@ -51,28 +56,16 @@ const ELECTRON_FORGE_PREFIX = '@electron-forge/';
     await fs.writeJson(pjPath, existingPJ, {
       spaces: 2,
     });
-    childProcess.execSync(`git add "${path.relative(BASE_DIR, pjPath)}"`, {
-      cwd: BASE_DIR,
-    });
+    (await run(`git add "${path.relative(BASE_DIR, pjPath)}"`));
   }
 
-  childProcess.execSync(`git commit -m "Version Bump: ${version}"`, {
-    cwd: BASE_DIR,
-  });
-  childProcess.execSync(`git tag v${version}`, {
-    cwd: BASE_DIR,
-  });
+  (await run(`git commit -m "Version Bump: ${version}"`));
+  (await run(`git tag v${version}`));
 
-  childProcess.execSync(`node_modules/.bin/changelog --tag=v${lastVersion}`, {
-    cwd: BASE_DIR,
-  });
+  (await run(`node_modules/.bin/changelog --tag=v${lastVersion}`));
 
-  require('../ci/fix-changelog');
+  require('../ci/fix-changelog'); // eslint-disable-line global-require
 
-  childProcess.execSync('git add CHANGELOG.md', {
-    cwd: BASE_DIR,
-  });
-  childProcess.execSync('git commit -m "Update CHANGELOG.md"', {
-    cwd: BASE_DIR,
-  });
+  (await run('git add CHANGELOG.md'));
+  (await run('git commit -m "Update CHANGELOG.md"'));
 })().catch(console.error);
