@@ -25,10 +25,10 @@ async function run(command) {
 
   const version = process.argv[2];
   if (!version) {
-    throw 'Must provide a version in argv[1]'.red;
+    throw 'Must provide a version in argv[2]'.red;
   }
   if (!semver.valid(version)) {
-    throw `Must provide a valid semver version in argv[1].  Got ${version}`.red;
+    throw `Must provide a valid semver version in argv[2].  Got ${version}`.red;
   }
   console.info(`Setting version of all dependencies: ${version.cyan}`);
 
