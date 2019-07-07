@@ -17,11 +17,23 @@ async function run(command) {
   return exec(command, { cwd: BASE_DIR });
 }
 
-(async () => {
-  // Check clean working dir
+async function checkCleanWorkingDir() {
   if ((await run('git status -s')).toString() !== '') {
     throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
   }
+}
+
+async function updateChangelog(lastVersion, version) {
+  await run(`node_modules/.bin/changelog --tag=v${lastVersion}..v${version}`);
+
+  require('../ci/fix-changelog'); // eslint-disable-line global-require
+
+  await run('git add CHANGELOG.md');
+  await run(`git commit -m "Update CHANGELOG.md for ${version}"`);
+}
+
+(async () => {
+  checkCleanWorkingDir();
 
   const version = process.argv[2];
   if (!version) {
@@ -30,9 +42,10 @@ async function run(command) {
   if (!semver.valid(version)) {
     throw `Must provide a valid semver version in argv[2].  Got ${version}`.red;
   }
+
   console.info(`Setting version of all dependencies: ${version.cyan}`);
 
-  let lastVersion;
+  const { version: lastVersion } = await fs.readJson(path.join(BASE_DIR, 'package.json'));
   const dirsToUpdate = [BASE_DIR];
 
   for (const subDir of await fs.readdir(PACKAGES_DIR)) {
@@ -44,7 +57,6 @@ async function run(command) {
   for (const dir of dirsToUpdate) {
     const pjPath = path.resolve(dir, 'package.json');
     const existingPJ = await fs.readJson(pjPath);
-    lastVersion = existingPJ.version;
     existingPJ.version = version;
     for (const type of ['dependencies', 'devDependencies', 'optionalDependencies']) {
       for (const depKey in existingPJ[type]) {
@@ -56,16 +68,15 @@ async function run(command) {
     await fs.writeJson(pjPath, existingPJ, {
       spaces: 2,
     });
-    (await run(`git add "${path.relative(BASE_DIR, pjPath)}"`));
+    await run(`git add "${path.relative(BASE_DIR, pjPath)}"`);
   }
 
-  (await run(`git commit -m "Version Bump: ${version}"`));
-  (await run(`git tag v${version}`));
+  await run(`git commit -m "Release ${version}"`);
+  await run(`git tag v${version}`);
 
-  (await run(`node_modules/.bin/changelog --tag=v${lastVersion}`));
+  await updateChangelog(lastVersion, version);
 
-  require('../ci/fix-changelog'); // eslint-disable-line global-require
-
-  (await run('git add CHANGELOG.md'));
-  (await run('git commit -m "Update CHANGELOG.md"'));
+  // re-tag to include the changelog
+  await run(`git tag -d v${version}`);
+  await run(`git tag v${version}`);
 })().catch(console.error);
