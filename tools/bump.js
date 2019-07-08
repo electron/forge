@@ -77,6 +77,5 @@ async function updateChangelog(lastVersion, version) {
   await updateChangelog(lastVersion, version);
 
   // re-tag to include the changelog
-  await run(`git tag -d v${version}`);
-  await run(`git tag v${version}`);
+  await run(`git tag --force v${version}`);
 })().catch(console.error);
