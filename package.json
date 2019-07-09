@@ -149,7 +149,7 @@
     "sinon": "^7.3.2",
     "ts-node": "^8.2.0",
     "typedoc": "^0.14.2",
-    "typescript": "3.5.2"
+    "typescript": "3.5.3"
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.10.0",
