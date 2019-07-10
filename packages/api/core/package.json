@@ -20,7 +20,7 @@
     "asar": "^2.0.1",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "fetch-mock": "^7.3.3",
+    "fetch-mock": "^7.3.6",
     "mocha": "^6.1.4",
     "proxyquire": "^2.0.1",
     "sinon": "^7.3.2"
