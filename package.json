@@ -87,7 +87,7 @@
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
-    "@babel/preset-env": "^7.5.2",
+    "@babel/preset-env": "^7.5.4",
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "7.4.4",
     "@types/chai": "4.1.7",
