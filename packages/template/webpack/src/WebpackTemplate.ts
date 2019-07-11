@@ -11,7 +11,9 @@ class WebpackTemplate implements ForgeTemplate {
     `@electron-forge/plugin-webpack@${currentVersion}`,
     // TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
     '@marshallofsound/webpack-asset-relocator-loader@^0.5.0',
+    'file-loader@^4.0.0',
     'node-loader@^0.6.0',
+    'style-loader@^0.23.1',
   ];
 
   public initializeTemplate = async (directory: string) => {
@@ -46,6 +48,7 @@ class WebpackTemplate implements ForgeTemplate {
       let indexContents = await fs.readFile(path.resolve(directory, 'src', 'index.js'), 'utf8');
       indexContents = indexContents.split('\n').map((line) => {
         if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+        if (line.includes('link rel="stylesheet"')) return '';
         return line;
       }).join('\n');
       await fs.writeFile(path.resolve(directory, 'src', 'main.js'), indexContents);
