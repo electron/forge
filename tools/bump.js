@@ -18,7 +18,7 @@ async function run(command) {
 }
 
 async function checkCleanWorkingDir() {
-  if ((await run('git status -s')).toString() !== '') {
+  if ((await run('git status -s')).stdout !== '') {
     throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
   }
 }
@@ -33,7 +33,7 @@ async function updateChangelog(lastVersion, version) {
 }
 
 (async () => {
-  checkCleanWorkingDir();
+  await checkCleanWorkingDir();
 
   const version = process.argv[2];
   if (!version) {
