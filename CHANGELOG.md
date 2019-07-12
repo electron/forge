@@ -1,3 +1,155 @@
+#### [6.0.0-beta.40](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.40) (2019-07-12)
+
+##### Build System / Dependencies
+
+* **deps-dev:**
+  *  bump fetch-mock from 7.3.3 to 7.3.6 (#1007) ([662b5ce2](https://github.com/electron-userland/electron-forge/commit/662b5ce2))
+  *  bump @babel/preset-env from 7.5.2 to 7.5.4 ([8aed6b70](https://github.com/electron-userland/electron-forge/commit/8aed6b70))
+  *  bump @types/node from 12.6.1 to 12.6.2 ([41c269d4](https://github.com/electron-userland/electron-forge/commit/41c269d4))
+  *  bump @babel/core from 7.5.0 to 7.5.4 ([938c3e75](https://github.com/electron-userland/electron-forge/commit/938c3e75))
+  *  bump typescript from 3.5.2 to 3.5.3 ([8082ca08](https://github.com/electron-userland/electron-forge/commit/8082ca08))
+  *  bump @babel/preset-env from 7.5.0 to 7.5.2 ([2fdf513f](https://github.com/electron-userland/electron-forge/commit/2fdf513f))
+  *  bump @types/node from 12.0.12 to 12.6.1 (#1000) ([362a7666](https://github.com/electron-userland/electron-forge/commit/362a7666))
+  *  bump @types/node from 12.0.10 to 12.0.12 ([fe44d331](https://github.com/electron-userland/electron-forge/commit/fe44d331))
+  *  bump eslint-config-airbnb from 17.1.0 to 17.1.1 ([c7cfc056](https://github.com/electron-userland/electron-forge/commit/c7cfc056))
+  *  bump eslint-plugin-jsx-a11y from 6.2.1 to 6.2.3 ([eedf5496](https://github.com/electron-userland/electron-forge/commit/eedf5496))
+  *  bump @types/electron-packager from 13.0.0 to 13.0.1 ([2656d0ca](https://github.com/electron-userland/electron-forge/commit/2656d0ca))
+  *  bump generate-changelog from 1.7.1 to 1.8.0 ([a07abbd6](https://github.com/electron-userland/electron-forge/commit/a07abbd6))
+  *  bump @types/webpack-dev-middleware from 2.0.2 to 2.0.3 ([e52eceec](https://github.com/electron-userland/electron-forge/commit/e52eceec))
+  *  bump @types/webpack from 4.4.33 to 4.4.34 ([98f3c0ad](https://github.com/electron-userland/electron-forge/commit/98f3c0ad))
+  *  bump eslint-plugin-react from 7.14.0 to 7.14.2 ([5c68634e](https://github.com/electron-userland/electron-forge/commit/5c68634e))
+  *  bump eslint-plugin-import from 2.17.3 to 2.18.0 ([cb5fca1f](https://github.com/electron-userland/electron-forge/commit/cb5fca1f))
+  *  bump @types/node from 12.0.8 to 12.0.10 ([4321f5fc](https://github.com/electron-userland/electron-forge/commit/4321f5fc))
+  *  bump eslint-plugin-react from 7.13.0 to 7.14.0 ([91c2bbdb](https://github.com/electron-userland/electron-forge/commit/91c2bbdb))
+  *  bump @types/semver from 6.0.0 to 6.0.1 ([0d09dacf](https://github.com/electron-userland/electron-forge/commit/0d09dacf))
+  *  bump @types/webpack from 4.4.32 to 4.4.33 ([07e24b9e](https://github.com/electron-userland/electron-forge/commit/07e24b9e))
+  *  bump @types/fetch-mock from 7.3.0 to 7.3.1 ([f5a7e461](https://github.com/electron-userland/electron-forge/commit/f5a7e461))
+  *  bump @types/node-fetch from 2.3.6 to 2.3.7 ([9e0e564b](https://github.com/electron-userland/electron-forge/commit/9e0e564b))
+  *  bump typescript from 3.5.1 to 3.5.2 ([a1fb73e3](https://github.com/electron-userland/electron-forge/commit/a1fb73e3))
+  *  bump @types/sinon from 7.0.12 to 7.0.13 ([7968ce87](https://github.com/electron-userland/electron-forge/commit/7968ce87))
+  *  bump @types/node-fetch from 2.3.5 to 2.3.6 ([b7ca5b04](https://github.com/electron-userland/electron-forge/commit/b7ca5b04))
+  *  bump @types/node from 12.0.7 to 12.0.8 ([b3fbca87](https://github.com/electron-userland/electron-forge/commit/b3fbca87))
+  *  bump @types/node-fetch from 2.3.4 to 2.3.5 ([76b7ac48](https://github.com/electron-userland/electron-forge/commit/76b7ac48))
+  *  bump @types/node from 12.0.5 to 12.0.7 ([dd3537d0](https://github.com/electron-userland/electron-forge/commit/dd3537d0))
+  *  bump @types/node from 12.0.4 to 12.0.5 ([18903ff6](https://github.com/electron-userland/electron-forge/commit/18903ff6))
+  *  bump coveralls from 3.0.3 to 3.0.4 ([6a14ca87](https://github.com/electron-userland/electron-forge/commit/6a14ca87))
+  *  bump @types/express from 4.16.1 to 4.17.0 ([63b7b2cf](https://github.com/electron-userland/electron-forge/commit/63b7b2cf))
+  *  bump @types/node from 12.0.3 to 12.0.4 ([62276fcb](https://github.com/electron-userland/electron-forge/commit/62276fcb))
+  *  bump @types/mocha from 5.2.6 to 5.2.7 ([8afc1eaf](https://github.com/electron-userland/electron-forge/commit/8afc1eaf))
+  *  bump typescript from 3.4.5 to 3.5.1 ([c8e62fb4](https://github.com/electron-userland/electron-forge/commit/c8e62fb4))
+  *  bump @types/node from 12.0.2 to 12.0.3 ([14a7ba84](https://github.com/electron-userland/electron-forge/commit/14a7ba84))
+  *  bump nodemon from 1.19.0 to 1.19.1 ([1d3da591](https://github.com/electron-userland/electron-forge/commit/1d3da591))
+  *  bump ts-node from 8.1.0 to 8.2.0 ([1fc358ff](https://github.com/electron-userland/electron-forge/commit/1fc358ff))
+  *  bump eslint-plugin-import from 2.17.2 to 2.17.3 ([c0b1fcff](https://github.com/electron-userland/electron-forge/commit/c0b1fcff))
+  *  bump @types/sinon from 7.0.11 to 7.0.12 ([3b02e6dc](https://github.com/electron-userland/electron-forge/commit/3b02e6dc))
+  *  bump @babel/core from 7.4.4 to 7.4.5 ([2de77412](https://github.com/electron-userland/electron-forge/commit/2de77412))
+  *  bump @types/webpack from 4.4.31 to 4.4.32 ([a43b977a](https://github.com/electron-userland/electron-forge/commit/a43b977a))
+* **deps:**
+  *  bump @octokit/rest from 16.28.2 to 16.28.3 (#1005) ([27798941](https://github.com/electron-userland/electron-forge/commit/27798941))
+  *  bump webpack from 4.35.2 to 4.35.3 (#1001) ([03b82b3f](https://github.com/electron-userland/electron-forge/commit/03b82b3f))
+  *  bump form-data from 2.4.0 to 2.5.0 (#989) ([588d0581](https://github.com/electron-userland/electron-forge/commit/588d0581))
+  *  bump semver from 6.1.3 to 6.2.0 (#984) ([dbf23b23](https://github.com/electron-userland/electron-forge/commit/dbf23b23))
+  *  bump open from 6.3.0 to 6.4.0 (#982) ([9a969ac6](https://github.com/electron-userland/electron-forge/commit/9a969ac6))
+  *  bump xterm from 3.14.2 to 3.14.4 (#977) ([23e5863a](https://github.com/electron-userland/electron-forge/commit/23e5863a))
+  *  bump @electron/get from 1.3.0 to 1.3.1 ([dc952b77](https://github.com/electron-userland/electron-forge/commit/dc952b77))
+  *  bump inquirer from 6.4.0 to 6.4.1 (#966) ([263d1617](https://github.com/electron-userland/electron-forge/commit/263d1617))
+  *  bump semver from 6.1.1 to 6.1.2 (#965) ([ee82dd8d](https://github.com/electron-userland/electron-forge/commit/ee82dd8d))
+  *  bump inquirer from 6.3.1 to 6.4.0 (#955) ([bd64ce7d](https://github.com/electron-userland/electron-forge/commit/bd64ce7d))
+  *  bump webpack from 4.34.0 to 4.35.0 (#954) ([83bc119a](https://github.com/electron-userland/electron-forge/commit/83bc119a))
+  *  bump @electron/get from 1.2.0 to 1.3.0 (#953) ([4b412251](https://github.com/electron-userland/electron-forge/commit/4b412251))
+  *  bump form-data from 2.3.3 to 2.4.0 (#952) ([f6678c82](https://github.com/electron-userland/electron-forge/commit/f6678c82))
+  *  bump find-up from 4.0.0 to 4.1.0 (#948) ([3783037f](https://github.com/electron-userland/electron-forge/commit/3783037f))
+  *  bump @octokit/rest from 16.28.1 to 16.28.2 (#946) ([693492fd](https://github.com/electron-userland/electron-forge/commit/693492fd))
+  *  bump username from 5.0.0 to 5.1.0 (#938) ([47801d90](https://github.com/electron-userland/electron-forge/commit/47801d90))
+  *  bump webpack from 4.33.0 to 4.34.0 (#940) ([168f4fd5](https://github.com/electron-userland/electron-forge/commit/168f4fd5))
+  *  bump @octokit/rest from 16.28.0 to 16.28.1 (#927) ([92d7ab56](https://github.com/electron-userland/electron-forge/commit/92d7ab56))
+  *  bump aws-sdk from 2.471.0 to 2.472.0 (#926) ([c500b188](https://github.com/electron-userland/electron-forge/commit/c500b188))
+  *  bump sudo-prompt from 8.2.5 to 9.0.0 (#908) ([9b504db6](https://github.com/electron-userland/electron-forge/commit/9b504db6))
+  *  bump webpack from 4.32.2 to 4.33.0 (#910) ([56b753da](https://github.com/electron-userland/electron-forge/commit/56b753da))
+  *  bump xterm from 3.14.1 to 3.14.2 (#907) ([6e62f0e5](https://github.com/electron-userland/electron-forge/commit/6e62f0e5))
+  *  bump @octokit/rest from 16.27.2 to 16.27.3 (#900) ([0c100e16](https://github.com/electron-userland/electron-forge/commit/0c100e16))
+  *  bump xterm from 3.13.2 to 3.14.0 (#898) ([ed8b2ab1](https://github.com/electron-userland/electron-forge/commit/ed8b2ab1))
+  *  bump @octokit/rest from 16.27.0 to 16.27.1 (#897) ([136d9fe8](https://github.com/electron-userland/electron-forge/commit/136d9fe8))
+  *  bump semver from 6.1.0 to 6.1.1 (#893) ([eb1e1bc3](https://github.com/electron-userland/electron-forge/commit/eb1e1bc3))
+  *  bump express from 4.17.0 to 4.17.1 (#887) ([18ceb8ac](https://github.com/electron-userland/electron-forge/commit/18ceb8ac))
+  *  [security] bump tar from 2.2.1 to 2.2.2 ([70f9ab29](https://github.com/electron-userland/electron-forge/commit/70f9ab29))
+  *  bump @octokit/rest from 16.26.0 to 16.27.0 (#879) ([fa4cf33f](https://github.com/electron-userland/electron-forge/commit/fa4cf33f))
+  *  bump xterm from 3.13.1 to 3.13.2 (#877) ([eca3dad3](https://github.com/electron-userland/electron-forge/commit/eca3dad3))
+
+##### Chores
+
+*  fix problems with working dir check in bump version script ([677fa9b2](https://github.com/electron-userland/electron-forge/commit/677fa9b2))
+*  make sure the changelog modifications are with the proper git tag (#996) ([5a5b526f](https://github.com/electron-userland/electron-forge/commit/5a5b526f))
+*  upgrade declared babel packages to ^7.5.0 where available ([fd95c771](https://github.com/electron-userland/electron-forge/commit/fd95c771))
+*  upgrade babel packages to 7.5.0 ([ba5e42d1](https://github.com/electron-userland/electron-forge/commit/ba5e42d1))
+*  upgrade Electron Packager to 14.0.1 (#987) ([00bb5283](https://github.com/electron-userland/electron-forge/commit/00bb5283))
+*  upgrade dependencies ([3ad14a9d](https://github.com/electron-userland/electron-forge/commit/3ad14a9d))
+*  upgrade fs-extra to ^8.1.0 and @types/fs-extra to ^8.0.0 (#979) ([4be12b13](https://github.com/electron-userland/electron-forge/commit/4be12b13))
+*  upgrade @types/electron-packager to ^14.0.0 ([a4ddf816](https://github.com/electron-userland/electron-forge/commit/a4ddf816))
+*  upgrade typescript-eslint packages ([469c39c5](https://github.com/electron-userland/electron-forge/commit/469c39c5))
+*  upgrade to Electron Packager 14 & electron-installer-snap 4 (#958) ([8b497ca1](https://github.com/electron-userland/electron-forge/commit/8b497ca1))
+*  fix sudo-prompt type definition ([6f3c2ec3](https://github.com/electron-userland/electron-forge/commit/6f3c2ec3))
+*  replace pify with util.promisify ([b94692c4](https://github.com/electron-userland/electron-forge/commit/b94692c4))
+*  @babel/plugin-proposal-object-rest-spread isn't necessary as of Node 8 ([4e179c66](https://github.com/electron-userland/electron-forge/commit/4e179c66))
+*  upgrade dependencies for eslint ([24edb6ee](https://github.com/electron-userland/electron-forge/commit/24edb6ee))
+*  upgrade ts-node to 8.3.0 ([ee05021f](https://github.com/electron-userland/electron-forge/commit/ee05021f))
+*  upgrade dependencies for electron-rebuild ([e630efa0](https://github.com/electron-userland/electron-forge/commit/e630efa0))
+*  upgrade dependencies for electron-winstaller ([373e22f7](https://github.com/electron-userland/electron-forge/commit/373e22f7))
+*  upgrade dependencies for typedoc ([9a9486d1](https://github.com/electron-userland/electron-forge/commit/9a9486d1))
+*  upgrade dependencies for electron-installer-snap ([089ba6c6](https://github.com/electron-userland/electron-forge/commit/089ba6c6))
+*  upgrade dependencies for electron-installer-dmg ([a84ce5fb](https://github.com/electron-userland/electron-forge/commit/a84ce5fb))
+*  upgrade @malept/electron-installer-flatpak to ^0.10.0 (#944) ([8c8083bf](https://github.com/electron-userland/electron-forge/commit/8c8083bf))
+*  remove unnecessary direct node-gyp dependency (#943) ([e60a5cdf](https://github.com/electron-userland/electron-forge/commit/e60a5cdf))
+*  upgrade electron-installer-{debian,redhat} to ^2.0.0 (#928) ([8be98bf8](https://github.com/electron-userland/electron-forge/commit/8be98bf8))
+*  upgrade global to 4.4.0 ([7f4d5d0a](https://github.com/electron-userland/electron-forge/commit/7f4d5d0a))
+*  upgrade @typescript-eslint/{eslint-plugin,parser} to 1.10.2 ([ae434da5](https://github.com/electron-userland/electron-forge/commit/ae434da5))
+*  upgrade aws-sdk to 2.471.0 ([267c6d2e](https://github.com/electron-userland/electron-forge/commit/267c6d2e))
+*  upgrade @octokit/rest to 16.28.0 ([20733150](https://github.com/electron-userland/electron-forge/commit/20733150))
+*  upgrade electron-installer-dmg to ^3.0.0 (#914) ([6a048cb7](https://github.com/electron-userland/electron-forge/commit/6a048cb7))
+*  upgrade electron-rebuild to ^1.8.5 ([b0e019fd](https://github.com/electron-userland/electron-forge/commit/b0e019fd))
+*  update README for the create-electron-app command ([09fdf05d](https://github.com/electron-userland/electron-forge/commit/09fdf05d))
+* **deps-dev:**  bump babel-plugin-source-map-support ([5e32bcd9](https://github.com/electron-userland/electron-forge/commit/5e32bcd9))
+* **deps:**
+  *  bump inquirer from 6.4.1 to 6.5.0 (#1012) ([aefd33cc](https://github.com/electron-userland/electron-forge/commit/aefd33cc))
+  *  bump xterm from 3.14.4 to 3.14.5 (#1011) ([edea6f9f](https://github.com/electron-userland/electron-forge/commit/edea6f9f))
+* **core:**
+  *  fix typo ([2b59043a](https://github.com/electron-userland/electron-forge/commit/2b59043a))
+  *  re-enable built-in template tests (#876) ([23a0cab6](https://github.com/electron-userland/electron-forge/commit/23a0cab6))
+
+##### Documentation Changes
+
+*  link to website repository ([9f1c84cc](https://github.com/electron-userland/electron-forge/commit/9f1c84cc))
+*  update links to website ([f3dd9301](https://github.com/electron-userland/electron-forge/commit/f3dd9301))
+*  fix plugins link (#923) ([38dafd65](https://github.com/electron-userland/electron-forge/commit/38dafd65))
+
+##### New Features
+
+* **template-webpack:**  add file-loader/style-loader for handling the static CSS file ([054a458a](https://github.com/electron-userland/electron-forge/commit/054a458a))
+* **core:**  use git config to determine author before username (#920) ([57e30a47](https://github.com/electron-userland/electron-forge/commit/57e30a47))
+*  Various improvements for electron/template (#950) ([641f5218](https://github.com/electron-userland/electron-forge/commit/641f5218))
+
+##### Bug Fixes
+
+* **plugin-webpack:**
+  *  check that stats is not empty before sending to multi-logger (#1018) ([aa8587bf](https://github.com/electron-userland/electron-forge/commit/aa8587bf))
+  *  provide an output path so that hot reloading works correctly ([c8097c2f](https://github.com/electron-userland/electron-forge/commit/c8097c2f))
+* **core:**
+  *  remove unnecessary character from HTML template ([6ab43314](https://github.com/electron-userland/electron-forge/commit/6ab43314))
+  *  update CI templates to Node 8 and other updates (#975) ([de3b4aac](https://github.com/electron-userland/electron-forge/commit/de3b4aac))
+  *  restart app in development via CLI multiple times (#904) ([df98fe81](https://github.com/electron-userland/electron-forge/commit/df98fe81))
+*  search for the top-level node_modules folder when using yarn workspaces (#902) ([a91d8b31](https://github.com/electron-userland/electron-forge/commit/a91d8b31))
+
+##### Other Changes
+
+* **deps:**
+  *  bump lodash.merge from 4.6.1 to 4.6.2 (#1006) ([21b40a48](https://github.com/electron-userland/electron-forge/commit/21b40a48))
+  *  bump lodash.template from 4.4.0 to 4.5.0 (#1003) ([3882dab6](https://github.com/electron-userland/electron-forge/commit/3882dab6))
+
+##### Refactors
+
+* **core:**  move css in template to a separate file ([7c963aaf](https://github.com/electron-userland/electron-forge/commit/7c963aaf))
+*  convert from electron-download to @electron/get (#921) ([e5f74165](https://github.com/electron-userland/electron-forge/commit/e5f74165))
+
 #### [6.0.0-beta.39](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.39) (2019-05-24)
 
 ##### Bug Fixes
