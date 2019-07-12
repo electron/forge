@@ -98,6 +98,5 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 - if you aren't sure if a release should happen, open an issue
 - make sure the tests pass
-- `npm run release:(patch|minor|major)`
-- create a new GitHub release from the pushed tag with the contents of `CHANGELOG.md` for that version
-- close the milestone associated with the version if one is open
+- `node tools/bump.js $NEW_VERSION`
+- `node tools/publish.js`
