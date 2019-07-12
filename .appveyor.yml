@@ -14,7 +14,7 @@ branches:
 install:
 - ps: Install-Product node $env:nodejs_version $env:platform
 - set PATH=%APPDATA%\npm;%PATH%
-- npm i -g bolt@0.21.2
+- npm i -g bolt@0.21.2 codecov
 - if not exist "node_modules" mkdir node_modules
 - ps: Remove-Item node_modules -Recurse -Force
 - bolt
@@ -32,6 +32,7 @@ test_script:
 - node --version
 - yarn --version
 - yarn lint
-- yarn test
+- yarn coverage
+- codecov
 
 build: off

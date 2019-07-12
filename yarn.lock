@@ -2574,18 +2574,6 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-coveralls@^3.0.4:
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/coveralls/-/coveralls-3.0.5.tgz#28d7274c6c9827aa85537eab82d66e7e62d0d527"
-  integrity sha512-/KD7PGfZv/tjKB6LoW97jzIgFqem0Tu9tZL9/iwBnBd8zkIZp7vT1ZSHNvnr0GSQMV/LTMxUstWg8WcDDUVQKg==
-  dependencies:
-    growl "~> 1.10.0"
-    js-yaml "^3.13.1"
-    lcov-parse "^0.0.10"
-    log-driver "^1.2.7"
-    minimist "^1.2.0"
-    request "^2.86.0"
-
 cp-file@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/cp-file/-/cp-file-6.2.0.tgz#40d5ea4a1def2a9acdd07ba5c0b0246ef73dc10d"
@@ -4315,7 +4303,7 @@ graceful-fs@~3.0.5:
   dependencies:
     natives "^1.1.0"
 
-growl@1.10.5, "growl@~> 1.10.0":
+growl@1.10.5:
   version "1.10.5"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
@@ -5283,11 +5271,6 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
-lcov-parse@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/lcov-parse/-/lcov-parse-0.0.10.tgz#1b0b8ff9ac9c7889250582b70b71315d9da6d9a3"
-  integrity sha1-GwuP+ayceIklBYK3C3ExXZ2m2aM=
-
 levn@^0.3.0, levn@~0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/levn/-/levn-0.3.0.tgz#3b09924edf9f083c0490fdd4c0bc4421e04764ee"
@@ -5507,11 +5490,6 @@ lodash@^4.13.0, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.1
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
-
-log-driver@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/log-driver/-/log-driver-1.2.7.tgz#63b95021f0702fedfa2c9bb0a24e7797d71871d8"
-  integrity sha512-U7KCmLdqsGHBLeWqYlFA0V0Sl6P08EE1ZrmA9cxjUE0WVqT9qnyVDPz1kzpFEP0jdJuFnasWIfSd7fsaNXkpbg==
 
 log-symbols@2.2.0, log-symbols@^2.2.0:
   version "2.2.0"
@@ -7354,7 +7332,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@^2.45.0, request@^2.86.0, request@^2.87.0:
+request@^2.45.0, request@^2.87.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==

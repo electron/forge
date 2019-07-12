@@ -29,9 +29,9 @@ branches:
   - master
   - /^v\d+\.\d+\.\d+/
 install:
-- npm i -g bolt@0.22.5
+- npm i -g bolt@0.22.5 codecov
 script: ci/script.sh
-after_success: ci/coverage.sh
+after_success: codecov
 notifications:
   slack:
     secure: OIKgrHnR746qDfezkuMD2idSRrQVkfYII8JqhMmaQ46GRK6WtWC/vp/tThuj+Hc9LoHsBWNW0q4Lur1jchsgjYlgqYpdCGyl19yCMYs6XEnf0G+rXQyczzVeek9ZerwjwY5eyvdzKwE4I2khaNasyiVbdnArNDwg3TXcZdqFV2YkpNBzWJz6ha/QOO9l2D38Csdcfuz+6WdPSvoYyPcjQTvLDjvBcZapLm2lfQXduolRXxtCSDfRCAvl/DnT3TcwTyJEkHzwj32H1SyB3tW/1aPoouy0Lx+s+pQp8EWlnMq8rzS3cc9k51M7T6ziHQv9ATSo02Npf4EfzMByekbL2KO7tkkHax1J8+abUFikwtLyIPBwA9QYDV6lE0qtb3TFsRPSvsoxg7qYPDK4La+tbxMZwM0qR/oEZ5kKb5XGqNd5KO4huU3Eztp6cwXeTOdV7jYVZ1LdM+SmLKnjYaP/HHXLdGn4YJ7K/C59VlXMdaVIenOCbuIgBoK/vBn3dDX0n5xXkCTCgN7m85rOWEaFkj1vz05c/7Zvx7wvPjHe6UPTjSEBwXBU+F7Bwmq+aS5kzdIznZ2YKmn8OzdYlOkWAFhcE2PGOGVstAuqfKOBhAZHqPU0J+j+9uxdopFLHFeVxf+GZJDDB6MPYkn/xRz38JmarCaXI7nvkJFc1y40G00=

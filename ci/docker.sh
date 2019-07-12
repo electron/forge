@@ -17,4 +17,4 @@ bolt lint
 mkdir -p /var/run/dbus
 dbus-daemon --system
 
-DEBUG=electron-installer-snap:snapcraft CI=true bolt test -- --installer=$NODE_INSTALLER
+DEBUG=electron-installer-snap:snapcraft CI=true bolt coverage -- --installer=$NODE_INSTALLER
