@@ -360,7 +360,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         const compiler = webpack(await this.getMainConfig());
         const [onceResolve, onceReject] = once(resolve, reject);
         const cb: webpack.ICompiler.Handler = (err, stats) => {
-          if (tab) {
+          if (tab && stats) {
             tab.log(stats.toString({
               colors: true,
             }));
@@ -443,9 +443,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
             const cb: webpack.ICompiler.Handler = (err, stats) => {
-              tab.log(stats.toString({
-                colors: true,
-              }));
+              if (stats) {
+                tab.log(stats.toString({
+                  colors: true,
+                }));
+              }
 
               if (err) return onceReject(err);
               return onceResolve();
