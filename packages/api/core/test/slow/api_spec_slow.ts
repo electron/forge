@@ -121,6 +121,14 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       })).to.eventually.be.rejected;
     });
 
+    it('should initialize an already initialized directory when forced to', async () => {
+      await forge.init({
+        dir,
+        force: true,
+        template: 'webpack',
+      });
+    });
+
     it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
       expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
     });
