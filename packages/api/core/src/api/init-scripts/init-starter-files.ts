@@ -22,7 +22,7 @@ export default async (dir: string, { copyCIFiles }: InitStarterFilesOptions) => 
     await fs.mkdirs(path.resolve(dir, 'src'));
     const rootFiles = ['_gitignore'];
     if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
-    const srcFiles = ['index.js', 'index.html'];
+    const srcFiles = ['index.css', 'index.js', 'index.html'];
 
     for (const file of rootFiles) {
       await copy(path.resolve(tmplPath, file), path.resolve(dir, file.replace(/^_/, '.')));
