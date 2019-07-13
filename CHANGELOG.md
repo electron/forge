@@ -1,3 +1,9 @@
+#### [6.0.0-beta.41](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.41) (2019-07-13)
+
+##### Bug Fixes
+
+* **core:**  copy index.css to a new project ([12fbbd08](https://github.com/electron-userland/electron-forge/commit/12fbbd08))
+
 #### [6.0.0-beta.40](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.40) (2019-07-12)
 
 ##### Build System / Dependencies
