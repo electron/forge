@@ -1,7 +1,7 @@
 {
   "name": "@electron-forge/shared-types",
   "version": "6.0.0-beta.41",
-  "description": "Shared types across forge",
+  "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",

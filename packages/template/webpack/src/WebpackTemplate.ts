@@ -17,7 +17,7 @@ class WebpackTemplate implements ForgeTemplate {
   ];
 
   public initializeTemplate = async (directory: string) => {
-    await asyncOra('Setting up forge configuration', async () => {
+    await asyncOra('Setting up Forge configuration', async () => {
       const pjPath = path.resolve(directory, 'package.json');
       const currentPJ = await fs.readJson(pjPath);
       currentPJ.main = '.webpack/main';

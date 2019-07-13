@@ -147,7 +147,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       forgeConfig.packagerConfig = {};
     }
     if (forgeConfig.packagerConfig.ignore) {
-      console.error(`You have set packagerConfig.ignore, the electron forge webpack plugin normally sets this automatically.
+      console.error(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
 Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red);
       return forgeConfig;

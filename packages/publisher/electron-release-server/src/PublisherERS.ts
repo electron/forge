@@ -37,7 +37,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     const { config } = this;
 
     if (!(config.baseUrl && config.username && config.password)) {
-      throw new Error('In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your forge config. See the docs for more info');
+      throw new Error('In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info');
     }
 
     d('attempting to authenticate to ERS');

@@ -40,7 +40,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     if (!(config.repository && typeof config.repository === 'object'
       && config.repository.owner && config.repository.name)) {
-      throw new Error('In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your forge config. See the docs for more info');
+      throw new Error('In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your Forge config. See the docs for more info');
     }
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);

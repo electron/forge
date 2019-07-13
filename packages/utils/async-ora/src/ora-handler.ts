@@ -43,7 +43,7 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
           console.error(colors.red(err.message));
           console.error(colors.red(err.stack));
         } else {
-          console.error('\nElectron forge was terminated:'.red);
+          console.error('\nElectron Forge was terminated:'.red);
           console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
         }
         processExitFn(1);

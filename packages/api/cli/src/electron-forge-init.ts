@@ -12,7 +12,7 @@ import workingDir from './util/working-dir';
   program
     .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[name]')
-    .option('-t, --template [name]', 'Name of the forge template to use')
+    .option('-t, --template [name]', 'Name of the Forge template to use')
     .option('-c, --copy-ci-files', 'Whether to copy the templated CI files (defaults to false)', false)
     .action((name) => { dir = workingDir(dir, name, false); })
     .parse(process.argv);
