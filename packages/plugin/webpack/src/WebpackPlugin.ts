@@ -425,7 +425,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           error: tab.log.bind(tab),
           warn: tab.log.bind(tab),
         },
-        publicPath: '/',
+        ...(this.isProd ? {} : { publicPath: '/' }),
         hot: true,
         historyApiFallback: true,
         writeToDisk: true,
