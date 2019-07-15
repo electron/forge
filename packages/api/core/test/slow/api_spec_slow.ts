@@ -40,8 +40,12 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   };
 
-  const expectProjectPathExists = async (subPath: string, pathType: string) => {
-    expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(true);
+  const expectProjectPathExists = async (subPath: string, pathType: string, exists = true) => {
+    expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
+  };
+
+  const expectProjectPathNotExists = async (subPath: string, pathType: string, exists = true) => {
+    expectProjectPathExists(subPath, pathType, false);
   };
 
   describe('init', () => {
@@ -135,6 +139,12 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       for (const filename of expectedFiles) {
         await expectProjectPathExists(filename, 'file');
       }
+    });
+
+    it('should move and rewrite the main process file', async () => {
+      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
+      await expectProjectPathExists(path.join('src', 'main.js'), 'file');
+      expect(await fs.readFile(path.join(dir, 'src', 'main.js'))).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
     });
 
     after(async () => {
