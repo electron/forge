@@ -104,7 +104,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with built-in templater)', () => {
+  describe.only('init (with built-in templater)', () => {
     before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing', async () => {
@@ -123,6 +123,18 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
       expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
+    });
+
+    it('should copy the appropriate template files', async () => {
+      const expectedFiles = [
+        'webpack.main.config.js',
+        'webpack.renderer.config.js',
+        'webpack.rules.js',
+        path.join('src', 'renderer.js'),
+      ];
+      for (const filename of expectedFiles) {
+        await expectProjectPathExists(filename, 'file');
+      }
     });
 
     after(async () => {

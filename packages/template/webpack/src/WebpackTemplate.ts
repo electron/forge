@@ -6,6 +6,11 @@ import path from 'path';
 
 const currentVersion = require('../package').version;
 
+const copyTemplateFile = async (destDir: string, basename: string) => {
+  const templateDir = path.resolve(__dirname, '..', 'tmpl');
+  await fs.copy(path.join(templateDir, basename), path.resolve(destDir, basename));
+}
+
 class WebpackTemplate implements ForgeTemplate {
   public devDependencies = [
     `@electron-forge/plugin-webpack@${currentVersion}`,
@@ -41,10 +46,10 @@ class WebpackTemplate implements ForgeTemplate {
       });
     });
     await asyncOra('Setting up webpack configuration', async () => {
-      await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.main.config.js'), path.resolve(directory, 'webpack.main.config.js'));
-      await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.renderer.config.js'), path.resolve(directory, 'webpack.renderer.config.js'));
-      await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'webpack.rules.js'), path.resolve(directory, 'webpack.rules.js'));
-      await fs.copy(path.resolve(__dirname, '..', 'tmpl', 'renderer.js'), path.resolve(directory, 'src', 'renderer.js'));
+      await copyTemplateFile(directory, 'webpack.main.config.js');
+      await copyTemplateFile(directory, 'webpack.renderer.config.js');
+      await copyTemplateFile(directory, 'webpack.rules.js');
+      await copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
       let indexContents = await fs.readFile(path.resolve(directory, 'src', 'index.js'), 'utf8');
       indexContents = indexContents.split('\n').map((line) => {
         if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
