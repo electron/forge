@@ -144,7 +144,7 @@
     "mocha": "^6.1.4",
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
-    "proxyquire": "^2.0.1",
+    "proxyquire": "^2.1.1",
     "rimraf": "^2.6.2",
     "sinon": "^7.3.2",
     "ts-node": "^8.2.0",
