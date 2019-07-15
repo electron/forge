@@ -1,3 +1,27 @@
+#### [6.0.0-beta.42](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.42) (2019-07-15)
+
+##### Chores
+
+* **deps:**  upgrade @octokit/rest to 16.28.4 ([e1012fe1](https://github.com/electron-userland/electron-forge/commit/e1012fe1))
+* **deps-dev:**
+  *  upgrade @types/form-data to 2.5.0 and @types/node to 12.6.3 ([7a1c0148](https://github.com/electron-userland/electron-forge/commit/7a1c0148))
+  *  upgrade proxyquire to 2.1.1 ([812bf56f](https://github.com/electron-userland/electron-forge/commit/812bf56f))
+  *  upgrade typescript-eslint packages to 1.12.0 ([6f242937](https://github.com/electron-userland/electron-forge/commit/6f242937))
+  *  bump @types/webpack from 4.4.34 to 4.4.35 ([ab1628a1](https://github.com/electron-userland/electron-forge/commit/ab1628a1))
+  *  bump @types/html-webpack-plugin from 3.2.0 to 3.2.1 ([1de1e3bd](https://github.com/electron-userland/electron-forge/commit/1de1e3bd))
+*  consistent use of Forge/Electron Forge in messages ([1d19b320](https://github.com/electron-userland/electron-forge/commit/1d19b320))
+
+##### Bug Fixes
+
+* **template-webpack:**  properly remove stylesheet link from index.html ([89176b4d](https://github.com/electron-userland/electron-forge/commit/89176b4d))
+* **plugin-webpack:**  properly reference `index.js` in production (#1021) ([d70ae5c2](https://github.com/electron-userland/electron-forge/commit/d70ae5c2))
+
+##### Refactors
+
+* **template-webpack:**
+  *  extract rewrite template file function ([5b586063](https://github.com/electron-userland/electron-forge/commit/5b586063))
+  *  extract copy template file function ([cd638744](https://github.com/electron-userland/electron-forge/commit/cd638744))
+
 #### [6.0.0-beta.41](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.41) (2019-07-13)
 
 ##### Bug Fixes
