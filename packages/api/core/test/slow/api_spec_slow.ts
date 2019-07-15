@@ -44,7 +44,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
   };
 
-  const expectProjectPathNotExists = async (subPath: string, pathType: string, exists = true) => {
+  const expectProjectPathNotExists = async (subPath: string, pathType: string) => {
     expectProjectPathExists(subPath, pathType, false);
   };
 

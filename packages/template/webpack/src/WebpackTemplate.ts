@@ -9,15 +9,19 @@ const currentVersion = require('../package').version;
 const copyTemplateFile = async (destDir: string, basename: string) => {
   const templateDir = path.resolve(__dirname, '..', 'tmpl');
   await fs.copy(path.join(templateDir, basename), path.resolve(destDir, basename));
-}
+};
 
-const updateFileByLine = async (inputPath: string, lineHandler: (line: string) => string, outputPath: string | undefined = undefined) => {
+const updateFileByLine = async (
+  inputPath: string,
+  lineHandler: (line: string) => string,
+  outputPath: string | undefined = undefined,
+) => {
   const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
   await fs.writeFile(outputPath || inputPath, fileContents);
   if (outputPath !== undefined) {
     await fs.remove(inputPath);
   }
-}
+};
 
 class WebpackTemplate implements ForgeTemplate {
   public devDependencies = [
