@@ -63,6 +63,11 @@ class WebpackTemplate implements ForgeTemplate {
         if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
         return line;
       }, path.resolve(directory, 'src', 'main.js'));
+
+      await updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
+        if (line.includes('link rel="stylesheet"')) return '';
+        return line;
+      });
     });
   }
 }

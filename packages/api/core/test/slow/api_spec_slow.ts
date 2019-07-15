@@ -108,7 +108,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe.only('init (with built-in templater)', () => {
+  describe('init (with built-in templater)', () => {
     before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing', async () => {
@@ -144,7 +144,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     it('should move and rewrite the main process file', async () => {
       await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
       await expectProjectPathExists(path.join('src', 'main.js'), 'file');
-      expect(await fs.readFile(path.join(dir, 'src', 'main.js'))).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
+      expect((await fs.readFile(path.join(dir, 'src', 'main.js'))).toString()).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
+    });
+
+    it('should remove the stylesheet link from the HTML file', async () => {
+      expect((await fs.readFile(path.join(dir, 'src', 'index.html'))).toString()).to.not.match(/link rel="stylesheet"/);
     });
 
     after(async () => {
