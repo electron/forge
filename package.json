@@ -122,7 +122,7 @@
     "@types/webpack-hot-middleware": "^2.16.3",
     "@types/webpack-merge": "^4.1.5",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
-    "@typescript-eslint/parser": "^1.9.0",
+    "@typescript-eslint/parser": "^1.12.0",
     "asar": "^2.0.1",
     "babel-plugin-source-map-support": "^2.1.1",
     "chai": "4.2.0",
