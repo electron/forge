@@ -11,6 +11,14 @@ const copyTemplateFile = async (destDir: string, basename: string) => {
   await fs.copy(path.join(templateDir, basename), path.resolve(destDir, basename));
 }
 
+const updateFileByLine = async (inputPath: string, lineHandler: (line: string) => string, outputPath: string | undefined = undefined) => {
+  const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
+  await fs.writeFile(outputPath || inputPath, fileContents);
+  if (outputPath !== undefined) {
+    await fs.remove(inputPath);
+  }
+}
+
 class WebpackTemplate implements ForgeTemplate {
   public devDependencies = [
     `@electron-forge/plugin-webpack@${currentVersion}`,
@@ -50,14 +58,11 @@ class WebpackTemplate implements ForgeTemplate {
       await copyTemplateFile(directory, 'webpack.renderer.config.js');
       await copyTemplateFile(directory, 'webpack.rules.js');
       await copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
-      let indexContents = await fs.readFile(path.resolve(directory, 'src', 'index.js'), 'utf8');
-      indexContents = indexContents.split('\n').map((line) => {
+
+      await updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
         if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
-        if (line.includes('link rel="stylesheet"')) return '';
         return line;
-      }).join('\n');
-      await fs.writeFile(path.resolve(directory, 'src', 'main.js'), indexContents);
-      await fs.remove(path.resolve(directory, 'src', 'index.js'));
+      }, path.resolve(directory, 'src', 'main.js'));
     });
   }
 }
