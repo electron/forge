@@ -21,7 +21,7 @@ jump right in to Electron development.
 :building_construction:
 
 The `master` branch is a rewrite of Electron Forge that will eventually be the 6.x series. If you
-are looking for the 5.x series (the version currently published to NPM), please view the [5.x branch](https://github.com/electron-userland/electron-forge/tree/5.x).
+are looking for the 5.x series (the version currently published to NPM under `electron-forge`), please view the [5.x branch](https://github.com/electron-userland/electron-forge/tree/5.x).
 
 ----
 
@@ -35,16 +35,9 @@ are looking for the 5.x series (the version currently published to NPM), please 
 
 # Getting Started
 
-**Note**: Electron Forge requires Node 6 or above, plus git installed.
+**Note**: Electron Forge requires Node 8 or above, plus git installed.
 
-```bash
-npm install -g @electron-forge/cli@beta
-electron-forge init my-new-app
-cd my-new-app
-npm start
-```
-
-Alternatively, if you have a more recent version of `npm` or `yarn`, you can use
+If you have a more recent version of `npm` or `yarn`, you can use
 [`npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b),
 or
 [`yarn create`](https://yarnpkg.com/blog/2017/05/12/introducing-yarn/).
@@ -55,6 +48,15 @@ npx create-electron-app my-new-app
 yarn create electron-app my-new-app
 
 # then
+cd my-new-app
+npm start
+```
+
+Alternatively (less recommended):
+
+```bash
+npm install -g @electron-forge/cli
+electron-forge init my-new-app
 cd my-new-app
 npm start
 ```
@@ -86,29 +88,10 @@ For Electron Forge documentation and usage you should check out our website:
 
 ## How do I use this with `webpack`/`babel`/`typescript`/`random build tool`?
 
-As of Electron Forge 6+ by default we only do vanilla JavaScript but if you want
+By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but if you want
 to do some fancy build tool stuff you should check out the [plugins](https://www.electronforge.io/config/plugins)
-section of our docs site.  We currently have plugins for Webpack, Parcel and
-Electron Compile.
-
-# Contributing
-
-Getting the code base running locally requires the `bolt` command installed globally.  An example is given below.
-
-```bash
-npm i -g bolt
-git clone https://github.com/electron-userland/electron-forge
-cd electron-forge
-# Installs all dependencies, don't run "yarn" or "npm install" yourself
-bolt
-# Builds all the TS code
-bolt build
-```
-
-**NOTE:** Please ensure that all changes are committed using semantic commits, we expose a helper `bolt commit`
-to make this easier.
-
-For more information you should check out our [Contributing](CONTRIBUTING.md) guide.
+section of our docs site.  We currently have plugins for Webpack and Electron Compile, and a
+[template for Webpack](https://www.electronforge.io/templates/webpack-template).
 
 # Team
 
