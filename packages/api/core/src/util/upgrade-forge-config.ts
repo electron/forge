@@ -7,12 +7,13 @@ import {
 import path from 'path';
 import { siblingDep } from '../api/init-scripts/init-npm';
 
+type MakeTargets = { string: string[] };
+
 function mapMakeTargets(forge5Config: any): Map<string, ForgePlatform[]> {
   const makeTargets = new Map<string, ForgePlatform[]>();
   if (forge5Config.makeTargets) {
-    // TODO: Use object.entries when dropping Node 6
-    for (const platform of Object.keys(forge5Config.makeTargets)) {
-      for (const target of forge5Config.makeTargets[platform]) {
+    for (const [platform, targets] of Object.entries(forge5Config.makeTargets as MakeTargets)) {
+      for (const target of targets) {
         let platforms = makeTargets.get(target);
         if (platforms === undefined) {
           platforms = [];
