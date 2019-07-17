@@ -333,7 +333,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         path: path.resolve(this.baseDir, 'renderer'),
         filename: '[name]/index.js',
         globalObject: 'self',
-        publicPath: '/',
+        ...(this.isProd ? {} : { publicPath: '/' }),
       },
       node: {
         __dirname: false,
@@ -425,7 +425,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           error: tab.log.bind(tab),
           warn: tab.log.bind(tab),
         },
-        ...(this.isProd ? {} : { publicPath: '/' }),
+        publicPath: '/',
         hot: true,
         historyApiFallback: true,
         writeToDisk: true,
