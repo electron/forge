@@ -23,6 +23,10 @@ export interface InitOptions {
    */
   copyCIFiles?: boolean;
   /**
+   * Whether to overwrite an existing directory
+   */
+  force?: boolean;
+  /**
    * The custom template to use. If left empty, the default template is used
    */
   template?: string;
@@ -32,13 +36,14 @@ export default async ({
   dir = process.cwd(),
   interactive = false,
   copyCIFiles = false,
+  force = false,
   template,
 }: InitOptions) => {
   asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);
 
-  await initDirectory(dir);
+  await initDirectory(dir, force);
   await initGit(dir);
   await initStarter(dir, { copyCIFiles });
   await initNPM(dir);
