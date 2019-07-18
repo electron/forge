@@ -133,7 +133,7 @@
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-mocha": "^5.2.0",
+    "eslint-plugin-mocha": "^6.0.0",
     "eslint-plugin-react": "^7.14.2",
     "fetch-mock": "^7.3.6",
     "generate-changelog": "^1.8.0",
