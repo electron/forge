@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-squirrel",
-  "version": "6.0.0-beta.42",
+  "version": "6.0.0-beta.43",
   "description": "Squirrel maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.42",
-    "@electron-forge/shared-types": "6.0.0-beta.42",
+    "@electron-forge/maker-base": "6.0.0-beta.43",
+    "@electron-forge/shared-types": "6.0.0-beta.43",
     "fs-extra": "^8.1.0"
   },
   "optionalDependencies": {
