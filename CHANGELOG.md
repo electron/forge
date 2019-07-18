@@ -1,3 +1,31 @@
+#### [6.0.0-beta.43](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.43) (2019-07-18)
+
+##### Chores
+
+* **deps-dev:**
+  *  upgrade dependencies ([71f89c28](https://github.com/electron-userland/electron-forge/commit/71f89c28))
+  *  remove now-unnecessary @types/pretty-ms ([a341e444](https://github.com/electron-userland/electron-forge/commit/a341e444))
+  *  upgrade babel devDependencies to 7.5.5 ([e9269602](https://github.com/electron-userland/electron-forge/commit/e9269602))
+  *  remove now-unnecessary @types/form-data ([ca6ed54d](https://github.com/electron-userland/electron-forge/commit/ca6ed54d))
+  *  upgrade @types/node to 12.6.6 ([c755c8a2](https://github.com/electron-userland/electron-forge/commit/c755c8a2))
+* **deps:**
+  *  upgrade webpack to 4.36.1 ([5079a911](https://github.com/electron-userland/electron-forge/commit/5079a911))
+  *  upgrade Electron tooling transitive dependencies ([948b0803](https://github.com/electron-userland/electron-forge/commit/948b0803))
+*  clean up README and contributing docs ([5fb8e55f](https://github.com/electron-userland/electron-forge/commit/5fb8e55f))
+
+##### New Features
+
+* **core:**  add a force flag to init to allow it to overwrite an existing directory (#1020) ([dcdc2a1c](https://github.com/electron-userland/electron-forge/commit/dcdc2a1c))
+
+##### Bug Fixes
+
+* **template-webpack:**  use css-loader instead of file-loader (#1036) ([62b7c195](https://github.com/electron-userland/electron-forge/commit/62b7c195))
+* **plugin-webpack:**  adjust publicPath in renderer only (#1035) ([57ca285a](https://github.com/electron-userland/electron-forge/commit/57ca285a))
+
+##### Refactors
+
+* **core:**  use Object.entries when mapping makeTargets in the v5 importer ([745e7689](https://github.com/electron-userland/electron-forge/commit/745e7689))
+
 #### [6.0.0-beta.42](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.42) (2019-07-15)
 
 ##### Chores
