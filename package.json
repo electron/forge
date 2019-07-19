@@ -125,7 +125,7 @@
     "babel-plugin-source-map-support": "^2.1.1",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "commitizen": "^3.1.1",
+    "commitizen": "^4.0.1",
     "coveralls": "^3.0.4",
     "cross-env": "^5.0.0",
     "cz-customizable": "^6.2.0",
