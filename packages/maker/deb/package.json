@@ -10,7 +10,7 @@
   "devDependencies": {
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.0",
     "proxyquire": "^2.0.1",
     "sinon": "^7.3.2"
   },
