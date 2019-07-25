@@ -3210,10 +3210,10 @@ electron-osx-sign@^0.4.10, electron-osx-sign@^0.4.11:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@^14.0.0:
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.2.tgz#b9d722e6f4c4481e125a3bfde9080af23b5e5466"
-  integrity sha512-QJyttK+GlgJFwjueOpGWN7gZ67WsHkstzCieAyojiw6mLzdBz54q+2oZidF7GfB8bkWVxsMUQa7WrHV13e2eQw==
+electron-packager@^14.0.3:
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.3.tgz#5e7985dfdeea419c03125277ebd602c38fcf1e28"
+  integrity sha512-jqtfUHx6sx9hXLro5+J6RS5FGMYpnYgTcVuDDZRG6XbOw9gymjElek3Cx1hUmlZXqboCGrH2y78RU51CnVY+gQ==
   dependencies:
     "@electron/get" "^1.3.0"
     asar "^2.0.1"
