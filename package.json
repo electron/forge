@@ -81,7 +81,7 @@
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.1.1",
     "xterm": "^3.14.5",
-    "yarn-or-npm": "^2.0.2"
+    "yarn-or-npm": "^3.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
