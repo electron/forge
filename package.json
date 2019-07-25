@@ -39,7 +39,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
-    "@electron/get": "^1.3.1",
+    "@electron/get": "^1.4.0",
     "@octokit/rest": "^16.28.5",
     "aws-sdk": "^2.472.0",
     "colors": "^1.2.0",
