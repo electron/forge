@@ -22,7 +22,7 @@
     "debug": "^4.1.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.0",
-    "semver": "^6.2.0"
+    "semver": "^6.3.0"
   },
   "engines": {
     "node": ">= 8.0"
