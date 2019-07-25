@@ -95,7 +95,6 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/debug": "^4.1.4",
     "@types/electron-packager": "^14.0.0",
-    "@types/electron-winstaller": "^2.6.1",
     "@types/express": "^4.17.0",
     "@types/express-ws": "^3.0.0",
     "@types/fetch-mock": "^7.3.1",
@@ -156,7 +155,7 @@
     "electron-installer-redhat": "^2.0.0",
     "electron-installer-snap": "^4.0.0",
     "electron-windows-store": "^2.1.0",
-    "electron-winstaller": "^3.0.4",
+    "electron-winstaller": "^4.0.0",
     "electron-wix-msi": "^2.1.1"
   }
 }
