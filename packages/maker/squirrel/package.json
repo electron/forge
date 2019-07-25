@@ -20,6 +20,6 @@
     "fs-extra": "^8.1.0"
   },
   "optionalDependencies": {
-    "electron-winstaller": "^3.0.4"
+    "electron-winstaller": "^4.0.0"
   }
 }
