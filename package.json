@@ -95,7 +95,6 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/debug": "^4.1.4",
     "@types/electron-packager": "^14.0.0",
-    "@types/electron-winstaller": "^2.6.1",
     "@types/express": "^4.17.0",
     "@types/express-ws": "^3.0.0",
     "@types/fetch-mock": "^7.3.1",
