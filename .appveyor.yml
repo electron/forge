@@ -33,6 +33,6 @@ test_script:
 - yarn --version
 - yarn lint
 - yarn coverage
-- codecov
+- codecov --gcov-glob="**/node_modules/**/*"
 
 build: off
