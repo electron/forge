@@ -18,7 +18,7 @@ jobs:
     env: NODE_INSTALLER=yarn
   - stage: docs
     os: linux
-    node_js: '8'
+    node_js: '12'
     script: ci/docs.sh
 stages:
 - test
