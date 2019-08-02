@@ -91,7 +91,7 @@
     "@babel/preset-typescript": "7.3.3",
     "@babel/register": "^7.5.5",
     "@types/chai": "4.1.7",
-    "@types/chai-as-promised": "^7.1.0",
+    "@types/chai-as-promised": "^7.1.1",
     "@types/cross-spawn": "^6.0.0",
     "@types/debug": "^4.1.4",
     "@types/electron-packager": "^14.0.0",
