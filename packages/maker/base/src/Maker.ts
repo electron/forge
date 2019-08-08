@@ -3,6 +3,7 @@ import {
 } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
+import which from 'which';
 
 export interface MakerOptions {
   /**
@@ -125,6 +126,13 @@ export default abstract class Maker<C> implements IForgeMaker {
       await fs.remove(file);
     }
     await fs.mkdirs(path.dirname(file));
+  }
+
+  /**
+   * Checks if the specified binaries exist, which are required for the maker to be used.
+   */
+  externalBinariesExist(binaries: string[]): boolean {
+    return binaries.every(binary => which.sync(binary, { nothrow: true }) !== null);
   }
 
   /**
