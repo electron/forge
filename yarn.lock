@@ -999,10 +999,10 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.3.tgz#bdfd69d61e464dcc81b25159c270d75a73c1a636"
   integrity sha512-Il2DtDVRGDcqjDtE+rF8iqg1CArehSK84HZJCT7AMITlyXRBpuPhqGLDQMowraqqu1coEaimg4ZOqggt6L6L+A==
 
-"@types/listr@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@types/listr/-/listr-0.14.1.tgz#ed55e083589c289774893fe1d582c3452eb11ca5"
-  integrity sha512-EDDdv+f1riQ4eS1yyX+FFuMbQvKwijQtIKGWt6alHLrjOfswP7oFHWiRQkII0dRpA6+CoKD4NRvFk3eSMJTWAQ==
+"@types/listr@^0.14.2":
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/@types/listr/-/listr-0.14.2.tgz#2e5f80fbc3ca8dceb9940ce9bf8e3113ab452545"
+  integrity sha512-wCipMbQr3t2UHTm90LldVp+oTBj1TX6zvpkCJcWS4o8nn6kS8SN93oUvKJAgueIRZ5M36yOlFmScqBxYH8Ajig==
   dependencies:
     "@types/node" "*"
     rxjs "^6.5.1"
