@@ -11,7 +11,7 @@
     "chai": "4.2.0",
     "mocha": "^6.2.0",
     "proxyquire": "^2.0.1",
-    "sinon": "^7.3.2"
+    "sinon": "^7.4.1"
   },
   "dependencies": {
     "colors": "^1.2.0",
