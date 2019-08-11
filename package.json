@@ -74,7 +74,7 @@
     "resolve-package": "^1.0.1",
     "s3": "^4.4.0",
     "semver": "^6.3.0",
-    "source-map-support": "^0.5.12",
+    "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.0.0",
     "username": "^5.1.0",
     "webpack": "^4.39.1",
