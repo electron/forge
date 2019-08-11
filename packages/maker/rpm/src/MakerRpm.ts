@@ -31,7 +31,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 
-    const outDir = path.resolve(makeDir);
+    const outDir = path.resolve(makeDir, 'rpm', targetArch);
 
     await this.ensureDirectory(outDir);
     const { packagePaths } = await installer({
