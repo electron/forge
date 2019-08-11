@@ -53,7 +53,7 @@ describe('MakerRpm', () => {
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'rpm', process.arch),
       rename: undefined,
     });
   });
@@ -77,7 +77,7 @@ describe('MakerRpm', () => {
         productName: 'Redhat',
       },
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'rpm', process.arch),
       rename: undefined,
     });
   });

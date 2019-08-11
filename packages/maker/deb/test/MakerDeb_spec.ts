@@ -54,7 +54,7 @@ describe('MakerDeb', () => {
       arch: debianArch(process.arch as ForgeArch),
       options: {},
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'deb', process.arch),
       rename: undefined,
     });
     expect(maker.config).to.deep.equal(config);
@@ -80,7 +80,7 @@ describe('MakerDeb', () => {
         productName: 'Debian',
       },
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'deb', process.arch),
       rename: undefined,
     });
   });
