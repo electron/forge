@@ -52,10 +52,11 @@ describe('MakerFlatpak', () => {
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
+    const expectedArch = flatpakArch(process.arch as ForgeArch);
     expect(opts).to.deep.equal({
-      arch: flatpakArch(process.arch as ForgeArch),
+      arch: expectedArch,
       src: dir,
-      dest: path.resolve(makeDir, 'flatpak'),
+      dest: path.resolve(makeDir, 'flatpak', expectedArch),
     });
   });
 
@@ -72,13 +73,14 @@ describe('MakerFlatpak', () => {
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
+    const expectedArch = flatpakArch(process.arch as ForgeArch);
     expect(opts).to.deep.equal({
-      arch: flatpakArch(process.arch as ForgeArch),
+      arch: expectedArch,
       options: {
         productName: 'Flatpak',
       },
       src: dir,
-      dest: path.resolve(makeDir, 'flatpak'),
+      dest: path.resolve(makeDir, 'flatpak', expectedArch),
     });
   });
 });

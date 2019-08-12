@@ -51,7 +51,7 @@ describe('MakerSnap', () => {
     expect(opts).to.deep.equal({
       arch: process.arch,
       src: dir,
-      dest: path.resolve(makeDir, 'snap'),
+      dest: path.resolve(makeDir, 'snap', process.arch),
     });
   });
 
@@ -69,7 +69,7 @@ describe('MakerSnap', () => {
     expect(opts).to.deep.equal({
       arch: process.arch,
       src: dir,
-      dest: path.resolve(makeDir, 'snap'),
+      dest: path.resolve(makeDir, 'snap', process.arch),
       description: 'Snap description',
     });
   });

@@ -22,7 +22,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     // eslint-disable-next-line global-require
     const installer = require('electron-installer-snap');
 
-    const outPath = path.resolve(makeDir, 'snap');
+    const outPath = path.resolve(makeDir, 'snap', targetArch);
 
     await this.ensureDirectory(outPath);
 

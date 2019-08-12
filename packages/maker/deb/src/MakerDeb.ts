@@ -31,7 +31,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-debian');
 
-    const outDir = path.resolve(makeDir);
+    const outDir = path.resolve(makeDir, 'deb', targetArch);
 
     await this.ensureDirectory(outDir);
     const { packagePaths } = await installer({

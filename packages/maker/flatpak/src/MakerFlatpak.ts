@@ -34,7 +34,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     const installer = require('@malept/electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);
-    const outDir = path.resolve(makeDir, 'flatpak');
+    const outDir = path.resolve(makeDir, 'flatpak', arch);
 
     await this.ensureDirectory(outDir);
     const flatpakConfig = Object.assign({}, this.config, {

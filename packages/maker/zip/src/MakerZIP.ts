@@ -20,6 +20,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     makeDir,
     appName,
     packageJSON,
+    targetArch,
     targetPlatform,
   }: MakerOptions) {
     // eslint-disable-next-line global-require
@@ -27,7 +28,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
 
     const zipDir = ['darwin', 'mas'].includes(targetPlatform) ? path.resolve(dir, `${appName}.app`) : dir;
 
-    const zipPath = path.resolve(makeDir, `${path.basename(dir)}-${packageJSON.version}.zip`);
+    const zipPath = path.resolve(makeDir, 'zip', targetPlatform, targetArch, `${path.basename(dir)}-${packageJSON.version}.zip`);
 
     await this.ensureFile(zipPath);
     await promisify(zip)(zipDir, zipPath);
