@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-linux",
-  "version": "6.0.0-beta.43",
+  "version": "6.0.0-beta.44",
   "description": "Base linux file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,7 +14,7 @@
     "node": ">= 8.0"
   },
   "dependencies": {
-    "@electron-forge/installer-base": "6.0.0-beta.43",
+    "@electron-forge/installer-base": "6.0.0-beta.44",
     "sudo-prompt": "^9.0.0"
   }
 }
