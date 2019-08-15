@@ -16,7 +16,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
   private collapseMakeResults = (makeResults: PublisherOptions['makeResults']) => {
     const newMakeResults: typeof makeResults = [];
     for (const result of makeResults) {
-      const existingResult = newMakeResults.find(nResult => nResult.arch === result.arch
+      const existingResult = newMakeResults.find((nResult) => nResult.arch === result.arch
           && nResult.platform === result.platform
           && nResult.packageJSON.version === result.packageJSON.version);
       if (existingResult) {

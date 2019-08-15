@@ -29,7 +29,7 @@ import './util/terminate';
       message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
     });
 
-    return assets.find(asset => asset.id === assetID)!;
+    return assets.find((asset) => asset.id === assetID)!;
   };
 
   await api.install({

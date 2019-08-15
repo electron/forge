@@ -26,16 +26,16 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 
-    const winstallerConfig: ElectronWinstallerOptions = Object.assign({
+    const winstallerConfig: ElectronWinstallerOptions = {
       name: packageJSON.name,
       title: appName,
       noMsi: true,
       exe: `${appName}.exe`,
       setupExe: `${appName}-${packageJSON.version} Setup.exe`,
-    }, this.config, {
+      ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,
-    });
+    };
 
     await createWindowsInstaller(winstallerConfig);
 

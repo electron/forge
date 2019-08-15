@@ -106,8 +106,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     this.baseDir = path.resolve(dir, '.webpack');
 
     d('hooking process events');
-    process.on('exit', _code => this.exitHandler({ cleanup: true }));
-    process.on('SIGINT' as NodeJS.Signals, _signal => this.exitHandler({ exit: true }));
+    process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
+    process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
   }
 
   private loggedOutputUrl = false;
@@ -339,8 +339,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         __dirname: false,
         __filename: false,
       },
-      plugins: entryPoints.filter(entryPoint => Boolean(entryPoint.html))
-        .map(entryPoint => new HtmlWebpackPlugin({
+      plugins: entryPoints.filter((entryPoint) => Boolean(entryPoint.html))
+        .map((entryPoint) => new HtmlWebpackPlugin({
           title: entryPoint.name,
           template: entryPoint.html,
           filename: `${entryPoint.name}/index.html`,

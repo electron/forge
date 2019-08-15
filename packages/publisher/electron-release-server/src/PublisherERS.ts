@@ -56,16 +56,14 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     })).json();
 
     // eslint-disable-next-line max-len
-    const authFetch = (apiPath: string, options?: any) => fetch(api(apiPath), Object.assign({}, options || {}, {
-      headers: Object.assign({}, (options || {}).headers, { Authorization: `Bearer ${token}` }),
-    }));
+    const authFetch = (apiPath: string, options?: any) => fetch(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 
     for (const makeResult of makeResults) {
       const { artifacts, packageJSON } = makeResult;
 
-      const existingVersion = versions.find(version => version.name === packageJSON.version);
+      const existingVersion = versions.find((version) => version.name === packageJSON.version);
 
       let channel = 'stable';
       if (config.channel) {
@@ -101,10 +99,10 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           uploadSpinner.text = getText();
         };
 
-        await Promise.all(artifacts.map(artifactPath => new Promise(async (resolve, reject) => {
+        await Promise.all(artifacts.map((artifactPath) => new Promise(async (resolve, reject) => {
           if (existingVersion) {
             const existingAsset = existingVersion.assets.find(
-              asset => asset.name === path.basename(artifactPath),
+              (asset) => asset.name === path.basename(artifactPath),
             );
 
             if (existingAsset) {

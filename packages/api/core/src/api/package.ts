@@ -34,7 +34,7 @@ type ElectronPackagerAfterCopyHook = (
  */
 function resolveHooks(hooks: (string | ElectronPackagerAfterCopyHook)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map(hook => (
+    return hooks.map((hook) => (
       typeof hook === 'string'
         ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
         : hook
@@ -170,10 +170,10 @@ export default async ({
   }) as ElectronPackagerAfterCopyHook];
   afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
 
-  const packageOpts: packager.Options = Object.assign({
+  const packageOpts: packager.Options = {
     asar: false,
     overwrite: true,
-  }, forgeConfig.packagerConfig, {
+    ...forgeConfig.packagerConfig,
     dir,
     arch,
     platform,
@@ -182,7 +182,7 @@ export default async ({
     afterPrune: sequentialHooks(afterPruneHooks),
     out: calculatedOutDir,
     electronVersion: await getElectronVersion(dir, packageJSON),
-  });
+  };
   packageOpts.quiet = true;
 
   if (packageOpts.all) {

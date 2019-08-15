@@ -50,7 +50,7 @@ export async function getElectronVersion(dir: string, packageJSON: any): Promise
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies'.red);
   }
-  const packageName = electronPackageNames.find(pkg => packageJSON.devDependencies[pkg]);
+  const packageName = electronPackageNames.find((pkg) => packageJSON.devDependencies[pkg]);
   if (packageName === undefined) {
     throw new Error('Could not find any Electron packages in devDependencies');
   }
@@ -82,11 +82,11 @@ export function updateElectronDependency(
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
   if (Object.keys(packageJSON.devDependencies).find(findElectronDep)) {
-    alteredExact = alteredExact.filter(dep => dep !== 'electron');
+    alteredExact = alteredExact.filter((dep) => dep !== 'electron');
   } else {
     const electronKey = Object.keys(packageJSON.dependencies).find(findElectronDep);
     if (electronKey) {
-      alteredExact = alteredExact.filter(dep => dep !== 'electron');
+      alteredExact = alteredExact.filter((dep) => dep !== 'electron');
       d(`Moving ${electronKey} from dependencies to devDependencies`);
       alteredDev.push(`${electronKey}@${packageJSON.dependencies[electronKey]}`);
       delete packageJSON.dependencies[electronKey];

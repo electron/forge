@@ -12,7 +12,7 @@ const d = debug('electron-forge:check-system');
 
 async function checkGitExists() {
   return new Promise<boolean>((resolve) => {
-    exec('git --version', err => resolve(!err));
+    exec('git --version', (err) => resolve(!err));
   });
 }
 
@@ -93,7 +93,7 @@ export default async function (ora: OraImpl): Promise<boolean> {
       checkGitExists(),
       checkNodeVersion(),
       checkPackageManagerVersion(ora),
-    ])).every(check => check);
+    ])).every((check) => check);
   }
   d('skipping system check');
   return true;

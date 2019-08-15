@@ -17,7 +17,7 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
       return flat;
     }, [] as string[]);
 
-    const snapArtifacts = artifacts.filter(artifact => artifact.endsWith('.snap'));
+    const snapArtifacts = artifacts.filter((artifact) => artifact.endsWith('.snap'));
 
     if (snapArtifacts.length === 0) {
       throw new Error('No snap files to upload. Please ensure that "snap" is listed in the "make_targets" in Forge config.');

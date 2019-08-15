@@ -116,15 +116,16 @@ export default async (dir: string) => {
   } else if (typeof forgeConfig !== 'object') {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
   }
-  forgeConfig = Object.assign({
+  forgeConfig = {
     packagerConfig: {},
     rebuildConfig: {},
     makers: [],
     publishers: [],
     plugins: [],
-  }, forgeConfig);
+    ...forgeConfig,
+  };
 
-  const templateObj = Object.assign({}, packageJSON, { year: (new Date()).getFullYear() });
+  const templateObj = { ...packageJSON, year: (new Date()).getFullYear() };
   const template = (obj: any) => {
     Object.keys(obj).forEach((objKey) => {
       if (typeof obj[objKey] === 'object' && obj !== null) {

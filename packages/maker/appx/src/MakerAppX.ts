@@ -95,7 +95,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     const outPath = path.resolve(makeDir, `appx/${targetArch}`);
     await this.ensureDirectory(outPath);
 
-    const opts = Object.assign({
+    const opts = {
       publisher: `CN=${getNameFromAuthor(packageJSON.author)}`,
       flatten: false,
       deploy: false,
@@ -105,10 +105,10 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       packageDescription: packageJSON.description || appName,
       packageExecutable: `app\\${appName}.exe`,
       windowsKit: this.config.windowsKit || path.dirname(await findSdkTool('makeappx.exe')),
-    }, this.config, {
+      ...this.config,
       inputDirectory: dir,
       outputDirectory: outPath,
-    });
+    };
 
     if (!opts.publisher) {
       throw new Error(

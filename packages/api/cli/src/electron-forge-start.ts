@@ -49,8 +49,8 @@ import workingDir from './util/working-dir';
   if (program.vscode && appArgs) {
     // Args are in the format ~arg~ so we need to strip the "~"
     appArgs = appArgs
-      .map(arg => arg.substr(1, arg.length - 2))
-      .filter(arg => arg.length > 0);
+      .map((arg) => arg.substr(1, arg.length - 2))
+      .filter((arg) => arg.length > 0);
   }
 
   if (program.appPath) opts.appPath = program.appPath;

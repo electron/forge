@@ -14,7 +14,7 @@ export default class InstallerDMG extends InstallerDarwin {
     installSpinner,
   }: InstallerOptions) {
     const mounts = await getMountedImages();
-    let targetMount = mounts.find(mount => mount.imagePath === filePath);
+    let targetMount = mounts.find((mount) => mount.imagePath === filePath);
 
     if (!targetMount) {
       targetMount = await mountImage(filePath);
@@ -22,7 +22,7 @@ export default class InstallerDMG extends InstallerDarwin {
 
     try {
       const volumePath = path.resolve('/Volumes', targetMount.mountPath);
-      const appName = (await fs.readdir(volumePath)).find(file => file.endsWith('.app'));
+      const appName = (await fs.readdir(volumePath)).find((file) => file.endsWith('.app'));
       if (!appName) {
         throw new Error('Failed to find .app file in DMG');
       }

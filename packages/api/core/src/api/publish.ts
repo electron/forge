@@ -103,10 +103,11 @@ const publish = async ({
 
   if (!makeResults) {
     d('triggering make');
-    makeResults = await make(Object.assign({
+    makeResults = await make({
       dir,
       interactive,
-    }, makeOptions));
+      ...makeOptions,
+    });
   } else {
     // Restore values from dry run
     d('restoring publish settings from dry run');

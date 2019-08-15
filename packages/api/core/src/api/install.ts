@@ -96,7 +96,7 @@ export default async ({
       throw new Error(`Repository "${repo}" has no releases`);
     }
 
-    releases = releases.filter(release => !release.prerelease || prerelease);
+    releases = releases.filter((release) => !release.prerelease || prerelease);
 
     const sortedReleases = releases.sort((releaseA, releaseB) => {
       let tagA = releaseA.tag_name;
@@ -181,7 +181,7 @@ export default async ({
     };
 
     const suffixFnIdent = Object.keys(installActions[process.platform])
-      .find(suffix => targetAsset.name.endsWith(suffix));
+      .find((suffix) => targetAsset.name.endsWith(suffix));
     if (!suffixFnIdent) {
       throw new Error(`No installer to handle "${targetAsset.name}"`);
     }

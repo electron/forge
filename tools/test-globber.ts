@@ -7,7 +7,7 @@ import { getPackageInfoSync } from './utils';
 
 const argv = minimist(
   process.argv.slice(
-    process.argv.findIndex(arg => arg === 'mocha.opts'),
+    process.argv.findIndex((arg) => arg === 'mocha.opts'),
   ),
 );
 

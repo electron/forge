@@ -96,10 +96,11 @@ describe('upgradeForgeConfig', () => {
       owner: 'user',
     };
     const oldConfig = {
-      github_repository: Object.assign({
+      github_repository: {
         options: octokitOptions,
         draft: true,
-      }, repo),
+        ...repo,
+      },
     };
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.publishers).to.have.lengthOf(1);
@@ -143,8 +144,8 @@ describe('updateUpgradedForgeDevDeps', () => {
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);
-    expect(actual.find(dep => dep.startsWith('@electron-forge/maker-zip'))).to.not.equal(undefined);
-    expect(actual.find(dep => dep.startsWith('@electron-forge/maker-squirrel'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-zip'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel'))).to.not.equal(undefined);
   });
 
   it('adds publishers to devDependencies', () => {
@@ -156,8 +157,8 @@ describe('updateUpgradedForgeDevDeps', () => {
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);
-    expect(actual.find(dep => dep.startsWith('@electron-forge/publisher-github'))).to.not.equal(undefined);
-    expect(actual.find(dep => dep.startsWith('@electron-forge/publisher-snapcraft'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).to.not.equal(undefined);
   });
 
   it('adds electron-compile plugin to devDependencies when electron-prebuilt-compile is in devDependencies', () => {
