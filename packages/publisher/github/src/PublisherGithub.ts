@@ -89,7 +89,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           flatArtifacts.push(...artifact.artifacts);
         }
 
-        await Promise.all(flatArtifacts.map((artifactPath) => new Promise(async (resolve) => {
+        return Promise.all(flatArtifacts.map((artifactPath) => new Promise(async (resolve) => {
           const done = () => {
             uploaded += 1;
             updateSpinner();

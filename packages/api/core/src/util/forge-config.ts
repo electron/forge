@@ -117,8 +117,8 @@ export default async (dir: string) => {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
   }
   forgeConfig = {
+    electronRebuildConfig: {},
     packagerConfig: {},
-    rebuildConfig: {},
     makers: [],
     publishers: [],
     plugins: [],

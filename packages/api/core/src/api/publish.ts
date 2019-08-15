@@ -3,6 +3,7 @@ import { asyncOra } from '@electron-forge/async-ora';
 import {
   IForgeResolvablePublisher,
   IForgePublisher,
+  ForgeConfigPublisher,
   ForgeMakeResult,
   // ForgePlatform,
 } from '@electron-forge/shared-types';
@@ -34,7 +35,7 @@ export interface PublishOptions {
    * The publish targets, by default pulled from forge config, set this prop to
    * override that list
    */
-  publishTargets?: (IForgeResolvablePublisher | IForgePublisher | string)[];
+  publishTargets?: ForgeConfigPublisher[];
   /**
    * Options object to passed through to make()
    */
@@ -143,9 +144,9 @@ const publish = async ({
     // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
     //   ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
   }
-  publishTargets = publishTargets.map((target) => {
+  publishTargets = (publishTargets as ForgeConfigPublisher[]).map((target) => {
     if (typeof target === 'string') {
-      return (forgeConfig.publishers || []).find((p) => {
+      return (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
         if (typeof p === 'string') return false;
         // eslint-disable-next-line no-underscore-dangle
         if ((p as IForgePublisher).__isElectronForgePublisher) return false;
@@ -153,7 +154,7 @@ const publish = async ({
       }) || { name: target };
     }
     return target;
-  }) as (IForgeResolvablePublisher | IForgePublisher)[];
+  });
 
   for (const publishTarget of publishTargets) {
     let publisher: PublisherBase<any>;

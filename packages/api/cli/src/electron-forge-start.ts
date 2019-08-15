@@ -81,6 +81,6 @@ import workingDir from './util/working-dir';
       child.on('exit', onExit);
       child.on('restarted', onRestart);
     };
-    listenForExit(spawned);
+    listenForExit(spawned as ChildProcess);
   });
 })();

@@ -10,8 +10,7 @@ import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
 
-import { fromBuildIdentifier } from '../util/forge-config';
-import { hasYarn, yarnOrNpmSpawn } from '../util/yarn-or-npm';
+import ForgeUtils from '../util';
 
 export class ForgeAPI {
   /**
@@ -81,22 +80,6 @@ export class ForgeAPI {
   }
 }
 
-export class ForgeUtils {
-  /**
-   * Helper for creating a dynamic config value that will get it's real value
-   * based on the "buildIdentifier" in your forge config.
-   *
-   * Usage:
-   * `fromBuildIdentifier({ stable: 'App', beta: 'App Beta' })`
-   */
-  fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
-    return fromBuildIdentifier(map);
-  }
-
-  hasYarn = hasYarn;
-
-  yarnOrNpmSpawn = yarnOrNpmSpawn;
-}
 
 const api = new ForgeAPI();
 const utils = new ForgeUtils();

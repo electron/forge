@@ -170,12 +170,14 @@ export default async ({
   }) as ElectronPackagerAfterCopyHook];
   afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
 
+  type PackagerArch = Exclude<ForgeArch, 'arm'>;
+
   const packageOpts: packager.Options = {
     asar: false,
     overwrite: true,
     ...forgeConfig.packagerConfig,
     dir,
-    arch,
+    arch: arch as PackagerArch,
     platform,
     afterCopy: sequentialHooks(afterCopyHooks),
     afterExtract: sequentialHooks(afterExtractHooks),
