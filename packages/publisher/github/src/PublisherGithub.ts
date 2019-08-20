@@ -89,11 +89,10 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           flatArtifacts.push(...artifact.artifacts);
         }
 
-        return Promise.all(flatArtifacts.map((artifactPath) => new Promise(async (resolve) => {
+        await Promise.all(flatArtifacts.map(async (artifactPath) => {
           const done = () => {
             uploaded += 1;
             updateSpinner();
-            resolve();
           };
           if (release!.assets.find((asset) => asset.name === path.basename(artifactPath))) {
             return done();
@@ -108,7 +107,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             name: path.basename(artifactPath),
           });
           return done();
-        })));
+        }));
       });
     }
   }

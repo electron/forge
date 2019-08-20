@@ -101,6 +101,17 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   }
 
+  // eslint-disable-next-line max-len
+  private runWebpack = async (options: webpack.Configuration): Promise<webpack.Stats> => new Promise((resolve, reject) => {
+    webpack(options)
+      .run((err, stats) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(stats);
+      });
+  });
+
   init = (dir: string) => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
@@ -384,29 +395,16 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
     await asyncOra('Compiling Renderer Template', async () => {
-      await new Promise(async (resolve, reject) => {
-        webpack(await this.getRendererConfig(this.config.renderer.entryPoints))
-          .run((err, stats) => {
-            if (err) return reject(err);
-            if (!watch && stats.hasErrors()) {
-              return reject(new Error(`Compilation errors in the renderer: ${stats.toString()}`));
-            }
-
-            return resolve();
-          });
-      });
+      const stats = await this.runWebpack(await this.getRendererConfig(this.config.renderer.entryPoints));
+      if (!watch && stats.hasErrors()) {
+        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+      }
     });
 
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          await new Promise(async (resolve, reject) => {
-            webpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!))
-              .run((err) => {
-                if (err) return reject(err);
-                return resolve();
-              });
-          });
+          await this.runWebpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!));
         });
       }
     }

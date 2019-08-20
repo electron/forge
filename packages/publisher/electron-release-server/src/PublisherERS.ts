@@ -99,7 +99,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           uploadSpinner.text = getText();
         };
 
-        await Promise.all(artifacts.map((artifactPath) => new Promise(async (resolve, reject) => {
+        await Promise.all(artifacts.map(async (artifactPath) => {
           if (existingVersion) {
             const existingAsset = existingVersion.assets.find(
               (asset) => asset.name === path.basename(artifactPath),
@@ -112,26 +112,21 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
               return;
             }
           }
-          try {
-            d('attempting to upload asset:', artifactPath);
-            const artifactForm = new FormData();
-            artifactForm.append('token', token);
-            artifactForm.append('version', packageJSON.version);
-            artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
-            artifactForm.append('file', fs.createReadStream(artifactPath));
-            await authFetch('api/asset', {
-              method: 'POST',
-              body: artifactForm,
-              headers: artifactForm.getHeaders(),
-            });
-            d('upload successful for asset:', artifactPath);
-            uploaded += 1;
-            updateSpinner();
-            resolve();
-          } catch (err) {
-            reject(err);
-          }
-        })));
+          d('attempting to upload asset:', artifactPath);
+          const artifactForm = new FormData();
+          artifactForm.append('token', token);
+          artifactForm.append('version', packageJSON.version);
+          artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
+          artifactForm.append('file', fs.createReadStream(artifactPath));
+          await authFetch('api/asset', {
+            method: 'POST',
+            body: artifactForm,
+            headers: artifactForm.getHeaders(),
+          });
+          d('upload successful for asset:', artifactPath);
+          uploaded += 1;
+          updateSpinner();
+        }));
       });
     }
   }
