@@ -57,7 +57,7 @@
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.0.0",
     "username": "^5.1.0",
-    "yarn-or-npm": "^2.0.4"
+    "yarn-or-npm": "^3.0.1"
   },
   "engines": {
     "node": ">= 8.0"
