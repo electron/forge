@@ -43,7 +43,7 @@
     "cross-spawn-promise": "^0.10.1",
     "debug": "^4.1.0",
     "electron-packager": "^14.0.4",
-    "electron-rebuild": "^1.8.5",
+    "electron-rebuild": "^1.8.6",
     "find-up": "^4.1.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.4",
