@@ -5,7 +5,7 @@ import findConfig from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
-  rebuildConfig: {},
+  electronRebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],
