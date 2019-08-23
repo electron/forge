@@ -108,7 +108,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         if (err) {
           return reject(err);
         }
-        resolve(stats);
+        return resolve(stats);
       });
   });
 
@@ -367,8 +367,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      await new Promise(async (resolve, reject) => {
-        const compiler = webpack(await this.getMainConfig());
+      const config = await this.getMainConfig();
+      await new Promise((resolve, reject) => {
+        const compiler = webpack(config);
         const [onceResolve, onceReject] = once(resolve, reject);
         const cb: webpack.ICompiler.Handler = (err, stats) => {
           if (tab && stats) {
@@ -395,7 +396,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
     await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(await this.getRendererConfig(this.config.renderer.entryPoints));
+      const stats = await this.runWebpack(
+        await this.getRendererConfig(this.config.renderer.entryPoints),
+      );
       if (!watch && stats.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
       }
@@ -404,7 +407,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          await this.runWebpack(await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!));
+          await this.runWebpack(
+            await this.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
+          );
         });
       }
     }
@@ -437,10 +442,15 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await asyncOra('Compiling Preload Scripts', async () => {
       for (const entryPoint of this.config.renderer.entryPoints) {
         if (entryPoint.preload) {
-          await new Promise(async (resolve, reject) => {
+          const config = await this.getPreloadRendererConfig(
+            entryPoint,
+            entryPoint.preload!,
+          );
+          await new Promise((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
-            const cb: webpack.ICompiler.Handler = (err, stats) => {
+
+            this.watchers.push(webpack(config).watch({}, (err, stats) => {
               if (stats) {
                 tab.log(stats.toString({
                   colors: true,
@@ -449,11 +459,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
               if (err) return onceReject(err);
               return onceResolve();
-            };
-            this.watchers.push(webpack(await this.getPreloadRendererConfig(
-              entryPoint,
-              entryPoint.preload!,
-            )).watch({}, cb));
+            }));
           });
         }
       }
