@@ -1,4 +1,4 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { stub, SinonStub } from 'sinon';
 
@@ -18,7 +18,7 @@ describe('hooks', () => {
     });
 
     it('should not error when running a hook that is not a function', async () => {
-      await runHook({ hooks: { myHook: 'abc' }, ...fakeConfig }, 'abc');
+      await runHook({ hooks: { myHook: ('abc' as unknown) as ForgeHookFn }, ...fakeConfig }, 'abc');
     });
 
     it('should run the hook if it is provided as a function', async () => {
