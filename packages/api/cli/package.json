@@ -21,7 +21,7 @@
     "commander": "^3.0.0",
     "debug": "^4.1.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^6.5.1",
+    "inquirer": "^7.0.0",
     "semver": "^6.3.0"
   },
   "engines": {
