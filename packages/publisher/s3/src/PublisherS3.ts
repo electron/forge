@@ -33,7 +33,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     }[] = [];
 
     for (const makeResult of makeResults) {
-      artifacts.push(...makeResult.artifacts.map(artifact => ({
+      artifacts.push(...makeResult.artifacts.map((artifact) => ({
         path: artifact,
         keyPrefix: config.folder || makeResult.packageJSON.version,
         platform: makeResult.platform,
@@ -63,7 +63,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
       };
 
-      await Promise.all(artifacts.map(artifact => new Promise(async (resolve, reject) => {
+      await Promise.all(artifacts.map((artifact) => new Promise((resolve, reject) => {
         const done = (err?: Error) => {
           if (err) return reject(err);
           uploaded += 1;

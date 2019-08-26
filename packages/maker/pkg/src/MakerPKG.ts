@@ -30,11 +30,12 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
 
     await this.ensureFile(outPath);
 
-    const pkgConfig = Object.assign({}, this.config, {
+    const pkgConfig = {
+      ...this.config,
       app: path.resolve(dir, `${appName}.app`),
       pkg: outPath,
       platform: targetPlatform,
-    });
+    };
     await flatAsync(pkgConfig);
 
     return [outPath];

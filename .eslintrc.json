@@ -13,7 +13,7 @@
     "node": true
   },
   "extends": [
-    "airbnb"
+    "airbnb-base"
   ],
   "rules": {
     "class-methods-use-this": "off",

@@ -28,13 +28,13 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     const forgeDefaultOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.dmg`);
 
     await this.ensureFile(outPath);
-    const dmgConfig = Object.assign({
+    const dmgConfig = {
       overwrite: true,
       name: appName,
-    }, this.config, {
+      ...this.config,
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
-    });
+    };
     const opts = await electronDMG(dmgConfig);
     if (!this.config.name) {
       await this.ensureFile(forgeDefaultOutPath);

@@ -4,8 +4,6 @@ import resolvePackage from 'resolve-package';
 
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import installDepList, { DepType } from '../../util/install-dependencies';
-// https://github.com/benmosher/eslint-plugin-import/issues/1120
-// eslint-disable-next-line import/named
 import { PossibleModule } from '../../util/require-search';
 
 const d = debug('electron-forge:init:custom');

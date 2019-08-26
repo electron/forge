@@ -89,13 +89,12 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           flatArtifacts.push(...artifact.artifacts);
         }
 
-        await Promise.all(flatArtifacts.map(artifactPath => new Promise(async (resolve) => {
+        await Promise.all(flatArtifacts.map(async (artifactPath) => {
           const done = () => {
             uploaded += 1;
             updateSpinner();
-            resolve();
           };
-          if (release!.assets.find(asset => asset.name === path.basename(artifactPath))) {
+          if (release!.assets.find((asset) => asset.name === path.basename(artifactPath))) {
             return done();
           }
           await github.getGitHub().repos.uploadReleaseAsset({
@@ -108,7 +107,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             name: path.basename(artifactPath),
           });
           return done();
-        })));
+        }));
       });
     }
   }

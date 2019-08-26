@@ -4,8 +4,9 @@ import { Options } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
 export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
-export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm' | 'all';
+export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'arm' | 'all';
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
+export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
 export interface IForgePluginInterface {
   triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
   triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
@@ -27,13 +28,13 @@ export interface ForgeConfig {
    */
   pluginInterface: IForgePluginInterface;
   /**
-   * An array of forge plugins or a tuple consisting of [pluginName, pluginOptions]
+   * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
   plugins: (IForgePlugin | [string, any])[];
   electronRebuildConfig: Partial<RebuildOptions>;
   packagerConfig: Partial<Options>;
   makers: (IForgeResolvableMaker | IForgeMaker)[];
-  publishers: (IForgeResolvablePublisher | IForgePublisher | string)[];
+  publishers: ForgeConfigPublisher[];
 }
 export interface ForgeMakeResult {
   /**

@@ -12,8 +12,8 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
   let indexOfDoubleDash = process.argv.indexOf('--');
   indexOfDoubleDash = indexOfDoubleDash < 0 ? process.argv.length + 1 : indexOfDoubleDash;
 
-  const passThroughArgs = args.filter(arg => process.argv.indexOf(arg) > indexOfDoubleDash);
-  const normalArgs = args.filter(arg => process.argv.indexOf(arg) <= indexOfDoubleDash);
+  const passThroughArgs = args.filter((arg) => process.argv.indexOf(arg) > indexOfDoubleDash);
+  const normalArgs = args.filter((arg) => process.argv.indexOf(arg) <= indexOfDoubleDash);
 
   let newArgs = args;
   let newUnknown = unknown;

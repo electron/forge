@@ -133,7 +133,7 @@ export default function upgradeForgeConfig(forge5Config: any): ForgeConfig {
 
 export function updateUpgradedForgeDevDeps(packageJSON: any, devDeps: string[]): string[] {
   const forgeConfig = packageJSON.config.forge;
-  devDeps = devDeps.filter(dep => !dep.startsWith('@electron-forge/maker-'));
+  devDeps = devDeps.filter((dep) => !dep.startsWith('@electron-forge/maker-'));
   // eslint-disable-next-line max-len
   devDeps = devDeps.concat(forgeConfig.makers.map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
   // eslint-disable-next-line max-len

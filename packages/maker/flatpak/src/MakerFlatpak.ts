@@ -37,16 +37,17 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     const outDir = path.resolve(makeDir, 'flatpak', arch);
 
     await this.ensureDirectory(outDir);
-    const flatpakConfig = Object.assign({}, this.config, {
+    const flatpakConfig = {
+      ...this.config,
       arch,
       src: dir,
       dest: outDir,
-    });
+    };
 
     await installer(flatpakConfig);
 
     return (await fs.readdir(outDir))
-      .filter(basename => basename.endsWith('.flatpak'))
-      .map(basename => path.join(outDir, basename));
+      .filter((basename) => basename.endsWith('.flatpak'))
+      .map((basename) => path.join(outDir, basename));
   }
 }

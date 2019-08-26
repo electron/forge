@@ -132,7 +132,7 @@ export default abstract class Maker<C> implements IForgeMaker {
    * Checks if the specified binaries exist, which are required for the maker to be used.
    */
   externalBinariesExist(binaries: string[]): boolean {
-    return binaries.every(binary => which.sync(binary, { nothrow: true }) !== null);
+    return binaries.every((binary) => which.sync(binary, { nothrow: true }) !== null);
   }
 
   /**

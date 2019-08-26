@@ -17,7 +17,7 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
     const replaceExistingFiles = Boolean(config.replaceExistingFiles);
     const appPassword = process.env.BITBUCKET_APP_PASSWORD;
     const username = process.env.BITBUCKET_USERNAME;
-    const auth = Object.assign({}, { appPassword, username }, config.auth || {});
+    const auth = { appPassword, username, ...config.auth || {} };
     const apiUrl = `https://api.bitbucket.org/2.0/repositories/${config.repository.owner}/${config.repository.name}/downloads`;
     const encodedUserAndPass = Buffer.from(`${auth.username}:${auth.appPassword}`).toString('base64');
 

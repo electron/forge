@@ -35,7 +35,7 @@ async function normalizeLinks(htmlFile: string, subPath: string): Promise<string
 
     // Rewrite assets path to allow better cross-dep caching
     // otherwise each module will have it's own unique JS file :(
-    const htmlFiles = await new Promise<string[]>(resolve => Glob(path.resolve(docPath, '**', '*.html'), (e, l) => resolve(l)));
+    const htmlFiles = await new Promise<string[]>((resolve) => Glob(path.resolve(docPath, '**', '*.html'), (e, l) => resolve(l)));
     for (const htmlFile of htmlFiles) {
       await fs.writeFile(htmlFile, await normalizeLinks(htmlFile, subPath));
     }

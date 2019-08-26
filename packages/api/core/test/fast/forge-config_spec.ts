@@ -5,7 +5,7 @@ import findConfig from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
-  rebuildConfig: {},
+  electronRebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],
@@ -15,12 +15,13 @@ describe('forge-config', () => {
   it('should resolve the object in package.json with defaults  if one exists', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
     delete config.pluginInterface;
-    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
+    expect(config).to.be.deep.equal({
+      ...defaults,
       packagerConfig: {
         baz: {},
       },
       s3: {},
-    }));
+    });
   });
 
   it('should set a pluginInterface', async () => {
@@ -59,12 +60,13 @@ describe('forge-config', () => {
     delete config.topLevelProp;
     delete config.topLevelUndef;
     delete config.regexp;
-    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
+    expect(config).to.be.deep.equal({
+      ...defaults,
       buildIdentifier: 'beta',
       packagerConfig: { foo: 'bar', baz: {} },
       s3: {},
       electronReleaseServer: {},
-    }));
+    });
   });
 
   it('should resolve the JS file exports in config.forge points to a JS file and maintain functions', async () => {

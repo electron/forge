@@ -82,10 +82,13 @@ export default async ({
     const spawnOpts = {
       cwd: dir,
       stdio: 'inherit',
-      env: Object.assign({}, process.env, enableLogging ? {
-        ELECTRON_ENABLE_LOGGING: 'true',
-        ELECTRON_ENABLE_STACK_DUMPING: 'true',
-      } : {}) as NodeJS.ProcessEnv,
+      env: ({
+        ...process.env,
+        ...(enableLogging ? {
+          ELECTRON_ENABLE_LOGGING: 'true',
+          ELECTRON_ENABLE_STACK_DUMPING: 'true',
+        } : {}),
+      }) as NodeJS.ProcessEnv,
     };
 
     if (runAsNode) {

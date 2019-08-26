@@ -31,7 +31,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
       dest: outPath,
       src: dir,
     };
-    const snapConfig = Object.assign({}, this.config, snapDefaults);
+    const snapConfig = { ...this.config, ...snapDefaults };
 
     return [await installer(snapConfig)];
   }

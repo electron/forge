@@ -14,7 +14,7 @@ import { InitOptions } from '../../src/api';
 
 const asar = require('asar');
 
-const nodeInstallerArg = process.argv.find(arg => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
+const nodeInstallerArg = process.argv.find((arg) => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
 const nodeInstaller = nodeInstallerArg.substr(12);
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
@@ -36,7 +36,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       if (beforeInit) {
         beforeInit();
       }
-      await forge.init(Object.assign({}, params, { dir }));
+      await forge.init({ ...params, dir });
     });
   };
 
@@ -332,13 +332,13 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           '@electron-forge/maker-wix',
           '@electron-forge/maker-zip',
         ];
-        return allMakers.map(maker => require.resolve(maker))
+        return allMakers.map((maker) => require.resolve(maker))
           .filter((makerPath) => {
             const MakerClass = require(makerPath).default;
             const maker = new MakerClass();
             return maker.isSupportedOnCurrentPlatform() === good;
           })
-          .map(makerPath => () => ({
+          .map((makerPath) => () => ({
             name: makerPath,
             platforms: [process.platform],
             config: {
