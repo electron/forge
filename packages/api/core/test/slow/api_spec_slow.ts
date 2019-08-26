@@ -94,6 +94,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should create deep files correctly', async () => {
       await expectProjectPathExists('src/foo.js', 'file');
+      await expectProjectPathExists('src/index.html', 'file');
     });
 
     describe('lint', () => {
