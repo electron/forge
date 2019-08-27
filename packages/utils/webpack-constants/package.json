@@ -1,0 +1,15 @@
+{
+  "name": "@electron-forge/webpack-constants",
+  "version": "6.0.0-beta.44",
+  "description": "Expose electron forges webpack magic constants",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "engines": {
+    "node": ">= 8.0"
+  }
+}
