@@ -33,6 +33,6 @@ test_script:
 - yarn --version
 - yarn lint
 - yarn coverage
-- codecov --file coverage/lcov.info
+- codecov --file=coverage/lcov.info
 
 build: off
