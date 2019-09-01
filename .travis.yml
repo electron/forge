@@ -29,7 +29,7 @@ branches:
   - master
   - /^v\d+\.\d+\.\d+/
 install:
-- npm i -g bolt@0.22.5 codecov
+- npm i -g bolt@0.22.5
 script: ci/script.sh
 after_success: bolt codecov
 notifications:
