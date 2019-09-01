@@ -23,6 +23,9 @@
     }
   },
   "nyc": {
+    "exclude": [
+      "packages/*/*/test/**/*_spec*.ts"
+    ],
     "extends": "@istanbuljs/nyc-config-typescript"
   },
   "scripts": {
