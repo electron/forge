@@ -24,8 +24,7 @@
   },
   "nyc": {
     "exclude": [
-      "packages/*/*/test/**/*.js",
-      "packages/*/*/test/**/*_spec*.ts",
+      "packages/*/*/test/**/*.{js,ts}",
       "tools/*.ts"
     ],
     "extends": "@istanbuljs/nyc-config-typescript"
