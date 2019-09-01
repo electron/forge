@@ -30,7 +30,7 @@
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
     "codecov": "nyc report --reporter=text-lcov | tee coverage.lcov && codecov --disable=gcov --file=coverage.lcov",
-    "coverage": "nyc bolt test",
+    "coverage": "cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts'",
     "docs": "bolt docs:generate && bolt docs:position",
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
     "docs:position": "ts-node tools/position-docs.ts",
