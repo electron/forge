@@ -9,8 +9,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest windows-latest]
-        node-installer: [npm yarn]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node-installer: [npm, yarn]
 
     steps:
     - uses: actions/checkout@v1
