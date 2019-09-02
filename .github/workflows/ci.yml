@@ -4,9 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
@@ -18,14 +16,19 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 8.x
-    - name: install, build, and test
-      run: |
-        npm install -g bolt
-        bolt
-        bolt lint
-        bolt build
-        bolt coverage
-        bolt codecov
+    - name: Install bolt
+      run: npm install -g bolt
+    - name: Install
+      run: bolt
+    - name: Lint
+      run: bolt lint
+    - name: Build
+      run: bolt build
+    - name: Test
+      run: bolt coverage
       env:
         CI: true
+        DEBUG: electron-installer-snap:snapcraft
         NODE_INSTALLER: ${{ matrix.node-installer }}
+    - name: Codecov
+      run: bolt codecov
