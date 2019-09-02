@@ -6,5 +6,5 @@ else
     bolt
     yarn build
     yarn lint
-    yarn test
+    yarn coverage
 fi

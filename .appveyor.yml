@@ -32,6 +32,7 @@ test_script:
 - node --version
 - yarn --version
 - yarn lint
-- yarn test
+- yarn coverage
+- yarn codecov
 
 build: off
