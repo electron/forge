@@ -10,7 +10,7 @@ jobs:
       if: github.event.ref_type == 'branch' && startsWith(github.event.ref, 'dependabot/')
       uses: actions/checkout@v1
     - name: Run dependabolt
-      if: success()
+      if: job.steps.checkout_action.status == 'success'
       uses: malept/github-action-dependabolt@v1.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
