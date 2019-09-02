@@ -1,0 +1,31 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest windows-latest]
+        node-installer: [npm yarn]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js 8.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8.x
+    - name: install, build, and test
+      run: |
+        npm install -g bolt
+        bolt
+        bolt lint
+        bolt build
+        bolt coverage
+        bolt codecov
+      env:
+        CI: true
+        NODE_INSTALLER: ${{ matrix.node-installer }}
