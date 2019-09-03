@@ -752,14 +752,12 @@
     tmp-promise "^2.0.1"
 
 "@octokit/endpoint@^5.1.0":
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.3.2.tgz#2deda2d869cac9ba7f370287d55667be2a808d4b"
-  integrity sha512-gRjteEM9I6f4D8vtwU2iGUTn9RX/AJ0SVXiqBUEuYEWVGGAVjSXdT0oNmghH5lvQNWs8mwt6ZaultuG6yXivNw==
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.3.4.tgz#959c61b6db3cb4c77e870d6b8bdc9476b6856085"
+  integrity sha512-DNkTvTUs1hobAjtHDkVwspKihZk9HnZI2zbfHqLOzTzZiAWP38QypTsyXXbg0FiuVDbx2A6cWyc+ooLFewNXSg==
   dependencies:
-    deepmerge "4.0.0"
     is-plain-object "^3.0.0"
     universal-user-agent "^3.0.0"
-    url-template "^2.0.8"
 
 "@octokit/request-error@^1.0.1", "@octokit/request-error@^1.0.2":
   version "1.0.4"
@@ -782,10 +780,10 @@
     once "^1.4.0"
     universal-user-agent "^3.0.0"
 
-"@octokit/rest@^16.28.5":
-  version "16.28.7"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.28.7.tgz#a2c2db5b318da84144beba82d19c1a9dbdb1a1fa"
-  integrity sha512-cznFSLEhh22XD3XeqJw51OLSfyL2fcFKUO+v2Ep9MTAFfFLS1cK1Zwd1yEgQJmJoDnj4/vv3+fGGZweG+xsbIA==
+"@octokit/rest@^16.28.8":
+  version "16.28.8"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.28.8.tgz#9b57829084892a67654eaac075e1860bdd4b9419"
+  integrity sha512-FouTTcLdT++gwgKVnBN8CEVeFvY/OKzeaoH/L9LBvZhbjUotLthFWAdKa8WeOMt5x7Rs7uvBpu7IdcrtRD3wBA==
   dependencies:
     "@octokit/request" "^5.0.0"
     "@octokit/request-error" "^1.0.2"
@@ -799,7 +797,6 @@
     octokit-pagination-methods "^1.1.0"
     once "^1.4.0"
     universal-user-agent "^3.0.0"
-    url-template "^2.0.8"
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
@@ -2872,11 +2869,6 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
-
-deepmerge@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.0.0.tgz#3e3110ca29205f120d7cb064960a39c3d2087c09"
-  integrity sha512-YZ1rOP5+kHor4hMAH+HRQnBQHg+wvS1un1hAOuIcxcBy0hzcUf6Jg2a1w65kpoOUnurOfZbERwjI1TfZxNjcww==
 
 default-require-extensions@^2.0.0:
   version "2.0.0"
@@ -8697,11 +8689,6 @@ url-parse-lax@^3.0.0:
   integrity sha1-FrXK/Afb42dsGxmZF3gj1lA6yww=
   dependencies:
     prepend-http "^2.0.0"
-
-url-template@^2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/url-template/-/url-template-2.0.8.tgz#fc565a3cccbff7730c775f5641f9555791439f21"
-  integrity sha1-/FZaPMy/93MMd19WQflVV5FDnyE=
 
 url@0.10.3:
   version "0.10.3"
