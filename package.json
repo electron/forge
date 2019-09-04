@@ -54,7 +54,7 @@
     "aws-sdk": "^2.472.0",
     "colors": "^1.2.0",
     "commander": "^3.0.1",
-    "cross-spawn": "^6.0.4",
+    "cross-spawn": "^7.0.0",
     "cross-spawn-promise": "^0.10.1",
     "cross-zip": "^2.1.5",
     "debug": "^4.1.0",
