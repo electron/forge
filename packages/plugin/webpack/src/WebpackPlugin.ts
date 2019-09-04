@@ -423,6 +423,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const compiler = webpack(config);
       const server = webpackDevMiddleware(compiler, {
         logger: {
+          debug: tab.log.bind(tab),
           log: tab.log.bind(tab),
           info: tab.log.bind(tab),
           error: tab.log.bind(tab),
