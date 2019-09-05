@@ -1,3 +1,63 @@
+#### [6.0.0-beta.45](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.45) (2019-09-05)
+
+##### Build System / Dependencies
+
+*  pin now to a specific version to avoid bug ([90b79c25](https://github.com/electron-userland/electron-forge/commit/90b79c25))
+
+##### Chores
+
+* **deps:**
+  *  bump webpack-dev-middleware from 3.7.0 to 3.7.1 (#1137) ([c9597b31](https://github.com/electron-userland/electron-forge/commit/c9597b31))
+  *  bump @octokit/rest from 16.28.8 to 16.28.9 (#1135) ([faac3fc4](https://github.com/electron-userland/electron-forge/commit/faac3fc4))
+  *  bump cross-spawn from 6.0.5 to 7.0.0 (#1133) ([2a44e3da](https://github.com/electron-userland/electron-forge/commit/2a44e3da))
+  *  bump @octokit/rest from 16.28.7 to 16.28.8 (#1127) ([15edf18a](https://github.com/electron-userland/electron-forge/commit/15edf18a))
+  *  bump commander from 3.0.0 to 3.0.1 (#1126) ([aa8ae615](https://github.com/electron-userland/electron-forge/commit/aa8ae615))
+  *  bump form-data from 2.5.0 to 2.5.1 (#1121) ([402a1ae6](https://github.com/electron-userland/electron-forge/commit/402a1ae6))
+  *  bump electron-packager from 14.0.4 to 14.0.5 (#1118) ([d4a743a2](https://github.com/electron-userland/electron-forge/commit/d4a743a2))
+  *  bump webpack-merge from 4.2.1 to 4.2.2 (#1116) ([9bbc5204](https://github.com/electron-userland/electron-forge/commit/9bbc5204))
+  *  bump webpack from 4.39.2 to 4.39.3 (#1115) ([43640225](https://github.com/electron-userland/electron-forge/commit/43640225))
+  *  upgrade @electron/get to 1.5.0 ([04021bb3](https://github.com/electron-userland/electron-forge/commit/04021bb3))
+  *  [security] bump eslint-utils from 1.4.0 to 1.4.2 ([9ee48eef](https://github.com/electron-userland/electron-forge/commit/9ee48eef))
+  *  bump inquirer from 6.5.1 to 7.0.0 (#1106) ([2466c5d6](https://github.com/electron-userland/electron-forge/commit/2466c5d6))
+  *  bump electron-rebuild from 1.8.5 to 1.8.6 (#1097) ([17eedddb](https://github.com/electron-userland/electron-forge/commit/17eedddb))
+  *  upgrade yarn-or-npm to ^3.0.1 ([0a64ee36](https://github.com/electron-userland/electron-forge/commit/0a64ee36))
+  *  downgrade yarn-or-npm to ^2.0.4 due to a regression in 3.0.0 ([10a83d8b](https://github.com/electron-userland/electron-forge/commit/10a83d8b))
+  *  upgrade cross-zip to 2.1.6 ([4d1f83be](https://github.com/electron-userland/electron-forge/commit/4d1f83be))
+  *  bump webpack from 4.39.1 to 4.39.2 (#1092) ([f2a507eb](https://github.com/electron-userland/electron-forge/commit/f2a507eb))
+* **deps-dev:**
+  *  bump nodemon from 1.19.1 to 1.19.2 (#1136) ([fcc9cca3](https://github.com/electron-userland/electron-forge/commit/fcc9cca3))
+  *  bump @types/chai from 4.2.0 to 4.2.1 ([30f383f1](https://github.com/electron-userland/electron-forge/commit/30f383f1))
+  *  bump @types/node from 12.7.3 to 12.7.4 ([8ef109ab](https://github.com/electron-userland/electron-forge/commit/8ef109ab))
+  *  bump @typescript-eslint/eslint-plugin ([278a9ebe](https://github.com/electron-userland/electron-forge/commit/278a9ebe))
+  *  bump sinon from 7.4.1 to 7.4.2 (#1128) ([2fd698b6](https://github.com/electron-userland/electron-forge/commit/2fd698b6))
+  *  bump @typescript-eslint/parser from 2.0.0 to 2.1.0 ([8a798dfc](https://github.com/electron-userland/electron-forge/commit/8a798dfc))
+  *  bump cross-env from 5.2.0 to 5.2.1 ([8dd7a453](https://github.com/electron-userland/electron-forge/commit/8dd7a453))
+  *  bump eslint from 6.2.2 to 6.3.0 (#1125) ([5a297d91](https://github.com/electron-userland/electron-forge/commit/5a297d91))
+  *  bump @types/node from 12.7.2 to 12.7.3 ([1ae253e4](https://github.com/electron-userland/electron-forge/commit/1ae253e4))
+  *  bump typescript from 3.5.3 to 3.6.2 ([b9b08dd0](https://github.com/electron-userland/electron-forge/commit/b9b08dd0))
+  *  bump eslint from 6.2.1 to 6.2.2 ([5bf51965](https://github.com/electron-userland/electron-forge/commit/5bf51965))
+  *  bump @types/webpack from 4.39.0 to 4.39.1 ([4c4e3d68](https://github.com/electron-userland/electron-forge/commit/4c4e3d68))
+  *  upgrade to ESLint 6 and friends (#1104) ([ef0b6630](https://github.com/electron-userland/electron-forge/commit/ef0b6630))
+  *  bump eslint-plugin-mocha from 6.0.0 to 6.1.0 ([a2d04f4e](https://github.com/electron-userland/electron-forge/commit/a2d04f4e))
+  *  bump @types/express from 4.17.0 to 4.17.1 ([79df0c47](https://github.com/electron-userland/electron-forge/commit/79df0c47))
+  *  bump @types/webpack from 4.32.1 to 4.39.0 ([1b3ae033](https://github.com/electron-userland/electron-forge/commit/1b3ae033))
+  *  upgrade @types/node to 12.7.2 ([f0aaba54](https://github.com/electron-userland/electron-forge/commit/f0aaba54))
+  *  upgrade rimraf to ^3.0.0 ([2ee24d23](https://github.com/electron-userland/electron-forge/commit/2ee24d23))
+  *  bump proxyquire from 2.1.2 to 2.1.3 (#1091) ([7eedab3e](https://github.com/electron-userland/electron-forge/commit/7eedab3e))
+*  add dependabolt GitHub Action workflow (#1123) ([3b005088](https://github.com/electron-userland/electron-forge/commit/3b005088))
+*  replace coveralls with codecov (#1016) ([b424380a](https://github.com/electron-userland/electron-forge/commit/b424380a))
+
+##### Bug Fixes
+
+* **plugin-webpack:**  add missing debug level for webpack-dev-middleware (#1131) ([2d9eaa12](https://github.com/electron-userland/electron-forge/commit/2d9eaa12))
+* **core:**  only add stderr to exception if stderr exists ([b6cbc378](https://github.com/electron-userland/electron-forge/commit/b6cbc378))
+
+##### Tests
+
+* **core:**
+  *  fix custom template tests ([3cd44eb0](https://github.com/electron-userland/electron-forge/commit/3cd44eb0))
+  *  fix calls to expectProjectPathExists ([86ca42d4](https://github.com/electron-userland/electron-forge/commit/86ca42d4))
+
 #### [6.0.0-beta.44](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.44) (2019-08-12)
 
 ##### Build System / Dependencies
