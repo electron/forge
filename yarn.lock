@@ -3177,10 +3177,10 @@ electron-osx-sign@^0.4.11, electron-osx-sign@^0.4.13:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@^14.0.5:
-  version "14.0.5"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.5.tgz#b60dc38ba8d1b74fec7e97797b4b9a9d9e938173"
-  integrity sha512-vgCUVGcT5Ig/vartQVSkfs8MbsYxAYgIt2zom4pVNrNBJKSxUSS+OT8Tdq87aJvY3R0SHuLqhfY9lpw3yw/Iug==
+electron-packager@^14.0.6:
+  version "14.0.6"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-14.0.6.tgz#e187f2ef83cc29a97a0f940b7c3bb5e4edc8a8e2"
+  integrity sha512-X+ikV+TnnNkIrK93vOjsjPeykCQBFxBS7LXKMTE1s62rXWirGMdjWL+edVkBOMRkH0ROJyFmWM28Dpj6sfEg+A==
   dependencies:
     "@electron/get" "^1.3.0"
     asar "^2.0.1"
