@@ -130,7 +130,7 @@
     "@types/webpack-dev-middleware": "^2.0.3",
     "@types/webpack-hot-middleware": "^2.16.3",
     "@types/webpack-merge": "^4.1.5",
-    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.2.0",
     "@typescript-eslint/parser": "^2.1.0",
     "asar": "^2.0.1",
     "babel-plugin-source-map-support": "^2.1.1",
