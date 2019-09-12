@@ -3097,9 +3097,9 @@ electron-installer-common@^0.7.0, electron-installer-common@^0.7.1:
     tmp-promise "^2.0.1"
 
 electron-installer-debian@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-2.0.0.tgz#295431530e06403e71154fc3bd2d74a0ada1c4a3"
-  integrity sha512-FNdoIzCFhaHiOoLOacWvoUHV80AV/+iH6KNYNiYlB8LmqQKNTPKXNVfZHet/7yDZi2Md4DxRy4gsokEPvV8QSg==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-2.0.1.tgz#79dd3f85ddd0651b8e13a83d7934e6de88925df3"
+  integrity sha512-6/rgdWoezE5/JKSu6Y1mK3TT2lUeRKpviVoh063DKSLwcDPHQFgJ0/uDxqGppi3AF4du8n1vVio0VEkCEwlM1A==
   dependencies:
     debug "^4.1.1"
     electron-installer-common "^0.7.1"
@@ -3107,7 +3107,7 @@ electron-installer-debian@^2.0.0:
     get-folder-size "^2.0.1"
     lodash "^4.17.4"
     word-wrap "^1.2.3"
-    yargs "^13.2.2"
+    yargs "^14.0.0"
 
 electron-installer-dmg@^3.0.0:
   version "3.0.0"
@@ -9151,6 +9151,23 @@ yargs@^13.2.2, yargs@^13.2.4:
   integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
   dependencies:
     cliui "^5.0.0"
+    find-up "^3.0.0"
+    get-caller-file "^2.0.1"
+    require-directory "^2.1.1"
+    require-main-filename "^2.0.0"
+    set-blocking "^2.0.0"
+    string-width "^3.0.0"
+    which-module "^2.0.0"
+    y18n "^4.0.0"
+    yargs-parser "^13.1.1"
+
+yargs@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-14.0.0.tgz#ba4cacc802b3c0b3e36a9e791723763d57a85066"
+  integrity sha512-ssa5JuRjMeZEUjg7bEL99AwpitxU/zWGAGpdj0di41pOEmJti8NR6kyUIJBkR78DTYNPZOU08luUo0GTHuB+ow==
+  dependencies:
+    cliui "^5.0.0"
+    decamelize "^1.2.0"
     find-up "^3.0.0"
     get-caller-file "^2.0.1"
     require-directory "^2.1.1"
