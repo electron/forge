@@ -86,7 +86,7 @@
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.0.0",
     "username": "^5.1.0",
-    "webpack": "^4.39.3",
+    "webpack": "^4.40.0",
     "webpack-dev-middleware": "^3.7.1",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.2.2",
