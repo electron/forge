@@ -779,9 +779,9 @@
     once "^1.4.0"
 
 "@octokit/request@^5.0.0":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@octokit/request/-/request-5.0.3.tgz#84eda906fab089eec979a5047cd9d41b5497765a"
-  integrity sha512-4vRqNNf4lYqhpuiqimew2pxxwCvTShwENza25h+UMNBUvKm50K03LJ8PL7Iu6l9qboo1D0mI5DMrGwR0Tr/nKw==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/request/-/request-5.1.0.tgz#5609dcc7b5323e529f29d535214383d9eaf0c05c"
+  integrity sha512-I15T9PwjFs4tbWyhtFU2Kq7WDPidYMvRB7spmxoQRZfxSmiqullG+Nz+KbSmpkfnlvHwTr1e31R5WReFRKMXjg==
   dependencies:
     "@octokit/endpoint" "^5.1.0"
     "@octokit/request-error" "^1.0.1"
