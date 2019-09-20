@@ -31,7 +31,7 @@ export default async (dir: string, template: string) => {
               templateModulePath = require.resolve(template);
               d('using absolute template');
             } catch (err5) {
-              throw new Error(`Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge-template-${template}\``);
+              throw new Error(`Failed to locate custom template: "${template}"\n\nTry \`npm install -g electron-forge-template-${template}\``);
             }
           }
         }
