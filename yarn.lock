@@ -791,10 +791,10 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
-"@octokit/rest@^16.29.0":
-  version "16.29.0"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.29.0.tgz#5bbbfc818a44bb9ab32bee72cc0acc32e4556058"
-  integrity sha512-t01+Hz6sUJx2/HzY4KSgmST5n7KcTYr8i6+UwqS6TkgyjyA6YmeTxVhZrQUobEXaDdQFxs1dRhh1hgmOo6OF9Q==
+"@octokit/rest@^16.30.0":
+  version "16.30.0"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.30.0.tgz#c14f177b7378f330ec6ec6ae49b68af359d09053"
+  integrity sha512-TN5MbqVuqxT/s87D6tGe3zsMvyHUQSkGFMBHuwBToPQGV3eG2a67rJW2rag2vJr7JusWyERDhQ4g/4HvFo9B1g==
   dependencies:
     "@octokit/request" "^5.0.0"
     "@octokit/request-error" "^1.0.2"
