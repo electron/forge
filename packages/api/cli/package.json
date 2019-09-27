@@ -18,7 +18,7 @@
     "@electron-forge/async-ora": "6.0.0-beta.45",
     "@electron-forge/core": "6.0.0-beta.45",
     "colors": "^1.4.0",
-    "commander": "^3.0.1",
+    "commander": "^3.0.2",
     "debug": "^4.1.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.0",
