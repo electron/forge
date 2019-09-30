@@ -144,7 +144,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-mocha": "^6.1.1",
-    "fetch-mock": "^7.3.9",
+    "fetch-mock": "^7.4.0",
     "generate-changelog": "^1.8.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.0",
