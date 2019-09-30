@@ -9,7 +9,7 @@
   "typings": "dist/MakerWix.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.1"
   },
   "engines": {
     "node": ">= 8.0"
