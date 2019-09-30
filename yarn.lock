@@ -6465,10 +6465,10 @@ ora@^3.4.0:
     strip-ansi "^5.2.0"
     wcwidth "^1.0.1"
 
-ora@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-4.0.1.tgz#e0ddf8fcdcf28cf714f742f06a493cc84819621c"
-  integrity sha512-yQv2q0GO8rqP2wzdOxpu0FxUmRg4z/Lw0m6uSpukPJXoOMaQzrIpl+STKHzjryFP5ExQC56+y8+yXPar2iezaw==
+ora@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/ora/-/ora-4.0.2.tgz#0e1e68fd45b135d28648b27cf08081fa6e8a297d"
+  integrity sha512-YUOZbamht5mfLxPmk4M35CD/5DuOkAacxlEUbStVXpBAt4fyhBf+vZHI/HRkI++QUp3sNoeA2Gw4C+hi4eGSig==
   dependencies:
     chalk "^2.4.2"
     cli-cursor "^3.1.0"
