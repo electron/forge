@@ -124,7 +124,7 @@
     "@types/node-fetch": "^2.5.2",
     "@types/proxyquire": "^1.3.28",
     "@types/semver": "^6.0.2",
-    "@types/sinon": "^7.0.13",
+    "@types/sinon": "^7.5.0",
     "@types/username": "^3.0.0",
     "@types/webpack": "^4.39.2",
     "@types/webpack-dev-middleware": "^2.0.3",
