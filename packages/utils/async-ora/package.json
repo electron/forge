@@ -17,7 +17,7 @@
     "colors": "^1.4.0",
     "debug": "^4.1.0",
     "log-symbols": "^3.0.0",
-    "ora": "^4.0.1",
+    "ora": "^4.0.2",
     "pretty-ms": "^5.0.0"
   },
   "engines": {
