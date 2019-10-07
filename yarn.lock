@@ -750,9 +750,9 @@
     tmp-promise "^2.0.1"
 
 "@octokit/endpoint@^5.1.0":
-  version "5.3.6"
-  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.3.6.tgz#58a67b75b853127568e0db533cdd10f3bdca2e23"
-  integrity sha512-XuerByak8H+jW9J/rVMEdBXfI4UTsDWUwAKgIP/uhQjXIUVdPRwt2Zg+SmbWQ+WY7pRkw/hFVES8C4G/Kle7oA==
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@octokit/endpoint/-/endpoint-5.4.0.tgz#5b44b3e8e92d88765daf127e1501174ecbca7bce"
+  integrity sha512-DWTNgEKg5KXzvNjKTzcFTnkZiL7te6pQxxumvxPjyjDpcY5V3xzywnNu1WVqySY3Ct1flF/kAoyDdZos6acq3Q==
   dependencies:
     is-plain-object "^3.0.0"
     universal-user-agent "^4.0.0"
@@ -778,10 +778,10 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
-"@octokit/rest@^16.30.2":
-  version "16.30.2"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.30.2.tgz#da379a6f4f7e7e152733d38a9cba21da5c76ef7c"
-  integrity sha512-6YN4N/uWjjBUx4TNfWAxkrzCy1i7M4agdHs2g/sOTdSY/Va3T1v/f/ME5EnNfd64AMpBWee6rcLHQe5fki89lg==
+"@octokit/rest@^16.32.0":
+  version "16.32.0"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-16.32.0.tgz#5bb14e870c90ae34c3587b17bc8efb86d4d62da3"
+  integrity sha512-H8X4OGHK7KFNlrx11xQLBQcFGjracSLSoV8JC/N8/BfLl9L5ZMpxt5iFrudZM6alsCZd4hQ5f/GW0hEjAW0ZvQ==
   dependencies:
     "@octokit/request" "^5.0.0"
     "@octokit/request-error" "^1.0.2"
