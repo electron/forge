@@ -6,7 +6,7 @@ import sinon, { SinonStub } from 'sinon';
 
 import { StartOptions } from '../../src/api';
 
-describe.only('start', () => {
+describe('start', () => {
   let start: (opts: StartOptions) => Promise<ChildProcess>;
   let packageJSON: any;
   let resolveStub: SinonStub;
