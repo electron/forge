@@ -12,7 +12,7 @@ describe('start', () => {
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
   let shouldOverride: any;
-  let processOn: SinonStub<[string | symbol, (...args: any[]) => void]>;
+  let processOn: SinonStub<['timeout', () => void]>;
 
   beforeEach(() => {
     resolveStub = sinon.stub();
