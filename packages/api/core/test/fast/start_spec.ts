@@ -6,13 +6,13 @@ import sinon, { SinonStub } from 'sinon';
 
 import { StartOptions } from '../../src/api';
 
-describe('start', () => {
+describe.only('start', () => {
   let start: (opts: StartOptions) => Promise<ChildProcess>;
   let packageJSON: any;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
   let shouldOverride: any;
-  let processOn: SinonStub<[string | symbol, (...args: any[]) => void]>;
+  let processOn: SinonStub<['timeout', () => void]>;
 
   beforeEach(() => {
     resolveStub = sinon.stub();
