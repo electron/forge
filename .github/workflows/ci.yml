@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [macOS-latest]
         node-installer: [npm, yarn]
 
     steps:
@@ -18,8 +18,6 @@ jobs:
         node-version: 8.x
     - name: Install bolt
       run: npm install -g bolt
-    - name: Install maker dependencies
-      run: sudo apt install -y --no-install-recommends snapcraft flatpak-builder
     - name: Install
       run: bolt
     - name: Lint
@@ -30,7 +28,6 @@ jobs:
       run: bolt coverage
       env:
         CI: true
-        DEBUG: electron-installer-snap:snapcraft
         NODE_INSTALLER: ${{ matrix.node-installer }}
     - name: Codecov
       run: bolt codecov
