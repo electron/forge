@@ -19,7 +19,7 @@ jobs:
     - name: Install bolt
       run: npm install -g bolt
     - name: Install maker dependencies
-      run: sudo apt install -y --no-install-recommends snapcraft flatpak-builder dpkg fakeroot rpm
+      run: sudo apt install -y --no-install-recommends snapcraft flatpak-builder
     - name: Install
       run: bolt
     - name: Lint
