@@ -23,7 +23,7 @@ describe('rebuilder', () => {
   }
 
   async function doRebuild(config?: Partial<RebuildOptions>) {
-    await rebuild(testModulePath, '1.4.12', process.platform as ForgePlatform, process.arch as ForgeArch, config);
+    await rebuild(testModulePath, '6.1.0', process.platform as ForgePlatform, process.arch as ForgeArch, config);
   }
 
   describe('no config', () => {
