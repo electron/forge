@@ -120,7 +120,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.11.6",
     "@types/node-fetch": "^2.5.2",
     "@types/proxyquire": "^1.3.28",
     "@types/semver": "^6.0.2",
