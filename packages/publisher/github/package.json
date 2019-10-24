@@ -20,7 +20,7 @@
     "@electron-forge/async-ora": "6.0.0-beta.45",
     "@electron-forge/publisher-base": "6.0.0-beta.45",
     "@electron-forge/shared-types": "6.0.0-beta.45",
-    "@octokit/rest": "^16.33.1",
+    "@octokit/rest": "^16.34.0",
     "fs-extra": "^8.1.0",
     "lodash.merge": "^4.6.2",
     "mime-types": "^2.1.24"
