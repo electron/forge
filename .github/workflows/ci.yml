@@ -16,6 +16,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 8.x
+    - name: Cache node_modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
     - name: Install bolt
       run: npm install -g bolt
     - name: Install
