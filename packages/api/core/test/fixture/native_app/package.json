@@ -14,14 +14,14 @@
     "forge": "./forge.config.js"
   },
   "devDependencies": {
-    "ffi": "2.2.0"
+    "ffi-napi": "2.4.5"
   },
   "dependencies": {
-    "ref": "1.3.3",
-    "benchr": "3.2.0",
-    "@newrelic/native-metrics": "2.1.1"
+    "@nlv8/signun": "1.3.4",
+    "electron-markdown": "0.6.0",
+    "ref-napi": "1.4.2"
   },
   "optionalDependencies": {
-    "zipfile": "0.5.11"
+    "bcrypt": "3.0.6"
   }
 }
