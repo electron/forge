@@ -23,7 +23,7 @@ describe('rebuilder', () => {
   }
 
   async function doRebuild(config?: Partial<RebuildOptions>) {
-    await rebuild(testModulePath, '1.4.12', process.platform as ForgePlatform, process.arch as ForgeArch, config);
+    await rebuild(testModulePath, '5.0.12', process.platform as ForgePlatform, process.arch as ForgeArch, config);
   }
 
   describe('no config', () => {
@@ -33,45 +33,45 @@ describe('rebuilder', () => {
     });
 
     it('should have rebuilt top level prod dependencies', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'ref build meta should exist').to.equal(true);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref-napi', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'ref-napi build meta should exist').to.equal(true);
     });
 
     it('should have rebuilt children of top level prod dependencies', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'microtime', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'microtime build meta should exist').to.equal(true);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'cmark-gfm', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'cmark-gfm build meta should exist').to.equal(true);
     });
 
     it('should have rebuilt children of scoped top level prod dependencies', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', '@newrelic/native-metrics', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), '@newrelic/native-metrics build meta should exist').to.equal(true);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', '@nlv8/signun', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), '@nlv8/signun build meta should exist').to.equal(true);
     });
 
     it('should have rebuilt top level optional dependencies', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'zipfile', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'zipfile build meta should exist').to.equal(true);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'bcrypt', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'bcrypt build meta should exist').to.equal(true);
     });
 
     it('should not have rebuilt top level devDependencies', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ffi', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'ffi build meta should not exist').to.equal(false);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ffi-napi', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'ffi-napi build meta should not exist').to.equal(false);
     });
   });
 
   describe('with config', () => {
     before(async () => {
       await setupProject();
-      await doRebuild({ onlyModules: ['ref'] });
+      await doRebuild({ onlyModules: ['ref-napi'] });
     });
 
     it('should have rebuilt module in onlyModules', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'ref build meta should exist').to.equal(true);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'ref-napi', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'ref-napi build meta should exist').to.equal(true);
     });
 
     it('should not have rebuilt module not in onlyModules', async () => {
-      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'zipfile', 'build', 'Release', '.forge-meta');
-      expect(await fs.pathExists(forgeMeta), 'zipfile build meta should not exist').to.equal(false);
+      const forgeMeta = path.resolve(testModulePath, 'node_modules', 'bcrypt', 'build', 'Release', '.forge-meta');
+      expect(await fs.pathExists(forgeMeta), 'bcrypt build meta should not exist').to.equal(false);
     });
   });
 
