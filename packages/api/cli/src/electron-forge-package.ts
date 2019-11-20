@@ -1,6 +1,7 @@
 import { api, PackageOptions } from '@electron-forge/core';
 
 import fs from 'fs-extra';
+import { initializeProxy } from '@electron/get';
 import program from 'commander';
 import path from 'path';
 
@@ -16,6 +17,8 @@ import workingDir from './util/working-dir';
     .option('-p, --platform [platform]', 'Target build platform')
     .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(process.argv);
+
+  initializeProxy();
 
   const packageOpts: PackageOptions = {
     dir,
