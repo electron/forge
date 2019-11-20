@@ -38,6 +38,8 @@ jobs:
     - name: Windows specific setup
       if: matrix.os == 'windows-latest'
       run: |
+        curl -LS https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311.exe > wix311.exe
+        wix311.exe /install /quiet /norestart
         $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
         $env:PATH = $env:PATH + $wixToolsetBinPath
         [Environment]::SetEnvironmentVariable("Path", $env:PATH, [EnvironmentVariableTarget]::Machine)
