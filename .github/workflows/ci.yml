@@ -61,11 +61,17 @@ jobs:
       env:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
-    - name: Test on non-Windows
-      if: matrix.os != 'windows-latest'
+    - name: Test on macOS
+      if: matrix.os == 'macOS-latest'
       run: bolt coverage
       env:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
+    - name: Test on Linux
+      if: matrix.os == 'linux-latest'
+      uses: docker://malept/electron-forge-container:latest
+      with:
+        entrypoint: bash
+        args: -c "ls"
     - name: Codecov
       run: bolt codecov
