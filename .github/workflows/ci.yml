@@ -69,9 +69,9 @@ jobs:
         NODE_INSTALLER: ${{ matrix.node-installer }}
     - name: Test on Linux
       if: matrix.os == 'ubuntu-latest'
-      uses: docker://malept/electron-forge-container:latest
+      uses: docker://malept/electron-forge-container:node-8
       with:
         entrypoint: bash
-        args: -c "ls"
+        args: -c "bolt coverage"
     - name: Codecov
       run: bolt codecov
