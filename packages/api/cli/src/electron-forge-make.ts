@@ -1,6 +1,7 @@
 import { api, MakeOptions } from '@electron-forge/core';
 
 import fs from 'fs-extra';
+import { initializeProxy } from '@electron/get';
 import program from 'commander';
 import path from 'path';
 
@@ -37,6 +38,8 @@ export async function getMakeOptions() {
 if (process.mainModule === module || (global as any).__LINKED_FORGE__) {
   (async () => {
     const makeOpts = await getMakeOptions();
+
+    initializeProxy();
 
     await api.make(makeOpts);
   })();

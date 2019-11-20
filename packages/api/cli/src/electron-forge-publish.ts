@@ -1,6 +1,7 @@
 import { api, PublishOptions } from '@electron-forge/core';
 
 import fs from 'fs-extra';
+import { initializeProxy } from '@electron/get';
 import program from 'commander';
 import path from 'path';
 
@@ -19,6 +20,8 @@ import { getMakeOptions } from './electron-forge-make';
     .allowUnknownOption(true)
     .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(process.argv);
+
+  initializeProxy();
 
   const publishOpts: PublishOptions = {
     dir,
