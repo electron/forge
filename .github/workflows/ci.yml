@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest]
+        os: [windows-latest, macOS-latest]
         node-installer: [npm, yarn]
 
     steps:
