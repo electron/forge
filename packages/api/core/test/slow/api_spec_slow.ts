@@ -284,14 +284,14 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     it('can package without errors with native pre-gyp deps installed', async () => {
-      await installDeps(dir, ['ref']);
+      await installDeps(dir, ['ref-napi']);
       await forge.package({ dir });
-      await fs.remove(path.resolve(dir, 'node_modules/ref'));
+      await fs.remove(path.resolve(dir, 'node_modules/ref-napi'));
     });
 
     it('can package without errors', async () => {
       const packageJSON = await readRawPackageJson(dir);
-      delete packageJSON.dependencies.ref;
+      delete packageJSON.dependencies['ref-napi'];
       packageJSON.config.forge.packagerConfig.asar = true;
       await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 
