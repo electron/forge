@@ -11,6 +11,8 @@ jobs:
         node-installer: [npm, yarn]
 
     steps:
+    - name: Fix git checkout line endings
+      run: git config --global core.autocrlf input
     - uses: actions/checkout@v1
     - name: Use Node.js 8.x
       uses: actions/setup-node@v1
