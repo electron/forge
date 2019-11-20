@@ -26,6 +26,7 @@ jobs:
           ${{ runner.OS }}-build-
           ${{ runner.OS }}-
     - name: Install bolt
+      shell: bash
       run: |
         case "$(uname -s)" in
           Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
