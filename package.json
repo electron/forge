@@ -84,7 +84,7 @@
     "s3": "^4.4.0",
     "semver": "^6.3.0",
     "source-map-support": "^0.5.13",
-    "sudo-prompt": "^9.0.0",
+    "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
     "webpack": "^4.41.2",
     "webpack-dev-middleware": "^3.7.2",
