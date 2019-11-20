@@ -45,7 +45,7 @@ jobs:
         {
           Write-Host "Unable to find light.exe in your PATH"
         }
-        npm install --global npm
+        npm config node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\.bin\node-gyp"
     - name: Install
       run: bolt
     - name: Lint
