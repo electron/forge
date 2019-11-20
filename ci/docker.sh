@@ -1,17 +1,9 @@
-#!/bin/bash
-
-set -e
+#!/bin/bash -e
 
 NODE_INSTALLER="$1"
 
-npm i -g yarn
-npm i -g bolt@0.22.5
-
-cd /code
-
-bolt
-bolt build
-bolt lint
+npm install -g yarn
+npm install -g bolt
 
 # For flatpak
 mkdir -p /var/run/dbus

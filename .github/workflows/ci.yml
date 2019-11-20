@@ -72,6 +72,6 @@ jobs:
       uses: docker://malept/electron-forge-container:node-8
       with:
         entrypoint: bash
-        args: -c "npm install -g bolt && bolt coverage"
+        args: -c "ci/docker.sh ${{ matrix.node-installer }}"
     - name: Codecov
       run: bolt codecov
