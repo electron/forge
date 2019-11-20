@@ -62,7 +62,7 @@ jobs:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
     - name: Test on non-Windows
-      if: matrix.os != 'windows.latest'
+      if: matrix.os != 'windows-latest'
       run: bolt coverage
       env:
         CI: true
