@@ -8,4 +8,4 @@ npm install -g bolt
 mkdir -p /var/run/dbus
 dbus-daemon --system
 
-DEBUG=electron-installer-snap:snapcraft CI=true bolt coverage -- --installer=$NODE_INSTALLER
+DEBUG=electron-installer-snap:snapcraft,electron-installer-flatpak,@malept/flatpak-bundler CI=true bolt coverage -- --installer=$NODE_INSTALLER
