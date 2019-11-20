@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [linux-latest]
+        os: [ubuntu-latest]
         node-installer: [yarn]
 
     steps:
@@ -68,7 +68,7 @@ jobs:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
     - name: Test on Linux
-      if: matrix.os == 'linux-latest'
+      if: matrix.os == 'ubuntu-latest'
       uses: docker://malept/electron-forge-container:latest
       with:
         entrypoint: bash
