@@ -2,7 +2,6 @@
 
 NODE_INSTALLER="$1"
 
-npm install -g yarn
 npm install -g bolt
 
 # For flatpak
