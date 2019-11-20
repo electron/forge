@@ -35,7 +35,7 @@ jobs:
           *) BOLT_VERSION=latest ;;
         esac
         npm install -g bolt@$BOLT_VERSION
-    - name: Set up WiX on Windows
+    - name: Windows specific setup
       if: matrix.os == 'windows-latest'
       run: |
         $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
@@ -45,6 +45,7 @@ jobs:
         {
           Write-Host "Unable to find light.exe in your PATH"
         }
+        npm install --global npm
     - name: Install
       run: bolt
     - name: Lint
