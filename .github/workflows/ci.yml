@@ -26,7 +26,7 @@ jobs:
           ${{ runner.OS }}-build-
           ${{ runner.OS }}-
     - name: Install bolt
-      run: npm install -g bolt
+      run: npm install -g bolt@0.21.2
     - name: Install
       run: bolt
     - name: Lint
