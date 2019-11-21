@@ -77,3 +77,5 @@ jobs:
         DEBUG: electron-installer-snap:snapcraft
     - name: Codecov
       run: bolt codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
