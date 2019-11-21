@@ -25,6 +25,7 @@ flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flath
 
 install_runtime x86_64 org.freedesktop.Sdk 1.6
 install_runtime x86_64 org.freedesktop.Platform 1.6
+install_app x86_64 org.electronjs.Electron2.BaseApp stable
 
 mkdir -p fakesnap/snap
 cp ci/snapcraft.yaml fakesnap/snap/
@@ -32,4 +33,3 @@ pushd fakesnap
 snapcraft pull desktop-gtk3 electron-deps
 popd
 rm -r fakesnap
-install_app x86_64 org.electronjs.Electron2.BaseApp stable
