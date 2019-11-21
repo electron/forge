@@ -106,7 +106,7 @@ jobs:
           esac
           npm install -g bolt@$BOLT_VERSION
       - name: Deploy docs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && secrets.NOW_TOKEN != ''
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: ci/docs.sh
         env:
           NOW_TOKEN: ${{ secrets.NOW_TOKEN }}
