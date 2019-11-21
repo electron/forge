@@ -41,6 +41,11 @@ jobs:
         curl -OLS https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311.exe
         .\wix311.exe /install /quiet /norestart
         npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+    - name: Linux specific setup
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ci/install_runtimes.sh
+        apt-get install -y --no-install-recommends snapcraft
     - name: Install
       run: bolt
     - name: Lint
@@ -61,17 +66,11 @@ jobs:
       env:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
-    - name: Test on macOS
-      if: matrix.os == 'macOS-latest'
+    - name: Test on macOS/Linux
+      if: matrix.os != 'windows-latest'
       run: bolt coverage
       env:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
-    - name: Test on Linux
-      if: matrix.os == 'ubuntu-latest'
-      uses: docker://malept/electron-forge-container:node-8
-      with:
-        entrypoint: bash
-        args: -c "ci/docker.sh ${{ matrix.node-installer }}"
     - name: Codecov
       run: bolt codecov
