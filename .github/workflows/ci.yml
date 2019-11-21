@@ -14,6 +14,19 @@ jobs:
     - name: Fix git checkout line endings
       run: git config --global core.autocrlf input
     - uses: actions/checkout@v1
+    - name: Windows specific setup
+      if: matrix.os == 'windows-latest'
+      run: |
+        curl -OLS https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311.exe
+        .\wix311.exe /install /quiet /norestart
+        npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+    - name: Linux specific setup
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo add-apt-repository -y ppa:alexlarsson/flatpak
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder
+        ci/install_runtimes.sh
     - name: Use Node.js 8.x
       uses: actions/setup-node@v1
       with:
@@ -35,19 +48,6 @@ jobs:
           *) BOLT_VERSION=latest ;;
         esac
         npm install -g bolt@$BOLT_VERSION
-    - name: Windows specific setup
-      if: matrix.os == 'windows-latest'
-      run: |
-        curl -OLS https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311.exe
-        .\wix311.exe /install /quiet /norestart
-        npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
-    - name: Linux specific setup
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo add-apt-repository -y ppa:alexlarsson/flatpak
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder
-        ci/install_runtimes.sh
     - name: Install
       run: bolt
     - name: Lint
