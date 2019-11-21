@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.45",
     "@electron-forge/publisher-base": "6.0.0-beta.45",
-    "form-data": "2.5.1",
+    "form-data": "3.0.0",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.0"
   }
