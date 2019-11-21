@@ -1,10 +1,9 @@
 import { expect } from 'chai';
+import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import sinon, { SinonSpy } from 'sinon';
 
 import { InstallOptions, InstallAsset } from '../../src/api';
-
-const fetchMock = require('fetch-mock/es5/server');
 
 describe('install', () => {
   let install: (opts: InstallOptions) => Promise<void>;
