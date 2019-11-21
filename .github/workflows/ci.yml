@@ -44,8 +44,8 @@ jobs:
     - name: Linux specific setup
       if: matrix.os == 'ubuntu-latest'
       run: |
+        apt-get install -y --no-install-recommends snapcraft flatpak-builder
         ci/install_runtimes.sh
-        apt-get install -y --no-install-recommends snapcraft
     - name: Install
       run: bolt
     - name: Lint
