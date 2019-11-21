@@ -7,8 +7,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        node-installer: [yarn]
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+        node-installer: [npm, yarn]
 
     steps:
     - name: Fix git checkout line endings
