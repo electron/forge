@@ -74,5 +74,6 @@ jobs:
       env:
         CI: true
         NODE_INSTALLER: ${{ matrix.node-installer }}
+        DEBUG: electron-installer-snap:snapcraft
     - name: Codecov
       run: bolt codecov
