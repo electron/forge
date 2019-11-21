@@ -90,7 +90,7 @@
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.2.2",
-    "which": "^2.0.1",
+    "which": "^2.0.2",
     "xterm": "^4.2.0",
     "yarn-or-npm": "^3.0.1"
   },
