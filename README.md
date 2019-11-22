@@ -1,6 +1,6 @@
 Electron Forge
 --------------
-[![Build Status](https://github.com/actions/hello-world/workflows/Greet%20Everyone/badge.svg)](https://github.com/electron-userland/electron-forge/actions?query=workflow:CI)
+[![Build Status](https://github.com/electron-userland/electron-forge/workflows/CI/badge.svg)](https://github.com/electron-userland/electron-forge/actions?query=workflow:CI)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm version](https://badge.fury.io/js/electron-forge.svg)](https://www.npmjs.com/package/electron-forge)
 [![npm](https://img.shields.io/npm/dt/electron-forge.svg?maxAge=2592000)](https://www.npmjs.com/package/electron-forge)
