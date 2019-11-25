@@ -83,7 +83,7 @@ bolt test
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
 
-* Travis CI and AppVeyor are used to make sure that the project builds packages as expected on the
+* GitHub Actions are used to make sure that the project builds packages as expected on the
   supported platforms, using supported Node.js versions, and that the project conforms to the
   configured coding standards.
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
