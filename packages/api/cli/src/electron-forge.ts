@@ -48,12 +48,14 @@ Make sure you have git installed and Node.js version 6.0.0+`).red);
     process.exit(1);
   }
 
-  program
-    .arguments('<command>').action((cmd) => {
-      program.outputHelp();
-      console.log(` Unknown command ${cmd}`);
-      console.log();
-    });
+  const [, , command] = process.argv;
+  const availableCommands = program.commands.map((cmd: any) => cmd._name);
+  
+  if (!availableCommands.includes(command)) {
+  	program.outputHelp();
+  	console.log(` Unknown command ${command}`);
+  	console.log();
+  }
 
   program.parse(process.argv);
 })();
