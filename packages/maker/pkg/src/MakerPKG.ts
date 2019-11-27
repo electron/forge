@@ -11,6 +11,8 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
+  requiredExternalBinaries: string[] = [];
+
   isSupportedOnCurrentPlatform() {
     return process.platform === 'darwin';
   }

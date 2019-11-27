@@ -11,6 +11,8 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas', 'win32', 'linux'];
 
+  requiredExternalBinaries: string[] = [];
+
   isSupportedOnCurrentPlatform() {
     return true;
   }

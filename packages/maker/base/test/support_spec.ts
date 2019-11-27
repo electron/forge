@@ -6,16 +6,14 @@ class MakerImpl extends MakerBase<{}> {
   name = 'test';
 
   defaultPlatforms = [];
+
+  requiredExternalBinaries = ['bash', 'nonexistent'];
 }
 
 describe('ensureExternalBinariesExist', () => {
   const maker = new MakerImpl({}, []);
 
-  it('returns true when all binaries exist', () => {
-    expect(maker.ensureExternalBinariesExist(['node'])).to.equal(true);
-  });
-
   it('throws an error when one of the binaries does not exist', () => {
-    expect(() => maker.ensureExternalBinariesExist(['bash', 'nonexistent'])).to.throw(/the following external binaries need to be installed: bash, nonexistent/);
+    expect(() => maker.ensureExternalBinariesExist()).to.throw(/the following external binaries need to be installed: bash, nonexistent/);
   });
 });

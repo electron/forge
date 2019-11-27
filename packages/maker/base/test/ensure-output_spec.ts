@@ -9,6 +9,8 @@ class MakerImpl extends MakerBase<{}> {
   name = 'test';
 
   defaultPlatforms = [];
+
+  requiredExternalBinaries = [];
 }
 
 describe('ensure-output', () => {
