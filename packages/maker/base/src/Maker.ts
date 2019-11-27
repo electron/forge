@@ -136,6 +136,17 @@ export default abstract class Maker<C> implements IForgeMaker {
   }
 
   /**
+   * Throws an error if any of the binaries don't exist.
+   */
+  ensureExternalBinariesExist(binaries: string[]): boolean {
+    if (this.externalBinariesExist(binaries)) {
+      return true;
+    } else {
+      throw new Error(`Cannot make for ${this.name}, the following external binaries need to be installed: ${binaries.join(', ')}`);
+    }
+  }
+
+  /**
    * Checks if the given module is installed, used for testing if optional dependencies
    * are installed or not
    */

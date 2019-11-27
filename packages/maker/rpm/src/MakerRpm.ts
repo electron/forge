@@ -20,7 +20,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
   isSupportedOnCurrentPlatform() {
-    return this.isInstalled('electron-installer-redhat') && this.externalBinariesExist(['rpmbuild']);
+    return this.isInstalled('electron-installer-redhat') && this.ensureExternalBinariesExist(['rpmbuild']);
   }
 
   async make({
