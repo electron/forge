@@ -36,9 +36,9 @@ program
   .command('publish', 'Publish the current Electron application to GitHub')
   .command('install', 'Install an Electron application from GitHub')
   .on('command:*', () => {
+    program.outputHelp();
     console.error();
     console.error(`Unknown command "${program.args.join(' ')}".`.red);
-    console.error('See --help for a list of available commands.');
     process.exit(1);
   });
 
