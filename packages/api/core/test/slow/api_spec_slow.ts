@@ -337,7 +337,8 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           .filter((makerPath) => {
             const MakerClass = require(makerPath).default;
             const maker = new MakerClass();
-            return maker.isSupportedOnCurrentPlatform() === good;
+            return maker.isSupportedOnCurrentPlatform() === good
+              && maker.externalBinariesExist() === good;
           })
           .map((makerPath) => () => ({
             name: makerPath,

@@ -10,9 +10,9 @@ import { MakerRpmConfig } from '../src/Config';
 import { rpmArch } from '../src/MakerRpm';
 
 class MakerImpl extends MakerBase<MakerRpmConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerRpm', () => {

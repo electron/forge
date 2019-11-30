@@ -21,8 +21,10 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
+  requiredExternalBinaries: string[] = ['flatpak-builder'];
+
   isSupportedOnCurrentPlatform() {
-    return this.isInstalled('@malept/electron-installer-flatpak') && this.externalBinariesExist(['flatpak-builder']);
+    return this.isInstalled('@malept/electron-installer-flatpak');
   }
 
   async make({

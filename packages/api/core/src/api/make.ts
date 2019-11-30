@@ -21,9 +21,9 @@ import requireSearch from '../util/require-search';
 import packager from './package';
 
 class MakerImpl extends MakerBase<any> {
- name = 'impl';
+  name = 'impl';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 export interface MakeOptions {
@@ -131,6 +131,8 @@ export default async ({
         `that it cannot run on ${process.platform}`,
       ].join(''));
     }
+
+    maker.ensureExternalBinariesExist();
 
     makers[targetId] = maker;
     targetId += 1;
