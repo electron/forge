@@ -14,8 +14,6 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  requiredExternalBinaries: string[] = [];
-
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
   }

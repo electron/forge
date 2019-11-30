@@ -81,8 +81,6 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  requiredExternalBinaries: string[] = [];
-
   isSupportedOnCurrentPlatform() {
     return process.platform === 'win32';
   }

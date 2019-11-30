@@ -44,7 +44,7 @@ export default abstract class Maker<C> implements IForgeMaker {
 
   public abstract defaultPlatforms: ForgePlatform[];
 
-  public abstract requiredExternalBinaries: string[] = [];
+  public requiredExternalBinaries: string[] = [];
 
   __isElectronForgeMaker!: true;
 

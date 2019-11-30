@@ -24,8 +24,6 @@ class MakerImpl extends MakerBase<any> {
   name = 'impl';
 
   defaultPlatforms = [];
-
-  requiredExternalBinaries = [];
 }
 
 export interface MakeOptions {

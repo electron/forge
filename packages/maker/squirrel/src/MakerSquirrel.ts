@@ -12,8 +12,6 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  requiredExternalBinaries: string[] = [];
-
   isSupportedOnCurrentPlatform() {
     return this.isInstalled('electron-winstaller') && !process.env.DISABLE_SQUIRREL_TEST;
   }
