@@ -26,7 +26,7 @@ export const fakeOra = (name: string) => {
       return fake;
     },
     fail: () => {
-      d(`Process Failed: ${fake.text}`.red, timing);
+      d(`Process Failed: ${fake.text}`.red, timing());
       return fake;
     },
     succeed: () => {
