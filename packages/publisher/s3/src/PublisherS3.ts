@@ -59,7 +59,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         } as S3.PutObjectRequest);
         d('uploading:', artifact.path);
 
-        uploader.on('httpUploadProgress', progress => {
+        uploader.on('httpUploadProgress', (progress) => {
           const p = `${Math.round((progress.loaded / progress.total) * 100)}%`;
           d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
         });
@@ -73,9 +73,13 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
   keyForArtifact(artifact: S3Artifact): string {
     if (this.config.keyResolver) {
-      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
-    } else {
-      return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
+      return this.config.keyResolver(
+        path.basename(artifact.path),
+        artifact.platform,
+        artifact.arch,
+      );
     }
+
+    return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
   }
 }
