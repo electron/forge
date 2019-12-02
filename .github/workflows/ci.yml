@@ -84,7 +84,9 @@ jobs:
       - name: Codecov
         run: bolt codecov
         env:
+          CI_OS: ${{ matrix.os }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          NODE_INSTALLER: ${{ matrix.node-installer }}
   docs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build

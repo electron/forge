@@ -36,7 +36,7 @@
     "build:quick": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\" --config-file ../../../.babelrc",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
-    "codecov": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe",
+    "codecov": "nyc report --reporter=text-lcov | codecov --disable=gcov --pipe --env=CI_OS,NODE_INSTALLER",
     "coverage": "cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts'",
     "docs": "bolt docs:generate && bolt docs:position",
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
