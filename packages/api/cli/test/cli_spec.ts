@@ -13,7 +13,7 @@ function tsNodePath() {
 function runForgeCLI(...extraArgs: string[]): Promise<Uint8Array> {
   const args = [
     path.resolve(__dirname, '../src/electron-forge.ts'),
-    ...extraArgs
+    ...extraArgs,
   ];
   return spawnPromise(tsNodePath(), args);
 }
