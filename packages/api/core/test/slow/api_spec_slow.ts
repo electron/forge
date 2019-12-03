@@ -341,13 +341,21 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
             return maker.isSupportedOnCurrentPlatform() === good
               && maker.externalBinariesExist() === good;
           })
-          .map((makerPath) => () => ({
-            name: makerPath,
-            platforms: [process.platform],
-            config: {
-              devCert,
-            },
-          }));
+          .map((makerPath) => () => {
+            const makerDefinition = {
+              name: makerPath,
+              platforms: [process.platform],
+              config: {
+                devCert,
+              },
+            };
+
+            if (process.platform === 'win32') {
+              (makerDefinition.config as any).makeVersionWinStoreCompatible = true;
+            }
+
+            return makerDefinition;
+          });
       }
 
       const goodMakers = getMakers(true);
