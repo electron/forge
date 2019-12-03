@@ -232,6 +232,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
       const packageJSON = await readRawPackageJson(dir);
       packageJSON.name = 'testapp';
+      packageJSON.version = '1.0.0-beta.1';
       packageJSON.productName = 'Test-App';
       packageJSON.config.forge.packagerConfig.asar = false;
       if (process.platform === 'win32') {
