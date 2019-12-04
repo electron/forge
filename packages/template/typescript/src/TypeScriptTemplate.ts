@@ -19,7 +19,7 @@ class TypeScriptTemplate implements ForgeTemplate {
     await asyncOra('Setting up Forge configuration', async () => {
       const packageJSONPath = path.resolve(directory, 'package.json');
       const packageJSON = await fs.readJson(packageJSONPath);
-      
+
       // Configure forge plugins for TS template
       packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
 
@@ -43,7 +43,7 @@ class TypeScriptTemplate implements ForgeTemplate {
       // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));
       await copyTemplateFile(path.join(directory, 'src'), 'index.ts.js');
-      await fs.rename(filePath('index.ts.js'), filePath('index.ts'))
+      await fs.rename(filePath('index.ts.js'), filePath('index.ts'));
     });
   }
 }
