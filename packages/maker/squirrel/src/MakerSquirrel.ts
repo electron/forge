@@ -1,7 +1,7 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import { createWindowsInstaller, Options as ElectronWinstallerOptions } from 'electron-winstaller';
+import { convertVersion, createWindowsInstaller, Options as ElectronWinstallerOptions } from 'electron-winstaller';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -39,12 +39,14 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
 
     await createWindowsInstaller(winstallerConfig);
 
+    const nupkgVersion = convertVersion(packageJSON.version);
+
     const artifacts = [
       path.resolve(outPath, 'RELEASES'),
       path.resolve(outPath, winstallerConfig.setupExe || `${appName}Setup.exe`),
-      path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-full.nupkg`),
+      path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-full.nupkg`),
     ];
-    const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${packageJSON.version}-delta.nupkg`);
+    const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-delta.nupkg`);
     if (winstallerConfig.remoteReleases || await fs.pathExists(deltaPath)) {
       artifacts.push(deltaPath);
     }
