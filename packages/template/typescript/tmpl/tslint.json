@@ -4,6 +4,10 @@
     "tslint:latest"
   ],
   "jsRules": {},
-  "rules": {},
+  "rules": {
+    "no-implicit-dependencies": [true, "dev"],
+    "no-var-requires": false,
+    "quotemark": [true, "single"]
+  },
   "rulesDirectory": []
 }
