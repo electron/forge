@@ -168,24 +168,9 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   describe('init (with typescript templater)', () => {
     before(ensureTestDirIsNonexistent);
 
-    it('should succeed in initializing the webpack template', async () => {
+    it('should succeed in initializing the typescript template', async () => {
       await forge.init({
         dir,
-        template: 'typescript',
-      });
-    });
-
-    it('should fail in initializing an already initialized directory', async () => {
-      await expect(forge.init({
-        dir,
-        template: 'typescript',
-      })).to.eventually.be.rejected;
-    });
-
-    it('should initialize an already initialized directory when forced to', async () => {
-      await forge.init({
-        dir,
-        force: true,
         template: 'typescript',
       });
     });

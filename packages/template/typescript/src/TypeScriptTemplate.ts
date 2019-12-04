@@ -20,11 +20,7 @@ class TypeScriptTemplate implements ForgeTemplate {
       const packageJSONPath = path.resolve(directory, 'package.json');
       const packageJSON = await fs.readJson(packageJSONPath);
 
-      // Configure forge plugins for TS template
-      packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
-
       // Configure scripts for TS template
-      packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
       packageJSON.scripts.lint = 'tslint -c tslint.json -p tsconfig.json';
       packageJSON.scripts.start = 'tsc && electron-forge start -p dist';
 
@@ -32,15 +28,16 @@ class TypeScriptTemplate implements ForgeTemplate {
     });
 
     await asyncOra('Setting up TypeScript configuration', async () => {
+      const filePath = (fileName: string) => path.join(directory, 'src', fileName);
+
       // Copy tsconfig with a small set of presets
       await copyTemplateFile(directory, 'tsconfig.json');
 
       // Copy tslint config with recommended settings
       await copyTemplateFile(directory, 'tslint.json');
 
-      const filePath = (fileName: string) => path.join(directory, 'src', fileName);
-
-      // Remove index.js and replace with index.ts
+      // Remove index.js and replace with index.ts - needs to be done since bolt
+      // won't be able to find Electron's types
       await fs.remove(filePath('index.js'));
       await copyTemplateFile(path.join(directory, 'src'), 'index.ts.js');
       await fs.rename(filePath('index.ts.js'), filePath('index.ts'));
