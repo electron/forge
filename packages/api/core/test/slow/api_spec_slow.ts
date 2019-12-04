@@ -191,6 +191,22 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
       expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
     });
 
+    describe('lint', () => {
+      it('should initially pass the linting process', async () => {
+        try {
+          await forge.lint({ dir });
+        } catch (err) {
+          if (err.stdout) {
+            // eslint-disable-next-line no-console
+            console.error('STDOUT:', err.stdout.toString());
+            // eslint-disable-next-line no-console
+            console.error('STDERR:', err.stderr.toString());
+          }
+          throw err;
+        }
+      });
+    });
+
     after(async () => {
       await fs.remove(dir);
     });
