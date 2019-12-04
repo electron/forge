@@ -109,22 +109,13 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with built-in templater)', () => {
+  describe('init (with webpack templater)', () => {
     before(ensureTestDirIsNonexistent);
 
     it('should succeed in initializing the webpack template', async () => {
       await forge.init({
         dir,
         template: 'webpack',
-      });
-    });
-
-    it('should succeed in initializing the typescript template', async () => {
-      await fs.remove(dir);
-
-      await forge.init({
-        dir,
-        template: 'typescript',
       });
     });
 
@@ -167,6 +158,52 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should remove the stylesheet link from the HTML file', async () => {
       expect((await fs.readFile(path.join(dir, 'src', 'index.html'))).toString()).to.not.match(/link rel="stylesheet"/);
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+    });
+  });
+
+  describe('init (with typescript templater)', () => {
+    before(ensureTestDirIsNonexistent);
+
+    it('should succeed in initializing the webpack template', async () => {
+      await forge.init({
+        dir,
+        template: 'typescript',
+      });
+    });
+
+    it('should fail in initializing an already initialized directory', async () => {
+      await expect(forge.init({
+        dir,
+        template: 'typescript',
+      })).to.eventually.be.rejected;
+    });
+
+    it('should initialize an already initialized directory when forced to', async () => {
+      await forge.init({
+        dir,
+        force: true,
+        template: 'typescript',
+      });
+    });
+
+    it('should copy the appropriate template files', async () => {
+      const expectedFiles = [
+        'tsconfig.json',
+        'tslint.json',
+      ];
+      for (const filename of expectedFiles) {
+        await expectProjectPathExists(filename, 'file');
+      }
+    });
+
+    it('should convert the main process file to typescript', async () => {
+      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
+      await expectProjectPathExists(path.join('src', 'index.ts'), 'file');
+      expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
     });
 
     after(async () => {
