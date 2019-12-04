@@ -109,10 +109,10 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with built-in templater)', () => {
+  describe('init (with webpack templater)', () => {
     before(ensureTestDirIsNonexistent);
 
-    it('should succeed in initializing', async () => {
+    it('should succeed in initializing the webpack template', async () => {
       await forge.init({
         dir,
         template: 'webpack',
@@ -158,6 +158,37 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should remove the stylesheet link from the HTML file', async () => {
       expect((await fs.readFile(path.join(dir, 'src', 'index.html'))).toString()).to.not.match(/link rel="stylesheet"/);
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+    });
+  });
+
+  describe('init (with typescript templater)', () => {
+    before(ensureTestDirIsNonexistent);
+
+    it('should succeed in initializing the typescript template', async () => {
+      await forge.init({
+        dir,
+        template: 'typescript',
+      });
+    });
+
+    it('should copy the appropriate template files', async () => {
+      const expectedFiles = [
+        'tsconfig.json',
+        'tslint.json',
+      ];
+      for (const filename of expectedFiles) {
+        await expectProjectPathExists(filename, 'file');
+      }
+    });
+
+    it('should convert the main process file to typescript', async () => {
+      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
+      await expectProjectPathExists(path.join('src', 'index.ts'), 'file');
+      expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
     });
 
     after(async () => {

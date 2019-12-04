@@ -1,5 +1,8 @@
 {
   "sourceMaps": "inline",
+  "ignore": [
+    "./tmpl"
+  ],
   "plugins": [
     "@babel/plugin-proposal-class-properties",
     "source-map-support"
