@@ -36,11 +36,9 @@ class TypeScriptTemplate implements ForgeTemplate {
       // Copy tslint config with recommended settings
       await copyTemplateFile(directory, 'tslint.json');
 
-      // Remove index.js and replace with index.ts - needs to be done since bolt
-      // won't be able to find Electron's types
+      // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));
-      await copyTemplateFile(path.join(directory, 'src'), 'index.ts.js');
-      await fs.rename(filePath('index.ts.js'), filePath('index.ts'));
+      await copyTemplateFile(path.join(directory, 'src'), 'index.ts');
     });
   }
 }
