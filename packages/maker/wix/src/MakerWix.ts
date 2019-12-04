@@ -1,7 +1,7 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import colors;
+import 'colors';
 import logSymbols from 'log-symbols';
 import path from 'path';
 
@@ -30,9 +30,10 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
-    let version = packageJSON.version;
+    let { version } = packageJSON;
     if (version.includes('-')) {
-      console.warn(logSymbols.warning, 'WARNING: WiX distributables does not handle prerelease information in the app version, removing it from the MSI'.yellow);
+      // eslint-disable-next-line no-console
+      console.warn(logSymbols.warning, 'WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI'.yellow);
       version = this.normalizeWindowsVersion(version);
     }
 
