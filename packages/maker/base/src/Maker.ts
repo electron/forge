@@ -162,4 +162,13 @@ export default abstract class Maker<C> implements IForgeMaker {
       return false;
     }
   }
+
+  /**
+   * Normalize the given semver-formatted version to a 4-part dot delimited version number without
+   * prerelease information for use in Windows apps.
+   */
+  normalizeWindowsVersion(version: string): string {
+    const noPrerelease = version.replace(/-.*/, '');
+    return `${noPrerelease}.0`;
+  }
 }
