@@ -13,10 +13,19 @@
     "node": true
   },
   "extends": [
-    "airbnb-base"
+    "airbnb-base",
+    "plugin:import/typescript"
   ],
   "rules": {
     "class-methods-use-this": "off",
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "ts": "never"
+      }
+    ],
     "import/no-cycle": "off",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": ["packages/**/test/**/*_spec.ts"] }],
     "mocha/no-exclusive-tests": "error",
