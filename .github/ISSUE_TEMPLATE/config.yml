@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Question
+    url: https://electronjs.org/community
+    about: Please ask questions about using Electron Forge in one of the community-driven sites.
+  - name: Website Issues
+    url: https://github.com/MarshallOfSound/electron-forge-docs/issues/new
+    about: Website issues / pull requests should be filed in the website repository.

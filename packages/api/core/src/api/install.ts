@@ -76,7 +76,7 @@ export default async ({
   let possibleAssets: Asset[] = [];
 
   await asyncOra('Searching for Application', async (searchSpinner) => {
-    if (!repo || repo.indexOf('/') === -1) {
+    if (!repo || !repo.includes('/')) {
       throw new Error('Invalid repository name, must be in the format owner/name');
     }
 

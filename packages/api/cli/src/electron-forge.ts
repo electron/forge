@@ -35,11 +35,14 @@ program
   .command('start', 'Start the current Electron application')
   .command('publish', 'Publish the current Electron application to GitHub')
   .command('install', 'Install an Electron application from GitHub')
-  .on('command:*', () => {
-    program.outputHelp();
-    console.error();
-    console.error(`Unknown command "${program.args.join(' ')}".`.red);
-    process.exit(1);
+  .on('command:*', (commands) => {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!program._execs.has(commands[0])) {
+      program.outputHelp();
+      console.error();
+      console.error(`Unknown command "${program.args.join(' ')}".`.red);
+      process.exit(1);
+    }
   });
 
 (async () => {

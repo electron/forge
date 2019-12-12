@@ -109,10 +109,10 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with built-in templater)', () => {
+  describe('init (with webpack templater)', () => {
     before(ensureTestDirIsNonexistent);
 
-    it('should succeed in initializing', async () => {
+    it('should succeed in initializing the webpack template', async () => {
       await forge.init({
         dir,
         template: 'webpack',
@@ -158,6 +158,53 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should remove the stylesheet link from the HTML file', async () => {
       expect((await fs.readFile(path.join(dir, 'src', 'index.html'))).toString()).to.not.match(/link rel="stylesheet"/);
+    });
+
+    after(async () => {
+      await fs.remove(dir);
+    });
+  });
+
+  describe('init (with typescript templater)', () => {
+    before(ensureTestDirIsNonexistent);
+
+    it('should succeed in initializing the typescript template', async () => {
+      await forge.init({
+        dir,
+        template: 'typescript',
+      });
+    });
+
+    it('should copy the appropriate template files', async () => {
+      const expectedFiles = [
+        'tsconfig.json',
+        'tslint.json',
+      ];
+      for (const filename of expectedFiles) {
+        await expectProjectPathExists(filename, 'file');
+      }
+    });
+
+    it('should convert the main process file to typescript', async () => {
+      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
+      await expectProjectPathExists(path.join('src', 'index.ts'), 'file');
+      expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
+    });
+
+    describe('lint', () => {
+      it('should initially pass the linting process', async () => {
+        try {
+          await forge.lint({ dir });
+        } catch (err) {
+          if (err.stdout) {
+            // eslint-disable-next-line no-console
+            console.error('STDOUT:', err.stdout.toString());
+            // eslint-disable-next-line no-console
+            console.error('STDERR:', err.stderr.toString());
+          }
+          throw err;
+        }
+      });
     });
 
     after(async () => {
@@ -232,6 +279,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
       const packageJSON = await readRawPackageJson(dir);
       packageJSON.name = 'testapp';
+      packageJSON.version = '1.0.0-beta.1';
       packageJSON.productName = 'Test-App';
       packageJSON.config.forge.packagerConfig.asar = false;
       if (process.platform === 'win32') {
@@ -337,15 +385,24 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           .filter((makerPath) => {
             const MakerClass = require(makerPath).default;
             const maker = new MakerClass();
-            return maker.isSupportedOnCurrentPlatform() === good;
+            return maker.isSupportedOnCurrentPlatform() === good
+              && maker.externalBinariesExist() === good;
           })
-          .map((makerPath) => () => ({
-            name: makerPath,
-            platforms: [process.platform],
-            config: {
-              devCert,
-            },
-          }));
+          .map((makerPath) => () => {
+            const makerDefinition = {
+              name: makerPath,
+              platforms: [process.platform],
+              config: {
+                devCert,
+              },
+            };
+
+            if (process.platform === 'win32') {
+              (makerDefinition.config as any).makeVersionWinStoreCompatible = true;
+            }
+
+            return makerDefinition;
+          });
       }
 
       const goodMakers = getMakers(true);

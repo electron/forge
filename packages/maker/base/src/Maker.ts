@@ -44,6 +44,8 @@ export default abstract class Maker<C> implements IForgeMaker {
 
   public abstract defaultPlatforms: ForgePlatform[];
 
+  public requiredExternalBinaries: string[] = [];
+
   __isElectronForgeMaker!: true;
 
   constructor(
@@ -131,8 +133,19 @@ export default abstract class Maker<C> implements IForgeMaker {
   /**
    * Checks if the specified binaries exist, which are required for the maker to be used.
    */
-  externalBinariesExist(binaries: string[]): boolean {
-    return binaries.every((binary) => which.sync(binary, { nothrow: true }) !== null);
+  externalBinariesExist(): boolean {
+    return this.requiredExternalBinaries.every(
+      (binary) => which.sync(binary, { nothrow: true }) !== null,
+    );
+  }
+
+  /**
+   * Throws an error if any of the binaries don't exist.
+   */
+  ensureExternalBinariesExist() {
+    if (!this.externalBinariesExist()) {
+      throw new Error(`Cannot make for ${this.name}, the following external binaries need to be installed: ${this.requiredExternalBinaries.join(', ')}`);
+    }
   }
 
   /**
@@ -148,5 +161,14 @@ export default abstract class Maker<C> implements IForgeMaker {
       // Package doesn't exist -- must not be installable on this platform
       return false;
     }
+  }
+
+  /**
+   * Normalize the given semver-formatted version to a 4-part dot delimited version number without
+   * prerelease information for use in Windows apps.
+   */
+  normalizeWindowsVersion(version: string): string {
+    const noPrerelease = version.replace(/-.*/, '');
+    return `${noPrerelease}.0`;
   }
 }

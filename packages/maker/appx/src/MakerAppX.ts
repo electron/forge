@@ -123,10 +123,9 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       );
     }
 
-    if (opts.packageVersion.match(/-/)) {
+    if (opts.packageVersion.includes('-')) {
       if (opts.makeVersionWinStoreCompatible) {
-        const noBeta = opts.packageVersion.replace(/-.*/, '');
-        opts.packageVersion = `${noBeta}.0`;
+        opts.packageVersion = this.normalizeWindowsVersion(opts.packageVersion);
       } else {
         throw new Error(
           "Windows Store version numbers don't support semver beta tags. To "

@@ -1,12 +1,12 @@
 {
-  "name": "@electron-forge/template-webpack",
+  "name": "@electron-forge/template-typescript",
   "version": "6.0.0-beta.46",
-  "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
+  "description": "Typescript template for Electron Forge, gets you started with TypeScript really quickly",
   "repository": "https://github.com/electron-userland/electron-forge",
-  "author": "Samuel Attard",
+  "author": "Shelley Vohr <shelley.vohr@gmail.com>",
   "license": "MIT",
-  "main": "dist/WebpackTemplate.js",
-  "typings": "dist/WebpackTemplate.d.ts",
+  "main": "dist/TypeScriptTemplate.js",
+  "typings": "dist/TypeScriptTemplate.d.ts",
   "scripts": {
     "test": "echo No Tests"
   },

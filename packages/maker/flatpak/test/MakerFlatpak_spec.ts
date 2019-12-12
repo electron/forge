@@ -11,9 +11,9 @@ import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
 
 class MakerImpl extends MakerBase<MakerFlatpakConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerFlatpak', () => {

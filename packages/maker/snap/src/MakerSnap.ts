@@ -10,6 +10,8 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
+  requiredExternalBinaries: string[] = ['snapcraft'];
+
   isSupportedOnCurrentPlatform() {
     return process.platform === 'linux';
   }

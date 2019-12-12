@@ -23,8 +23,7 @@ jobs:
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         run: |
-          curl -OLS https://github.com/wixtoolset/wix3/releases/download/wix3111rtm/wix311.exe
-          .\wix311.exe /install /quiet /norestart
+          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
           npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
       - name: Linux specific setup
         if: matrix.os == 'ubuntu-latest'
@@ -84,7 +83,9 @@ jobs:
       - name: Codecov
         run: bolt codecov
         env:
+          CI_OS: ${{ matrix.os }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          NODE_INSTALLER: ${{ matrix.node-installer }}
   docs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: build

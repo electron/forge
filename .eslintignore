@@ -2,3 +2,4 @@ dist
 node_modules
 *.d.ts
 packages/*/*/index.ts
+tmpl

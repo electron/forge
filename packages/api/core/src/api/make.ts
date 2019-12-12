@@ -21,9 +21,9 @@ import requireSearch from '../util/require-search';
 import packager from './package';
 
 class MakerImpl extends MakerBase<any> {
- name = 'impl';
+  name = 'impl';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 export interface MakeOptions {
@@ -104,7 +104,7 @@ export default async ({
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
       // eslint-disable-next-line no-continue
-      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
+      if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
@@ -114,7 +114,7 @@ export default async ({
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
       // eslint-disable-next-line no-continue
-      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
+      if (!maker.platforms.includes(actualTargetPlatform)) continue;
     }
 
     if (!maker.isSupportedOnCurrentPlatform) {
@@ -131,6 +131,8 @@ export default async ({
         `that it cannot run on ${process.platform}`,
       ].join(''));
     }
+
+    maker.ensureExternalBinariesExist();
 
     makers[targetId] = maker;
     targetId += 1;
