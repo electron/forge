@@ -222,7 +222,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   getDefines = (inRendererDir = true) => {
     const defines: { [key: string]: string; } = {
       ASSET_RELOCATOR_BASE_DIR: this.isProd
-        ? `process.resourcesPath + "/" + (__filename.indexOf(".asar") === -1 ? "app" : "app.asar") + "/.webpack/${inRendererDir ? 'main' : 'renderer/any_folder'}"`
+        ? `process.resourcesPath + "/" + (__filename.includes(".asar") ? "app.asar" : "app") + "/.webpack/${inRendererDir ? 'main' : 'renderer/any_folder'}"`
         : JSON.stringify(
           path.resolve(
             this.baseDir,
@@ -259,10 +259,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     const fix = (item: EntryType): EntryType => {
       if (typeof item === 'string') return (fix([item]) as string[])[0];
       if (Array.isArray(item)) {
-        return item.map((val) => {
-          if (val.indexOf('./') === 0) return path.resolve(this.projectDir, val);
-          return val;
-        });
+        return item.map((val) => val.startsWith('./') ? path.resolve(this.projectDir, val) : val);
       }
       const ret: Record<string, string | string[]> = {};
       for (const key of Object.keys(item)) {

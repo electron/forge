@@ -280,7 +280,7 @@ describe('publish', () => {
       it('should successfully restore values and pass them to publisher', () => {
         expect(makeStub.callCount).to.equal(0);
         expect(publisherSpy.callCount).to.equal(2, 'should call once for each platform (make run)');
-        const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.indexOf('darwin') !== -1) ? 0 : 1;
+        const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.includes('darwin')) ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
         const darwinArtifacts = [];
