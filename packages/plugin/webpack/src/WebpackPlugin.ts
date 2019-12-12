@@ -259,7 +259,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     const fix = (item: EntryType): EntryType => {
       if (typeof item === 'string') return (fix([item]) as string[])[0];
       if (Array.isArray(item)) {
-        return item.map((val) => val.startsWith('./') ? path.resolve(this.projectDir, val) : val);
+        return item.map((val) => (val.startsWith('./') ? path.resolve(this.projectDir, val) : val));
       }
       const ret: Record<string, string | string[]> = {};
       for (const key of Object.keys(item)) {
