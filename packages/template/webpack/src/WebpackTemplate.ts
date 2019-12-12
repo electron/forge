@@ -64,7 +64,7 @@ class WebpackTemplate implements ForgeTemplate {
       await copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
 
       await updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
-        if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+        if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
         return line;
       }, path.resolve(directory, 'src', 'main.js'));
 
