@@ -142,7 +142,7 @@ const publish = async ({
   if (!publishTargets) {
     publishTargets = (forgeConfig.publishers || []);
     // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
-    //   ? publisher.platforms.indexOf(testPlatform) !== -1 : true);
+    //   ? publisher.platforms.includes(testPlatform) : true);
   }
   publishTargets = (publishTargets as ForgeConfigPublisher[]).map((target) => {
     if (typeof target === 'string') {
