@@ -47,6 +47,14 @@
     "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "npm run lint"
+  },
   "dependencies": {
     "@electron/get": "^1.6.0",
     "@octokit/rest": "^16.34.0",
