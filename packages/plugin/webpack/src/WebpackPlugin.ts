@@ -113,12 +113,16 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   });
 
   init = (dir: string) => {
-    this.projectDir = dir;
-    this.baseDir = path.resolve(dir, '.webpack');
+    this.setDirectories(dir);
 
     d('hooking process events');
     process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
+  }
+
+  setDirectories = (dir: string) => {
+    this.projectDir = dir;
+    this.baseDir = path.resolve(dir, '.webpack');
   }
 
   private loggedOutputUrl = false;
@@ -173,7 +177,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   packageAfterCopy = async (_: any, buildPath: string) => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
-    delete pj.config.forge;
+    if (pj.config) {
+      delete pj.config.forge;
+    }
     pj.devDependencies = {};
     pj.dependencies = {};
     pj.optionalDependencies = {};
