@@ -22,7 +22,8 @@ class TypeScriptTemplate implements ForgeTemplate {
 
       // Configure scripts for TS template
       packageJSON.scripts.lint = 'tslint -c tslint.json -p tsconfig.json';
-      packageJSON.scripts.start = 'tsc && electron-forge start -p dist';
+      packageJSON.scripts.start = 'tsc && electron-forge start';
+      packageJSON.main = 'dist/index.js';
 
       await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });
