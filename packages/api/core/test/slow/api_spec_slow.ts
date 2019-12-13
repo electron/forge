@@ -92,11 +92,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   describe('init (with custom templater)', () => {
     beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
 
-    it('should add a dependency on debug', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('debug');
+    it('should add custom dependencies', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('debug');
     });
 
-    it('should add a devDependency on lodash', async () => {
+    it('should add custom devDependencies', async () => {
       expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('lodash');
     });
 
@@ -185,8 +185,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let devCert: string;
 
     before(async () => {
-      dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}/electron-forge-test`);
-      dirID += 1;
+      dir = path.join(await ensureTestDirIsNonexistent(), 'electron-forge-test');
       await forge.init({ dir });
 
       const packageJSON = await readRawPackageJson(dir);
