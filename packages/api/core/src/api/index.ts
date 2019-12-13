@@ -11,6 +11,7 @@ import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
 
 import ForgeUtils from '../util';
+import * as testUtils from '../util/test';
 
 export class ForgeAPI {
   /**
@@ -96,5 +97,6 @@ export {
   PublishOptions,
   StartOptions,
   api,
+  testUtils,
   utils,
 };

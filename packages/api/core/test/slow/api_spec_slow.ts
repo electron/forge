@@ -11,6 +11,7 @@ import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 import { InitOptions } from '../../src/api';
+import { ensureTestDirIsNonexistent, expectProjectPathExists, expectProjectPathNotExists } from '../../src/util/test';
 
 const asar = require('asar');
 
@@ -22,17 +23,10 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
 
 describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   let dir: string;
-  let dirID = Date.now();
-
-  const ensureTestDirIsNonexistent = async () => {
-    dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
-    dirID += 1;
-    await fs.remove(dir);
-  };
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: Function) => {
     before(async () => {
-      await ensureTestDirIsNonexistent();
+      dir = await ensureTestDirIsNonexistent();
       if (beforeInit) {
         beforeInit();
       }
@@ -50,6 +44,17 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
   describe('init', () => {
     beforeInitTest();
+
+    it('should fail in initializing an already initialized directory', async () => {
+      await expect(forge.init({ dir })).to.eventually.be.rejected;
+    });
+
+    it('should initialize an already initialized directory when forced to', async () => {
+      await forge.init({
+        dir,
+        force: true,
+      });
+    });
 
     it('should create a new folder with a npm module inside', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
@@ -109,111 +114,10 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with webpack templater)', () => {
-    before(ensureTestDirIsNonexistent);
-
-    it('should succeed in initializing the webpack template', async () => {
-      await forge.init({
-        dir,
-        template: 'webpack',
-      });
-    });
-
-    it('should fail in initializing an already initialized directory', async () => {
-      await expect(forge.init({
-        dir,
-        template: 'webpack',
-      })).to.eventually.be.rejected;
-    });
-
-    it('should initialize an already initialized directory when forced to', async () => {
-      await forge.init({
-        dir,
-        force: true,
-        template: 'webpack',
-      });
-    });
-
-    it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
-    });
-
-    it('should copy the appropriate template files', async () => {
-      const expectedFiles = [
-        'webpack.main.config.js',
-        'webpack.renderer.config.js',
-        'webpack.rules.js',
-        path.join('src', 'renderer.js'),
-      ];
-      for (const filename of expectedFiles) {
-        await expectProjectPathExists(filename, 'file');
-      }
-    });
-
-    it('should move and rewrite the main process file', async () => {
-      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
-      await expectProjectPathExists(path.join('src', 'main.js'), 'file');
-      expect((await fs.readFile(path.join(dir, 'src', 'main.js'))).toString()).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
-    });
-
-    it('should remove the stylesheet link from the HTML file', async () => {
-      expect((await fs.readFile(path.join(dir, 'src', 'index.html'))).toString()).to.not.match(/link rel="stylesheet"/);
-    });
-
-    after(async () => {
-      await fs.remove(dir);
-    });
-  });
-
-  describe('init (with typescript templater)', () => {
-    before(ensureTestDirIsNonexistent);
-
-    it('should succeed in initializing the typescript template', async () => {
-      await forge.init({
-        dir,
-        template: 'typescript',
-      });
-    });
-
-    it('should copy the appropriate template files', async () => {
-      const expectedFiles = [
-        'tsconfig.json',
-        'tslint.json',
-      ];
-      for (const filename of expectedFiles) {
-        await expectProjectPathExists(filename, 'file');
-      }
-    });
-
-    it('should convert the main process file to typescript', async () => {
-      await expectProjectPathNotExists(path.join('src', 'index.js'), 'file');
-      await expectProjectPathExists(path.join('src', 'index.ts'), 'file');
-      expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
-    });
-
-    describe('lint', () => {
-      it('should initially pass the linting process', async () => {
-        try {
-          await forge.lint({ dir });
-        } catch (err) {
-          if (err.stdout) {
-            // eslint-disable-next-line no-console
-            console.error('STDOUT:', err.stdout.toString());
-            // eslint-disable-next-line no-console
-            console.error('STDERR:', err.stderr.toString());
-          }
-          throw err;
-        }
-      });
-    });
-
-    after(async () => {
-      await fs.remove(dir);
-    });
-  });
-
   describe('init (with a nonexistent templater)', () => {
-    before(ensureTestDirIsNonexistent);
+    before(async () => {
+      dir = await ensureTestDirIsNonexistent();
+    });
 
     it('should fail in initializing', async () => {
       await expect(forge.init({
@@ -229,7 +133,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
   describe('import', () => {
     before(async () => {
-      await ensureTestDirIsNonexistent();
+      dir = await ensureTestDirIsNonexistent();
       await fs.mkdir(dir);
       execSync(`${nodeInstaller} init -y`, {
         cwd: dir,
