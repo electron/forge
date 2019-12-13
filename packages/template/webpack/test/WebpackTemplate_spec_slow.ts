@@ -17,10 +17,6 @@ describe('init', () => {
     });
   });
 
-  it('should add a devDependency on @electron-forge/plugin-webpack', async () => {
-    expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('@electron-forge/plugin-webpack');
-  });
-
   it('should copy the appropriate template files', async () => {
     const expectedFiles = [
       'webpack.main.config.js',

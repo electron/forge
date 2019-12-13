@@ -92,6 +92,14 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
   describe('init (with custom templater)', () => {
     beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
 
+    it('should add a dependency on debug', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('debug');
+    });
+
+    it('should add a devDependency on lodash', async () => {
+      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('lodash');
+    });
+
     it('should create dot files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
       await expectProjectPathExists('.bar', 'file');
