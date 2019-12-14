@@ -1,0 +1,14 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:latest"
+  ],
+  "jsRules": {},
+  "rules": {
+    "no-implicit-dependencies": [true, "dev"],
+    "no-var-requires": false,
+    "quotemark": [true, "single"],
+    "no-console": false
+  },
+  "rulesDirectory": []
+}
