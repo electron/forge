@@ -1776,9 +1776,9 @@ array.prototype.flat@^1.2.1:
     function-bind "^1.1.1"
 
 asar@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-2.0.1.tgz#8518a1c62c238109c15a5f742213e83a09b9fd38"
-  integrity sha512-Vo9yTuUtyFahkVMFaI6uMuX6N7k5DWa6a/8+7ov0/f8Lq9TVR0tUjzSzxQSxT1Y+RJIZgnP7BVb6Uhi+9cjxqA==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-2.0.3.tgz#250eebf56d29253948763e2c457537448211ccd9"
+  integrity sha512-QdHKO+HOYVtE4B/M3up3i4LSJeJgsa2CTVBrjBf9GgLUPGGUFZowcdJ5yE4gOJuRAHNdqB9JFeRfFfaOu5x8Rw==
   dependencies:
     chromium-pickle-js "^0.2.0"
     commander "^2.20.0"
@@ -1981,12 +1981,12 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.0.0.tgz#23c0df14f6a88077f5f986c0d167ec03c3d5537c"
   integrity sha512-Phlt0plgpIIBOGTT/ehfFnbNlfsDEiqmzE2KRXoX1bLIlir4X/MR+zSyBEkL05ffWgnRSf/DXv+WrUAVr93/ow==
 
-bluebird@^3.0.6, bluebird@^3.1.1, bluebird@^3.5.0:
+bluebird@^3.0.6, bluebird@^3.1.1:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.1.tgz#df70e302b471d7473489acf26a93d63b53f874de"
   integrity sha512-DdmyoGCleJnkbp3nkbxTLJ18rjDsE4yCggEwKNXkeV123sPNfOCYeDoeuOY+F2FrSjO1YXcTU+dsy96KMy+gcg==
 
-bluebird@^3.5.5:
+bluebird@^3.5.0, bluebird@^3.5.5:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -8459,7 +8459,7 @@ sudo-prompt@^9.1.1:
   resolved "https://registry.yarnpkg.com/sudo-prompt/-/sudo-prompt-9.1.1.tgz#73853d729770392caec029e2470db9c221754db0"
   integrity sha512-es33J1g2HjMpyAhz8lOR+ICmXXAqTuKbuXuUWLhOLew20oN9oUCgCJx615U/v7aioZg7IX5lIh9x34vwneu4pA==
 
-sumchecker@^3.0.0, sumchecker@^3.0.1:
+sumchecker@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/sumchecker/-/sumchecker-3.0.1.tgz#6377e996795abb0b6d348e9b3e1dfb24345a8e42"
   integrity sha512-MvjXzkz/BOfyVDkG0oFOtBxHX2u3gKbMHIF/dXblZsgD3BWOFLmHovIpZY7BykJdAjcqRCBi1WYBNdEC9yI7vg==
