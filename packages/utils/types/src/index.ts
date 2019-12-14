@@ -3,6 +3,8 @@ import { ChildProcess } from 'child_process';
 import { Options } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
+export type ElectronProcess = ChildProcess & { restarted: boolean };
+
 export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
 export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'arm' | 'all';
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
@@ -10,7 +12,7 @@ export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher |
 export interface IForgePluginInterface {
   triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
   triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
-  overrideStartLogic(opts: any): Promise<ChildProcess | string | string[] | false>;
+  overrideStartLogic(opts: any): Promise<ElectronProcess | string | string[] | false>;
 }
 export interface ForgeConfig {
   /**
@@ -61,7 +63,7 @@ export interface IForgePlugin {
 
   init(dir: string, forgeConfig: ForgeConfig): void;
   getHook?(hookName: string): ForgeHookFn | null;
-  startLogic?(opts: StartOptions): Promise<ChildProcess | string | string[] | false>;
+  startLogic?(opts: StartOptions): Promise<ElectronProcess | string | string[] | false>;
 }
 
 export interface IForgeResolvableMaker {

@@ -1,9 +1,8 @@
 /* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
-import { ChildProcess } from 'child_process';
 import debug from 'debug';
 import fs from 'fs-extra';
 import merge from 'webpack-merge';
@@ -137,14 +136,14 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await this.compileRenderers();
         };
       case 'postStart':
-        return async (_: any, child: ChildProcess) => {
+        return async (_: any, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
             console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
           child.on('exit', () => {
-            if ((child as any).restarted) return;
+            if (child.restarted) return;
             this.exitHandler({ cleanup: true, exit: true });
           });
         };

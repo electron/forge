@@ -1,6 +1,6 @@
 import { api, StartOptions } from '@electron-forge/core';
+import { ElectronProcess } from '@electron-forge/shared-types';
 
-import { ChildProcess } from 'child_process';
 import fs from 'fs-extra';
 import program from 'commander';
 import path from 'path';
@@ -59,28 +59,28 @@ import workingDir from './util/working-dir';
   const spawned = await api.start(opts);
 
   await new Promise((resolve) => {
-    const listenForExit = (child: ChildProcess) => {
+    const listenForExit = (child: ElectronProcess) => {
       let onExit: NodeJS.ExitListener;
-      let onRestart: (newChild: ChildProcess) => void;
+      let onRestart: (newChild: ElectronProcess) => void;
       const removeListeners = () => {
         child.removeListener('exit', onExit);
         child.removeListener('restarted', onRestart);
       };
       onExit = (code: number) => {
         removeListeners();
-        if ((spawned as any).restarted) return;
+        if (spawned.restarted) return;
         if (code !== 0) {
           process.exit(code);
         }
         resolve();
       };
-      onRestart = (newChild: ChildProcess) => {
+      onRestart = (newChild: ElectronProcess) => {
         removeListeners();
         listenForExit(newChild);
       };
       child.on('exit', onExit);
       child.on('restarted', onRestart);
     };
-    listenForExit(spawned as ChildProcess);
+    listenForExit(spawned as ElectronProcess);
   });
 })();
