@@ -19,6 +19,7 @@
     "fs-extra": "^8.1.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "6.0.0-beta.46"
+    "@electron-forge/test-utils": "6.0.0-beta.46",
+    "chai": "4.2.0"
   }
 }

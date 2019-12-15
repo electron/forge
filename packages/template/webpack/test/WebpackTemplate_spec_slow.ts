@@ -1,7 +1,8 @@
-import { api, testUtils } from '@electron-forge/core';
+import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 import path from 'path';
+import template from '../src/WebpackTemplate';
 
 describe('init', () => {
   let dir: string;
@@ -11,10 +12,7 @@ describe('init', () => {
   });
 
   it('should succeed in initializing the webpack template', async () => {
-    await api.init({
-      dir,
-      template: 'webpack',
-    });
+    await template.initializeTemplate(dir);
   });
 
   it('should copy the appropriate template files', async () => {

@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "6.0.0-beta.46",
+    "chai": "4.2.0",
     "cross-spawn-promise": "^0.10.1"
   }
 }

@@ -17,7 +17,7 @@ export async function expectProjectPathExists(
   dir: string,
   subPath: string,
   pathType: string,
-  exists = true
+  exists = true,
 ) {
   expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
 }
