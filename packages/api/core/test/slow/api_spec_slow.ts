@@ -1,17 +1,15 @@
+import { createDefaultCertificate } from '@electron-forge/maker-appx';
+import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
-
 import { expect } from 'chai';
+import fs from 'fs-extra';
+import path from 'path';
 import proxyquire from 'proxyquire';
 
-import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 import { InitOptions } from '../../src/api';
-import { ensureTestDirIsNonexistent, expectProjectPathExists, expectProjectPathNotExists } from '../../src/util/test';
 
 const asar = require('asar');
 
@@ -34,14 +32,6 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   };
 
-  const expectProjectPathExists = async (subPath: string, pathType: string, exists = true) => {
-    expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
-  };
-
-  const expectProjectPathNotExists = async (subPath: string, pathType: string) => {
-    await expectProjectPathExists(subPath, pathType, false);
-  };
-
   describe('init', () => {
     beforeInitTest();
 
@@ -58,15 +48,15 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should create a new folder with a npm module inside', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists('package.json', 'file');
+      await expectProjectPathExists(dir, 'package.json', 'file');
     });
 
     it('should have initialized a git repository', async () => {
-      await expectProjectPathExists('.git', 'folder');
+      await expectProjectPathExists(dir, '.git', 'folder');
     });
 
     it('should have installed the initial node_modules', async () => {
-      await expectProjectPathExists('node_modules', 'folder');
+      await expectProjectPathExists(dir, 'node_modules', 'folder');
       expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
       expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
       expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
@@ -84,8 +74,8 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should copy over the CI config files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists('.appveyor.yml', 'file');
-      await expectProjectPathExists('.travis.yml', 'file');
+      await expectProjectPathExists(dir, '.appveyor.yml', 'file');
+      await expectProjectPathExists(dir, '.travis.yml', 'file');
     });
   });
 
@@ -102,12 +92,12 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     it('should create dot files correctly', async () => {
       expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists('.bar', 'file');
+      await expectProjectPathExists(dir, '.bar', 'file');
     });
 
     it('should create deep files correctly', async () => {
-      await expectProjectPathExists('src/foo.js', 'file');
-      await expectProjectPathExists('src/index.html', 'file');
+      await expectProjectPathExists(dir, 'src/foo.js', 'file');
+      await expectProjectPathExists(dir, 'src/index.html', 'file');
     });
 
     describe('lint', () => {

@@ -1,7 +1,9 @@
-import { api, testUtils } from '@electron-forge/core';
+import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 import path from 'path';
+import spawnPromise from 'cross-spawn-promise';
+import template from '../src/TypeScriptTemplate';
 
 describe('init', () => {
   let dir: string;
@@ -11,10 +13,7 @@ describe('init', () => {
   });
 
   it('should succeed in initializing the typescript template', async () => {
-    await api.init({
-      dir,
-      template: 'typescript',
-    });
+    await template.initializeTemplate(dir);
   });
 
   it('should copy the appropriate template files', async () => {
@@ -36,7 +35,7 @@ describe('init', () => {
   describe('lint', () => {
     it('should initially pass the linting process', async () => {
       try {
-        await api.lint({ dir });
+        await (spawnPromise as Function)('npm', ['run', 'lint'], { cwd: dir });
       } catch (err) {
         if (err.stdout) {
           // eslint-disable-next-line no-console

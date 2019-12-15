@@ -11,13 +11,17 @@ export async function ensureTestDirIsNonexistent(): Promise<string> {
   await fs.remove(dir);
 
   return dir;
-};
+}
 
-export async function expectProjectPathExists(dir: string, subPath: string, pathType: string, exists = true) {
+export async function expectProjectPathExists(
+  dir: string,
+  subPath: string,
+  pathType: string,
+  exists = true
+) {
   expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
-};
+}
 
 export async function expectProjectPathNotExists(dir: string, subPath: string, pathType: string) {
   await expectProjectPathExists(dir, subPath, pathType, false);
-};
-
+}
