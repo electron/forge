@@ -14,7 +14,6 @@ export class BaseTemplate implements ForgeTemplate {
 
   public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
     await asyncOra('Copying Starter Files', async () => {
-
       d('creating directory:', path.resolve(directory, 'src'));
       await fs.mkdirs(path.resolve(directory, 'src'));
       const rootFiles = ['_gitignore'];
