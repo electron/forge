@@ -11,7 +11,7 @@ const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(__dirname, '../tmpl');
 
 export class BaseTemplate implements ForgeTemplate {
-  public templateDir?: string;
+  public templateDir = tmplDir;
 
   public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
     await asyncOra('Copying Starter Files', async () => {
