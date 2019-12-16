@@ -1,4 +1,4 @@
-const baseTemplate = require('@electron-forge/template-base');
+const baseTemplate = require('@electron-forge/template-base').default;
 const fs = require('fs-extra');
 const path = require('path');
 
