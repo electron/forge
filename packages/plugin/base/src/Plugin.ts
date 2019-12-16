@@ -1,7 +1,6 @@
 import {
-  ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions,
+  ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions,
 } from '@electron-forge/shared-types';
-import { ChildProcess } from 'child_process';
 
 export { StartOptions };
 
@@ -25,7 +24,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
     return null;
   }
 
-  async startLogic(_startOpts: StartOptions): Promise<ChildProcess | string | string[] | false> {
+  async startLogic(_startOpts: StartOptions): Promise<ElectronProcess | string | string[] | false> {
     return false;
   }
 }

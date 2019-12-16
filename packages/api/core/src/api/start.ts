@@ -1,7 +1,9 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import { StartOptions, ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
-import { spawn, ChildProcess, SpawnOptions } from 'child_process';
+import {
+  ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
+} from '@electron-forge/shared-types';
+import { spawn, SpawnOptions } from 'child_process';
 import path from 'path';
 
 import { readMutatedPackageJson } from '../util/read-package-json';
@@ -49,7 +51,7 @@ export default async ({
 
   await runHook(forgeConfig, 'generateAssets');
 
-  let lastSpawned: ChildProcess | null = null;
+  let lastSpawned: ElectronProcess | null = null;
 
   const forgeSpawn = async () => {
     let electronExecPath: string | null = null;
@@ -101,14 +103,14 @@ export default async ({
       args = ['--inspect' as (string|number)].concat(args);
     }
 
-    let spawned!: ChildProcess;
+    let spawned!: ElectronProcess;
 
     await asyncOra('Launching Application', async () => {
       spawned = spawn(
         electronExecPath!,
         prefixArgs.concat([appPath]).concat(args as string[]),
         spawnOpts as SpawnOptions,
-      );
+      ) as ElectronProcess;
     });
 
     await runHook(forgeConfig, 'postStart', spawned);
@@ -123,7 +125,7 @@ export default async ({
         process.stdin.resume();
       }
       spawned.on('exit', () => {
-        if ((spawned as any).restarted) return;
+        if (spawned.restarted) return;
 
         if (!process.stdin.isPaused()) process.stdin.pause();
       });
@@ -140,7 +142,7 @@ export default async ({
       if (data.toString().trim() === 'rs' && lastSpawned) {
         // eslint-disable-next-line no-console
         console.info('\nRestarting App\n'.cyan);
-        (lastSpawned as any).restarted = true;
+        lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');
         lastSpawned.emit('restarted', await forgeSpawnWrapper());
       }
