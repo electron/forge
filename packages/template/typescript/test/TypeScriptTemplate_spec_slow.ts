@@ -5,7 +5,7 @@ import path from 'path';
 // import spawnPromise from 'cross-spawn-promise';
 import template from '../src/TypeScriptTemplate';
 
-describe('init', () => {
+describe('TypeScriptTemplate', () => {
   let dir: string;
 
   before(async () => {

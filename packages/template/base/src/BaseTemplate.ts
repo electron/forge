@@ -8,9 +8,10 @@ import path from 'path';
 import determineAuthor from './determine-author';
 
 const d = debug('electron-forge:template:base');
+const tmplDir = path.resolve(__dirname, '../tmpl');
 
 export class BaseTemplate implements ForgeTemplate {
-  public templateDir = path.resolve(__dirname, '../tmpl');
+  public templateDir?: string;
 
   public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
     await asyncOra('Copying Starter Files', async () => {
@@ -21,10 +22,10 @@ export class BaseTemplate implements ForgeTemplate {
       const srcFiles = ['index.css', 'index.js', 'index.html'];
 
       for (const file of rootFiles) {
-        await this.copy(path.resolve(this.templateDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
       }
       for (const file of srcFiles) {
-        await this.copy(path.resolve(this.templateDir, file), path.resolve(directory, 'src', file));
+        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
       }
     });
 

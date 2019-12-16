@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import template from '../src/WebpackTemplate';
 
-describe('init', () => {
+describe('WebpackTemplate', () => {
   let dir: string;
 
   before(async () => {
