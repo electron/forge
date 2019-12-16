@@ -3,7 +3,6 @@ import debug from 'debug';
 import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
-// import { setInitialForgeConfig } from '@electron-forge/config';
 
 import determineAuthor from './determine-author';
 
@@ -47,7 +46,6 @@ export class BaseTemplate implements ForgeTemplate {
       // eslint-disable-next-line no-multi-assign
       packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
       packageJSON.author = await determineAuthor(directory);
-      // setInitialForgeConfig(packageJSON);
 
       packageJSON.scripts.lint = 'echo "No linting configured"';
 

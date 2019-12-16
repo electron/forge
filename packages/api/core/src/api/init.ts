@@ -1,11 +1,14 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-
 import findTemplate from './init-scripts/find-template';
+import fs from 'fs-extra';
 import initDirectory from './init-scripts/init-directory';
 import initGit from './init-scripts/init-git';
 import initNPM from './init-scripts/init-npm';
 import installDepList, { DepType } from '../util/install-dependencies';
+import path from 'path';
+import { readRawPackageJson } from '../util/read-package-json';
+import { setInitialForgeConfig } from '../util/forge-config';
 
 const d = debug('electron-forge:init');
 
@@ -49,6 +52,9 @@ export default async ({
 
   if (typeof templateModule.initializeTemplate === 'function') {
     await templateModule.initializeTemplate(dir, { copyCIFiles });
+    const packageJSON = await readRawPackageJson(dir);
+    setInitialForgeConfig(packageJSON);
+    await fs.writeJson(path.join(dir, 'package.json'), packageJSON, { spaces: 2 });
   }
 
   await asyncOra('Installing Template Dependencies', async () => {
