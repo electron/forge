@@ -1,5 +1,6 @@
 import _merge from 'lodash.merge';
 import { asyncOra } from '@electron-forge/async-ora';
+import baseTemplate from '@electron-forge/template-base';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
@@ -192,7 +193,7 @@ export default async ({
   }
 
   packageJSON.config = packageJSON.config || {};
-  const templatePackageJSON = await readRawPackageJson(path.resolve(__dirname, '../../tmpl'));
+  const templatePackageJSON = await readRawPackageJson(baseTemplate.templateDir);
   if (packageJSON.config.forge) {
     if (typeof packageJSON.config.forge !== 'string') {
       packageJSON.config.forge = _merge(templatePackageJSON.config.forge, packageJSON.config.forge);

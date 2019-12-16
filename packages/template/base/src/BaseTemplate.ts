@@ -10,11 +10,10 @@ import determineAuthor from './determine-author';
 const d = debug('electron-forge:template:base');
 
 export class BaseTemplate implements ForgeTemplate {
-  public templateDir?: string;
+  public templateDir = path.resolve(__dirname, '../tmpl');
 
   public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
     await asyncOra('Copying Starter Files', async () => {
-      const tmplPath = path.resolve(__dirname, '../tmpl');
 
       d('creating directory:', path.resolve(directory, 'src'));
       await fs.mkdirs(path.resolve(directory, 'src'));
@@ -23,10 +22,10 @@ export class BaseTemplate implements ForgeTemplate {
       const srcFiles = ['index.css', 'index.js', 'index.html'];
 
       for (const file of rootFiles) {
-        await this.copy(path.resolve(tmplPath, file), path.resolve(directory, file.replace(/^_/, '.')));
+        await this.copy(path.resolve(this.templateDir, file), path.resolve(directory, file.replace(/^_/, '.')));
       }
       for (const file of srcFiles) {
-        await this.copy(path.resolve(tmplPath, file), path.resolve(directory, 'src', file));
+        await this.copy(path.resolve(this.templateDir, file), path.resolve(directory, 'src', file));
       }
     });
 
