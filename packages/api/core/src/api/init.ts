@@ -1,12 +1,13 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-import findTemplate from './init-scripts/find-template';
 import fs from 'fs-extra';
+import path from 'path';
+
+import findTemplate from './init-scripts/find-template';
 import initDirectory from './init-scripts/init-directory';
 import initGit from './init-scripts/init-git';
 import initNPM from './init-scripts/init-npm';
 import installDepList, { DepType } from '../util/install-dependencies';
-import path from 'path';
 import { readRawPackageJson } from '../util/read-package-json';
 import { setInitialForgeConfig } from '../util/forge-config';
 
