@@ -12,7 +12,7 @@ describe('init', () => {
   });
 
   it('should succeed in initializing the webpack template', async () => {
-    await template.initializeTemplate(dir);
+    await template.initializeTemplate(dir, {});
   });
 
   it('should copy the appropriate template files', async () => {

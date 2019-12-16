@@ -1,11 +1,11 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 
-import initCustom from './init-scripts/init-custom';
+import findTemplate from './init-scripts/find-template';
 import initDirectory from './init-scripts/init-directory';
 import initGit from './init-scripts/init-git';
 import initNPM from './init-scripts/init-npm';
-import initStarter from './init-scripts/init-starter-files';
+import installDepList, { DepType } from '../util/install-dependencies';
 
 const d = debug('electron-forge:init');
 
@@ -37,7 +37,7 @@ export default async ({
   interactive = false,
   copyCIFiles = false,
   force = false,
-  template,
+  template = 'base',
 }: InitOptions) => {
   asyncOra.interactive = interactive;
 
@@ -45,9 +45,18 @@ export default async ({
 
   await initDirectory(dir, force);
   await initGit(dir);
-  await initStarter(dir, { copyCIFiles });
-  await initNPM(dir);
-  if (template) {
-    await initCustom(dir, template);
+  const templateModule = await findTemplate(dir, template);
+
+  if (typeof templateModule.initializeTemplate === 'function') {
+    await templateModule.initializeTemplate(dir, { copyCIFiles });
   }
+
+  await asyncOra('Installing Template Dependencies', async () => {
+    d('installing dependencies');
+    await installDepList(dir, templateModule.dependencies || []);
+    d('installing devDependencies');
+    await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
+  });
+
+  await initNPM(dir);
 };
