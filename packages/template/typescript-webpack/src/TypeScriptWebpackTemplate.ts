@@ -1,29 +1,14 @@
-import { ForgeTemplate } from '@electron-forge/shared-types';
 import { asyncOra } from '@electron-forge/async-ora';
-
+import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
+import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
 const currentVersion = require('../package').version;
 
-const copyTemplateFile = async (destDir: string, basename: string) => {
-  const templateDir = path.resolve(__dirname, '..', 'tmpl');
-  await fs.copy(path.join(templateDir, basename), path.resolve(destDir, basename));
-};
+class TypeScriptWebpackTemplate extends BaseTemplate {
+  public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-const updateFileByLine = async (
-  inputPath: string,
-  lineHandler: (line: string) => string,
-  outputPath: string | undefined = undefined,
-) => {
-  const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
-  await fs.writeFile(outputPath || inputPath, fileContents);
-  if (outputPath !== undefined) {
-    await fs.remove(inputPath);
-  }
-};
-
-class TypeScriptWebpackTemplate implements ForgeTemplate {
   public devDependencies = [
     `@electron-forge/plugin-webpack@${currentVersion}`,
     '@marshallofsound/webpack-asset-relocator-loader@^0.5.0',
@@ -36,7 +21,8 @@ class TypeScriptWebpackTemplate implements ForgeTemplate {
     'fork-ts-checker-webpack-plugin@^3.1.1',
   ];
 
-  public initializeTemplate = async (directory: string) => {
+  async initializeTemplate(directory: string, options: InitTemplateOptions) {
+    await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
       const packageJSONPath = path.resolve(directory, 'package.json');
       const packageJSON = await fs.readJson(packageJSONPath);
@@ -68,27 +54,27 @@ class TypeScriptWebpackTemplate implements ForgeTemplate {
       const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
       // Copy Webpack files
-      await copyTemplateFile(directory, 'webpack.main.config.js');
-      await copyTemplateFile(directory, 'webpack.renderer.config.js');
-      await copyTemplateFile(directory, 'webpack.rules.js');
-      await copyTemplateFile(directory, 'webpack.plugins.js');
+      await this.copyTemplateFile(directory, 'webpack.main.config.js');
+      await this.copyTemplateFile(directory, 'webpack.renderer.config.js');
+      await this.copyTemplateFile(directory, 'webpack.rules.js');
+      await this.copyTemplateFile(directory, 'webpack.plugins.js');
 
-      await updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
+      await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';
         return line;
       });
 
       // Copy tsconfig with a small set of presets
-      await copyTemplateFile(directory, 'tsconfig.json');
+      await this.copyTemplateFile(directory, 'tsconfig.json');
 
       // Copy tslint config with recommended settings
-      await copyTemplateFile(directory, 'tslint.json');
+      await this.copyTemplateFile(directory, 'tslint.json');
 
       // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));
-      await copyTemplateFile(path.join(directory, 'src'), 'index.ts');
+      await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
-      await copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
+      await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
     });
   }
 }

@@ -119,10 +119,14 @@ export interface StartOptions {
   inspect?: boolean;
 }
 
+export interface InitTemplateOptions {
+  copyCIFiles?: boolean;
+}
+
 export interface ForgeTemplate {
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string) => void;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => void;
 }
 
 export type PackagePerson = undefined | string | {
