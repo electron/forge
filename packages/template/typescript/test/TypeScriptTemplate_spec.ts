@@ -2,7 +2,6 @@ import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 import path from 'path';
-// import spawnPromise from 'cross-spawn-promise';
 import template from '../src/TypeScriptTemplate';
 
 describe('TypeScriptTemplate', () => {
@@ -32,23 +31,19 @@ describe('TypeScriptTemplate', () => {
     expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
   });
 
-  // describe('lint', () => {
-  //   it('should initially pass the linting process', async () => {
-  //     try {
-  // eslint-disable-next-line max-len
-  //       await (spawnPromise as Function)('npm', ['install', 'tslint', 'typescript'], { cwd: dir });
-  //       await (spawnPromise as Function)('npm', ['run', 'lint'], { cwd: dir });
-  //     } catch (err) {
-  //       if (err.stdout) {
-  //         // eslint-disable-next-line no-console
-  //         console.error('STDOUT:', err.stdout.toString());
-  //         // eslint-disable-next-line no-console
-  //         console.error('STDERR:', err.stderr.toString());
-  //       }
-  //       throw err;
-  //     }
-  //   });
-  // });
+  describe('lint', () => {
+    before(async () => {
+      await testUtils.ensureModulesInstalled(
+        dir,
+        ['electron', 'electron-squirrel-startup'],
+        ['tslint', 'typescript'],
+      );
+    });
+
+    it('should initially pass the linting process', async () => {
+      await testUtils.expectLintToPass(dir);
+    });
+  });
 
   after(async () => {
     await fs.remove(dir);
