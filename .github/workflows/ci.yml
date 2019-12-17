@@ -80,7 +80,7 @@ jobs:
           NODE_INSTALLER: ${{ matrix.node-installer }}
           DEBUG: electron-installer-snap:snapcraft
       - name: Codecov
-        if: matrix.os != 'macOS-latest' && matrix.node-installer != 'npm'
+        if: true && !(matrix.os == 'macOS-latest' && matrix.node-installer == 'npm')
         run: bolt codecov
         env:
           CI_OS: ${{ matrix.os }}
