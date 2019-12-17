@@ -112,54 +112,6 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
   });
 
-  describe('init (with typescript-webpack templater)', () => {
-    before(ensureTestDirIsNonexistent);
-
-    it('should succeed in initializing the typescript template', async () => {
-      await forge.init({
-        dir,
-        template: 'typescript-webpack',
-      });
-    });
-
-    it('should copy the appropriate template files', async () => {
-      const expectedFiles = [
-        'tsconfig.json',
-        'tslint.json',
-        'webpack.main.config.js',
-        'webpack.renderer.config.js',
-        'webpack.rules.js',
-        'webpack.plugins.js',
-        path.join('src', 'index.ts'),
-        path.join('src', 'renderer.ts'),
-      ];
-
-      for (const filename of expectedFiles) {
-        await expectProjectPathExists(filename, 'file');
-      }
-    });
-
-    describe('lint', () => {
-      it('should initially pass the linting process', async () => {
-        try {
-          await forge.lint({ dir });
-        } catch (err) {
-          if (err.stdout) {
-            // eslint-disable-next-line no-console
-            console.error('STDOUT:', err.stdout.toString());
-            // eslint-disable-next-line no-console
-            console.error('STDERR:', err.stderr.toString());
-          }
-          throw err;
-        }
-      });
-    });
-
-    after(async () => {
-      await fs.remove(dir);
-    });
-  });
-
   describe('init (with a nonexistent templater)', () => {
     before(async () => {
       dir = await ensureTestDirIsNonexistent();
