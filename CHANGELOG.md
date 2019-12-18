@@ -1,3 +1,58 @@
+#### [6.0.0-beta.47](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.47) (2019-12-18)
+
+##### Build System / Dependencies
+
+* **deps-dev:**
+  *  upgrade typescript-eslint modules to 2.12.0 ([2e72ddf4](https://github.com/electron-userland/electron-forge/commit/2e72ddf4))
+  *  bump typedoc from 0.15.4 to 0.15.5 ([1cf3c47e](https://github.com/electron-userland/electron-forge/commit/1cf3c47e))
+  *  bump @types/node from 12.12.17 to 12.12.18 ([b939452f](https://github.com/electron-userland/electron-forge/commit/b939452f))
+  *  upgrade asar to 2.0.3 ([d92434d0](https://github.com/electron-userland/electron-forge/commit/d92434d0))
+  *  bump nodemon from 2.0.1 to 2.0.2 ([29470fb0](https://github.com/electron-userland/electron-forge/commit/29470fb0))
+  *  bump @types/webpack-hot-middleware ([006d62fc](https://github.com/electron-userland/electron-forge/commit/006d62fc))
+  *  bump @types/node from 12.12.16 to 12.12.17 ([4484eec9](https://github.com/electron-userland/electron-forge/commit/4484eec9))
+  *  bump @types/chai from 4.2.6 to 4.2.7 ([083cbe87](https://github.com/electron-userland/electron-forge/commit/083cbe87))
+  *  upgrade typedoc to 0.15.4 ([afa5e0a5](https://github.com/electron-userland/electron-forge/commit/afa5e0a5))
+  *  upgrade some eslint plugins ([a9a80684](https://github.com/electron-userland/electron-forge/commit/a9a80684))
+  *  upgrade @types/node to 12.12.16 ([4ebf49dd](https://github.com/electron-userland/electron-forge/commit/4ebf49dd))
+  *  upgrade babel packages to latest 7.7.x version ([5e9667a6](https://github.com/electron-userland/electron-forge/commit/5e9667a6))
+  *  bump fetch-mock from 8.0.0 to 8.0.1 (#1322) ([bb72f662](https://github.com/electron-userland/electron-forge/commit/bb72f662))
+  *  bump typescript from 3.7.2 to 3.7.3 ([e7c3cb34](https://github.com/electron-userland/electron-forge/commit/e7c3cb34))
+*  fix CI codecov step conditional ([66bd0e2a](https://github.com/electron-userland/electron-forge/commit/66bd0e2a))
+*  disable docs CI step until NOW_TOKEN is defined (#1343) ([40f6b990](https://github.com/electron-userland/electron-forge/commit/40f6b990))
+*  fix up eslint config for imports + typescript ([d3fc0770](https://github.com/electron-userland/electron-forge/commit/d3fc0770))
+* **deps:**
+  *  upgrade @octokit/rest to 16.35.2 ([f1412e5f](https://github.com/electron-userland/electron-forge/commit/f1412e5f))
+  *  upgrade @electron/get to 1.7.2 ([603fca9c](https://github.com/electron-userland/electron-forge/commit/603fca9c))
+  *  upgrade dependencies of webpack ([8870594a](https://github.com/electron-userland/electron-forge/commit/8870594a))
+  *  upgrade xterm to 4.3.0 ([beefaf1f](https://github.com/electron-userland/electron-forge/commit/beefaf1f))
+
+##### Chores
+
+*  disable macOS/npm tests due to weirdness with fsevents ([01c417da](https://github.com/electron-userland/electron-forge/commit/01c417da))
+*  use the already-installed WiX installer to install the WiX toolset ([371a068a](https://github.com/electron-userland/electron-forge/commit/371a068a))
+
+##### New Features
+
+*  add typescript-webpack template (#1344) ([7c8259dd](https://github.com/electron-userland/electron-forge/commit/7c8259dd))
+*  add template for typescript (#1319) ([cece7da7](https://github.com/electron-userland/electron-forge/commit/cece7da7))
+
+##### Bug Fixes
+
+* **plugin-webpack:**  handle package.json files without config keys (#1342) ([4db53f89](https://github.com/electron-userland/electron-forge/commit/4db53f89))
+* **core:**  use loadFile instead of loadURL in the default template (#1341) ([51fbf715](https://github.com/electron-userland/electron-forge/commit/51fbf715))
+
+##### Refactors
+
+* **core:**  remove unused config-fn utility file ([40c13d3a](https://github.com/electron-userland/electron-forge/commit/40c13d3a))
+*  create base template & test utils (#1351) ([3e5a64c0](https://github.com/electron-userland/electron-forge/commit/3e5a64c0))
+*  create the ElectronProcess type (ChildProcess + restarted property) (#1346) ([abbf0311](https://github.com/electron-userland/electron-forge/commit/abbf0311))
+*  replace indexOf with includes/startsWith where applicable (#1337) ([a3eae4df](https://github.com/electron-userland/electron-forge/commit/a3eae4df))
+* **template-typescript:**  use main script to start app (#1345) ([ef0b2baf](https://github.com/electron-userland/electron-forge/commit/ef0b2baf))
+
+##### Tests
+
+* **template-typescript:**  run lint for template & adjust default rules (#1321) ([a83b46cd](https://github.com/electron-userland/electron-forge/commit/a83b46cd))
+
 #### [6.0.0-beta.46](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.46) (2019-12-04)
 
 ##### Build System / Dependencies
