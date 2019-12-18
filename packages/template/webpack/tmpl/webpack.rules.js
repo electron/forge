@@ -21,7 +21,7 @@ module.exports = [
    *
    * {
    *   test: /\.tsx?$/,
-   *   exclude: /(node_modules|.webpack)/,
+   *   exclude: /(node_modules)/,
    *   loaders: [{
    *     loader: 'ts-loader',
    *     options: {
