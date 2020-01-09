@@ -1,6 +1,3 @@
-Terminal.applyAddon(fit);
-Terminal.applyAddon(search);
-
 const split = (text) => {
   return text.split(/\n/g);
 }
@@ -33,13 +30,16 @@ class Renderer {
         brightWhite: '#fdf6e3'
       }
     });
+    const fitAddon = new FitAddon.FitAddon();
+    this.term.loadAddon(fitAddon);
+    this.term.loadAddon(new SearchAddon.SearchAddon());
     this.container = document.querySelector('#terminal');
 
     this.term.open(this.container);
-    this.term.fit();
+    fitAddon.fit();
 
     window.addEventListener('resize', () => {
-      this.term.fit();
+      fitAddon.fit();
     });
 
     this.fetch = this.fetch.bind(this);
