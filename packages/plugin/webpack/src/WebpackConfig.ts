@@ -34,7 +34,7 @@ export default class WebpackConfigGenerator {
   resolveConfig(config: Configuration | string) {
     if (typeof config === 'string') {
       // eslint-disable-next-line import/no-dynamic-require, global-require
-      return require(path.resolve(path.dirname(this.webpackDir), config)) as Configuration;
+      return require(path.resolve(this.projectDir, config)) as Configuration;
     }
 
     return config;
@@ -42,51 +42,6 @@ export default class WebpackConfigGenerator {
 
   get mode() {
     return this.isProd ? 'production' : 'development';
-  }
-
-  getMainConfig() {
-    const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
-
-    if (!mainConfig.entry) {
-      throw new Error('Required config option "entry" has not been defined');
-    }
-    const fix = (item: EntryType): EntryType => {
-      if (typeof item === 'string') return (fix([item]) as string[])[0];
-      if (Array.isArray(item)) {
-        return item.map((val) => (val.startsWith('./') ? path.resolve(this.projectDir, val) : val));
-      }
-      const ret: Record<string, string | string[]> = {};
-      for (const key of Object.keys(item)) {
-        ret[key] = fix(item[key]) as string | string[];
-      }
-      return ret;
-    };
-    mainConfig.entry = fix(mainConfig.entry as EntryType);
-
-    return webpackMerge.smart({
-      devtool: 'source-map',
-      target: 'electron-main',
-      mode: this.mode,
-      output: {
-        path: path.resolve(this.webpackDir, 'main'),
-        filename: 'index.js',
-        libraryTarget: 'commonjs2',
-      },
-      plugins: [
-        new webpack.DefinePlugin(this.getDefines()),
-      ],
-      node: {
-        __dirname: false,
-        __filename: false,
-      },
-      resolve: {
-        modules: [
-          path.resolve(path.dirname(this.webpackDir), './'),
-          path.resolve(path.dirname(this.webpackDir), 'node_modules'),
-          path.resolve(__dirname, '..', 'node_modules'),
-        ],
-      },
-    }, mainConfig || {});
   }
 
   rendererEntryPoint(
@@ -159,6 +114,51 @@ export default class WebpackConfigGenerator {
       defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
     }
     return defines;
+  }
+
+  getMainConfig() {
+    const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
+
+    if (!mainConfig.entry) {
+      throw new Error('Required option "mainConfig.entry" has not been defined');
+    }
+    const fix = (item: EntryType): EntryType => {
+      if (typeof item === 'string') return (fix([item]) as string[])[0];
+      if (Array.isArray(item)) {
+        return item.map((val) => (val.startsWith('./') ? path.resolve(this.projectDir, val) : val));
+      }
+      const ret: Record<string, string | string[]> = {};
+      for (const key of Object.keys(item)) {
+        ret[key] = fix(item[key]) as string | string[];
+      }
+      return ret;
+    };
+    mainConfig.entry = fix(mainConfig.entry as EntryType);
+
+    return webpackMerge.smart({
+      devtool: 'source-map',
+      target: 'electron-main',
+      mode: this.mode,
+      output: {
+        path: path.resolve(this.webpackDir, 'main'),
+        filename: 'index.js',
+        libraryTarget: 'commonjs2',
+      },
+      plugins: [
+        new webpack.DefinePlugin(this.getDefines()),
+      ],
+      node: {
+        __dirname: false,
+        __filename: false,
+      },
+      resolve: {
+        modules: [
+          path.resolve(path.dirname(this.webpackDir), './'),
+          path.resolve(path.dirname(this.webpackDir), 'node_modules'),
+          path.resolve(__dirname, '..', 'node_modules'),
+        ],
+      },
+    }, mainConfig || {});
   }
 
   async getPreloadRendererConfig(

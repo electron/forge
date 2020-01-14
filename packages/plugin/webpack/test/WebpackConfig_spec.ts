@@ -1,41 +1,203 @@
+import { Entry } from 'webpack';
 import { expect } from 'chai';
+import path from 'path';
 
 import WebpackConfigGenerator from '../src/WebpackConfig';
+import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
 
 describe('WebpackConfigGenerator', () => {
-  describe('PRELOAD_WEBPACK_ENTRY', () => {
-    const config = {
-      mainConfig: {},
-      renderer: {
-        config: {},
-        entryPoints: [
-          {
-            js: 'window.js',
-            name: 'window',
-            preload: {
-              js: 'preload.js',
-            },
-          },
-        ],
-      },
-    };
-    const projectDir = process.platform === 'win32' ? 'C:\\baseDir' : '/baseDir';
-
-    it('should assign absolute preload script path in development', () => {
-      const generator = new WebpackConfigGenerator(config, projectDir, false, 3000);
-      const defines = generator.getDefines();
-
-      if (process.platform === 'win32') {
-        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal(String.raw`'C:\\baseDir\\.webpack\\renderer\\window\\preload.js'`);
-      } else {
-        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("'/baseDir/.webpack/renderer/window/preload.js'");
-      }
+  describe('getDefines', () => {
+    it('throws an error if renderer.entryPoints does not exist', () => {
+      const config = {
+        renderer: {},
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(() => generator.getDefines()).to.throw(/renderer.entryPoints.* has not been defined/);
     });
 
-    it('should assign an expression to resolve the preload script in production', () => {
-      const generator = new WebpackConfigGenerator(config, projectDir, true, 3000);
+    it('throws an error if renderer.entryPoints is not an array', () => {
+      const config = {
+        renderer: {
+          entryPoints: {},
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(() => generator.getDefines()).to.throw(/renderer.entryPoints.* has not been defined/);
+    });
+
+    it('sets the renderer entry point to a JS file in development', () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'hello',
+            js: 'foo.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines();
-      expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
+
+      expect(defines.HELLO_WEBPACK_ENTRY).to.equal("'http://localhost:3000/hello/index.js'");
+    });
+
+    it('sets the renderer entry point to a JS file in production', () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'hello',
+            js: 'foo.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+      const defines = generator.getDefines(false);
+
+      // eslint-disable-next-line no-template-curly-in-string
+      expect(defines.HELLO_WEBPACK_ENTRY).to.equal("`file://${require('path').resolve(__dirname, '..', '.', 'hello', 'index.js')}`");
+    });
+
+    it('sets the renderer entry point to an HTML file if both an HTML & JS file are specified', () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'hello',
+            html: 'foo.html',
+            js: 'foo.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      const defines = generator.getDefines();
+
+      expect(defines.HELLO_WEBPACK_ENTRY).to.equal("'http://localhost:3000/hello'");
+    });
+
+    describe('PRELOAD_WEBPACK_ENTRY', () => {
+      const config = {
+        mainConfig: {},
+        renderer: {
+          config: {},
+          entryPoints: [
+            {
+              js: 'window.js',
+              name: 'window',
+              preload: {
+                js: 'preload.js',
+              },
+            },
+          ],
+        },
+      };
+      const projectDir = process.platform === 'win32' ? 'C:\\baseDir' : '/baseDir';
+
+      it('should assign absolute preload script path in development', () => {
+        const generator = new WebpackConfigGenerator(config, projectDir, false, 3000);
+        const defines = generator.getDefines();
+
+        if (process.platform === 'win32') {
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal(String.raw`'C:\\baseDir\\.webpack\\renderer\\window\\preload.js'`);
+        } else {
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("'/baseDir/.webpack/renderer/window/preload.js'");
+        }
+      });
+
+      it('should assign an expression to resolve the preload script in production', () => {
+        const generator = new WebpackConfigGenerator(config, projectDir, true, 3000);
+        const defines = generator.getDefines();
+        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
+      });
+    });
+  });
+
+  describe('getMainConfig', () => {
+    it('fails when there is no mainConfig.entry', () => {
+      const config = {
+        mainConfig: {},
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(() => generator.getMainConfig()).to.throw('Required option "mainConfig.entry" has not been defined');
+    });
+
+    it('generates a development config', async () => {
+      const config = {
+        mainConfig: {
+          entry: 'main.js',
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.target).to.equal('electron-main');
+      expect(webpackConfig.mode).to.equal('development');
+      expect(webpackConfig.entry).to.equal('main.js');
+      expect(webpackConfig.output).to.deep.equal({
+        path: '/path/.webpack/main',
+        filename: 'index.js',
+        libraryTarget: 'commonjs2',
+      });
+    });
+
+    it('generates a production config', async () => {
+      const config = {
+        mainConfig: {
+          entry: 'main.js',
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.mode).to.equal('production');
+    });
+
+    it('generates a config with a relative entry path', async () => {
+      const config = {
+        mainConfig: {
+          entry: './foo/main.js',
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal('/path/foo/main.js');
+    });
+
+    it('generates a config with multiple entries', async () => {
+      const config = {
+        mainConfig: {
+          entry: {
+            foo: './foo/main.js',
+            bar: 'bar.js',
+          } as Entry,
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.deep.equal({
+        foo: '/path/foo/main.js',
+        bar: 'bar.js',
+      });
+    });
+
+    it('generates a config from a requirable file', async () => {
+      const config = {
+        mainConfig: 'mainConfig.js',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
     });
   });
 });
