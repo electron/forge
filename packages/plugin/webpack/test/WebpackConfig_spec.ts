@@ -200,4 +200,104 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
     });
   });
+
+  describe('getPreloadRendererConfig', () => {
+    it('generates a development config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preloadScript.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.mode).to.equal('development');
+      expect(webpackConfig.entry).to.deep.equal(['preloadScript.js']);
+      expect(webpackConfig.output).to.deep.equal({
+        path: '/path/.webpack/renderer/main',
+        filename: 'preload.js',
+      });
+    });
+  });
+
+  describe('getRendererConfig', () => {
+    it('generates a development config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            js: 'rendererScript.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.mode).to.equal('development');
+      expect(webpackConfig.entry).to.deep.equal({
+        main: ['rendererScript.js'],
+      });
+      expect(webpackConfig.output).to.deep.equal({
+        path: '/path/.webpack/renderer',
+        filename: '[name]/index.js',
+        globalObject: 'self',
+        publicPath: '/',
+      });
+      expect(webpackConfig.plugins!.length).to.equal(2);
+    });
+
+    it('generates a development config with an HTML endpoint', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            html: 'renderer.html',
+            js: 'rendererScript.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.entry).to.deep.equal({
+        main: [
+          'rendererScript.js',
+          'webpack-hot-middleware/client',
+        ],
+      });
+      expect(webpackConfig.plugins!.length).to.equal(3);
+    });
+
+    it('generates a production config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            js: 'rendererScript.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.mode).to.equal('production');
+      expect(webpackConfig.entry).to.deep.equal({
+        main: ['rendererScript.js'],
+      });
+      expect(webpackConfig.output).to.deep.equal({
+        path: '/path/.webpack/renderer',
+        filename: '[name]/index.js',
+        globalObject: 'self',
+      });
+      expect(webpackConfig.plugins!.length).to.equal(1);
+    });
+  });
 });
