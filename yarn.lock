@@ -947,18 +947,17 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/nyc-config-typescript/-/nyc-config-typescript-0.1.3.tgz#944d15b3ebdb71f963a628daffaa25ade981bb86"
   integrity sha512-EzRFg92bRSD1W/zeuNkeGwph0nkWf+pP2l/lYW4/5hav7RjKKBN5kV1Ix7Tvi0CMu3pC4Wi/U7rNisiJMR3ORg==
 
-"@malept/electron-installer-flatpak@^0.10.0":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.10.1.tgz#b57dc286489613ce09c2368142650910c96ca915"
-  integrity sha512-B72vvkITZbR6nzLPIB9zH0Ar6QVTRbzGe8rBsUTW7AH1bIQ1GKTFDJK94D/qg97cvqUY0fRbXr+GZ3ig56objA==
+"@malept/electron-installer-flatpak@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.0.tgz#864b5f6cdf9ac61786bce84dea0c61c3e4db91c4"
+  integrity sha512-bEA880Kv+NhHg601gvRPxlN6O+IaPuEsv5/Gxxxhx8w9DwT4K4HWIbzllgLxcQkJWHlwEsGsoxasg7p3ktMAGw==
   dependencies:
     "@malept/flatpak-bundler" "^0.3.0"
     debug "^4.1.1"
-    electron-installer-common "^0.7.0"
-    fs-extra "^8.0.1"
-    lodash "^4.13.0"
-    semver "^6.1.1"
-    yargs "^14.0.0"
+    electron-installer-common "^0.8.0"
+    lodash "^4.17.15"
+    semver "^7.1.1"
+    yargs "^15.0.1"
 
 "@malept/flatpak-bundler@^0.3.0":
   version "0.3.0"
@@ -3448,6 +3447,21 @@ electron-installer-common@^0.7.0, electron-installer-common@^0.7.1:
     fs-extra "^8.0.1"
     glob "^7.1.4"
     lodash "^4.17.11"
+    parse-author "^2.0.0"
+    semver "^6.0.0"
+    tmp-promise "^2.0.1"
+
+electron-installer-common@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.8.0.tgz#10c8ab85e7a8d733b42e2d55f9114345c02171f6"
+  integrity sha512-0W2GNnCXFP6QutFqfaF5oH32+gXcfI643WC2rqljTPje9N36qmWxVORRax1hKuuhwn1Fa0x/x1dcTkdCr87rkA==
+  dependencies:
+    asar "^2.0.1"
+    cross-spawn "^7.0.1"
+    debug "^4.1.1"
+    fs-extra "^8.0.1"
+    glob "^7.1.4"
+    lodash "^4.17.15"
     parse-author "^2.0.0"
     semver "^6.0.0"
     tmp-promise "^2.0.1"
@@ -5991,7 +6005,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@4.17.15, lodash@^4.13.0, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4:
+lodash@4.17.15, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.3, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -8076,7 +8090,7 @@ semver@7.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
-semver@^6.0.0, semver@^6.1.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0:
+semver@^6.0.0, semver@^6.1.0, semver@^6.1.2, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
