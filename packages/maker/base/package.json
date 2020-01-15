@@ -12,7 +12,7 @@
     "mocha": "^6.2.2"
   },
   "engines": {
-    "node": ">= 8.0"
+    "node": ">= 10.0.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "6.0.0-beta.47",
