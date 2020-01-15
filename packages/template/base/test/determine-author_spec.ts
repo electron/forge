@@ -28,7 +28,7 @@ describe('determineAuthor', () => {
   };
 
   beforeEach(() => {
-    determineAuthor = proxyquire.noCallThru().load('../../src/util/determine-author', {
+    determineAuthor = proxyquire.noCallThru().load('../src/determine-author', {
       child_process: { exec: sinon.stub().callsFake(fakeExec) },
       username: sinon.stub().resolves('fromUsername'),
     }).default;

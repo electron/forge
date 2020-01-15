@@ -1,5 +1,5 @@
+import { ElectronProcess } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import { ChildProcess } from 'child_process';
 import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon, { SinonStub } from 'sinon';
@@ -7,7 +7,7 @@ import sinon, { SinonStub } from 'sinon';
 import { StartOptions } from '../../src/api';
 
 describe('start', () => {
-  let start: (opts: StartOptions) => Promise<ChildProcess>;
+  let start: (opts: StartOptions) => Promise<ElectronProcess>;
   let packageJSON: any;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;

@@ -20,14 +20,13 @@ const proxify = <T extends object>(
     newObject = [] as any;
   }
 
-  Object.keys(object).forEach((key) => {
-    const val = (object as any)[key];
+  for (const [key, val] of Object.entries(object)) {
     if (typeof val === 'object' && key !== 'pluginInterface' && !(val instanceof RegExp)) {
       (newObject as any)[key] = proxify(buildIdentifier, (object as any)[key], `${envPrefix}_${underscoreCase(key)}`);
     } else {
       (newObject as any)[key] = (object as any)[key];
     }
-  });
+  }
 
   return new Proxy<T>(newObject, {
     get(target, name, receiver) {
@@ -82,12 +81,26 @@ export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
   };
 }
 
-async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
+export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
   return typeof forgeConfig === 'string'
     && (
       await fs.pathExists(path.resolve(dir, forgeConfig))
       || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
     );
+}
+
+export function renderConfigTemplate(dir: string, templateObj: any, obj: any) {
+  for (const [key, value] of Object.entries(obj)) {
+    if (typeof value === 'object' && value !== null) {
+      renderConfigTemplate(dir, templateObj, value);
+    } else if (typeof value === 'string') {
+      obj[key] = _template(value)(templateObj);
+      if (obj[key].startsWith('require:')) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
+        obj[key] = require(path.resolve(dir, obj[key].substr(8)));
+      }
+    }
+  }
 }
 
 export default async (dir: string) => {
@@ -126,21 +139,7 @@ export default async (dir: string) => {
   };
 
   const templateObj = { ...packageJSON, year: (new Date()).getFullYear() };
-  const template = (obj: any) => {
-    Object.keys(obj).forEach((objKey) => {
-      if (typeof obj[objKey] === 'object' && obj !== null) {
-        template(obj[objKey]);
-      } else if (typeof obj[objKey] === 'string') {
-        obj[objKey] = _template(obj[objKey])(templateObj);
-        if (obj[objKey].startsWith('require:')) {
-          // eslint-disable-next-line global-require, import/no-dynamic-require
-          obj[objKey] = require(path.resolve(dir, obj[objKey].substr(8)));
-        }
-      }
-    });
-  };
-
-  template(forgeConfig);
+  renderConfigTemplate(dir, templateObj, forgeConfig);
 
   forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
 

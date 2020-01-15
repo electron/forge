@@ -1,29 +1,14 @@
-import { ForgeTemplate } from '@electron-forge/shared-types';
 import { asyncOra } from '@electron-forge/async-ora';
-
+import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
+import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
 const currentVersion = require('../package').version;
 
-const copyTemplateFile = async (destDir: string, basename: string) => {
-  const templateDir = path.resolve(__dirname, '..', 'tmpl');
-  await fs.copy(path.join(templateDir, basename), path.resolve(destDir, basename));
-};
+class WebpackTemplate extends BaseTemplate {
+  public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-const updateFileByLine = async (
-  inputPath: string,
-  lineHandler: (line: string) => string,
-  outputPath: string | undefined = undefined,
-) => {
-  const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
-  await fs.writeFile(outputPath || inputPath, fileContents);
-  if (outputPath !== undefined) {
-    await fs.remove(inputPath);
-  }
-};
-
-class WebpackTemplate implements ForgeTemplate {
   public devDependencies = [
     `@electron-forge/plugin-webpack@${currentVersion}`,
     // TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
@@ -33,7 +18,8 @@ class WebpackTemplate implements ForgeTemplate {
     'style-loader@^0.23.1',
   ];
 
-  public initializeTemplate = async (directory: string) => {
+  public async initializeTemplate(directory: string, options: InitTemplateOptions) {
+    await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
       const pjPath = path.resolve(directory, 'package.json');
       const currentPJ = await fs.readJson(pjPath);
@@ -58,17 +44,17 @@ class WebpackTemplate implements ForgeTemplate {
       });
     });
     await asyncOra('Setting up webpack configuration', async () => {
-      await copyTemplateFile(directory, 'webpack.main.config.js');
-      await copyTemplateFile(directory, 'webpack.renderer.config.js');
-      await copyTemplateFile(directory, 'webpack.rules.js');
-      await copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
+      await this.copyTemplateFile(directory, 'webpack.main.config.js');
+      await this.copyTemplateFile(directory, 'webpack.renderer.config.js');
+      await this.copyTemplateFile(directory, 'webpack.rules.js');
+      await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
 
-      await updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
-        if (line.includes('mainWindow.loadURL')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+      await this.updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
+        if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
         return line;
       }, path.resolve(directory, 'src', 'main.js'));
 
-      await updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
+      await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';
         return line;
       });
