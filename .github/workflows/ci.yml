@@ -9,8 +9,20 @@ on:
   pull_request:
 
 jobs:
-  build:
+  dependabolt:
+    runs-on: ubuntu-latest
+    steps:
+    - id: checkout_action
+      uses: actions/checkout@v2
+    - name: Run dependabolt
+      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      uses: docker://malept/gha-dependabolt:2.1.0
+      env:
+        DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  test:
     runs-on: ${{ matrix.os }}
+    needs: dependabolt
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-latest]
@@ -87,7 +99,7 @@ jobs:
           NODE_INSTALLER: ${{ matrix.node-installer }}
   # docs:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-  #   needs: build
+  #   needs: test
   #   runs-on: [ubuntu-latest]
   #   steps:
   #     - uses: actions/checkout@v1
