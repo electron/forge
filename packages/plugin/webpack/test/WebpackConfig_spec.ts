@@ -5,6 +5,8 @@ import path from 'path';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
 
+const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
+
 describe('WebpackConfigGenerator', () => {
   describe('getDefines', () => {
     it('throws an error if renderer.entryPoints does not exist', () => {
@@ -88,21 +90,20 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       };
-      const projectDir = process.platform === 'win32' ? 'C:\\baseDir' : '/baseDir';
 
       it('should assign absolute preload script path in development', () => {
-        const generator = new WebpackConfigGenerator(config, projectDir, false, 3000);
+        const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
         const defines = generator.getDefines();
 
         if (process.platform === 'win32') {
-          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal(String.raw`'C:\\baseDir\\.webpack\\renderer\\window\\preload.js'`);
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal(String.raw`'C:\\path\\.webpack\\renderer\\window\\preload.js'`);
         } else {
-          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("'/baseDir/.webpack/renderer/window/preload.js'");
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal(`'${mockProjectDir}/.webpack/renderer/window/preload.js'`);
         }
       });
 
       it('should assign an expression to resolve the preload script in production', () => {
-        const generator = new WebpackConfigGenerator(config, projectDir, true, 3000);
+        const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
         const defines = generator.getDefines();
         expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
       });
@@ -127,13 +128,13 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.target).to.equal('electron-main');
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.equal('main.js');
       expect(webpackConfig.output).to.deep.equal({
-        path: '/path/.webpack/main',
+        path: path.join(mockProjectDir, '.webpack', 'main'),
         filename: 'index.js',
         libraryTarget: 'commonjs2',
       });
@@ -148,7 +149,7 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.mode).to.equal('production');
     });
@@ -162,9 +163,9 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
-      expect(webpackConfig.entry).to.equal('/path/foo/main.js');
+      expect(webpackConfig.entry).to.equal(path.join(mockProjectDir, 'foo', 'main.js'));
     });
 
     it('generates a config with multiple entries', async () => {
@@ -179,10 +180,10 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.entry).to.deep.equal({
-        foo: '/path/foo/main.js',
+        foo: path.join(mockProjectDir, 'foo', 'main.js'),
         bar: 'bar.js',
       });
     });
@@ -213,7 +214,7 @@ describe('WebpackConfigGenerator', () => {
           }],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const entryPoint = config.renderer.entryPoints[0];
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
@@ -223,7 +224,7 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.deep.equal(['preloadScript.js']);
       expect(webpackConfig.output).to.deep.equal({
-        path: '/path/.webpack/renderer/main',
+        path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
     });
@@ -239,7 +240,7 @@ describe('WebpackConfigGenerator', () => {
           }],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       expect(webpackConfig.target).to.equal('electron-renderer');
       expect(webpackConfig.mode).to.equal('development');
@@ -247,7 +248,7 @@ describe('WebpackConfigGenerator', () => {
         main: ['rendererScript.js'],
       });
       expect(webpackConfig.output).to.deep.equal({
-        path: '/path/.webpack/renderer',
+        path: path.join(mockProjectDir, '.webpack', 'renderer'),
         filename: '[name]/index.js',
         globalObject: 'self',
         publicPath: '/',
@@ -265,7 +266,7 @@ describe('WebpackConfigGenerator', () => {
           }],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', false, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       expect(webpackConfig.entry).to.deep.equal({
         main: [
@@ -285,7 +286,7 @@ describe('WebpackConfigGenerator', () => {
           }],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/path', true, 3000);
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       expect(webpackConfig.target).to.equal('electron-renderer');
       expect(webpackConfig.mode).to.equal('production');
@@ -293,7 +294,7 @@ describe('WebpackConfigGenerator', () => {
         main: ['rendererScript.js'],
       });
       expect(webpackConfig.output).to.deep.equal({
-        path: '/path/.webpack/renderer',
+        path: path.join(mockProjectDir, '.webpack', 'renderer'),
         filename: '[name]/index.js',
         globalObject: 'self',
       });
