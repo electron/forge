@@ -149,7 +149,7 @@
     "generate-changelog": "^1.8.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.0",
-    "mocha": "^6.2.2",
+    "mocha": "^7.0.0",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
     "proxyquire": "^2.1.3",
