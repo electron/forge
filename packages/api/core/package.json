@@ -57,13 +57,13 @@
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
     "resolve-package": "^1.0.1",
-    "semver": "^6.3.0",
+    "semver": "^7.1.1",
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
     "yarn-or-npm": "^3.0.1"
   },
   "engines": {
-    "node": ">= 8.0"
+    "node": ">= 10.0.0"
   }
 }

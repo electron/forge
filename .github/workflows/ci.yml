@@ -42,12 +42,12 @@ jobs:
         run: |
           sudo add-apt-repository -y ppa:alexlarsson/flatpak
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder
+          sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
-      - name: Use Node.js 8.x
+      - name: Use Node.js 10.x
         uses: actions/setup-node@v1
         with:
-          node-version: 8.x
+          node-version: 10.x
       - name: Determine Yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"

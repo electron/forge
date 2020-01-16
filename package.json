@@ -81,7 +81,7 @@
     "parse-author": "^2.0.0",
     "pretty-ms": "^5.0.0",
     "resolve-package": "^1.0.1",
-    "semver": "^6.3.0",
+    "semver": "^7.1.1",
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
@@ -138,7 +138,7 @@
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
     "codecov": "^3.6.1",
-    "commitizen": "^3.1.1",
+    "commitizen": "^4.0.3",
     "cross-env": "^6.0.3",
     "cz-customizable": "^6.2.0",
     "eslint": "^6.8.0",
@@ -160,7 +160,7 @@
     "typescript": "^3.7.3"
   },
   "optionalDependencies": {
-    "@malept/electron-installer-flatpak": "^0.10.0",
+    "@malept/electron-installer-flatpak": "^0.11.0",
     "electron-installer-debian": "^2.0.0",
     "electron-installer-dmg": "^3.0.0",
     "electron-installer-redhat": "^2.0.0",

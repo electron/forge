@@ -15,7 +15,7 @@
     "sinon": "^8.0.4"
   },
   "engines": {
-    "node": ">= 8.0"
+    "node": ">= 10.0.0"
   },
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.47",
@@ -23,6 +23,6 @@
     "fs-extra": "^8.1.0"
   },
   "optionalDependencies": {
-    "@malept/electron-installer-flatpak": "^0.10.0"
+    "@malept/electron-installer-flatpak": "^0.11.0"
   }
 }
