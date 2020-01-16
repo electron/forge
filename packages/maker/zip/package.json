@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.47",
     "@electron-forge/shared-types": "6.0.0-beta.47",
-    "cross-zip": "^2.1.5",
+    "cross-zip": "^3.0.0",
     "fs-extra": "^8.1.0"
   }
 }
