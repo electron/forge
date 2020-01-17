@@ -51,7 +51,7 @@
     "@electron/get": "^1.6.0",
     "@octokit/rest": "^16.36.0",
     "@types/which": "^1.3.2",
-    "aws-sdk": "^2.472.0",
+    "aws-sdk": "^2.605.0",
     "colors": "^1.4.0",
     "commander": "^4.0.1",
     "cross-spawn": "^7.0.1",
