@@ -18,7 +18,7 @@
     "@electron-forge/async-ora": "6.0.0-beta.47",
     "@electron-forge/publisher-base": "6.0.0-beta.47",
     "@electron-forge/shared-types": "6.0.0-beta.47",
-    "aws-sdk": "^2.472.0",
+    "aws-sdk": "^2.605.0",
     "debug": "^4.1.0"
   }
 }
