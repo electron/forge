@@ -12,8 +12,7 @@ jobs:
   dependabolt:
     runs-on: ubuntu-latest
     steps:
-    - id: checkout_action
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
       uses: docker://malept/gha-dependabolt:2.1.1
@@ -31,7 +30,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         run: |
