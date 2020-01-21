@@ -20,6 +20,6 @@
     "fs-extra": "^8.1.0"
   },
   "optionalDependencies": {
-    "electron-installer-snap": "^4.0.0"
+    "electron-installer-snap": "^5.0.0"
   }
 }

@@ -3336,7 +3336,22 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-installer-common@^0.7.0, electron-installer-common@^0.7.1:
+electron-installer-common@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.0.tgz#e57b9cac3637fc312d28f3e45f197f5c1743c931"
+  integrity sha512-oWkkKSrBtsg9rEh1lscRoboNBvA/biZV1L86jwsv8AOhQ6WqMqWPI6xf2HFRNsVDdsHGIldJSpGR4F8ITclerQ==
+  dependencies:
+    asar "^2.0.1"
+    cross-spawn "^7.0.1"
+    debug "^4.1.1"
+    fs-extra "^8.0.1"
+    glob "^7.1.4"
+    lodash "^4.17.15"
+    parse-author "^2.0.0"
+    semver "^7.1.1"
+    tmp-promise "^2.0.1"
+
+electron-installer-common@^0.7.1:
   version "0.7.3"
   resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.7.3.tgz#95beedc4c6abd287a2f3ef60c545abdf804d90a0"
   integrity sha512-l4chYFTWr6uWODKYUXeC+Z4tqGa3b8e+Y2WUBf3F7Ruv6yYzZ+Ccic65oXreeotx09B7sUx1KTuwXRsRJHKlMw==
@@ -3402,20 +3417,17 @@ electron-installer-redhat@^2.0.0:
     word-wrap "^1.2.3"
     yargs "^13.2.2"
 
-electron-installer-snap@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-4.1.0.tgz#b36e5d0640144073707d6ce848f94b447beecdbe"
-  integrity sha512-4h9o0/D4tSIj+jje5JlIoNn8zHggVYeNACtZ6w626E4bveoUeQjzq2DOuBiF0+OFo9qvvOGhRjoENMHfXBze4A==
+electron-installer-snap@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-5.0.0.tgz#09553749b367aa6d00c1f92e57d3f3e05daced5a"
+  integrity sha512-M5ADJ7MP3QX1bRfdMZer4B/t5p2fVWciCXkqUs1t3kBSyxEJw4N2jNMydAeJRLend9cbM1E2Jq5+bhPEES85Kg==
   dependencies:
-    cross-spawn-promise "^0.10.1"
     debug "^4.1.1"
-    electron-installer-common "^0.7.0"
+    electron-installer-common "^0.10.0"
     fs-extra "^8.0.1"
     js-yaml "^3.10.0"
-    lodash.filter "^4.6.0"
-    lodash.merge "^4.6.0"
-    lodash.pull "^4.1.0"
-    semver "^6.1.0"
+    lodash "^4.17.15"
+    semver "^7.1.1"
     tmp-promise "^2.0.1"
     which "^2.0.1"
     yargs "^15.0.1"
@@ -5850,11 +5862,6 @@ lodash.defaults@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
   integrity sha1-0JF4cW/+pN3p5ft7N/bwgCJ0WAw=
 
-lodash.filter@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/lodash.filter/-/lodash.filter-4.6.0.tgz#668b1d4981603ae1cc5a6fa760143e480b4c4ace"
-  integrity sha1-ZosdSYFgOuHMWm+nYBQ+SAtMSs4=
-
 lodash.flattendeep@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
@@ -5875,15 +5882,10 @@ lodash.map@^4.5.1:
   resolved "https://registry.yarnpkg.com/lodash.map/-/lodash.map-4.6.0.tgz#771ec7839e3473d9c4cde28b19394c3562f4f6d3"
   integrity sha1-dx7Hg540c9nEzeKLGTlMNWL09tM=
 
-lodash.merge@^4.6.0, lodash.merge@^4.6.1, lodash.merge@^4.6.2:
+lodash.merge@^4.6.1, lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
-
-lodash.pull@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/lodash.pull/-/lodash.pull-4.1.0.tgz#60060cc6bd625b4d4567ec27dc45cd1be9eec012"
-  integrity sha1-YAYMxr1iW01FZ+wn3EXNG+nuwBI=
 
 lodash.set@^4.3.2:
   version "4.3.2"
@@ -7991,7 +7993,7 @@ semver@7.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
-semver@^6.0.0, semver@^6.1.0, semver@^6.1.2, semver@^6.3.0:
+semver@^6.0.0, semver@^6.1.2, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
