@@ -845,13 +845,13 @@
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
 "@malept/electron-installer-flatpak@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.0.tgz#864b5f6cdf9ac61786bce84dea0c61c3e4db91c4"
-  integrity sha512-bEA880Kv+NhHg601gvRPxlN6O+IaPuEsv5/Gxxxhx8w9DwT4K4HWIbzllgLxcQkJWHlwEsGsoxasg7p3ktMAGw==
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.1.tgz#67b707c2d795f9181b437cc936d75404026b268d"
+  integrity sha512-EFMoQT+RAHF4sKnX7MyckCI4ZfKxddFKv6lpdqstwzv33I8N9AxRrBp8deh2DGiPEGrPsGT7YJTD4AuOOVB8Nw==
   dependencies:
     "@malept/flatpak-bundler" "^0.3.0"
     debug "^4.1.1"
-    electron-installer-common "^0.8.0"
+    electron-installer-common "^0.10.0"
     lodash "^4.17.15"
     semver "^7.1.1"
     yargs "^15.0.1"
@@ -3362,21 +3362,6 @@ electron-installer-common@^0.7.1:
     fs-extra "^8.0.1"
     glob "^7.1.4"
     lodash "^4.17.11"
-    parse-author "^2.0.0"
-    semver "^6.0.0"
-    tmp-promise "^2.0.1"
-
-electron-installer-common@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.8.0.tgz#10c8ab85e7a8d733b42e2d55f9114345c02171f6"
-  integrity sha512-0W2GNnCXFP6QutFqfaF5oH32+gXcfI643WC2rqljTPje9N36qmWxVORRax1hKuuhwn1Fa0x/x1dcTkdCr87rkA==
-  dependencies:
-    asar "^2.0.1"
-    cross-spawn "^7.0.1"
-    debug "^4.1.1"
-    fs-extra "^8.0.1"
-    glob "^7.1.4"
-    lodash "^4.17.15"
     parse-author "^2.0.0"
     semver "^6.0.0"
     tmp-promise "^2.0.1"
