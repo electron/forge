@@ -3366,18 +3366,18 @@ electron-installer-common@^0.7.1:
     semver "^6.0.0"
     tmp-promise "^2.0.1"
 
-electron-installer-debian@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-2.0.1.tgz#79dd3f85ddd0651b8e13a83d7934e6de88925df3"
-  integrity sha512-6/rgdWoezE5/JKSu6Y1mK3TT2lUeRKpviVoh063DKSLwcDPHQFgJ0/uDxqGppi3AF4du8n1vVio0VEkCEwlM1A==
+electron-installer-debian@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-3.0.0.tgz#abd76db8e89bc1ba1e5366975a941461dda06e6d"
+  integrity sha512-91iiicfK5hq6D6Xit7SFCN2GpccFBQbZB1JpYaxFdaueEjM/1hSULtCPf4e5w/2vQKZ73AfBZrxxIJqO3DhGPw==
   dependencies:
     debug "^4.1.1"
-    electron-installer-common "^0.7.1"
+    electron-installer-common "^0.10.0"
     fs-extra "^8.0.1"
     get-folder-size "^2.0.1"
     lodash "^4.17.4"
     word-wrap "^1.2.3"
-    yargs "^14.0.0"
+    yargs "^15.0.1"
 
 electron-installer-dmg@^3.0.0:
   version "3.0.0"
@@ -9505,14 +9505,6 @@ yargs-parser@13.1.1, yargs-parser@^13.1.1:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-15.0.0.tgz#cdd7a97490ec836195f59f3f4dbe5ea9e8f75f08"
-  integrity sha512-xLTUnCMc4JhxrPEPUYD5IBR1mWCK/aT6+RJ/K29JY2y1vD+FhtgKK0AXRWvI262q3QSffAQuTouFIKUuHX89wQ==
-  dependencies:
-    camelcase "^5.0.0"
-    decamelize "^1.2.0"
-
 yargs-parser@^16.0.0, yargs-parser@^16.1.0:
   version "16.1.0"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-16.1.0.tgz#73747d53ae187e7b8dbe333f95714c76ea00ecf1"
@@ -9545,23 +9537,6 @@ yargs@13.3.0, yargs@^13.2.2, yargs@^13.2.4, yargs@^13.3.0:
     which-module "^2.0.0"
     y18n "^4.0.0"
     yargs-parser "^13.1.1"
-
-yargs@^14.0.0:
-  version "14.2.2"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-14.2.2.tgz#2769564379009ff8597cdd38fba09da9b493c4b5"
-  integrity sha512-/4ld+4VV5RnrynMhPZJ/ZpOCGSCeghMykZ3BhdFBDa9Wy/RH6uEGNWDJog+aUlq+9OM1CFTgtYRW5Is1Po9NOA==
-  dependencies:
-    cliui "^5.0.0"
-    decamelize "^1.2.0"
-    find-up "^3.0.0"
-    get-caller-file "^2.0.1"
-    require-directory "^2.1.1"
-    require-main-filename "^2.0.0"
-    set-blocking "^2.0.0"
-    string-width "^3.0.0"
-    which-module "^2.0.0"
-    y18n "^4.0.0"
-    yargs-parser "^15.0.0"
 
 yargs@^15.0.1, yargs@^15.0.2:
   version "15.1.0"
