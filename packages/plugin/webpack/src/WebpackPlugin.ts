@@ -92,14 +92,18 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   }
 
+  async writeJSONStats(type: string, stats: webpack.Stats, statsOptions?: webpack.Stats.ToStringOptions): Promise<void> {
+    d(`Writing JSON stats for ${type} config`);
+    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    await fs.writeJson(jsonStatsFilename, stats.toJson(statsOptions as webpack.Stats.ToJsonOptions), { spaces: 2 });
+  }
+
   // eslint-disable-next-line max-len
   private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats> => new Promise((resolve, reject) => {
     webpack(options)
       .run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          d('writing JSON stats for renderers');
-          const jsonStatsFilename = path.resolve(this.baseDir, 'renderer', 'stats.json');
-          await fs.writeJson(jsonStatsFilename, stats.toJson(options.stats), { spaces: 2 });
+          await this.writeJSONStats('renderer', stats, options.stats);
         }
         if (err) {
           return reject(err);
@@ -216,9 +220,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             }));
           }
           if (this.config.jsonStats) {
-            d('writing JSON stats for main');
-            const jsonStatsFilename = path.resolve(this.baseDir, 'main', 'stats.json');
-            await fs.writeJson(jsonStatsFilename, stats.toJson(mainConfig.stats), { spaces: 2 });
+            await this.writeJSONStats('main', stats, mainConfig.stats);
           }
 
           if (err) return onceReject(err);
