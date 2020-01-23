@@ -6,7 +6,7 @@ import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
-import webpack, { Configuration, Stats } from 'webpack';
+import webpack, { Configuration } from 'webpack';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import express from 'express';
@@ -221,7 +221,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = async (err, stats: Stats) => {
+        const cb: webpack.ICompiler.Handler = async (err, stats: webpack.Stats) => {
           if (tab && stats) {
             tab.log(stats.toString({
               colors: true,
