@@ -92,10 +92,15 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   }
 
-  async writeJSONStats(type: string, stats: webpack.Stats, statsOptions?: webpack.Stats.ToStringOptions): Promise<void> {
+  async writeJSONStats(
+    type: string,
+    stats: webpack.Stats,
+    statsOptions?: webpack.Stats.ToStringOptions,
+  ): Promise<void> {
     d(`Writing JSON stats for ${type} config`);
+    const jsonStats = stats.toJson(statsOptions as webpack.Stats.ToJsonOptions);
     const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
-    await fs.writeJson(jsonStatsFilename, stats.toJson(statsOptions as webpack.Stats.ToJsonOptions), { spaces: 2 });
+    await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
   // eslint-disable-next-line max-len
