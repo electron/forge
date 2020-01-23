@@ -92,10 +92,24 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   }
 
+  async writeJSONStats(
+    type: string,
+    stats: webpack.Stats,
+    statsOptions?: webpack.Stats.ToStringOptions,
+  ): Promise<void> {
+    d(`Writing JSON stats for ${type} config`);
+    const jsonStats = stats.toJson(statsOptions as webpack.Stats.ToJsonOptions);
+    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
+  }
+
   // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration): Promise<webpack.Stats> => new Promise((resolve, reject) => {
+  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats> => new Promise((resolve, reject) => {
     webpack(options)
-      .run((err, stats) => {
+      .run(async (err, stats) => {
+        if (isRenderer && this.config.renderer.jsonStats) {
+          await this.writeJSONStats('renderer', stats, options.stats);
+        }
         if (err) {
           return reject(err);
         }
@@ -168,6 +182,14 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
+      if (this.config.jsonStats && file.endsWith(path.join('.webpack', 'main', 'stats.json'))) {
+        return true;
+      }
+
+      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+        return true;
+      }
+
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
@@ -200,15 +222,18 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const config = await this.configGenerator.getMainConfig();
+      const mainConfig = await this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
-        const compiler = webpack(config);
+        const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = (err, stats) => {
+        const cb: webpack.ICompiler.Handler = async (err, stats: webpack.Stats) => {
           if (tab && stats) {
             tab.log(stats.toString({
               colors: true,
             }));
+          }
+          if (this.config.jsonStats) {
+            await this.writeJSONStats('main', stats, mainConfig.stats);
           }
 
           if (err) return onceReject(err);
@@ -231,6 +256,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await asyncOra('Compiling Renderer Template', async () => {
       const stats = await this.runWebpack(
         await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
+        true,
       );
       if (!watch && stats.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
