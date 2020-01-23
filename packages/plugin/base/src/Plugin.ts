@@ -1,13 +1,13 @@
-import { ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions } from '@electron-forge/shared-types';
-import { ChildProcess } from 'child_process';
+import {
+  ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions,
+} from '@electron-forge/shared-types';
 
 export { StartOptions };
 
 export default abstract class Plugin<C> implements IForgePlugin {
   public abstract name: string;
-  /* tslint:disable variable-name */
+
   __isElectronForgePlugin!: true;
-  /* tslint:enable variable-name */
 
   constructor(public config: C) {
     Object.defineProperty(this, '__isElectronForgePlugin', {
@@ -17,14 +17,14 @@ export default abstract class Plugin<C> implements IForgePlugin {
     });
   }
 
-  init(dir: string, config: ForgeConfig) {
+  init(_dir: string, _config: ForgeConfig) {
   }
 
-  getHook(hookName: string): ForgeHookFn | null {
+  getHook(_hookName: string): ForgeHookFn | null {
     return null;
   }
 
-  async startLogic(startOpts: StartOptions): Promise<ChildProcess | string | string[] | false> {
+  async startLogic(_startOpts: StartOptions): Promise<ElectronProcess | string | string[] | false> {
     return false;
   }
 }

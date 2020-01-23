@@ -1,6 +1,9 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult } from '@electron-forge/shared-types';
+import { getHostArch } from '@electron/get';
+import {
+  IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult,
+} from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
@@ -17,9 +20,11 @@ import requireSearch from '../util/require-search';
 
 import packager from './package';
 
-const { host: hostArch }: { host: () => ForgeArch } = require('electron-download/lib/arch');
+class MakerImpl extends MakerBase<any> {
+  name = 'impl';
 
-class MakerImpl extends MakerBase<any> { name = 'impl'; defaultPlatforms = []; }
+  defaultPlatforms = [];
+}
 
 export interface MakeOptions {
   /**
@@ -56,19 +61,18 @@ export default async ({
   dir = process.cwd(),
   interactive = false,
   skipPackage = false,
-  arch = hostArch(),
+  arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   overrideTargets,
   outDir,
 }: MakeOptions) => {
-
   asyncOra.interactive = interactive;
 
   let forgeConfig!: ForgeConfig;
   await asyncOra('Resolving Forge Config', async () => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
-      throw 'Failed to locate makeable Electron application';
+      throw new Error('Failed to locate makeable Electron application');
     }
     dir = resolvedDir;
 
@@ -96,18 +100,21 @@ export default async ({
   let targetId = 0;
   for (const target of targets) {
     let maker: MakerBase<any>;
+    // eslint-disable-next-line no-underscore-dangle
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
-      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
+      // eslint-disable-next-line no-continue
+      if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw `Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`;
+        throw new Error(`Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`);
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
-      if (maker.platforms.indexOf(actualTargetPlatform) === -1) continue;
+      // eslint-disable-next-line no-continue
+      if (!maker.platforms.includes(actualTargetPlatform)) continue;
     }
 
     if (!maker.isSupportedOnCurrentPlatform) {
@@ -124,6 +131,8 @@ export default async ({
         `that it cannot run on ${process.platform}`,
       ].join(''));
     }
+
+    maker.ensureExternalBinariesExist();
 
     makers[targetId] = maker;
     targetId += 1;
@@ -159,7 +168,8 @@ export default async ({
     }
 
     targetId = 0;
-    for (const target of targets) {
+    // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-unused-vars
+    for (const _target of targets) {
       const maker = makers[targetId];
       targetId += 1;
 
@@ -198,6 +208,7 @@ export default async ({
           });
         } catch (err) {
           if (err) {
+            // eslint-disable-next-line no-throw-literal
             throw {
               message: `An error occured while making for target: ${maker.name}`,
               stack: `${err.message}\n${err.stack}`,
@@ -212,5 +223,5 @@ export default async ({
 
   // If the postMake hooks modifies the locations / names of the outputs it must return
   // the new locations so that the publish step knows where to look
-  return await runMutatingHook(forgeConfig, 'postMake', outputs);
+  return runMutatingHook(forgeConfig, 'postMake', outputs);
 };

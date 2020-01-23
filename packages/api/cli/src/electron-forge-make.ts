@@ -1,30 +1,25 @@
 import { api, MakeOptions } from '@electron-forge/core';
 
 import fs from 'fs-extra';
-import path from 'path';
+import { initializeProxy } from '@electron/get';
 import program from 'commander';
+import path from 'path';
 
 import './util/terminate';
+import workingDir from './util/working-dir';
 
 // eslint-disable-next-line import/prefer-default-export
-export const getMakeOptions = () => {
+export async function getMakeOptions() {
   let dir = process.cwd();
   program
-    .version(require('../package.json').version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[cwd]')
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
     .option('--targets [targets]', 'Override your make targets for this run')
     .allowUnknownOption(true)
-    .action((cwd) => {
-      if (!cwd) return;
-      if (path.isAbsolute(cwd) && fs.existsSync(cwd)) {
-        dir = cwd;
-      } else if (fs.existsSync(path.resolve(dir, cwd))) {
-        dir = path.resolve(dir, cwd);
-      }
-    })
+    .action((cwd) => { dir = workingDir(dir, cwd); })
     .parse(process.argv);
 
   const makeOpts: MakeOptions = {
@@ -37,11 +32,14 @@ export const getMakeOptions = () => {
   if (program.platform) makeOpts.platform = program.platform;
 
   return makeOpts;
-};
+}
 
+// eslint-disable-next-line no-underscore-dangle
 if (process.mainModule === module || (global as any).__LINKED_FORGE__) {
   (async () => {
-    const makeOpts = getMakeOptions();
+    const makeOpts = await getMakeOptions();
+
+    initializeProxy();
 
     await api.make(makeOpts);
   })();

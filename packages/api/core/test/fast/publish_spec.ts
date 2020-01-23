@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub, SinonSpy } from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 
 import { PublishOptions } from '../../src/api';
 
@@ -26,7 +26,9 @@ describe('publish', () => {
     publishers = ['@electron-forge/publisher-test'];
     const fakePublisher = (stub: SinonStub, name: string = 'default') => class X {
       private publish: SinonStub;
+
       public name = name;
+
       constructor(public providedConfig: any) {
         fooPublisher = this;
         this.publish = stub;
@@ -178,15 +180,21 @@ describe('publish', () => {
 
     const fakeMake = (platform: string) => {
       const ret = [
-        { artifacts: [
-          path.resolve(dir, `out/make/artifact1-${platform}`),
-          path.resolve(dir, `out/make/artifact2-${platform}`),
-        ] }, { artifacts: [
-          path.resolve(dir, `out/make/artifact3-${platform}`),
-        ] },
-        { artifacts: [
-          path.resolve(dir, `out/make/artifact4-${platform}`),
-        ] },
+        {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact1-${platform}`),
+            path.resolve(dir, `out/make/artifact2-${platform}`),
+          ],
+        }, {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact3-${platform}`),
+          ],
+        },
+        {
+          artifacts: [
+            path.resolve(dir, `out/make/artifact4-${platform}`),
+          ],
+        },
       ];
       const state = {
         platform,
@@ -272,7 +280,7 @@ describe('publish', () => {
       it('should successfully restore values and pass them to publisher', () => {
         expect(makeStub.callCount).to.equal(0);
         expect(publisherSpy.callCount).to.equal(2, 'should call once for each platform (make run)');
-        const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.indexOf('darwin') !== -1) ? 0 : 1;
+        const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.includes('darwin')) ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
         const darwinArtifacts = [];

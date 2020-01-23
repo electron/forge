@@ -1,10 +1,9 @@
 import { expect } from 'chai';
+import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import sinon, { SinonSpy } from 'sinon';
 
 import { InstallOptions, InstallAsset } from '../../src/api';
-
-const fetchMock = require('fetch-mock/es5/server');
 
 describe('install', () => {
   let install: (opts: InstallOptions) => Promise<void>;
@@ -86,7 +85,7 @@ describe('install', () => {
     );
   });
 
-  it('should throw an error if there are no release compatable with the current platform', async () => {
+  it('should throw an error if there are no release compatible with the current platform', async () => {
     fetch.get('*', [
       {
         tag_name: '1.0.0',
@@ -123,7 +122,7 @@ describe('install', () => {
     expect(nuggetSpy.firstCall.args[0]).to.equal('fetch.it');
   });
 
-  it('should throw an error if there is more than one compatable asset with no chooseAsset method', async () => {
+  it('should throw an error if there is more than one compatible asset with no chooseAsset method', async () => {
     fetch.get('*', [
       {
         tag_name: '1.0.0',
@@ -144,7 +143,7 @@ describe('install', () => {
     );
   });
 
-  it('should provide compatable assets to chooseAsset if more than one exists', async () => {
+  it('should provide compatible assets to chooseAsset if more than one exists', async () => {
     const chooseAssetSpy = sinon.spy(async (assets: InstallAsset[]) => assets[0]);
     fetch.get('*', [
       {

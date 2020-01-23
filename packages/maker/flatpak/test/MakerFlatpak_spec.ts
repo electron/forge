@@ -1,21 +1,25 @@
 import MakerBase from '@electron-forge/maker-base';
 
 import { expect } from 'chai';
-import chaiAsPromised from 'chai-as-promised';
+import 'chai-as-promised';
 import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
+import { ForgeArch } from '@electron-forge/shared-types';
 import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
-import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerFlatpakConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerFlatpakConfig> {
+  name = 'test';
+
+  defaultPlatforms = [];
+}
 
 describe('MakerFlatpak', () => {
-  let flatpakModule: typeof MakerImpl;
+  let MakerFlatpak: typeof MakerImpl;
   let maker: MakerImpl;
-  let eidStub: SinonStub;
+  let eifStub: SinonStub;
   let ensureDirectoryStub: SinonStub;
   let config: MakerFlatpakConfig;
   let createMaker: () => void;
@@ -28,15 +32,15 @@ describe('MakerFlatpak', () => {
 
   beforeEach(() => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
-    eidStub = stub().callsArg(1);
+    eifStub = stub().resolves();
     config = {};
 
-    flatpakModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
+    MakerFlatpak = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
       'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
-      'electron-installer-flatpak': eidStub,
+      '@malept/electron-installer-flatpak': eifStub,
     }).default;
     createMaker = () => {
-      maker = new flatpakModule(config); // eslint-disable-line
+      maker = new MakerFlatpak(config);
       maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };
@@ -44,12 +48,15 @@ describe('MakerFlatpak', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
+    const opts = eifStub.firstCall.args[0];
+    const expectedArch = flatpakArch(process.arch as ForgeArch);
     expect(opts).to.deep.equal({
-      arch: flatpakArch(process.arch as ForgeArch),
+      arch: expectedArch,
       src: dir,
-      dest: path.resolve(makeDir, 'flatpak'),
+      dest: path.resolve(makeDir, 'flatpak', expectedArch),
     });
   });
 
@@ -62,15 +69,18 @@ describe('MakerFlatpak', () => {
     } as any;
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-    const opts = eidStub.firstCall.args[0];
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
+    const opts = eifStub.firstCall.args[0];
+    const expectedArch = flatpakArch(process.arch as ForgeArch);
     expect(opts).to.deep.equal({
-      arch: flatpakArch(process.arch as ForgeArch),
+      arch: expectedArch,
       options: {
         productName: 'Flatpak',
       },
       src: dir,
-      dest: path.resolve(makeDir, 'flatpak'),
+      dest: path.resolve(makeDir, 'flatpak', expectedArch),
     });
   });
 });

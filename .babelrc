@@ -1,8 +1,10 @@
 {
   "sourceMaps": "inline",
+  "ignore": [
+    "./tmpl"
+  ],
   "plugins": [
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread",
     "source-map-support"
   ],
   "presets": [
@@ -10,7 +12,7 @@
       "@babel/preset-env",
       {
         "targets": {
-          "node": "6"
+          "node": "8"
         }
       }
     ],

@@ -4,8 +4,10 @@ yarn-error.log
 packages/.old
 **/tsconfig.json
 !/tsconfig.json
+!packages/template/*/tmpl/tsconfig.json
 **/tslint.json
 !/tslint.json
+!packages/template/*/tmpl/tslint.json
 docs
 doc
 .vscode
@@ -15,6 +17,9 @@ packages/utils/types/index.d.ts
 packages/maker/**/README.md
 packages/publisher/**/README.md
 packages/plugin/**/README.md
+packages/api/cli/README.md
 !packages/**/base/README.md
 !/README.md
 packages/*/*/index.ts
+.nyc_output
+/coverage

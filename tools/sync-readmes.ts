@@ -11,12 +11,15 @@ const workspaceMappings: { [space: string]: { [packageName: string]: string | un
   },
   publisher: {},
   plugin: {},
+  api: {
+    core: 'does-not-exist-plz-no-readme',
+  },
 };
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const DOCS_BASE = 'https://raw.githubusercontent.com/MarshallOfSound/electron-forge-docs/v6';
 
-const sanitize = (gb: string) => {
+function sanitize(gb: string): string {
   return gb
     .replace('{% code-tabs %}', '')
     .replace('{% endcode-tabs %}', '')
@@ -31,13 +34,13 @@ const sanitize = (gb: string) => {
       };
       return `\n--------\n\n${styleMap[style] || 'ℹ️'} `;
     });
-};
+}
 
 interface SyncContext {
   packageKeys: [string, string, string, string][];
 }
 
-const sync = () => {
+function sync(): Listr {
   return new Listr([
     {
       title: 'Collecting package keys',
@@ -57,19 +60,27 @@ const sync = () => {
     },
     {
       title: 'Fetching READMEs',
-      task: (ctx: SyncContext) => new Listr(ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
-        title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
-        task: async () => {
-          const r = await fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
-          if (r.status !== 200) return;
+      task: (ctx: SyncContext) => new Listr(ctx.packageKeys.map(
+        ([workspace, workspaceDir, packageKey, packageName]) => ({
+          title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
+          task: async () => {
+            let rp: ReturnType<typeof fetch>;
+            if (workspace !== 'api') {
+              rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
+            } else {
+              rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
+            }
+            const r = await rp;
+            if (r.status !== 200) return;
 
-          const md = sanitize(await r.text());
-          await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
-        },
-      })), { concurrent: 5 }),
+            const md = sanitize(await r.text());
+            await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
+          },
+        }),
+      ), { concurrent: 3 }),
     },
   ]);
-};
+}
 
 if (process.mainModule === module) {
   sync().run().catch(console.error);

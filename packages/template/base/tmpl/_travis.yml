@@ -1,0 +1,32 @@
+language: node_js
+node_js: "8"
+os:
+- linux
+- osx
+dist: xenial
+osx_image: xcode10.1
+
+cache:
+  npm: true
+  directories:
+  - $HOME/.cache/electron
+
+addons:
+  apt:
+    packages:
+    - fakeroot
+    - rpm
+
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+/
+
+install:
+- npm install
+- npm update
+
+script:
+- npm run lint
+- if test -z "$TRAVIS_TAG"; then npm run make; fi
+after_success: if test -n "$TRAVIS_TAG"; then npm run publish; fi

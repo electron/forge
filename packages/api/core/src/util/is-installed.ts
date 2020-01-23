@@ -1,3 +1,4 @@
+/* eslint "global-require": "off", "import/no-dynamic-require": "off" */
 export default function isInstalled(pkg: string) {
   try {
     require(pkg);

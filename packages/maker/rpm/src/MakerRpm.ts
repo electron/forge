@@ -1,6 +1,5 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-
 import path from 'path';
 
 import { MakerRpmConfig } from './Config';
@@ -17,34 +16,33 @@ export function rpmArch(nodeArch: ForgeArch) {
 
 export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   name = 'rpm';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
+  requiredExternalBinaries: string[] = ['rpmbuild'];
+
   isSupportedOnCurrentPlatform() {
-    return this.isInstalled('electron-installer-redhat') && process.platform === 'linux';
+    return this.isInstalled('electron-installer-redhat');
   }
 
   async make({
     dir,
     makeDir,
     targetArch,
-    packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 
-    const arch = rpmArch(targetArch);
-    const name = (this.config.options || {}).name || packageJSON.name;
-    const versionedName = `${name}-${packageJSON.version}.${arch}`;
-    const outPath = path.resolve(makeDir, `${versionedName}.rpm`);
+    const outDir = path.resolve(makeDir, 'rpm', targetArch);
 
-    await this.ensureFile(outPath);
-    const rpmConfig = Object.assign({}, this.config, {
-      arch,
+    await this.ensureDirectory(outDir);
+    const { packagePaths } = await installer({
+      ...this.config,
+      arch: rpmArch(targetArch),
       src: dir,
-      dest: path.dirname(outPath),
+      dest: outDir,
       rename: undefined,
     });
-
-    await installer(rpmConfig);
-    return [outPath];
+    return packagePaths;
   }
 }

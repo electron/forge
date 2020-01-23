@@ -19,7 +19,7 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
     const pj = await fs.readJson(path.resolve(dir, 'package.json'));
     if (pj.name === '@electron-forge/cli') continue;
     if (!await fs.pathExists(path.resolve(dir, pj.main))) {
-      console.error(`${`[${pj.name}]`.cyan}:`,  `Main entry not found (${pj.main})`.red);
+      console.error(`${`[${pj.name}]`.cyan}:`, `Main entry not found (${pj.main})`.red);
       bad = true;
     }
     if (!pj.typings || !await fs.pathExists(path.resolve(dir, pj.typings))) {

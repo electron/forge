@@ -1,7 +1,9 @@
 import { api, InstallAsset } from '@electron-forge/core';
-import inquirer from 'inquirer';
 
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import program from 'commander';
+import path from 'path';
 
 import './util/terminate';
 
@@ -9,12 +11,10 @@ import './util/terminate';
   let repo!: string;
 
   program
-    .version(require('../package.json').version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[repository]')
     .option('--prerelease', 'Fetch prerelease versions')
-    .action((repository) => {
-      repo = repository;
-    })
+    .action((repository) => { repo = repository; })
     .parse(process.argv);
 
   const chooseAsset = async (assets: InstallAsset[]) => {
@@ -29,7 +29,7 @@ import './util/terminate';
       message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
     });
 
-    return assets.find(asset => asset.id === assetID)!;
+    return assets.find((asset) => asset.id === assetID)!;
   };
 
   await api.install({

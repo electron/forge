@@ -1,6 +1,5 @@
 import PluginBase from '@electron-forge/plugin-base';
 import { IForgePluginInterface, ForgeConfig, IForgePlugin } from '@electron-forge/shared-types';
-import { ChildProcess } from 'child_process';
 import debug from 'debug';
 
 import { StartOptions } from '../api';
@@ -10,27 +9,28 @@ const d = debug('electron-forge:plugins');
 
 export default class PluginInterface implements IForgePluginInterface {
   private plugins: IForgePlugin[];
+
   private config: ForgeConfig;
 
   constructor(dir: string, forgeConfig: ForgeConfig) {
     this.plugins = forgeConfig.plugins.map((plugin) => {
+      // eslint-disable-next-line no-underscore-dangle
       if ((plugin as IForgePlugin).__isElectronForgePlugin) {
         return plugin;
       }
 
       if (Array.isArray(plugin)) {
-        if (typeof plugin[0] !== 'string') {
-          throw `Expected plugin[0] to be a string but found ${plugin[0]}`;
+        const [pluginName, opts = {}] = plugin;
+        if (typeof pluginName !== 'string') {
+          throw new Error(`Expected plugin[0] to be a string but found ${pluginName}`);
         }
-        let opts = {};
-        if (typeof plugin[1] !== 'undefined') opts = plugin[1];
-        const Plugin = requireSearch<any>(dir, [plugin[0]]);
+        const Plugin = requireSearch<any>(dir, [pluginName]);
         if (!Plugin) {
-          throw `Could not find module with name: ${plugin[0]}. Make sure it's listed in the devDependencies of your package.json`;
+          throw new Error(`Could not find module with name: ${plugin[0]}. Make sure it's listed in the devDependencies of your package.json`);
         }
         return new Plugin(opts);
       }
-      throw `Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`; // eslint-disable-line
+      throw new Error(`Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`);
     });
     // Fix linting
     this.config = null as any;
@@ -79,10 +79,12 @@ export default class PluginInterface implements IForgePluginInterface {
         newStartFn = plugin.startLogic;
       }
     }
-    if (claimed.length > 1) throw `Multiple plugins tried to take control of the start command, please remove one of them\n --> ${claimed.join(', ')}`;
+    if (claimed.length > 1) {
+      throw new Error(`Multiple plugins tried to take control of the start command, please remove one of them\n --> ${claimed.join(', ')}`);
+    }
     if (claimed.length === 1 && newStartFn) {
       d(`plugin: "${claimed[0]}" has taken control of the start command`);
-      return await newStartFn(opts);
+      return newStartFn(opts);
     }
     return false;
   }

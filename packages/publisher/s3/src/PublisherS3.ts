@@ -1,23 +1,21 @@
 import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import { asyncOra } from '@electron-forge/async-ora';
 
-import AWS from 'aws-sdk';
 import debug from 'debug';
+import fs from 'fs';
 import path from 'path';
+import S3 from 'aws-sdk/clients/s3';
 
 import { PublisherS3Config } from './Config';
-import { ForgePlatform } from '@electron-forge/shared-types';
-
-// FIXME: Drop usage of s3 module in favor of AWS-sdk
-const s3 = require('s3');
 
 const d = debug('electron-forge:publish:s3');
 
-(AWS as any).util.update(AWS.S3.prototype, {
-  addExpect100Continue: function addExpect100Continue() {
-    // Hack around large upload issue: https://github.com/andrewrk/node-s3-client/issues/74
-  },
-});
+type S3Artifact = {
+  path: string;
+  keyPrefix: string;
+  platform: string;
+  arch: string;
+};
 
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
@@ -26,15 +24,10 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     makeResults,
   }: PublisherOptions) {
     const { config } = this;
-    const artifacts: {
-      path: string;
-      keyPrefix: string;
-      platform: string;
-      arch: string;
-    }[] = [];
+    const artifacts: S3Artifact[] = [];
 
     for (const makeResult of makeResults) {
-      artifacts.push(...makeResult.artifacts.map(artifact => ({
+      artifacts.push(...makeResult.artifacts.map((artifact) => ({
         path: artifact,
         keyPrefix: config.folder || makeResult.packageJSON.version,
         platform: makeResult.platform,
@@ -42,61 +35,51 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       })));
     }
 
-    const s3Client = new AWS.S3({
+    const s3Client = new S3({
       accessKeyId: config.accessKeyId || process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
     });
 
     if (!s3Client.config.credentials || !config.bucket) {
-      throw 'In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your forge config. See the docs for more info'; // eslint-disable-line
+      throw new Error('In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your Forge config. See the docs for more info');
     }
 
     d('creating s3 client with options:', config);
 
-    const client = s3.createClient({
-      s3Client,
-    });
-    client.s3.addExpect100Continue = () => {};
-
     let uploaded = 0;
-    await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length}`, async (uploadSpinner) => {
-      const updateSpinner = () => {
-        uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length}`;
-      };
+    const spinnerText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
 
-      await Promise.all(artifacts.map(artifact =>
-        new Promise(async (resolve, reject) => {
-          const done = (err?: Error) => {
-            if (err) return reject(err);
-            uploaded += 1;
-            updateSpinner();
-            resolve();
-          };
+    await asyncOra(spinnerText(), async (uploadSpinner) => {
+      await Promise.all(artifacts.map(async (artifact) => {
+        const uploader = s3Client.upload({
+          Body: fs.createReadStream(artifact.path),
+          Bucket: config.bucket,
+          Key: this.keyForArtifact(artifact),
+          ACL: config.public ? 'public-read' : 'private',
+        } as S3.PutObjectRequest);
+        d('uploading:', artifact.path);
 
-          const uploader = client.uploadFile({
-            localFile: artifact.path,
-            s3Params: {
-              Bucket: config.bucket,
-              Key: this.config.keyResolver
-                ? this.config.keyResolver(
-                  path.basename(artifact.path),
-                  artifact.platform,
-                  artifact.arch,
-                )
-                : `${artifact.keyPrefix}/${path.basename(artifact.path)}`,
-              ACL: config.public ? 'public-read' : 'private',
-            },
-          });
-          d('uploading:', artifact.path);
+        uploader.on('httpUploadProgress', (progress) => {
+          const p = `${Math.round((progress.loaded / progress.total) * 100)}%`;
+          d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
+        });
 
-          uploader.on('error', (err: Error) => done(err));
-          uploader.on('progress', () => {
-            const p = `${Math.round((uploader.progressAmount / uploader.progressTotal) * 100)}%`;
-            d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
-          });
-          uploader.on('end', () => done());
-        }),
-      ));
+        await uploader.promise();
+        uploaded += 1;
+        uploadSpinner.text = spinnerText();
+      }));
     });
+  }
+
+  keyForArtifact(artifact: S3Artifact): string {
+    if (this.config.keyResolver) {
+      return this.config.keyResolver(
+        path.basename(artifact.path),
+        artifact.platform,
+        artifact.arch,
+      );
+    }
+
+    return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
   }
 }

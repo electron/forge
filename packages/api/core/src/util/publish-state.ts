@@ -18,13 +18,14 @@ export default class PublishState {
 
       if ((await fs.stat(subDir)).isDirectory()) {
         const filePaths = (await fs.readdir(subDir))
-          .filter(fileName => fileName.endsWith(EXTENSION))
-          .map(fileName => path.resolve(subDir, fileName));
+          .filter((fileName) => fileName.endsWith(EXTENSION))
+          .map((fileName) => path.resolve(subDir, fileName));
 
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);
           await state.load();
-          state.state.artifacts = state.state.artifacts.map(artifactPath => path.resolve(rootDir, artifactPath));
+          // eslint-disable-next-line max-len
+          state.state.artifacts = state.state.artifacts.map((artifactPath) => path.resolve(rootDir, artifactPath));
           states.push(state);
         }
       }
@@ -36,7 +37,8 @@ export default class PublishState {
   static async saveToDirectory(directory: string, artifacts: ForgeMakeResult[], rootDir: string) {
     const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
-      artifact.artifacts = artifact.artifacts.map(artifactPath => path.relative(rootDir, artifactPath));
+      // eslint-disable-next-line max-len
+      artifact.artifacts = artifact.artifacts.map((artifactPath) => path.relative(rootDir, artifactPath));
       const publishState = new PublishState(path.resolve(directory, id, 'null'), false);
       publishState.state = artifact;
       await publishState.saveToDisk();
@@ -44,8 +46,11 @@ export default class PublishState {
   }
 
   private dir: string;
+
   private path: string;
+
   private hasHash: boolean;
+
   public state: ForgeMakeResult = {} as ForgeMakeResult;
 
   constructor(filePath: string, hasHash = true) {

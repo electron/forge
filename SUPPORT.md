@@ -1,6 +1,6 @@
 # Support for Electron Forge
 
-If you have questions about usage, we encourage you to browse the [website](https://v6.electronforge.io/),
+If you have questions about usage, we encourage you to browse the [website](https://www.electronforge.io/),
 and visit one of the several [community-driven sites](https://github.com/electron/electron#community).
 
 ## Troubleshooting
@@ -10,7 +10,7 @@ running `electron-forge`. This will print debug information from the specified m
 value of the environment variable is a comma-separated list of modules which support this logging
 feature. Known modules include:
 
-* `electron-download`
+* `@electron/get:*`
 * `electron-forge:*` (always use this one before filing an issue)
 * `electron-installer-debian`
 * `electron-installer-dmg`

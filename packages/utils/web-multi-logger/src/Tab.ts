@@ -6,6 +6,7 @@ let idCounter = 1;
 
 export default class Tab {
   private logs: Log[] = [];
+
   private id: number;
 
   constructor(public name: string, private ws: ews.Instance) {

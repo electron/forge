@@ -7,7 +7,10 @@ import { MakerSnapConfig } from './Config';
 
 export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   name = 'snap';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
+
+  requiredExternalBinaries: string[] = ['snapcraft'];
 
   isSupportedOnCurrentPlatform() {
     return process.platform === 'linux';
@@ -18,9 +21,10 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     makeDir,
     targetArch,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const installer = require('electron-installer-snap');
 
-    const outPath = path.resolve(makeDir, 'snap');
+    const outPath = path.resolve(makeDir, 'snap', targetArch);
 
     await this.ensureDirectory(outPath);
 
@@ -29,7 +33,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
       dest: outPath,
       src: dir,
     };
-    const snapConfig = Object.assign({}, this.config, snapDefaults);
+    const snapConfig = { ...this.config, ...snapDefaults };
 
     return [await installer(snapConfig)];
   }

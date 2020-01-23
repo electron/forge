@@ -1,26 +1,41 @@
 import { expect } from 'chai';
 import path from 'path';
 
-import findConfig from '../../src/util/forge-config';
+import findConfig, { forgeConfigIsValidFilePath, renderConfigTemplate, setInitialForgeConfig } from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
-  rebuildConfig: {},
+  electronRebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],
 };
 
 describe('forge-config', () => {
-  it('should resolve the object in package.json with defaults  if one exists', async () => {
+  it('should fail if the config is not an object or requirable path', async () => {
+    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_forge_config'))).to.eventually.be.rejectedWith('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
+  });
+
+  it('should fail if the external config is not parseable', async () => {
+    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_external_forge_config'))).to.eventually.be.rejectedWith(/bad.js: Unexpected token/);
+  });
+
+  it('should be set to the defaults if no Forge config is specified in package.json', async () => {
+    const config = await findConfig(path.resolve(__dirname, '../fixture/no_forge_config'));
+    delete config.pluginInterface;
+    expect(config).to.deep.equal(defaults);
+  });
+
+  it('should resolve the object in package.json with defaults if one exists', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
     delete config.pluginInterface;
-    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
+    expect(config).to.be.deep.equal({
+      ...defaults,
       packagerConfig: {
         baz: {},
       },
       s3: {},
-    }));
+    });
   });
 
   it('should set a pluginInterface', async () => {
@@ -43,7 +58,9 @@ describe('forge-config', () => {
     expect(() => { conf.packagerConfig.baz = 'bar'; }).to.not.throw();
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
-    const descriptor = { writable: true, enumerable: true, configurable: true, value: 'SecretyThing' };
+    const descriptor = {
+      writable: true, enumerable: true, configurable: true, value: 'SecretyThing',
+    };
     expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).to.be.deep.equal(descriptor);
     expect(() => { conf.s3.secretAccessKey = 'bar'; }).to.not.throw();
     expect(conf.s3.secretAccessKey).to.equal('bar');
@@ -57,12 +74,13 @@ describe('forge-config', () => {
     delete config.topLevelProp;
     delete config.topLevelUndef;
     delete config.regexp;
-    expect(config).to.be.deep.equal(Object.assign({}, defaults, {
+    expect(config).to.be.deep.equal({
+      ...defaults,
       buildIdentifier: 'beta',
       packagerConfig: { foo: 'bar', baz: {} },
       s3: {},
       electronReleaseServer: {},
-    }));
+    });
   });
 
   it('should resolve the JS file exports in config.forge points to a JS file and maintain functions', async () => {
@@ -121,5 +139,71 @@ describe('forge-config', () => {
     expect(conf.regexp).to.be.instanceOf(RegExp);
     expect(conf.regexp.test('foo')).to.equal(true, 'regexp should match foo');
     expect(conf.regexp.test('bar')).to.equal(false, 'regexp should not match bar');
+  });
+
+  describe('forgeConfigIsValidFilePath', () => {
+    it('succeeds for a file extension-less path', async () => {
+      await expect(forgeConfigIsValidFilePath(path.resolve(__dirname, '../fixture/dummy_js_conf/'), 'forge.different.config')).to.eventually.equal(true);
+    });
+
+    it('fails when a file is nonexistent', async () => {
+      await expect(forgeConfigIsValidFilePath(path.resolve(__dirname, '../fixture/dummy_js_conf/'), 'forge.nonexistent.config')).to.eventually.equal(false);
+    });
+  });
+
+  describe('renderConfigTemplate', () => {
+    it('should import a JS file when a string starts with "require:"', () => {
+      const dir = path.resolve(__dirname, '../fixture/dummy_js_conf');
+      const config = {
+        foo: 'require:foo',
+      };
+      renderConfigTemplate(dir, {}, config);
+      expect(config.foo).to.deep.equal({
+        bar: {
+          baz: 'quux',
+        },
+      });
+    });
+  });
+
+  describe('setInitialForgeConfig', () => {
+    it('should normalize hyphens in maker names to underscores', () => {
+      const packageJSON = {
+        name: 'foo-bar',
+        config: {
+          forge: {
+            makers: [
+              {
+                name: '@electron-forge/maker-test',
+                config: {
+                  name: 'will be overwritten',
+                },
+              },
+            ],
+          },
+        },
+      };
+      setInitialForgeConfig(packageJSON);
+      expect(packageJSON.config.forge.makers[0].config.name).to.equal('foo_bar');
+    });
+
+    it('should handle when package.json name is not set', () => {
+      const packageJSON = {
+        config: {
+          forge: {
+            makers: [
+              {
+                name: '@electron-forge/maker-test',
+                config: {
+                  name: 'will be overwritten',
+                },
+              },
+            ],
+          },
+        },
+      };
+      setInitialForgeConfig(packageJSON);
+      expect(packageJSON.config.forge.makers[0].config.name).to.equal('');
+    });
   });
 });

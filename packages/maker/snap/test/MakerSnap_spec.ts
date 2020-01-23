@@ -7,7 +7,11 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerSnapConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerSnapConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerSnapConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerSnap', () => {
   let MakerSnapModule: typeof MakerImpl;
@@ -32,7 +36,7 @@ describe('MakerSnap', () => {
       'electron-installer-snap': eisStub,
     }).default;
     createMaker = () => {
-      maker = new MakerSnapModule(config); // eslint-disable-line
+      maker = new MakerSnapModule(config);
       maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };
@@ -40,12 +44,14 @@ describe('MakerSnap', () => {
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,
       src: dir,
-      dest: path.resolve(makeDir, 'snap'),
+      dest: path.resolve(makeDir, 'snap', process.arch),
     });
   });
 
@@ -56,12 +62,14 @@ describe('MakerSnap', () => {
     } as any);
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: process.arch,
       src: dir,
-      dest: path.resolve(makeDir, 'snap'),
+      dest: path.resolve(makeDir, 'snap', process.arch),
       description: 'Snap description',
     });
   });

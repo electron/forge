@@ -1,0 +1,83 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "mocha",
+    "@typescript-eslint"
+  ],
+  "env": {
+    "mocha": true,
+    "node": true
+  },
+  "extends": [
+    "airbnb-base",
+    "plugin:import/typescript"
+  ],
+  "rules": {
+    "class-methods-use-this": "off",
+    "import/extensions": [
+      "error",
+      "always",
+      {
+        "js": "never",
+        "ts": "never"
+      }
+    ],
+    "import/no-cycle": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["packages/**/test/**/*_spec*.ts"] }],
+    "mocha/no-exclusive-tests": "error",
+    "no-await-in-loop": "off",
+    "no-param-reassign": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ForInStatement",
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+      },
+      {
+        "selector": "LabeledStatement",
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+      },
+      {
+        "selector": "WithStatement",
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-this-alias": ["error", {
+      "allowDestructuring": true
+    }],
+    "@typescript-eslint/no-unused-vars": ["error", {
+      "args": "after-used",
+      "argsIgnorePattern": "^_",
+      "ignoreRestSiblings": true,
+      "vars": "all"
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["packages/*/*/test/**/*_spec*.ts"],
+      "rules": {
+        "global-require": "off",
+        "import/no-dynamic-require": "off"
+      }
+    }
+  ],
+  "settings": {
+    "import/extensions": [
+      ".js",
+      ".ts"
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts"]
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".json", ".ts"]
+      }
+    }
+  }
+}

@@ -48,37 +48,44 @@ When changing the API documentation, here are some rules to keep in mind.
   * should be properly capitalized
   * should not be "This"
 
-For changes to the website ([electronforge.io](https://v6.electronforge.io)), please file
-issues/pull requests at this repository in the "docs" folder.
+For changes to the website ([electronforge.io](https://www.electronforge.io)), please file
+issues/pull requests at [its separate repository](https://github.com/MarshallOfSound/electron-forge-docs).
 
-## Running the Tests
+## Changing the Code
 
-The Electron Forge repository has a lot of tests some mof which take a decent
-amount of time to run, if you only want to run the fast tests or just the tests
-for a specific package we've provided some helpers to make it easy for you
-to do so.
+Getting the code base running locally requires the `bolt` command installed globally.  An example is given below.
 
 ```bash
-# Test everything (fast, slow, all packages)
-yarn test
+npm i -g bolt
+git clone https://github.com/electron-userland/electron-forge
+cd electron-forge
+# Installs all dependencies, don't run "yarn" or "npm install" yourself
+bolt
+# Builds all the TS code
+bolt build
+```
 
-# Test just the fast things
-yarn test --fast
+### Making Commits
 
-# Test just the things in the webpack package
-yarn test --match=webpack
+Please ensure that all changes are committed using [semantic commit messages](https://github.com/bcoe/conventional-changelog-standard/blob/master/convention.md).
+We expose a helper (`bolt commit`) to make this easier.
 
-# Test just the fast things in the core package
-yarn test --match=core --fast
+### Running the Tests
+
+The Electron Forge repository has a lot of tests, some of which take a decent
+amount of time to run.
+
+```bash
+bolt test
 ```
 
 ## Filing Pull Requests
 
 Here are some things to keep in mind as you file pull requests to fix bugs, add new features, etc.:
 
-* Travis CI is used to make sure that the project builds packages as expected on the supported
-  platforms, using supported Node.js versions, and that the project conforms to the configured
-  coding standards.
+* GitHub Actions are used to make sure that the project builds packages as expected on the
+  supported platforms, using supported Node.js versions, and that the project conforms to the
+  configured coding standards.
 * Unless it's impractical, please write tests for your changes. This will help us so that we can
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
@@ -87,10 +94,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   adding a new feature, think about whether it is appropriate to go into a separate Node module,
   and then be integrated into this project.
 * Please **do not** bump the version number in your pull requests, the maintainers will do that.
-  Feel free to indicate whether the changes require a major, minor, or patch version bump, as
-  prescribed by the [semantic versioning specification](http://semver.org/).
-* This project uses `git-cz` to generate commit messages. To make commits, please run
-  `npm run commit`.
+  Feel free to indicate whether the changes are a breaking change in behavior.
 * If you are continuing the work of another person's PR and need to rebase/squash, please retain the
   attribution of the original author(s) and continue the work in subsequent commits.
 
@@ -98,6 +102,5 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 - if you aren't sure if a release should happen, open an issue
 - make sure the tests pass
-- `npm run release:(patch|minor|major)`
-- create a new GitHub release from the pushed tag with the contents of `CHANGELOG.md` for that version
-- close the milestone associated with the version if one is open
+- `node tools/bump.js $NEW_VERSION`
+- `node tools/publish.js`

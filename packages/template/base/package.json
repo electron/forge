@@ -1,0 +1,30 @@
+{
+  "name": "@electron-forge/template-base",
+  "version": "6.0.0-beta.47",
+  "description": "Base template for Electron Forge",
+  "repository": "https://github.com/electron-userland/electron-forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "main": "dist/BaseTemplate.js",
+  "typings": "dist/BaseTemplate.d.ts",
+  "scripts": {
+    "test": "echo No Tests"
+  },
+  "engines": {
+    "node": ">= 10.0.0"
+  },
+  "dependencies": {
+    "@electron-forge/async-ora": "6.0.0-beta.47",
+    "@electron-forge/shared-types": "6.0.0-beta.47",
+    "debug": "^4.1.0",
+    "fs-extra": "^8.1.0",
+    "username": "^5.1.0"
+  },
+  "devDependencies": {
+    "@electron-forge/test-utils": "6.0.0-beta.47",
+    "chai": "4.2.0",
+    "cross-spawn-promise": "^0.10.1",
+    "proxyquire": "^2.1.3",
+    "sinon": "^8.1.0"
+  }
+}

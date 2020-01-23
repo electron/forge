@@ -1,11 +1,8 @@
 import parseAuthor from 'parse-author';
+import { PackagePerson } from '@electron-forge/shared-types';
 
-type AuthorType = string | {
-  name: string;
-} | undefined;
-
-export default function getNameFromAuthor(author: AuthorType) {
-  let publisher: AuthorType = author || '';
+export default function getNameFromAuthor(author: PackagePerson) {
+  let publisher: PackagePerson = author || '';
 
   if (typeof publisher === 'string') {
     publisher = parseAuthor(publisher);

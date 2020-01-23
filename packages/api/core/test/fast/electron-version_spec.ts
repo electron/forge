@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import path from 'path';
 import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
-import { deps, devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { hasYarn } from '../../src/util/yarn-or-npm';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
@@ -31,13 +32,9 @@ describe('updateElectronDependency', () => {
 });
 
 describe('getElectronVersion', () => {
-  it('fails without devDependencies', () => {
-    return expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies');
-  });
+  it('fails without devDependencies', () => expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
-  it('fails without electron devDependencies', () => {
-    return expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies');
-  });
+  it('fails without electron devDependencies', () => expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   it('fails with a non-exact version and no electron installed', () => {
     const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
@@ -75,5 +72,17 @@ describe('getElectronVersion', () => {
       devDependencies: { electron: '1.0.0' },
     };
     return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
+  });
+
+  it('works with a non-exact version and yarn workspaces', async () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace', 'packages', 'subpackage');
+    const packageJSON = {
+      devDependencies: { electron: '^4.0.4' },
+    };
+    if (hasYarn()) {
+      expect(await getElectronVersion(fixtureDir, packageJSON)).to.be.equal('4.0.9');
+    } else {
+      expect(getElectronVersion(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
+    }
   });
 });

@@ -7,6 +7,7 @@ import MakerBase from '../src/Maker';
 
 class MakerImpl extends MakerBase<{}> {
   name = 'test';
+
   defaultPlatforms = [];
 }
 

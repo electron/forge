@@ -12,8 +12,8 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
   let indexOfDoubleDash = process.argv.indexOf('--');
   indexOfDoubleDash = indexOfDoubleDash < 0 ? process.argv.length + 1 : indexOfDoubleDash;
 
-  const passThroughArgs = args.filter(arg => process.argv.indexOf(arg) > indexOfDoubleDash);
-  const normalArgs = args.filter(arg => process.argv.indexOf(arg) <= indexOfDoubleDash);
+  const passThroughArgs = args.filter((arg) => process.argv.indexOf(arg) > indexOfDoubleDash);
+  const normalArgs = args.filter((arg) => process.argv.indexOf(arg) <= indexOfDoubleDash);
 
   let newArgs = args;
   let newUnknown = unknown;
@@ -34,7 +34,16 @@ program
   .command('make', 'Generate distributables for the current Electron application')
   .command('start', 'Start the current Electron application')
   .command('publish', 'Publish the current Electron application to GitHub')
-  .command('install', 'Install an Electron application from GitHub');
+  .command('install', 'Install an Electron application from GitHub')
+  .on('command:*', (commands) => {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!program._execs.has(commands[0])) {
+      console.error();
+      console.error(`Unknown command "${program.args.join(' ')}".`.red);
+      console.error('See --help for a list of available commands.');
+      process.exit(1);
+    }
+  });
 
 (async () => {
   let goodSystem;

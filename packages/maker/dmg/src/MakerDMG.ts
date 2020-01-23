@@ -1,13 +1,14 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerDMGConfig } from './Config';
 
 import fs from 'fs-extra';
 import path from 'path';
+import { MakerDMGConfig } from './Config';
 
 export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   name = 'dmg';
+
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
   isSupportedOnCurrentPlatform() {
@@ -20,20 +21,21 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     appName,
     packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require
     const electronDMG = require('electron-installer-dmg');
 
     const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
     const forgeDefaultOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.dmg`);
 
     await this.ensureFile(outPath);
-    const dmgConfig = Object.assign({
+    const dmgConfig = {
       overwrite: true,
       name: appName,
-    }, this.config, {
+      ...this.config,
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
-    });
-    const opts = await electronDMG.p(dmgConfig);
+    };
+    const opts = await electronDMG(dmgConfig);
     if (!this.config.name) {
       await this.ensureFile(forgeDefaultOutPath);
       await fs.rename(outPath, forgeDefaultOutPath);

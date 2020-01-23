@@ -18,7 +18,7 @@ export default async (
   deps: string[],
   depType = DepType.PROD,
   versionRestriction = DepVersionRestriction.RANGE,
-) => {
+) => { // eslint-disable-line consistent-return
   d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
@@ -41,6 +41,6 @@ export default async (
       stdio: 'pipe',
     });
   } catch (err) {
-    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr.toString()}`);
+    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
   }
 };

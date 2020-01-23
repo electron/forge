@@ -1,12 +1,13 @@
 import 'colors';
 import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
-import { ForgeArch, ForgePlatform, ForgeConfig } from '@electron-forge/shared-types';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import { getHostArch } from '@electron/get';
 import glob from 'glob';
-import path from 'path';
-import pify from 'pify';
 import packager from 'electron-packager';
+import path from 'path';
+import { promisify } from 'util';
 
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
@@ -18,22 +19,25 @@ import resolveDir from '../util/resolve-dir';
 import getCurrentOutDir from '../util/out-dir';
 import { getElectronVersion } from '../util/electron-version';
 
-const { host: hostArch }: { host: () => ForgeArch | 'all' } = require('electron-download/lib/arch');
-
 const d = debug('electron-forge:packager');
 
-type ElectronPackagerAfterCopyHook =
-  (buildPath: string, electronVersion: string, pPlatform: ForgePlatform, pArch: ForgeArch, done: (err?: Error) => void) => void;
+type ElectronPackagerAfterCopyHook = (
+  buildPath: string,
+  electronVersion: string,
+  pPlatform: ForgePlatform,
+  pArch: ForgeArch,
+  done: (err?: Error) => void
+) => void;
 
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
 function resolveHooks(hooks: (string | ElectronPackagerAfterCopyHook)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map(hook => (
+    return hooks.map((hook) => (
       typeof hook === 'string'
-      ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
-      : hook
+        ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
+        : hook
     ));
   }
 
@@ -49,7 +53,7 @@ function sequentialHooks(hooks: Function[]) {
     const done = args[args.length - 1];
     const passedArgs = args.splice(0, args.length - 1);
     for (const hook of hooks) {
-      await pify(hook)(...passedArgs);
+      await promisify(hook)(...passedArgs);
     }
     done();
   }] as [(...args: any[]) => Promise<void>];
@@ -81,7 +85,7 @@ export interface PackageOptions {
 export default async ({
   dir = process.cwd(),
   interactive = false,
-  arch = hostArch(),
+  arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   outDir,
 }: PackageOptions) => {
@@ -92,7 +96,7 @@ export default async ({
 
   const resolvedDir = await resolveDir(dir);
   if (!resolvedDir) {
-    throw 'Failed to locate compilable Electron application';
+    throw new Error('Failed to locate compilable Electron application');
   }
   dir = resolvedDir;
 
@@ -100,7 +104,7 @@ export default async ({
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
 
   if (!packageJSON.main) {
-    throw 'packageJSON.main must be set to a valid entry point for your Electron app';
+    throw new Error('packageJSON.main must be set to a valid entry point for your Electron app');
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
@@ -115,7 +119,7 @@ export default async ({
         prepareCounter += 1;
         prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
-      const bins = await pify(glob)(path.join(buildPath, '**/.bin/**/*'));
+      const bins = await promisify(glob)(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
       }
@@ -126,7 +130,13 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
+      await rebuildHook(
+        buildPath,
+        electronVersion,
+        pPlatform,
+        pArch,
+        forgeConfig.electronRebuildConfig,
+      );
       packagerSpinner = ora('Packaging Application').start();
       done();
     },
@@ -160,19 +170,21 @@ export default async ({
   }) as ElectronPackagerAfterCopyHook];
   afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
 
-  const packageOpts: packager.Options = Object.assign({
+  type PackagerArch = Exclude<ForgeArch, 'arm'>;
+
+  const packageOpts: packager.Options = {
     asar: false,
     overwrite: true,
-  }, forgeConfig.packagerConfig, {
+    ...forgeConfig.packagerConfig,
     dir,
-    arch,
+    arch: arch as PackagerArch,
     platform,
     afterCopy: sequentialHooks(afterCopyHooks),
     afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),
     out: calculatedOutDir,
     electronVersion: await getElectronVersion(dir, packageJSON),
-  });
+  };
   packageOpts.quiet = true;
 
   if (packageOpts.all) {

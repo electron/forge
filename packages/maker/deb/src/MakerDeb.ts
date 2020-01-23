@@ -16,36 +16,35 @@ export function debianArch(nodeArch: ForgeArch) {
 
 export default class MakerDeb extends MakerBase<MakerDebConfig> {
   name = 'deb';
+
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
+  requiredExternalBinaries: string[] = ['dpkg', 'fakeroot'];
+
   isSupportedOnCurrentPlatform() {
-    return this.isInstalled('electron-installer-debian') && process.platform === 'linux';
+    return this.isInstalled('electron-installer-debian');
   }
 
   async make({
     dir,
     makeDir,
     targetArch,
-    packageJSON,
   }: MakerOptions) {
+    // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-debian');
 
-    const arch = debianArch(targetArch);
-    const name = (this.config.options || {}).name || packageJSON.name;
-    const versionedName = `${name}_${installer.transformVersion(packageJSON.version)}_${arch}`;
-    const outPath = path.resolve(makeDir, `${versionedName}.deb`);
+    const outDir = path.resolve(makeDir, 'deb', targetArch);
 
-    await this.ensureFile(outPath);
-
-    await installer(Object.assign({
+    await this.ensureDirectory(outDir);
+    const { packagePaths } = await installer({
       options: {},
-    }, this.config, {
-      arch,
+      ...this.config,
+      arch: debianArch(targetArch),
       src: dir,
-      dest: path.dirname(outPath),
+      dest: outDir,
       rename: undefined,
-    }));
+    });
 
-    return [outPath];
+    return packagePaths;
   }
 }

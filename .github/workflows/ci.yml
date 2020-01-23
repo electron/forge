@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+  pull_request:
+
+jobs:
+  dependabolt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run dependabolt
+      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      uses: docker://malept/gha-dependabolt:2.1.1
+      env:
+        DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  test:
+    runs-on: ${{ matrix.os }}
+    needs: dependabolt
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+        node-installer: [npm, yarn]
+
+    steps:
+      - name: Fix git checkout line endings
+        run: git config --global core.autocrlf input
+      - uses: actions/checkout@v2
+      - name: Windows specific setup
+        if: matrix.os == 'windows-latest'
+        run: |
+          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
+          npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+      - name: Linux specific setup
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo add-apt-repository -y ppa:alexlarsson/flatpak
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
+          ci/install_runtimes.sh
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Determine Yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache Yarn
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install bolt
+        shell: bash
+        run: |
+          case "$(uname -s)" in
+            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+            *) BOLT_VERSION=latest ;;
+          esac
+          npm install -g bolt@$BOLT_VERSION
+      - name: Install
+        run: bolt
+      - name: Lint
+        run: bolt lint
+      - name: Build
+        run: bolt build
+      - name: Test on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
+          $env:PATH = $env:PATH + $wixToolsetBinPath
+          [Environment]::SetEnvironmentVariable("Path", $env:PATH, [EnvironmentVariableTarget]::Machine)
+          if ((Get-Command "light.exe" -ErrorAction SilentlyContinue) -eq $null)
+          {
+            Write-Host "Unable to find light.exe in your PATH"
+          }
+          bolt coverage
+        env:
+          CI: true
+          NODE_INSTALLER: ${{ matrix.node-installer }}
+      - name: Test on macOS/Linux
+        if: matrix.os != 'windows-latest'
+        run: bolt coverage
+        env:
+          NODE_INSTALLER: ${{ matrix.node-installer }}
+          DEBUG: electron-installer-snap:snapcraft
+      - name: Codecov
+        run: bolt codecov
+        env:
+          CI_OS: ${{ matrix.os }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          NODE_INSTALLER: ${{ matrix.node-installer }}
+  # docs:
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   needs: test
+  #   runs-on: [ubuntu-latest]
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - name: Use Node.js 12.x
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: 12.x
+  #     - name: Cache node_modules
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: node_modules
+  #         key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.OS }}-build-${{ env.cache-name }}-
+  #           ${{ runner.OS }}-build-
+  #           ${{ runner.OS }}-
+  #     - name: Install bolt
+  #       shell: bash
+  #       run: |
+  #         case "$(uname -s)" in
+  #           Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+  #           *) BOLT_VERSION=latest ;;
+  #         esac
+  #         npm install -g bolt@$BOLT_VERSION
+  #     - name: Deploy docs
+  #       run: ci/docs.sh
+  #       env:
+  #         NOW_TOKEN: ${{ secrets.NOW_TOKEN }}

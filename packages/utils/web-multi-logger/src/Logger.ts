@@ -9,8 +9,11 @@ export { Tab };
 
 export default class Logger {
   private app = express();
+
   private ws!: ews.Instance;
+
   private tabs: Tab[] = [];
+
   private server: http.Server | null = null;
 
   constructor(private port = 9000) {
@@ -19,11 +22,11 @@ export default class Logger {
 
   private registerRoutes() {
     this.ws = ews(this.app);
-    this.app.get('/rest/tabs', (req, res) => {
-      return res.json(this.tabs);
-    });
+    this.app.get('/rest/tabs', (req, res) => res.json(this.tabs));
 
-    this.app.use('/xterm', express.static(path.resolve(require.resolve('xterm'), '../../../dist')));
+    this.app.use('/xterm/addons/fit', express.static(path.dirname(require.resolve('xterm-addon-fit'))));
+    this.app.use('/xterm/addons/search', express.static(path.dirname(require.resolve('xterm-addon-search'))));
+    this.app.use('/xterm', express.static(path.resolve(require.resolve('xterm'), '../..')));
     this.app.use(express.static(path.resolve(__dirname, '..', 'static')));
     (this.app as any).ws('/sub', () => {});
   }

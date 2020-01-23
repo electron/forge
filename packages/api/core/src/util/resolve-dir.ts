@@ -24,9 +24,8 @@ export default async (dir: string) => {
 
       // TODO: Move this check to inside the forge config resolver and use
       //       mutatedPackageJson reader
-      let electronVersion;
       try {
-        electronVersion = await getElectronVersion(mDir, packageJSON);
+        await getElectronVersion(mDir, packageJSON);
       } catch (err) {
         lastError = err.message;
       }

@@ -5,16 +5,20 @@ import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
+import { ForgeArch } from '@electron-forge/shared-types';
 import { MakerDebConfig } from '../src/Config';
 import { debianArch } from '../src/MakerDeb';
-import { ForgeArch } from '@electron-forge/shared-types';
 
-class MakerImpl extends MakerBase<MakerDebConfig> { name = 'test'; defaultPlatforms = []; }
+class MakerImpl extends MakerBase<MakerDebConfig> {
+ name = 'test';
+
+ defaultPlatforms = [];
+}
 
 describe('MakerDeb', () => {
   let MakerDeb: typeof MakerImpl;
   let eidStub: SinonStub;
-  let ensureFileStub: SinonStub;
+  let ensureDirectoryStub: SinonStub;
   let config: MakerDebConfig;
   let maker: MakerImpl;
   let createMaker: () => void;
@@ -26,30 +30,31 @@ describe('MakerDeb', () => {
   const packageJSON = { version: '1.2.3' };
 
   beforeEach(() => {
-    ensureFileStub = stub().returns(Promise.resolve());
-    eidStub = stub().resolves();
-    (eidStub as any).transformVersion = (version: string) => version;
+    ensureDirectoryStub = stub().returns(Promise.resolve());
+    eidStub = stub().returns({ packagePaths: ['/foo/bar.deb'] });
     config = {};
 
     MakerDeb = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDeb', {
       'electron-installer-debian': eidStub,
     }).default;
     createMaker = () => {
-      maker = new MakerDeb(config, []); // eslint-disable-line
-      maker.ensureFile = ensureFileStub;
+      maker = new MakerDeb(config, []);
+      maker.ensureDirectory = ensureDirectoryStub;
       maker.prepareConfig(targetArch as any);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: debianArch(process.arch as ForgeArch),
       options: {},
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'deb', process.arch),
       rename: undefined,
     });
     expect(maker.config).to.deep.equal(config);
@@ -65,7 +70,9 @@ describe('MakerDeb', () => {
 
     createMaker();
 
-    await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
+    await (maker.make as any)({
+      dir, makeDir, appName, targetArch, packageJSON,
+    });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       arch: debianArch(process.arch as ForgeArch),
@@ -73,19 +80,10 @@ describe('MakerDeb', () => {
         productName: 'Debian',
       },
       src: dir,
-      dest: makeDir,
+      dest: path.join(makeDir, 'deb', process.arch),
       rename: undefined,
     });
   });
-
-  if (process.platform === 'linux') {
-    it('should return the proper pre-release version in the outPath', async () => {
-      (eidStub as any).transformVersion = require('electron-installer-debian').transformVersion;
-      packageJSON.version = '1.2.3-beta.4';
-      const outPath = await (maker.make as any)({ dir, makeDir, appName, targetArch, packageJSON });
-      expect(outPath).to.match(/1\.2\.3~beta\.4/);
-    });
-  }
 
   describe('debianArch', () => {
     it('should convert ia32 to i386', () => {

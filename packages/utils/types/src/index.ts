@@ -1,15 +1,18 @@
-import { OraImpl } from '@electron-forge/async-ora';
 import { ChildProcess } from 'child_process';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Options } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
+export type ElectronProcess = ChildProcess & { restarted: boolean };
+
 export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
-export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm' | 'all';
+export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'arm' | 'all';
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
+export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
 export interface IForgePluginInterface {
   triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
   triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
-  overrideStartLogic(opts: any): Promise<ChildProcess | string | string[] | false>;
+  overrideStartLogic(opts: any): Promise<ElectronProcess | string | string[] | false>;
 }
 export interface ForgeConfig {
   /**
@@ -27,13 +30,13 @@ export interface ForgeConfig {
    */
   pluginInterface: IForgePluginInterface;
   /**
-   * An array of forge plugins or a tuple consisting of [pluginName, pluginOptions]
+   * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
   plugins: (IForgePlugin | [string, any])[];
   electronRebuildConfig: Partial<RebuildOptions>;
   packagerConfig: Partial<Options>;
   makers: (IForgeResolvableMaker | IForgeMaker)[];
-  publishers: (IForgeResolvablePublisher | IForgePublisher | string)[];
+  publishers: ForgeConfigPublisher[];
 }
 export interface ForgeMakeResult {
   /**
@@ -60,7 +63,7 @@ export interface IForgePlugin {
 
   init(dir: string, forgeConfig: ForgeConfig): void;
   getHook?(hookName: string): ForgeHookFn | null;
-  startLogic?(opts: StartOptions): Promise<ChildProcess | string | string[] | false>;
+  startLogic?(opts: StartOptions): Promise<ElectronProcess | string | string[] | false>;
 }
 
 export interface IForgeResolvableMaker {
@@ -116,9 +119,18 @@ export interface StartOptions {
   inspect?: boolean;
 }
 
+export interface InitTemplateOptions {
+  copyCIFiles?: boolean;
+}
+
 export interface ForgeTemplate {
   dependencies?: string[];
   devDependencies?: string[];
-  templateDirectory?: string;
-  postCopy?: (dir: string) => void;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => void;
 }
+
+export type PackagePerson = undefined | string | {
+  name: string;
+  email?: string;
+  url?: string;
+};

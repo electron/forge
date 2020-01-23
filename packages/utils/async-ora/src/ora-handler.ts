@@ -1,14 +1,20 @@
+/* eslint "no-console": "off" */
 import colors from 'colors';
 import ora from './ora';
 
 export class OraImpl {
+  // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(public text: string = '') {}
 
-  succeed(symbol?: string) { return this; }
-  fail(symbol?: string) { return this; }
+  succeed(_symbol?: string) { return this; }
+
+  fail(_symbol?: string) { return this; }
+
   start() { return this; }
-  stop(symbol?: string) { return this; }
-  warn(message: string) { return this; }
+
+  stop(_symbol?: string) { return this; }
+
+  warn(_message: string) { return this; }
 }
 
 export interface AsyncOraMethod {
@@ -37,7 +43,7 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
           console.error(colors.red(err.message));
           console.error(colors.red(err.stack));
         } else {
-          console.error('\nElectron forge was terminated:'.red);
+          console.error('\nElectron Forge was terminated:'.red);
           console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
         }
         processExitFn(1);
