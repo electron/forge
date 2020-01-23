@@ -177,6 +177,14 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
+      if (this.config.jsonStats && file.endsWith(path.join('.webpack', 'main', 'stats.json'))) {
+        return true;
+      }
+
+      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+        return true;
+      }
+
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
