@@ -55,6 +55,7 @@ export interface WebpackPluginRendererConfig {
   /**
    * Instructs webpack to emit a JSON file containing statistics about
    * modules, the dependency graph and various other build information for the renderer process.
+   * This file is located in `.webpack/renderer/stats.json` and is not packaged with your app.
    */
   jsonStats?: boolean;
   /**
@@ -72,6 +73,7 @@ export interface WebpackPluginConfig {
   /**
    * Instructs webpack to emit a JSON file containing statistics about
    * modules, the dependency graph and various other build information for the main process.
+   * This file is located in `.webpack/main/stats.json` and is not packaged with your app.
    */
   jsonStats?: boolean;
   /**
