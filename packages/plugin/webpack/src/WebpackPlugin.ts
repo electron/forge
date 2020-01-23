@@ -97,13 +97,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     webpack(options)
       .run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          const jsonStats = stats.toJson(options.stats);
+          d('writing JSON stats for renderers');
           const jsonStatsFilename = path.resolve(this.baseDir, 'renderer', 'stats.json');
-          await fs.writeFile(
-            jsonStatsFilename,
-            JSON.stringify(jsonStats),
-            { encoding: 'utf8' },
-          );
+          await fs.writeJson(jsonStatsFilename, stats.toJson(options.stats), { spaces: 2 });
         }
         if (err) {
           return reject(err);
@@ -220,13 +216,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             }));
           }
           if (this.config.jsonStats) {
-            const jsonStats = stats.toJson(mainConfig.stats);
+            d('writing JSON stats for main');
             const jsonStatsFilename = path.resolve(this.baseDir, 'main', 'stats.json');
-            await fs.writeFile(
-              jsonStatsFilename,
-              JSON.stringify(jsonStats),
-              { encoding: 'utf8' },
-            );
+            await fs.writeJson(jsonStatsFilename, stats.toJson(mainConfig.stats), { spaces: 2 });
           }
 
           if (err) return onceReject(err);
