@@ -139,7 +139,7 @@
     "chai-as-promised": "^7.0.0",
     "codecov": "^3.6.1",
     "commitizen": "^4.0.3",
-    "cross-env": "^6.0.3",
+    "cross-env": "^7.0.0",
     "cz-customizable": "^6.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
