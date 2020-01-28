@@ -102,8 +102,8 @@ describe('WebpackPlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
         const ignore = config.packagerConfig.ignore as Function;
 
-        expect(ignore('/.webpack/main/stats.json')).to.equal(true);
-        expect(ignore('/.webpack/renderer/stats.json')).to.equal(true);
+        expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
+        expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);
       });
     });
   });
