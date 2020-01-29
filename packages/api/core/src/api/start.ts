@@ -11,7 +11,7 @@ import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
-import { getElectronVersion } from '../util/electron-version';
+import { getElectronModulePath, getElectronVersion } from '../util/electron-version';
 
 export { StartOptions };
 
@@ -78,7 +78,7 @@ export default async ({
 
     if (!electronExecPath) {
       // eslint-disable-next-line import/no-dynamic-require, global-require
-      electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
+      electronExecPath = require((await getElectronModulePath(dir, packageJSON)) || path.resolve(dir, 'node_modules/electron'));
     }
 
     const spawnOpts = {
