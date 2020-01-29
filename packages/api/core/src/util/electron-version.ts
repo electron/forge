@@ -46,23 +46,55 @@ export class PackageNotFoundError extends Error {
   }
 }
 
-export async function getElectronVersion(dir: string, packageJSON: any): Promise<string> {
+function getElectronModuleName(packageJSON: any): string {
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies'.red);
   }
+
   const packageName = electronPackageNames.find((pkg) => packageJSON.devDependencies[pkg]);
   if (packageName === undefined) {
     throw new Error('Could not find any Electron packages in devDependencies');
   }
 
+  return packageName;
+}
+
+async function getElectronPackageJSONPath(
+  dir: string,
+  packageName: string,
+): Promise<string | undefined> {
+  const nodeModulesPath = await determineNodeModulesPath(dir);
+  if (!nodeModulesPath) {
+    throw new PackageNotFoundError(packageName, dir);
+  }
+  const electronPackageJSONPath = path.join(nodeModulesPath, packageName, 'package.json');
+  if (await fs.pathExists(electronPackageJSONPath)) {
+    return electronPackageJSONPath;
+  }
+
+  return undefined;
+}
+
+export async function getElectronModulePath(
+  dir: string,
+  packageJSON: any,
+): Promise<string | undefined> {
+  const moduleName = await getElectronModuleName(packageJSON);
+  const packageJSONPath = await getElectronPackageJSONPath(dir, moduleName);
+  if (packageJSONPath) {
+    return path.dirname(packageJSONPath);
+  }
+
+  return undefined;
+}
+
+export async function getElectronVersion(dir: string, packageJSON: any): Promise<string> {
+  const packageName = getElectronModuleName(packageJSON);
+
   let version = packageJSON.devDependencies[packageName];
   if (!semver.valid(version)) { // It's not an exact version, find it in the actual module
-    const nodeModulesPath = await determineNodeModulesPath(dir);
-    if (!nodeModulesPath) {
-      throw new PackageNotFoundError(packageName, dir);
-    }
-    const electronPackageJSONPath = path.join(nodeModulesPath, packageName, 'package.json');
-    if (await fs.pathExists(electronPackageJSONPath)) {
+    const electronPackageJSONPath = await getElectronPackageJSONPath(dir, packageName);
+    if (electronPackageJSONPath) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
       // eslint-disable-next-line prefer-destructuring
       version = electronPackageJSON.version;

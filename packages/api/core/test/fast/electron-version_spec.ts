@@ -1,6 +1,8 @@
 import { expect } from 'chai';
+import fs from 'fs-extra';
+import os from 'os';
 import path from 'path';
-import { getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
+import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
 import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
 import { hasYarn } from '../../src/util/yarn-or-npm';
 
@@ -84,5 +86,44 @@ describe('getElectronVersion', () => {
     } else {
       expect(getElectronVersion(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
     }
+  });
+});
+
+describe('getElectronModulePath', () => {
+  let tempDir: string;
+  before(async () => {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-forge-test-'));
+  });
+
+  it('fails without devDependencies', () => expect(getElectronModulePath('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
+
+  it('fails without electron devDependencies', () => expect(getElectronModulePath('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
+
+  it('fails with no electron installed', async () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
+    await fs.copy(fixtureDir, tempDir);
+    return expect(getElectronModulePath(tempDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
+  });
+
+  it('works with electron', () => {
+    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'non-exact');
+    return expect(getElectronModulePath(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+  });
+
+  it('works with yarn workspaces', async () => {
+    const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+    const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
+    const packageJSON = {
+      devDependencies: { electron: '^4.0.4' },
+    };
+    if (hasYarn()) {
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    } else {
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
+    }
+  });
+
+  after(async () => {
+    await fs.remove(tempDir);
   });
 });
