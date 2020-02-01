@@ -17,8 +17,11 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
     'ts-loader@^6.2.1',
     'style-loader@^0.23.1',
     'typescript@^3.7.0',
-    'tslint@^5.20.0',
     'fork-ts-checker-webpack-plugin@^3.1.1',
+    'eslint@^6.8.0',
+    'eslint-plugin-import@^2.20.0',
+    '@typescript-eslint/eslint-plugin@^2.18.0',
+    '@typescript-eslint/parser@^2.18.0',
   ];
 
   async initializeTemplate(directory: string, options: InitTemplateOptions) {
@@ -45,7 +48,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       ]);
 
       // Configure scripts for TS template
-      packageJSON.scripts.lint = 'tslint -c tslint.json -p tsconfig.json';
+      packageJSON.scripts.lint = 'eslint --ext .ts .';
 
       await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });
@@ -67,8 +70,8 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       // Copy tsconfig with a small set of presets
       await this.copyTemplateFile(directory, 'tsconfig.json');
 
-      // Copy tslint config with recommended settings
-      await this.copyTemplateFile(directory, 'tslint.json');
+      // Copy eslint config with recommended settings
+      await this.copyTemplateFile(directory, '.eslintrc.json');
 
       // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));

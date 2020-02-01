@@ -45,7 +45,7 @@ describe('TypeScriptTemplate', () => {
     });
   });
 
-  // after(async () => {
-  //   await fs.remove(dir);
-  // });
+  after(async () => {
+    await fs.remove(dir);
+  });
 });
