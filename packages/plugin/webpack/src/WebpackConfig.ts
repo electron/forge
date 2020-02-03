@@ -198,13 +198,13 @@ export default class WebpackConfigGenerator {
 
     const defines = this.getDefines(false);
     const plugins = entryPoints.filter((entryPoint) => Boolean(entryPoint.html))
-        .map((entryPoint) => new HtmlWebpackPlugin({
-          title: entryPoint.name,
-          template: entryPoint.html,
-          filename: `${entryPoint.name}/index.html`,
-          chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-        }) as webpack.Plugin).concat([new webpack.DefinePlugin(defines)])
-        .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
+      .map((entryPoint) => new HtmlWebpackPlugin({
+        title: entryPoint.name,
+        template: entryPoint.html,
+        filename: `${entryPoint.name}/index.html`,
+        chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
+      }) as webpack.Plugin).concat([new webpack.DefinePlugin(defines)])
+      .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
     return webpackMerge.smart({
       entry,
       devtool: 'inline-source-map',
