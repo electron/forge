@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-darwin",
-  "version": "6.0.0-beta.47",
+  "version": "6.0.0-beta.48",
   "description": "Base darwin file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,8 +14,8 @@
     "node": ">= 10.0.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.47",
-    "@electron-forge/installer-base": "6.0.0-beta.47",
+    "@electron-forge/async-ora": "6.0.0-beta.48",
+    "@electron-forge/installer-base": "6.0.0-beta.48",
     "fs-extra": "^8.1.0",
     "sudo-prompt": "^9.1.1"
   }
