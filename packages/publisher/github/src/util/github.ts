@@ -1,5 +1,5 @@
 import GitHubAPI from '@octokit/rest';
-import merge from 'lodash.merge';
+import { merge } from 'lodash';
 
 export default class GitHub {
   private options: GitHubAPI.Options;

@@ -1,7 +1,7 @@
 import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
-import _template from 'lodash.template';
+import { template } from 'lodash';
 
 import { readRawPackageJson } from './read-package-json';
 import PluginInterface from './plugin-interface';
@@ -94,7 +94,7 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any) {
     if (typeof value === 'object' && value !== null) {
       renderConfigTemplate(dir, templateObj, value);
     } else if (typeof value === 'string') {
-      obj[key] = _template(value)(templateObj);
+      obj[key] = template(value)(templateObj);
       if (obj[key].startsWith('require:')) {
         // eslint-disable-next-line global-require, import/no-dynamic-require
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));
