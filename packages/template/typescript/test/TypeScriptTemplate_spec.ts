@@ -28,7 +28,7 @@ describe('TypeScriptTemplate', () => {
   it('should convert the main process file to typescript', async () => {
     await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
     await testUtils.expectProjectPathExists(dir, path.join('src', 'index.ts'), 'file');
-    expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/Electron.BrowserWindow/);
+    expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/import\b.*\bBrowserWindow\b/);
   });
 
   describe('lint', () => {
