@@ -1,6 +1,6 @@
-import _merge from 'lodash.merge';
 import { IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
+import { merge } from 'lodash';
 
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../../src/util/upgrade-forge-config';
 
@@ -20,7 +20,7 @@ describe('upgradeForgeConfig', () => {
 
   it('converts electron-rebuild config', () => {
     const rebuildConfig = { types: ['prod'] };
-    const oldConfig = { electronRebuildConfig: _merge({}, rebuildConfig) };
+    const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.electronRebuildConfig).to.deep.equal(rebuildConfig);
@@ -123,13 +123,13 @@ describe('updateUpgradedForgeDevDeps', () => {
   };
 
   it('removes unused makers from devDependencies', () => {
-    const packageJSON = _merge({}, skeletonPackageJSON);
+    const packageJSON = merge({}, skeletonPackageJSON);
     const devDeps = updateUpgradedForgeDevDeps(packageJSON, ['@electron-forge/maker-squirrel']);
     expect(devDeps).to.deep.equal([]);
   });
 
   it('adds makers to devDependencies', () => {
-    const packageJSON = _merge({}, skeletonPackageJSON);
+    const packageJSON = merge({}, skeletonPackageJSON);
     packageJSON.config.forge.makers = [
       {
         name: '@electron-forge/maker-zip',
@@ -149,7 +149,7 @@ describe('updateUpgradedForgeDevDeps', () => {
   });
 
   it('adds publishers to devDependencies', () => {
-    const packageJSON = _merge({}, skeletonPackageJSON);
+    const packageJSON = merge({}, skeletonPackageJSON);
     packageJSON.config.forge.publishers = [
       { name: '@electron-forge/publisher-github' },
       { name: '@electron-forge/publisher-snapcraft' },
@@ -162,8 +162,10 @@ describe('updateUpgradedForgeDevDeps', () => {
   });
 
   it('adds electron-compile plugin to devDependencies when electron-prebuilt-compile is in devDependencies', () => {
-    const packageJSON = _merge({}, skeletonPackageJSON, {
-      devDependencies: { 'electron-prebuilt-compile': '2.0.0' },
+    const packageJSON = merge({}, skeletonPackageJSON, {
+      devDependencies: {
+        'electron-prebuilt-compile': '2.0.0',
+      },
     });
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
