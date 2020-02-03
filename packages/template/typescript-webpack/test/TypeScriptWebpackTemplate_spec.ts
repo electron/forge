@@ -17,7 +17,7 @@ describe('TypeScriptWebpackTemplate', () => {
   it('should copy the appropriate template files', async () => {
     const expectedFiles = [
       'tsconfig.json',
-      'tslint.json',
+      '.eslintrc.json',
       'webpack.main.config.js',
       'webpack.renderer.config.js',
       'webpack.rules.js',
@@ -36,7 +36,7 @@ describe('TypeScriptWebpackTemplate', () => {
       await testUtils.ensureModulesInstalled(
         dir,
         ['electron', 'electron-squirrel-startup'],
-        ['tslint', 'typescript'],
+        template.devDependencies.filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript')),
       );
     });
 

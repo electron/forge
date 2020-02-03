@@ -8,7 +8,10 @@ class TypeScriptTemplate extends BaseTemplate {
 
   public devDependencies = [
     'typescript@^3.7.0',
-    'tslint@^5.20.0',
+    'eslint@^6.8.0',
+    'eslint-plugin-import@^2.20.0',
+    '@typescript-eslint/eslint-plugin@^2.18.0',
+    '@typescript-eslint/parser@^2.18.0',
   ];
 
   async initializeTemplate(directory: string) {
@@ -18,7 +21,7 @@ class TypeScriptTemplate extends BaseTemplate {
       const packageJSON = await fs.readJson(packageJSONPath);
 
       // Configure scripts for TS template
-      packageJSON.scripts.lint = 'tslint -c tslint.json -p tsconfig.json';
+      packageJSON.scripts.lint = 'eslint --ext .ts .';
       packageJSON.scripts.start = 'tsc && electron-forge start';
       packageJSON.main = 'dist/index.js';
 
@@ -31,8 +34,8 @@ class TypeScriptTemplate extends BaseTemplate {
       // Copy tsconfig with a small set of presets
       await this.copyTemplateFile(directory, 'tsconfig.json');
 
-      // Copy tslint config with recommended settings
-      await this.copyTemplateFile(directory, 'tslint.json');
+      // Copy eslint config with recommended settings
+      await this.copyTemplateFile(directory, '.eslintrc.json');
 
       // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));

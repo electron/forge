@@ -17,8 +17,8 @@ describe('TypeScriptTemplate', () => {
 
   it('should copy the appropriate template files', async () => {
     const expectedFiles = [
+      '.eslintrc.json',
       'tsconfig.json',
-      'tslint.json',
     ];
     for (const filename of expectedFiles) {
       await testUtils.expectProjectPathExists(dir, filename, 'file');
@@ -36,7 +36,7 @@ describe('TypeScriptTemplate', () => {
       await testUtils.ensureModulesInstalled(
         dir,
         ['electron', 'electron-squirrel-startup'],
-        ['tslint', 'typescript'],
+        template.devDependencies,
       );
     });
 
