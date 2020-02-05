@@ -125,7 +125,7 @@
     "@types/semver": "^7.1.0",
     "@types/sinon": "^7.5.1",
     "@types/username": "^3.0.0",
-    "@types/webpack": "^4.39.5",
+    "@types/webpack": "^4.41.5",
     "@types/webpack-dev-middleware": "^2.0.3",
     "@types/webpack-hot-middleware": "^2.25.0",
     "@types/webpack-merge": "^4.1.5",
