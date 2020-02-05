@@ -1,3 +1,4 @@
+import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack, { Configuration } from 'webpack';
@@ -6,6 +7,8 @@ import webpackMerge from 'webpack-merge';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
+
+const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
 export default class WebpackConfigGenerator {
   private isProd: boolean;
@@ -29,6 +32,8 @@ export default class WebpackConfigGenerator {
     this.webpackDir = path.resolve(projectDir, '.webpack');
     this.isProd = isProd;
     this.port = port;
+
+    d('Config mode:', this.mode);
   }
 
   resolveConfig(config: Configuration | string) {

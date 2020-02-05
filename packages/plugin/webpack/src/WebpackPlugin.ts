@@ -29,7 +29,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private baseDir!: string;
 
-  private configGenerator!: WebpackConfigGenerator;
+  private _configGenerator!: WebpackConfigGenerator;
 
   private watchers: webpack.Compiler.Watching[] = [];
 
@@ -128,13 +128,22 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   setDirectories = (dir: string) => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
+  }
 
-    this.configGenerator = new WebpackConfigGenerator(
-      this.config,
-      this.projectDir,
-      this.isProd,
-      this.port,
-    );
+  get configGenerator() {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!this._configGenerator) {
+    // eslint-disable-next-line no-underscore-dangle
+      this._configGenerator = new WebpackConfigGenerator(
+        this.config,
+        this.projectDir,
+        this.isProd,
+        this.port,
+      );
+    }
+
+    // eslint-disable-next-line no-underscore-dangle
+    return this._configGenerator;
   }
 
   private loggedOutputUrl = false;
