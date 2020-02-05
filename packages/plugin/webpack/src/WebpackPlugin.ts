@@ -131,7 +131,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   get configGenerator() {
+    // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
+    // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(
         this.config,
         this.projectDir,
@@ -140,6 +142,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       );
     }
 
+    // eslint-disable-next-line no-underscore-dangle
     return this._configGenerator;
   }
 
