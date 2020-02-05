@@ -1,4 +1,4 @@
-import { Options } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 
 export interface GitHubRepository {
   /**
@@ -30,7 +30,7 @@ export interface PublisherGitHubConfig {
    * customize any of the options that module uses.  This is particularly
    * helpful for publishing to GitHub Enterprise servers.
    */
-  octokitOptions?: Options;
+  octokitOptions?: Octokit.Options;
   /**
    * Whether or not this release should be tagged as a prerelease
    */

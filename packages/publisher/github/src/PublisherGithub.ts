@@ -6,7 +6,7 @@ import mime from 'mime-types';
 import path from 'path';
 
 import { ForgeMakeResult } from '@electron-forge/shared-types';
-import { ReposListReleasesResponseItem } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import GitHub from './util/github';
 import { PublisherGitHubConfig } from './Config';
 
@@ -46,7 +46,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     const github = new GitHub(config.authToken, true, config.octokitOptions);
 
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
-      let release: ReposListReleasesResponseItem | undefined;
+      let release: Octokit.ReposListReleasesResponseItem | undefined;
       const artifacts = perReleaseArtifacts[releaseName];
 
       await asyncOra(`Searching for target release: ${releaseName}`, async () => {
