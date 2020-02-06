@@ -1,3 +1,19 @@
+#### [6.0.0-beta.49](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.49) (2020-02-06)
+
+##### Build System / Dependencies
+
+* **deps:**
+  *  bump xterm from 4.3.0 to 4.4.0 (#1474) ([b1f3b722](https://github.com/electron-userland/electron-forge/commit/b1f3b722))
+  *  bump commander from 4.1.0 to 4.1.1 (#1470) ([ab1f3e00](https://github.com/electron-userland/electron-forge/commit/ab1f3e00))
+  *  upgrade transitive dependency node-abi to 2.14.0 ([bd708083](https://github.com/electron-userland/electron-forge/commit/bd708083))
+* **deps-dev:**
+  *  bump @types/webpack from 4.41.4 to 4.41.5 ([3c914539](https://github.com/electron-userland/electron-forge/commit/3c914539))
+  *  upgrade @typescript-eslint/{parser,eslint-plugin} to 2.19.0 ([e1a3b02e](https://github.com/electron-userland/electron-forge/commit/e1a3b02e))
+
+##### Bug Fixes
+
+* **plugin-webpack:**  lazily load config generator so isProd is set correctly (#1480) ([9f6a445c](https://github.com/electron-userland/electron-forge/commit/9f6a445c))
+
 #### [6.0.0-beta.48](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.48) (2020-02-03)
 
 ##### Build System / Dependencies
