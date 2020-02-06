@@ -1,15 +1,15 @@
-import GitHubAPI from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 import { merge } from 'lodash';
 
 export default class GitHub {
-  private options: GitHubAPI.Options;
+  private options: Octokit.Options;
 
   token?: string;
 
   constructor(
     authToken: string | undefined = undefined,
     requireAuth: boolean = false,
-    options: GitHubAPI.Options = {},
+    options: Octokit.Options = {},
   ) {
     this.options = merge(
       options,
@@ -25,7 +25,7 @@ export default class GitHub {
   }
 
   getGitHub() {
-    const github = new GitHubAPI(this.options);
+    const github = new Octokit(this.options);
     if (this.token) {
       github.authenticate({
         type: 'token',
