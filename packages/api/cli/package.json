@@ -13,7 +13,7 @@
   "devDependencies": {
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "cross-spawn-promise": "^0.10.1",
+    "cross-spawn-promise": "^0.10.2",
     "mocha": "^7.0.1"
   },
   "dependencies": {

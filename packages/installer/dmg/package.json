@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@electron-forge/installer-darwin": "6.0.0-beta.49",
-    "cross-spawn-promise": "^0.10.1",
+    "cross-spawn-promise": "^0.10.2",
     "debug": "^4.1.0",
     "fs-extra": "^8.1.0"
   }

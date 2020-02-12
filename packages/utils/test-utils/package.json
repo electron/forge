@@ -9,7 +9,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "chai": "4.2.0",
-    "cross-spawn-promise": "^0.10.1",
+    "cross-spawn-promise": "^0.10.2",
     "fs-extra": "^8.1.0"
   },
   "engines": {
