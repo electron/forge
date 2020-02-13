@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 
 async function runNPM(dir: string, ...args: string[]) {
-  await (spawnPromise as Function)('npm', args, { cwd: dir });
+  await spawn('npm', args, { cwd: dir });
 }
 
 async function runNPMInstall(dir: string, ...args: string[]) {

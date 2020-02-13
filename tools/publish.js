@@ -2,7 +2,7 @@ require('colors');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
-const spawnPromise = require('cross-spawn-promise');
+const { spawn } = require('@malept/cross-spawn-promise');
 const Listr = require('listr');
 require('ts-node').register();
 
@@ -22,7 +22,7 @@ const prepare = new Listr([
   },
   {
     title: 'Building all packages',
-    task: () => spawnPromise('bolt', ['build'], {
+    task: () => spawn('bolt', ['build'], {
       cwd: BASE_DIR,
     }),
   },
@@ -56,7 +56,7 @@ const publisher = new Listr([
           title: `Publishing: ${`${name}@${version}`.cyan} (beta=${isBeta ? 'true'.green : 'false'.red})`,
           task: async () => {
             try {
-              await spawnPromise('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
+              await spawn('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
                 cwd: dir,
               });
             } catch (err) {

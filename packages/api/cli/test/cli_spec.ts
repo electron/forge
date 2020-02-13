@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import path from 'path';
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 
 chai.use(chaiAsPromised);
 
@@ -15,7 +15,7 @@ function runForgeCLI(...extraArgs: string[]): Promise<Uint8Array> {
     path.resolve(__dirname, '../src/electron-forge.ts'),
     ...extraArgs,
   ];
-  return spawnPromise(tsNodePath(), args);
+  return spawn(tsNodePath(), args);
 }
 
 describe('cli', () => {

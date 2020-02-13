@@ -1,4 +1,4 @@
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
 
@@ -20,6 +20,6 @@ const safeYarnOrNpm = () => {
 export default safeYarnOrNpm;
 
 // eslint-disable-next-line max-len
-export const yarnOrNpmSpawn = (args?: string[], opts?: any) => spawnPromise(safeYarnOrNpm(), args, opts);
+export const yarnOrNpmSpawn = (args?: string[], opts?: any) => spawn(safeYarnOrNpm(), args, opts);
 
 export const hasYarn = () => safeYarnOrNpm() === 'yarn';

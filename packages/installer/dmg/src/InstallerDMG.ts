@@ -1,6 +1,6 @@
 import InstallerDarwin, { InstallerOptions } from '@electron-forge/installer-darwin';
 
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -31,7 +31,7 @@ export default class InstallerDMG extends InstallerDarwin {
 
       await this.moveApp(appPath, targetApplicationPath, installSpinner, true);
 
-      await spawnPromise('open', ['-R', targetApplicationPath], { detached: true } as any);
+      await spawn('open', ['-R', targetApplicationPath], { detached: true } as any);
     } finally {
       await unmountImage(targetMount);
     }
