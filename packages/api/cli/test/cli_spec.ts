@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import path from 'path';
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 
 chai.use(chaiAsPromised);
 
@@ -10,12 +10,12 @@ function tsNodePath() {
   return process.platform === 'win32' ? `${tsNode}.cmd` : tsNode;
 }
 
-function runForgeCLI(...extraArgs: string[]): Promise<Uint8Array> {
+function runForgeCLI(...extraArgs: string[]): Promise<string> {
   const args = [
     path.resolve(__dirname, '../src/electron-forge.ts'),
     ...extraArgs,
   ];
-  return spawnPromise(tsNodePath(), args);
+  return spawn(tsNodePath(), args);
 }
 
 describe('cli', () => {
@@ -26,7 +26,7 @@ describe('cli', () => {
 
   it('should fail on unknown subcommands', async () => {
     const error = await expect(runForgeCLI('nonexistent')).to.eventually.be.rejected;
-    expect(error.exitStatus).to.equal(1);
-    expect(error.stderr.toString()).to.match(/Unknown command "nonexistent"/);
+    expect(error.code).to.equal(1);
+    expect(error.stderr).to.match(/Unknown command "nonexistent"/);
   });
 });

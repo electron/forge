@@ -1,6 +1,6 @@
 import InstallerDarwin, { InstallerOptions } from '@electron-forge/installer-darwin';
 
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -11,7 +11,7 @@ export default class InstallerZip extends InstallerDarwin {
     filePath,
     installSpinner,
   }: InstallerOptions) {
-    await spawnPromise('unzip', ['-q', '-o', path.basename(filePath)], {
+    await spawn('unzip', ['-q', '-o', path.basename(filePath)], {
       cwd: path.dirname(filePath),
     } as any);
 
@@ -23,6 +23,6 @@ export default class InstallerZip extends InstallerDarwin {
 
     await this.moveApp(appPath, targetApplicationPath, installSpinner);
 
-    await spawnPromise('open', ['-R', targetApplicationPath], { detached: true } as any);
+    await spawn('open', ['-R', targetApplicationPath], { detached: true } as any);
   }
 }

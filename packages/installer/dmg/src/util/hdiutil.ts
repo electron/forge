@@ -1,4 +1,4 @@
-import spawnPromise from 'cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
 const d = debug('electron-forge:hdiutil');
@@ -9,7 +9,7 @@ export interface Mount {
 }
 
 export const getMountedImages = async (): Promise<Mount[]> => {
-  const output = await spawnPromise('hdiutil', ['info']);
+  const output = await spawn('hdiutil', ['info']);
   const mounts = output.toString().split(/====\n/g);
   mounts.shift();
 
@@ -31,7 +31,7 @@ export const getMountedImages = async (): Promise<Mount[]> => {
 
 export const mountImage = async (filePath: string): Promise<Mount> => {
   d('mounting image:', filePath);
-  const output = await spawnPromise('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]);
+  const output = await spawn('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]);
   const mountPath = /\/Volumes\/(.+)\n/g.exec(output.toString())![1];
   d('mounted at:', mountPath);
 
@@ -43,5 +43,5 @@ export const mountImage = async (filePath: string): Promise<Mount> => {
 
 export const unmountImage = async (mount: Mount) => {
   d('unmounting current mount:', mount);
-  await spawnPromise('hdiutil', ['unmount', '-force', `/Volumes/${mount.mountPath}`]);
+  await spawn('hdiutil', ['unmount', '-force', `/Volumes/${mount.mountPath}`]);
 };
