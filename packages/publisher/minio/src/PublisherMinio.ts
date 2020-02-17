@@ -48,7 +48,7 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
     if (!config.endPoint || !config.port || !configuration.accessKey || !configuration.secretKey || !config.bucket) {
       throw new Error('In order to publish to minio you must set the "minio.accessKey", "minio.secretKey", "minio.endPoint", "minio.port" and "bucket"');
     }
-    var minioClient = new Client(configuration);
+    const minioClient = new Client(configuration);
 
     d('creating minio client with options:', config);
 
@@ -57,11 +57,12 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
 
     await asyncOra(spinnerText(), async (uploadSpinner) => {
       await Promise.all(artifacts.map(async (artifact) => {
-        // const uploader = minioClient.fPutObject(config.bucket, artifact.path, artifact.path);
-        d('uploading:', artifact.path);
-        d('uploading:', artifact);
+        const fileName = path.basename(artifact.path);
+        const stream = fs.createReadStream(artifact.path);
+
+        await minioClient.putObject(config.bucket, fileName, stream);
         
-        // await uploader;
+        d('uploading:', fileName);
         uploaded += 1;
         uploadSpinner.text = spinnerText();
       }));
