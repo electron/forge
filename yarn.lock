@@ -3400,12 +3400,12 @@ ee-first@1.1.1:
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
 electron-installer-common@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.0.tgz#e57b9cac3637fc312d28f3e45f197f5c1743c931"
-  integrity sha512-oWkkKSrBtsg9rEh1lscRoboNBvA/biZV1L86jwsv8AOhQ6WqMqWPI6xf2HFRNsVDdsHGIldJSpGR4F8ITclerQ==
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.1.tgz#42738f140c15270758681ac3f32039430b9fc023"
+  integrity sha512-d9gEXhfSSyMn8mkFNdbUdkqdLkxVZ8nO3NDso3nuSnG1+wy7cJuuCjutwR4+zsXdQuNFC1n/DxpTk4pBLZSCTQ==
   dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
     asar "^2.0.1"
-    cross-spawn "^7.0.1"
     debug "^4.1.1"
     fs-extra "^8.0.1"
     glob "^7.1.4"
