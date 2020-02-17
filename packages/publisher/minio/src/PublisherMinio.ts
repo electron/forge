@@ -29,7 +29,7 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
     for (const makeResult of makeResults) {
       artifacts.push(...makeResult.artifacts.map((artifact) => ({
         path: artifact,
-        keyPrefix: config.folder || makeResult.packageJSON.version,
+        keyPrefix: config.useAppVersionAsFolder ? makeResult.packageJSON.version : config.folder,
         platform: makeResult.platform,
         arch: makeResult.arch,
       })));
@@ -46,7 +46,7 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
 
 
     if (!config.endPoint || !config.port || !configuration.accessKey || !configuration.secretKey || !config.bucket) {
-      throw new Error('In order to publish to minio you must set the "minio.accessKey", "minio.secretKey", "minio.endPoint", "minio.port" and "bucket"');
+      throw new Error('In order to publish to minio you must set the "minio.accessKeyId", "minio.secretAccessKey", "minio.endPoint", "minio.port" and "bucket"');
     }
     const minioClient = new Client(configuration);
 
@@ -60,12 +60,22 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
         const fileName = path.basename(artifact.path);
         const stream = fs.createReadStream(artifact.path);
 
-        await minioClient.putObject(config.bucket, fileName, stream);
+        await minioClient.putObject(config.bucket, this.resolvePath(artifact, fileName), stream);
         
         d('uploading:', fileName);
         uploaded += 1;
         uploadSpinner.text = spinnerText();
       }));
     });
+  }
+
+  resolvePath(artifact: MinioArtifact, fileName: string): string {
+    if (!artifact.keyPrefix) {
+      return fileName;
+    }
+
+    return artifact.keyPrefix.endsWith('/') ? 
+        artifact.keyPrefix + fileName :
+        artifact.keyPrefix + '/' + fileName;
   }
 }

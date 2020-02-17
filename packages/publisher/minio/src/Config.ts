@@ -36,15 +36,16 @@ export interface PublisherMinioConfig {
    *
    * E.g. `my/prefix`
    *
-   * Default: appVersion
+   * Default: undefined
    */
   folder?: string;
   /**
-   * Whether or not to make uploaded artifacts public to the internet
+   * Override folder configuration with appVersion
    *
    * Default: false
    */
-  public?: boolean;
+  useAppVersionAsFolder: boolean;
+  
   /**
    * Custom function to provide the key to upload a given file to
    */
