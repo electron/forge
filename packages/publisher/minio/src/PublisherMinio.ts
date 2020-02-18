@@ -41,11 +41,11 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
       port: config.port,
       useSSL: config.useSSL,
       accessKey: (config.accessKeyId || process.env.MINIO_ACCESS_KEY) || '',
-      secretKey: (config.secretAccessKey || process.env.MINIO_SECRET_KEY) || ''
+      secretKey: (config.secretAccessKey || process.env.MINIO_SECRET_KEY) || '',
     };
 
-
-    if (!config.endPoint || !config.port || !configuration.accessKey || !configuration.secretKey || !config.bucket) {
+    if (!config.endPoint || !config.port || !configuration.accessKey
+        || !configuration.secretKey || !config.bucket) {
       throw new Error('In order to publish to minio you must set the "minio.accessKeyId", "minio.secretAccessKey", "minio.endPoint", "minio.port" and "bucket"');
     }
     const minioClient = new Client(configuration);
@@ -61,7 +61,7 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
         const stream = fs.createReadStream(artifact.path);
 
         await minioClient.putObject(config.bucket, this.resolvePath(artifact, fileName), stream);
-        
+
         d('uploading:', fileName);
         uploaded += 1;
         uploadSpinner.text = spinnerText();
@@ -74,8 +74,6 @@ export default class PublisherMinio extends PublisherBase<PublisherMinioConfig> 
       return fileName;
     }
 
-    return artifact.keyPrefix.endsWith('/') ? 
-        artifact.keyPrefix + fileName :
-        artifact.keyPrefix + '/' + fileName;
+    return artifact.keyPrefix.endsWith('/') ? artifact.keyPrefix + fileName : `${artifact.keyPrefix}/${fileName}`;
   }
 }

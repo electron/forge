@@ -10,7 +10,7 @@ export interface PublisherMinioConfig {
   port: number,
   /**
    * Flag of SSL
-   * 
+   *
    * Falls back to 'false'
    */
   useSSL?: boolean,
@@ -45,7 +45,6 @@ export interface PublisherMinioConfig {
    * Default: false
    */
   useAppVersionAsFolder: boolean;
-  
   /**
    * Custom function to provide the key to upload a given file to
    */
