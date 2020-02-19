@@ -1,3 +1,4 @@
+import * as asar from 'asar';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
@@ -10,8 +11,6 @@ import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 import { InitOptions } from '../../src/api';
-
-const asar = require('asar');
 
 const nodeInstallerArg = process.argv.find((arg) => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
 const nodeInstaller = nodeInstallerArg.substr(12);
