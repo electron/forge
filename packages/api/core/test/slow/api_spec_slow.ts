@@ -256,7 +256,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         const cleanPackageJSON = JSON.parse(asar.extractFile(
           path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`, resourcesPath, 'app.asar'),
           'package.json',
-        ));
+        ).toString());
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
       });
 
