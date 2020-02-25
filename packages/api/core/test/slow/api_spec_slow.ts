@@ -385,7 +385,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
             }],
             platform: 'linux',
             skipPackage: true,
-          })).to.eventually.be.rejectedWith(`Could not find any make targets configured for the "linux" platform.`);
+          })).to.eventually.be.rejectedWith('Could not find any make targets configured for the "linux" platform.');
         });
 
         it('can make for the MAS platform successfully', async () => {
