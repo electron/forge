@@ -849,9 +849,9 @@
     resolve-global "^1.0.0"
 
 "@electron/get@^1.3.1", "@electron/get@^1.6.0", "@electron/get@^1.7.6":
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.7.6.tgz#f1c8e87cbef0bce78644159b72340821d52066b3"
-  integrity sha512-zlNikt6ziVLNcm4lly1L4y62fJd/eYpEBjF5DiV/VAQq2vdPjH4sbUphXt9upmHz86lAhAj8g9lTnWrxJ/KBZw==
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@electron/get/-/get-1.8.0.tgz#b10320e2b0ec55165e097862695be34b236ef0b5"
+  integrity sha512-p9q2KNfN12lhLzcSJwjOKbHHZcPCP+DMHXWLE/nFzJfyFDiPFAvOgLdKwz8WvGfzn2Y8YtYk1BhqvaNRow78ag==
   dependencies:
     debug "^4.1.1"
     env-paths "^2.2.0"
