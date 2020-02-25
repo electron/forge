@@ -153,6 +153,10 @@ export default async ({
 
   targets = targets.filter((_, i) => makers[i]);
 
+  if (targets.length === 0) {
+    throw new Error(`Could not find any make targets configured for the "${actualTargetPlatform}" platform.`);
+  }
+
   info(interactive, `Making for the following targets: ${`${targets.map((t, i) => makers[i].name).join(', ')}`.cyan}`);
 
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
