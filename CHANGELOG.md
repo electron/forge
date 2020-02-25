@@ -1,3 +1,54 @@
+#### [6.0.0-beta.50](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.50) (2020-02-25)
+
+##### Build System / Dependencies
+
+* **deps-dev:**
+  *  upgrade @types/sinon to 7.5.2 ([26f58633](https://github.com/electron-userland/electron-forge/commit/26f58633))
+  *  upgrade @types/node to 13.7.5 ([75c14c57](https://github.com/electron-userland/electron-forge/commit/75c14c57))
+  *  bump @types/node-fetch from 2.5.4 to 2.5.5 ([9f55a6c9](https://github.com/electron-userland/electron-forge/commit/9f55a6c9))
+  *  upgrade @typescript-eslint/{parser,eslint-plugin} to 2.21.0 ([b00446fa](https://github.com/electron-userland/electron-forge/commit/b00446fa))
+  *  bump typescript from 3.7.5 to 3.8.2 ([dcaa3c2e](https://github.com/electron-userland/electron-forge/commit/dcaa3c2e))
+  *  bump eslint-plugin-mocha from 6.2.2 to 6.3.0 ([0cb70c23](https://github.com/electron-userland/electron-forge/commit/0cb70c23))
+  *  bump @types/node from 13.7.2 to 13.7.4 ([3354084e](https://github.com/electron-userland/electron-forge/commit/3354084e))
+  *  bump sinon from 8.1.1 to 9.0.0 (#1505) ([da87172e](https://github.com/electron-userland/electron-forge/commit/da87172e))
+  *  upgrade asar to 2.1.0 (#1504) ([53ce8149](https://github.com/electron-userland/electron-forge/commit/53ce8149))
+  *  bump @types/node from 13.7.1 to 13.7.2 ([a5c5084a](https://github.com/electron-userland/electron-forge/commit/a5c5084a))
+  *  upgrade @typescript-eslint/{parser,eslint-plugin} to 2.20.0 ([167e4f2d](https://github.com/electron-userland/electron-forge/commit/167e4f2d))
+  *  bump @types/fs-extra from 8.0.1 to 8.1.0 ([5a9444dc](https://github.com/electron-userland/electron-forge/commit/5a9444dc))
+  *  upgrade typedoc to 0.16.10 ([ff3863a3](https://github.com/electron-userland/electron-forge/commit/ff3863a3))
+  *  bump @types/chai from 4.2.8 to 4.2.9 ([d4e44ab7](https://github.com/electron-userland/electron-forge/commit/d4e44ab7))
+  *  bump @types/node from 13.7.0 to 13.7.1 ([2d112566](https://github.com/electron-userland/electron-forge/commit/2d112566))
+  *  upgrade @typescript-eslint/{parser,eslint-plugin} to 2.19.2 ([a4ef9b47](https://github.com/electron-userland/electron-forge/commit/a4ef9b47))
+  *  upgrade @types/webpack to 4.41.6 ([ec1256df](https://github.com/electron-userland/electron-forge/commit/ec1256df))
+  *  upgrade codecov to 3.6.5 ([2e7dcda5](https://github.com/electron-userland/electron-forge/commit/2e7dcda5))
+  *  upgrade rimraf to 3.0.2 ([3e39cf7b](https://github.com/electron-userland/electron-forge/commit/3e39cf7b))
+* **deps:**
+  *  upgrade @electron/get to 1.8.0 ([a15eb934](https://github.com/electron-userland/electron-forge/commit/a15eb934))
+  *  upgrade electron-installer-common to 0.10.1 ([d015bab7](https://github.com/electron-userland/electron-forge/commit/d015bab7))
+  *  bump pretty-ms from 5.1.0 to 6.0.0 (#1495) ([fe800f64](https://github.com/electron-userland/electron-forge/commit/fe800f64))
+  *  bump semver from 7.1.2 to 7.1.3 (#1490) ([8a7c8c5c](https://github.com/electron-userland/electron-forge/commit/8a7c8c5c))
+  *  bump webpack from 4.41.5 to 4.41.6 (#1494) ([196def64](https://github.com/electron-userland/electron-forge/commit/196def64))
+  *  bump @electron/get from 1.7.5 to 1.7.6 (#1493) ([1b1efe86](https://github.com/electron-userland/electron-forge/commit/1b1efe86))
+  *  bump xterm-addon-search from 0.4.0 to 0.5.0 (#1489) ([edda336d](https://github.com/electron-userland/electron-forge/commit/edda336d))
+  *  upgrade @electron/get to 1.7.5 ([ffe4a050](https://github.com/electron-userland/electron-forge/commit/ffe4a050))
+  *  upgrade electron-packager to 14.2.1 ([3f1c9590](https://github.com/electron-userland/electron-forge/commit/3f1c9590))
+  *  bump @octokit/rest from 16.42.2 to 16.43.1 (#1471) ([60c0f07b](https://github.com/electron-userland/electron-forge/commit/60c0f07b))
+*  emit Node 10 compatible code ([53a824a5](https://github.com/electron-userland/electron-forge/commit/53a824a5))
+
+##### Chores
+
+*  changes to TypeScript files have eslint --fix run on them (#1516) ([dcf3bb18](https://github.com/electron-userland/electron-forge/commit/dcf3bb18))
+*  ignore yarn.lock in subdirectories ([76217769](https://github.com/electron-userland/electron-forge/commit/76217769))
+
+##### Bug Fixes
+
+* **core:**  throw an error when no make targets for the given platform are found (#1515) ([bc370aab](https://github.com/electron-userland/electron-forge/commit/bc370aab))
+* **typescript-webpack:**  remove async=false option from ts-checker to avoid preload compile hang (#1497) ([fe5b33c9](https://github.com/electron-userland/electron-forge/commit/fe5b33c9))
+
+##### Refactors
+
+*  use @malept/cross-spawn-promise instead of cross-spawn-promise (#1496) ([62998e5c](https://github.com/electron-userland/electron-forge/commit/62998e5c))
+
 #### [6.0.0-beta.49](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.49) (2020-02-06)
 
 ##### Build System / Dependencies
