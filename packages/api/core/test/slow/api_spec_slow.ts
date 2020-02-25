@@ -377,6 +377,17 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
           })).to.eventually.be.rejectedWith(/incompatible with this version/);
         });
 
+        it('throws an error when no makers are configured for the given platform', async () => {
+          await expect(forge.make({
+            dir,
+            overrideTargets: [{
+              name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
+            }],
+            platform: 'linux',
+            skipPackage: true,
+          })).to.eventually.be.rejectedWith('Could not find any make targets configured for the "linux" platform.');
+        });
+
         it('can make for the MAS platform successfully', async () => {
           if (process.platform !== 'darwin') return;
           await expect(forge.make({
