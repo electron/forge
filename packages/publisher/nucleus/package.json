@@ -9,7 +9,7 @@
   "typings": "dist/PublisherNucleus.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^7.0.1"
+    "mocha": "^7.1.0"
   },
   "engines": {
     "node": ">= 10.0.0"
