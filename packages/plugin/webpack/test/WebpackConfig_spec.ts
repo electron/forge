@@ -220,7 +220,7 @@ describe('WebpackConfigGenerator', () => {
         entryPoint,
         entryPoint.preload!,
       );
-      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.target).to.equal('electron-preload');
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.deep.equal(['preloadScript.js']);
       expect(webpackConfig.output).to.deep.equal({
