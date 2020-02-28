@@ -175,7 +175,7 @@ export default class WebpackConfigGenerator {
 
     return webpackMerge.smart({
       devtool: 'inline-source-map',
-      target: 'electron-renderer',
+      target: 'electron-preload',
       mode: this.mode,
       entry: prefixedEntries.concat([
         entryPoint.js,
