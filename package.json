@@ -141,7 +141,7 @@
     "rimraf": "^3.0.1",
     "sinon": "^9.0.0",
     "ts-node": "^8.6.1",
-    "typedoc": "^0.16.9",
+    "typedoc": "^0.16.11",
     "typescript": "^3.8.2"
   },
   "optionalDependencies": {
