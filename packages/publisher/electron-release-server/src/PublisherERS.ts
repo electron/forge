@@ -3,7 +3,7 @@ import { asyncOra } from '@electron-forge/async-ora';
 import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
 import debug from 'debug';
-import fetch from 'node-fetch';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import path from 'path';
@@ -16,6 +16,17 @@ interface ERSVersion {
   name: string;
   assets: { name: string; }[];
 }
+
+const fetchAndCheckStatus = async (
+  url: RequestInfo,
+  init?: RequestInit,
+): Promise<Response> => {
+  const result = await fetch(url, init);
+  if (result.ok) { // res.status >= 200 && res.status < 300
+    return result;
+  }
+  throw new Error(`ERS publish failed with status code: ${result.status} (${result.url})`);
+};
 
 export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch) => {
   switch (platform) {
@@ -44,7 +55,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
     const api = (apiPath: string) => `${config.baseUrl}/${apiPath}`;
 
-    const { token } = await (await fetch(api('api/auth/login'), {
+    const { token } = await (await fetchAndCheckStatus(api('api/auth/login'), {
       method: 'POST',
       body: JSON.stringify({
         username: config.username,
@@ -56,7 +67,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     })).json();
 
     // eslint-disable-next-line max-len
-    const authFetch = (apiPath: string, options?: any) => fetch(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
+    const authFetch = (apiPath: string, options?: any) => fetchAndCheckStatus(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 
