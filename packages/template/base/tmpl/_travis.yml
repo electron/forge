@@ -1,13 +1,14 @@
 language: node_js
-node_js: "8"
+node_js: "10"
 os:
 - linux
 - osx
-dist: xenial
+dist: bionic
 osx_image: xcode10.1
 
 cache:
   npm: true
+  yarn: true
   directories:
   - $HOME/.cache/electron
 
@@ -21,10 +22,6 @@ branches:
   only:
   - master
   - /^v\d+\.\d+\.\d+/
-
-install:
-- npm install
-- npm update
 
 script:
 - npm run lint
