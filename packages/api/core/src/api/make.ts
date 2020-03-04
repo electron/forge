@@ -26,6 +26,23 @@ class MakerImpl extends MakerBase<any> {
   defaultPlatforms = [];
 }
 
+type MakeTarget = IForgeResolvableMaker | MakerBase<any>;
+
+function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[]) {
+  if (overrideTargets) {
+    return overrideTargets.map((target) => {
+      if (typeof target === 'string') {
+        return forgeConfig.makers.find(
+          (maker) => (maker as IForgeResolvableMaker).name === target,
+        ) || { name: target };
+      }
+
+      return target;
+    });
+  }
+  return forgeConfig.makers;
+}
+
 export interface MakeOptions {
   /**
    * The path to the app from which distrubutables are generated
@@ -42,7 +59,7 @@ export interface MakeOptions {
   /**
    * An array of make targets to override your forge config
    */
-  overrideTargets?: (IForgeResolvableMaker | MakerBase<any>)[];
+  overrideTargets?: MakeTarget[];
   /**
    * The target architecture
    */
@@ -90,12 +107,8 @@ export default async ({
   const makers: {
     [key: number]: MakerBase<any>;
   } = {};
-  let targets = (overrideTargets || forgeConfig.makers).map((target) => {
-    if (typeof target === 'string') {
-      return { name: target };
-    }
-    return target;
-  });
+
+  let targets = generateTargets(forgeConfig, overrideTargets);
 
   let targetId = 0;
   for (const target of targets) {
