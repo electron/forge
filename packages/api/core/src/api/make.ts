@@ -26,7 +26,7 @@ class MakerImpl extends MakerBase<any> {
   defaultPlatforms = [];
 }
 
-type MakeTarget = IForgeResolvableMaker | MakerBase<any>;
+type MakeTarget = IForgeResolvableMaker | MakerBase<any> | string;
 
 function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[]) {
   if (overrideTargets) {
