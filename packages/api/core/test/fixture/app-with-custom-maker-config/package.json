@@ -1,0 +1,21 @@
+{
+  "name": "test",
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "../custom-maker",
+          "config": {
+            "artifactPath": "from config"
+          }
+        },
+        {
+          "name": "@electron-forge/non-existent-forge-maker"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^1.0.0"
+  }
+}
