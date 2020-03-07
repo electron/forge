@@ -47,9 +47,12 @@ export default class WebpackConfigGenerator {
 
   // Users can override this method in a subclass to provide custom logic or
   // configuraqtion parameters.
-  async preprocessConfig(config: ConfigurationFactory): Promise<Configuration> {
-    return config({}, { mode: this.mode });
-  }
+  preprocessConfig = async (config: ConfigurationFactory): Promise<Configuration> => config(
+    {},
+    {
+      mode: this.mode,
+    },
+  )
 
   get mode(): WebpackMode {
     return this.isProd ? 'production' : 'development';
