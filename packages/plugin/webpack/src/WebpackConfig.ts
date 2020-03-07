@@ -5,11 +5,14 @@ import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
+import processConfig from './util/processConfig';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
+
+export type ConfigurationFactory = (env: string | Record<string, string | boolean | number> | unknown, args: Record<string, unknown>) => Configuration;
 
 export default class WebpackConfigGenerator {
   private isProd: boolean;
@@ -32,13 +35,20 @@ export default class WebpackConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  resolveConfig(config: Configuration | string): Configuration {
-    if (typeof config === 'string') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
-      return require(path.resolve(this.projectDir, config)) as Configuration;
-    }
+  async resolveConfig(config: Configuration | ConfigurationFactory | string): Promise<Configuration> {
+    const rawConfig =
+      typeof config === 'string'
+        ? // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
+          (require(path.resolve(this.projectDir, config)) as Configuration | ConfigurationFactory)
+        : config;
 
-    return config;
+    return processConfig(this.preprocessConfig, rawConfig);
+  }
+
+  // Users can override this method in a subclass to provide custom logic or
+  // configuraqtion parameters.
+  async preprocessConfig(config: ConfigurationFactory): Promise<Configuration> {
+    return config({}, { mode: this.mode });
   }
 
   get mode(): WebpackMode {
@@ -102,8 +112,8 @@ export default class WebpackConfigGenerator {
     return defines;
   }
 
-  getMainConfig(): Configuration {
-    const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
+  async getMainConfig(): Promise<Configuration> {
+    const mainConfig = await this.resolveConfig(this.pluginConfig.mainConfig);
 
     if (!mainConfig.entry) {
       throw new Error('Required option "mainConfig.entry" has not been defined');
@@ -142,7 +152,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
-    const rendererConfig = this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
+    const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge(
@@ -165,7 +175,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
-    const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
+    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
     const entry: webpack.Entry = {};
     for (const entryPoint of entryPoints) {
       const prefixedEntries = entryPoint.prefixedEntries || [];
