@@ -1,4 +1,3 @@
-import { ForgePlatform } from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
 
 interface Config {
@@ -8,7 +7,7 @@ interface Config {
 export default class Maker extends MakerBase<Config> {
   name = 'custom-maker';
 
-  defaultPlatforms = [process.platform] as ForgePlatform[];
+  defaultPlatforms = ['linux'];
 
   isSupportedOnCurrentPlatform() {
     return true;
