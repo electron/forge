@@ -90,6 +90,8 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   spot regressions much easier.
 * If your PR changes the behavior of an existing feature, or adds a new feature, please add/edit
   the package's documentation.
+* Commit messages and pull request titles should adhere to the [Conventional Commits
+  format](https://www.conventionalcommits.org/en/v1.0.0/).
 * One of the philosophies of the project is to keep the code base as small as possible. If you are
   adding a new feature, think about whether it is appropriate to go into a separate Node module,
   and then be integrated into this project.
