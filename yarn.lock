@@ -1245,15 +1245,15 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@>= 8":
-  version "13.7.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.7.tgz#1628e6461ba8cc9b53196dfeaeec7b07fa6eea99"
-  integrity sha512-Uo4chgKbnPNlxQwoFmYIwctkQVkMMmsAoGGU4JKwLuvBefF0pCq4FybNSnfkfRCpC7ZW7kttcC/TrRtAJsvGtg==
-
-"@types/node@^13.7.7":
+"@types/node@*", "@types/node@^13.7.7":
   version "13.9.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.0.tgz#5b6ee7a77faacddd7de719017d0bc12f52f81589"
   integrity sha512-0ARSQootUG1RljH2HncpsY2TJBfGQIKOOi7kxzUY6z54ePu/ZD+wJA8zI2Q6v8rol2qpG/rvqsReco8zNMPvhQ==
+
+"@types/node@>= 8":
+  version "13.7.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.7.7.tgz#1628e6461ba8cc9b53196dfeaeec7b07fa6eea99"
+  integrity sha512-Uo4chgKbnPNlxQwoFmYIwctkQVkMMmsAoGGU4JKwLuvBefF0pCq4FybNSnfkfRCpC7ZW7kttcC/TrRtAJsvGtg==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -1877,6 +1877,18 @@ asar@^2.0.1:
     minimatch "^3.0.4"
     mkdirp "^0.5.1"
     tmp-promise "^1.0.5"
+  optionalDependencies:
+    "@types/glob" "^7.1.1"
+
+asar@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.0.tgz#8684ef4c7a7ecfa0d279f40dc66d52e6a2e7b958"
+  integrity sha512-Zz78dNBkaKIc5esKx7z1aymECwlNKtGZkq0Az5dan4BdKvt35UfrA2+0UYC1w9zNIwxW18talb/x6C9tauTDPw==
+  dependencies:
+    chromium-pickle-js "^0.2.0"
+    commander "^4.1.1"
+    glob "^7.1.6"
+    minimatch "^3.0.4"
   optionalDependencies:
     "@types/glob" "^7.1.1"
 
