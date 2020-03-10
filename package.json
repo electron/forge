@@ -60,7 +60,7 @@
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
-    "open": "^7.0.1",
+    "open": "^7.0.3",
     "ora": "^4.0.3",
     "parse-author": "^2.0.0",
     "pretty-ms": "^6.0.1",
