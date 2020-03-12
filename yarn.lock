@@ -1880,10 +1880,10 @@ asar@^2.0.1:
   optionalDependencies:
     "@types/glob" "^7.1.1"
 
-asar@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.0.tgz#8684ef4c7a7ecfa0d279f40dc66d52e6a2e7b958"
-  integrity sha512-Zz78dNBkaKIc5esKx7z1aymECwlNKtGZkq0Az5dan4BdKvt35UfrA2+0UYC1w9zNIwxW18talb/x6C9tauTDPw==
+asar@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.1.tgz#fbf352cba5b833efbdebbf7118440e5b492c01c5"
+  integrity sha512-43sVUKSX0VLNfavair0OLzPoVX5rRdqAxcUUhtwKLGkKQPs2ePreOG7zpp3gZOLvZGhZxixD9JZBxWKgqH8r1g==
   dependencies:
     chromium-pickle-js "^0.2.0"
     commander "^4.1.1"
