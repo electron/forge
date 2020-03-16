@@ -22,7 +22,7 @@
     "@electron-forge/shared-types": "6.0.0-beta.50",
     "@electron/get": "^1.9.0",
     "colors": "^1.4.0",
-    "commander": "^4.1.1",
+    "commander": "^5.0.0",
     "debug": "^4.1.0",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.0.6",
