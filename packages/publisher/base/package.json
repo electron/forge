@@ -10,7 +10,7 @@
   "devDependencies": {
     "@electron-forge/shared-types": "6.0.0-beta.50",
     "chai": "4.2.0",
-    "mocha": "^7.1.0"
+    "mocha": "^7.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"

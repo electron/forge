@@ -8,7 +8,7 @@
   "main": "dist/InstallerDeb.js",
   "typings": "dist/InstallerDeb.d.ts",
   "devDependencies": {
-    "mocha": "^7.1.0"
+    "mocha": "^7.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"
