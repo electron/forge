@@ -110,7 +110,7 @@
     "@types/semver": "^7.1.0",
     "@types/sinon": "^7.5.1",
     "@types/username": "^3.0.0",
-    "@types/webpack": "^4.41.7",
+    "@types/webpack": "^4.41.8",
     "@types/webpack-dev-middleware": "^3.7.0",
     "@types/webpack-hot-middleware": "^2.25.0",
     "@types/webpack-merge": "^4.1.5",
