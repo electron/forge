@@ -7,6 +7,8 @@ import './util/terminate';
 
 import checkSystem from './util/check-system';
 
+const metadata = require('../package.json');
+
 const originalSC = program.executeSubCommand.bind(program);
 program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) => {
   let indexOfDoubleDash = process.argv.indexOf('--');
@@ -25,7 +27,7 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
 };
 
 program
-  .version(require('../package.json').version)
+  .version(metadata.version)
   .option('--verbose', 'Enables verbose mode')
   .command('init', 'Initialize a new Electron application')
   .command('import', 'Attempts to navigate you through the process of importing an existing project to "electron-forge"')
@@ -53,7 +55,7 @@ program
 
   if (!goodSystem) {
     console.error((`It looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version 6.0.0+`).red);
+Make sure you have git installed and Node.js version ${metadata.engines.node}`).red);
     process.exit(1);
   }
 
