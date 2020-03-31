@@ -32,6 +32,24 @@ export interface PublisherS3Config {
    */
   public?: boolean;
   /**
+   * The endpoint URI to send requests to.
+   *
+   * E.g. `https://s3.example.com`
+   */
+  endpoint?: string;
+  /**
+   * The region to send service requests to.
+   *
+   * E.g. `eu-west-1`
+   */
+  region?: string;
+  /**
+   * Whether to force path style URLs for S3 objects.
+   *
+   * Default: false
+   */
+  s3ForcePathStyle?: boolean;
+  /**
    * Custom function to provide the key to upload a given file to
    */
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
