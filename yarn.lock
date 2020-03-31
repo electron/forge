@@ -1284,15 +1284,20 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^13.9.4":
-  version "13.9.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.6.tgz#3371aa845ca4dfb86c2ff7a9a3bf62d86a3a59f6"
-  integrity sha512-ojnAmpyicIR0pS40ZA3dfOXeyRjNFMDcuImX8dVdqkfINnI/V6+cdyYnU7GaMIXeSPAfi3oCJaDLOYY927Rizw==
+"@types/node@*":
+  version "13.9.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.8.tgz#09976420fc80a7a00bf40680c63815ed8c7616f4"
+  integrity sha512-1WgO8hsyHynlx7nhP1kr0OFzsgKz5XDQL+Lfc3b1Q3qIln/n8cKD4m09NJ0+P1Rq7Zgnc7N0+SsMnoD1rEb0kA==
 
 "@types/node@>= 8":
   version "13.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.4.tgz#63c58e67999bfbfa688dd49ed84639b01b543606"
   integrity sha512-uzaaDXey/NI2l7kU+xCgWu852Dh/zmf6ZKApc0YQEQpY4DaiZFmLN29E6SLHJfSedj3iNWAndSwfSBpEDadJfg==
+
+"@types/node@^13.9.4":
+  version "13.9.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.9.6.tgz#3371aa845ca4dfb86c2ff7a9a3bf62d86a3a59f6"
+  integrity sha512-ojnAmpyicIR0pS40ZA3dfOXeyRjNFMDcuImX8dVdqkfINnI/V6+cdyYnU7GaMIXeSPAfi3oCJaDLOYY927Rizw==
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -1904,9 +1909,9 @@ asar@^2.0.1:
     "@types/glob" "^7.1.1"
 
 asar@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.2.tgz#884d04a0549d5c3cd84816ff6784ec0d735fdd3e"
-  integrity sha512-nFtY0kToUcMEAY8f6qmeyqn+HZzovwlKsbzf5yjEnzOksFzJLTxWvP2jbzItFT04BdaL3CZKRApTr5iRofVq6g==
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.3.tgz#1fef03c2d6d2de0cbad138788e4f7ae03b129c7b"
+  integrity sha512-k7zd+KoR+n8pl71PvgElcoKHrVNiSXtw7odKbyNpmgKe7EGRF9Pnu3uLOukD37EvavKwVFxOUpqXTIZC5B5Pmw==
   dependencies:
     chromium-pickle-js "^0.2.0"
     commander "^5.0.0"
