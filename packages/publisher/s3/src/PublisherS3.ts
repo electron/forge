@@ -40,7 +40,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       secretAccessKey: config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
       region: config.region || undefined,
       endpoint: config.endpoint || undefined,
-      s3ForcePathStyle: config.s3ForcePathStyle || false,
+      s3ForcePathStyle: !!config.s3ForcePathStyle,
     });
 
     if (!s3Client.config.credentials || !config.bucket) {
