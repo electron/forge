@@ -75,7 +75,7 @@ With these goals in mind, under the hood this project uses, among others:
 * [`electron-rebuild`](https://github.com/electron/electron-rebuild):
   Automatically recompiles native Node.js modules against the correct
   Electron version.
-* [`electron-packager`](https://github.com/electron-userland/electron-packager):
+* [Electron Packager](https://github.com/electron/electron-packager):
   Customizes and bundles your Electron app to get it ready for distribution.
 
 # Docs and Usage
@@ -85,7 +85,7 @@ For Electron Forge documentation and usage you should check out our website:
 
 # FAQ
 
-## How do I use this with `webpack`/`babel`/`typescript`/`other` build tool?
+## How do I use this with `webpack`/`babel`/`typescript`/other build tool?
 
 By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but for typescript, webpack, and other build tool support check out the [plugins](https://www.electronforge.io/config/plugins)
 section of our docs site.  We currently have plugins for Webpack and Electron Compile, and a
