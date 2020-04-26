@@ -171,7 +171,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": "yarn lint --fix"
+    "*.ts": "eslint --ext .ts --fix"
   },
   "nyc": {
     "exclude": [
