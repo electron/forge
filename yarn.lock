@@ -3457,7 +3457,7 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-installer-common@^0.10.0:
+electron-installer-common@^0.10.0, electron-installer-common@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.1.tgz#42738f140c15270758681ac3f32039430b9fc023"
   integrity sha512-d9gEXhfSSyMn8mkFNdbUdkqdLkxVZ8nO3NDso3nuSnG1+wy7cJuuCjutwR4+zsXdQuNFC1n/DxpTk4pBLZSCTQ==
@@ -3508,14 +3508,15 @@ electron-installer-redhat@^3.0.0:
     word-wrap "^1.2.3"
     yargs "^15.1.0"
 
-electron-installer-snap@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-5.0.0.tgz#09553749b367aa6d00c1f92e57d3f3e05daced5a"
-  integrity sha512-M5ADJ7MP3QX1bRfdMZer4B/t5p2fVWciCXkqUs1t3kBSyxEJw4N2jNMydAeJRLend9cbM1E2Jq5+bhPEES85Kg==
+electron-installer-snap@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-5.1.0.tgz#30334cd9b59bb8efa70f2fe45b54a6b10545b134"
+  integrity sha512-lZ/EQ8SFbmEplhxbGdDRKGJUVZqXzoK+CbZtL3SoCwWz1MWKfOZzlx0VhNlLDuaAo6DKFN2Hxh+3yPikzqfbew==
   dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
     debug "^4.1.1"
-    electron-installer-common "^0.10.0"
-    fs-extra "^8.0.1"
+    electron-installer-common "^0.10.1"
+    fs-extra "^9.0.0"
     js-yaml "^3.10.0"
     lodash "^4.17.15"
     semver "^7.1.1"
