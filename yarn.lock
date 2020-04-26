@@ -1375,9 +1375,9 @@
     loglevel "^1.6.2"
 
 "@types/webpack-hot-middleware@^2.25.0":
-  version "2.25.0"
-  resolved "https://registry.yarnpkg.com/@types/webpack-hot-middleware/-/webpack-hot-middleware-2.25.0.tgz#ceb1e0fb43cbb9ec79c4a856c2060f161e12bf30"
-  integrity sha512-J+Zk7c99pMnPcxWpPY7CEdc4jhPFX1SVPrqXTzinoF8ea+OmIiHa+oOdVI7leMQFGZ6G9e9Yo1uNPhLVr/R8Uw==
+  version "2.25.2"
+  resolved "https://registry.yarnpkg.com/@types/webpack-hot-middleware/-/webpack-hot-middleware-2.25.2.tgz#22280f76e86a9dae41bc55ca0de5e88d22178f86"
+  integrity sha512-Q05ffLL61Gk4rDmQzb4xYuxXepStWWcdAvKXUg9NgcnVaiXsSPyr9m96I33Ui8k8iuPFKxCQ5XjfwFl0qReHJg==
   dependencies:
     "@types/connect" "*"
     "@types/webpack" "*"
@@ -1398,19 +1398,7 @@
     "@types/source-list-map" "*"
     source-map "^0.6.1"
 
-"@types/webpack@*":
-  version "4.41.10"
-  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-4.41.10.tgz#2e1f6b3508a249854efe3dcc7690905ac5ee10be"
-  integrity sha512-vIy0qaq8AjOjZLuFPqpo7nAJzcoVXMdw3mvpNN07Uvdy0p1IpJeLNBe3obdRP7FX2jIusDE7z1pZa0A6qYUgnA==
-  dependencies:
-    "@types/anymatch" "*"
-    "@types/node" "*"
-    "@types/tapable" "*"
-    "@types/uglify-js" "*"
-    "@types/webpack-sources" "*"
-    source-map "^0.6.0"
-
-"@types/webpack@^4.41.8":
+"@types/webpack@*", "@types/webpack@^4.41.8":
   version "4.41.12"
   resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-4.41.12.tgz#0386ee2a2814368e2f2397abb036c0bf173ff6c3"
   integrity sha512-BpCtM4NnBen6W+KEhrL9jKuZCXVtiH6+0b6cxdvNt2EwU949Al334PjQSl2BeAyvAX9mgoNNG21wvjP3xZJJ5w==
