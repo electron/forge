@@ -52,7 +52,7 @@
     "fs-extra": "^9.0.0",
     "glob": "^7.1.5",
     "lodash": "^4.17.15",
-    "log-symbols": "^3.0.0",
+    "log-symbols": "^4.0.0",
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
     "resolve-package": "^1.0.1",
