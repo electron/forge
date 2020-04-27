@@ -9,7 +9,7 @@
   "typings": "dist/Plugin.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^7.1.1"
+    "mocha": "^7.1.2"
   },
   "engines": {
     "node": ">= 10.0.0"
