@@ -18,7 +18,7 @@
     "debug": "^4.1.0",
     "log-symbols": "^4.0.0",
     "ora": "^4.0.3",
-    "pretty-ms": "^6.0.1"
+    "pretty-ms": "^7.0.0"
   },
   "engines": {
     "node": ">= 10.0.0"
