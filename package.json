@@ -67,7 +67,7 @@
     "resolve-package": "^1.0.1",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
-    "sudo-prompt": "^9.1.1",
+    "sudo-prompt": "^9.2.1",
     "username": "^5.1.0",
     "webpack": "^4.42.0",
     "webpack-dev-middleware": "^3.7.2",
