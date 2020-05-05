@@ -154,9 +154,6 @@
     "electron-winstaller": "^4.0.0",
     "electron-wix-msi": "^2.1.1"
   },
-  "resolutions": {
-    "commitizen/minimist": "^1.2.5"
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-customizable"
