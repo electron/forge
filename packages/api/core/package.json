@@ -42,7 +42,7 @@
     "@electron-forge/template-typescript": "6.0.0-beta.51",
     "@electron-forge/template-typescript-webpack": "6.0.0-beta.51",
     "@electron-forge/template-webpack": "6.0.0-beta.51",
-    "@electron/get": "^1.9.0",
+    "@electron/get": "^1.12.0",
     "@malept/cross-spawn-promise": "^1.1.0",
     "colors": "^1.4.0",
     "debug": "^4.1.0",
