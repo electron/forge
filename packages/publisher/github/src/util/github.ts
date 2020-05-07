@@ -13,7 +13,7 @@ export default class GitHub {
   ) {
     this.options = merge(
       options,
-      { headers: { 'user-agent': 'Electron Forge' } },
+      { userAgent: 'Electron Forge' },
     );
     if (authToken) {
       this.token = authToken;
@@ -25,13 +25,11 @@ export default class GitHub {
   }
 
   getGitHub() {
-    const github = new Octokit(this.options);
-    if (this.token) {
-      github.authenticate({
-        type: 'token',
-        token: this.token,
-      });
-    }
+    const authOption = this.token ? { auth: `token ${this.token}` } : {};
+    const github = new Octokit({
+      ...this.options,
+      ...authOption,
+    });
     return github;
   }
 }
