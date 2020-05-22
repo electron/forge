@@ -9771,9 +9771,9 @@ xterm-addon-search@^0.6.0:
   integrity sha512-k3EsZzUptCXygHFP5rQuCBdWWkI/ZNuX3pDSOVdxPV9jB7U5Aha9guTIZoMP7FIjL8jce+ClQs6q7VINcRV1+w==
 
 xterm@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-4.5.0.tgz#c7fd145c6cf91c9f2ef07011a9b35026cf4bfecc"
-  integrity sha512-4t12tsvtYnv13FBJwewddxdI/j4kSonmbQQv50j34R/rPIFbUNGtptbprmuUlTDAKvHLMDZ/Np2XcpNimga/HQ==
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-4.6.0.tgz#1b49b32e546409c110fbe8ece0b4a388504a937d"
+  integrity sha512-98211RIDrAECqpsxs6gbilwMcxLtxSDIvtzZUIqP1xIByXtuccJ4pmMhHGJATZeEGe/reARPMqwPINK8T7jGZg==
 
 y18n@^4.0.0:
   version "4.0.0"
