@@ -82,7 +82,7 @@ function sync(): Listr {
   ]);
 }
 
-if (process.mainModule === module) {
+if (require.main === module) {
   sync().run().catch(console.error);
 }
 
