@@ -86,7 +86,7 @@ async function checkPackageManagerVersion(ora: OraImpl) {
  */
 const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check');
 
-export default async function (ora: OraImpl): Promise<boolean> {
+export default async function checkSystem(ora: OraImpl): Promise<boolean> {
   if (!await fs.pathExists(SKIP_SYSTEM_CHECK)) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return (await Promise.all([
