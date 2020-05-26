@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.51",
     "@electron-forge/shared-types": "6.0.0-beta.51",
-    "cross-spawn": "^7.0.1",
+    "cross-spawn": "^7.0.3",
     "fs-extra": "^9.0.0",
     "parse-author": "^2.0.0"
   },
