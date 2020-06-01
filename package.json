@@ -127,7 +127,7 @@
     "eslint": "^7.0.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-mocha": "^7.0.0",
+    "eslint-plugin-mocha": "^7.0.1",
     "fetch-mock": "^9.10.1",
     "generate-changelog": "^1.8.0",
     "husky": "^4.2.5",
