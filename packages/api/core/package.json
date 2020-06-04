@@ -49,7 +49,7 @@
     "electron-packager": "^14.2.0",
     "electron-rebuild": "^1.8.6",
     "find-up": "^4.1.0",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^9.0.1",
     "glob": "^7.1.5",
     "lodash": "^4.17.15",
     "log-symbols": "^4.0.0",
