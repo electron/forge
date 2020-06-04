@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.51",
     "@electron-forge/publisher-base": "6.0.0-beta.51",
-    "fs-extra": "^9.0.0"
+    "fs-extra": "^9.0.1"
   },
   "optionalDependencies": {
     "electron-installer-snap": "^5.1.0"
