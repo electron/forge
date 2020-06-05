@@ -131,7 +131,7 @@
     "fetch-mock": "^9.10.1",
     "generate-changelog": "^1.8.0",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.8",
+    "lint-staged": "^10.2.9",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
     "mocha": "^7.1.2",
