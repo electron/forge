@@ -930,27 +930,27 @@
   dependencies:
     cross-spawn "^7.0.1"
 
-"@malept/electron-installer-flatpak@^0.11.0":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.1.tgz#67b707c2d795f9181b437cc936d75404026b268d"
-  integrity sha512-EFMoQT+RAHF4sKnX7MyckCI4ZfKxddFKv6lpdqstwzv33I8N9AxRrBp8deh2DGiPEGrPsGT7YJTD4AuOOVB8Nw==
+"@malept/electron-installer-flatpak@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.2.tgz#a2578ff744d7ad3f87e869251663c0b15af13680"
+  integrity sha512-B+0IhhRE05ZISWiPuortytJo2vp85Hv8EGWs/mWxLjF5bKU9toGaPVT5CjEB998YfpaIUJqdlNWfPH0+4S9kOA==
   dependencies:
-    "@malept/flatpak-bundler" "^0.3.0"
+    "@malept/flatpak-bundler" "^0.4.0"
     debug "^4.1.1"
     electron-installer-common "^0.10.0"
     lodash "^4.17.15"
     semver "^7.1.1"
     yargs "^15.0.1"
 
-"@malept/flatpak-bundler@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@malept/flatpak-bundler/-/flatpak-bundler-0.3.0.tgz#107c2343f982c61177ecc5fe0783a1bb47978258"
-  integrity sha512-jOp6TWc0vLpye3390Z29otyDmzwfof8SljeqeuIL6pyGszmBFx2J4hcpq1urb+3qcGs6/ZyCgUxREZGTKz+5og==
+"@malept/flatpak-bundler@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@malept/flatpak-bundler/-/flatpak-bundler-0.4.0.tgz#e8a32c30a95d20c2b1bb635cc580981a06389858"
+  integrity sha512-9QOtNffcOF/c1seMCDnjckb3R9WHcG34tky+FHpNKKCW0wc/scYLwMtO+ptyGUfMW0/b/n4qRiALlaFHc9Oj7Q==
   dependencies:
     debug "^4.1.1"
-    fs-extra "^8.0.1"
-    lodash "^4.16.2"
-    tmp-promise "^2.0.1"
+    fs-extra "^9.0.0"
+    lodash "^4.17.15"
+    tmp-promise "^3.0.2"
 
 "@octokit/auth-token@^2.4.0":
   version "2.4.0"
@@ -6128,7 +6128,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@4.17.15, lodash@^4.16.2, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4:
+lodash@4.17.15, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.4:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
@@ -9016,6 +9016,13 @@ tmp-promise@^2.0.1:
   dependencies:
     tmp "0.1.0"
 
+tmp-promise@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/tmp-promise/-/tmp-promise-3.0.2.tgz#6e933782abff8b00c3119d63589ca1fb9caaa62a"
+  integrity sha512-OyCLAKU1HzBjL6Ev3gxUeraJNlbNingmi8IrHHEsYH8LTmEuhvYfqvhn2F/je+mjf4N58UmZ96OMEy1JanSCpA==
+  dependencies:
+    tmp "^0.2.0"
+
 tmp@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.1.0.tgz#ee434a4e22543082e294ba6201dcc6eafefa2877"
@@ -9029,6 +9036,13 @@ tmp@^0.0.33:
   integrity sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==
   dependencies:
     os-tmpdir "~1.0.2"
+
+tmp@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.1.tgz#8457fc3037dcf4719c251367a1af6500ee1ccf14"
+  integrity sha512-76SUhtfqR2Ijn+xllcI5P1oyannHNHByD80W1q447gU3mp9G9PSpGdWmjUOHRDPiHYacIk66W7ubDTuPF3BEtQ==
+  dependencies:
+    rimraf "^3.0.0"
 
 tn1150@^0.1.0:
   version "0.1.0"
