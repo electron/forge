@@ -134,7 +134,7 @@
     "lint-staged": "^10.2.9",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
-    "mocha": "^7.1.2",
+    "mocha": "^8.0.1",
     "nodemon": "^2.0.3",
     "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",
