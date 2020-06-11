@@ -43,4 +43,8 @@ export interface PublisherGitHubConfig {
    * Prepended to the package version to determine the release name (default "v")
    */
   tagPrefix?: string;
+  /**
+   * Re-upload the new asset if you upload an asset with the same filename as existing asset
+   */
+  override?: boolean;
 }
