@@ -9,7 +9,7 @@
   "typings": "dist/MakerSquirrel.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^7.1.2"
+    "mocha": "^8.0.1"
   },
   "engines": {
     "node": ">= 10.0.0"

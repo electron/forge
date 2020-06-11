@@ -14,7 +14,7 @@
     "@malept/cross-spawn-promise": "^1.1.0",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "mocha": "^7.1.2"
+    "mocha": "^8.0.1"
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.51",
