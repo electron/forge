@@ -80,7 +80,6 @@ export class ForgeAPI {
   }
 }
 
-
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 

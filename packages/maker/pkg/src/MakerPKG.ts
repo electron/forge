@@ -5,7 +5,6 @@ import { flatAsync } from 'electron-osx-sign';
 import path from 'path';
 import { MakerPKGConfig } from './Config';
 
-
 export default class MakerDMG extends MakerBase<MakerPKGConfig> {
   name = 'pkg';
 
