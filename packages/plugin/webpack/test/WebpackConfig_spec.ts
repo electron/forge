@@ -235,6 +235,8 @@ describe('WebpackConfigGenerator', () => {
             plugins: [
               { apply() {} },
               { apply() {} },
+              { apply() {} },
+              { apply() {} },
             ] as Plugin[],
           },
           entryPoints: [{
@@ -251,7 +253,7 @@ describe('WebpackConfigGenerator', () => {
         entryPoint,
         entryPoint.preload!,
       );
-      expect(webpackConfig.plugins!.length).to.equal(2);
+      expect(webpackConfig.plugins!.length).to.equal(4);
     });
   });
 
