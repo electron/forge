@@ -203,8 +203,9 @@ export default class WebpackConfigGenerator {
 
     const defines = this.getDefines(false);
 
-    const useHtmlWebpackPlugin = !rendererConfig.plugins || !rendererConfig.plugins
-      .find((plugin) => plugin.constructor && plugin.constructor.name === 'HtmlWebpackPlugin');
+    const useHtmlWebpackPlugin = !rendererConfig?.plugins?.find(
+      (plugin) => plugin.constructor && plugin.constructor.name === 'HtmlWebpackPlugin'
+    );
 
     const plugins = entryPoints
       .filter((entryPoint) => Boolean(entryPoint.html) && useHtmlWebpackPlugin)
