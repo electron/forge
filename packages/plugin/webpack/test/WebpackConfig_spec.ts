@@ -1,4 +1,4 @@
-import { Entry } from 'webpack';
+import { Entry, Plugin } from 'webpack';
 import { expect } from 'chai';
 import path from 'path';
 
@@ -227,6 +227,31 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
+    });
+    it('generates a config from the given preload config', async () => {
+      const config = {
+        renderer: {
+          preloadConfig: {
+            plugins: [
+              { apply() {} },
+              { apply() {} },
+            ] as Plugin[],
+          },
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preloadScript.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.plugins!.length).to.equal(2);
     });
   });
 
