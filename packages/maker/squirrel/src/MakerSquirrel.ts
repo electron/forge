@@ -5,7 +5,7 @@ import { convertVersion, createWindowsInstaller, Options as ElectronWinstallerOp
 import fs from 'fs-extra';
 import path from 'path';
 
-import { MakerSquirrelConfig } from './Config';
+type MakerSquirrelConfig = Omit<ElectronWinstallerOptions, 'appDirectory' | 'outputDirectory'>
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';
