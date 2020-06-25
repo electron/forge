@@ -4147,10 +4147,10 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-fetch-mock@^9.10.2:
-  version "9.10.2"
-  resolved "https://registry.yarnpkg.com/fetch-mock/-/fetch-mock-9.10.2.tgz#68f33d0c598cd5ef1e41bddcacde63eb9ec5cf1f"
-  integrity sha512-5buRoztM1wVluB7RTtesMWxbIWd3m9j82Y38U01iFJLbaG9DmPeIsWYZZAow8G+F264IKsbAlsO8Z88RH7lLsg==
+fetch-mock@^9.10.3:
+  version "9.10.3"
+  resolved "https://registry.yarnpkg.com/fetch-mock/-/fetch-mock-9.10.3.tgz#33d85cf9f1e463822a8f5e2c28f9a8a8c7256abd"
+  integrity sha512-vvTW3vu+6sgDuOpInd8VtaaYlt56Un/zrEvBmT8JppDXj2ZY3PQgIAoxqdSAFR5o/10jJ1yFBhXLQ/Dce/p+jg==
   dependencies:
     babel-runtime "^6.26.0"
     core-js "^3.0.0"
