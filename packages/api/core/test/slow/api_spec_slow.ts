@@ -248,9 +248,10 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
 
     describe('after package', () => {
       it('should have deleted the forge config from the packaged app', async () => {
-        const cleanPackageJSON = await readMetadata(
-          path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
-        );
+        const cleanPackageJSON = await readMetadata({
+          src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
+          logger: console.error,
+        });
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
       });
 
