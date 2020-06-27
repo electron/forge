@@ -1,4 +1,3 @@
-import * as asar from 'asar';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
@@ -6,6 +5,7 @@ import { expect } from 'chai';
 import fs from 'fs-extra';
 import path from 'path';
 import proxyquire from 'proxyquire';
+import { readMetadata } from 'electron-installer-common';
 
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
@@ -247,16 +247,11 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     });
 
     describe('after package', () => {
-      let resourcesPath = 'Test-App.app/Contents/Resources';
-      if (process.platform !== 'darwin') {
-        resourcesPath = 'resources';
-      }
-
       it('should have deleted the forge config from the packaged app', async () => {
-        const cleanPackageJSON = JSON.parse(asar.extractFile(
-          path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`, resourcesPath, 'app.asar'),
-          'package.json',
-        ).toString());
+        const cleanPackageJSON = await readMetadata({
+          src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
+          logger: console.error,
+        });
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
       });
 

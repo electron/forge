@@ -1919,7 +1919,7 @@ asar@^2.0.1:
   optionalDependencies:
     "@types/glob" "^7.1.1"
 
-asar@^3.0.1:
+asar@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/asar/-/asar-3.0.3.tgz#1fef03c2d6d2de0cbad138788e4f7ae03b129c7b"
   integrity sha512-k7zd+KoR+n8pl71PvgElcoKHrVNiSXtw7odKbyNpmgKe7EGRF9Pnu3uLOukD37EvavKwVFxOUpqXTIZC5B5Pmw==
@@ -3480,6 +3480,23 @@ electron-installer-common@^0.10.0, electron-installer-common@^0.10.1:
     parse-author "^2.0.0"
     semver "^7.1.1"
     tmp-promise "^2.0.1"
+
+electron-installer-common@^0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.2.tgz#93afd2af392d33ab3f02b036c63ea855369b043a"
+  integrity sha512-jwKps+hE+Q4NnjqfkBl5XgtrAZUaQiMaNkDGQ9MC0rnoGCq2mzrhY+sh7nhh0YaVqIu8lSaxWC+sCL0qfNshpA==
+  dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
+    asar "^3.0.0"
+    debug "^4.1.1"
+    fs-extra "^9.0.0"
+    glob "^7.1.4"
+    lodash "^4.17.15"
+    parse-author "^2.0.0"
+    semver "^7.1.1"
+    tmp-promise "^3.0.2"
+  optionalDependencies:
+    "@types/fs-extra" "^9.0.1"
 
 electron-installer-debian@^3.0.0:
   version "3.0.0"
