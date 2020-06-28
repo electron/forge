@@ -3526,13 +3526,14 @@ electron-installer-dmg@^3.0.0:
     appdmg "^0.6.0"
 
 electron-installer-redhat@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-3.0.0.tgz#0a066eb9f9b3e691d58c2b41eea1055e8d5ffa92"
-  integrity sha512-BtYh174AOIGq0iDges4/fihqJYw8WsWXRKuRpKvUlkqrwfeGMWqln28+kKV5IW6GPfHjRFeCO5dcMUioUDBo1A==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-3.1.0.tgz#becbd3a301437cad25b019013a9471facc4f3a48"
+  integrity sha512-sBhUOU1Y+HxwdxX5mFSuSmpbqmzDJKfmvf+WOXoXloeMORxOlUqBXx3hwe67zNf1VupNk+LnW/gpk+VQcY7cJA==
   dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
     debug "^4.1.1"
-    electron-installer-common "^0.10.0"
-    fs-extra "^8.1.0"
+    electron-installer-common "^0.10.2"
+    fs-extra "^9.0.0"
     lodash "^4.17.15"
     word-wrap "^1.2.3"
     yargs "^15.1.0"
