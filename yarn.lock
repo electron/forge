@@ -3468,22 +3468,7 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-installer-common@^0.10.0, electron-installer-common@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.1.tgz#42738f140c15270758681ac3f32039430b9fc023"
-  integrity sha512-d9gEXhfSSyMn8mkFNdbUdkqdLkxVZ8nO3NDso3nuSnG1+wy7cJuuCjutwR4+zsXdQuNFC1n/DxpTk4pBLZSCTQ==
-  dependencies:
-    "@malept/cross-spawn-promise" "^1.0.0"
-    asar "^2.0.1"
-    debug "^4.1.1"
-    fs-extra "^8.0.1"
-    glob "^7.1.4"
-    lodash "^4.17.15"
-    parse-author "^2.0.0"
-    semver "^7.1.1"
-    tmp-promise "^2.0.1"
-
-electron-installer-common@^0.10.2:
+electron-installer-common@^0.10.0, electron-installer-common@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.2.tgz#93afd2af392d33ab3f02b036c63ea855369b043a"
   integrity sha512-jwKps+hE+Q4NnjqfkBl5XgtrAZUaQiMaNkDGQ9MC0rnoGCq2mzrhY+sh7nhh0YaVqIu8lSaxWC+sCL0qfNshpA==
@@ -3500,14 +3485,30 @@ electron-installer-common@^0.10.2:
   optionalDependencies:
     "@types/fs-extra" "^9.0.1"
 
-electron-installer-debian@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-3.0.0.tgz#abd76db8e89bc1ba1e5366975a941461dda06e6d"
-  integrity sha512-91iiicfK5hq6D6Xit7SFCN2GpccFBQbZB1JpYaxFdaueEjM/1hSULtCPf4e5w/2vQKZ73AfBZrxxIJqO3DhGPw==
+electron-installer-common@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.1.tgz#42738f140c15270758681ac3f32039430b9fc023"
+  integrity sha512-d9gEXhfSSyMn8mkFNdbUdkqdLkxVZ8nO3NDso3nuSnG1+wy7cJuuCjutwR4+zsXdQuNFC1n/DxpTk4pBLZSCTQ==
   dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
+    asar "^2.0.1"
     debug "^4.1.1"
-    electron-installer-common "^0.10.0"
     fs-extra "^8.0.1"
+    glob "^7.1.4"
+    lodash "^4.17.15"
+    parse-author "^2.0.0"
+    semver "^7.1.1"
+    tmp-promise "^2.0.1"
+
+electron-installer-debian@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-3.1.0.tgz#2f6107f559f6564c44e3832fb2942dd8de4d40cc"
+  integrity sha512-k6KChvx0Fw8XTlCqwwbBfh19yGQaKjGdbugokmr1IpzINOm4QFyACKMTHAYFHW5LCBUZQShZD96hwxUZ+8Kx+w==
+  dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
+    debug "^4.1.1"
+    electron-installer-common "^0.10.2"
+    fs-extra "^9.0.0"
     get-folder-size "^2.0.1"
     lodash "^4.17.4"
     word-wrap "^1.2.3"
