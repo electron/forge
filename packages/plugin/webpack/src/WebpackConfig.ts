@@ -97,7 +97,7 @@ export default class WebpackConfigGenerator {
 
   getDefines(inRendererDir = true) {
     const defines: { [key: string]: string; } = {
-      ASSET_RELOCATOR_BASE_DIR: this.assetRelocatorBaseDir(),
+      ASSET_RELOCATOR_BASE_DIR: this.assetRelocatorBaseDir(inRendererDir),
     };
     if (
       !this.pluginConfig.renderer.entryPoints
