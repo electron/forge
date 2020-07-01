@@ -83,7 +83,7 @@
     "@babel/cli": "^7.10.3",
     "@babel/core": "^7.10.3",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
-    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-env": "^7.10.4",
     "@babel/preset-typescript": "^7.6.0",
     "@babel/register": "^7.10.3",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
