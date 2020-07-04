@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
-      uses: docker://malept/gha-dependabolt:2.1.1
+      uses: docker://malept/gha-dependabolt:v2
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
