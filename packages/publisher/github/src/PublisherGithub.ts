@@ -1,12 +1,14 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import { asyncOra } from '@electron-forge/async-ora';
-
+import { ForgeMakeResult } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import {
+  ReposCreateReleaseResponseData as OctokitRelease,
+  ReposGetReleaseAssetResponseData as OctokitReleaseAsset,
+} from '@octokit/types/dist-types/generated/Endpoints.d';
 
-import { ForgeMakeResult } from '@electron-forge/shared-types';
-import { Octokit } from '@octokit/rest';
 import GitHub from './util/github';
 import { PublisherGitHubConfig } from './Config';
 
@@ -46,7 +48,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     const github = new GitHub(config.authToken, true, config.octokitOptions);
 
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
-      let release: Octokit.ReposListReleasesResponseItem | undefined;
+      let release: OctokitRelease | undefined;
       const artifacts = perReleaseArtifacts[releaseName];
 
       await asyncOra(`Searching for target release: ${releaseName}`, async () => {
@@ -94,12 +96,18 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             uploaded += 1;
             updateSpinner();
           };
-          if (release!.assets.find((asset) => asset.name === path.basename(artifactPath))) {
+          const artifactName = path.basename(artifactPath);
+          // eslint-disable-next-line max-len
+          if (release!.assets.find((asset) => (asset as OctokitReleaseAsset).name === artifactName)) {
             return done();
           }
           await github.getGitHub().repos.uploadReleaseAsset({
+            owner: config.repository.owner,
+            repo: config.repository.name,
+            release_id: release!.id,
             url: release!.upload_url,
-            file: fs.createReadStream(artifactPath),
+            // https://github.com/octokit/rest.js/issues/1645
+            data: ((await fs.readFile(artifactPath)) as unknown) as string,
             headers: {
               'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
               'content-length': (await fs.stat(artifactPath)).size,
