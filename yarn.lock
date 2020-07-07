@@ -3180,9 +3180,9 @@ cz-conventional-changelog@3.2.0:
     "@commitlint/load" ">6.1.1"
 
 cz-customizable@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-6.2.0.tgz#4591bef5eae9fcef44bf024259723979404cdee0"
-  integrity sha512-6fBA8pbwApTY20Q5aDkWgJcg5wCmbwlcnccUFyBQypN8AoRJ0Vt4pLehai0/P2Xr29t2UDYoNGOUDhi4eoR0JQ==
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/cz-customizable/-/cz-customizable-6.2.1.tgz#bc26caa007f1f47cba2fb1aab8e4f03c5e6b47e8"
+  integrity sha512-m4umHq83H7QsPrX8f0/Dx+EcAB88GsLDTHGPFnpf9YEBbco4s84n73ysdeZz2D8XHlHefMDT3lUd9eYCCGARlA==
   dependencies:
     editor "1.0.0"
     find-config "^1.0.0"
@@ -8257,14 +8257,14 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.3.1, rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.1, rxjs@^6.5.5:
+rxjs@^6.3.1, rxjs@^6.3.3, rxjs@^6.5.1, rxjs@^6.5.5:
   version "6.5.5"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.5.tgz#c5c884e3094c8cfee31bf27eb87e54ccfc87f9ec"
   integrity sha512-WfQI+1gohdf0Dai/Bbmk5L5ItH5tYqm3ki2c5GdWhKjalzjg93N3avFjVStyZZz+A2Em+ZxKH5bNghw9UeylGQ==
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.6.0:
+rxjs@^6.4.0, rxjs@^6.6.0:
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.0.tgz#af2901eedf02e3a83ffa7f886240ff9018bbec84"
   integrity sha512-3HMA8z/Oz61DUHe+SdOiQyzIf4tOx5oQHmMir7IZEu6TMqCLHT4LRcmNaUS0NwOz8VLvmmBduMsoaUvMaIiqzg==
