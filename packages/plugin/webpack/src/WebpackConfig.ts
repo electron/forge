@@ -2,7 +2,7 @@ import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack, { Configuration } from 'webpack';
-import webpackMerge from 'webpack-merge';
+import { merge as webpackMerge } from 'webpack-merge';
 
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
 
@@ -140,7 +140,7 @@ export default class WebpackConfigGenerator {
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
 
-    return webpackMerge.smart({
+    return webpackMerge({
       devtool: 'source-map',
       target: 'electron-main',
       mode: this.mode,
@@ -173,7 +173,7 @@ export default class WebpackConfigGenerator {
     const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
-    return webpackMerge.smart({
+    return webpackMerge({
       devtool: 'inline-source-map',
       target: 'electron-preload',
       mode: this.mode,
@@ -210,7 +210,7 @@ export default class WebpackConfigGenerator {
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
       }) as webpack.Plugin).concat([new webpack.DefinePlugin(defines)])
       .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
-    return webpackMerge.smart({
+    return webpackMerge({
       entry,
       devtool: 'inline-source-map',
       target: 'electron-renderer',
