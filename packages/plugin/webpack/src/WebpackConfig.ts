@@ -188,7 +188,7 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
-    }, rendererConfig);
+    }, rendererConfig || {});
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
@@ -226,6 +226,6 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       plugins,
-    }, rendererConfig);
+    }, rendererConfig || {});
   }
 }
