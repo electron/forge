@@ -51,7 +51,7 @@
     "find-up": "^4.1.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "log-symbols": "^4.0.0",
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
