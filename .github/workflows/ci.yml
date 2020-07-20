@@ -57,7 +57,7 @@ jobs:
         run: bolt lint
       - name: Build
         run: bolt build
-      - name: Test on macOS/Linux
+      - name: Run tests
         if: matrix.os != 'windows-latest'
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
