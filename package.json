@@ -120,7 +120,7 @@
     "babel-plugin-source-map-support": "^2.1.2",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "codecov": "^3.6.1",
+    "codecov": "^3.7.1",
     "commitizen": "^4.0.4",
     "cross-env": "^7.0.2",
     "cz-customizable": "^6.2.0",
