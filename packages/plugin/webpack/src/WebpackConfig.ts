@@ -175,7 +175,6 @@ export default class WebpackConfigGenerator {
 
     return webpackMerge({
       devtool: 'inline-source-map',
-      target: 'electron-preload',
       mode: this.mode,
       entry: prefixedEntries.concat([
         entryPoint.js,
@@ -188,7 +187,9 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
-    }, rendererConfig || {});
+    },
+    rendererConfig || {},
+    {target: 'electron-preload',);
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
