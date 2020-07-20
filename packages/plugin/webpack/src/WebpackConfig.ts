@@ -189,7 +189,7 @@ export default class WebpackConfigGenerator {
       },
     },
     rendererConfig || {},
-    {target: 'electron-preload',});
+    { target: 'electron-preload' });
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
