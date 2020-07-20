@@ -1,5 +1,6 @@
 .nyc_output
 .vscode
+*.lcov
 /coverage
 dist
 docs

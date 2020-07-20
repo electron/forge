@@ -85,7 +85,6 @@ jobs:
           }
           bolt coverage
         env:
-          CI: true
           NODE_INSTALLER: ${{ matrix.node-installer }}
       - name: Test on macOS/Linux
         if: matrix.os != 'windows-latest'
@@ -93,11 +92,13 @@ jobs:
         env:
           NODE_INSTALLER: ${{ matrix.node-installer }}
           DEBUG: electron-installer-snap:snapcraft
-      - name: Codecov
-        run: bolt codecov
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.lcov
+          env_vars: CI_OS,NODE_INSTALLER
         env:
           CI_OS: ${{ matrix.os }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           NODE_INSTALLER: ${{ matrix.node-installer }}
   # docs:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
