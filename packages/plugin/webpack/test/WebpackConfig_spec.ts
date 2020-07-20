@@ -228,6 +228,59 @@ describe('WebpackConfigGenerator', () => {
         filename: 'preload.js',
       });
     });
+    it('generates a production config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preloadScript.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.target).to.equal('electron-preload');
+      expect(webpackConfig.mode).to.equal('production');
+      expect(webpackConfig.entry).to.deep.equal(['preloadScript.js']);
+      expect(webpackConfig.output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
+        filename: 'preload.js',
+      });
+    });
+    it('generates config overriding custom target with \'electron-preload\'', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preloadScript.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.target).to.equal('electron-preload');
+      expect(webpackConfig.mode).to.equal('production');
+      expect(webpackConfig.entry).to.deep.equal(['preloadScript.js']);
+      expect(webpackConfig.output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
+        filename: 'preload.js',
+      });
+    });
   });
 
   describe('getRendererConfig', () => {
@@ -299,6 +352,27 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
       });
       expect(webpackConfig.plugins!.length).to.equal(1);
+    });
+
+    it('generates config with custom target - web', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [{
+            name: 'main',
+            js: 'rendererScript.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.target).to.equal('web');
+      expect(webpackConfig.mode).to.equal('production');
+      expect(webpackConfig.entry).to.deep.equal({
+        main: ['rendererScript.js'],
+      });
     });
   });
 });
