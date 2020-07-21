@@ -61,7 +61,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v1.0.11
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,NODE_INSTALLER,TEST_TYPE
