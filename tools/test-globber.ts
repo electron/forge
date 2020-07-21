@@ -1,7 +1,7 @@
 /* eslint "global-require": "off", "import/no-dynamic-require": "off" */
 import minimist from 'minimist';
 import * as path from 'path';
-import glob from 'glob';
+import globby from 'globby';
 
 import { getPackageInfoSync } from './utils';
 
@@ -19,15 +19,21 @@ const testFiles: string[] = [];
 for (const p of packages) {
   if (argv.match && !p.name.includes(argv.match)) continue;
 
-  let specGlob: string;
+  const apiSpec = path.resolve(p.path, 'test', 'slow', 'api_spec_slow.ts');
+  const specGlob: string[] = [];
 
-  if (argv.glob) {
-    specGlob = path.resolve(p.path, argv.glob);
+  if (argv.integration) {
+    specGlob.push(apiSpec);
+  } else if (argv.glob) {
+    specGlob.push(path.resolve(p.path, argv.glob));
   } else {
-    specGlob = path.resolve(p.path, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`);
+    specGlob.push(path.resolve(p.path, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`));
   }
 
-  testFiles.push(...glob.sync(specGlob));
+  if (argv.integration === false) {
+    specGlob.push(`!${apiSpec}`);
+  }
+  testFiles.push(...globby.sync(specGlob));
 }
 
 for (const f of testFiles) {
