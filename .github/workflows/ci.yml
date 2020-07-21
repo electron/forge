@@ -64,7 +64,7 @@ jobs:
         uses: codecov/codecov-action@v1.0.11
         with:
           file: ./coverage.lcov
-          env_vars: CI_OS,NODE_INSTALLER,TEST_TYPE
+          env_vars: CI_OS,TEST_TYPE
         env:
           CI_OS: ${{ matrix.os }}
           TEST_TYPE: fast
@@ -75,7 +75,6 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-latest]
-        node-installer: [npm, yarn]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
@@ -129,22 +128,18 @@ jobs:
             Write-Host "Unable to find light.exe in your PATH"
           }
           bolt coverage:slow
-        env:
-          NODE_INSTALLER: ${{ matrix.node-installer }}
       - name: Test on macOS/Linux
         if: matrix.os != 'windows-latest'
         run: bolt coverage:slow
         env:
-          NODE_INSTALLER: ${{ matrix.node-installer }}
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v1.0.12
         with:
           file: ./coverage.lcov
-          env_vars: CI_OS,NODE_INSTALLER,TEST_TYPE
+          env_vars: CI_OS,TEST_TYPE
         env:
           CI_OS: ${{ matrix.os }}
-          NODE_INSTALLER: ${{ matrix.node-installer }}
           TEST_TYPE: slow
 
   # docs:
