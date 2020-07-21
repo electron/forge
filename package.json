@@ -114,7 +114,7 @@
     "@types/webpack-dev-middleware": "^3.7.0",
     "@types/webpack-hot-middleware": "^2.25.0",
     "@types/webpack-merge": "^4.1.5",
-    "@typescript-eslint/eslint-plugin": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^3.0.0",
     "babel-plugin-source-map-support": "^2.1.2",
     "chai": "4.2.0",
