@@ -1,7 +1,7 @@
 /* eslint "global-require": "off", "import/no-dynamic-require": "off" */
+import globby from 'globby';
 import minimist from 'minimist';
 import * as path from 'path';
-import globby from 'globby';
 
 import { getPackageInfoSync } from './utils';
 
