@@ -313,7 +313,7 @@ describe('Electron Forge API', () => {
         shouldPass: boolean,
         ...options: any[]
       ) {
-        describe(`make (with target=${path.basename(target().name)})`, async () => {
+        describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
           before(async () => {
             const packageJSON = await readRawPackageJson(dir);
             packageJSON.config.forge.makers = [target()];
