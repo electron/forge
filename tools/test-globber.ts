@@ -11,7 +11,7 @@ const argv = minimist(
   ),
 );
 
-const isFast = argv.fast;
+const isFast = argv.fast || process.env.TEST_FAST_ONLY;
 
 const packages = getPackageInfoSync();
 const testFiles: string[] = [];
@@ -33,7 +33,7 @@ for (const p of packages) {
     specGlob.push(path.posix.join(packagePath, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`));
   }
 
-  if (argv.integration === false) {
+  if (argv.integration === false || process.env.INTEGRATION_TESTS === '0') {
     specGlob.push(`!${apiSpec}`);
   }
   testFiles.push(...globby.sync(specGlob));
