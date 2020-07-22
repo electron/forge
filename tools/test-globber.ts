@@ -19,15 +19,18 @@ const testFiles: string[] = [];
 for (const p of packages) {
   if (argv.match && !p.name.includes(argv.match)) continue;
 
-  const apiSpec = path.posix.join(p.path, 'test', 'slow', 'api_spec_slow.ts');
+  // normalize for Windows
+  const packagePath = p.path.replace(/\\/g, '/');
+
+  const apiSpec = path.posix.join(packagePath, 'test', 'slow', 'api_spec_slow.ts');
   const specGlob: string[] = [];
 
   if (argv.integration) {
     specGlob.push(apiSpec);
   } else if (argv.glob) {
-    specGlob.push(path.posix.join(p.path, argv.glob));
+    specGlob.push(path.posix.join(packagePath, argv.glob));
   } else {
-    specGlob.push(path.posix.join(p.path, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`));
+    specGlob.push(path.posix.join(packagePath, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`));
   }
 
   if (argv.integration === false) {
