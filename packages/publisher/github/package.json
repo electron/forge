@@ -21,7 +21,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.52",
     "@electron-forge/shared-types": "6.0.0-beta.52",
     "@octokit/core": "^3.1.1",
-    "@octokit/rest": "^18.0.1",
+    "@octokit/rest": "^18.0.2",
     "@octokit/types": "^5.1.0",
     "fs-extra": "^9.0.1",
     "lodash": "^4.17.19",
