@@ -3518,10 +3518,10 @@ electron-installer-dmg@^3.0.0:
   optionalDependencies:
     appdmg "^0.6.0"
 
-electron-installer-redhat@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-3.1.0.tgz#becbd3a301437cad25b019013a9471facc4f3a48"
-  integrity sha512-sBhUOU1Y+HxwdxX5mFSuSmpbqmzDJKfmvf+WOXoXloeMORxOlUqBXx3hwe67zNf1VupNk+LnW/gpk+VQcY7cJA==
+electron-installer-redhat@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-redhat/-/electron-installer-redhat-3.2.0.tgz#2c0f5da6f4a244453e4675ab1eca0877a66788c5"
+  integrity sha512-XMA+fQj3ULNVMl4eG+hIvrYITEqP1pfpERvx6kRwuPd06vdtB4KucL9241DAHT0NR5E9gnyJHM9Y6N24kk0mcA==
   dependencies:
     "@malept/cross-spawn-promise" "^1.0.0"
     debug "^4.1.1"
