@@ -9,166 +9,170 @@ import { readMetadata } from 'electron-installer-common';
 
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
-import yarnOrNpm from '../../src/util/yarn-or-npm';
 import { InitOptions } from '../../src/api';
 
-const nodeInstallerArg = process.argv.find((arg) => arg.startsWith('--installer=')) || `--installer=${yarnOrNpm()}`;
-const nodeInstaller = nodeInstallerArg.substr(12);
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
 }).api;
 
-describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
-  let dir: string;
+for (const nodeInstaller of ['npm', 'yarn']) {
+  process.env.NODE_INSTALLER = nodeInstaller;
+  describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
+    let dir: string;
 
-  const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: Function) => {
-    before(async () => {
-      dir = await ensureTestDirIsNonexistent();
-      if (beforeInit) {
-        beforeInit();
-      }
-      await forge.init({ ...params, dir });
+    const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: Function) => {
+      before(async () => {
+        dir = await ensureTestDirIsNonexistent();
+        if (beforeInit) {
+          beforeInit();
+        }
+        await forge.init({ ...params, dir });
+      });
+    };
+
+    describe('init', () => {
+      beforeInitTest();
+
+      it('should fail in initializing an already initialized directory', async () => {
+        await expect(forge.init({ dir })).to.eventually.be.rejected;
+      });
+
+      it('should initialize an already initialized directory when forced to', async () => {
+        await forge.init({
+          dir,
+          force: true,
+        });
+      });
+
+      it('should create a new folder with a npm module inside', async () => {
+        expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+        await expectProjectPathExists(dir, 'package.json', 'file');
+      });
+
+      it('should have initialized a git repository', async () => {
+        await expectProjectPathExists(dir, '.git', 'folder');
+      });
+
+      it('should have installed the initial node_modules', async () => {
+        await expectProjectPathExists(dir, 'node_modules', 'folder');
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
+        expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
+      });
+
+      describe('lint', () => {
+        it('should initially pass the linting process', () => forge.lint({ dir }));
+      });
+
+      after(() => fs.remove(dir));
     });
-  };
 
-  describe('init', () => {
-    beforeInitTest();
+    describe('init with CI files enabled', () => {
+      beforeInitTest({ copyCIFiles: true });
 
-    it('should fail in initializing an already initialized directory', async () => {
-      await expect(forge.init({ dir })).to.eventually.be.rejected;
-    });
-
-    it('should initialize an already initialized directory when forced to', async () => {
-      await forge.init({
-        dir,
-        force: true,
+      it('should copy over the CI config files correctly', async () => {
+        expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+        await expectProjectPathExists(dir, '.appveyor.yml', 'file');
+        await expectProjectPathExists(dir, '.travis.yml', 'file');
       });
     });
 
-    it('should create a new folder with a npm module inside', async () => {
-      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, 'package.json', 'file');
-    });
+    describe('init (with custom templater)', () => {
+      beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
 
-    it('should have initialized a git repository', async () => {
-      await expectProjectPathExists(dir, '.git', 'folder');
-    });
-
-    it('should have installed the initial node_modules', async () => {
-      await expectProjectPathExists(dir, 'node_modules', 'folder');
-      expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
-      expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
-      expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
-    });
-
-    describe('lint', () => {
-      it('should initially pass the linting process', () => forge.lint({ dir }));
-    });
-
-    after(() => fs.remove(dir));
-  });
-
-  describe('init with CI files enabled', () => {
-    beforeInitTest({ copyCIFiles: true });
-
-    it('should copy over the CI config files correctly', async () => {
-      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, '.appveyor.yml', 'file');
-      await expectProjectPathExists(dir, '.travis.yml', 'file');
-    });
-  });
-
-  describe('init (with custom templater)', () => {
-    beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
-
-    it('should add custom dependencies', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('debug');
-    });
-
-    it('should add custom devDependencies', async () => {
-      expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('lodash');
-    });
-
-    it('should create dot files correctly', async () => {
-      expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, '.bar', 'file');
-    });
-
-    it('should create deep files correctly', async () => {
-      await expectProjectPathExists(dir, 'src/foo.js', 'file');
-      await expectProjectPathExists(dir, 'src/index.html', 'file');
-    });
-
-    describe('lint', () => {
-      it('should initially pass the linting process', () => forge.lint({ dir }));
-    });
-
-    after(async () => {
-      await fs.remove(dir);
-      execSync('npm unlink', {
-        cwd: path.resolve(__dirname, '../fixture/custom_init'),
+      it('should add custom dependencies', async () => {
+        expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('debug');
       });
-    });
-  });
 
-  describe('init (with a nonexistent templater)', () => {
-    before(async () => {
-      dir = await ensureTestDirIsNonexistent();
-    });
+      it('should add custom devDependencies', async () => {
+        expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('lodash');
+      });
 
-    it('should fail in initializing', async () => {
-      await expect(forge.init({
-        dir,
-        template: 'does-not-exist',
-      })).to.eventually.be.rejectedWith('Failed to locate custom template');
-    });
+      it('should create dot files correctly', async () => {
+        expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
+        await expectProjectPathExists(dir, '.bar', 'file');
+      });
 
-    after(async () => {
-      await fs.remove(dir);
-    });
-  });
+      it('should create deep files correctly', async () => {
+        await expectProjectPathExists(dir, 'src/foo.js', 'file');
+        await expectProjectPathExists(dir, 'src/index.html', 'file');
+      });
 
-  describe('import', () => {
-    before(async () => {
-      dir = await ensureTestDirIsNonexistent();
-      await fs.mkdir(dir);
-      execSync(`${nodeInstaller} init -y`, {
-        cwd: dir,
+      describe('lint', () => {
+        it('should initially pass the linting process', () => forge.lint({ dir }));
+      });
+
+      after(async () => {
+        await fs.remove(dir);
+        execSync('npm unlink', {
+          cwd: path.resolve(__dirname, '../fixture/custom_init'),
+        });
       });
     });
 
-    it('creates a forge config', async () => {
-      const packageJSON = await readRawPackageJson(dir);
-      packageJSON.name = 'Name';
-      packageJSON.productName = 'Product Name';
-      packageJSON.customProp = 'propVal';
-      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+    describe('init (with a nonexistent templater)', () => {
+      before(async () => {
+        dir = await ensureTestDirIsNonexistent();
+      });
 
-      await forge.import({ dir });
+      it('should fail in initializing', async () => {
+        await expect(forge.init({
+          dir,
+          template: 'does-not-exist',
+        })).to.eventually.be.rejectedWith('Failed to locate custom template');
+      });
 
-      const {
-        config: {
-          forge: {
-            makers: [
-              {
-                config: {
-                  name: winstallerName,
+      after(async () => {
+        await fs.remove(dir);
+      });
+    });
+
+    describe('import', () => {
+      before(async () => {
+        dir = await ensureTestDirIsNonexistent();
+        await fs.mkdir(dir);
+        execSync(`${nodeInstaller} init -y`, {
+          cwd: dir,
+        });
+      });
+
+      it('creates a forge config', async () => {
+        const packageJSON = await readRawPackageJson(dir);
+        packageJSON.name = 'Name';
+        packageJSON.productName = 'Product Name';
+        packageJSON.customProp = 'propVal';
+        await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+
+        await forge.import({ dir });
+
+        const {
+          config: {
+            forge: {
+              makers: [
+                {
+                  config: {
+                    name: winstallerName,
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
-        customProp,
-      } = await readRawPackageJson(dir);
+          customProp,
+        } = await readRawPackageJson(dir);
 
-      expect(winstallerName).to.equal('Name');
-      expect(customProp).to.equal('propVal');
-    });
+        expect(winstallerName).to.equal('Name');
+        expect(customProp).to.equal('propVal');
+      });
 
-    after(async () => {
-      await fs.remove(dir);
+      after(async () => {
+        await fs.remove(dir);
+      });
     });
   });
+}
+
+describe('Electron Forge API', () => {
+  let dir: string;
 
   describe('after init', () => {
     let devCert: string;
@@ -309,7 +313,7 @@ describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
         shouldPass: boolean,
         ...options: any[]
       ) {
-        describe(`make (with target=${path.basename(target().name)})`, async () => {
+        describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
           before(async () => {
             const packageJSON = await readRawPackageJson(dir);
             packageJSON.config.forge.makers = [target()];
