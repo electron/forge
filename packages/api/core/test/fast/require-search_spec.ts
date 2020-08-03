@@ -16,7 +16,7 @@ describe('require-search', () => {
 
   it('should throw if file exists but fails to load', () => {
     expect(() => {
-      requireSearch(__dirname, ['../fixture/throw.js']);
-    }).to.throw(new Error('test'));
+      requireSearch(__dirname, ['../fixture/require-search/throw-error.js']);
+    }).to.throw('test');
   });
 });
