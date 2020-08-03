@@ -15,7 +15,7 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
       return require(testPath);
     } catch (err) {
       // If the error is a require error, and it's for the file we're looking for - ignore it
-      if (err.code === 'MODULE_NOT_FOUND' && err.requestPath === testPath) {
+      if (err.code === 'MODULE_NOT_FOUND' && (err.requestPath === undefined || err.requestPath === testPath)) {
         // Ignore the error
       } else {
         // Re-throw the error
