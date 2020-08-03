@@ -9,7 +9,7 @@
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "fetch-mock": "^9.10.4",
+    "fetch-mock": "^9.10.6",
     "mocha": "^8.0.1",
     "proxyquire": "^2.1.3"
   },
