@@ -13,4 +13,10 @@ describe('require-search', () => {
     const resolved = requireSearch(__dirname, ['../../src/util/forge-config']);
     expect(resolved).to.equal(findConfig);
   });
+
+  it('should throw if file exists but fails to load', () => {
+    expect(() => {
+      requireSearch(__dirname, ['../fixture/require-search/throw-error']);
+    }).to.throw('test');
+  });
 });
