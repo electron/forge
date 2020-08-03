@@ -30,7 +30,7 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
       - name: Use Node.js 10.x
-        uses: actions/setup-node@v2.1.0
+        uses: actions/setup-node@v2.1.1
         with:
           node-version: 10.x
       - name: Determine Yarn cache
