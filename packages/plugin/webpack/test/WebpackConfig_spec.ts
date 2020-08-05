@@ -228,6 +228,54 @@ describe('WebpackConfigGenerator', () => {
         filename: 'preload.js',
       });
     });
+
+    it('generates a production config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preload.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.target).to.equal('electron-preload');
+      expect(webpackConfig.mode).to.equal('production');
+      expect(webpackConfig.entry).to.deep.equal(['preload.js']);
+      expect(webpackConfig.output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
+        filename: 'preload.js',
+      });
+    });
+    it('prevents the preload target from being overridden', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [{
+            name: 'main',
+            preload: {
+              js: 'preload.js',
+            },
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const webpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        entryPoint.preload!,
+      );
+      expect(webpackConfig.target).to.equal('electron-preload');
+    });
   });
 
   describe('getRendererConfig', () => {
@@ -299,6 +347,23 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
       });
       expect(webpackConfig.plugins!.length).to.equal(1);
+    });
+
+    it('can override the renderer target', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [{
+            name: 'main',
+            js: 'renderer.js',
+          }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.target).to.equal('web');
     });
   });
 });
