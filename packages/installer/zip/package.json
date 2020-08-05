@@ -8,7 +8,7 @@
   "main": "dist/InstallerZip.js",
   "typings": "dist/InstallerZip.d.ts",
   "devDependencies": {
-    "mocha": "^8.0.1"
+    "mocha": "^8.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"
