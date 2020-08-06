@@ -1,4 +1,4 @@
-import { Entry } from 'webpack';
+import { Entry, ConfigurationFactory, Configuration } from 'webpack';
 import { expect } from 'chai';
 import path from 'path';
 
@@ -433,6 +433,85 @@ describe('WebpackConfigGenerator', () => {
       expect(await generateWebpackConfig(async () => ({
         ...sampleWebpackConfig,
       }))).to.deep.equal(modelWebpackConfig);
+    });
+  });
+
+  describe('preprocessConfig', () => {
+    context('when overriden in subclass', () => {
+      const makeSubclass = () => {
+        let invoked = 0;
+
+        class MyWebpackConfigGenerator extends WebpackConfigGenerator {
+          preprocessConfig = async (config: ConfigurationFactory): Promise<Configuration> => {
+            invoked += 1;
+            return config(
+              { hello: 'world' },
+              { },
+            );
+          }
+        }
+
+        return {
+          getInvokedCounter: () => invoked,
+          MyWebpackConfigGenerator,
+        };
+      };
+
+      it('is not invoked for object config', async () => {
+        const { MyWebpackConfigGenerator, getInvokedCounter } = makeSubclass();
+
+        const config = {
+          mainConfig: {
+            entry: 'main.js',
+            ...sampleWebpackConfig,
+          },
+          renderer: {
+            config: { ...sampleWebpackConfig },
+            entryPoints: [{
+              name: 'main',
+              js: 'rendererScript.js',
+            }],
+          },
+        } as WebpackPluginConfig;
+
+        const generator = new MyWebpackConfigGenerator(config, mockProjectDir, false, 3000);
+
+        expect(getInvokedCounter()).to.equal(0);
+
+        await generator.getMainConfig();
+        expect(getInvokedCounter()).to.equal(1);
+
+        await generator.getRendererConfig(config.renderer.entryPoints);
+        expect(getInvokedCounter()).to.equal(2);
+      });
+
+      it('is invoked for fn config', async () => {
+        const { MyWebpackConfigGenerator, getInvokedCounter } = makeSubclass();
+
+        const config = {
+          mainConfig: () => ({
+            entry: 'main.js',
+            ...sampleWebpackConfig,
+          }),
+          renderer: {
+            config: () => ({ ...sampleWebpackConfig }),
+            entryPoints: [{
+              name: 'main',
+              js: 'rendererScript.js',
+            }],
+          },
+        } as WebpackPluginConfig;
+
+        const generator = new MyWebpackConfigGenerator(config, mockProjectDir, false, 3000);
+
+        expect(getInvokedCounter()).to.equal(0);
+
+        await generator.getMainConfig();
+        expect(getInvokedCounter()).to.equal(1);
+
+        await generator.getRendererConfig(config.renderer.entryPoints);
+        expect(getInvokedCounter()).to.equal(2);
+      });
     });
   });
 });
