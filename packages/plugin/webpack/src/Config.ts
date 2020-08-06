@@ -1,4 +1,7 @@
-import { Configuration as WebpackConfiguration } from 'webpack';
+import {
+  Configuration as RawWebpackConfiguration,
+  ConfigurationFactory as WebpackConfigurationFactory,
+} from 'webpack';
 
 export interface WebpackPluginEntryPoint {
   /**
@@ -133,3 +136,5 @@ export interface WebpackPluginConfig {
   devServer?: Record<string, unknown>;
   // TODO: use webpack-dev-server.Configuration when @types/webpack-dev-server upgrades to v4
 }
+
+export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;
