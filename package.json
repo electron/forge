@@ -64,7 +64,7 @@
     "node-fetch": "^2.6.0",
     "nugget": "^2.0.1",
     "open": "^7.1.0",
-    "ora": "^4.0.5",
+    "ora": "^4.1.0",
     "parse-author": "^2.0.0",
     "pretty-ms": "^7.0.0",
     "resolve-package": "^1.0.1",
