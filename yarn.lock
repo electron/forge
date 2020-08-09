@@ -1093,10 +1093,17 @@
     "@octokit/plugin-request-log" "^1.0.0"
     "@octokit/plugin-rest-endpoint-methods" "4.1.2"
 
-"@octokit/types@^5.0.0", "@octokit/types@^5.0.1", "@octokit/types@^5.1.1", "@octokit/types@^5.2.0", "@octokit/types@^5.2.1":
+"@octokit/types@^5.0.0", "@octokit/types@^5.0.1", "@octokit/types@^5.1.1", "@octokit/types@^5.2.0":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@octokit/types/-/types-5.2.1.tgz#c212f03b0492faf215fa2ae506d5ec18038c2a36"
   integrity sha512-PugtgEw8u++zAyBpDpSkR8K1OsT2l8QWp3ECL6bZHFoq9PfHDoKeGFWSuX2Z+Ghy93k1fkKf8tsmqNBv+8dEfQ==
+  dependencies:
+    "@types/node" ">= 8"
+
+"@octokit/types@^5.2.1":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-5.3.0.tgz#f0d11e73887fdd06f34587d1fed1c2f597b1f752"
+  integrity sha512-qu6+YHQUl2IJkUBHzal68TNHTjQAgJG2l8C62f1lJ0FLsXhxuT2fe29Bwnl8UXSBof3TqBd92p+YYujzrkvWHQ==
   dependencies:
     "@types/node" ">= 8"
 
