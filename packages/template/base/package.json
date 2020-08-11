@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-base",
-  "version": "6.0.0-beta.51",
+  "version": "6.0.0-beta.52",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,14 +14,14 @@
     "node": ">= 10.0.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.51",
-    "@electron-forge/shared-types": "6.0.0-beta.51",
+    "@electron-forge/async-ora": "6.0.0-beta.52",
+    "@electron-forge/shared-types": "6.0.0-beta.52",
     "debug": "^4.1.0",
     "fs-extra": "^9.0.1",
     "username": "^5.1.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "6.0.0-beta.51",
+    "@electron-forge/test-utils": "6.0.0-beta.52",
     "chai": "4.2.0",
     "proxyquire": "^2.1.3",
     "sinon": "^9.0.2"

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-local-electron",
-  "version": "6.0.0-beta.51",
+  "version": "6.0.0-beta.52",
   "description": "Local Electron plugin for Electron Forge, let's you use a local build of Electron",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -9,13 +9,13 @@
   "typings": "dist/LocalElectronPlugin.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"
   },
   "dependencies": {
-    "@electron-forge/plugin-base": "6.0.0-beta.51",
+    "@electron-forge/plugin-base": "6.0.0-beta.52",
     "fs-extra": "^9.0.1"
   }
 }

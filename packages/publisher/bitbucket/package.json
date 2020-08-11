@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-bitbucket",
-  "version": "6.0.0-beta.51",
+  "version": "6.0.0-beta.52",
   "description": "Bitbucket publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Luke Batchelor",
@@ -9,14 +9,14 @@
   "typings": "dist/PublisherBitbucket.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.51",
-    "@electron-forge/publisher-base": "6.0.0-beta.51",
+    "@electron-forge/async-ora": "6.0.0-beta.52",
+    "@electron-forge/publisher-base": "6.0.0-beta.52",
     "form-data": "3.0.0",
     "fs-extra": "^9.0.1",
     "node-fetch": "^2.6.0"
