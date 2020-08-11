@@ -129,12 +129,15 @@ export default async (dir: string) => {
   } else if (typeof forgeConfig !== 'object') {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
   }
-  forgeConfig = {
+  const defaultForgeConfig = {
     electronRebuildConfig: {},
     packagerConfig: {},
     makers: [],
     publishers: [],
     plugins: [],
+  };
+  forgeConfig = {
+    ...defaultForgeConfig,
     ...forgeConfig,
   };
 

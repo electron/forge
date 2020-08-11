@@ -1,7 +1,6 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-
 import fs from 'fs-extra';
 import path from 'path';
 import { MakerDMGConfig } from './Config';

@@ -14,7 +14,6 @@ describe('PublisherERS', () => {
       'node-fetch': fetch,
     }).default;
 
-
     const publisher = new PublisherERS({
       baseUrl: 'http://example.com',
       username: 'test',

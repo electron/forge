@@ -14,7 +14,10 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
       // eslint-disable-next-line global-require, import/no-dynamic-require
       return require(testPath);
     } catch (err) {
-      // Ignore the error
+      // Ignore require-related errors
+      if (err.code !== 'MODULE_NOT_FOUND' || ![undefined, testPath].includes(err.requestPath)) {
+        throw err;
+      }
     }
   }
   d('failed to find a module in', testPaths);

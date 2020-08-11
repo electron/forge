@@ -35,7 +35,7 @@ export async function getMakeOptions() {
 }
 
 // eslint-disable-next-line no-underscore-dangle
-if (process.mainModule === module || (global as any).__LINKED_FORGE__) {
+if (require.main === module || (global as any).__LINKED_FORGE__) {
   (async () => {
     const makeOpts = await getMakeOptions();
 

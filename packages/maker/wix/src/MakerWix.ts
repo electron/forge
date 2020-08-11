@@ -8,7 +8,6 @@ import path from 'path';
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 import getNameFromAuthor from './util/author-name';
 
-
 import { MakerWixConfig } from './Config';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
