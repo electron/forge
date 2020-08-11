@@ -1,12 +1,12 @@
 import { ChildProcess } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Options } from 'electron-packager';
+import { ArchOption, Options, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
 
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
-export type ForgePlatform = 'darwin' | 'mas' | 'win32' | 'linux';
-export type ForgeArch = 'ia32' | 'x64' | 'armv7l' | 'arm64' | 'arm' | 'all';
+export type ForgePlatform = TargetPlatform;
+export type ForgeArch = ArchOption;
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
 export interface IForgePluginInterface {

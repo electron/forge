@@ -15,47 +15,29 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
-      uses: docker://malept/gha-dependabolt:2.1.1
+      uses: docker://malept/gha-dependabolt:v2
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  test:
+  fast-tests:
     runs-on: ${{ matrix.os }}
     needs: dependabolt
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-latest]
-        node-installer: [npm, yarn]
-
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2
-      - name: Windows specific setup
-        if: matrix.os == 'windows-latest'
-        run: |
-          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
-          npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
-      - name: Linux specific setup
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo add-apt-repository -y ppa:alexlarsson/flatpak
-          curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-          curl https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
-          sudo rm /etc/apt/sources.list.d/bazel.list
-          sudo rm /etc/apt/sources.list.d/mongo*.list
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
-          ci/install_runtimes.sh
       - name: Use Node.js 10.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2.1.1
         with:
           node-version: 10.x
       - name: Determine Yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: Cache Yarn
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -75,6 +57,65 @@ jobs:
         run: bolt lint
       - name: Build
         run: bolt build
+      - name: Run tests
+        run: bolt coverage:fast
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v1.0.12
+        with:
+          file: ./coverage.lcov
+          env_vars: CI_OS,TEST_TYPE
+        env:
+          CI_OS: ${{ matrix.os }}
+          TEST_TYPE: fast
+
+  slow-tests:
+    runs-on: ${{ matrix.os }}
+    needs: dependabolt
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+    steps:
+      - name: Fix git checkout line endings
+        run: git config --global core.autocrlf input
+      - uses: actions/checkout@v2
+      - name: Windows specific setup
+        if: matrix.os == 'windows-latest'
+        run: |
+          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
+          npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+      - name: Linux specific setup
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo add-apt-repository -y ppa:alexlarsson/flatpak
+          sudo rm /etc/apt/sources.list.d/bazel.list
+          sudo rm /etc/apt/sources.list.d/mongo*.list
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
+          ci/install_runtimes.sh
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@v2.1.1
+        with:
+          node-version: 10.x
+      - name: Determine Yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache Yarn
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install bolt
+        shell: bash
+        run: |
+          case "$(uname -s)" in
+            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+            *) BOLT_VERSION=latest ;;
+          esac
+          npm install -g bolt@$BOLT_VERSION
+      - name: Install
+        run: bolt
       - name: Test on Windows
         if: matrix.os == 'windows-latest'
         run: |
@@ -85,34 +126,33 @@ jobs:
           {
             Write-Host "Unable to find light.exe in your PATH"
           }
-          bolt coverage
-        env:
-          CI: true
-          NODE_INSTALLER: ${{ matrix.node-installer }}
+          bolt coverage:slow
       - name: Test on macOS/Linux
         if: matrix.os != 'windows-latest'
-        run: bolt coverage
+        run: bolt coverage:slow
         env:
-          NODE_INSTALLER: ${{ matrix.node-installer }}
           DEBUG: electron-installer-snap:snapcraft
-      - name: Codecov
-        run: bolt codecov
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v1.0.12
+        with:
+          file: ./coverage.lcov
+          env_vars: CI_OS,TEST_TYPE
         env:
           CI_OS: ${{ matrix.os }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-          NODE_INSTALLER: ${{ matrix.node-installer }}
+          TEST_TYPE: slow
+
   # docs:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-  #   needs: test
+  #   needs: [fast-tests, slow-tests]
   #   runs-on: [ubuntu-latest]
   #   steps:
   #     - uses: actions/checkout@v1
   #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v1
+  #       uses: actions/setup-node@v2.1.1
   #       with:
   #         node-version: 12.x
   #     - name: Cache node_modules
-  #       uses: actions/cache@v1
+  #       uses: actions/cache@v2
   #       with:
   #         path: node_modules
   #         key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-base",
-  "version": "6.0.0-beta.51",
+  "version": "6.0.0-beta.52",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,11 +8,11 @@
   "main": "dist/Publisher.js",
   "typings": "dist/Publisher.d.ts",
   "dependencies": {
-    "@electron-forge/shared-types": "6.0.0-beta.51"
+    "@electron-forge/shared-types": "6.0.0-beta.52"
   },
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "^8.0.1"
+    "mocha": "^8.1.1"
   },
   "engines": {
     "node": ">= 10.0.0"

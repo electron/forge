@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-electron-release-server",
-  "version": "6.0.0-beta.51",
+  "version": "6.0.0-beta.52",
   "description": "Electron release server publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -9,17 +9,17 @@
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
     "chai": "4.2.0",
-    "fetch-mock": "^9.10.1",
-    "mocha": "^8.0.1",
+    "fetch-mock": "^9.10.6",
+    "mocha": "^8.1.1",
     "proxyquire": "^2.1.3"
   },
   "engines": {
     "node": ">= 10.0.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.51",
-    "@electron-forge/publisher-base": "6.0.0-beta.51",
-    "@electron-forge/shared-types": "6.0.0-beta.51",
+    "@electron-forge/async-ora": "6.0.0-beta.52",
+    "@electron-forge/publisher-base": "6.0.0-beta.52",
+    "@electron-forge/shared-types": "6.0.0-beta.52",
     "debug": "^4.1.0",
     "form-data": "3.0.0",
     "fs-extra": "^9.0.1",

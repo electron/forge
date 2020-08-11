@@ -205,9 +205,14 @@ export default async ({
 
   d('packaging with options', packageOpts);
 
-  await packager(packageOpts);
+  const outputPaths = await packager(packageOpts);
 
-  await runHook(forgeConfig, 'postPackage');
+  await runHook(forgeConfig, 'postPackage', {
+    arch,
+    outputPaths,
+    platform,
+    spinner: packagerSpinner,
+  });
 
   if (packagerSpinner) packagerSpinner!.succeed();
 };
