@@ -15,6 +15,17 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {},
 }).api;
 
+type PackageJSON = Record<string, any>;
+
+async function updatePackageJSON(
+  dir: string,
+  packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>,
+) {
+  const packageJSON = await readRawPackageJson(dir);
+  await packageJSONUpdater(packageJSON);
+  await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+}
+
 for (const nodeInstaller of ['npm', 'yarn']) {
   process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
@@ -137,11 +148,11 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       it('creates a forge config', async () => {
-        const packageJSON = await readRawPackageJson(dir);
-        packageJSON.name = 'Name';
-        packageJSON.productName = 'Product Name';
-        packageJSON.customProp = 'propVal';
-        await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+        await updatePackageJSON(dir, async (packageJSON) => {
+          packageJSON.name = 'Name';
+          packageJSON.productName = 'Product Name';
+          packageJSON.customProp = 'propVal';
+        });
 
         await forge.import({ dir });
 
@@ -181,36 +192,36 @@ describe('Electron Forge API', () => {
       dir = path.join(await ensureTestDirIsNonexistent(), 'electron-forge-test');
       await forge.init({ dir });
 
-      const packageJSON = await readRawPackageJson(dir);
-      packageJSON.name = 'testapp';
-      packageJSON.version = '1.0.0-beta.1';
-      packageJSON.productName = 'Test-App';
-      packageJSON.config.forge.packagerConfig.asar = false;
-      if (process.platform === 'win32') {
-        await fs.copy(
-          path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
-          path.join(dir, 'default.pvk'),
-        );
-        devCert = await createDefaultCertificate(
-          'CN=Test Author',
-          { certFilePath: dir },
-        );
-      } else if (process.platform === 'linux') {
-        packageJSON.config.forge.packagerConfig.executableName = 'testapp';
-      }
-      packageJSON.homepage = 'http://www.example.com/';
-      packageJSON.author = 'Test Author';
-      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+      await updatePackageJSON(dir, async (packageJSON) => {
+        packageJSON.name = 'testapp';
+        packageJSON.version = '1.0.0-beta.1';
+        packageJSON.productName = 'Test-App';
+        packageJSON.config.forge.packagerConfig.asar = false;
+        if (process.platform === 'win32') {
+          await fs.copy(
+            path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
+            path.join(dir, 'default.pvk'),
+          );
+          devCert = await createDefaultCertificate(
+            'CN=Test Author',
+            { certFilePath: dir },
+          );
+        } else if (process.platform === 'linux') {
+          packageJSON.config.forge.packagerConfig.executableName = 'testapp';
+        }
+        packageJSON.homepage = 'http://www.example.com/';
+        packageJSON.author = 'Test Author';
+      });
     });
 
     it('throws an error when all is set', async () => {
-      let packageJSON = await readRawPackageJson(dir);
-      packageJSON.config.forge.packagerConfig.all = true;
-      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+      await updatePackageJSON(dir, async (packageJSON) => {
+        packageJSON.config.forge.packagerConfig.all = true;
+      });
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
-      packageJSON = await readRawPackageJson(dir);
-      delete packageJSON.config.forge.packagerConfig.all;
-      await fs.writeJson(path.join(dir, 'package.json'), packageJSON);
+      await updatePackageJSON(dir, async (packageJSON) => {
+        delete packageJSON.config.forge.packagerConfig.all;
+      });
     });
 
     it('can package to outDir without errors', async () => {
@@ -224,9 +235,9 @@ describe('Electron Forge API', () => {
     });
 
     it('can make from custom outDir without errors', async () => {
-      const packageJSON = await readRawPackageJson(dir);
-      packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
-      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+      await updatePackageJSON(dir, async (packageJSON) => {
+        packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
+      });
 
       await forge.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
 
@@ -242,10 +253,10 @@ describe('Electron Forge API', () => {
     });
 
     it('can package without errors', async () => {
-      const packageJSON = await readRawPackageJson(dir);
-      delete packageJSON.dependencies['ref-napi'];
-      packageJSON.config.forge.packagerConfig.asar = true;
-      await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
+      await updatePackageJSON(dir, async (packageJSON) => {
+        delete packageJSON.dependencies['ref-napi'];
+        packageJSON.config.forge.packagerConfig.asar = true;
+      });
 
       await forge.package({ dir });
     });
@@ -315,9 +326,9 @@ describe('Electron Forge API', () => {
       ) {
         describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
           before(async () => {
-            const packageJSON = await readRawPackageJson(dir);
-            packageJSON.config.forge.makers = [target()];
-            await fs.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON));
+            await updatePackageJSON(dir, async (packageJSON) => {
+              packageJSON.config.forge.makers = [target()];
+            });
           });
 
           for (const optionsFetcher of options) {
