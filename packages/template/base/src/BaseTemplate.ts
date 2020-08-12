@@ -18,7 +18,7 @@ export class BaseTemplate implements ForgeTemplate {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
     if (fs.pathExistsSync(packageJSONPath)) {
       const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
-      return (Object.values(packageDevDeps) as string[][]).map(([packageName, version]) => {
+      return Object.entries(packageDevDeps).map(([packageName, version]) => {
         if (version === 'ELECTRON_FORGE/VERSION') {
           version = currentForgeVersion;
         }
