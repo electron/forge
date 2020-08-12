@@ -52,7 +52,7 @@
     "electron-rebuild": "^1.8.6",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
-    "find-up": "^4.1.0",
+    "find-up": "^5.0.0",
     "form-data": "3.0.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.5",
