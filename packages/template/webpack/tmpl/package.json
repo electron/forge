@@ -3,7 +3,7 @@
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "css-loader": "^4.2.1",
-    "node-loader": "^0.6.0",
+    "node-loader": "^1.0.1",
     "style-loader": "^1.2.1"
   }
 }
