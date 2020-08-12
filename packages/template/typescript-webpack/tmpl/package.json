@@ -8,9 +8,9 @@
     "style-loader": "^0.23.1",
     "typescript": "^3.7.0",
     "fork-ts-checker-webpack-plugin": "^3.1.1",
-    "eslint": "^6.8.0",
+    "eslint": "^7.6.0",
     "eslint-plugin-import": "^2.20.0",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0"
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0"
   }
 }
