@@ -4,19 +4,9 @@ import fs from 'fs-extra';
 import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
-const currentVersion = require('../package').version;
-
+// TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
-
-  public devDependencies = [
-    `@electron-forge/plugin-webpack@${currentVersion}`,
-    // TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
-    '@marshallofsound/webpack-asset-relocator-loader@^0.5.0',
-    'css-loader@^3.0.0',
-    'node-loader@^0.6.0',
-    'style-loader@^0.23.1',
-  ];
 
   public async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);

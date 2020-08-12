@@ -6,11 +6,28 @@ import path from 'path';
 
 import determineAuthor from './determine-author';
 
+const currentForgeVersion = require('../package.json').version;
+
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(__dirname, '../tmpl');
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
+
+  get devDependencies(): string[] {
+    const packageJSONPath = path.join(this.templateDir, 'package.json');
+    if (fs.pathExistsSync(packageJSONPath)) {
+      const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
+      return (Object.values(packageDevDeps) as string[][]).map(([packageName, version]) => {
+        if (version === 'ELECTRON_FORGE/VERSION') {
+          version = currentForgeVersion;
+        }
+        return `${packageName}@${version}`;
+      });
+    }
+
+    return [];
+  }
 
   public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
     await asyncOra('Copying Starter Files', async () => {
