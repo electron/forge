@@ -48,7 +48,7 @@
     "debug": "^4.1.0",
     "electron-packager": "^15.0.0",
     "electron-rebuild": "^1.8.6",
-    "find-up": "^4.1.0",
+    "find-up": "^5.0.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.5",
     "lodash": "^4.17.19",
