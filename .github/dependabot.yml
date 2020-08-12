@@ -1,14 +1,27 @@
 version: 2
 updates:
-  # Enable version updates for npm
   - package-ecosystem: "npm"
-    # Look for `package.json` and `lock` files in the `root` directory
     directory: "/"
     # Check the npm registry for updates every weekday
     schedule:
       interval: "daily"
     ignore:
       - dependency-name: aws-sdk
+  - package-ecosystem: "npm"
+    directory: "/packages/template/typescript/tmpl"
+    # Check the npm registry for updates every weekday
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/packages/template/typescript-webpack/tmpl"
+    # Check the npm registry for updates every weekday
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/packages/template/webpack/tmpl"
+    # Check the npm registry for updates every weekday
+    schedule:
+      interval: "daily"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
