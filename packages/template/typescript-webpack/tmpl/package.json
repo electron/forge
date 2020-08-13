@@ -5,7 +5,7 @@
     "css-loader": "^4.2.1",
     "node-loader": "^1.0.1",
     "ts-loader": "^8.0.2",
-    "style-loader": "^0.23.1",
+    "style-loader": "^1.2.1",
     "typescript": "^3.7.0",
     "fork-ts-checker-webpack-plugin": "^5.0.14",
     "eslint": "^7.6.0",
