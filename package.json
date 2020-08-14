@@ -59,7 +59,7 @@
     "global": "^4.3.2",
     "html-webpack-plugin": "^4.0.2",
     "inquirer": "^7.3.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.0",
