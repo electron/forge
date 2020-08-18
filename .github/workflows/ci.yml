@@ -60,7 +60,7 @@ jobs:
       - name: Run tests
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1.0.12
+        uses: codecov/codecov-action@v1.0.13
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -133,7 +133,7 @@ jobs:
         env:
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1.0.12
+        uses: codecov/codecov-action@v1.0.13
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
