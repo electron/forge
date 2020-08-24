@@ -3729,9 +3729,9 @@ electron-osx-sign@^0.4.11, electron-osx-sign@^0.4.17:
     plist "^3.0.1"
 
 electron-packager@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-15.0.0.tgz#40eb28a273a1251da9e089f6fde4222e72f6eedd"
-  integrity sha512-J0yQP7/fKPkjxo9Yz5+vsQVig0dBbSXW8LQYA1pvNMvi+bL00hfI2SAyORP6EU7XaeiXGUIBSG2Px01EkKfGCw==
+  version "15.1.0"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-15.1.0.tgz#16a3733e4cad26112a2ac36f0b0f35c3b0170eff"
+  integrity sha512-THNm4bz1DfvR9f0g51+NjuAYELflM8+1vhQ/iv/G8vyZNKzSMuFd5doobngQKq3rRsLdPNZVnGqDdgS884d7Og==
   dependencies:
     "@electron/get" "^1.6.0"
     asar "^3.0.0"
@@ -3749,7 +3749,7 @@ electron-packager@^15.0.0:
     rcedit "^2.0.0"
     resolve "^1.1.6"
     semver "^7.1.3"
-    yargs-parser "^18.0.0"
+    yargs-parser "^19.0.1"
 
 electron-rebuild@^1.8.6:
   version "1.11.0"
@@ -5053,10 +5053,17 @@ get-stream@^4.0.0, get-stream@^4.1.0:
   dependencies:
     pump "^3.0.0"
 
-get-stream@^5.0.0, get-stream@^5.1.0:
+get-stream@^5.0.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-5.1.0.tgz#01203cdc92597f9b909067c3e656cc1f4d3c4dc9"
   integrity sha512-EXr1FOzrzTfGeL0gQdeFEvOMm2mzMOglyiOXSTpPC+iAjAKftbr3jpCMWynogwYnM+eSj9sHGc6wjIcDvYiygw==
+  dependencies:
+    pump "^3.0.0"
+
+get-stream@^5.1.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-5.2.0.tgz#4966a1795ee5ace65e706c4b7beb71257d6e22d3"
+  integrity sha512-nBF+F1rAZVCu/p7rjzgA+Yb4lfYXrpl7a6VmJrU8wF9I1CKvP/QwPNZHnOlwbTkY6dvtFIzFMSyQXbLoTQPRpA==
   dependencies:
     pump "^3.0.0"
 
@@ -10408,13 +10415,18 @@ yargs-parser@^15.0.1:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
-yargs-parser@^18.0.0, yargs-parser@^18.1.2:
+yargs-parser@^18.1.2:
   version "18.1.3"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-18.1.3.tgz#be68c4975c6b2abf469236b0c870362fab09a7b0"
   integrity sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==
   dependencies:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
+
+yargs-parser@^19.0.1:
+  version "19.0.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-19.0.1.tgz#34b444580905d0f67e89f31283d8dc1f8bd53d47"
+  integrity sha512-2UuJKZmPN9S9/0s3FSCG3aNUSyC/qz56oJsMZG0NV2B44QxTXaNySp4xXW10CizmUs0DXgPY0y114dOGLvtYHg==
 
 yargs-unparser@1.6.1:
   version "1.6.1"
