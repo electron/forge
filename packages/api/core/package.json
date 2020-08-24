@@ -47,7 +47,7 @@
     "colors": "^1.4.0",
     "debug": "^4.1.0",
     "electron-packager": "^15.0.0",
-    "electron-rebuild": "^1.8.6",
+    "electron-rebuild": "^2.0.0",
     "find-up": "^5.0.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.5",
