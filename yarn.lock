@@ -2944,10 +2944,10 @@ commander@^6.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-6.0.0.tgz#2b270da94f8fb9014455312f829a1129dbf8887e"
   integrity sha512-s7EA+hDtTYNhuXkTlhqew4txMZVdszBmKWSPEMxGr8ru8JXR7bLUFIAtPhcSuFdJQ0ILMxnJi8GkQL0yvDy/YA==
 
-commitizen@^4.0.3, commitizen@^4.0.4:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/commitizen/-/commitizen-4.2.0.tgz#1be53302dd23a028c2a1c39b6d5c857f0e3a8a29"
-  integrity sha512-dMTgCkmxDOaH32HViVyvoGqVzCAyvBsgMViWnIDQxVHlEwHS1d6d8rweCGE7fjCROryBZmHRQrWVWN9GTw2F/g==
+commitizen@^4.0.3, commitizen@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/commitizen/-/commitizen-4.2.1.tgz#3b098b16c6b1a37f0d129018dff6751b20cd3103"
+  integrity sha512-nZsp8IThkDu7C+93BFD/mLShb9Gd6Wsaf90tpKE3x/6u5y/Q52kzanIJpGr0qvIsJ5bCMpgKtr3Lbu3miEJfaA==
   dependencies:
     cachedir "2.2.0"
     cz-conventional-changelog "3.2.0"
