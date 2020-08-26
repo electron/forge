@@ -134,7 +134,7 @@
     "generate-changelog": "^1.8.0",
     "globby": "^11.0.1",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.11",
+    "lint-staged": "^10.2.13",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
     "mocha": "^8.1.2",
