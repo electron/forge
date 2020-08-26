@@ -122,7 +122,7 @@
     "babel-plugin-source-map-support": "^2.1.2",
     "chai": "4.2.0",
     "chai-as-promised": "^7.0.0",
-    "commitizen": "^4.0.4",
+    "commitizen": "^4.2.1",
     "cross-env": "^7.0.2",
     "cz-customizable": "^6.3.0",
     "electron-installer-common": "^0.10.2",
