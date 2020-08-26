@@ -22,13 +22,13 @@ describe('forge-config', () => {
 
   it('should be set to the defaults if no Forge config is specified in package.json', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/no_forge_config'));
-    delete config.pluginInterface;
+    delete (config as any).pluginInterface;
     expect(config).to.deep.equal(defaults);
   });
 
   it('should resolve the object in package.json with defaults if one exists', async () => {
     const config = await findConfig(path.resolve(__dirname, '../fixture/dummy_app'));
-    delete config.pluginInterface;
+    delete (config as any).pluginInterface;
     expect(config).to.be.deep.equal({
       ...defaults,
       packagerConfig: {
