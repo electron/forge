@@ -91,6 +91,10 @@ By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, bu
 section of our docs site.  We currently have plugins for Webpack and Electron Compile, and a
 [template for Webpack](https://www.electronforge.io/templates/webpack-template).
 
+## `yarn create` does not use the latest `electron-forge` versions
+
+Run `yarn global remove create-electron-app` and rerun the `yarn create ...` command.
+
 # Team
 
 | <img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /> | <img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /> |
