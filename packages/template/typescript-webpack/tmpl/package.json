@@ -11,6 +11,6 @@
     "eslint": "^7.6.0",
     "eslint-plugin-import": "^2.20.0",
     "@typescript-eslint/eslint-plugin": "^3.9.0",
-    "@typescript-eslint/parser": "^3.9.0"
+    "@typescript-eslint/parser": "^4.0.1"
   }
 }
