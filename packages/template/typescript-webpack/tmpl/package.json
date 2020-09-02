@@ -10,7 +10,7 @@
     "fork-ts-checker-webpack-plugin": "^5.0.14",
     "eslint": "^7.6.0",
     "eslint-plugin-import": "^2.20.0",
-    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1"
   }
 }
