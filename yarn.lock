@@ -3763,9 +3763,9 @@ electron-packager@^15.0.0:
     yargs-parser "^19.0.1"
 
 electron-rebuild@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-2.0.1.tgz#d5532b1aa527aeec8180be2026f1f11ab86d3540"
-  integrity sha512-oXCnKKS+FpLxXiiSHtSCFI3zo+4H2y6zUegSQTI031RJXn2fzQV9UJMAfBrnW7Z083chIo3/L4+xFM4R8mreOQ==
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-2.0.2.tgz#4d32ad34c4c7092544251b11d3a413a63e8ee8b6"
+  integrity sha512-A0rQwHasP4bcHf4vOzDNlTlmTOwNVtMtn+NPOm9GvqwHMttigx43uTLHJ2FKXGaour8HgdeWtg8g70TKiGNImw==
   dependencies:
     "@malept/cross-spawn-promise" "^1.1.0"
     colors "^1.3.3"
@@ -3774,7 +3774,7 @@ electron-rebuild@^2.0.0:
     fs-extra "^9.0.1"
     node-abi "^2.19.1"
     node-gyp "^7.1.0"
-    ora "^5.0.0"
+    ora "^5.1.0"
     yargs "^15.4.1"
 
 electron-to-chromium@^1.3.562:
@@ -7520,7 +7520,7 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
-ora@^5.0.0:
+ora@^5.0.0, ora@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/ora/-/ora-5.1.0.tgz#b188cf8cd2d4d9b13fd25383bc3e5cba352c94f8"
   integrity sha512-9tXIMPvjZ7hPTbk8DFq1f7Kow/HU/pQYB60JbNq+QnGwcyhWVZaQ4hM9zQDEsPxw/muLpgiHSaumUZxCAmod/w==
