@@ -20,7 +20,7 @@ export class OraImpl {
 export interface AsyncOraMethod {
   (
     initialOraValue: string,
-    asyncFn: (ora: OraImpl) => Promise<void>,
+    asyncFn: (oraImpl: OraImpl) => Promise<void>,
     processExitFn?: (code: number) => void,
   ): Promise<void>;
   interactive?: boolean;

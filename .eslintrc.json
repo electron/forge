@@ -16,6 +16,9 @@
     "airbnb-base",
     "plugin:import/typescript"
   ],
+  "globals": {
+    "NodeJS": "readonly"
+  },
   "rules": {
     "class-methods-use-this": "off",
     "import/extensions": [
@@ -46,6 +49,8 @@
         "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
       }
     ],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"],
     "no-unused-vars": "off",
     "@typescript-eslint/no-this-alias": ["error", {
       "allowDestructuring": true
@@ -55,7 +60,9 @@
       "argsIgnorePattern": "^_",
       "ignoreRestSiblings": true,
       "vars": "all"
-    }]
+    }],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"]
   },
   "overrides": [
     {

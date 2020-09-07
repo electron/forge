@@ -1,16 +1,16 @@
 /* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
-import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
-import fs from 'fs-extra';
-import path from 'path';
-import webpack, { Configuration } from 'webpack';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-import webpackDevMiddleware from 'webpack-dev-middleware';
+import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
 import express from 'express';
+import fs from 'fs-extra';
 import http from 'http';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
+import path from 'path';
+import PluginBase from '@electron-forge/plugin-base';
+import webpack, { Configuration } from 'webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import once from './util/once';
 import { WebpackPluginConfig } from './Config';

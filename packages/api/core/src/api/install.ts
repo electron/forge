@@ -25,19 +25,19 @@ const GITHUB_API = 'https://api.github.com';
 
 class InstallerImpl extends InstallerBase { name = 'impl'; }
 
-interface Release {
-  // eslint-disable-next-line camelcase
-  tag_name: string;
-  prerelease: boolean;
-  assets: Asset[];
-}
-
 export interface Asset {
   id: string;
   name: string;
   size: number;
   // eslint-disable-next-line camelcase
   browser_download_url: string;
+}
+
+interface Release {
+  // eslint-disable-next-line camelcase
+  tag_name: string;
+  prerelease: boolean;
+  assets: Asset[];
 }
 
 export interface InstallOptions {

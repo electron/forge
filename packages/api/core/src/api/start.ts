@@ -3,8 +3,8 @@ import { asyncOra } from '@electron-forge/async-ora';
 import {
   ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
 } from '@electron-forge/shared-types';
-import { spawn, SpawnOptions } from 'child_process';
 import path from 'path';
+import { spawn, SpawnOptions } from 'child_process';
 
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
