@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
-    "xterm": "^4.8.1",
+    "xterm": "^4.9.0",
     "xterm-addon-fit": "^0.4.0",
     "xterm-addon-search": "^0.7.0"
   },
