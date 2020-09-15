@@ -63,8 +63,6 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
 
   postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions) => {
     await runElectronegativity({
-      // FIXME: remove after https://github.com/doyensec/electronegativity/pull/73 is released.
-      customScan: [],
       ...this.config,
       input: options.outputPaths[0],
     }, true);
