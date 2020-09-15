@@ -1,4 +1,4 @@
-import { OctokitOptions } from './util/github';
+import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 
 export interface GitHubRepository {
   /**
