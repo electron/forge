@@ -9,7 +9,7 @@ const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
 
 export function siblingDep(name: string) {
-  return `@electron-forge/${name}@${corePackage.version}`;
+  return `@electron-forge/${name}@^${corePackage.version}`;
 }
 
 export const deps = ['electron-squirrel-startup'];
