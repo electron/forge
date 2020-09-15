@@ -89,7 +89,7 @@ jobs:
           sudo add-apt-repository -y ppa:alexlarsson/flatpak
           sudo rm /etc/apt/sources.list.d/bazel.list
           sudo rm /etc/apt/sources.list.d/mongo*.list
-          grep opensuse /etc/apt/sources.list.d/* | xargs sudo rm
+          grep -l opensuse /etc/apt/sources.list.d/* | xargs sudo rm
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
