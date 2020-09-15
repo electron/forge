@@ -2,8 +2,6 @@ import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 import { merge } from 'lodash';
 
-export { OctokitOptions } from '@octokit/core/dist-types/types.d';
-
 export default class GitHub {
   private options: OctokitOptions;
 
