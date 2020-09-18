@@ -28,7 +28,7 @@
     "fs-extra": "^9.0.1",
     "global": "^4.3.2",
     "html-webpack-plugin": "^4.4.1",
-    "webpack": "^4.42.0",
+    "webpack": "^4.44.2",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^5.1.4"
