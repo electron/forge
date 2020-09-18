@@ -3842,10 +3842,10 @@ electron-winstaller@^4.0.1:
     lodash.template "^4.2.2"
     temp "^0.9.0"
 
-electron-wix-msi@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/electron-wix-msi/-/electron-wix-msi-3.0.0.tgz#3a7a3b98faf6e51c93a31eeef7d5aed1d2f9080e"
-  integrity sha512-V2z7kxjcYhgXqeLoD7hi0GvVi/0fksICjmxN46SSyUkvob+BxrGs4+e06P52sD7vSSOwFCzuQjgnfqcoSY3jqQ==
+electron-wix-msi@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/electron-wix-msi/-/electron-wix-msi-3.0.2.tgz#04ad544aea7e66589b5740f9b42ee7024f18c8fa"
+  integrity sha512-SOJrAnta/v3kHlHgqYY/I+aNpD1BCf5wN/bFReCV8ZVl2kgBtRVyu60uMKDQTqVtYtB8rDoVD7qBgiPqDuwgyg==
   dependencies:
     debug "^4.1.1"
     fs-extra "^8.1.0"
