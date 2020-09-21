@@ -45,7 +45,7 @@
     "@electron/get": "^1.9.0",
     "@malept/cross-spawn-promise": "^1.1.0",
     "colors": "^1.4.0",
-    "debug": "^4.1.0",
+    "debug": "^4.2.0",
     "electron-packager": "^15.0.0",
     "electron-rebuild": "^2.0.3",
     "find-up": "^5.0.0",

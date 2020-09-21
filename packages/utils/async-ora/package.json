@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
-    "debug": "^4.1.0",
+    "debug": "^4.2.0",
     "log-symbols": "^4.0.0",
     "ora": "^5.0.0",
     "pretty-ms": "^7.0.0"
