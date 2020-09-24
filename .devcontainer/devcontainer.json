@@ -9,5 +9,5 @@
   "extensions": [
     "dbaeumer.vscode-eslint"
   ],
-  "postCreateCommand": "bolt"
+  "postCreateCommand": "ci/install_runtimes.sh && bolt"
 }
