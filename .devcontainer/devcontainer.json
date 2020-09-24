@@ -1,4 +1,13 @@
 {
   "name": "Electron Forge",
-  "dockerFile": "Dockerfile"
+  "build": {
+    "dockerFile": "Dockerfile"
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint"
+  ],
+  "postCreateCommand": "bolt"
 }
