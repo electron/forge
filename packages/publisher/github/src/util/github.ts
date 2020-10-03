@@ -26,13 +26,11 @@ export default class GitHub {
   }
 
   getGitHub() {
-    const github = new Octokit(this.options);
+    const options: OctokitOptions = { ...this.options };
     if (this.token) {
-      github.authenticate({
-        type: 'token',
-        token: this.token,
-      });
+      options.auth = this.token;
     }
+    const github = new Octokit(options);
     return github;
   }
 }
