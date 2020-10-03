@@ -7,22 +7,16 @@ import InternalGitHub from '../src/util/github';
 describe('GitHub', () => {
   let GitHub: typeof InternalGitHub;
   let gitHubSpy: SinonSpy;
-  let gitHubAuthSpy: SinonSpy;
   let MockGitHub: any;
 
   beforeEach(() => {
     gitHubSpy = sinon.spy();
-    gitHubAuthSpy = sinon.spy();
     MockGitHub = class {
       private options: any;
 
       constructor(options: any) {
         gitHubSpy();
         this.options = options;
-      }
-
-      authenticate() {
-        gitHubAuthSpy();
       }
     };
     GitHub = proxyquire.noCallThru().load('../src/util/github', {
@@ -57,6 +51,7 @@ describe('GitHub', () => {
       const api = gh.getGitHub();
 
       expect((api as any).options).to.deep.equal({
+        auth: '1234',
         baseUrl: 'https://github.example.com:8443/enterprise',
         headers: {
           'user-agent': 'Electron Forge',
@@ -73,16 +68,25 @@ describe('GitHub', () => {
 
     it('should authenticate if a token is present', () => {
       const gh = new GitHub('token');
-      expect(gitHubAuthSpy.callCount).to.equal(0);
+      const api = gh.getGitHub();
       gh.getGitHub();
-      expect(gitHubAuthSpy.callCount).to.equal(1);
+      expect((api as any).options).to.deep.equal({
+        auth: 'token',
+        headers: {
+          'user-agent': 'Electron Forge',
+        },
+      });
     });
 
     it('should not authenticate if a token is not present', () => {
       const gh = new GitHub();
-      expect(gitHubAuthSpy.callCount).to.equal(0);
+      const api = gh.getGitHub();
       gh.getGitHub();
-      expect(gitHubAuthSpy.callCount).to.equal(0);
+      expect((api as any).options).to.deep.equal({
+        headers: {
+          'user-agent': 'Electron Forge',
+        },
+      });
     });
 
     it('should throw an exception if a token is required', () => {
