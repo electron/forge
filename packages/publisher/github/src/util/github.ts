@@ -25,7 +25,7 @@ export default class GitHub {
     }
   }
 
-  getGitHub() {
+  getGitHub(): Octokit {
     const options: OctokitOptions = { ...this.options };
     if (this.token) {
       options.auth = this.token;
