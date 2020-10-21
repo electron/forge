@@ -10,7 +10,7 @@
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.54",
     "electron-packager": "^15.0.0",
-    "electron-rebuild": "^2.0.3",
+    "electron-rebuild": "^2.3.2",
     "ora": "^5.0.0"
   },
   "engines": {
