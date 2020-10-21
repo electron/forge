@@ -49,7 +49,7 @@
     "debug": "^4.1.0",
     "electron-osx-sign": "^0.4.17",
     "electron-packager": "^15.0.0",
-    "electron-rebuild": "^2.0.3",
+    "electron-rebuild": "^2.3.2",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",
     "find-up": "^5.0.0",
