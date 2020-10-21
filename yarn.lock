@@ -3866,10 +3866,10 @@ electron-packager@^15.0.0:
     semver "^7.1.3"
     yargs-parser "^19.0.1"
 
-electron-rebuild@^2.0.3:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-2.3.1.tgz#145f4367bfaff9f5a4219be828acd381b92f3854"
-  integrity sha512-KuI2tspzEbjIpcBXXXc1dSz4/LllNGcwppPShrJUaJM3ZEmCIwutBZH7OnfKWOelYOoSHeHe81BR1pkDP4temg==
+electron-rebuild@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-2.3.2.tgz#42da553a1e4e844ae4d3c3b97e42be836b2924b3"
+  integrity sha512-VLd3iIn65PmYWmvL+nx0oKspbohkDUhCAz8I2EWbMJcOFzWKW1UXJZ+ZG53iEDJFldm9PahE4q2Bx3ns4bdzeQ==
   dependencies:
     "@malept/cross-spawn-promise" "^1.1.0"
     colors "^1.3.3"
