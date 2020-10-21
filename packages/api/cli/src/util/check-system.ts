@@ -16,9 +16,15 @@ async function checkGitExists() {
   });
 }
 
-async function checkNodeVersion() {
+async function checkNodeVersion(ora: OraImpl) {
   const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
-  return Promise.resolve(semver.satisfies(process.versions.node, engines.node));
+  const versionSatisified = semver.satisfies(process.versions.node, engines.node);
+
+  if (!versionSatisified) {
+    ora.warn!(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
+  }
+
+  return versionSatisified;
 }
 
 const NPM_WHITELISTED_VERSIONS = {
@@ -90,7 +96,7 @@ export default async function checkSystem(ora: OraImpl): Promise<boolean> {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return (await Promise.all([
       checkGitExists(),
-      checkNodeVersion(),
+      checkNodeVersion(ora),
       checkPackageManagerVersion(ora),
     ])).every((check) => check);
   }
