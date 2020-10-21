@@ -16,8 +16,15 @@ async function checkGitExists() {
   });
 }
 
-async function checkNodeVersion() {
-  return Promise.resolve(semver.gt(process.versions.node, '6.0.0'));
+async function checkNodeVersion(ora: OraImpl) {
+  const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
+  const versionSatisified = semver.satisfies(process.versions.node, engines.node);
+
+  if (!versionSatisified) {
+    ora.warn!(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
+  }
+
+  return versionSatisified;
 }
 
 const NPM_WHITELISTED_VERSIONS = {
@@ -62,17 +69,15 @@ The known versions that work with Electron Forge are: ${versions}`);
 }
 
 async function checkPackageManagerVersion(ora: OraImpl) {
-  return forgeUtils.yarnOrNpmSpawn(['--version'])
-    .then((version) => {
-      const versionString = version.toString();
-      if (forgeUtils.hasYarn()) {
-        warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_WHITELISTED_VERSIONS, ora);
-      } else {
-        warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_WHITELISTED_VERSIONS, ora);
-      }
+  const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
+  const versionString = version.toString();
+  if (forgeUtils.hasYarn()) {
+    warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_WHITELISTED_VERSIONS, ora);
+  } else {
+    warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_WHITELISTED_VERSIONS, ora);
+  }
 
-      return true;
-    });
+  return true;
 }
 
 /**
@@ -91,7 +96,7 @@ export default async function checkSystem(ora: OraImpl): Promise<boolean> {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return (await Promise.all([
       checkGitExists(),
-      checkNodeVersion(),
+      checkNodeVersion(ora),
       checkPackageManagerVersion(ora),
     ])).every((check) => check);
   }
