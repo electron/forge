@@ -17,7 +17,8 @@ async function checkGitExists() {
 }
 
 async function checkNodeVersion() {
-  return Promise.resolve(semver.gt(process.versions.node, '6.0.0'));
+  const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
+  return Promise.resolve(semver.satisfies(process.versions.node, engines.node));
 }
 
 const NPM_WHITELISTED_VERSIONS = {
