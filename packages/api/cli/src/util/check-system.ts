@@ -63,17 +63,15 @@ The known versions that work with Electron Forge are: ${versions}`);
 }
 
 async function checkPackageManagerVersion(ora: OraImpl) {
-  return forgeUtils.yarnOrNpmSpawn(['--version'])
-    .then((version) => {
-      const versionString = version.toString();
-      if (forgeUtils.hasYarn()) {
-        warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_WHITELISTED_VERSIONS, ora);
-      } else {
-        warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_WHITELISTED_VERSIONS, ora);
-      }
+  const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
+  const versionString = version.toString();
+  if (forgeUtils.hasYarn()) {
+    warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_WHITELISTED_VERSIONS, ora);
+  } else {
+    warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_WHITELISTED_VERSIONS, ora);
+  }
 
-      return true;
-    });
+  return true;
 }
 
 /**
