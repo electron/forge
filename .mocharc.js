@@ -1,8 +1,10 @@
-{
+const path = require('path')
+
+module.exports = {
   "require": [
     "ts-node/register",
     "@babel/register",
-    "./tools/test-setup.ts"
+    path.join(__dirname, "tools", "test-setup.ts")
   ],
   "timeout": 800000,
   "recursive": true
