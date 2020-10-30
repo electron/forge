@@ -1069,19 +1069,7 @@
   dependencies:
     "@octokit/types" "^5.0.0"
 
-"@octokit/core@^3.0.0":
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/@octokit/core/-/core-3.1.4.tgz#9c51a3d77bad7d8aa5ec0e997ee90da224206b5e"
-  integrity sha512-eNDwFpKbGbLzPXiFE5PCoeq3nHlKTmWcCtZfQNCwJmW21XqrWr6c2uUhgLCzDeDkQVvKqUWaIgeCDB6i6mvFoA==
-  dependencies:
-    "@octokit/auth-token" "^2.4.0"
-    "@octokit/graphql" "^4.3.1"
-    "@octokit/request" "^5.4.0"
-    "@octokit/types" "^5.0.0"
-    before-after-hook "^2.1.0"
-    universal-user-agent "^6.0.0"
-
-"@octokit/core@^3.1.4":
+"@octokit/core@^3.0.0", "@octokit/core@^3.1.4":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@octokit/core/-/core-3.2.0.tgz#7a872ad4cb8d8d2f417dd7fe1aaff3919c09dc04"
   integrity sha512-42jzu1GWlCr4KUo52X4hD3if2AwjNJLzsS8mqUs9JkJbsM3vzvSx8AqTnVBQjOM0hQMYBqR7/7SAUTfH7IZqIg==
@@ -1119,9 +1107,9 @@
     "@octokit/types" "^5.5.0"
 
 "@octokit/plugin-request-log@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-1.0.0.tgz#eef87a431300f6148c39a7f75f8cfeb218b2547e"
-  integrity sha512-ywoxP68aOT3zHCLgWZgwUJatiENeHE7xJzYjfz8WI0goynp96wETBF+d95b8g/uL4QmS6owPVlaxiz3wyMAzcw==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-1.0.2.tgz#394d59ec734cd2f122431fbaf05099861ece3c44"
+  integrity sha512-oTJSNAmBqyDR41uSMunLQKMX0jmEXbwD1fpz8FG27lScV3RhtGfBa1/BBLym+PxcC16IBlF7KH9vP1BUYxA+Eg==
 
 "@octokit/plugin-rest-endpoint-methods@4.2.0":
   version "4.2.0"
@@ -1155,9 +1143,9 @@
     universal-user-agent "^6.0.0"
 
 "@octokit/rest@^18.0.6":
-  version "18.0.6"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.0.6.tgz#76c274f1a68f40741a131768ef483f041e7b98b6"
-  integrity sha512-ES4lZBKPJMX/yUoQjAZiyFjei9pJ4lTTfb9k7OtYoUzKPDLl/M8jiHqt6qeSauyU4eZGLw0sgP1WiQl9FYeM5w==
+  version "18.0.7"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.0.7.tgz#236514417084334bc0ef62416a19f6030db3d907"
+  integrity sha512-ctz0cMIb3c6gO2ADto+A1r4JI+2hkUkDcD1JRunkhk1SOUrNGQcQ+9FBqZ6UekS1Z/c3xPvF0OoLtX2cQ118+A==
   dependencies:
     "@octokit/core" "^3.0.0"
     "@octokit/plugin-paginate-rest" "^2.2.0"
