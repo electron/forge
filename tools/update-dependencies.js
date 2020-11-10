@@ -6,7 +6,9 @@ const { spawn } = require('@malept/cross-spawn-promise')
 
 const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
-  'commander'
+  'commander', // TODO: convert to yargs
+  'cross-zip', // >= 4.0.0 requires Node 12
+  'webpack' // Lots of incompatibilities between v4 and v5
 ]
 
 /**
