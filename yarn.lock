@@ -10412,10 +10412,10 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
-webpack-dev-middleware@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-4.0.0.tgz#1725b2ebc78b66333672499d9dc7b1c244aebb1c"
-  integrity sha512-n6X6CxYQyYWGBfLzcNYya0oz1N8iTG5atGxrEacrMGc9pPjg3GHyHul6Z+hfs5x5voYtqr7mz1pbK/M4ZeMl1w==
+webpack-dev-middleware@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-4.0.2.tgz#1436ae6cacee78475bd6bc1fbf063dfbfd6e577d"
+  integrity sha512-xyAICqIugWtT1RRH5aMMmZlPhDhEqPTDL0TWhmMZsuZ+cFlAvRxv4thCbuxdk9MW+OYK4c9BkfmgdQ1/7imkJA==
   dependencies:
     mem "^8.0.0"
     memfs "^3.2.0"
