@@ -5,6 +5,7 @@ const { satisfies } = require('semver')
 const { spawn } = require('@malept/cross-spawn-promise')
 
 const DO_NOT_UPGRADE = [
+  '@types/webpack', // Should be upgraded with Webpack v5
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
   'cross-zip', // >= 4.0.0 requires Node 12
