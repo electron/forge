@@ -39,7 +39,7 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines(false);
 
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal('"/.webpack/renderer/any_folder"');
+      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal(`"${path.resolve('/.webpack', 'renderer', 'any_folder')}"`);
     });
 
     it('sets the renderer asset relocator base dir in production', () => {
@@ -70,7 +70,7 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines(true);
 
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal('"/.webpack/main"');
+      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal(`"${path.resolve('/.webpack', 'main', '.')}"`);
     });
 
     it('sets the main asset relocator base dir in production', () => {
