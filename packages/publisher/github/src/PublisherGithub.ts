@@ -4,10 +4,7 @@ import fs from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import {
-  ReposCreateReleaseResponseData as OctokitRelease,
-  ReposGetReleaseAssetResponseData as OctokitReleaseAsset,
-} from '@octokit/types/dist-types/generated/Endpoints.d';
+import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 
 import GitHub from './util/github';
 import { PublisherGitHubConfig } from './Config';
@@ -46,6 +43,12 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     }
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);
+
+    const octokit = github.getGitHub();
+    type OctokitRelease = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.getRelease>;
+    type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<
+      typeof octokit.repos.updateReleaseAsset
+    >;
 
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
       let release: OctokitRelease | undefined;
@@ -98,7 +101,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           };
           const artifactName = path.basename(artifactPath);
           // eslint-disable-next-line max-len
-          if (release!.assets.find((asset) => (asset as OctokitReleaseAsset).name === artifactName)) {
+          if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
             return done();
           }
           await github.getGitHub().repos.uploadReleaseAsset({
