@@ -9,6 +9,7 @@ const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
   'cross-zip', // >= 4.0.0 requires Node 12
+  'typescript', // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
   'webpack' // Lots of incompatibilities between v4 and v5
 ]
 
