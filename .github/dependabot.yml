@@ -6,7 +6,13 @@ updates:
     schedule:
       interval: "daily"
     ignore:
+      # aws-sdk upgrades too often, do this manually
       - dependency-name: aws-sdk
+      - dependency-name: commander
+      - dependency-name: cross-zip
+        versions: ['4.x']
+      - dependency-name: typescript
+        versions: ['4.1.x']
       - dependency-name: webpack
         versions: ['5.x']
   - package-ecosystem: "npm"
