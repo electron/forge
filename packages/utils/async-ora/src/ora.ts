@@ -12,7 +12,8 @@ const d = debug('electron-forge:async-ora');
 const useFakeOra = Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge'));
 
 if (useFakeOra) {
-  console.warn('WARNING: DEBUG environment variable detected.  Progress indicators will be sent over electron-forge:lifecycle'.red);
+  console.warn('WARNING: DEBUG environment variable detected. Append the electron-forge:lifecycle namespace'.red);
+  console.warn('to the value of DEBUG in order to view progress indicators.'.red);
 }
 
 export const fakeOra = (name: string) => {
