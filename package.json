@@ -155,7 +155,7 @@
     "electron-installer-snap": "^5.1.0",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^4.0.1",
-    "electron-wix-msi": "^3.0.2"
+    "electron-wix-msi": "^3.0.6"
   },
   "config": {
     "commitizen": {
