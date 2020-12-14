@@ -11,7 +11,7 @@
     "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts test/**/**/*_spec.ts"
   },
   "devDependencies": {
-    "@types/node": "^14.14.12",
+    "@types/node": "^14.14.13",
     "chai": "4.2.0",
     "mocha": "^8.1.3"
   },
