@@ -1,5 +1,3 @@
-import path from 'path';
-
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
@@ -98,15 +96,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               uploaded += 1;
               updateUploadStatus();
             };
-            // Based on https://developer.github.com/v3/repos/releases/#upload-a-release-asset and
-            // https://stackoverflow.com/questions/59081778/rules-for-special-characters-in-github-repository-name
-            const artifactName = path
-              .basename(artifactPath)
-              .replace(/\s/g, '.')
-              .replace(/\.+/g, '.')
-              .replace(/^\./g, '')
-              .replace(/\.$/g, '')
-              .replace(/[^\w.-]/g, '-');
+            const artifactName = GitHub.sanitizeName(artifactPath);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === artifactName);
             if (asset !== undefined) {
