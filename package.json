@@ -39,7 +39,7 @@
     "@malept/cross-spawn-promise": "^1.1.1",
     "@octokit/core": "^3.2.4",
     "@octokit/rest": "^18.0.11",
-    "@octokit/types": "^6.0.1",
+    "@octokit/types": "^6.1.2",
     "@types/which": "^1.3.2",
     "aws-sdk": "^2.472.0",
     "colors": "^1.4.0",
