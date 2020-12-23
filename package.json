@@ -76,7 +76,7 @@
     "webpack": "^4.44.2",
     "webpack-dev-middleware": "^4.0.2",
     "webpack-hot-middleware": "^2.25.0",
-    "webpack-merge": "^5.7.2",
+    "webpack-merge": "^5.7.3",
     "which": "^2.0.2",
     "xterm": "^4.9.0",
     "xterm-addon-fit": "^0.4.0",
