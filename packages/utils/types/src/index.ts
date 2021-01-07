@@ -35,6 +35,7 @@ export interface ForgeConfig {
   plugins: (IForgePlugin | [string, any])[];
   electronRebuildConfig: Partial<RebuildOptions>;
   packagerConfig: Partial<Options>;
+  defaultPackagerConfigIgnore?: boolean;
   makers: (IForgeResolvableMaker | IForgeMaker)[];
   publishers: ForgeConfigPublisher[];
 }

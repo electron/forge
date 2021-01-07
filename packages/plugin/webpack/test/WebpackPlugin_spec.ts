@@ -3,6 +3,7 @@ import { ForgeConfig } from '@electron-forge/shared-types';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { tmpdir } from 'os';
+import sinon from 'sinon';
 
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackPlugin from '../src/WebpackPlugin';
@@ -74,8 +75,24 @@ describe('WebpackPlugin', () => {
       expect(config.packagerConfig.ignore).to.be.a('function');
     });
 
+    it('does not warn if packagerConfig.ignore has been automatically set already', async () => {
+      const consoleStub = sinon.stub(console, 'error');
+
+      const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+
+      expect(config.defaultPackagerConfigIgnore).to.equal(true);
+
+      await plugin.resolveForgeConfig(config);
+
+      expect(consoleStub.called).to.equal(false);
+
+      consoleStub.restore();
+    });
+
     describe('packagerConfig.ignore', () => {
       it('does not overwrite an existing ignore value', async () => {
+        const consoleStub = sinon.stub(console, 'error');
+
         const config = await plugin.resolveForgeConfig({
           packagerConfig: {
             ignore: /test/,
@@ -83,6 +100,9 @@ describe('WebpackPlugin', () => {
         } as ForgeConfig);
 
         expect(config.packagerConfig.ignore).to.deep.equal(/test/);
+        expect(consoleStub.called).to.equal(true);
+
+        consoleStub.restore();
       });
 
       it('ignores everything but files in .webpack', async () => {
