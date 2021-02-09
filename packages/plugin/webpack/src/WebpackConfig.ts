@@ -1,7 +1,7 @@
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
@@ -209,7 +209,7 @@ export default class WebpackConfigGenerator {
         template: entryPoint.html,
         filename: `${entryPoint.name}/index.html`,
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-      }) as webpack.Plugin).concat([new webpack.DefinePlugin(defines)])
+      }) as WebpackPluginInstance).concat([new webpack.DefinePlugin(defines)])
       .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
     return webpackMerge({
       entry,

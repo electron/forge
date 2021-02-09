@@ -8,7 +8,7 @@ import http from 'http';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import path from 'path';
 import PluginBase from '@electron-forge/plugin-base';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration, Compiler, Stats } from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
@@ -31,7 +31,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private _configGenerator!: WebpackConfigGenerator;
 
-  private watchers: webpack.Compiler.Watching[] = [];
+  private watchers: InstanceType<typeof Compiler>['watching'][] = [];
 
   private servers: http.Server[] = [];
 
@@ -94,24 +94,28 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   async writeJSONStats(
     type: string,
-    stats: webpack.Stats,
-    statsOptions?: webpack.Stats.ToStringOptions,
+    stats: Stats,
+    statsOptions?: any, // TODO: change that
   ): Promise<void> {
     d(`Writing JSON stats for ${type} config`);
-    const jsonStats = stats.toJson(statsOptions as webpack.Stats.ToJsonOptions);
+    const jsonStats = stats.toJson(statsOptions);
     const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
+  private ensureNotError<T>(err: Error | undefined, e: T | undefined): e is T {
+    return !err;
+  }
+
   // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats> => new Promise((resolve, reject) => {
+  private runWebpack = async (options: Configuration, isRenderer = false): Promise<Stats> => new Promise((resolve, reject) => {
     webpack(options)
       .run(async (err, stats) => {
+        if (!this.ensureNotError(err, stats)) {
+          return reject(err);
+        }
         if (isRenderer && this.config.renderer.jsonStats) {
           await this.writeJSONStats('renderer', stats, options.stats);
-        }
-        if (err) {
-          return reject(err);
         }
         return resolve(stats);
       });
@@ -235,22 +239,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = async (err, stats: webpack.Stats) => {
+        const cb: Parameters<InstanceType<typeof Compiler>['watch']>[1] = async (err, stats) => {
           if (tab && stats) {
             tab.log(stats.toString({
               colors: true,
             }));
           }
+          if (!this.ensureNotError(err, stats)) return onceReject(err);
           if (this.config.jsonStats) {
             await this.writeJSONStats('main', stats, mainConfig.stats);
           }
 
-          if (err) return onceReject(err);
           if (!watch && stats.hasErrors()) {
             return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
           }
 
-          return onceResolve();
+          return onceResolve(undefined);
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -327,7 +331,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
               }
 
               if (err) return onceReject(err);
-              return onceResolve();
+              return onceResolve(undefined);
             }));
           });
         }
