@@ -236,7 +236,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
     await asyncOra('Compiling Main Process Code', async () => {
       const mainConfig = await this.configGenerator.getMainConfig();
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
         const cb: Parameters<InstanceType<typeof Compiler>['watch']>[1] = async (err, stats) => {
@@ -254,7 +254,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
           }
 
-          return onceResolve(undefined);
+          return onceResolve();
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -292,20 +292,27 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const tab = logger.createTab('Renderers');
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      const compiler = webpack(config);
+      const compiler = webpack(config, (err, stats) => {
+        if (stats) {
+          tab.log(stats.toString({
+            colors: true,
+          }));
+        }
+        tab.log(err?.message ?? '');
+      });
       const server = webpackDevMiddleware(compiler, {
-        logger: {
-          debug: tab.log.bind(tab),
-          log: tab.log.bind(tab),
-          info: tab.log.bind(tab),
-          error: tab.log.bind(tab),
-          warn: tab.log.bind(tab),
-        },
+        // logger: {
+        //   debug: tab.log.bind(tab),
+        //   log: tab.log.bind(tab),
+        //   info: tab.log.bind(tab),
+        //   error: tab.log.bind(tab),
+        //   warn: tab.log.bind(tab),
+        // },
         publicPath: '/',
-        hot: true,
-        historyApiFallback: true,
+        // hot: true,
+        // historyApiFallback: true,
         writeToDisk: true,
-      } as any);
+      });
       const app = express();
       app.use(server);
       app.use(webpackHotMiddleware(compiler));
@@ -319,7 +326,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
             entryPoint,
             entryPoint.preload!,
           );
-          await new Promise((resolve, reject) => {
+          await new Promise<void>((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
 
@@ -331,7 +338,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
               }
 
               if (err) return onceReject(err);
-              return onceResolve(undefined);
+              return onceResolve();
             }));
           });
         }

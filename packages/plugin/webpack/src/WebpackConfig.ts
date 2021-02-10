@@ -156,6 +156,9 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
+      cache: {
+        type: 'filesystem',
+      },
       resolve: {
         modules: [
           path.resolve(path.dirname(this.webpackDir), './'),
@@ -187,6 +190,9 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
+      cache: {
+        type: 'filesystem',
+      },
     },
     rendererConfig || {},
     { target: 'electron-preload' });
@@ -211,7 +217,7 @@ export default class WebpackConfigGenerator {
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
       }) as WebpackPluginInstance).concat([new webpack.DefinePlugin(defines)])
       .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
-    return webpackMerge({
+    const baseConfig: Configuration & { devServer: any } = {
       entry,
       devtool: 'inline-source-map',
       target: 'electron-renderer',
@@ -226,7 +232,14 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
+      devServer: {
+        historyApiFallback: true,
+      },
+      cache: {
+        type: 'filesystem',
+      },
       plugins,
-    }, rendererConfig || {});
+    };
+    return webpackMerge(baseConfig, rendererConfig || {});
   }
 }
