@@ -1,7 +1,7 @@
 
 
 declare module "webpack-dev-middleware" {
-    import {Compiler} from 'webpack';
+    import {Compiler, Configuration} from 'webpack';
     const middleware: (compiler: Compiler, options: Options) => any;
     export interface Options {
         [proName: string]: any;

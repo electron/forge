@@ -289,17 +289,12 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   launchDevServers = async (logger: Logger) => {
     await asyncOra('Launch Dev Servers', async () => {
-      const tab = logger.createTab('Renderers');
+      // const tab = logger.createTab('Renderers');
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      const compiler = webpack(config, (err, stats) => {
-        if (stats) {
-          tab.log(stats.toString({
-            colors: true,
-          }));
-        }
-        tab.log(err?.message ?? '');
-      });
+      const compiler = await webpack(config);
+      console.log('\ncompiler:', compiler);
+      const app = express();
       const server = webpackDevMiddleware(compiler, {
         // logger: {
         //   debug: tab.log.bind(tab),
@@ -313,7 +308,6 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         // historyApiFallback: true,
         writeToDisk: true,
       });
-      const app = express();
       app.use(server);
       app.use(webpackHotMiddleware(compiler));
       this.servers.push(app.listen(this.port));
