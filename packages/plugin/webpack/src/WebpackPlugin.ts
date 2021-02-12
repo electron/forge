@@ -289,25 +289,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   launchDevServers = async (logger: Logger) => {
     await asyncOra('Launch Dev Servers', async () => {
-      // const tab = logger.createTab('Renderers');
+      const tab = logger.createTab('Renderers');
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      const compiler = await webpack(config);
-      console.log('\ncompiler:', compiler);
+      const compiler = webpack(config);
       const app = express();
       const server = webpackDevMiddleware(compiler, {
-        // logger: {
-        //   debug: tab.log.bind(tab),
-        //   log: tab.log.bind(tab),
-        //   info: tab.log.bind(tab),
-        //   error: tab.log.bind(tab),
-        //   warn: tab.log.bind(tab),
-        // },
         publicPath: '/',
-        // hot: true,
-        // historyApiFallback: true,
         writeToDisk: true,
       });
+      server.context.logger = {
+        debug: tab.log.bind(tab),
+        log: tab.log.bind(tab),
+        info: tab.log.bind(tab),
+        error: tab.log.bind(tab),
+        warn: tab.log.bind(tab),
+      };
       app.use(server);
       app.use(webpackHotMiddleware(compiler));
       this.servers.push(app.listen(this.port));

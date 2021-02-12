@@ -157,7 +157,7 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       cache: {
-        type: 'filesystem',
+        type: 'memory',
       },
       resolve: {
         modules: [
@@ -191,7 +191,7 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       cache: {
-        type: 'filesystem',
+        type: 'memory',
       },
     },
     rendererConfig || {},
@@ -232,11 +232,12 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
-      devServer: {
+      devServer: this.isProd ? {} : {
+        hot: true,
         historyApiFallback: true,
       },
       cache: {
-        type: 'filesystem',
+        type: 'memory',
       },
       plugins,
     };
