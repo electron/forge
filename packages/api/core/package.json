@@ -18,7 +18,7 @@
     "@electron-forge/maker-wix": "6.0.0-beta.54",
     "@electron-forge/maker-zip": "6.0.0-beta.54",
     "@electron-forge/test-utils": "6.0.0-beta.54",
-    "chai": "4.2.0",
+    "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
     "electron-installer-common": "^0.10.2",
     "fetch-mock": "^9.10.7",
