@@ -27,7 +27,7 @@
     "express": "^4.17.1",
     "fs-extra": "^9.0.1",
     "global": "^4.3.2",
-    "html-webpack-plugin": "^4.4.1",
+    "html-webpack-plugin": "^5.2.0",
     "webpack": "^4.44.2",
     "webpack-dev-middleware": "^4.0.2",
     "webpack-hot-middleware": "^2.25.0",
