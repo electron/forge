@@ -8,7 +8,7 @@
   "main": "dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
   "devDependencies": {
-    "chai": "4.2.0",
+    "chai": "^4.3.3",
     "mocha": "^8.1.3"
   },
   "engines": {

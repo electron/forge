@@ -120,7 +120,7 @@
     "@typescript-eslint/eslint-plugin": "^4.11.0",
     "@typescript-eslint/parser": "^4.11.0",
     "babel-plugin-source-map-support": "^2.1.2",
-    "chai": "4.2.0",
+    "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
     "commitizen": "^4.2.1",
     "cross-env": "^7.0.2",
