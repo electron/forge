@@ -6085,7 +6085,7 @@ inquirer@6.5.2, inquirer@^6.2.0, inquirer@^6.3.1:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-inquirer@^7.0.0, inquirer@^7.3.3:
+inquirer@^7.0.0:
   version "7.3.3"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-7.3.3.tgz#04d176b2af04afc157a83fd7c100e98ee0aad003"
   integrity sha512-JG3eIAj5V9CwcGvuOmoo6LB9kbAYT8HXffUl6memuszlwDC/qvFAJw49XJ5NROSFNPxp3iQg1GqkFhaY/CR0IA==
@@ -6100,6 +6100,25 @@ inquirer@^7.0.0, inquirer@^7.3.3:
     mute-stream "0.0.8"
     run-async "^2.4.0"
     rxjs "^6.6.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+    through "^2.3.6"
+
+inquirer@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.0.0.tgz#957a46db1abcf0fdd2ab82deb7470e90afc7d0ac"
+  integrity sha512-ON8pEJPPCdyjxj+cxsYRe6XfCJepTxANdNnTebsTuQgXpRyZRRT9t4dJwjRubgmvn20CLSEnozRUayXyM9VTXA==
+  dependencies:
+    ansi-escapes "^4.2.1"
+    chalk "^4.1.0"
+    cli-cursor "^3.1.0"
+    cli-width "^3.0.0"
+    external-editor "^3.0.3"
+    figures "^3.0.0"
+    lodash "^4.17.21"
+    mute-stream "0.0.8"
+    run-async "^2.4.0"
+    rxjs "^6.6.6"
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
@@ -6995,7 +7014,7 @@ lodash.unescape@4.0.1:
   resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
   integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
 
-lodash@^4.17.10, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19:
+lodash@^4.17.10, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -9282,7 +9301,7 @@ rxjs@^6.3.3, rxjs@^6.5.1, rxjs@^6.6.3:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.4.0, rxjs@^6.6.0:
+rxjs@^6.4.0, rxjs@^6.6.0, rxjs@^6.6.6:
   version "6.6.6"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.6.tgz#14d8417aa5a07c5e633995b525e1e3c0dec03b70"
   integrity sha512-/oTwee4N4iWzAMAL9xdGKjkEHmIwupR3oXbQjCKywF1BeFohswF3vZdogbmEF6pZkOsXTzWkrZszrWpQTByYVg==
