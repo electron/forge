@@ -11,6 +11,8 @@ updates:
       - dependency-name: commander
       - dependency-name: cross-zip
         versions: ['4.x']
+      - dependency-name: html-webpack-plugin
+        versions: ['5.x']
       - dependency-name: open
       - dependency-name: typescript
         versions: ['4.1.x', '4.2.x']
