@@ -867,9 +867,9 @@
     "@babel/plugin-transform-typescript" "^7.13.0"
 
 "@babel/register@^7.12.10":
-  version "7.12.10"
-  resolved "https://registry.yarnpkg.com/@babel/register/-/register-7.12.10.tgz#19b87143f17128af4dbe7af54c735663b3999f60"
-  integrity sha512-EvX/BvMMJRAA3jZgILWgbsrHwBQvllC5T8B29McyME8DvkdOxk4ujESfrMvME8IHSDvWXrmMXxPvA/lx2gqPLQ==
+  version "7.13.8"
+  resolved "https://registry.yarnpkg.com/@babel/register/-/register-7.13.8.tgz#d9051dc6820cb4e86375cc0e2d55a4862b31184f"
+  integrity sha512-yCVtABcmvQjRsX2elcZFUV5Q5kDDpHdtXKKku22hNDma60lYuhKmtp1ykZ/okRCPLT2bR5S+cA1kvtBdAFlDTQ==
   dependencies:
     find-cache-dir "^2.0.0"
     lodash "^4.17.19"
