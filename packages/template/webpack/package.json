@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "6.0.0-beta.54",
-    "chai": "4.2.0"
+    "chai": "^4.3.3"
   }
 }
