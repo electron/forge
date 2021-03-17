@@ -8,7 +8,7 @@
   "main": "dist/MakerSquirrel.js",
   "typings": "dist/MakerSquirrel.d.ts",
   "devDependencies": {
-    "chai": "4.2.0",
+    "chai": "^4.3.3",
     "mocha": "^8.1.3"
   },
   "engines": {
@@ -20,6 +20,6 @@
     "fs-extra": "^9.0.1"
   },
   "optionalDependencies": {
-    "electron-winstaller": "^4.0.1"
+    "electron-winstaller": "^5.0.0"
   }
 }
