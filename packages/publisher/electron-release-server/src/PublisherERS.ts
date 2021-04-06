@@ -82,7 +82,6 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       fileTypesToUpload.win32 = ['.exe', '.msi'];
     }
 
-    // eslint-disable-next-line max-len
     const makeResultsFileTypesFiltered = makeResults.map((makeResult) => {
       const extensions = fileTypesToUpload[makeResult.platform as 'darwin' | 'win32' | 'linux'] || [];
 
