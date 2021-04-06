@@ -71,7 +71,34 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 
-    for (const makeResult of makeResults) {
+    const fileTypesToUpload = config.fileExtensions || {};
+    if (!config.fileExtensions?.darwin) {
+      fileTypesToUpload.darwin = ['.dmg', '.mas', '.pkg'];
+    }
+    if (!config.fileExtensions?.linux) {
+      fileTypesToUpload.linux = ['.deb', '.gz', '.rpm', 'AppImage'];
+    }
+    if (!config.fileExtensions?.win32) {
+      fileTypesToUpload.win32 = ['.exe', '.msi'];
+    }
+
+    // eslint-disable-next-line max-len
+    const makeResultsFileTypesFiltered = makeResults.map((makeResult) => {
+      const extensions = fileTypesToUpload[makeResult.platform as 'darwin' | 'win32' | 'linux'] || [];
+
+      const fixedArtifacts = makeResult.artifacts.filter((artifact) => {
+        for (let j = 0; j < extensions.length; j += 1) {
+          if (artifact.endsWith(extensions[j])) {
+            return true;
+          }
+        }
+        return false;
+      });
+      makeResult.artifacts = fixedArtifacts;
+      return makeResult;
+    });
+
+    for (const makeResult of makeResultsFileTypesFiltered) {
       const { artifacts, packageJSON } = makeResult;
 
       const existingVersion = versions.find((version) => version.name === packageJSON.version);
