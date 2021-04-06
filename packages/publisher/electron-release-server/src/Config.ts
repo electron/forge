@@ -1,4 +1,4 @@
-type DarwinFileExtension = '.dmg' | '.pkg' | '.mas';
+type DarwinFileExtension = '.dmg' | '.pkg' | '.mas';
 
 type WindowsFileExtension = '.exe' |'.msi';
 
