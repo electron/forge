@@ -73,13 +73,13 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
     const fileTypesToUpload = config.fileExtensions || {};
     if (!config.fileExtensions?.darwin) {
-      fileTypesToUpload.darwin = ['.dmg', '.mas', '.pkg'];
+      fileTypesToUpload.darwin = ['.dmg', '.mas', '.pkg', '.zip'];
     }
     if (!config.fileExtensions?.linux) {
       fileTypesToUpload.linux = ['.deb', '.gz', '.rpm', '.AppImage'];
     }
     if (!config.fileExtensions?.win32) {
-      fileTypesToUpload.win32 = ['.exe', '.msi'];
+      fileTypesToUpload.win32 = ['.exe', '.msi', '.nupkg'];
     }
 
     const makeResultsFileTypesFiltered = makeResults.map((makeResult) => {
