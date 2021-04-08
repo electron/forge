@@ -1,6 +1,6 @@
-type DarwinFileExtension = '.dmg' | '.pkg' | '.mas';
+type DarwinFileExtension = '.dmg' | '.pkg' | '.mas' | '.zip';
 
-type WindowsFileExtension = '.exe' | '.msi';
+type WindowsFileExtension = '.exe' | '.msi' | '.nupkg';
 
 type LinuxFileExtension = '.deb' | '.gz' | '.rpm' | '.AppImage';
 
