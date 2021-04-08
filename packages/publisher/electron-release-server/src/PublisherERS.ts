@@ -76,7 +76,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       fileTypesToUpload.darwin = ['.dmg', '.mas', '.pkg'];
     }
     if (!config.fileExtensions?.linux) {
-      fileTypesToUpload.linux = ['.deb', '.gz', '.rpm', 'AppImage'];
+      fileTypesToUpload.linux = ['.deb', '.gz', '.rpm', '.AppImage'];
     }
     if (!config.fileExtensions?.win32) {
       fileTypesToUpload.win32 = ['.exe', '.msi'];

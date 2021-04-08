@@ -2,7 +2,7 @@ type DarwinFileExtension = '.dmg' | '.pkg' | '.mas';
 
 type WindowsFileExtension = '.exe' | '.msi';
 
-type LinuxFileExtension = '.deb' | '.gz' | '.rpm' | 'AppImage';
+type LinuxFileExtension = '.deb' | '.gz' | '.rpm' | '.AppImage';
 
 // eslint-disable-next-line import/prefer-default-export
 export interface PublisherERSConfig {
