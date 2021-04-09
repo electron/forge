@@ -1,9 +1,8 @@
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import webpack, { Configuration } from 'webpack';
+import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
-
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
@@ -174,7 +173,7 @@ export default class WebpackConfigGenerator {
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge({
-      devtool: 'inline-source-map',
+      devtool: this.isProd ? 'source-map' : 'eval-source-map',
       mode: this.mode,
       entry: prefixedEntries.concat([
         entryPoint.js,
@@ -187,9 +186,7 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
-    },
-    rendererConfig || {},
-    { target: 'electron-preload' });
+    }, rendererConfig || {}, { target: 'electron-preload' });
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
@@ -198,8 +195,7 @@ export default class WebpackConfigGenerator {
     for (const entryPoint of entryPoints) {
       const prefixedEntries = entryPoint.prefixedEntries || [];
       entry[entryPoint.name] = prefixedEntries
-        .concat([entryPoint.js])
-        .concat(this.isProd || !entryPoint.html ? [] : ['webpack-hot-middleware/client']);
+        .concat([entryPoint.js]);
     }
 
     const defines = this.getDefines(false);
@@ -209,11 +205,10 @@ export default class WebpackConfigGenerator {
         template: entryPoint.html,
         filename: `${entryPoint.name}/index.html`,
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-      }) as webpack.Plugin).concat([new webpack.DefinePlugin(defines)])
-      .concat(this.isProd ? [] : [new webpack.HotModuleReplacementPlugin()]);
+      }) as WebpackPluginInstance).concat([new webpack.DefinePlugin(defines)]);
     return webpackMerge({
       entry,
-      devtool: 'inline-source-map',
+      devtool: this.isProd ? 'source-map' : 'eval-source-map',
       target: 'electron-renderer',
       mode: this.mode,
       output: {
