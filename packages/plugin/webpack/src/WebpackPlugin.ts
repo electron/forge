@@ -298,25 +298,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   launchDevServers = async (logger: Logger) => {
     await asyncOra('Launch Dev Servers', async () => {
-      // const tab = logger.createTab('Renderers');
-      const pluginLogs = new ElectronForgeLoggingPlugin(logger);
+      const tab = logger.createTab('Renderers');
+      const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      config.plugins = [...(config.plugins ?? []), pluginLogs];
+      if (!config.plugins) config.plugins = [];
+      config.plugins.push(pluginLogs);
       const compiler = webpack(config);
-      // eslint-disable-next-line global-require, import/no-unresolved
-      // const logging = require('webpack/logging/runtime');
-      // logging.configureDefaultLogger(undefined, tab.log.bind(tab));
       const webpackDevServer = new WebpackDevServer(compiler, {
         hot: true,
         port: this.port,
-        // publicPath: '/',
-        // contentBase: path.join(this.baseDir, 'renderer'),
+        dev: {
+          // contentBase: path.join(this.baseDir, 'renderer'),
+          writeToDisk: true,
+        },
         historyApiFallback: true,
-        // writeToDisk: true,
       });
-      // console.log((webpackDevServer as any).infrastructureLogger);
-      // console.log((webpackDevServer as any).log);
       const server = await webpackDevServer.listen(this.port);
       this.servers.push(server);
     });
