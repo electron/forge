@@ -1,0 +1,7 @@
+{
+  "singleQuote": true,
+  "endOfLine": "lf",
+  "printWidth": 100,
+  "trailingComma": "all",
+  "bracketSpacing": true
+}
