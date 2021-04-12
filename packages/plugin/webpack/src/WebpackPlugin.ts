@@ -93,8 +93,11 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   }
 
-  // eslint-disable-next-line max-len
-  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions): Promise<void> {
+  async writeJSONStats(
+    type: string,
+    stats: webpack.Stats | undefined,
+    statsOptions: WebpackToJsonOptions,
+  ): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
@@ -104,15 +107,16 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   // eslint-disable-next-line max-len
   private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> => new Promise((resolve, reject) => {
-    webpack(options).run(async (err, stats) => {
-      if (isRenderer && this.config.renderer.jsonStats) {
-        await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
-      }
-      if (err) {
-        return reject(err);
-      }
-      return resolve(stats);
-    });
+    webpack(options)
+      .run(async (err, stats) => {
+        if (isRenderer && this.config.renderer.jsonStats) {
+          await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
+        }
+        if (err) {
+          return reject(err);
+        }
+        return resolve(stats);
+      });
   });
 
   init = (dir: string) => {
