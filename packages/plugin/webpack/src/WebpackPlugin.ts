@@ -297,10 +297,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const webpackDevServer = new WebpackDevServer(compiler, {
         hot: true,
         port: this.port,
+        static: path.resolve(this.baseDir, 'renderer'),
         dev: {
-          publicPath: '/',
           writeToDisk: true,
         },
+        setupExitSignals: true,
         historyApiFallback: true,
       });
       const server = await webpackDevServer.listen(this.port);
