@@ -1,9 +1,8 @@
-import { Entry } from 'webpack';
 import { expect } from 'chai';
 import path from 'path';
-
-import WebpackConfigGenerator from '../src/WebpackConfig';
+import { Entry } from 'webpack';
 import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
+import WebpackConfigGenerator from '../src/WebpackConfig';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 
@@ -363,7 +362,7 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '/',
       });
-      expect(webpackConfig.plugins!.length).to.equal(2);
+      expect(webpackConfig.plugins!.length).to.equal(1);
     });
 
     it('generates a development config with an HTML endpoint', async () => {
@@ -381,10 +380,9 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.entry).to.deep.equal({
         main: [
           'rendererScript.js',
-          'webpack-hot-middleware/client',
         ],
       });
-      expect(webpackConfig.plugins!.length).to.equal(3);
+      expect(webpackConfig.plugins!.length).to.equal(2);
     });
 
     it('generates a production config', async () => {
