@@ -131,7 +131,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   get configGenerator() {
     // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-      // eslint-disable-next-line no-underscore-dangle
+    // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(
         this.config,
         this.projectDir,
@@ -158,7 +158,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'postStart':
         return async (_: any, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${`http://localhost:${this.loggerPort}`.cyan}\n`);
+            console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
@@ -212,9 +212,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     pj.optionalDependencies = {};
     pj.peerDependencies = {};
 
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
-      spaces: 2,
-    });
+    await fs.writeJson(
+      path.resolve(buildPath, 'package.json'),
+      pj,
+      {
+        spaces: 2,
+      },
+    );
 
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
