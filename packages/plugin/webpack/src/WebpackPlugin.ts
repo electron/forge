@@ -70,12 +70,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  private exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
+  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
         d('cleaning webpack watcher');
-        watcher.close(() => {});
+        watcher.close(() => { });
       }
       this.watchers = [];
       for (const server of this.servers) {
@@ -135,7 +135,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   get configGenerator() {
     // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-    // eslint-disable-next-line no-underscore-dangle
+      // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(
         this.config,
         this.projectDir,
