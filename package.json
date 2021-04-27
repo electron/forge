@@ -73,7 +73,7 @@
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
-    "webpack": "^5.34.0",
+    "webpack": "^5.35.1",
     "webpack-dev-server": "^4.0.0-beta.2",
     "webpack-merge": "^5.7.3",
     "which": "^2.0.2",
