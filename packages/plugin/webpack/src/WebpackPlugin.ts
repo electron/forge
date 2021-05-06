@@ -298,7 +298,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         hot: true,
         port: this.port,
         static: path.resolve(this.baseDir, 'renderer'),
-        dev: {
+        devMiddleware: {
           writeToDisk: true,
         },
         setupExitSignals: true,
