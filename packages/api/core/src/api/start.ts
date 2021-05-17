@@ -1,17 +1,20 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
+import debug from 'debug';
 import {
   ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
 } from '@electron-forge/shared-types';
-import path from 'path';
 import { spawn, SpawnOptions } from 'child_process';
 
+import { getElectronVersion } from '../util/electron-version';
+import getForgeConfig from '../util/forge-config';
+import locateElectronExecutable from '../util/electron-executable';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
-import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
-import { getElectronModulePath, getElectronVersion } from '../util/electron-version';
+
+const d = debug('electron-forge:start');
 
 export { StartOptions };
 
@@ -77,9 +80,10 @@ export default async ({
     }
 
     if (!electronExecPath) {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      electronExecPath = require((await getElectronModulePath(dir, packageJSON)) || path.resolve(dir, 'node_modules/electron'));
+      electronExecPath = await locateElectronExecutable(dir, packageJSON);
     }
+
+    d('Electron binary path:', electronExecPath);
 
     const spawnOpts = {
       cwd: dir,

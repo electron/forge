@@ -1,6 +1,5 @@
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import path from 'path';
 import proxyquire from 'proxyquire';
 import sinon, { SinonStub } from 'sinon';
 
@@ -19,11 +18,10 @@ describe('start', () => {
     spawnStub = sinon.stub();
     shouldOverride = false;
     packageJSON = require('../fixture/dummy_app/package.json');
-    const electronPath = path.resolve(__dirname, 'node_modules/electron');
 
     start = proxyquire.noCallThru().load('../../src/api/start', {
+      '../util/electron-executable': () => Promise.resolve('fake_electron_path'),
       '../util/electron-version': {
-        getElectronModulePath: () => Promise.resolve(electronPath),
         getElectronVersion: () => Promise.resolve('1.0.0'),
       },
       '../util/forge-config': async () => ({
@@ -32,7 +30,6 @@ describe('start', () => {
           triggerHook: async () => false,
         },
       }),
-      [electronPath]: 'fake_electron_path',
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
