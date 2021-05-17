@@ -48,7 +48,7 @@ export class PackageNotFoundError extends Error {
 
 function getElectronModuleName(packageJSON: any): string {
   if (!packageJSON.devDependencies) {
-    throw new Error('package.json for app does not have any devDependencies'.red);
+    throw new Error('package.json for app does not have any devDependencies');
   }
 
   const packageName = electronPackageNames.find((pkg) => packageJSON.devDependencies[pkg]);
