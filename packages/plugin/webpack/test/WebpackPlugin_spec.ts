@@ -1,8 +1,9 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
+import { ForgeConfig } from '@electron-forge/shared-types';
 import * as fs from 'fs-extra';
-import { tmpdir } from 'os';
 import * as path from 'path';
+import { tmpdir } from 'os';
+
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackPlugin from '../src/WebpackPlugin';
 

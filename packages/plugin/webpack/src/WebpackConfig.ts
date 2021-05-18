@@ -120,6 +120,10 @@ export default class WebpackConfigGenerator {
     return defines;
   }
 
+  sourceMapOption() {
+    return this.isProd ? 'source-map' : 'eval-source-map';
+  }
+
   getMainConfig() {
     const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
 
@@ -173,7 +177,7 @@ export default class WebpackConfigGenerator {
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge({
-      devtool: this.isProd ? 'source-map' : 'eval-source-map',
+      devtool: this.sourceMapOption(),
       mode: this.mode,
       entry: prefixedEntries.concat([
         entryPoint.js,
@@ -186,7 +190,9 @@ export default class WebpackConfigGenerator {
         __dirname: false,
         __filename: false,
       },
-    }, rendererConfig || {}, { target: 'electron-preload' });
+    },
+    rendererConfig || {},
+    { target: 'electron-preload' });
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
@@ -208,7 +214,7 @@ export default class WebpackConfigGenerator {
       }) as WebpackPluginInstance).concat([new webpack.DefinePlugin(defines)]);
     return webpackMerge({
       entry,
-      devtool: this.isProd ? 'source-map' : 'eval-source-map',
+      devtool: this.sourceMapOption(),
       target: 'electron-renderer',
       mode: this.mode,
       output: {

@@ -10,12 +10,12 @@ export default class LoggingPlugin {
 
   promiseResolver: (() => void) | undefined;
 
-  promiseRejecter: ((reason?: any) => void) | undefined;
+  promiseRejector: ((reason?: any) => void) | undefined;
 
   constructor(tab: Tab) {
     this.tab = tab;
     this.promiseResolver = undefined;
-    this.promiseRejecter = undefined;
+    this.promiseRejector = undefined;
   }
 
   private addRun() {
@@ -23,14 +23,14 @@ export default class LoggingPlugin {
     asyncOra('Compiling Renderer Code', () => new Promise<void>((resolve, reject) => {
       const [onceResolve, onceReject] = once(resolve, reject);
       this.promiseResolver = onceResolve;
-      this.promiseRejecter = onceReject;
+      this.promiseRejector = onceReject;
     }), () => {});
   }
 
   private finishRun(error?: string) {
-    if (error && this.promiseRejecter) this.promiseRejecter(error);
+    if (error && this.promiseRejector) this.promiseRejector(error);
     else if (this.promiseResolver) this.promiseResolver();
-    this.promiseRejecter = undefined;
+    this.promiseRejector = undefined;
     this.promiseResolver = undefined;
   }
 

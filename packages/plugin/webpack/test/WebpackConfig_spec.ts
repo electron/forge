@@ -1,8 +1,9 @@
+import { Entry } from 'webpack';
 import { expect } from 'chai';
 import path from 'path';
-import { Entry } from 'webpack';
-import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
+
 import WebpackConfigGenerator from '../src/WebpackConfig';
+import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 

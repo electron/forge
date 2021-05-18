@@ -75,7 +75,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.cleanup) {
       for (const watcher of this.watchers) {
         d('cleaning webpack watcher');
-        watcher.close(() => { });
+        watcher.close(() => {});
       }
       this.watchers = [];
       for (const server of this.servers) {
@@ -248,7 +248,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           }
 
           if (err) return onceReject(err);
-          if (!watch && stats && stats.hasErrors()) {
+          if (!watch && stats?.hasErrors()) {
             return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
           }
 
@@ -269,7 +269,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
         true,
       );
-      if (!watch && stats && stats.hasErrors()) {
+      if (!watch && stats?.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
       }
     });

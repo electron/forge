@@ -11,6 +11,7 @@ describe('Once', () => {
     expect(fakeA.called).to.equal(true);
     expect(fakeB.called).to.equal(false);
   });
+
   it('triggers only once', () => {
     const fakeA = sinon.fake();
     const fakeB = sinon.fake();
