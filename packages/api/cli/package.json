@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/cli",
-  "version": "6.0.0-beta.54",
+  "version": "6.0.0-beta.55",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -17,9 +17,9 @@
     "mocha": "^8.1.3"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.54",
-    "@electron-forge/core": "6.0.0-beta.54",
-    "@electron-forge/shared-types": "6.0.0-beta.54",
+    "@electron-forge/async-ora": "6.0.0-beta.55",
+    "@electron-forge/core": "6.0.0-beta.55",
+    "@electron-forge/shared-types": "6.0.0-beta.55",
     "@electron/get": "^1.9.0",
     "colors": "^1.4.0",
     "commander": "^4.1.1",
