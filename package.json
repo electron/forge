@@ -114,7 +114,7 @@
     "@types/sinon": "^10.0.0",
     "@types/sinon-chai": "^3.2.5",
     "@types/username": "^5.0.0",
-    "@types/webpack": "^4.41.21",
+    "@types/webpack": "^5.28.0",
     "@types/webpack-dev-middleware": "^4.1.0",
     "@types/webpack-hot-middleware": "^2.25.0",
     "@types/webpack-merge": "^5.0.0",
