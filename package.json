@@ -33,7 +33,7 @@
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
     "lint": "eslint --ext .ts .",
     "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'",
-    "test:fast": "cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true yarn run mocha --parallel './tools/test-globber.ts'",
+    "test:fast": "cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
