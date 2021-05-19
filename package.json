@@ -24,7 +24,7 @@
     "build:quick": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\" --config-file ../../../.babelrc",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
-    "coverage:fast": "cross-env INTEGRATION_TESTS=0 TS_NODE_FILES=true nyc mocha --parallel './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:fast": "cross-env INTEGRATION_TESTS=0 TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:slow": "cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "bolt docs:generate && bolt docs:position",
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
