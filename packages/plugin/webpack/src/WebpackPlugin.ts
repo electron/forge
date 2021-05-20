@@ -301,6 +301,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         hot: true,
         historyApiFallback: true,
         writeToDisk: true,
+        reload: true,
       } as any);
       const app = express();
       app.use(server);
