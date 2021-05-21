@@ -107,4 +107,39 @@ describe('WebpackPlugin', () => {
       });
     });
   });
+
+  describe('WebpackDevServer', () => {
+    let plugin: WebpackPlugin;
+    const webpackDevServerConfig: WebpackPluginConfig = {
+      mainConfig: {
+        entry: './foo/main.js',
+      },
+      renderer: {
+        config: {},
+        entryPoints: [
+          {
+            js: './foo/main.js',
+            name: 'main_window',
+          },
+        ],
+      },
+    };
+    const mainFile = path.join(webpackTestDir, 'main', 'index.js');
+    const rendererFile = path.join(webpackTestDir, 'renderer', 'main_window', 'index.js');
+    before(async () => {
+      plugin = new WebpackPlugin(webpackDevServerConfig);
+      plugin.setDirectories(webpackTestDir);
+      await plugin.startLogic();
+    });
+
+    after(async () => {
+      plugin.exitHandler({ cleanup: true, exit: true });
+      await fs.remove(webpackTestDir);
+    });
+
+    it('writesToDisk', async () => {
+      expect(await fs.pathExists(mainFile)).to.equal(true);
+      expect(await fs.pathExists(rendererFile)).to.equal(true);
+    });
+  });
 });

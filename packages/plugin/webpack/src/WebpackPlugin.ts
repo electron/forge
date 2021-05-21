@@ -1,24 +1,25 @@
 /* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
+import PluginBase from '@electron-forge/plugin-base';
 import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
-import express from 'express';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
+import debug from 'debug';
 import fs from 'fs-extra';
 import http from 'http';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import path from 'path';
-import PluginBase from '@electron-forge/plugin-base';
-import webpack, { Configuration } from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-
-import once from './util/once';
+import webpack, { Configuration, Watching } from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
 import { WebpackPluginConfig } from './Config';
+import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
+import once from './util/once';
 import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
 const DEFAULT_LOGGER_PORT = 9000;
+
+type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
+type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -31,7 +32,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private _configGenerator!: WebpackConfigGenerator;
 
-  private watchers: webpack.Compiler.Watching[] = [];
+  private watchers: Watching[] = [];
 
   private servers: http.Server[] = [];
 
@@ -69,7 +70,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  private exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
+  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
@@ -94,21 +95,22 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   async writeJSONStats(
     type: string,
-    stats: webpack.Stats,
-    statsOptions?: webpack.Stats.ToStringOptions,
+    stats: webpack.Stats | undefined,
+    statsOptions: WebpackToJsonOptions,
   ): Promise<void> {
+    if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
-    const jsonStats = stats.toJson(statsOptions as webpack.Stats.ToJsonOptions);
+    const jsonStats = stats.toJson(statsOptions);
     const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
   // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats> => new Promise((resolve, reject) => {
+  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> => new Promise((resolve, reject) => {
     webpack(options)
       .run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          await this.writeJSONStats('renderer', stats, options.stats);
+          await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
         }
         if (err) {
           return reject(err);
@@ -133,7 +135,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   get configGenerator() {
     // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-    // eslint-disable-next-line no-underscore-dangle
+      // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(
         this.config,
         this.projectDir,
@@ -235,22 +237,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = async (err, stats: webpack.Stats) => {
+        const cb: WebpackWatchHandler = async (err, stats) => {
           if (tab && stats) {
             tab.log(stats.toString({
               colors: true,
             }));
           }
           if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats);
+            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions);
           }
 
           if (err) return onceReject(err);
-          if (!watch && stats.hasErrors()) {
+          if (!watch && stats?.hasErrors()) {
             return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
           }
 
-          return onceResolve();
+          return onceResolve(undefined);
         };
         if (watch) {
           this.watchers.push(compiler.watch({}, cb));
@@ -261,13 +263,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     });
   }
 
-  compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
+  compileRenderers = async (watch = false) => {
     await asyncOra('Compiling Renderer Template', async () => {
       const stats = await this.runWebpack(
         await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
         true,
       );
-      if (!watch && stats.hasErrors()) {
+      if (!watch && stats?.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
       }
     });
@@ -286,26 +288,24 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   launchDevServers = async (logger: Logger) => {
     await asyncOra('Launch Dev Servers', async () => {
       const tab = logger.createTab('Renderers');
+      const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+      if (!config.plugins) config.plugins = [];
+      config.plugins.push(pluginLogs);
       const compiler = webpack(config);
-      const server = webpackDevMiddleware(compiler, {
-        logger: {
-          debug: tab.log.bind(tab),
-          log: tab.log.bind(tab),
-          info: tab.log.bind(tab),
-          error: tab.log.bind(tab),
-          warn: tab.log.bind(tab),
-        },
-        publicPath: '/',
+      const webpackDevServer = new WebpackDevServer(compiler, {
         hot: true,
+        port: this.port,
+        static: path.resolve(this.baseDir, 'renderer'),
+        devMiddleware: {
+          writeToDisk: true,
+        },
+        setupExitSignals: true,
         historyApiFallback: true,
-        writeToDisk: true,
-      } as any);
-      const app = express();
-      app.use(server);
-      app.use(webpackHotMiddleware(compiler));
-      this.servers.push(app.listen(this.port));
+      });
+      const server = await webpackDevServer.listen(this.port);
+      this.servers.push(server);
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {
@@ -327,7 +327,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
               }
 
               if (err) return onceReject(err);
-              return onceResolve();
+              return onceResolve(undefined);
             }));
           });
         }
