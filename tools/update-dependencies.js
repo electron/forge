@@ -5,19 +5,9 @@ const { satisfies } = require('semver')
 const { spawn } = require('@malept/cross-spawn-promise')
 
 const DO_NOT_UPGRADE = [
-  '@types/webpack', // Should be upgraded with Webpack v5
-  '@types/webpack-dev-middleware', // Should be upgraded with Webpack v5
-  '@types/webpack-hot-middleware', // Should be upgraded with Webpack v5
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
-  'cross-zip', // >= 4.0.0 requires Node 12
-  'fs-extra', // >= 10.0.0 requires Node 12
-  'html-webpack-plugin', // SHould be upgraded with Webpack v5
-  'lint-staged', // >= 11.0.0 requires Node 12
-  'log-symbols', // >= 5.0.0 requires Node 12
-  'open', // >= 8 requires Node 12
-  'typescript', // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
-  'webpack' // Lots of incompatibilities between v4 and v5
+  'typescript' // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
 ]
 
 /**
