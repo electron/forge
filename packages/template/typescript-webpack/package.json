@@ -11,7 +11,7 @@
     "test": "echo No Tests"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.55",
