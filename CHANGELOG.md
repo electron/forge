@@ -1,3 +1,24 @@
+#### [6.0.0-beta.56](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.56) (2021-05-22)
+
+##### Build System / Dependencies
+
+* **deps-dev:**
+  *  bump ts-loader (#2282) ([8293fe75](https://github.com/electron-userland/electron-forge/commit/8293fe75))
+  *  bump node-loader (#2219) ([0c980dae](https://github.com/electron-userland/electron-forge/commit/0c980dae))
+  *  bump node-loader in /packages/template/webpack/tmpl (#2218) ([0ff2a518](https://github.com/electron-userland/electron-forge/commit/0ff2a518))
+
+##### Chores
+
+*  require Node 12 for all packages (#2281) ([8fbbad24](https://github.com/electron-userland/electron-forge/commit/8fbbad24))
+
+##### Bug Fixes
+
+* **plugin-local-electron:**  bind methods correctly (#2280) ([e60445d7](https://github.com/electron-userland/electron-forge/commit/e60445d7))
+
+##### Other Changes
+
+* **webpack-plugin:**  upgrade to Webpack 5 (#2225) ([564a4451](https://github.com/electron-userland/electron-forge/commit/564a4451))
+
 #### [6.0.0-beta.55](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.55) (2021-05-18)
 
 ##### Build System / Dependencies
