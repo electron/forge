@@ -15,12 +15,12 @@
     "sinon": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   },
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.55",
     "@electron-forge/shared-types": "6.0.0-beta.55",
-    "fs-extra": "^9.0.1"
+    "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {
     "electron-installer-dmg": "^3.0.0"

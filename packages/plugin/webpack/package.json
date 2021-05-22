@@ -17,7 +17,7 @@
     "sinon": "^10.0.0"
   },
   "engines": {
-    "node": ">= 12.0.0"
+    "node": ">= 12.13.0"
   },
   "dependencies": {
     "@electron-forge/async-ora": "6.0.0-beta.55",
@@ -25,7 +25,7 @@
     "@electron-forge/shared-types": "6.0.0-beta.55",
     "@electron-forge/web-multi-logger": "6.0.0-beta.55",
     "debug": "^4.3.1",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^10.0.0",
     "global": "^4.3.2",
     "html-webpack-plugin": "^5.3.1",
     "webpack": "^5.37.0",
