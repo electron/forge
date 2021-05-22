@@ -23,7 +23,7 @@
     "@octokit/core": "^3.2.4",
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^10.0.0",
     "lodash": "^4.17.20",
     "mime-types": "^2.1.25"
   }
