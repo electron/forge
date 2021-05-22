@@ -6,6 +6,13 @@ import { LocalElectronPluginConfig } from './Config';
 export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginConfig> {
   name = 'local-electron';
 
+  constructor(c: LocalElectronPluginConfig) {
+    super(c);
+
+    this.getHook = this.getHook.bind(this);
+    this.startLogic = this.startLogic.bind(this);
+  }
+
   get enabled() {
     if (typeof this.config.enabled === 'undefined') {
       return true;
