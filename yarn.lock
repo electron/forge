@@ -1569,13 +1569,6 @@
   dependencies:
     "@types/node" "*"
 
-"@types/username@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/username/-/username-5.0.0.tgz#80c23d107a8c9af1b22b9276f5e7c507d927cf83"
-  integrity sha512-2jvqm6JmGBZWZHt73X2u0tFurEclp7zlhnj2n79Y7Zxc0ZBT456VesmYDWF8J0lBtcukiD+yERAXbBuv9BHRfw==
-  dependencies:
-    username "*"
-
 "@types/which@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/which/-/which-2.0.0.tgz#446d35586611dee657120de8e0457382a658fc25"
@@ -9970,7 +9963,7 @@ user-home@^2.0.0:
   dependencies:
     os-homedir "^1.0.0"
 
-username@*, username@^5.1.0:
+username@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/username/-/username-5.1.0.tgz#a7f9325adce2d0166448cdd55d4985b1360f2508"
   integrity sha512-PCKbdWw85JsYMvmCv5GH3kXmM66rCd9m1hBEDutPNv94b/pqCMT4NtcKyeWYvLFiE8b+ha1Jdl8XAaUdPn5QTg==
