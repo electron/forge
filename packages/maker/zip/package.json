@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-zip",
-  "version": "6.0.0-beta.55",
+  "version": "6.0.0-beta.56",
   "description": "ZIP maker for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.55",
-    "@electron-forge/shared-types": "6.0.0-beta.55",
+    "@electron-forge/maker-base": "6.0.0-beta.56",
+    "@electron-forge/shared-types": "6.0.0-beta.56",
     "cross-zip": "^4.0.0",
     "fs-extra": "^10.0.0"
   }
