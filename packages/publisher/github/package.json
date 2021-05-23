@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-github",
-  "version": "6.0.0-beta.56",
+  "version": "6.0.0-beta.57",
   "description": "Github publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -17,9 +17,9 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.56",
-    "@electron-forge/publisher-base": "6.0.0-beta.56",
-    "@electron-forge/shared-types": "6.0.0-beta.56",
+    "@electron-forge/async-ora": "6.0.0-beta.57",
+    "@electron-forge/publisher-base": "6.0.0-beta.57",
+    "@electron-forge/shared-types": "6.0.0-beta.57",
     "@octokit/core": "^3.2.4",
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",

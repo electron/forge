@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-snapcraft",
-  "version": "6.0.0-beta.56",
+  "version": "6.0.0-beta.57",
   "description": "Snapcraft publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.56",
-    "@electron-forge/publisher-base": "6.0.0-beta.56",
+    "@electron-forge/async-ora": "6.0.0-beta.57",
+    "@electron-forge/publisher-base": "6.0.0-beta.57",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {

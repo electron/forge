@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-webpack",
-  "version": "6.0.0-beta.56",
+  "version": "6.0.0-beta.57",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,13 +14,13 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.56",
-    "@electron-forge/shared-types": "6.0.0-beta.56",
-    "@electron-forge/template-base": "6.0.0-beta.56",
+    "@electron-forge/async-ora": "6.0.0-beta.57",
+    "@electron-forge/shared-types": "6.0.0-beta.57",
+    "@electron-forge/template-base": "6.0.0-beta.57",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "6.0.0-beta.56",
+    "@electron-forge/test-utils": "6.0.0-beta.57",
     "chai": "^4.3.3"
   }
 }
