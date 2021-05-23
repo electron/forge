@@ -215,7 +215,7 @@ export default class WebpackConfigGenerator {
     return webpackMerge({
       entry,
       devtool: this.sourceMapOption(),
-      target: 'electron-renderer',
+      target: ['web', 'electron-renderer'],
       mode: this.mode,
       output: {
         path: path.resolve(this.webpackDir, 'renderer'),

@@ -352,7 +352,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.target).to.deep.equal(['web', 'electron-renderer']);
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.deep.equal({
         main: ['rendererScript.js'],
@@ -397,7 +397,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      expect(webpackConfig.target).to.equal('electron-renderer');
+      expect(webpackConfig.target).to.deep.equal(['web', 'electron-renderer']);
       expect(webpackConfig.mode).to.equal('production');
       expect(webpackConfig.entry).to.deep.equal({
         main: ['rendererScript.js'],
