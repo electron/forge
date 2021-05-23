@@ -1,3 +1,13 @@
+#### [6.0.0-beta.57](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.57) (2021-05-23)
+
+##### Chores
+
+*  set up typeRoots for package tsconfig (#2286) ([d378b201](https://github.com/electron-userland/electron-forge/commit/d378b201))
+
+##### Bug Fixes
+
+* **webpack-plugin:**  add web as a target for the renderer process (#2285) ([9f2bc411](https://github.com/electron-userland/electron-forge/commit/9f2bc411))
+
 #### [6.0.0-beta.56](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.56) (2021-05-22)
 
 ##### Build System / Dependencies
