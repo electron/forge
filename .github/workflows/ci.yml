@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2.3.4
+    - name: Use Node.js LTS
+      uses: actions/setup-node@v2.1.5
+      with:
+        node-version: 14.x
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
       uses: docker://ghcr.io/malept/dependabolt-action:2.1.3
