@@ -19,7 +19,7 @@ jobs:
         node-version: 14.x
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
-      uses: docker://ghcr.io/malept/dependabolt-action:2.1.3
+      uses: malept/github-action-dependabolt@refactor/composite
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
