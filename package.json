@@ -37,7 +37,7 @@
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
-    "@doyensec/electronegativity": "^1.7.0",
+    "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^1.9.0",
     "@malept/cross-spawn-promise": "^1.1.1",
     "@octokit/core": "^3.2.4",
