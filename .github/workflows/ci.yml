@@ -146,6 +146,14 @@ jobs:
           CI_OS: ${{ matrix.os }}
           TEST_TYPE: slow
 
+  automerge:
+    needs: [fast-tests, slow-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
   # docs:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
   #   needs: [fast-tests, slow-tests]
