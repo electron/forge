@@ -9034,10 +9034,10 @@ single-line-log@^1.1.2:
   dependencies:
     string-width "^1.0.1"
 
-sinon-chai@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/sinon-chai/-/sinon-chai-3.6.0.tgz#25bd59a37ef8990245e085a40f1f79d6bf023b7a"
-  integrity sha512-bk2h+0xyKnmvazAnc7HE5esttqmCerSMcBtuB2PS2T4tG6x8woXAxZeJaOJWD+8reXHngnXn0RtIbfEW9OTHFg==
+sinon-chai@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/sinon-chai/-/sinon-chai-3.7.0.tgz#cfb7dec1c50990ed18c153f1840721cf13139783"
+  integrity sha512-mf5NURdUaSdnatJx3uhoBOrY9dtL19fiOtAdT1Azxg3+lNJFiuN0uzaU3xX1LeAfL17kHQhTAJgpsfhbMJMY2g==
 
 sinon@^10.0.0:
   version "10.0.0"
