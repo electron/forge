@@ -33,7 +33,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install
-        run: yarn lerna bootstrap
+        run: |
+          yarn
+          yarn lerna bootstrap
       - name: Lint
         run: yarn lint
       - name: Build
@@ -88,7 +90,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install
-        run: yarn lerna bootstrap
+        run: |
+          yarn
+          yarn lerna bootstrap
       - name: Test on Windows
         if: matrix.os == 'windows-latest'
         run: |
