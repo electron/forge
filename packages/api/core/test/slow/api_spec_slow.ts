@@ -246,16 +246,25 @@ describe('Electron Forge API', () => {
       await fs.remove(path.resolve(dir, 'out'));
     });
 
-    // TODO(malept): unskip when Electron 13 works correctly
-    it.skip('can package without errors with native pre-gyp deps installed', async () => {
-      await installDeps(dir, ['ref-napi']);
-      await forge.package({ dir });
-      await fs.remove(path.resolve(dir, 'node_modules/ref-napi'));
+    describe('with native pre-gyp deps installed', () => {
+      before(async () => {
+        await installDeps(dir, ['ref-napi']);
+      });
+
+      it('can package without errors', async () => {
+        await forge.package({ dir });
+      });
+
+      after(async () => {
+        await fs.remove(path.resolve(dir, 'node_modules/ref-napi'));
+        await updatePackageJSON(dir, async (packageJSON) => {
+          delete packageJSON.dependencies['ref-napi'];
+        });
+      });
     });
 
     it('can package without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
-        delete packageJSON.dependencies['ref-napi'];
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 
