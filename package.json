@@ -6,8 +6,8 @@
   "engines": {
     "node": ">= 12.13.0"
   },
-  "bolt": {
-    "workspaces": [
+  "workspaces": {
+    "packages": [
       "packages/api/*",
       "packages/installer/*",
       "packages/maker/*",
@@ -131,6 +131,7 @@
     "generate-changelog": "^1.8.0",
     "globby": "^11.0.1",
     "husky": "^6.0.0",
+    "lerna": "^4.0.0",
     "lint-staged": "^11.0.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
