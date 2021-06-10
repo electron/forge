@@ -4,6 +4,7 @@ import path from 'path';
 import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
+import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 
@@ -80,24 +81,8 @@ export default class WebpackConfigGenerator {
     return 'undefined';
   }
 
-  assetRelocatorBaseDir(inRendererDir = true) {
-    if (this.isProd) {
-      return `process.resourcesPath + "/" + (__filename.includes(".asar") ? "app.asar" : "app") + "/.webpack/${inRendererDir ? 'main' : 'renderer/any_folder'}"`;
-    }
-
-    return JSON.stringify(
-      path.resolve(
-        this.webpackDir,
-        inRendererDir ? 'main' : 'renderer',
-        inRendererDir ? '.' : 'any_folder',
-      ),
-    );
-  }
-
   getDefines(inRendererDir = true) {
-    const defines: { [key: string]: string; } = {
-      ASSET_RELOCATOR_BASE_DIR: this.assetRelocatorBaseDir(inRendererDir),
-    };
+    const defines: { [key: string]: string; } = {};
     if (
       !this.pluginConfig.renderer.entryPoints
       || !Array.isArray(this.pluginConfig.renderer.entryPoints)
@@ -186,6 +171,9 @@ export default class WebpackConfigGenerator {
         path: path.resolve(this.webpackDir, 'renderer', parentPoint.name),
         filename: 'preload.js',
       },
+      plugins: [
+        new AssetRelocatorPatch(this.isProd),
+      ],
       node: {
         __dirname: false,
         __filename: false,
@@ -211,7 +199,9 @@ export default class WebpackConfigGenerator {
         template: entryPoint.html,
         filename: `${entryPoint.name}/index.html`,
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-      }) as WebpackPluginInstance).concat([new webpack.DefinePlugin(defines)]);
+      }) as WebpackPluginInstance).concat(
+        [new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd)],
+      );
     return webpackMerge({
       entry,
       devtool: this.sourceMapOption(),

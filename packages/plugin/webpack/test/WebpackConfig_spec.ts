@@ -27,68 +27,6 @@ describe('WebpackConfigGenerator', () => {
       expect(() => generator.getDefines()).to.throw(/renderer.entryPoints.* has not been defined/);
     });
 
-    it('sets the renderer asset relocator base dir in development', () => {
-      const config = {
-        renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
-        },
-      } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const defines = generator.getDefines(false);
-
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal(JSON.stringify(path.resolve('/.webpack', 'renderer', 'any_folder')));
-    });
-
-    it('sets the renderer asset relocator base dir in production', () => {
-      const config = {
-        renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
-        },
-      } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/', true, 3000);
-      const defines = generator.getDefines(false);
-
-      // eslint-disable-next-line no-template-curly-in-string
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal('process.resourcesPath + "/" + (__filename.includes(".asar") ? "app.asar" : "app") + "/.webpack/renderer/any_folder"');
-    });
-
-    it('sets the main asset relocator base dir in development', () => {
-      const config = {
-        renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
-        },
-      } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const defines = generator.getDefines(true);
-
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal(JSON.stringify(path.resolve('/.webpack', 'main', '.')));
-    });
-
-    it('sets the main asset relocator base dir in production', () => {
-      const config = {
-        renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
-        },
-      } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, '/', true, 3000);
-      const defines = generator.getDefines(true);
-
-      // eslint-disable-next-line no-template-curly-in-string
-      expect(defines.ASSET_RELOCATOR_BASE_DIR).to.equal('process.resourcesPath + "/" + (__filename.includes(".asar") ? "app.asar" : "app") + "/.webpack/main"');
-    });
-
     it('sets the renderer entry point to a JS file in development', () => {
       const config = {
         renderer: {
