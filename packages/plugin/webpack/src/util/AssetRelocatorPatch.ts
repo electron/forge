@@ -1,13 +1,13 @@
-import { Compiler } from 'webpack';
+import { Chunk, Compiler } from 'webpack';
 
 export default class AssetRelocatorPatch {
-  readonly isProd: boolean;
+  private readonly isProd: boolean;
 
   constructor(isProd: boolean) {
     this.isProd = isProd;
   }
 
-  apply(compiler: Compiler) {
+  public apply(compiler: Compiler) {
     compiler.hooks.compilation.tap(
       'asset-relocator-forge-patch',
       (compilation) => {
@@ -19,42 +19,31 @@ export default class AssetRelocatorPatch {
         compilation.mainTemplate.hooks.requireExtensions.intercept({
           register: (tapInfo) => {
             if (tapInfo.name === 'asset-relocator-loader') {
-              const originalFn = tapInfo.fn;
+              const originalFn = tapInfo.fn as (source: string, chunk: Chunk) => string;
 
-              tapInfo.fn = (source: any, chunk: any) => {
-                const originalInjectCode = originalFn(source, chunk) as string;
+              tapInfo.fn = (source: string, chunk: Chunk) => {
+                const originalInjectCode = originalFn(source, chunk);
 
                 // Since the is not a public API of the Vercel loader, it could
                 // change on patch versions and break things.
                 //
                 // If the injected code changes substantially, we throw an error
-                if (!originalInjectCode.includes("if (typeof __webpack_require__ !== 'undefined') __webpack_require__.ab = __dirname + ")) {
-                  throw new Error('The installed version of @vercel/webpack-asset-relocator-loader does not appear to be compatible');
+                if (!originalInjectCode.includes('__webpack_require__.ab = __dirname + ')) {
+                  throw new Error('The installed version of @vercel/webpack-asset-relocator-loader does not appear to be compatible with Forge');
                 }
 
-                if (this.isProd) {
-                  // In production, the native asset base is up one directory from
-                  // __dirname.
-                  //
-                  // We use dirname(__filename) because there is a bug in
-                  // html-webpack-plugin where it throws an error if the bundle
-                  // contains __dirname 🤷‍♂️
-                  return (
-                    `const { dirname, resolve } = require('path');\n${
-                      originalInjectCode.replace(
-                        '__dirname',
-                        "resolve(dirname(__filename), '..')",
-                      )}`
-                  );
-                }
-
-                // In development, the app is loaded via webpack-dev-server so
-                // __dirname is useless because it points to Electron internal
-                // code. Instead we just hard-code the absolute path to the webpack
-                // output.
                 return originalInjectCode.replace(
                   '__dirname',
-                  JSON.stringify(compiler.options.output.path),
+                  this.isProd
+                    // In production, the native asset base is up one directory
+                    // from __dirname.
+                    // ? "require('path').resolve(__dirname, '..')"
+                    ? "require('path').resolve(require('path').dirname(__filename), '..')"
+                    // In development, the app is loaded via webpack-dev-server
+                    // so __dirname is useless because it points to Electron
+                    // internal code. Instead we hard-code the absolute path to
+                    // the webpack output.
+                    : JSON.stringify(compiler.options.output.path),
                 );
               };
             }
