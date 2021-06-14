@@ -4,8 +4,15 @@ import path from 'path';
 
 import WebpackConfigGenerator from '../src/WebpackConfig';
 import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
+import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
+
+function hasAssetRelocatorPatchPlugin(
+  plugins?: (((this: any, compiler: any) => void) | any)[],
+): boolean {
+  return !!(plugins || []).find((plugin) => plugin instanceof AssetRelocatorPatch);
+}
 
 describe('WebpackConfigGenerator', () => {
   describe('getDefines', () => {
@@ -138,6 +145,7 @@ describe('WebpackConfigGenerator', () => {
         filename: 'index.js',
         libraryTarget: 'commonjs2',
       });
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(false);
     });
 
     it('generates a production config', async () => {
@@ -152,6 +160,7 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.mode).to.equal('production');
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(false);
     });
 
     it('generates a config with a relative entry path', async () => {
@@ -227,6 +236,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
 
     it('generates a production config', async () => {
@@ -253,6 +263,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
     it('prevents the preload target from being overridden', async () => {
       const config = {
@@ -301,7 +312,8 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '/',
       });
-      expect(webpackConfig.plugins!.length).to.equal(1);
+      expect(webpackConfig.plugins!.length).to.equal(2);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
 
     it('generates a development config with an HTML endpoint', async () => {
@@ -321,7 +333,8 @@ describe('WebpackConfigGenerator', () => {
           'rendererScript.js',
         ],
       });
-      expect(webpackConfig.plugins!.length).to.equal(2);
+      expect(webpackConfig.plugins!.length).to.equal(3);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
 
     it('generates a production config', async () => {
@@ -345,7 +358,8 @@ describe('WebpackConfigGenerator', () => {
         filename: '[name]/index.js',
         globalObject: 'self',
       });
-      expect(webpackConfig.plugins!.length).to.equal(1);
+      expect(webpackConfig.plugins!.length).to.equal(2);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
 
     it('can override the renderer target', async () => {
