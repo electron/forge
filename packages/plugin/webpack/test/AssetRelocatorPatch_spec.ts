@@ -38,8 +38,11 @@ describe('AssetRelocatorPatch', () => {
       config: './webpack.renderer.config.js',
       entryPoints: [
         {
-          js: join(appPath, 'src/renderer.js'),
           name: 'main_window',
+          js: join(appPath, 'src/renderer.js'),
+          preload: {
+            js: join(appPath, 'src/preload.js'),
+          },
         },
       ],
     },
@@ -57,6 +60,21 @@ describe('AssetRelocatorPatch', () => {
       const mainJs = readFileSync(join(appPath, '.webpack/main/index.js'), { encoding: 'utf8' });
       expect(mainJs).to.contain('__webpack_require__.ab = __dirname + "/native_modules/"');
       expect(mainJs).to.contain('require(__webpack_require__.ab + "build/Release/hello_world.node")');
+    });
+
+    it('builds preload', async () => {
+      const entryPoint = config.renderer.entryPoints[0];
+      const preloadConfig = await generator.getPreloadRendererConfig(
+        entryPoint, entryPoint.preload!,
+      );
+      await asyncWebpack(preloadConfig);
+
+      expect(existsSync(join(appPath, '.webpack/renderer/main_window/native_modules/build/Release/hello_world.node'))).to.equal(true);
+
+      const preloadJs = readFileSync(join(appPath, '.webpack/renderer/main_window/preload.js'), { encoding: 'utf8' });
+      const expectedPath = resolvePath(join(appPath, '.webpack/renderer/main_window'));
+      expect(preloadJs).to.contain(`__webpack_require__.ab = ${JSON.stringify(expectedPath)} + "/native_modules/"`);
+      expect(preloadJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
     });
 
     it('builds renderer', async () => {
@@ -84,6 +102,20 @@ describe('AssetRelocatorPatch', () => {
       const mainJs = readFileSync(join(appPath, '.webpack/main/index.js'), { encoding: 'utf8' });
       expect(mainJs).to.contain('o.ab=__dirname+"/native_modules/"');
       expect(mainJs).to.contain('require(o.ab+"build/Release/hello_world.node")');
+    });
+
+    it('builds preload', async () => {
+      const entryPoint = config.renderer.entryPoints[0];
+      const preloadConfig = await generator.getPreloadRendererConfig(
+        entryPoint, entryPoint.preload!,
+      );
+      await asyncWebpack(preloadConfig);
+
+      expect(existsSync(join(appPath, '.webpack/renderer/main_window/native_modules/build/Release/hello_world.node'))).to.equal(true);
+
+      const preloadJs = readFileSync(join(appPath, '.webpack/renderer/main_window/preload.js'), { encoding: 'utf8' });
+      expect(preloadJs).to.contain('o.ab=require("path").resolve(require("path").dirname(__filename))+"/native_modules/"');
+      expect(preloadJs).to.contain('require(o.ab+"build/Release/hello_world.node")');
     });
 
     it('builds renderer', async () => {

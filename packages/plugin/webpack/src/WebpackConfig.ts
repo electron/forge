@@ -172,7 +172,7 @@ export default class WebpackConfigGenerator {
         filename: 'preload.js',
       },
       plugins: [
-        new AssetRelocatorPatch(this.isProd),
+        new AssetRelocatorPatch(this.isProd, true),
       ],
       node: {
         __dirname: false,
@@ -200,7 +200,7 @@ export default class WebpackConfigGenerator {
         filename: `${entryPoint.name}/index.html`,
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
       }) as WebpackPluginInstance).concat(
-        [new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd)],
+        [new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, false)],
       );
     return webpackMerge({
       entry,

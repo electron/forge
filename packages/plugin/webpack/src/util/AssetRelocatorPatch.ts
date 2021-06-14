@@ -3,8 +3,11 @@ import { Chunk, Compiler } from 'webpack';
 export default class AssetRelocatorPatch {
   private readonly isProd: boolean;
 
-  constructor(isProd: boolean) {
+  private readonly isPreload: boolean;
+
+  constructor(isProd: boolean, isPreload: boolean) {
     this.isProd = isProd;
+    this.isPreload = isPreload;
   }
 
   public apply(compiler: Compiler) {
@@ -36,9 +39,8 @@ export default class AssetRelocatorPatch {
                   '__dirname',
                   this.isProd
                     // In production, the native asset base is up one directory
-                    // from __dirname.
-                    // ? "require('path').resolve(__dirname, '..')"
-                    ? "require('path').resolve(require('path').dirname(__filename), '..')"
+                    // from __dirname for renderers and __dirname for preloads
+                    ? `require('path').resolve(require('path').dirname(__filename)${this.isPreload ? '' : ", '..'"})`
                     // In development, the app is loaded via webpack-dev-server
                     // so __dirname is useless because it points to Electron
                     // internal code. Instead we hard-code the absolute path to
