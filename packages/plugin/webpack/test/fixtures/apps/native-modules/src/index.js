@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 
 app.on('ready', () => {
   const mainWindow = new BrowserWindow({
@@ -10,6 +10,5 @@ app.on('ready', () => {
   mainWindow.webContents.openDevTools();
 });
 
-// eslint-disable-next-line import/no-unresolved
 const helloWorld = require('native-hello-world');
 console.log(`main: ${helloWorld()} from the renderer`);
