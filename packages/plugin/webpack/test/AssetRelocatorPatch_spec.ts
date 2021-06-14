@@ -1,5 +1,4 @@
 import { Configuration, webpack } from 'webpack';
-// import { expect } from 'chai';
 import { join, resolve as resolvePath } from 'path';
 import { expect } from 'chai';
 import { existsSync, readFileSync } from 'fs';
