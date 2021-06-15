@@ -48,8 +48,11 @@ function spawnAsync(command: string, opt: SpawnOptions): Promise<string> {
   });
 }
 
-describe('AssetRelocatorPatch', () => {
+describe.only('AssetRelocatorPatch', () => {
   const appPath = join(__dirname, 'fixtures', 'apps', 'native-modules');
+  const rendererOut = join(appPath, '.webpack/renderer');
+  const mainOut = join(appPath, '.webpack/main');
+  const nativePath = 'native_modules/build/Release/hello_world.node';
 
   before(() => {
     spawnSync('yarn', { cwd: appPath, shell: true });
@@ -86,9 +89,9 @@ describe('AssetRelocatorPatch', () => {
       const mainConfig = generator.getMainConfig();
       await asyncWebpack(mainConfig);
 
-      expect(existsSync(join(appPath, '.webpack/main/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(mainOut, nativePath))).to.equal(true);
 
-      const mainJs = readFileSync(join(appPath, '.webpack/main/index.js'), { encoding: 'utf8' });
+      const mainJs = readFileSync(join(mainOut, 'index.js'), { encoding: 'utf8' });
       expect(mainJs).to.contain('__webpack_require__.ab = __dirname + "/native_modules/"');
       expect(mainJs).to.contain('require(__webpack_require__.ab + "build/Release/hello_world.node")');
     });
@@ -100,9 +103,9 @@ describe('AssetRelocatorPatch', () => {
       );
       await asyncWebpack(preloadConfig);
 
-      expect(existsSync(join(appPath, '.webpack/renderer/main_window/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(rendererOut, 'main_window', nativePath))).to.equal(true);
 
-      const preloadJs = readFileSync(join(appPath, '.webpack/renderer/main_window/preload.js'), { encoding: 'utf8' });
+      const preloadJs = readFileSync(join(rendererOut, 'main_window/preload.js'), { encoding: 'utf8' });
       expect(preloadJs).to.contain('__webpack_require__.ab = __dirname + "/native_modules/"');
       expect(preloadJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
     });
@@ -111,21 +114,20 @@ describe('AssetRelocatorPatch', () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       await asyncWebpack(rendererConfig);
 
-      expect(existsSync(join(appPath, '.webpack/renderer/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(rendererOut, nativePath))).to.equal(true);
 
-      const rendererJs = readFileSync(join(appPath, '.webpack/renderer/main_window/index.js'), { encoding: 'utf8' });
-      const expectedPath = resolvePath(join(appPath, '.webpack/renderer'));
-      expect(rendererJs).to.contain(`__webpack_require__.ab = ${JSON.stringify(expectedPath)} + "/native_modules/"`);
+      const rendererJs = readFileSync(join(rendererOut, 'main_window/index.js'), { encoding: 'utf8' });
+      expect(rendererJs).to.contain(`__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`);
       expect(rendererJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
     });
 
     it('app runs with expected output', async () => {
-      // Webpack dev server doesn't like to exit so instead we just create a
+      // Webpack dev server doesn't like to exit, outputs logs  so instead we just create a
       // basic server
       const server = http.createServer((req, res) => {
         const url = (req.url || '');
         const file = url.endsWith('main_window') ? join(url, '/index.html') : url;
-        const path = join(appPath, '.webpack/renderer', file);
+        const path = join(rendererOut, file);
         readFile(path, (err, data) => {
           if (err) {
             res.writeHead(404);
@@ -160,9 +162,9 @@ describe('AssetRelocatorPatch', () => {
       const mainConfig = generator.getMainConfig();
       await asyncWebpack(mainConfig);
 
-      expect(existsSync(join(appPath, '.webpack/main/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(mainOut, nativePath))).to.equal(true);
 
-      const mainJs = readFileSync(join(appPath, '.webpack/main/index.js'), { encoding: 'utf8' });
+      const mainJs = readFileSync(join(mainOut, 'index.js'), { encoding: 'utf8' });
       expect(mainJs).to.contain('.ab=__dirname+"/native_modules/"');
       expect(mainJs).to.contain('.ab+"build/Release/hello_world.node"');
     });
@@ -174,9 +176,9 @@ describe('AssetRelocatorPatch', () => {
       );
       await asyncWebpack(preloadConfig);
 
-      expect(existsSync(join(appPath, '.webpack/renderer/main_window/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(rendererOut, 'main_window', nativePath))).to.equal(true);
 
-      const preloadJs = readFileSync(join(appPath, '.webpack/renderer/main_window/preload.js'), { encoding: 'utf8' });
+      const preloadJs = readFileSync(join(rendererOut, 'main_window/preload.js'), { encoding: 'utf8' });
       expect(preloadJs).to.contain('.ab=__dirname+"/native_modules/"');
       expect(preloadJs).to.contain('.ab+"build/Release/hello_world.node"');
     });
@@ -185,9 +187,9 @@ describe('AssetRelocatorPatch', () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       await asyncWebpack(rendererConfig);
 
-      expect(existsSync(join(appPath, '.webpack/renderer/native_modules/build/Release/hello_world.node'))).to.equal(true);
+      expect(existsSync(join(rendererOut, nativePath))).to.equal(true);
 
-      const rendererJs = readFileSync(join(appPath, '.webpack/renderer/main_window/index.js'), { encoding: 'utf8' });
+      const rendererJs = readFileSync(join(rendererOut, 'main_window/index.js'), { encoding: 'utf8' });
       expect(rendererJs).to.contain('.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"');
       expect(rendererJs).to.contain('.ab+"build/Release/hello_world.node"');
     });
@@ -198,7 +200,7 @@ describe('AssetRelocatorPatch', () => {
         shell: true,
         encoding: 'utf-8',
         env: {
-          ...process.env, ELECTRON_ENABLE_LOGGING: 'true',
+          ELECTRON_ENABLE_LOGGING: 'true',
         },
       });
 
