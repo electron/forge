@@ -200,7 +200,7 @@ export default async ({
     throw new Error('config.forge.packagerConfig.prebuiltAsar is not supported by Electron Forge');
   }
 
-  await runHook(forgeConfig, 'generateAssets');
+  await runHook(forgeConfig, 'generateAssets', platform, arch);
   await runHook(forgeConfig, 'prePackage');
 
   d('packaging with options', packageOpts);

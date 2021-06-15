@@ -52,7 +52,7 @@ export default async ({
     forgeConfig.electronRebuildConfig,
   );
 
-  await runHook(forgeConfig, 'generateAssets');
+  await runHook(forgeConfig, 'generateAssets', process.platform, process.arch);
 
   let lastSpawned: ElectronProcess | null = null;
 
