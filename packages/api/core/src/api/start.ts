@@ -44,15 +44,18 @@ export default async ({
     throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
   }
 
+  const platform = process.env.npm_config_platform || process.platform;
+  const arch = process.env.npm_config_arch || process.arch;
+
   await rebuild(
     dir,
     await getElectronVersion(dir, packageJSON),
-    process.platform as ForgePlatform,
-    process.arch as ForgeArch,
+    platform as ForgePlatform,
+    arch as ForgeArch,
     forgeConfig.electronRebuildConfig,
   );
 
-  await runHook(forgeConfig, 'generateAssets', process.platform, process.arch);
+  await runHook(forgeConfig, 'generateAssets', platform, arch);
 
   let lastSpawned: ElectronProcess | null = null;
 
