@@ -11,6 +11,7 @@
     "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts test/**/**/*_spec.ts"
   },
   "devDependencies": {
+    "@malept/cross-spawn-promise": "^1.1.1",
     "@types/node": "^15.3.0",
     "chai": "^4.3.3",
     "mocha": "^8.1.3",

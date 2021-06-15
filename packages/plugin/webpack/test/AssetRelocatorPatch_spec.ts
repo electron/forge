@@ -3,7 +3,7 @@ import { join } from 'path';
 import { expect } from 'chai';
 import http from 'http';
 import { existsSync, readFile, readFileSync } from 'fs';
-import { spawnSync, spawn, SpawnOptions } from 'child_process';
+import { spawn } from '@malept/cross-spawn-promise';
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 
@@ -32,30 +32,14 @@ async function asyncWebpack(config: Configuration): Promise<void> {
   });
 }
 
-function spawnAsync(command: string, opt: SpawnOptions): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let stdout = '';
-    const child = spawn(command, [], opt);
-    child.on('error', (e) => reject(e));
-    child?.stdout?.on('data', (chunk) => { stdout += chunk; });
-    child.on('exit', (code) => {
-      if (code !== 0) {
-        reject(code);
-      } else {
-        resolve(stdout);
-      }
-    });
-  });
-}
-
 describe('AssetRelocatorPatch', () => {
   const appPath = join(__dirname, 'fixtures', 'apps', 'native-modules');
   const rendererOut = join(appPath, '.webpack/renderer');
   const mainOut = join(appPath, '.webpack/main');
   const nativePath = 'native_modules/build/Release/hello_world.node';
 
-  before(() => {
-    spawnSync('yarn', { cwd: appPath, shell: true });
+  before(async () => {
+    await spawn('yarn', [], { cwd: appPath, shell: true });
   });
 
   after(() => {
@@ -141,7 +125,7 @@ describe('AssetRelocatorPatch', () => {
 
       servers.push(server);
 
-      const output = await spawnAsync('yarn start', {
+      const output = await spawn('yarn start', [], {
         cwd: appPath,
         shell: true,
         env: {
@@ -195,16 +179,13 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('app runs with expected output', async () => {
-      const result = spawnSync('yarn start', {
+      const output = await spawn('yarn start', [], {
         cwd: appPath,
         shell: true,
-        encoding: 'utf-8',
         env: {
           ELECTRON_ENABLE_LOGGING: 'true',
         },
       });
-
-      const output = result.stdout;
 
       expect(output).to.contain('Hello, world! from the main');
       expect(output).to.contain('Hello, world! from the preload');
