@@ -147,6 +147,7 @@ describe('getElectronModulePath', () => {
 
     if (hasYarn()) {
       expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).not.to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     } else {
       expect(getElectronModulePath(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
     }
