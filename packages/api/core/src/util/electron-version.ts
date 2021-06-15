@@ -18,11 +18,14 @@ function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
 }
 
-async function findAncestorNodeModulesPath(dir: string): Promise<string | undefined> {
+async function findAncestorNodeModulesPath(
+  dir: string,
+  packageName: string,
+): Promise<string | undefined> {
   if (hasYarn()) {
     const yarnLockPath = await findUp('yarn.lock', { cwd: dir, type: 'file' });
     if (yarnLockPath) {
-      const nodeModulesPath = path.join(path.dirname(yarnLockPath), 'node_modules');
+      const nodeModulesPath = path.join(path.dirname(yarnLockPath), 'node_modules', packageName);
       if (await fs.pathExists(nodeModulesPath)) {
         return nodeModulesPath;
       }
@@ -32,12 +35,15 @@ async function findAncestorNodeModulesPath(dir: string): Promise<string | undefi
   return Promise.resolve(undefined);
 }
 
-async function determineNodeModulesPath(dir: string): Promise<string | undefined> {
-  const nodeModulesPath: string | undefined = path.join(dir, 'node_modules');
+async function determineNodeModulesPath(
+  dir: string,
+  packageName: string,
+): Promise<string | undefined> {
+  const nodeModulesPath: string | undefined = path.join(dir, 'node_modules', packageName);
   if (await fs.pathExists(nodeModulesPath)) {
     return nodeModulesPath;
   }
-  return findAncestorNodeModulesPath(dir);
+  return findAncestorNodeModulesPath(dir, packageName);
 }
 
 export class PackageNotFoundError extends Error {
@@ -63,11 +69,12 @@ async function getElectronPackageJSONPath(
   dir: string,
   packageName: string,
 ): Promise<string | undefined> {
-  const nodeModulesPath = await determineNodeModulesPath(dir);
+  const nodeModulesPath = await determineNodeModulesPath(dir, packageName);
   if (!nodeModulesPath) {
     throw new PackageNotFoundError(packageName, dir);
   }
-  const electronPackageJSONPath = path.join(nodeModulesPath, packageName, 'package.json');
+
+  const electronPackageJSONPath = path.join(nodeModulesPath, 'package.json');
   if (await fs.pathExists(electronPackageJSONPath)) {
     return electronPackageJSONPath;
   }
@@ -79,7 +86,7 @@ export async function getElectronModulePath(
   dir: string,
   packageJSON: any,
 ): Promise<string | undefined> {
-  const moduleName = await getElectronModuleName(packageJSON);
+  const moduleName = getElectronModuleName(packageJSON);
   const packageJSONPath = await getElectronPackageJSONPath(dir, moduleName);
   if (packageJSONPath) {
     return path.dirname(packageJSONPath);
