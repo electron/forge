@@ -1,7 +1,8 @@
-const { resolve } = require('path');
 const rules = require('./webpack.rules');
 
 module.exports = {
+  context: __dirname,
+  target: 'electron-renderer',
   performance: {
     hints: false,
   },
@@ -10,6 +11,5 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js'],
-    modules: ['node_modules', resolve(__dirname, 'src')],
   },
 };

@@ -1,2 +1,4 @@
+import { ipcRenderer } from 'electron';
+
 const helloWorld = require('native-hello-world');
-console.log(`renderer: ${helloWorld()} from the renderer`);
+ipcRenderer.send('stdout', `${helloWorld()} from the preload`);

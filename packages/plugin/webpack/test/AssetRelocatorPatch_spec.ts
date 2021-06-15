@@ -1,9 +1,13 @@
 import { Configuration, webpack } from 'webpack';
 import { join, resolve as resolvePath } from 'path';
 import { expect } from 'chai';
-import { existsSync, readFileSync } from 'fs';
+import http from 'http';
+import { existsSync, readFile, readFileSync } from 'fs';
+import { spawnSync, spawn, SpawnOptions } from 'child_process';
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
+
+let servers: {close():void}[] = [];
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -28,8 +32,35 @@ async function asyncWebpack(config: Configuration): Promise<void> {
   });
 }
 
+function spawnAsync(command: string, opt: SpawnOptions): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let stdout = '';
+    const child = spawn(command, [], opt);
+    child.on('error', (e) => reject(e));
+    child?.stdout?.on('data', (chunk) => { stdout += chunk; });
+    child.on('exit', (code) => {
+      if (code !== 0) {
+        reject(code);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
+
 describe('AssetRelocatorPatch', () => {
   const appPath = join(__dirname, 'fixtures', 'apps', 'native-modules');
+
+  before(() => {
+    spawnSync('yarn', { cwd: appPath, shell: true });
+  });
+
+  after(() => {
+    for (const server of servers) {
+      server.close();
+    }
+    servers = [];
+  });
 
   const config = {
     mainConfig: './webpack.main.config.js',
@@ -38,9 +69,10 @@ describe('AssetRelocatorPatch', () => {
       entryPoints: [
         {
           name: 'main_window',
-          js: join(appPath, 'src/renderer.js'),
+          html: './src/index.html',
+          js: './src/renderer.js',
           preload: {
-            js: join(appPath, 'src/preload.js'),
+            js: './src/preload.js',
           },
         },
       ],
@@ -86,6 +118,39 @@ describe('AssetRelocatorPatch', () => {
       expect(rendererJs).to.contain(`__webpack_require__.ab = ${JSON.stringify(expectedPath)} + "/native_modules/"`);
       expect(rendererJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
     });
+
+    it('app runs with expected output', async () => {
+      // Webpack dev server doesn't like to exit so instead we just create a
+      // basic server
+      const server = http.createServer((req, res) => {
+        const url = (req.url || '');
+        const file = url.endsWith('main_window') ? join(url, '/index.html') : url;
+        const path = join(appPath, '.webpack/renderer', file);
+        readFile(path, (err, data) => {
+          if (err) {
+            res.writeHead(404);
+            res.end(JSON.stringify(err));
+            return;
+          }
+          res.writeHead(200);
+          res.end(data);
+        });
+      }).listen(3000);
+
+      servers.push(server);
+
+      const output = await spawnAsync('yarn start', {
+        cwd: appPath,
+        shell: true,
+        env: {
+          ELECTRON_ENABLE_LOGGING: 'true',
+        },
+      });
+
+      expect(output).to.contain('Hello, world! from the main');
+      expect(output).to.contain('Hello, world! from the preload');
+      expect(output).to.contain('Hello, world! from the renderer');
+    });
   });
 
   describe('Production', () => {
@@ -98,8 +163,8 @@ describe('AssetRelocatorPatch', () => {
       expect(existsSync(join(appPath, '.webpack/main/native_modules/build/Release/hello_world.node'))).to.equal(true);
 
       const mainJs = readFileSync(join(appPath, '.webpack/main/index.js'), { encoding: 'utf8' });
-      expect(mainJs).to.contain('o.ab=__dirname+"/native_modules/"');
-      expect(mainJs).to.contain('require(o.ab+"build/Release/hello_world.node")');
+      expect(mainJs).to.contain('.ab=__dirname+"/native_modules/"');
+      expect(mainJs).to.contain('.ab+"build/Release/hello_world.node"');
     });
 
     it('builds preload', async () => {
@@ -112,8 +177,8 @@ describe('AssetRelocatorPatch', () => {
       expect(existsSync(join(appPath, '.webpack/renderer/main_window/native_modules/build/Release/hello_world.node'))).to.equal(true);
 
       const preloadJs = readFileSync(join(appPath, '.webpack/renderer/main_window/preload.js'), { encoding: 'utf8' });
-      expect(preloadJs).to.contain('o.ab=__dirname+"/native_modules/"');
-      expect(preloadJs).to.contain('require(o.ab+"build/Release/hello_world.node")');
+      expect(preloadJs).to.contain('.ab=__dirname+"/native_modules/"');
+      expect(preloadJs).to.contain('.ab+"build/Release/hello_world.node"');
     });
 
     it('builds renderer', async () => {
@@ -123,8 +188,25 @@ describe('AssetRelocatorPatch', () => {
       expect(existsSync(join(appPath, '.webpack/renderer/native_modules/build/Release/hello_world.node'))).to.equal(true);
 
       const rendererJs = readFileSync(join(appPath, '.webpack/renderer/main_window/index.js'), { encoding: 'utf8' });
-      expect(rendererJs).to.contain('o.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"');
-      expect(rendererJs).to.contain('require(o.ab+"build/Release/hello_world.node")');
+      expect(rendererJs).to.contain('.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"');
+      expect(rendererJs).to.contain('.ab+"build/Release/hello_world.node"');
+    });
+
+    it('app runs with expected output', async () => {
+      const result = spawnSync('yarn start', {
+        cwd: appPath,
+        shell: true,
+        encoding: 'utf-8',
+        env: {
+          ...process.env, ELECTRON_ENABLE_LOGGING: 'true',
+        },
+      });
+
+      const output = result.stdout;
+
+      expect(output).to.contain('Hello, world! from the main');
+      expect(output).to.contain('Hello, world! from the preload');
+      expect(output).to.contain('Hello, world! from the renderer');
     });
   });
 });

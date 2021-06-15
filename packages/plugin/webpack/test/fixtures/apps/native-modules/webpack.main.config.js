@@ -1,6 +1,5 @@
-const { resolve } = require('path');
-
 module.exports = {
+  context: __dirname,
   entry: './src/index.js',
   performance: {
     hints: false,
@@ -10,6 +9,5 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js'],
-    modules: ['node_modules', resolve(__dirname, 'src')],
   },
 };
