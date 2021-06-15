@@ -1,5 +1,5 @@
 import { Configuration, webpack } from 'webpack';
-import { join, resolve as resolvePath } from 'path';
+import { join } from 'path';
 import { expect } from 'chai';
 import http from 'http';
 import { existsSync, readFile, readFileSync } from 'fs';
@@ -48,7 +48,7 @@ function spawnAsync(command: string, opt: SpawnOptions): Promise<string> {
   });
 }
 
-describe.only('AssetRelocatorPatch', () => {
+describe('AssetRelocatorPatch', () => {
   const appPath = join(__dirname, 'fixtures', 'apps', 'native-modules');
   const rendererOut = join(appPath, '.webpack/renderer');
   const mainOut = join(appPath, '.webpack/main');
