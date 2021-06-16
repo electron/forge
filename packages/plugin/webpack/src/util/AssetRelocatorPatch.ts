@@ -35,7 +35,11 @@ export default class AssetRelocatorPatch {
                 return originalInjectCode.replace(
                   '__dirname',
                   this.isProd
-                  // In production the assets are found one directory up from __dirname
+                  // In production the assets are found one directory up from
+                  // __dirname
+                  //
+                  // __dirname cannot be used directly until this PR lands
+                  // https://github.com/jantimon/html-webpack-plugin/pull/1650
                     ? 'require("path").resolve(require("path").dirname(__filename), "..")'
                   // In development, the app is loaded via webpack-dev-server
                   // so __dirname is useless because it points to Electron
