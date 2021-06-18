@@ -82,7 +82,7 @@ export default class WebpackConfigGenerator {
   }
 
   getDefines(inRendererDir = true) {
-    const defines: { [key: string]: string; } = {};
+    const defines: Record<string, string> = {};
     if (
       !this.pluginConfig.renderer.entryPoints
       || !Array.isArray(this.pluginConfig.renderer.entryPoints)
