@@ -71,6 +71,17 @@
         "global-require": "off",
         "import/no-dynamic-require": "off"
       }
+    },
+    {
+      "files": ["packages/**/*.ts"],
+      "rules": {
+        "import/no-unresolved": [
+          "error",
+          {
+            "ignore": ["^@electron-forge/"]
+          }
+        ]
+      }
     }
   ],
   "settings": {
