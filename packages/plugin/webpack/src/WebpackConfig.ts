@@ -48,6 +48,10 @@ export default class WebpackConfigGenerator {
     return this.isProd ? 'production' : 'development';
   }
 
+  get rendererTarget() {
+    return this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
+  }
+
   rendererEntryPoint(
     entryPoint: WebpackPluginEntryPoint,
     inRendererDir: boolean,
@@ -215,7 +219,7 @@ export default class WebpackConfigGenerator {
     return webpackMerge({
       entry,
       devtool: this.sourceMapOption(),
-      target: ['web', 'electron-renderer'],
+      target: this.rendererTarget,
       mode: this.mode,
       output: {
         path: path.resolve(this.webpackDir, 'renderer'),
