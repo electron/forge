@@ -277,9 +277,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          await this.runWebpack(
+          const stats = await this.runWebpack(
             await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
           );
+
+          if (stats?.hasErrors()) {
+            throw new Error(`Compilation errors in the preload: ${stats.toString()}`);
+          }
         });
       }
     }
