@@ -102,4 +102,18 @@ export interface WebpackPluginConfig {
    * The TCP port for web-multi-logger. Defaults to 9000.
    */
   loggerPort?: number;
+  /**
+   * Sets the [`Content-Security-Policy` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
+   * for the Webpack development server.
+   *
+   * Normally you would want to only specify this as a `<meta>` tag. However, in development mode,
+   * the Webpack plugin uses the `devtool: eval-source-map` source map setting for efficiency
+   * purposes. This requires the `'unsafe-eval'` source for the `script-src` directive that wouldn't
+   * normally be recommended to use. If this value is set, make sure that you keep this
+   * directive-source pair intact if you want to use source maps.
+   *
+   * Default: `default-src 'self' 'unsafe-inline' data:;`
+   * `script-src 'self' 'unsafe-eval' 'unsafe-inline' data:`
+   */
+  devContentSecurityPolicy?: string
 }

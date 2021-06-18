@@ -293,6 +293,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
       if (!config.plugins) config.plugins = [];
       config.plugins.push(pluginLogs);
+
+      const cspDirectives = this.config.devContentSecurityPolicy
+        ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
+
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(compiler, {
         hot: true,
@@ -303,6 +307,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         },
         setupExitSignals: true,
         historyApiFallback: true,
+        headers: {
+          'Content-Security-Policy': cspDirectives,
+        },
       });
       const server = await webpackDevServer.listen(this.port);
       this.servers.push(server);
