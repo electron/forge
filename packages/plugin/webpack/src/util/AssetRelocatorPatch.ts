@@ -24,7 +24,7 @@ export default class AssetRelocatorPatch {
               tapInfo.fn = (source: string, chunk: Chunk) => {
                 const originalInjectCode = originalFn(source, chunk);
 
-                // Since the is not a public API of the Vercel loader, it could
+                // Since this is not a public API of the Vercel loader, it could
                 // change on patch versions and break things.
                 //
                 // If the injected code changes substantially, we throw an error
