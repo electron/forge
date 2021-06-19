@@ -28,7 +28,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: Run dependabolt
-      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn')
       uses: malept/github-action-dependabolt@v4.0.1
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
