@@ -143,7 +143,7 @@
     "sinon-chai": "^3.6.0",
     "ts-node": "^10.0.0",
     "typedoc": "^0.21.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.3.4"
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.2",
