@@ -1,4 +1,4 @@
-import { Entry } from 'webpack';
+import { Compiler, Entry, WebpackPluginInstance } from 'webpack';
 import { expect } from 'chai';
 import path from 'path';
 
@@ -8,10 +8,10 @@ import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 
-function hasAssetRelocatorPatchPlugin(
-  plugins?: (((this: any, compiler: any) => void) | any)[],
-): boolean {
-  return !!(plugins || []).find((plugin) => plugin instanceof AssetRelocatorPatch);
+type WebpackPlugin = ((this: Compiler, compiler: Compiler) => void) | WebpackPluginInstance;
+
+function hasAssetRelocatorPatchPlugin(plugins?: WebpackPlugin[]): boolean {
+  return (plugins || []).some((plugin: WebpackPlugin) => plugin instanceof AssetRelocatorPatch);
 }
 
 describe('WebpackConfigGenerator', () => {
