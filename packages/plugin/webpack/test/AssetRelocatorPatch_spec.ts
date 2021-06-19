@@ -164,7 +164,7 @@ describe('AssetRelocatorPatch', () => {
       });
     });
 
-    it('app runs with expected output', async () => {
+    it('runs the app with the native module', async () => {
       servers.push(createSimpleDevServer(rendererOut));
 
       const output = await yarnStart();
@@ -217,7 +217,7 @@ describe('AssetRelocatorPatch', () => {
       });
     });
 
-    it('app runs with expected output', async () => {
+    it('runs the app with the native module', async () => {
       const output = await yarnStart();
 
       expect(output).to.contain('Hello, world! from the main');
