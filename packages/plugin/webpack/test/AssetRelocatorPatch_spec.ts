@@ -1,13 +1,20 @@
 import { Configuration, webpack } from 'webpack';
-import { join } from 'path';
+import path from 'path';
 import { expect } from 'chai';
 import http from 'http';
-import { existsSync, readFile, readFileSync } from 'fs';
+import { pathExists, readFile } from 'fs-extra';
 import { spawn } from '@malept/cross-spawn-promise';
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 
-let servers: {close():void}[] = [];
+type Closeable = {
+  close: () => void;
+}
+
+let servers: Closeable[] = [];
+
+const nativePathSuffix = 'build/Release/hello_world.node';
+const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -32,11 +39,61 @@ async function asyncWebpack(config: Configuration): Promise<void> {
   });
 }
 
+/**
+ * Webpack dev server doesn't like to exit, outputs logs  so instead we just create a
+ * basic server.
+ */
+function createSimpleDevServer(rendererOut: string): http.Server {
+  return http.createServer(async (req, res) => {
+    const url = (req.url || '');
+    const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
+    const fullPath = path.join(rendererOut, file);
+    try {
+      const data = await readFile(fullPath);
+      res.writeHead(200);
+      res.end(data);
+    } catch (err) {
+      res.writeHead(404);
+      res.end(JSON.stringify(err));
+    }
+  }).listen(3000);
+}
+
+type ExpectNativeModulePathOptions = {
+  outDir: string,
+  jsPath: string,
+  nativeModulesString: string,
+  nativePathString: string
+};
+
+async function expectOutputFileToHaveTheCorrectNativeModulePath({
+  outDir,
+  jsPath,
+  nativeModulesString,
+  nativePathString,
+}: ExpectNativeModulePathOptions): Promise<void> {
+  const nativePath = `native_modules/${nativePathSuffix}`;
+  expect(await pathExists(path.join(outDir, nativePath))).to.equal(true);
+
+  const jsContents = await readFile(jsPath, { encoding: 'utf8' });
+  expect(jsContents).to.contain(nativeModulesString);
+  expect(jsContents).to.contain(nativePathString);
+}
+
+async function yarnStart(): Promise<string> {
+  return spawn('yarn', ['start'], {
+    cwd: appPath,
+    shell: true,
+    env: {
+      ...process.env,
+      ELECTRON_ENABLE_LOGGING: 'true',
+    },
+  });
+}
+
 describe('AssetRelocatorPatch', () => {
-  const appPath = join(__dirname, 'fixtures', 'apps', 'native-modules');
-  const rendererOut = join(appPath, '.webpack/renderer');
-  const mainOut = join(appPath, '.webpack/main');
-  const nativePath = 'native_modules/build/Release/hello_world.node';
+  const rendererOut = path.join(appPath, '.webpack/renderer');
+  const mainOut = path.join(appPath, '.webpack/main');
 
   before(async () => {
     await spawn('yarn', [], { cwd: appPath, shell: true });
@@ -70,14 +127,14 @@ describe('AssetRelocatorPatch', () => {
     const generator = new WebpackConfigGenerator(config, appPath, false, 3000);
 
     it('builds main', async () => {
-      const mainConfig = generator.getMainConfig();
-      await asyncWebpack(mainConfig);
+      await asyncWebpack(generator.getMainConfig());
 
-      expect(existsSync(join(mainOut, nativePath))).to.equal(true);
-
-      const mainJs = readFileSync(join(mainOut, 'index.js'), { encoding: 'utf8' });
-      expect(mainJs).to.contain('__webpack_require__.ab = __dirname + "/native_modules/"');
-      expect(mainJs).to.contain('require(__webpack_require__.ab + "build/Release/hello_world.node")');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: mainOut,
+        jsPath: path.join(mainOut, 'index.js'),
+        nativeModulesString: '__webpack_require__.ab = __dirname + "/native_modules/"',
+        nativePathString: `require(__webpack_require__.ab + "${nativePathSuffix}")`,
+      });
     });
 
     it('builds preload', async () => {
@@ -87,51 +144,30 @@ describe('AssetRelocatorPatch', () => {
       );
       await asyncWebpack(preloadConfig);
 
-      expect(existsSync(join(rendererOut, 'main_window', nativePath))).to.equal(true);
-
-      const preloadJs = readFileSync(join(rendererOut, 'main_window/preload.js'), { encoding: 'utf8' });
-      expect(preloadJs).to.contain('__webpack_require__.ab = __dirname + "/native_modules/"');
-      expect(preloadJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: path.join(rendererOut, 'main_window'),
+        jsPath: path.join(rendererOut, 'main_window/preload.js'),
+        nativeModulesString: '__webpack_require__.ab = __dirname + "/native_modules/"',
+        nativePathString: `require(__webpack_require__.ab + \\"${nativePathSuffix}\\")`,
+      });
     });
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       await asyncWebpack(rendererConfig);
 
-      expect(existsSync(join(rendererOut, nativePath))).to.equal(true);
-
-      const rendererJs = readFileSync(join(rendererOut, 'main_window/index.js'), { encoding: 'utf8' });
-      expect(rendererJs).to.contain(`__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`);
-      expect(rendererJs).to.contain('require(__webpack_require__.ab + \\"build/Release/hello_world.node\\")');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: rendererOut,
+        jsPath: path.join(rendererOut, 'main_window/index.js'),
+        nativeModulesString: `__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`,
+        nativePathString: `require(__webpack_require__.ab + \\"${nativePathSuffix}\\")`,
+      });
     });
 
     it('app runs with expected output', async () => {
-      // Webpack dev server doesn't like to exit, outputs logs  so instead we just create a
-      // basic server
-      const server = http.createServer((req, res) => {
-        const url = (req.url || '');
-        const file = url.endsWith('main_window') ? join(url, '/index.html') : url;
-        const path = join(rendererOut, file);
-        readFile(path, (err, data) => {
-          if (err) {
-            res.writeHead(404);
-            res.end(JSON.stringify(err));
-            return;
-          }
-          res.writeHead(200);
-          res.end(data);
-        });
-      }).listen(3000);
+      servers.push(createSimpleDevServer(rendererOut));
 
-      servers.push(server);
-
-      const output = await spawn('yarn start', [], {
-        cwd: appPath,
-        shell: true,
-        env: {
-          ELECTRON_ENABLE_LOGGING: 'true',
-        },
-      });
+      const output = await yarnStart();
 
       expect(output).to.contain('Hello, world! from the main');
       expect(output).to.contain('Hello, world! from the preload');
@@ -146,11 +182,12 @@ describe('AssetRelocatorPatch', () => {
       const mainConfig = generator.getMainConfig();
       await asyncWebpack(mainConfig);
 
-      expect(existsSync(join(mainOut, nativePath))).to.equal(true);
-
-      const mainJs = readFileSync(join(mainOut, 'index.js'), { encoding: 'utf8' });
-      expect(mainJs).to.contain('.ab=__dirname+"/native_modules/"');
-      expect(mainJs).to.contain('.ab+"build/Release/hello_world.node"');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: mainOut,
+        jsPath: path.join(mainOut, 'index.js'),
+        nativeModulesString: '.ab=__dirname+"/native_modules/"',
+        nativePathString: `.ab+"${nativePathSuffix}"`,
+      });
     });
 
     it('builds preload', async () => {
@@ -160,32 +197,28 @@ describe('AssetRelocatorPatch', () => {
       );
       await asyncWebpack(preloadConfig);
 
-      expect(existsSync(join(rendererOut, 'main_window', nativePath))).to.equal(true);
-
-      const preloadJs = readFileSync(join(rendererOut, 'main_window/preload.js'), { encoding: 'utf8' });
-      expect(preloadJs).to.contain('.ab=__dirname+"/native_modules/"');
-      expect(preloadJs).to.contain('.ab+"build/Release/hello_world.node"');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: path.join(rendererOut, 'main_window'),
+        jsPath: path.join(rendererOut, 'main_window/preload.js'),
+        nativeModulesString: '.ab=__dirname+"/native_modules/"',
+        nativePathString: `.ab+"${nativePathSuffix}"`,
+      });
     });
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       await asyncWebpack(rendererConfig);
 
-      expect(existsSync(join(rendererOut, nativePath))).to.equal(true);
-
-      const rendererJs = readFileSync(join(rendererOut, 'main_window/index.js'), { encoding: 'utf8' });
-      expect(rendererJs).to.contain('.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"');
-      expect(rendererJs).to.contain('.ab+"build/Release/hello_world.node"');
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: rendererOut,
+        jsPath: path.join(rendererOut, 'main_window/index.js'),
+        nativeModulesString: '.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"',
+        nativePathString: `.ab+"${nativePathSuffix}"`,
+      });
     });
 
     it('app runs with expected output', async () => {
-      const output = await spawn('yarn start', [], {
-        cwd: appPath,
-        shell: true,
-        env: {
-          ELECTRON_ENABLE_LOGGING: 'true',
-        },
-      });
+      const output = await yarnStart();
 
       expect(output).to.contain('Hello, world! from the main');
       expect(output).to.contain('Hello, world! from the preload');
