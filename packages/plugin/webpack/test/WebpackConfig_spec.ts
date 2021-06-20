@@ -236,7 +236,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(false);
     });
 
     it('generates a production config', async () => {
@@ -263,7 +263,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer', 'main'),
         filename: 'preload.js',
       });
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(false);
     });
     it('prevents the preload target from being overridden', async () => {
       const config = {
