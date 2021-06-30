@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
     - name: Use Node.js LTS
-      uses: actions/setup-node@v2.1.5
+      uses: actions/setup-node@v2.2.0
       with:
         node-version: 14.x
     - name: Determine Yarn cache
@@ -44,7 +44,7 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2.3.4
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
       - name: Determine Yarn cache
@@ -108,7 +108,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
       - name: Determine Yarn cache
@@ -171,7 +171,7 @@ jobs:
   #   steps:
   #     - uses: actions/checkout@v1
   #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v2.1.5
+  #       uses: actions/setup-node@v2.2.0
   #       with:
   #         node-version: 12.x
   #     - name: Cache node_modules
