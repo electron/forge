@@ -22,6 +22,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     targetArch,
     packageJSON,
     appName,
+    forgeConfig,
   }: MakerOptions) {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
@@ -30,7 +31,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       name: packageJSON.name,
       title: appName,
       noMsi: true,
-      exe: `${appName}.exe`,
+      exe: `${forgeConfig.packagerConfig.executableName || appName}.exe`,
       setupExe: `${appName}-${packageJSON.version} Setup.exe`,
       ...this.config,
       appDirectory: dir,
