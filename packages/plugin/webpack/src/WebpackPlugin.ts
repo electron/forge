@@ -282,7 +282,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
           );
 
           if (stats?.hasErrors()) {
-            throw new Error(`Compilation errors in the preload: ${stats.toString()}`);
+            throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
           }
         });
       }
