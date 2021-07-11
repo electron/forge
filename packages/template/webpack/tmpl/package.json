@@ -4,6 +4,6 @@
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "css-loader": "^5.0.0",
     "node-loader": "^2.0.0",
-    "style-loader": "^2.0.0"
+    "style-loader": "^3.0.0"
   }
 }
