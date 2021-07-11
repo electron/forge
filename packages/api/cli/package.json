@@ -11,7 +11,7 @@
     "electron-forge-vscode-win": "script/vscode.cmd"
   },
   "devDependencies": {
-    "@malept/cross-spawn-promise": "^1.1.1",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
     "mocha": "^9.0.1"

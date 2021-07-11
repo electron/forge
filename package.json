@@ -39,7 +39,7 @@
   "dependencies": {
     "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^1.9.0",
-    "@malept/cross-spawn-promise": "^1.1.1",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "@octokit/core": "^3.2.4",
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",

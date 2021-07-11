@@ -51,7 +51,7 @@
     "@electron-forge/template-typescript-webpack": "6.0.0-beta.57",
     "@electron-forge/template-webpack": "6.0.0-beta.57",
     "@electron/get": "^1.9.0",
-    "@malept/cross-spawn-promise": "^1.1.1",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "colors": "^1.4.0",
     "debug": "^4.3.1",
     "electron-packager": "^15.0.0",

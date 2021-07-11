@@ -1086,6 +1086,13 @@
   dependencies:
     cross-spawn "^7.0.1"
 
+"@malept/cross-spawn-promise@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@malept/cross-spawn-promise/-/cross-spawn-promise-2.0.0.tgz#d0772de1aa680a0bfb9ba2f32b4c828c7857cb9d"
+  integrity sha512-1DpKU0Z5ThltBwjNySMC14g0CkbyhCaz9FkhxqNsZI6uAPJXFS8cMXlBKo26FJ8ZuW6S9GCMcR9IO5k2X5/9Fg==
+  dependencies:
+    cross-spawn "^7.0.1"
+
 "@malept/electron-installer-flatpak@^0.11.2":
   version "0.11.3"
   resolved "https://registry.yarnpkg.com/@malept/electron-installer-flatpak/-/electron-installer-flatpak-0.11.3.tgz#4551c29d43da505b6a4e2a12a9bf9f60caad123a"
