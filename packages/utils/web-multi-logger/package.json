@@ -10,7 +10,7 @@
   "devDependencies": {},
   "dependencies": {
     "express": "^4.17.1",
-    "express-ws": "^4.0.0",
+    "express-ws": "^5.0.2",
     "xterm": "^4.9.0",
     "xterm-addon-fit": "^0.5.0",
     "xterm-addon-search": "^0.8.0"

@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
     - name: Use Node.js LTS
-      uses: actions/setup-node@v2.1.5
+      uses: actions/setup-node@v2.2.0
       with:
         node-version: 14.x
     - name: Determine Yarn cache
@@ -28,7 +28,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-yarn-
     - name: Run dependabolt
-      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/')
+      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn')
       uses: malept/github-action-dependabolt@v4.0.1
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
@@ -44,7 +44,7 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2.3.4
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
       - name: Determine Yarn cache
@@ -74,7 +74,7 @@ jobs:
       - name: Run tests
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1.5.0
+        uses: codecov/codecov-action@v1.5.2
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -108,7 +108,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
       - name: Determine Yarn cache
@@ -148,7 +148,7 @@ jobs:
         env:
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v1.5.0
+        uses: codecov/codecov-action@v1.5.2
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -160,7 +160,7 @@ jobs:
     needs: [fast-tests, slow-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: fastify/github-action-merge-dependabot@v2.0.0
+      - uses: fastify/github-action-merge-dependabot@v2.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -171,7 +171,7 @@ jobs:
   #   steps:
   #     - uses: actions/checkout@v1
   #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v2.1.5
+  #       uses: actions/setup-node@v2.2.0
   #       with:
   #         node-version: 12.x
   #     - name: Cache node_modules

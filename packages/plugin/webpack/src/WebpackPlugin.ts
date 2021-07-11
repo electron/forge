@@ -160,7 +160,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await this.compileRenderers();
         };
       case 'postStart':
-        return async (_: any, child: ElectronProcess) => {
+        return async (_config: ForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
             console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
             this.loggedOutputUrl = true;
@@ -277,9 +277,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     for (const entryPoint of this.config.renderer.entryPoints) {
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          await this.runWebpack(
+          const stats = await this.runWebpack(
             await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
           );
+
+          if (stats?.hasErrors()) {
+            throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
+          }
         });
       }
     }
@@ -293,6 +297,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
       if (!config.plugins) config.plugins = [];
       config.plugins.push(pluginLogs);
+
+      const cspDirectives = this.config.devContentSecurityPolicy
+        ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
+
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(compiler, {
         hot: true,
@@ -303,6 +311,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         },
         setupExitSignals: true,
         historyApiFallback: true,
+        headers: {
+          'Content-Security-Policy': cspDirectives,
+        },
       });
       const server = await webpackDevServer.listen(this.port);
       this.servers.push(server);

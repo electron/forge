@@ -8,14 +8,14 @@
   "main": "dist/InstallerZip.js",
   "typings": "dist/InstallerZip.d.ts",
   "devDependencies": {
-    "mocha": "^8.1.3"
+    "mocha": "^9.0.1"
   },
   "engines": {
     "node": ">= 12.13.0"
   },
   "dependencies": {
     "@electron-forge/installer-darwin": "6.0.0-beta.57",
-    "@malept/cross-spawn-promise": "^1.1.1",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "fs-extra": "^10.0.0"
   }
 }

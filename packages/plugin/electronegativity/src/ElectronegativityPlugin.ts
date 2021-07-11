@@ -49,6 +49,12 @@ export type ElectronegativityConfig = {
    * from Electron 7 to Electron 8.
    */
   electronUpgrade?: string;
+  /**
+   * Specify additional parser plugins to use. For example, `optionalChaining`.
+   *
+   * Defaults to empty array (`[]`)
+   */
+  parserPlugins: Array<string>;
 };
 
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
@@ -64,6 +70,7 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
   postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions) => {
     await runElectronegativity({
       ...this.config,
+      parserPlugins: this.config.parserPlugins ?? [],
       input: options.outputPaths[0],
     }, true);
   }

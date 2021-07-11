@@ -15,6 +15,36 @@ function hasAssetRelocatorPatchPlugin(plugins?: WebpackPlugin[]): boolean {
 }
 
 describe('WebpackConfigGenerator', () => {
+  describe('rendererTarget', () => {
+    it('is web if undefined', () => {
+      const config = {
+        renderer: {},
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(generator.rendererTarget).to.equal('web');
+    });
+
+    it('is web if false', () => {
+      const config = {
+        renderer: {
+          nodeIntegration: false,
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(generator.rendererTarget).to.equal('web');
+    });
+
+    it('is electron-renderer if true', () => {
+      const config = {
+        renderer: {
+          nodeIntegration: true,
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      expect(generator.rendererTarget).to.equal('electron-renderer');
+    });
+  });
+
   describe('getDefines', () => {
     it('throws an error if renderer.entryPoints does not exist', () => {
       const config = {
@@ -297,11 +327,12 @@ describe('WebpackConfigGenerator', () => {
             name: 'main',
             js: 'rendererScript.js',
           }],
+          nodeIntegration: true,
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      expect(webpackConfig.target).to.deep.equal(['web', 'electron-renderer']);
+      expect(webpackConfig.target).to.deep.equal('electron-renderer');
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.deep.equal({
         main: ['rendererScript.js'],
@@ -348,7 +379,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      expect(webpackConfig.target).to.deep.equal(['web', 'electron-renderer']);
+      expect(webpackConfig.target).to.deep.equal('web');
       expect(webpackConfig.mode).to.equal('production');
       expect(webpackConfig.entry).to.deep.equal({
         main: ['rendererScript.js'],
