@@ -160,7 +160,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await this.compileRenderers();
         };
       case 'postStart':
-        return async (_: any, child: ElectronProcess) => {
+        return async (_config: ForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
             console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
             this.loggedOutputUrl = true;
