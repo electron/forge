@@ -30,6 +30,7 @@ async function yarn(...args) {
   await spawnPassthrough('yarn', args)
 }
 
+const packageJSON = require(__dirname + '/../package.json')
 
 class Package {
   constructor(name, currentVersion, wantedVersion, latestVersion, type) {
@@ -55,13 +56,23 @@ class Package {
   get commitVersion() {
     if (this.isMajorVersionBump()) {
       return `^${this.latestVersion}`
+    } else if (this.isMinorVersionBump()) {
+      return `~${this.latestVersion}`
     } else {
       return this.latestVersion
     }
   }
 
+  get minorVersionLocked() {
+    return packageJSON[this.type][this.name].startsWith('~')
+  }
+
   isMajorVersionBump() {
     return !satisfies(this.latestVersion, `^${this.wantedVersion}`)
+  }
+
+  isMinorVersionBump() {
+    return this.minorVersionLocked && !satisfies(this.latestVersion, `~${this.wantedVersion}`)
   }
 
   async smoketestAndCommit(packageName = null) {
@@ -73,7 +84,7 @@ class Package {
   }
 
   async upgrade() {
-    if (this.isMajorVersionBump()) {
+    if (this.isMajorVersionBump() || this.isMinorVersionBump()) {
       await this.bolt_upgrade()
     } else {
       await this.yarn_upgrade()
