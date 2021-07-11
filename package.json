@@ -130,7 +130,7 @@
     "fetch-mock": "^9.10.7",
     "generate-changelog": "^1.8.0",
     "globby": "^11.0.1",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "lint-staged": "^11.0.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
