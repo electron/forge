@@ -4,7 +4,6 @@ import fs from 'fs-extra';
 import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
-// TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 

@@ -24,16 +24,16 @@
     "build:quick": "bolt ws exec -- node_modules/.bin/babel src -d dist --quiet --extensions \".ts\" --config-file ../../../.babelrc",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
-    "coverage:fast": "cross-env INTEGRATION_TESTS=0 TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
-    "coverage:slow": "cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:slow": "xvfb-maybe cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "bolt docs:generate && bolt docs:position",
     "docs:generate": "bolt ws exec -- node_modules/.bin/typedoc --out doc --excludeExternals --ignoreCompilerErrors --mode file --excludePrivate --excludeProtected --hideGenerator",
     "docs:position": "ts-node tools/position-docs.ts",
     "docs:deploy": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
     "lint": "eslint --ext .ts .",
-    "test": "cross-env TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'",
-    "test:fast": "cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true yarn run mocha './tools/test-globber.ts'",
+    "test": "xvfb-maybe cross-env TS_NODE_FILES=true mocha './tools/test-globber.ts'",
+    "test:fast": "xvfb-maybe cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
   },
   "dependencies": {
@@ -143,7 +143,8 @@
     "sinon-chai": "^3.6.0",
     "ts-node": "^10.0.0",
     "typedoc": "^0.21.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.0.2",
+    "xvfb-maybe": "^0.2.1"
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.2",

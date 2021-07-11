@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
-    "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@vercel/webpack-asset-relocator-loader": "1.5.0",
     "css-loader": "^5.0.0",
     "node-loader": "^2.0.0",
     "style-loader": "^3.0.0"
