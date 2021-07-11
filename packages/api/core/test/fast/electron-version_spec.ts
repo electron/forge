@@ -116,8 +116,38 @@ describe('getElectronModulePath', () => {
     const packageJSON = {
       devDependencies: { electron: '^4.0.4' },
     };
+
     if (hasYarn()) {
       expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    } else {
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
+    }
+  });
+
+  it('works when yarn workspaces create additional node_modules folder inside package', async () => {
+    const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+    const fixtureDir = path.join(workspaceDir, 'packages', 'with-node-modules');
+    const packageJSON = {
+      devDependencies: { electron: '^4.0.4' },
+    };
+
+    if (hasYarn()) {
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    } else {
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
+    }
+  });
+
+  it('works with yarn workspaces in ala nohoist mode', async () => {
+    const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+    const fixtureDir = path.join(workspaceDir, 'packages', 'electron-folder-in-node-modules');
+    const packageJSON = {
+      devDependencies: { electron: '^13.0.0' },
+    };
+
+    if (hasYarn()) {
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).not.to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     } else {
       expect(getElectronModulePath(fixtureDir, packageJSON)).to.eventually.be.rejectedWith('Cannot find the package');
     }
