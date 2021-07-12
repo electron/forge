@@ -9794,10 +9794,10 @@ typedoc-default-themes@^0.12.10:
   resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.12.10.tgz#614c4222fe642657f37693ea62cad4dafeddf843"
   integrity sha512-fIS001cAYHkyQPidWXmHuhs8usjP5XVJjWB8oZGqkTowZaz3v7g3KDZeeqE82FBrmkAnIBOY3jgy7lnPnqATbA==
 
-typedoc@^0.21.0:
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.21.3.tgz#9d35e6789c70d3b5b908f69a830294652ef7128e"
-  integrity sha512-SE0MytBcr3LpZmo22KxOI5vOvy+4cHl7U3TwYfc7OpUWaZLsDgP1yVqswoIdAUl6qwqskZie6Lyw/nzW5y840w==
+typedoc@^0.21.4:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.21.4.tgz#fced3cffdc30180db60a5dbfec9dbbb273cb5b31"
+  integrity sha512-slZQhvD9U0d9KacktYAyuNMMOXJRFNHy+Gd8xY2Qrqq3eTTTv3frv3N4au/cFnab9t3T5WA0Orb6QUjMc+1bDA==
   dependencies:
     glob "^7.1.7"
     handlebars "^4.7.7"
