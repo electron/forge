@@ -7,8 +7,8 @@
     "start": "electron ."
   },
   "devDependencies": {
-    "@vercel/webpack-asset-relocator-loader": "1.5.0",
-    "electron": "13.1.2"
+    "@vercel/webpack-asset-relocator-loader": "1.6.0",
+    "electron": "^13.1.2"
   },
   "dependencies": {
     "native-hello-world": "^2.0.0"
