@@ -76,9 +76,10 @@ jobs:
       - uses: actions/checkout@v2.3.4
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
+        shell: bash
         run: |
-          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
-          npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+          echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
+          npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
       - name: Linux specific setup
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -104,19 +105,7 @@ jobs:
           npm install -g bolt@$BOLT_VERSION
       - name: Install
         run: bolt
-      - name: Test on Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
-          $env:PATH = $env:PATH + $wixToolsetBinPath
-          [Environment]::SetEnvironmentVariable("Path", $env:PATH, [EnvironmentVariableTarget]::Machine)
-          if ((Get-Command "light.exe" -ErrorAction SilentlyContinue) -eq $null)
-          {
-            Write-Host "Unable to find light.exe in your PATH"
-          }
-          bolt coverage:slow
-      - name: Test on macOS/Linux
-        if: matrix.os != 'windows-latest'
+      - name: Test
         run: bolt coverage:slow
         env:
           DEBUG: electron-installer-snap:snapcraft
