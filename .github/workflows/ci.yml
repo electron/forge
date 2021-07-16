@@ -17,16 +17,7 @@ jobs:
       uses: actions/setup-node@v2.2.0
       with:
         node-version: 14.x
-    - name: Determine Yarn cache
-      id: yarn-cache
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - name: Cache Yarn
-      uses: actions/cache@v2.1.6
-      with:
-        path: ${{ steps.yarn-cache.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+        cache: yarn
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn')
       uses: malept/github-action-dependabolt@v4.0.1
@@ -47,16 +38,7 @@ jobs:
         uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
-      - name: Determine Yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache Yarn
-        uses: actions/cache@v2.1.6
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: yarn
       - name: Install bolt
         shell: bash
         run: |
@@ -111,16 +93,7 @@ jobs:
         uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
-      - name: Determine Yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache Yarn
-        uses: actions/cache@v2.1.6
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: yarn
       - name: Install bolt
         shell: bash
         run: |
@@ -174,15 +147,7 @@ jobs:
   #       uses: actions/setup-node@v2.2.0
   #       with:
   #         node-version: 12.x
-  #     - name: Cache node_modules
-  #       uses: actions/cache@v2.1.6
-  #       with:
-  #         path: node_modules
-  #         key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.OS }}-build-${{ env.cache-name }}-
-  #           ${{ runner.OS }}-build-
-  #           ${{ runner.OS }}-
+  #         cache: yarn
   #     - name: Install bolt
   #       shell: bash
   #       run: |
