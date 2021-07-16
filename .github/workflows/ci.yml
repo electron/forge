@@ -17,16 +17,7 @@ jobs:
       uses: actions/setup-node@v2.2.0
       with:
         node-version: 14.x
-    - name: Determine Yarn cache
-      id: yarn-cache
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - name: Cache Yarn
-      uses: actions/cache@v2.1.6
-      with:
-        path: ${{ steps.yarn-cache.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+        cache: yarn
     - name: Run dependabolt
       if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn')
       uses: malept/github-action-dependabolt@v4.0.1
@@ -47,16 +38,7 @@ jobs:
         uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
-      - name: Determine Yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache Yarn
-        uses: actions/cache@v2.1.6
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: yarn
       - name: Install bolt
         shell: bash
         run: |
@@ -94,9 +76,10 @@ jobs:
       - uses: actions/checkout@v2.3.4
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
+        shell: bash
         run: |
-          C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix311.exe /install /quiet /norestart
-          npm config set node-gyp "$($env:GITHUB_WORKSPACE)\node_modules\node-gyp\bin\node-gyp.js"
+          echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
+          npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
       - name: Linux specific setup
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -111,16 +94,7 @@ jobs:
         uses: actions/setup-node@v2.2.0
         with:
           node-version: 12.x
-      - name: Determine Yarn cache
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache Yarn
-        uses: actions/cache@v2.1.6
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: yarn
       - name: Install bolt
         shell: bash
         run: |
@@ -131,19 +105,7 @@ jobs:
           npm install -g bolt@$BOLT_VERSION
       - name: Install
         run: bolt
-      - name: Test on Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          $wixToolsetBinPath = ";C:\Program Files (x86)\WiX Toolset v3.11\bin;"
-          $env:PATH = $env:PATH + $wixToolsetBinPath
-          [Environment]::SetEnvironmentVariable("Path", $env:PATH, [EnvironmentVariableTarget]::Machine)
-          if ((Get-Command "light.exe" -ErrorAction SilentlyContinue) -eq $null)
-          {
-            Write-Host "Unable to find light.exe in your PATH"
-          }
-          bolt coverage:slow
-      - name: Test on macOS/Linux
-        if: matrix.os != 'windows-latest'
+      - name: Test
         run: bolt coverage:slow
         env:
           DEBUG: electron-installer-snap:snapcraft
@@ -174,15 +136,7 @@ jobs:
   #       uses: actions/setup-node@v2.2.0
   #       with:
   #         node-version: 12.x
-  #     - name: Cache node_modules
-  #       uses: actions/cache@v2.1.6
-  #       with:
-  #         path: node_modules
-  #         key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.OS }}-build-${{ env.cache-name }}-
-  #           ${{ runner.OS }}-build-
-  #           ${{ runner.OS }}-
+  #         cache: yarn
   #     - name: Install bolt
   #       shell: bash
   #       run: |
