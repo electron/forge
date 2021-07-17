@@ -9,15 +9,9 @@ updates:
       # aws-sdk upgrades too often, do this manually
       - dependency-name: aws-sdk
       - dependency-name: commander
-      - dependency-name: cross-zip
-        versions: ['4.x']
-      - dependency-name: html-webpack-plugin
-        versions: ['5.x']
-      - dependency-name: open
+      - dependency-name: log-symbols
       - dependency-name: typescript
-        versions: ['4.1.x', '4.2.x']
-      - dependency-name: webpack
-        versions: ['5.x']
+        versions: ['4.1.x', '4.2.x', '4.3.x']
   - package-ecosystem: "npm"
     directory: "/packages/template/typescript/tmpl"
     # Check the npm registry for updates every weekday
