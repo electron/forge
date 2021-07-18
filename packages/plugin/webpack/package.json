@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-webpack",
-  "version": "6.0.0-beta.57",
+  "version": "6.0.0-beta.58",
   "description": "Webpack plugin for Electron Forge, lets you use Webpack directly in your tooling",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -22,10 +22,10 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.57",
-    "@electron-forge/plugin-base": "6.0.0-beta.57",
-    "@electron-forge/shared-types": "6.0.0-beta.57",
-    "@electron-forge/web-multi-logger": "6.0.0-beta.57",
+    "@electron-forge/async-ora": "6.0.0-beta.58",
+    "@electron-forge/plugin-base": "6.0.0-beta.58",
+    "@electron-forge/shared-types": "6.0.0-beta.58",
+    "@electron-forge/web-multi-logger": "6.0.0-beta.58",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
     "global": "^4.3.2",

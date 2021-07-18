@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-zip",
-  "version": "6.0.0-beta.57",
+  "version": "6.0.0-beta.58",
   "description": "ZIP file helper for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -14,7 +14,7 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/installer-darwin": "6.0.0-beta.57",
+    "@electron-forge/installer-darwin": "6.0.0-beta.58",
     "@malept/cross-spawn-promise": "^2.0.0",
     "fs-extra": "^10.0.0"
   }
