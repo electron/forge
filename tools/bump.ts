@@ -78,7 +78,7 @@ async function main(): Promise<void> {
   await updateChangelog(lastVersion, version);
 
   // re-tag to include the changelog
-  await git(`git tag --force v${version}`);
+  await git('tag', '--force', `v${version}`);
 }
 
 main().catch(console.error);
