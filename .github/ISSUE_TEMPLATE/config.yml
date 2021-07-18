@@ -5,5 +5,5 @@ contact_links:
     url: https://discord.gg/electron
     about: "Please ask questions about using Electron Forge in the official Electron Discord server, at the #electron-forge channel."
   - name: Website Issues
-    url: https://github.com/MarshallOfSound/electron-forge-docs/issues/new
+    url: https://github.com/electron-forge/electron-forge-docs/issues/new
     about: Website issues / pull requests should be filed in the website repository.

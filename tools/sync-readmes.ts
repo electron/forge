@@ -17,7 +17,7 @@ const workspaceMappings: { [space: string]: { [packageName: string]: string | un
 };
 
 const BASE_DIR = path.resolve(__dirname, '..');
-const DOCS_BASE = 'https://raw.githubusercontent.com/MarshallOfSound/electron-forge-docs/v6';
+const DOCS_BASE = 'https://raw.githubusercontent.com/electron-forge/electron-forge-docs/v6';
 
 function sanitize(gb: string): string {
   return gb

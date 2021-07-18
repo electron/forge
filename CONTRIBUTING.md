@@ -49,7 +49,7 @@ When changing the API documentation, here are some rules to keep in mind.
   * should not be "This"
 
 For changes to the website ([electronforge.io](https://www.electronforge.io)), please file
-issues/pull requests at [its separate repository](https://github.com/MarshallOfSound/electron-forge-docs).
+issues/pull requests at [its separate repository](https://github.com/electron-forge/electron-forge-docs).
 
 ## Changing the Code
 
