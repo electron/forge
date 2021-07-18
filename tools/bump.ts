@@ -1,38 +1,39 @@
-#!/usr/bin/env node
+#!node_modules/.bin/ts-node
 
-require('colors');
-const childProcess = require('child_process');
-const fs = require('fs-extra');
-const path = require('path');
-const { promisify } = require('util');
-const semver = require('semver');
+import 'colors';
+import * as fs from 'fs-extra';
+import path from 'path';
+import { spawn } from '@malept/cross-spawn-promise';
+import * as semver from 'semver';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 const ELECTRON_FORGE_PREFIX = '@electron-forge/';
 
-const exec = promisify(childProcess.exec);
-
-async function run(command) {
-  return exec(command, { cwd: BASE_DIR });
+async function run(command: string, args: string[]): Promise<string> {
+  return spawn(command, args, { cwd: BASE_DIR });
 }
 
-async function checkCleanWorkingDir() {
-  if ((await run('git status -s')).stdout !== '') {
+async function git(...args: string[]): Promise<string> {
+  return run('git', args);
+}
+
+async function checkCleanWorkingDir(): Promise<void> {
+  if ((await git('status', '--short')) !== '') {
     throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
   }
 }
 
-async function updateChangelog(lastVersion, version) {
-  await run(`node_modules/.bin/changelog --tag=v${lastVersion}..v${version}`);
+async function updateChangelog(lastVersion: string, version: string): Promise<void> {
+  await run('node_modules/.bin/changelog', [`--tag=v${lastVersion}..v${version}`]);
 
   require('../ci/fix-changelog'); // eslint-disable-line global-require
 
-  await run('git add CHANGELOG.md');
-  await run(`git commit -m "Update CHANGELOG.md for ${version}"`);
+  await git('add', 'CHANGELOG.md');
+  await git('commit', '-m', `Update CHANGELOG.md for ${version}`);
 }
 
-(async () => {
+async function main(): Promise<void> {
   await checkCleanWorkingDir();
 
   const version = process.argv[2];
@@ -68,14 +69,16 @@ async function updateChangelog(lastVersion, version) {
     await fs.writeJson(pjPath, existingPJ, {
       spaces: 2,
     });
-    await run(`git add "${path.relative(BASE_DIR, pjPath)}"`);
+    await git('add', path.relative(BASE_DIR, pjPath));
   }
 
-  await run(`git commit -m "Release ${version}"`);
-  await run(`git tag v${version}`);
+  await git('commit', '-m', `Release ${version}`);
+  await git('tag', `v${version}`);
 
   await updateChangelog(lastVersion, version);
 
   // re-tag to include the changelog
-  await run(`git tag --force v${version}`);
-})().catch(console.error);
+  await git(`git tag --force v${version}`);
+}
+
+main().catch(console.error);

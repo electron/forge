@@ -104,5 +104,5 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 - if you aren't sure if a release should happen, open an issue
 - make sure the tests pass
-- `node tools/bump.js $NEW_VERSION`
+- `./tools/bump.ts $NEW_VERSION`
 - `node tools/publish.js`
