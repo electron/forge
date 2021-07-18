@@ -1,3 +1,20 @@
+#### [6.0.0-beta.58](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.58) (2021-07-18)
+
+##### New Features
+
+* **plugin-webpack:**
+  *  improve native asset relocation without forking Vercel loader (#2320) ([db8a3f39](https://github.com/electron-userland/electron-forge/commit/db8a3f39))
+  *  add devContentSecurityPolicy config option (#2332) ([7d461090](https://github.com/electron-userland/electron-forge/commit/7d461090))
+  *  add nodeIntegration config for renderers (#2330) ([6e0a6248](https://github.com/electron-userland/electron-forge/commit/6e0a6248))
+* **core:**  add `platform` and `arch` to `generateAssets` hook parameters (#2327) ([e3af089d](https://github.com/electron-userland/electron-forge/commit/e3af089d))
+
+##### Bug Fixes
+
+* **core:**  search for electron in a `node_modules` folder with electron in it (#2326) ([43cbb0a6](https://github.com/electron-userland/electron-forge/commit/43cbb0a6))
+* **plugin-electronegativity:**  add parserPlugins option (#2323) ([c7eff261](https://github.com/electron-userland/electron-forge/commit/c7eff261))
+* **plugin-webpack:**  throw error if something bad happened in preload compilation (#2334) ([755a4502](https://github.com/electron-userland/electron-forge/commit/755a4502))
+* **maker-squirrel:**  use executableName for exe when available (#2365) ([52f71443](https://github.com/electron-userland/electron-forge/commit/52f71443))
+
 #### [6.0.0-beta.57](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.57) (2021-05-23)
 
 ##### Chores
