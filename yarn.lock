@@ -1073,7 +1073,7 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@malept/cross-spawn-promise@^1.0.0", "@malept/cross-spawn-promise@^1.1.1":
+"@malept/cross-spawn-promise@^1.0.0", "@malept/cross-spawn-promise@^1.1.0", "@malept/cross-spawn-promise@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@malept/cross-spawn-promise/-/cross-spawn-promise-1.1.1.tgz#504af200af6b98e198bce768bc1730c6936ae01d"
   integrity sha512-RTBGWL5FWQcg9orDOCcp4LvItNzUPcyEU9bwaeJX0rJ1IQxzucC48Y0/sQLp/g6t99IQgAlGIaesJS+gTn7tVQ==
@@ -3201,6 +3201,15 @@ cross-env@^7.0.2:
   dependencies:
     cross-spawn "^7.0.1"
 
+cross-spawn-windows-exe@^1.1.0, cross-spawn-windows-exe@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/cross-spawn-windows-exe/-/cross-spawn-windows-exe-1.2.0.tgz#46253b0f497676e766faf4a7061004618b5ac5ec"
+  integrity sha512-mkLtJJcYbDCxEG7Js6eUnUNndWjyUZwJ3H7bErmmtOYU/Zb99DyUkpamuIZE0b3bhmJyZ7D90uS6f+CGxRRjOw==
+  dependencies:
+    "@malept/cross-spawn-promise" "^1.1.0"
+    is-wsl "^2.2.0"
+    which "^2.0.2"
+
 cross-spawn@^6.0.0, cross-spawn@^6.0.5:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -3770,12 +3779,13 @@ electron-osx-sign@^0.5.0:
     plist "^3.0.1"
 
 electron-packager@^15.0.0:
-  version "15.2.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-15.2.0.tgz#c93de19d75e7c03d159a56295384d371cb625ad4"
-  integrity sha512-BaklTBRQy1JTijR3hi8XxHf/uo76rHbDCNM/eQHSblzE9C0NoNfOe86nPxB7y1u2jwlqoEJ4zFiHpTFioKGGRA==
+  version "15.3.0"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-15.3.0.tgz#10f51960d518e4c35b760c10d1392c7ebea24c8b"
+  integrity sha512-PHcykXinmjPyJcYoNGbOWNsOU25nIbMLHBAfg4caazWzYELFL14FshDZEqqrvVOMEUnqjx/Ktc1NmMIN5ZRomQ==
   dependencies:
     "@electron/get" "^1.6.0"
     asar "^3.0.0"
+    cross-spawn-windows-exe "^1.2.0"
     debug "^4.0.1"
     electron-notarize "^1.0.0"
     electron-osx-sign "^0.5.0"
@@ -3787,7 +3797,7 @@ electron-packager@^15.0.0:
     junk "^3.1.0"
     parse-author "^2.0.0"
     plist "^3.0.0"
-    rcedit "^2.0.0"
+    rcedit "^3.0.1"
     resolve "^1.1.6"
     semver "^7.1.3"
     yargs-parser "^20.0.0"
@@ -5756,7 +5766,14 @@ is-ci@^2.0.0:
   dependencies:
     ci-info "^2.0.0"
 
-is-core-module@^2.2.0, is-core-module@^2.4.0:
+is-core-module@^2.2.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.5.0.tgz#f754843617c70bfd29b7bd87327400cda5c18491"
+  integrity sha512-TXCMSDsEHMEEZ6eCA8rwRDbLu55MRGmrctljsBX/2v1d9/GzqHOxW5c5oPSgrUt2vBFXebu9rGqckXGPWOlYpg==
+  dependencies:
+    has "^1.0.3"
+
+is-core-module@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.4.0.tgz#8e9fc8e15027b011418026e98f0e6f4d86305cc1"
   integrity sha512-6A2fkfq1rfeQZjxrZJGerpLCTHRNEBiSgnu0+obeJpEPZRUooHgsizvzv0ZjJwOz3iWIHdJtVWJ/tmPr3D21/A==
@@ -8267,10 +8284,17 @@ rc@^1.2.7, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-rcedit@^2.0.0, rcedit@^2.1.0:
+rcedit@^2.1.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-2.3.0.tgz#951685a079db98a4cc8c21ebab75e374d5a0b108"
   integrity sha512-h1gNEl9Oai1oijwyJ1WYqYSXTStHnOcv1KYljg/8WM4NAg3H1KBK3azIaKkQ1WQl+d7PoJpcBMscPfLXVKgCLQ==
+
+rcedit@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-3.0.1.tgz#ae21b43e49c075f4d84df1929832a12c302f3c90"
+  integrity sha512-XM0Jv40/y4hVAqj/MO70o/IWs4uOsaSoo2mLyk3klFDW+SStLnCtzuQu+1OBTIMGlM8CvaK9ftlYCp6DJ+cMsw==
+  dependencies:
+    cross-spawn-windows-exe "^1.1.0"
 
 rcinfo@^0.1.3:
   version "0.1.3"
