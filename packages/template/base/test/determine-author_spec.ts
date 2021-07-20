@@ -9,27 +9,27 @@ describe('determineAuthor', () => {
   let returnGitUsername = true;
   let returnGitEmail = true;
   // eslint-disable-next-line max-len
-  const fakeExec = (cmd: string, options: { cwd: string }, callback: (err: Error | null, result?: { stdout?: string, stderr?: string }) => void) => {
-    if (cmd.includes('user.name')) {
+  const fakeSpawn = async (cmd: string, args: string[], _options: { cwd: string }): Promise<string> => {
+    if (args.includes('user.name')) {
       if (returnGitUsername) {
-        callback(null, { stdout: 'Foo Bar\n' });
-      } else {
-        callback(new Error('Not returning username'));
+        return Promise.resolve('Foo Bar\n');
       }
-    } else if (cmd.includes('user.email')) {
+
+      throw new Error('Not returning username');
+    } else if (args.includes('user.email')) {
       if (returnGitEmail) {
-        callback(null, { stdout: 'foo@example.com\n' });
-      } else {
-        callback(new Error('Not returning email'));
+        return Promise.resolve('foo@example.com\n');
       }
-    } else {
-      callback(new Error('Unknown cmd'));
+
+      throw new Error('Not returning email');
     }
+
+    throw new Error(`Unknown command: ${cmd} ${args.join(' ')}`);
   };
 
   beforeEach(() => {
     determineAuthor = proxyquire.noCallThru().load('../src/determine-author', {
-      child_process: { exec: sinon.stub().callsFake(fakeExec) },
+      '@malept/cross-spawn-promise': { spawn: sinon.stub().callsFake(fakeSpawn) },
       username: sinon.stub().resolves('fromUsername'),
     }).default;
   });
