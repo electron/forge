@@ -6,7 +6,8 @@ import username from 'username';
 const d = debug('electron-forge:determine-author');
 
 async function getGitConfig(name: string, cwd: string): Promise<string> {
-  return spawn('git', ['config', '--get', name], { cwd });
+  const value = await spawn('git', ['config', '--get', name], { cwd });
+  return value.trim();
 }
 
 const getAuthorFromGitConfig = async (dir: string): Promise<PackagePerson> => {
