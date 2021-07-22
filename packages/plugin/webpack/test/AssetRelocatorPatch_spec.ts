@@ -177,7 +177,7 @@ describe('AssetRelocatorPatch', () => {
   });
 
   describe('Production', () => {
-    const generator = new WebpackConfigGenerator(config, appPath, true, 3000);
+    let generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
     it('builds main', async () => {
       const mainConfig = generator.getMainConfig();
@@ -224,6 +224,21 @@ describe('AssetRelocatorPatch', () => {
       expect(output).to.contain('Hello, world! from the main');
       expect(output).to.contain('Hello, world! from the preload');
       expect(output).to.contain('Hello, world! from the renderer');
+    });
+
+    it('builds renderer with nodeIntegration = false', async () => {
+      config.renderer.nodeIntegration = false;
+      generator = new WebpackConfigGenerator(config, appPath, true, 3000);
+
+      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      await asyncWebpack(rendererConfig);
+
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: rendererOut,
+        jsPath: path.join(rendererOut, 'main_window/index.js'),
+        nativeModulesString: '.ab="/native_modules/"',
+        nativePathString: `.ab+"${nativePathSuffix}"`,
+      });
     });
   });
 });
