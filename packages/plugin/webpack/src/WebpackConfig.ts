@@ -201,7 +201,10 @@ export default class WebpackConfigGenerator {
         filename: `${entryPoint.name}/index.html`,
         chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
       }) as WebpackPluginInstance).concat(
-        [new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd)],
+        [
+          new webpack.DefinePlugin(defines),
+          new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration),
+        ],
       );
     return webpackMerge({
       entry,

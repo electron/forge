@@ -3,8 +3,26 @@ import { Chunk, Compiler } from 'webpack';
 export default class AssetRelocatorPatch {
   private readonly isProd: boolean;
 
-  constructor(isProd: boolean) {
+  private readonly nodeIntegration: boolean;
+
+  constructor(isProd: boolean, nodeIntegration: boolean) {
     this.isProd = isProd;
+    this.nodeIntegration = nodeIntegration;
+  }
+
+  private injectedProductionDirnameCode(): string {
+    if (this.nodeIntegration) {
+      // In production the assets are found one directory up from
+      // __dirname
+      //
+      // __dirname cannot be used directly until this PR lands
+      // https://github.com/jantimon/html-webpack-plugin/pull/1650
+      return 'require("path").resolve(require("path").dirname(__filename), "..")';
+    }
+
+    // If nodeIntegration is disabled, we replace __dirname
+    // with an empty string so no error is thrown at runtime
+    return '""';
   }
 
   public apply(compiler: Compiler) {
@@ -32,20 +50,17 @@ export default class AssetRelocatorPatch {
                   throw new Error('The installed version of @vercel/webpack-asset-relocator-loader does not appear to be compatible with Forge');
                 }
 
+                if (this.isProd) {
+                  return originalInjectCode.replace('__dirname', this.injectedProductionDirnameCode());
+                }
+
                 return originalInjectCode.replace(
                   '__dirname',
-                  this.isProd
-                  // In production the assets are found one directory up from
-                  // __dirname
-                  //
-                  // __dirname cannot be used directly until this PR lands
-                  // https://github.com/jantimon/html-webpack-plugin/pull/1650
-                    ? 'require("path").resolve(require("path").dirname(__filename), "..")'
                   // In development, the app is loaded via webpack-dev-server
                   // so __dirname is useless because it points to Electron
                   // internal code. Instead we hard-code the absolute path to
                   // the webpack output.
-                    : JSON.stringify(compiler.options.output.path),
+                  JSON.stringify(compiler.options.output.path),
                 );
               };
             }
