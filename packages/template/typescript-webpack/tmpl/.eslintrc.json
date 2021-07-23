@@ -10,6 +10,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
+    "plugin:import/electron",
     "plugin:import/typescript"
   ],
   "parser": "@typescript-eslint/parser",
