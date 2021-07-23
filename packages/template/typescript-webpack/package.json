@@ -8,7 +8,7 @@
   "main": "dist/TypeScriptWebpackTemplate.js",
   "typings": "dist/TypeScriptWebpackTemplate.d.ts",
   "scripts": {
-    "test": "echo No Tests"
+    "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },
   "engines": {
     "node": ">= 12.13.0"
