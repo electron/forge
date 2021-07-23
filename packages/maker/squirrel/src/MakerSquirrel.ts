@@ -27,13 +27,21 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 
+    const config = this.config;
+    if (process.env.WIN_CSC_LINK) {
+      config.certificateFile = process.env.WIN_CSC_LINK;
+    }
+    if (process.env.WIN_CSC_KEY_PASSWORD) {
+      config.certificatePassword = process.env.WIN_CSC_KEY_PASSWORD;
+    }
+
     const winstallerConfig: ElectronWinstallerOptions = {
       name: packageJSON.name,
       title: appName,
       noMsi: true,
       exe: `${forgeConfig.packagerConfig.executableName || appName}.exe`,
       setupExe: `${appName}-${packageJSON.version} Setup.exe`,
-      ...this.config,
+      ...config,
       appDirectory: dir,
       outputDirectory: outPath,
     };

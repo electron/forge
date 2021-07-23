@@ -59,7 +59,8 @@ export interface MakerWixConfig {
   version?: string;
   /**
    * Parameters to pass to signtool.exe. Overrides `certificateFile` and
-   * `certificatePassword`.
+   * `certificatePassword`. The environment variable `WIN_CSC_LINK` can
+   * also be used.
    */
   signWithParams?: string;
   /**
@@ -68,6 +69,7 @@ export interface MakerWixConfig {
   certificateFile?: string;
   /**
    * The password to decrypt the certificate given in `certificateFile`.
+   * The environment variable `WIN_CSC_KEY_PASSWORD` can also be used.
    */
   certificatePassword?: string;
   /**
