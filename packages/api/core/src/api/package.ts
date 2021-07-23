@@ -4,7 +4,7 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { getHostArch } from '@electron/get';
-import glob from 'glob';
+import glob from 'fast-glob';
 import packager from 'electron-packager';
 import path from 'path';
 import { promisify } from 'util';
@@ -119,7 +119,7 @@ export default async ({
         prepareCounter += 1;
         prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
       }
-      const bins = await promisify(glob)(path.join(buildPath, '**/.bin/**/*'));
+      const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
       }
