@@ -7,7 +7,8 @@ const { spawn } = require('@malept/cross-spawn-promise')
 const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
-  'log-symbols', // Requires the entire project to convert to ESM
+  'globby', // Requires ESM
+  'log-symbols', // Requires ESM
   'typescript' // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
 ]
 
