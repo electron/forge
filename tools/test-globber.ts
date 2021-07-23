@@ -1,5 +1,5 @@
 /* eslint "global-require": "off", "import/no-dynamic-require": "off" */
-import globby from 'globby';
+import glob from 'fast-glob';
 import minimist from 'minimist';
 import * as path from 'path';
 
@@ -36,7 +36,7 @@ for (const p of packages) {
   if (argv.integration === false || process.env.INTEGRATION_TESTS === '0') {
     specGlob.push(`!${apiSpec}`);
   }
-  testFiles.push(...globby.sync(specGlob));
+  testFiles.push(...glob.sync(specGlob));
 }
 
 for (const f of testFiles) {

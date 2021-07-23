@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
-const globby = require('globby')
+const glob = require('fast-glob')
 const { satisfies } = require('semver')
 const { spawn } = require('@malept/cross-spawn-promise')
 
 const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
-  'globby', // Requires ESM
   'log-symbols', // Requires ESM
   'typescript' // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
 ]
@@ -77,7 +76,7 @@ class Package {
   }
 
   async smoketestAndCommit(packageName = null) {
-    const packageJSONs = await globby('packages/*/*/package.json')
+    const packageJSONs = await glob('packages/*/*/package.json')
     await yarn('lint')
     await bolt('build')
     await git('add', 'package.json', 'yarn.lock', ...packageJSONs)
