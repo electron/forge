@@ -31,7 +31,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       ]);
 
       // Configure scripts for TS template
-      packageJSON.scripts.lint = 'eslint --ext .ts .';
+      packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
 
       await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });
