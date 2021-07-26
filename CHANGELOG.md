@@ -1,3 +1,11 @@
+#### [6.0.0-beta.59](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.59) (2021-07-26)
+
+##### Bug Fixes
+
+* **template-typescript-webpack:**  lint tsx files by default (#2403) ([c2e6c49f](https://github.com/electron-userland/electron-forge/commit/c2e6c49f))
+* **template:**  add plugin:import/electron to TypeScript ESLint config (#2399) ([f42c962a](https://github.com/electron-userland/electron-forge/commit/f42c962a))
+* **webpack-plugin:**  Ensure asset relocator injected code works with nodeIntegration disabled (#2396) ([146fc311](https://github.com/electron-userland/electron-forge/commit/146fc311))
+
 #### [6.0.0-beta.58](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.58) (2021-07-18)
 
 ##### New Features
