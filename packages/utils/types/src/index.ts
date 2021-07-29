@@ -124,6 +124,7 @@ export interface InitTemplateOptions {
 }
 
 export interface ForgeTemplate {
+  minimumForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
   initializeTemplate?: (dir: string, options: InitTemplateOptions) => void;

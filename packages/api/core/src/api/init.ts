@@ -51,6 +51,10 @@ export default async ({
   await initGit(dir);
   const templateModule = await findTemplate(dir, template);
 
+  if (!templateModule.minimumForgeVersion) {
+    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge that does not specify its minimum required Forge version.`);
+  }
+
   if (typeof templateModule.initializeTemplate === 'function') {
     await templateModule.initializeTemplate(dir, { copyCIFiles });
     const packageJSON = await readRawPackageJson(dir);
