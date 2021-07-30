@@ -38,7 +38,7 @@ export interface InitOptions {
   template?: string;
 }
 
-function validateTemplate(template: string, templateModule: ForgeTemplate): void {
+async function validateTemplate(template: string, templateModule: ForgeTemplate): void {
   if (!templateModule.requiredForgeVersion) {
     throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
   }
@@ -64,7 +64,7 @@ export default async ({
   await initGit(dir);
   const templateModule = await findTemplate(dir, template);
 
-  validateTemplate(template, templateModule);
+  await validateTemplate(template, templateModule);
 
   if (typeof templateModule.initializeTemplate === 'function') {
     await templateModule.initializeTemplate(dir, { copyCIFiles });
