@@ -38,7 +38,7 @@ export interface InitOptions {
   template?: string;
 }
 
-async function validateTemplate(template: string, templateModule: ForgeTemplate): void {
+async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
   if (!templateModule.requiredForgeVersion) {
     throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
   }
