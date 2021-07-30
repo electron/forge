@@ -53,7 +53,7 @@ export default async ({
   const templateModule = await findTemplate(dir, template);
 
   if (!templateModule.requiredForgeVersion) {
-    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge that does not specify its required Forge version.`);
+    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
   }
 
   const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
