@@ -14,7 +14,7 @@ const tmplDir = path.resolve(__dirname, '../tmpl');
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
 
-  public minimumForgeVersion = currentForgeVersion;
+  public requiredForgeVersion = currentForgeVersion;
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');

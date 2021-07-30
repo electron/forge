@@ -52,13 +52,13 @@ export default async ({
   await initGit(dir);
   const templateModule = await findTemplate(dir, template);
 
-  if (!templateModule.minimumForgeVersion) {
-    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge that does not specify its minimum required Forge version.`);
+  if (!templateModule.requiredForgeVersion) {
+    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge that does not specify its required Forge version.`);
   }
 
   const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..', 'package.json'))).version;
-  if (semver.lt(forgeVersion, templateModule.minimumForgeVersion)) {
-    throw new Error(`Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires version ${templateModule.minimumForgeVersion} or later`);
+  if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
+    throw new Error(`Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`);
   }
 
   if (typeof templateModule.initializeTemplate === 'function') {
