@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 module.exports = {
+  requiredForgeVersion: '>= 6.0.0-beta.1'
   dependencies: ['debug'],
   devDependencies: ['lodash'],
   initializeTemplate: async (directory) => {
