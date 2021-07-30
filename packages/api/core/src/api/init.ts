@@ -2,6 +2,7 @@ import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
+import semver from 'semver';
 
 import findTemplate from './init-scripts/find-template';
 import initDirectory from './init-scripts/init-directory';
@@ -53,6 +54,11 @@ export default async ({
 
   if (!templateModule.minimumForgeVersion) {
     throw new Error(`Cannot use a template (${template}) with this version of Electron Forge that does not specify its minimum required Forge version.`);
+  }
+
+  const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..', 'package.json'))).version;
+  if (semver.lt(forgeVersion, templateModule.minimumForgeVersion)) {
+    throw new Error(`Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires version ${templateModule.minimumForgeVersion} or later`);
   }
 
   if (typeof templateModule.initializeTemplate === 'function') {
