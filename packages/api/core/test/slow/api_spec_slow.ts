@@ -121,6 +121,40 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
     });
 
+    describe('init (with a templater sans required Forge version)', () => {
+      before(async () => {
+        dir = await ensureTestDirIsNonexistent();
+      });
+
+      it('should fail in initializing', async () => {
+        await expect(forge.init({
+          dir,
+          template: path.resolve(__dirname, '../fixture/template-sans-forge-version'),
+        })).to.eventually.be.rejectedWith(/it does not specify its required Forge version\.$/);
+      });
+
+      after(async () => {
+        await fs.remove(dir);
+      });
+    });
+
+    describe('init (with a templater with a non-matching Forge version)', () => {
+      before(async () => {
+        dir = await ensureTestDirIsNonexistent();
+      });
+
+      it('should fail in initializing', async () => {
+        await expect(forge.init({
+          dir,
+          template: path.resolve(__dirname, '../fixture/template-nonmatching-forge-version'),
+        })).to.eventually.be.rejectedWith(/is not compatible with this version of Electron Forge/);
+      });
+
+      after(async () => {
+        await fs.remove(dir);
+      });
+    });
+
     describe('init (with a nonexistent templater)', () => {
       before(async () => {
         dir = await ensureTestDirIsNonexistent();
