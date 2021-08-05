@@ -125,6 +125,11 @@ async function main() {
       await package.smoketestAndCommit(commitPackageName)
     }
   }
+
+  console.log(`Upgrading transitive dependencies in yarn.lock...`)
+  await yarn('upgrade')
+  await git('add', 'yarn.lock')
+  await git('commit', '-m', `build(deps): upgrade transitive dependencies`)
 }
 
 main().catch(err => {
