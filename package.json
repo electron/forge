@@ -171,5 +171,8 @@
       "tools/*.ts"
     ],
     "extends": "@istanbuljs/nyc-config-typescript"
+  },
+  "volta": {
+    "node": "12.22.4"
   }
 }
