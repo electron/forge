@@ -118,9 +118,7 @@
     "babel-plugin-source-map-support": "^2.1.2",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
-    "commitizen": "^4.2.1",
     "cross-env": "^7.0.2",
-    "cz-customizable": "^6.3.0",
     "electron-installer-common": "^0.10.2",
     "eslint": "^7.16.0",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -153,14 +151,6 @@
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^3.0.6"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": "./.cz.js"
-    }
   },
   "lint-staged": {
     "*.ts": "eslint --ext .ts --fix"
