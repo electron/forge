@@ -8717,9 +8717,9 @@ shebang-regex@^3.0.0:
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
 shiki@^0.9.3:
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/shiki/-/shiki-0.9.5.tgz#c8da81a05fbfd1810729c6873901a729a72ec541"
-  integrity sha512-XFn+rl3wIowDjzdr5DlHoHgQphXefgUTs2bNp/bZu4WF9gTrTLnKwio3f28VjiFG6Jpip7yQn/p4mMj6OrjrtQ==
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/shiki/-/shiki-0.9.6.tgz#057d6d451b9c1124107635fdcb5c752560d6abc6"
+  integrity sha512-h2y5Uq9QEWsEmi97n+BOdPOVxkOUdVunl+jVIzU9EqJ6/QbIX+U6F7TsrWZQ2xqwPgvvQaC9r7/zeegi1b48dQ==
   dependencies:
     json5 "^2.2.0"
     onigasm "^2.2.5"
@@ -9583,9 +9583,9 @@ typedoc-default-themes@^0.12.10:
   integrity sha512-fIS001cAYHkyQPidWXmHuhs8usjP5XVJjWB8oZGqkTowZaz3v7g3KDZeeqE82FBrmkAnIBOY3jgy7lnPnqATbA==
 
 typedoc@^0.21.0:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.21.4.tgz#fced3cffdc30180db60a5dbfec9dbbb273cb5b31"
-  integrity sha512-slZQhvD9U0d9KacktYAyuNMMOXJRFNHy+Gd8xY2Qrqq3eTTTv3frv3N4au/cFnab9t3T5WA0Orb6QUjMc+1bDA==
+  version "0.21.5"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.21.5.tgz#45643618ede5c3d75e2040b964d05fcffed7ca58"
+  integrity sha512-uRDRmYheE5Iju9Zz0X50pTASTpBorIHFt02F5Y8Dt4eBt55h3mwk1CBSY2+EfwBxY16N4Xm7f8KXhnfFZ0AmBw==
   dependencies:
     glob "^7.1.7"
     handlebars "^4.7.7"
@@ -9607,9 +9607,9 @@ typescript@~4.2.4:
   integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
 
 uglify-js@^3.1.4:
-  version "3.14.0"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.14.0.tgz#2d723a0afee81e0d08db9354a9c277006e942386"
-  integrity sha512-R/tiGB1ZXp2BC+TkRGLwj8xUZgdfT2f4UZEgX6aVjJ5uttPrr4fYmwTWDGqVnBCLbOXRMY6nr/BTbwCtVfps0g==
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.14.1.tgz#e2cb9fe34db9cb4cf7e35d1d26dfea28e09a7d06"
+  integrity sha512-JhS3hmcVaXlp/xSo3PKY5R0JqKs5M3IV+exdLHW99qKvKivPO4Z8qbej6mte17SOPqAOVMjt/XGgWacnFSzM3g==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
