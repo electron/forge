@@ -58,7 +58,7 @@ body:
     id: steps-to-reproduce
     attributes:
       label: Steps to reproduce
-      description: |Your best chance of getting this bug looked at quickly is to provide a **minimal** code snippet that can be run and clearly shows the actual behavior described above.
+      description: Your best chance of getting this bug looked at quickly is to provide a **minimal** code snippet that can be run and clearly shows the actual behavior described above.
     validations:
       required: true
   - type: textarea
