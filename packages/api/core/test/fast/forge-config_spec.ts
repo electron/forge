@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import path from 'path';
 
 import findConfig, { forgeConfigIsValidFilePath, renderConfigTemplate, setInitialForgeConfig } from '../../src/util/forge-config';
@@ -10,6 +11,15 @@ const defaults = {
   publishers: [],
   plugins: [],
 };
+
+function findPublisher(
+  publishers: IForgeResolvablePublisher[],
+  publisherName: string,
+): IForgeResolvablePublisher | undefined {
+  return publishers.find(
+    (publisher: IForgeResolvablePublisher) => publisher.name === publisherName,
+  );
+}
 
 describe('forge-config', () => {
   it('should fail if the config is not an object or requirable path', async () => {
@@ -46,25 +56,35 @@ describe('forge-config', () => {
   it('should allow access to built-ins of proxied objects', async () => {
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
-    process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+
+    process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+
+    const s3Publisher = findPublisher(conf.publishers, '@electron-forge/publisher-s3');
+    expect(s3Publisher).to.not.equal(undefined);
+
     // eslint-disable-next-line no-prototype-builtins
-    expect(conf.s3.hasOwnProperty('secretAccessKey')).to.equal(true);
-    delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
+    expect(s3Publisher!.config.hasOwnProperty('secretAccessKey')).to.equal(true);
+    delete process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY;
   });
 
   it('should allow overwrite of properties in proxied objects', async () => {
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
     expect(() => { conf.packagerConfig.baz = 'bar'; }).to.not.throw();
-    process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+
+    process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
     const descriptor = {
       writable: true, enumerable: true, configurable: true, value: 'SecretyThing',
     };
-    expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).to.be.deep.equal(descriptor);
-    expect(() => { conf.s3.secretAccessKey = 'bar'; }).to.not.throw();
-    expect(conf.s3.secretAccessKey).to.equal('bar');
-    delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
+
+    const s3Publisher = findPublisher(conf.makers, '@electron-forge/publisher-s3');
+    expect(s3Publisher).to.not.equal(undefined);
+
+    expect(Object.getOwnPropertyDescriptor(s3Publisher!.config, 'secretAccessKey')).to.be.deep.equal(descriptor);
+    expect(() => { s3Publisher!.config.secretAccessKey = 'bar'; }).to.not.throw();
+    expect(s3Publisher?.config.secretAccessKey).to.equal('bar');
+    delete process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY;
   });
 
   it('should resolve the JS file exports in config.forge points to a JS file', async () => {
@@ -99,12 +119,19 @@ describe('forge-config', () => {
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.s3.secretAccessKey).to.equal(undefined);
 
-    process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
-    process.env.ELECTRON_FORGE_ELECTRON_RELEASE_SERVER_BASE_URL = 'http://example.com';
-    expect(conf.s3.secretAccessKey).to.equal('SecretyThing');
-    expect(conf.electronReleaseServer.baseUrl).to.equal('http://example.com');
-    delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
-    delete process.env.ELECTRON_FORGE_ELECTRON_RELEASE_SERVER_BASE_URL;
+    process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY = 'SecretyThing';
+    process.env.ELECTRON_FORGE_PUBLISHER_ELECTRON_RELEASE_SERVER_BASE_URL = 'http://example.com';
+
+    const s3Publisher = findPublisher(conf.publishers, '@electron-forge/publisher-s3');
+    expect(s3Publisher).to.not.equal(undefined);
+
+    const ersPublisher = findPublisher(conf.publishers, '@electron-forge/publisher-electron-release-server');
+    expect(ersPublisher).to.not.equal(undefined);
+
+    expect(s3Publisher?.config?.secretAccessKey).to.equal('SecretyThing');
+    expect(ersPublisher?.config?.baseUrl).to.equal('http://example.com');
+    delete process.env.ELECTRON_FORGE_PUBLISHER_S3_SECRET_ACCESS_KEY;
+    delete process.env.ELECTRON_FORGE_PUBLISHER_ELECTRON_RELEASE_SERVER_BASE_URL;
   });
 
   it('should resolve values fromBuildIdentifier', async () => {
