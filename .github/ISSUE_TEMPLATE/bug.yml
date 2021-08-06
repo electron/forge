@@ -1,0 +1,80 @@
+name: Bug report
+description: Create a report to help us improve Electron Forge
+labels: "Bug"
+
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I have read the [contribution documentation](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) for this project.
+          required: true
+        - label: I agree to follow the [code of conduct](https://github.com/electron/electron/blob/main/CODE_OF_CONDUCT.md) that this project uses.
+          required: true
+        - label: I have searched the issue tracker for a bug that matches the one I want to file, without success.
+          required: true
+  - type: input
+    id: forge-version
+    attributes:
+      label: Electron Forge version
+      description: The output of `node_modules/.bin/electron-forge --version`, e.g. 6.0.0-beta.45
+    validations:
+      required: true
+  - type: input
+    id: electron-version
+    attributes:
+      label: Electron version
+      description: The output of `node_modules/.bin/electron --version`, e.g. 14.0.0
+    validations:
+      required: true
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system
+      description: Platform and version, for example, macOS 10.13.6 / Windows 10 (1803) / Ubuntu 18.04 x64
+    validations:
+      required: true
+  - type: input
+    id: last-working-version
+    attributes:
+      label: Last known working Electron Forge version
+      description: e.g., 6.0.0-beta.44
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual behavior
+      description: A clear and concise description of what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Your best chance of getting this bug looked at quickly is to provide a **minimal** code snippet that can be run and clearly shows the actual behavior described above.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: |
+        Please add any other context about the problem.
+
+        For example:
+        * Console output when you run your `electron-forge` command with the environment variable
+          `DEBUG=electron-forge:*`. (Instructions on how to do so
+          [here](https://www.npmjs.com/package/debug#usage)). Please include the stack trace if
+          one exists.
+        * Command line arguments you are passing to `electron-forge` (e.g.,
+          `electron-forge make --not-a-real-flag`)
+        * The `config.forge` data in `package.json` or `forge.config.js` in use
+        * A failing minimal testcase (with a link to the code) or detailed steps to reproduce the problem.
+          Using `electron-forge init` is a good starting point, if that is not the source of your problem.
