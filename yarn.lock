@@ -2202,9 +2202,9 @@ author-regex@^1.0.0:
   integrity sha1-0IiFvmubv5Q5/gh8dihyRfCoFFA=
 
 aws-sdk@^2.472.0:
-  version "2.961.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.961.0.tgz#c3bde072c3a38f119f01c170e8dc84cddd2f646e"
-  integrity sha512-71ELXHWd0roRT0FW8CnqGLYGKLksHARa7Yn8LPN3mF70FJt2LuvVAyK49IChoUczTjlzS78p+Y5197Tkky4N8g==
+  version "2.963.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.963.0.tgz#9655743e69e9466c7aed5962a680c330a6cad212"
+  integrity sha512-EY7EPap1c/1RxPx+Py56t9btJug3Z3PJkCfplqzNuU1QlFGs+rN8yYm9xIn8J6gbJ5D8F4Qab0GCtTmGstlHfQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
