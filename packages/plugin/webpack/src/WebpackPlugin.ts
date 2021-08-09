@@ -8,8 +8,10 @@ import fs from 'fs-extra';
 import http from 'http';
 import { merge } from 'webpack-merge';
 import path from 'path';
+import { utils } from '@electron-forge/core';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+
 import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
@@ -152,8 +154,15 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     switch (name) {
       case 'prePackage':
         this.isProd = true;
-        return async () => {
+        return async (config: ForgeConfig) => {
           await fs.remove(this.baseDir);
+          await utils.rebuildHook(
+            this.projectDir,
+            await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+            process.platform,
+            process.arch,
+            config.electronRebuildConfig,
+          );
           await this.compileMain();
           await this.compileRenderers();
         };

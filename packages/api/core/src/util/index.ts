@@ -1,5 +1,7 @@
 import { BuildIdentifierConfig, BuildIdentifierMap, fromBuildIdentifier } from './forge-config';
+import { getElectronVersion } from './electron-version';
 import { hasYarn, yarnOrNpmSpawn } from './yarn-or-npm';
+import rebuildHook from './rebuild';
 
 export default class ForgeUtils {
   /**
@@ -13,7 +15,11 @@ export default class ForgeUtils {
     return fromBuildIdentifier(map);
   }
 
+  getElectronVersion = getElectronVersion;
+
   hasYarn = hasYarn;
+
+  rebuildHook = rebuildHook;
 
   yarnOrNpmSpawn = yarnOrNpmSpawn;
 }
