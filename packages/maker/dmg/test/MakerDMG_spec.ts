@@ -67,14 +67,14 @@ describe('MakerDMG', () => {
       dir, makeDir, appName, targetArch, packageJSON,
     });
     expect(renameStub.callCount).to.equal(1);
-    expect(renameStub.firstCall.args[1]).to.include('1.2.3');
+    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
 
   it('should rename the DMG file to include the version if no custom name is set', async () => {
     await (maker.make as any)({
       dir, makeDir, appName, targetArch, packageJSON,
     });
-    expect(renameStub.firstCall.args[1]).to.include('1.2.3');
+    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {
