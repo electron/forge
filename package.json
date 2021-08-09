@@ -151,6 +151,9 @@
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^3.0.6"
   },
+  "resolutions": {
+    "electron-packager/electron-notarize": "<1.1.0"
+  },
   "lint-staged": {
     "*.ts": "eslint --ext .ts --fix"
   },
