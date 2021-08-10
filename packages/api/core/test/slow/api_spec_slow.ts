@@ -280,7 +280,7 @@ describe('Electron Forge API', () => {
       await fs.remove(path.resolve(dir, 'out'));
     });
 
-    describe('with native pre-gyp deps installed', () => {
+    describe('with prebuilt native module deps installed', () => {
       before(async () => {
         await installDeps(dir, ['ref-napi']);
       });
