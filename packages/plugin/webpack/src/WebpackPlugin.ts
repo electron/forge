@@ -6,6 +6,7 @@ import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
 import fs from 'fs-extra';
 import http from 'http';
+import { merge } from 'webpack-merge';
 import path from 'path';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -300,23 +301,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       if (!config.plugins) config.plugins = [];
       config.plugins.push(pluginLogs);
 
-      const cspDirectives = this.config.devContentSecurityPolicy
-        ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
-
       const compiler = webpack(config);
-      const webpackDevServer = new WebpackDevServer(compiler, {
-        hot: true,
-        port: this.port,
-        static: path.resolve(this.baseDir, 'renderer'),
-        devMiddleware: {
-          writeToDisk: true,
-        },
-        setupExitSignals: true,
-        historyApiFallback: true,
-        headers: {
-          'Content-Security-Policy': cspDirectives,
-        },
-      });
+      const webpackDevServer = new WebpackDevServer(compiler, this.devServerOptions());
       const server = await webpackDevServer.listen(this.port);
       this.servers.push(server);
     });
@@ -346,6 +332,29 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         }
       }
     });
+  }
+
+  devServerOptions(): Record<string, unknown> {
+    const cspDirectives = this.config.devContentSecurityPolicy
+      ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
+
+    const defaults = {
+      hot: true,
+      devMiddleware: {
+        writeToDisk: true,
+      },
+      historyApiFallback: true,
+    };
+    const overrides = {
+      port: this.port,
+      setupExitSignals: true,
+      static: path.resolve(this.baseDir, 'renderer'),
+      headers: {
+        'Content-Security-Policy': cspDirectives,
+      },
+    };
+
+    return merge(defaults, this.config.devServer ?? {}, overrides);
   }
 
   private alreadyStarted = false;
