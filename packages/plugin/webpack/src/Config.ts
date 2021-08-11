@@ -115,5 +115,16 @@ export interface WebpackPluginConfig {
    * Default: `default-src 'self' 'unsafe-inline' data:;`
    * `script-src 'self' 'unsafe-eval' 'unsafe-inline' data:`
    */
-  devContentSecurityPolicy?: string
+  devContentSecurityPolicy?: string;
+  /**
+   * Overrides for [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) options.
+   *
+   * The following options cannot be overridden here:
+   * * `port` (use the `port` config option)
+   * * `static`
+   * * `setupExitSignals`
+   * * `headers.Content-Security-Policy` (use the `devContentSecurityPolicy` config option)
+   */
+  devServer?: Record<string, unknown>;
+  // TODO: use webpack-dev-server.Configuration when @types/webpack-dev-server upgrades to v4
 }
