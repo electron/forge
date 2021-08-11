@@ -107,4 +107,48 @@ describe('WebpackPlugin', () => {
       });
     });
   });
+
+  describe('devServerOptions', () => {
+    it('can override defaults', () => {
+      const defaultPlugin = new WebpackPlugin(baseConfig);
+      defaultPlugin.setDirectories(webpackTestDir);
+      expect(defaultPlugin.devServerOptions().hot).to.equal(true);
+
+      const webpackConfig = {
+        ...baseConfig,
+        devServer: {
+          hot: false,
+        },
+      };
+
+      const plugin = new WebpackPlugin(webpackConfig);
+      plugin.setDirectories(webpackTestDir);
+      const devServerConfig = plugin.devServerOptions();
+
+      expect(devServerConfig.hot).to.equal(false);
+    });
+
+    it('cannot override certain configuration', () => {
+      const webpackConfig = {
+        ...baseConfig,
+        port: 9999,
+        devServer: {
+          port: 8888,
+          headers: {
+            'Content-Security-Policy': 'invalid',
+            'X-Test-Header': 'test',
+          },
+        },
+      };
+
+      const plugin = new WebpackPlugin(webpackConfig);
+      plugin.setDirectories(webpackTestDir);
+      const devServerConfig = plugin.devServerOptions();
+
+      expect(devServerConfig.port).to.equal(9999);
+      const headers = devServerConfig.headers as Record<string, string>;
+      expect(headers['Content-Security-Policy']).to.not.equal('invalid');
+      expect(headers['X-Test-Header']).to.equal('test');
+    });
+  });
 });

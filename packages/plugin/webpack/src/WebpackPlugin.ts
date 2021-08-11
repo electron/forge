@@ -334,7 +334,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     });
   }
 
-  private devServerOptions(): Record<string, unknown> {
+  devServerOptions(): Record<string, unknown> {
     const cspDirectives = this.config.devContentSecurityPolicy
       ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
