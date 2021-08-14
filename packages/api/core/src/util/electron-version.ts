@@ -3,7 +3,7 @@ import findUp from 'find-up';
 import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
-import yarnOrNpm, { hasYarn } from './yarn-or-npm';
+import yarnOrNpm from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');
 
@@ -22,13 +22,13 @@ async function findAncestorNodeModulesPath(
   dir: string,
   packageName: string,
 ): Promise<string | undefined> {
-  if (hasYarn()) {
-    const yarnLockPath = await findUp('yarn.lock', { cwd: dir, type: 'file' });
-    if (yarnLockPath) {
-      const nodeModulesPath = path.join(path.dirname(yarnLockPath), 'node_modules', packageName);
-      if (await fs.pathExists(nodeModulesPath)) {
-        return nodeModulesPath;
-      }
+  d('Looking for a lock file to indicate the root of the repo');
+  const lockPath = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], { cwd: dir, type: 'file' });
+  if (lockPath) {
+    d(`Found lock file: ${lockPath}`);
+    const nodeModulesPath = path.join(path.dirname(lockPath), 'node_modules', packageName);
+    if (await fs.pathExists(nodeModulesPath)) {
+      return nodeModulesPath;
     }
   }
 
