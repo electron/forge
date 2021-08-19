@@ -303,7 +303,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
-      await webpackDevServer.start(this.port);
+      await webpackDevServer.start();
       this.servers.push(webpackDevServer.server);
     });
 
