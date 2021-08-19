@@ -3,8 +3,9 @@ declare module 'webpack-dev-server' {
   import { Server } from 'http';
   import { Compiler } from 'webpack';
   class WebpackDevServer {
-    constructor(compiler: Compiler, options?: {})
-    listen(port?: number, hostname?: string): Promise<Server>
+    constructor(options: {}, compilter: Compiler)
+    server: Server;
+    start(): Promise<void>
     close(): void
   }
   export default WebpackDevServer;
