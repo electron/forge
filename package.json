@@ -122,7 +122,7 @@
     "electron-installer-common": "^0.10.2",
     "eslint": "^7.16.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-import": "^2.24.1",
     "eslint-plugin-mocha": "^9.0.0",
     "fetch-mock": "^9.10.7",
     "generate-changelog": "^1.8.0",
