@@ -302,9 +302,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       config.plugins.push(pluginLogs);
 
       const compiler = webpack(config);
-      const webpackDevServer = new WebpackDevServer(compiler, this.devServerOptions());
-      const server = await webpackDevServer.listen(this.port);
-      this.servers.push(server);
+      const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+      await webpackDevServer.start();
+      this.servers.push(webpackDevServer.server);
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {
