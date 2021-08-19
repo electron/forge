@@ -9,7 +9,8 @@ const DO_NOT_UPGRADE = [
   'commander', // TODO: convert to yargs
   'electron-notarize', // There's a bug in the TypeScript definition which affects Packager
   'log-symbols', // Requires ESM
-  'typescript' // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
+  'typescript', // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
+  'username' // Requires ESM
 ]
 
 /**
