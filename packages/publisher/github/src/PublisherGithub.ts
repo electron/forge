@@ -101,7 +101,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           };
           const artifactName = path.basename(artifactPath);
           // eslint-disable-next-line max-len
-          if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
+          if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName.replace(/ /g, '.'))) {
             return done();
           }
           await github.getGitHub().repos.uploadReleaseAsset({
