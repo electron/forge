@@ -19,7 +19,7 @@ jobs:
         node-version: 14.x
         cache: yarn
     - name: Run dependabolt
-      if: github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn')
+      if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
       uses: malept/github-action-dependabolt@v4.0.1
       env:
         DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}

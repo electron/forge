@@ -7,7 +7,7 @@
     "start": "electron ."
   },
   "devDependencies": {
-    "@vercel/webpack-asset-relocator-loader": "1.6.0",
+    "@vercel/webpack-asset-relocator-loader": "1.7.0",
     "electron": "^13.1.2"
   },
   "dependencies": {
