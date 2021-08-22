@@ -120,6 +120,13 @@ export default async ({
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
+
+      if (!resolvableTarget.name) {
+        throw new Error(`The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`);
+      } else if (typeof resolvableTarget.name !== 'string') {
+        throw new Error(`The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`);
+      }
+
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
         throw new Error(`Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`);
