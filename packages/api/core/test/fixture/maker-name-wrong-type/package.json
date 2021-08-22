@@ -1,0 +1,9 @@
+{
+  "config": {
+    "forge": {
+      "makers": [{
+        "name": 1
+      }]
+    }
+  }
+}
