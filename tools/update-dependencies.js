@@ -8,6 +8,7 @@ const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
   'electron-notarize', // There's a bug in the TypeScript definition which affects Packager
+  'find-up', // Requires ESM
   'log-symbols', // Requires ESM
   'ora', // Requires ESM
   'typescript', // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699

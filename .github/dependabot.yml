@@ -10,6 +10,7 @@ updates:
       - dependency-name: aws-sdk
       - dependency-name: commander
       - dependency-name: electron-notarize
+      - dependency-name: find-up
       - dependency-name: log-symbols
       - dependency-name: ora
       - dependency-name: typescript
