@@ -126,7 +126,7 @@
     "eslint-plugin-mocha": "^9.0.0",
     "fetch-mock": "^9.10.7",
     "generate-changelog": "^1.8.0",
-    "husky": "^7.0.1",
+    "husky": "^7.0.2",
     "lint-staged": "^11.0.0",
     "listr": "^0.14.1",
     "minimist": "^1.2.5",
