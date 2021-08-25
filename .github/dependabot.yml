@@ -11,6 +11,7 @@ updates:
       - dependency-name: commander
       - dependency-name: electron-notarize
       - dependency-name: log-symbols
+      - dependency-name: ora
       - dependency-name: typescript
         versions: ['4.1.x', '4.2.x', '4.3.x']
       - dependency-name: username
