@@ -108,7 +108,7 @@ export default async ({
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-  let packagerSpinner: OraImpl | null = null;
+  let packagerSpinner: OraImpl | undefined;
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 

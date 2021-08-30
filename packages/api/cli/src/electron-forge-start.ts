@@ -57,7 +57,7 @@ import workingDir from './util/working-dir';
 
   const spawned = await api.start(opts);
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     const listenForExit = (child: ElectronProcess) => {
       let onExit: NodeJS.ExitListener;
       let onRestart: (newChild: ElectronProcess) => void;

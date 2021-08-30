@@ -29,7 +29,7 @@ export default async (dir: string, template: string): Promise<ForgeTemplate> => 
         foundTemplate = true;
         break;
       } catch (err) {
-        d(`Error: ${err.message || err}`);
+        d(`Error: ${err instanceof Error ? err.message : err}`);
       }
     }
     if (!foundTemplate) {

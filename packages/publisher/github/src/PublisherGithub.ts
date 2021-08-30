@@ -7,6 +7,7 @@ import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base'
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 
 import GitHub from './util/github';
+import NoReleaseError from './util/no-release-error';
 import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
@@ -62,11 +63,10 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             per_page: 100,
           })).data.find((testRelease: GitHubRelease) => testRelease.tag_name === `v${releaseName}`);
           if (!release) {
-            // eslint-disable-next-line no-throw-literal
-            throw { code: 404 };
+            throw new NoReleaseError(404);
           }
         } catch (err) {
-          if (err.code === 404) {
+          if (err instanceof NoReleaseError && err.code === 404) {
             // Release does not exist, let's make it
             release = (await github.getGitHub().repos.createRelease({
               owner: config.repository.owner,

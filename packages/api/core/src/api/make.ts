@@ -231,12 +231,14 @@ export default async ({
             arch: targetArch,
           });
         } catch (err) {
-          if (err) {
+          if (err instanceof Error) {
             // eslint-disable-next-line no-throw-literal
             throw {
               message: `An error occured while making for target: ${maker.name}`,
               stack: `${err.message}\n${err.stack}`,
             };
+          } else if (err) {
+            throw err;
           } else {
             throw new Error(`An unknown error occured while making for target: ${maker.name}`);
           }

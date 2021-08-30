@@ -11,7 +11,6 @@ const DO_NOT_UPGRADE = [
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM
   'ora', // Requires ESM
-  'typescript', // Promisify issues, see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/49699
   'username' // Requires ESM
 ]
 
