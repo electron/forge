@@ -19,47 +19,35 @@ type S3Artifact = {
   arch: string;
 };
 
-function generateCredentials(config: PublisherS3Config): Credentials | undefined {
-  const accessKeyId = config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
-
-  if (accessKeyId && secretAccessKey) {
-    return { accessKeyId, secretAccessKey };
-  }
-
-  return undefined;
-}
-
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
 
   async publish({
     makeResults,
   }: PublisherOptions) {
-    const { config } = this;
     const artifacts: S3Artifact[] = [];
 
-    if (!config.bucket) {
+    if (!this.config.bucket) {
       throw new Error('In order to publish to S3, you must set the "bucket" property in your Forge publisher config. See the docs for more info');
     }
 
     for (const makeResult of makeResults) {
       artifacts.push(...makeResult.artifacts.map((artifact) => ({
         path: artifact,
-        keyPrefix: config.folder || makeResult.packageJSON.version,
+        keyPrefix: this.config.folder || makeResult.packageJSON.version,
         platform: makeResult.platform,
         arch: makeResult.arch,
       })));
     }
 
     const s3Client = new S3Client({
-      credentials: generateCredentials(config),
-      region: config.region,
-      endpoint: config.endpoint,
-      forcePathStyle: !!config.s3ForcePathStyle,
+      credentials: this.generateCredentials(),
+      region: this.config.region,
+      endpoint: this.config.endpoint,
+      forcePathStyle: !!this.config.s3ForcePathStyle,
     });
 
-    d('creating s3 client with options:', config);
+    d('creating s3 client with options:', this.config);
 
     let uploaded = 0;
     const spinnerText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
@@ -71,9 +59,9 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
           client: s3Client,
           params: {
             Body: fs.createReadStream(artifact.path),
-            Bucket: config.bucket,
+            Bucket: this.config.bucket,
             Key: this.keyForArtifact(artifact),
-            ACL: config.public ? 'public-read' : 'private',
+            ACL: this.config.public ? 'public-read' : 'private',
           },
         });
 
@@ -101,5 +89,16 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     }
 
     return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
+  }
+
+  generateCredentials(): Credentials | undefined {
+    const accessKeyId = this.config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = this.config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+
+    if (accessKeyId && secretAccessKey) {
+      return { accessKeyId, secretAccessKey };
+    }
+
+    return undefined;
   }
 }
