@@ -1,4 +1,5 @@
 import debug from 'debug';
+import { ExitError } from '@malept/cross-spawn-promise';
 import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
 
 const d = debug('electron-forge:dependency-installer');
@@ -41,6 +42,10 @@ export default async (
       stdio: 'pipe',
     });
   } catch (err) {
-    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
+    if (err instanceof ExitError) {
+      throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
+    } else {
+      throw err;
+    }
   }
 };

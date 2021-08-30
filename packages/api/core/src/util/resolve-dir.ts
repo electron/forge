@@ -27,7 +27,9 @@ export default async (dir: string) => {
       try {
         await getElectronVersion(mDir, packageJSON);
       } catch (err) {
-        lastError = err.message;
+        if (err instanceof Error) {
+          lastError = err.message;
+        }
       }
 
       if (packageJSON.config && packageJSON.config.forge) {
