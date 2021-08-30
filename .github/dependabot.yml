@@ -13,8 +13,6 @@ updates:
       - dependency-name: find-up
       - dependency-name: log-symbols
       - dependency-name: ora
-      - dependency-name: typescript
-        versions: ['4.1.x', '4.2.x', '4.3.x']
       - dependency-name: username
   - package-ecosystem: "npm"
     directory: "/packages/template/typescript/tmpl"
