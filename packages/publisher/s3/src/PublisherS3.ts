@@ -1,10 +1,12 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
-
+import { Credentials } from '@aws-sdk/types';
 import debug from 'debug';
 import fs from 'fs';
 import path from 'path';
-import S3 from 'aws-sdk/clients/s3';
+import { S3Client } from '@aws-sdk/client-s3';
+import { Progress, Upload } from '@aws-sdk/lib-storage';
+
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { asyncOra } from '@electron-forge/async-ora';
 
 import { PublisherS3Config } from './Config';
 
@@ -16,6 +18,17 @@ type S3Artifact = {
   platform: string;
   arch: string;
 };
+
+function generateCredentials(config: PublisherS3Config): Credentials | undefined {
+  const accessKeyId = config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+
+  if (accessKeyId && secretAccessKey) {
+    return { accessKeyId, secretAccessKey };
+  }
+
+  return undefined;
+}
 
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
@@ -35,12 +48,11 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       })));
     }
 
-    const s3Client = new S3({
-      accessKeyId: config.accessKeyId || process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY,
+    const s3Client = new S3Client({
+      credentials: generateCredentials(config),
       region: config.region || undefined,
       endpoint: config.endpoint || undefined,
-      s3ForcePathStyle: !!config.s3ForcePathStyle,
+      forcePathStyle: !!config.s3ForcePathStyle,
     });
 
     if (!s3Client.config.credentials || !config.bucket) {
@@ -54,20 +66,25 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
     await asyncOra(spinnerText(), async (uploadSpinner) => {
       await Promise.all(artifacts.map(async (artifact) => {
-        const uploader = s3Client.upload({
-          Body: fs.createReadStream(artifact.path),
-          Bucket: config.bucket,
-          Key: this.keyForArtifact(artifact),
-          ACL: config.public ? 'public-read' : 'private',
-        } as S3.PutObjectRequest);
         d('uploading:', artifact.path);
-
-        uploader.on('httpUploadProgress', (progress) => {
-          const p = `${Math.round((progress.loaded / progress.total) * 100)}%`;
-          d(`Upload Progress (${path.basename(artifact.path)}) ${p}`);
+        const uploader = new Upload({
+          client: s3Client,
+          params: {
+            Body: fs.createReadStream(artifact.path),
+            Bucket: config.bucket,
+            Key: this.keyForArtifact(artifact),
+            ACL: config.public ? 'public-read' : 'private',
+          },
         });
 
-        await uploader.promise();
+        uploader.on('httpUploadProgress', (progress: Progress) => {
+          if (progress.total) {
+            const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
+            d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
+          }
+        });
+
+        await uploader.done();
         uploaded += 1;
         uploadSpinner.text = spinnerText();
       }));
