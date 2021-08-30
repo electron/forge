@@ -1,3 +1,26 @@
+#### [6.0.0-beta.60](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.60) (2021-08-30)
+
+##### New Features
+
+* **plugin-webpack:**  allow most webpack-dev-server options to be configurable (#2444) ([699d4862](https://github.com/electron-userland/electron-forge/commit/699d4862))
+* **deps:**  upgrade to electron-rebuild@^3.1.1 (#2434) ([60778998](https://github.com/electron-userland/electron-forge/commit/60778998))
+
+##### Bug Fixes
+
+* **core:**
+  *  better errors when maker names are invalid (#2467) ([ca41d9ba](https://github.com/electron-userland/electron-forge/commit/ca41d9ba))
+  *  add support for finding electron for npm 7 workspaces (#2446) ([4c601519](https://github.com/electron-userland/electron-forge/commit/4c601519))
+* **plugin-webpack:**
+  *  fix deprecation warnings for dev-server@4.0.0 (#2457) ([99797449](https://github.com/electron-userland/electron-forge/commit/99797449))
+  *  don't specify resolve.modules by default (#2149) ([4a992b76](https://github.com/electron-userland/electron-forge/commit/4a992b76))
+  *  don't show the error message if packagerConfig.ignore is a function (#2424) ([4b4f16c3](https://github.com/electron-userland/electron-forge/commit/4b4f16c3))
+* **template-webpack:**  only use node-loader if the .node files are in native_modules/ (#2449) ([bd2526b3](https://github.com/electron-userland/electron-forge/commit/bd2526b3))
+* **maker-dmg:**  add the arch to the default dmg name (#2431) ([0c65f17d](https://github.com/electron-userland/electron-forge/commit/0c65f17d))
+
+##### Other Changes
+
+* **core:**  add required Forge version for templates (#2415) ([c094d168](https://github.com/electron-userland/electron-forge/commit/c094d168))
+
 #### [6.0.0-beta.59](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.59) (2021-07-26)
 
 ##### Bug Fixes
