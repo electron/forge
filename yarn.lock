@@ -1558,7 +1558,12 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^16.7.3":
+"@types/node@*":
+  version "16.7.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.6.tgz#8666478db8095aa66e25b7e469f3e7b53ea2855e"
+  integrity sha512-VESVNFoa/ahYA62xnLBjo5ur6gPsgEE5cNRy8SrdnkZ2nwJSW0kJ4ufbFr2zuU9ALtHM8juY53VcRoTA7htXSg==
+
+"@types/node@^16.7.3":
   version "16.7.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.7.3.tgz#8eef3b12df245e6275f083dba37730f29700a75a"
   integrity sha512-S6gm2sm9xIRWTxD7Ttj8N1ZrYfqdqZEU38Nwnrhd6krk7zf8vdgMgzz8hpAX9CfmXaJfP+Vqy2EhJpVavNEocg==
@@ -3683,10 +3688,10 @@ electron-packager@^15.0.0:
     semver "^7.1.3"
     yargs-parser "^20.0.0"
 
-electron-rebuild@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-3.2.0.tgz#5e5b8737501c49a3d3966702f9cf65292ac2683b"
-  integrity sha512-iCR90cKuLZaVsVGpEPp7XASkqLiuoZfpJnBVyKXZy0e6HuE8CtNSSNskkOCzEIcxQXcQAklFr0LJUj/zeFxJMw==
+electron-rebuild@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-3.2.2.tgz#b7bdcc6bb7a8868a517dfb341282ca5a4c7e502e"
+  integrity sha512-eeic8ZEVhMjCBviItDjL5kxYQQSlQjgVsG4dSP3/dLxwMH7o1tnPq57DWstoSpss2oYod/RvGXADSMX0XVoyfA==
   dependencies:
     "@malept/cross-spawn-promise" "^2.0.0"
     colors "^1.3.3"
