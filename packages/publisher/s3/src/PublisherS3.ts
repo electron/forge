@@ -39,6 +39,10 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     const { config } = this;
     const artifacts: S3Artifact[] = [];
 
+    if (!config.bucket) {
+      throw new Error('In order to publish to s3 you must set the "bucket" property in your Forge publisher config. See the docs for more info');
+    }
+
     for (const makeResult of makeResults) {
       artifacts.push(...makeResult.artifacts.map((artifact) => ({
         path: artifact,
@@ -54,10 +58,6 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       endpoint: config.endpoint,
       forcePathStyle: !!config.s3ForcePathStyle,
     });
-
-    if (!s3Client.config.credentials || !config.bucket) {
-      throw new Error('In order to publish to s3 you must set the "s3.accessKeyId", "process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY" and "s3.bucket" properties in your Forge config. See the docs for more info');
-    }
 
     d('creating s3 client with options:', config);
 
