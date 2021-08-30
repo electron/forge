@@ -6,8 +6,10 @@ updates:
     schedule:
       interval: "daily"
     ignore: # Everything not annotated here is documented in tools/update-dependencies.js
-      # aws-sdk upgrades too often, do this manually
-      - dependency-name: aws-sdk
+      # @aws-sdk/* upgrades too often, do this manually
+      - dependency-name: @aws-sdk/client-s3
+      - dependency-name: @aws-sdk/lib-storage
+      - dependency-name: @aws-sdk/types
       - dependency-name: commander
       - dependency-name: electron-notarize
       - dependency-name: find-up

@@ -15,10 +15,12 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.28.0",
+    "@aws-sdk/lib-storage": "^3.28.0",
+    "@aws-sdk/types": "^3.25.0",
     "@electron-forge/async-ora": "6.0.0-beta.59",
     "@electron-forge/publisher-base": "6.0.0-beta.59",
     "@electron-forge/shared-types": "6.0.0-beta.59",
-    "aws-sdk": "^2.472.0",
     "debug": "^4.3.1"
   }
 }
