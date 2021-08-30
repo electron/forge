@@ -50,8 +50,8 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
     const s3Client = new S3Client({
       credentials: generateCredentials(config),
-      region: config.region || undefined,
-      endpoint: config.endpoint || undefined,
+      region: config.region,
+      endpoint: config.endpoint,
       forcePathStyle: !!config.s3ForcePathStyle,
     });
 
