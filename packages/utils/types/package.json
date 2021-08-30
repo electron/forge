@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "6.0.0-beta.59",
+  "version": "6.0.0-beta.60",
   "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "index.d.ts",
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.59",
+    "@electron-forge/async-ora": "6.0.0-beta.60",
     "electron-packager": "^15.0.0",
     "electron-rebuild": "^3.2.2",
     "ora": "^5.0.0"
