@@ -40,7 +40,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     const artifacts: S3Artifact[] = [];
 
     if (!config.bucket) {
-      throw new Error('In order to publish to s3 you must set the "bucket" property in your Forge publisher config. See the docs for more info');
+      throw new Error('In order to publish to S3, you must set the "bucket" property in your Forge publisher config. See the docs for more info');
     }
 
     for (const makeResult of makeResults) {
