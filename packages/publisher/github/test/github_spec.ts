@@ -53,17 +53,15 @@ describe('GitHub', () => {
       expect((api as any).options).to.deep.equal({
         auth: '1234',
         baseUrl: 'https://github.example.com:8443/enterprise',
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+        userAgent: 'Electron Forge',
       });
     });
 
     it('should not override the user agent', () => {
-      const gh = new GitHub('1234', true, { headers: { 'user-agent': 'Something' } });
+      const gh = new GitHub('1234', true, { userAgent: 'Something' });
       const api = gh.getGitHub();
 
-      expect((api as any).options.headers['user-agent']).to.equal('Electron Forge');
+      expect((api as any).options.userAgent).to.equal('Electron Forge');
     });
 
     it('should authenticate if a token is present', () => {
@@ -72,9 +70,7 @@ describe('GitHub', () => {
       gh.getGitHub();
       expect((api as any).options).to.deep.equal({
         auth: 'token',
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+        userAgent: 'Electron Forge',
       });
     });
 
@@ -83,9 +79,7 @@ describe('GitHub', () => {
       const api = gh.getGitHub();
       gh.getGitHub();
       expect((api as any).options).to.deep.equal({
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+        userAgent: 'Electron Forge',
       });
     });
 

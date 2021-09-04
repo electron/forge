@@ -1,6 +1,5 @@
 import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
-import { merge } from 'lodash';
 
 export default class GitHub {
   private options: OctokitOptions;
@@ -12,10 +11,10 @@ export default class GitHub {
     requireAuth: boolean = false,
     options: OctokitOptions = {},
   ) {
-    this.options = merge(
-      options,
-      { headers: { 'user-agent': 'Electron Forge' } },
-    );
+    this.options = {
+      ...options,
+      userAgent: 'Electron Forge',
+    };
     if (authToken) {
       this.token = authToken;
     } else if (process.env.GITHUB_TOKEN) {
