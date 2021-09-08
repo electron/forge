@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import { Octokit } from '@octokit/rest';
+import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 import proxyquire from 'proxyquire';
 import sinon, { SinonSpy } from 'sinon';
 
@@ -37,6 +39,12 @@ describe('GitHub', () => {
   });
 
   describe('getGitHub', () => {
+    function getOptions(api: Octokit): OctokitOptions {
+      const { options } = api as any;
+      delete options.log;
+      return options;
+    }
+
     it('should create a new GitHubAPI', () => {
       const gh = new GitHub();
       expect(gitHubSpy.callCount).to.equal(0);
@@ -50,31 +58,27 @@ describe('GitHub', () => {
       });
       const api = gh.getGitHub();
 
-      expect((api as any).options).to.deep.equal({
+      expect(getOptions(api)).to.deep.equal({
         auth: '1234',
         baseUrl: 'https://github.example.com:8443/enterprise',
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+        userAgent: 'Electron Forge',
       });
     });
 
     it('should not override the user agent', () => {
-      const gh = new GitHub('1234', true, { headers: { 'user-agent': 'Something' } });
+      const gh = new GitHub('1234', true, { userAgent: 'Something' });
       const api = gh.getGitHub();
 
-      expect((api as any).options.headers['user-agent']).to.equal('Electron Forge');
+      expect(getOptions(api).userAgent).to.equal('Electron Forge');
     });
 
     it('should authenticate if a token is present', () => {
       const gh = new GitHub('token');
       const api = gh.getGitHub();
       gh.getGitHub();
-      expect((api as any).options).to.deep.equal({
+      expect(getOptions(api)).to.deep.equal({
         auth: 'token',
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+        userAgent: 'Electron Forge',
       });
     });
 
@@ -82,10 +86,8 @@ describe('GitHub', () => {
       const gh = new GitHub();
       const api = gh.getGitHub();
       gh.getGitHub();
-      expect((api as any).options).to.deep.equal({
-        headers: {
-          'user-agent': 'Electron Forge',
-        },
+      expect(getOptions(api)).to.deep.equal({
+        userAgent: 'Electron Forge',
       });
     });
 

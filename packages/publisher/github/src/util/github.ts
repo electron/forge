@@ -1,6 +1,9 @@
+import debug from 'debug';
 import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
-import { merge } from 'lodash';
+
+const logInfo = debug('electron-forge:publisher:github:info');
+const logDebug = debug('electron-forge:publisher:github:debug');
 
 export default class GitHub {
   private options: OctokitOptions;
@@ -12,10 +15,19 @@ export default class GitHub {
     requireAuth: boolean = false,
     options: OctokitOptions = {},
   ) {
-    this.options = merge(
-      options,
-      { headers: { 'user-agent': 'Electron Forge' } },
-    );
+    const noOp = () => {};
+
+    this.options = {
+      ...options,
+      log: {
+        debug: logDebug.enabled ? logDebug : noOp,
+        error: console.error,
+        info: logInfo.enabled ? logInfo : noOp,
+        warn: console.warn,
+      },
+      userAgent: 'Electron Forge',
+    };
+
     if (authToken) {
       this.token = authToken;
     } else if (process.env.GITHUB_TOKEN) {
