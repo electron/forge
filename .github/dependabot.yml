@@ -10,10 +10,12 @@ updates:
       - dependency-name: @aws-sdk/client-s3
       - dependency-name: @aws-sdk/lib-storage
       - dependency-name: @aws-sdk/types
+      - dependency-name: @types/node-fetch
       - dependency-name: commander
       - dependency-name: electron-notarize
       - dependency-name: find-up
       - dependency-name: log-symbols
+      - dependency-name: node-fetch
       - dependency-name: ora
       - dependency-name: username
   - package-ecosystem: "npm"
