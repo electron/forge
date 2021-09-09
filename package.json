@@ -76,7 +76,7 @@
     "pretty-ms": "^7.0.0",
     "resolve-package": "^1.0.1",
     "semver": "^7.2.1",
-    "source-map-support": "^0.5.13",
+    "source-map-support": "^0.5.20",
     "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
     "webpack": "^5.37.0",
