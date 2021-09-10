@@ -8,7 +8,6 @@ const DO_NOT_UPGRADE = [
   '@types/node-fetch', // No longer needed when node-fetch is upgraded to >= 3.0.0
   '@typescript-eslint/eslint-plugin', // special case
   'commander', // TODO: convert to yargs
-  'electron-notarize', // There's a bug in the TypeScript definition which affects Packager
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM
   'node-fetch', // Requires ESM
