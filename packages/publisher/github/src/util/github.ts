@@ -21,9 +21,9 @@ export default class GitHub {
       ...options,
       log: {
         debug: logDebug.enabled ? logDebug : noOp,
-        error: console.error,
+        error: console.error, // eslint-disable-line no-console
         info: logInfo.enabled ? logInfo : noOp,
-        warn: console.warn,
+        warn: console.warn, // eslint-disable-line no-console
       },
       userAgent: 'Electron Forge',
     };
