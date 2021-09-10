@@ -10301,10 +10301,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typedoc@^0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.22.0.tgz#72f0762e7e81eb1033323b4d15f844996ec25e2a"
-  integrity sha512-y6RnfkCHtU2NN3GqCQAQGvatxH1Vue3EU0SVBumvm198Ig9agiztwLH9h5wm8Nx91jCEd/nDKe3mTeiI/JlERA==
+typedoc@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.22.1.tgz#2919ed9d6bd3857dea7575d38bad907a9ba6ba68"
+  integrity sha512-JO1/nkMhUKb+Khiekn64HyBniuUuI3ePHN78BMiiFVHi4Oc8VqppWZiE2CNB38ZNqtwZFM+U3j0sJht3N6bWrg==
   dependencies:
     glob "^7.1.7"
     lunr "^2.3.9"
