@@ -1,3 +1,13 @@
+#### [6.0.0-beta.61](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.61) (2021-09-10)
+
+##### New Features
+
+* **publisher-github:**  add debug support for Octokit (#2499) ([73252c30](https://github.com/electron-userland/electron-forge/commit/73252c30))
+
+##### Bug Fixes
+
+*  unpin electron-notarize (#2515) ([af78353b](https://github.com/electron-userland/electron-forge/commit/af78353b))
+
 #### [6.0.0-beta.60](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.60) (2021-08-30)
 
 ##### New Features
