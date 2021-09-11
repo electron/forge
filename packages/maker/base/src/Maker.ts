@@ -5,6 +5,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import which from 'which';
 
+export type EmptyConfig = Record<string, never>;
+
 export interface MakerOptions {
   /**
    * The directory containing the packaged Electron application

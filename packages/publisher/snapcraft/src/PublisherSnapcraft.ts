@@ -6,6 +6,8 @@ import path from 'path';
 
 import { PublisherSnapcraftConfig } from './Config';
 
+// TODO: convert to import statement once electron-installer-snap imports Snapcraft properly.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Snapcraft = require('electron-installer-snap/src/snapcraft');
 
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {

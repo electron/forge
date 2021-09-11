@@ -17,6 +17,8 @@ import ExeInstaller from '@electron-forge/installer-exe';
 
 import { info } from '../util/messages';
 
+// TODO: replace with a got-based module
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const nugget = require('nugget');
 
 const d = debug('electron-forge:install');

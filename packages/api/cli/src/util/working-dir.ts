@@ -4,7 +4,7 @@ import path from 'path';
 export default function workingDir(
   dir: string,
   cwd: string,
-  checkExisting: boolean = true,
+  checkExisting = true,
 ): string {
   let finalDir = dir;
   if (cwd) {

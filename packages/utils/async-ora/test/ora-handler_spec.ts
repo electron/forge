@@ -49,14 +49,14 @@ describe('asyncOra', () => {
   });
 
   it('should create an ora with an initial value', () => {
-    asyncOra('say this first', async () => {});
+    asyncOra('say this first', async () => { /* no-op async function */ });
     expect(currentOra).to.not.equal(undefined);
     expect(currentOra!.text).to.equal('say this first');
   });
 
   it('should not create an ora when in non-interactive mode', () => {
     asyncOra.interactive = false;
-    asyncOra('say this again', async () => {});
+    asyncOra('say this again', async () => { /* no-op async function */ });
     expect(currentOra).to.equal(undefined);
   });
 
@@ -81,7 +81,7 @@ describe('asyncOra', () => {
     await asyncOra('this is gonna end badly', async () => {
       // eslint-disable-next-line no-throw-literal
       throw { message: 'Not an error', stack: 'No Stack - Not an error' };
-    }, () => {});
+    }, () => { /* no-op exit function */ });
     expect((currentOra as any).succeeded).to.equal(false);
     expect((currentOra as any).failed).to.equal(true);
   });

@@ -6,7 +6,7 @@ import path from 'path';
 // eslint-disable-next-line import/prefer-default-export
 export const createCompileHook = (originalDir: string) => async (_: any, buildPath: string) => {
   await asyncOra('Compiling Application', async () => {
-    // eslint-disable-next-line import/no-dynamic-require, global-require
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
     const compileCLI = require(path.resolve(originalDir, 'node_modules/electron-compile/lib/cli.js'));
 
     async function compileAndShim(appDir: string) {
@@ -16,7 +16,7 @@ export const createCompileHook = (originalDir: string) => async (_: any, buildPa
 
           if ((await fs.stat(fullPath)).isDirectory()) {
             const { log } = console;
-            console.log = () => {};
+            console.log = () => { /* disable log function for electron-compile */ };
             await compileCLI.main(appDir, [fullPath]);
             console.log = log;
           }

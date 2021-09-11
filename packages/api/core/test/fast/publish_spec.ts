@@ -7,6 +7,11 @@ import sinon, { SinonStub } from 'sinon';
 
 import { PublishOptions } from '../../src/api';
 
+async function loadFixtureConfig() {
+  // eslint-disable-next-line node/no-missing-require
+  return require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+}
+
 describe('publish', () => {
   let publish: (opts: PublishOptions) => Promise<void>;
   let makeStub: SinonStub;
@@ -25,7 +30,7 @@ describe('publish', () => {
     nowhereStub = sinon.stub();
     publishers = ['@electron-forge/publisher-test'];
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const fakePublisher = (stub: SinonStub, name: string = 'default') => class _FakePublisher {
+    const fakePublisher = (stub: SinonStub, name = 'default') => class _FakePublisher {
       private publish: SinonStub;
 
       public name = name;
@@ -43,7 +48,7 @@ describe('publish', () => {
         readMutatedPackageJson: () => Promise.resolve(require('../fixture/dummy_app/package.json')),
       },
       '../util/forge-config': async () => {
-        const config = await (require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')));
+        const config = await loadFixtureConfig();
 
         config.publishers = publishers;
         return config;
@@ -106,7 +111,7 @@ describe('publish', () => {
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
-    const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+    const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
 
@@ -133,7 +138,7 @@ describe('publish', () => {
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
-    const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+    const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
 

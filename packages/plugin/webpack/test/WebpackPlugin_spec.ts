@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { ForgeConfig } from '@electron-forge/shared-types';
 import * as fs from 'fs-extra';
+import { IgnoreFunction } from 'electron-packager';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -87,7 +88,7 @@ describe('WebpackPlugin', () => {
 
       it('ignores everything but files in .webpack', async () => {
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore('')).to.equal(false);
         expect(ignore('/abc')).to.equal(true);
@@ -100,7 +101,7 @@ describe('WebpackPlugin', () => {
         webpackConfig.renderer.jsonStats = true;
         plugin = new WebpackPlugin(webpackConfig);
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
         expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);

@@ -37,7 +37,7 @@ export default async (dir: string, template: string): Promise<ForgeTemplate> => 
     }
   });
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
   const templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
   return templateModule.default || templateModule;

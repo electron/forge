@@ -1,5 +1,7 @@
 import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
+// TODO: convert to an import statement when this is a public API
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { allOfficialArchsForPlatformAndVersion } = require('electron-packager/src/targets');
 
 export default function parseArchs(

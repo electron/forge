@@ -76,7 +76,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.cleanup) {
       for (const watcher of this.watchers) {
         d('cleaning webpack watcher');
-        watcher.close(() => {});
+        watcher.close(() => { /* Do nothing when the watcher closes */ });
       }
       this.watchers = [];
       for (const server of this.servers) {
@@ -91,6 +91,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       this.loggers = [];
     }
     if (err) console.error(err.stack);
+    // Why: This is literally what the option says to do.
+    // eslint-disable-next-line no-process-exit
     if (options.exit) process.exit();
   }
 

@@ -12,9 +12,10 @@ import { readRawPackageJson } from '../../src/util/read-package-json';
 import { InitOptions } from '../../src/api';
 
 const forge = proxyquire.noCallThru().load('../../src/api', {
-  './install': async () => {},
+  './install': async () => { /* don't load the install module for this spec */ },
 }).api;
 
+type BeforeInitFunction = () => void;
 type PackageJSON = Record<string, any>;
 
 async function updatePackageJSON(
@@ -31,7 +32,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;
 
-    const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: Function) => {
+    const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
       before(async () => {
         dir = await ensureTestDirIsNonexistent();
         if (beforeInit) {
@@ -270,6 +271,7 @@ describe('Electron Forge API', () => {
 
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        // eslint-disable-next-line node/no-missing-require
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
       });
 
@@ -447,6 +449,7 @@ describe('Electron Forge API', () => {
           if (process.platform !== 'darwin') return;
           await expect(forge.make({
             dir,
+            // eslint-disable-next-line node/no-missing-require
             overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
             platform: 'mas',
           })).to.eventually.have.length(2);

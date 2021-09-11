@@ -70,6 +70,8 @@ export default async ({
   // eslint-disable-next-line max-len
   if (typeof confirmImport === 'function') {
     if (!await confirmImport()) {
+      // TODO: figure out if we can just return early here
+      // eslint-disable-next-line no-process-exit
       process.exit(0);
     }
   }
@@ -86,6 +88,8 @@ export default async ({
       warn(interactive, 'It looks like this project is already configured for Electron Forge'.green);
       if (typeof shouldContinueOnExisting === 'function') {
         if (!await shouldContinueOnExisting()) {
+          // TODO: figure out if we can just return early here
+          // eslint-disable-next-line no-process-exit
           process.exit(0);
         }
       }

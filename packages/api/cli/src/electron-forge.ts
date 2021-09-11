@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import program from 'commander';
@@ -7,6 +6,7 @@ import './util/terminate';
 
 import checkSystem from './util/check-system';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const metadata = require('../package.json');
 
 const originalSC = program.executeSubCommand.bind(program);

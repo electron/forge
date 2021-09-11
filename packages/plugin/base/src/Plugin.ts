@@ -18,6 +18,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
   }
 
   init(_dir: string, _config: ForgeConfig) {
+    // By default, do nothing. This can be overridden.
   }
 
   getHook(_hookName: string): ForgeHookFn | null {

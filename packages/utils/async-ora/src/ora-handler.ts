@@ -34,7 +34,7 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
   return new Promise((resolve, reject) => {
     asyncFn(fnOra).then(() => {
       fnOra.succeed();
-      resolve();
+      return resolve();
     }).catch((err) => {
       fnOra.fail();
       if (asyncOra.interactive) {

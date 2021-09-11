@@ -12,10 +12,10 @@ export default class GitHub {
 
   constructor(
     authToken: string | undefined = undefined,
-    requireAuth: boolean = false,
+    requireAuth = false,
     options: OctokitOptions = {},
   ) {
-    const noOp = () => {};
+    const noOp = () => { /* Intentionally does nothing */ };
 
     this.options = {
       ...options,

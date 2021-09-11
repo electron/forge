@@ -28,7 +28,9 @@ export default class Logger {
     this.app.use('/xterm/addons/search', express.static(path.dirname(require.resolve('xterm-addon-search'))));
     this.app.use('/xterm', express.static(path.resolve(require.resolve('xterm'), '../..')));
     this.app.use(express.static(path.resolve(__dirname, '..', 'static')));
-    (this.app as any).ws('/sub', () => {});
+    (this.app as any).ws('/sub', () => {
+      // I assume this endpoint is just a no-op needed for some reason.
+    });
   }
 
   /**

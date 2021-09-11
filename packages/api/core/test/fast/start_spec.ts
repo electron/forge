@@ -60,7 +60,7 @@ describe('start', () => {
 
   it('should not spawn if a plugin overrides the start command', async () => {
     resolveStub.returnsArg(0);
-    shouldOverride = { on: () => {} };
+    shouldOverride = { on: () => { /* fake emitter */ } };
     await start({
       dir: __dirname,
       interactive: false,
@@ -174,7 +174,7 @@ describe('start', () => {
 
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
-    const fakeChild = { on: () => {} };
+    const fakeChild = { on: () => { /* fake emitter */ } };
     spawnStub.returns(fakeChild);
 
     await expect(start({

@@ -59,8 +59,11 @@ import workingDir from './util/working-dir';
 
   await new Promise<void>((resolve) => {
     const listenForExit = (child: ElectronProcess) => {
+      // Why: changing to const causes TypeScript compilation to fail.
+      /* eslint-disable prefer-const */
       let onExit: NodeJS.ExitListener;
       let onRestart: (newChild: ElectronProcess) => void;
+      /* eslint-enable prefer-const */
       const removeListeners = () => {
         child.removeListener('exit', onExit);
         child.removeListener('restarted', onRestart);

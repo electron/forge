@@ -38,7 +38,7 @@ export default async function locateElectronExecutable(
     electronModulePath = undefined;
   }
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
   let electronExecPath = require(electronModulePath || path.resolve(dir, 'node_modules/electron'));
 
   if (typeof electronExecPath !== 'string') {

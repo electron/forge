@@ -9,22 +9,26 @@ import { runMutatingHook } from './hook';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
+// Why: needs access to Object methods and also needs to be able to match any interface.
+// eslint-disable-next-line @typescript-eslint/ban-types
+type ProxiedObject = object;
+
 // eslint-disable-next-line arrow-parens
-const proxify = <T extends object>(
+const proxify = <T extends ProxiedObject>(
   buildIdentifier: string | (() => string),
-  object: T,
+  proxifiedObject: T,
   envPrefix: string,
 ): T => {
   let newObject: T = {} as any;
-  if (Array.isArray(object)) {
+  if (Array.isArray(proxifiedObject)) {
     newObject = [] as any;
   }
 
-  for (const [key, val] of Object.entries(object)) {
+  for (const [key, val] of Object.entries(proxifiedObject)) {
     if (typeof val === 'object' && key !== 'pluginInterface' && !(val instanceof RegExp)) {
-      (newObject as any)[key] = proxify(buildIdentifier, (object as any)[key], `${envPrefix}_${underscoreCase(key)}`);
+      (newObject as any)[key] = proxify(buildIdentifier, (proxifiedObject as any)[key], `${envPrefix}_${underscoreCase(key)}`);
     } else {
-      (newObject as any)[key] = (object as any)[key];
+      (newObject as any)[key] = (proxifiedObject as any)[key];
     }
   }
 
@@ -119,7 +123,7 @@ export default async (dir: string) => {
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
-      // eslint-disable-next-line global-require, import/no-dynamic-require
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, import/no-dynamic-require
       forgeConfig = require(path.resolve(dir, forgeConfig as string)) as ForgeConfig;
     } catch (err) {
       // eslint-disable-next-line no-console

@@ -24,7 +24,7 @@ export default class LoggingPlugin {
       const [onceResolve, onceReject] = once(resolve, reject);
       this.promiseResolver = onceResolve;
       this.promiseRejector = onceReject;
-    }), () => {});
+    }), () => { /* do not exit */ });
   }
 
   private finishRun(error?: string) {

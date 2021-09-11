@@ -38,7 +38,7 @@ export default class WebpackConfigGenerator {
 
   resolveConfig(config: Configuration | string) {
     if (typeof config === 'string') {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
       return require(path.resolve(this.projectDir, config)) as Configuration;
     }
 
