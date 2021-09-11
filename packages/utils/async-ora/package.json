@@ -7,6 +7,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "scripts": {
+    "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
+  },
   "devDependencies": {
     "chai": "^4.3.3",
     "mocha": "^9.0.1",
