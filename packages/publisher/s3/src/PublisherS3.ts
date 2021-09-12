@@ -22,9 +22,7 @@ type S3Artifact = {
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
 
-  async publish({
-    makeResults,
-  }: PublisherOptions): Promise<void> {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
 
     if (!this.config.bucket) {
@@ -32,12 +30,14 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     }
 
     for (const makeResult of makeResults) {
-      artifacts.push(...makeResult.artifacts.map((artifact) => ({
-        path: artifact,
-        keyPrefix: this.config.folder || makeResult.packageJSON.version,
-        platform: makeResult.platform,
-        arch: makeResult.arch,
-      })));
+      artifacts.push(
+        ...makeResult.artifacts.map((artifact) => ({
+          path: artifact,
+          keyPrefix: this.config.folder || makeResult.packageJSON.version,
+          platform: makeResult.platform,
+          arch: makeResult.arch,
+        }))
+      );
     }
 
     const s3Client = new S3Client({
@@ -53,39 +53,37 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     const spinnerText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
 
     await asyncOra(spinnerText(), async (uploadSpinner) => {
-      await Promise.all(artifacts.map(async (artifact) => {
-        d('uploading:', artifact.path);
-        const uploader = new Upload({
-          client: s3Client,
-          params: {
-            Body: fs.createReadStream(artifact.path),
-            Bucket: this.config.bucket,
-            Key: this.keyForArtifact(artifact),
-            ACL: this.config.public ? 'public-read' : 'private',
-          },
-        });
+      await Promise.all(
+        artifacts.map(async (artifact) => {
+          d('uploading:', artifact.path);
+          const uploader = new Upload({
+            client: s3Client,
+            params: {
+              Body: fs.createReadStream(artifact.path),
+              Bucket: this.config.bucket,
+              Key: this.keyForArtifact(artifact),
+              ACL: this.config.public ? 'public-read' : 'private',
+            },
+          });
 
-        uploader.on('httpUploadProgress', (progress: Progress) => {
-          if (progress.total) {
-            const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
-            d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
-          }
-        });
+          uploader.on('httpUploadProgress', (progress: Progress) => {
+            if (progress.total) {
+              const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
+              d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
+            }
+          });
 
-        await uploader.done();
-        uploaded += 1;
-        uploadSpinner.text = spinnerText();
-      }));
+          await uploader.done();
+          uploaded += 1;
+          uploadSpinner.text = spinnerText();
+        })
+      );
     });
   }
 
   keyForArtifact(artifact: S3Artifact): string {
     if (this.config.keyResolver) {
-      return this.config.keyResolver(
-        path.basename(artifact.path),
-        artifact.platform,
-        artifact.arch,
-      );
+      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
     }
 
     return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;

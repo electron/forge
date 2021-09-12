@@ -19,7 +19,9 @@ export async function getMakeOptions(): Promise<MakeOptions> {
     .option('-p, --platform [platform]', 'Target build platform')
     .option('--targets [targets]', 'Override your make targets for this run')
     .allowUnknownOption(true)
-    .action((cwd) => { dir = workingDir(dir, cwd); })
+    .action((cwd) => {
+      dir = workingDir(dir, cwd);
+    })
     .parse(process.argv);
 
   const makeOpts: MakeOptions = {

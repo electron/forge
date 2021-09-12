@@ -41,12 +41,7 @@ export async function expectLintToPass(dir: string): Promise<void> {
   }
 }
 
-export async function expectProjectPathExists(
-  dir: string,
-  subPath: string,
-  pathType: string,
-  exists = true,
-): Promise<void> {
+export async function expectProjectPathExists(dir: string, subPath: string, pathType: string, exists = true): Promise<void> {
   expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
 }
 

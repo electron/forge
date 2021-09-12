@@ -8,7 +8,7 @@ type RequireError = Error & {
   code: string;
   path: string;
   requestPath: string | undefined;
-}
+};
 
 export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | null {
   const testPaths = paths
@@ -41,5 +41,5 @@ export type PossibleModule<T> = {
 // eslint-disable-next-line arrow-parens
 export default <T>(relativeTo: string, paths: string[]): T | null => {
   const result = requireSearchRaw<PossibleModule<T>>(relativeTo, paths);
-  return typeof result === 'object' && result && result.default ? result.default : result as (T | null);
+  return typeof result === 'object' && result && result.default ? result.default : (result as T | null);
 };

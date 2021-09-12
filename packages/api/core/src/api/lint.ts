@@ -12,10 +12,7 @@ export interface LintOptions {
   interactive?: boolean;
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-}: LintOptions): Promise<void> => {
+export default async ({ dir = process.cwd(), interactive = false }: LintOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   let success = true;

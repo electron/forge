@@ -15,11 +15,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     return process.platform === 'linux';
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-  }: MakerOptions): Promise<string[]> {
+  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require
     const installer = require('electron-installer-snap');
 

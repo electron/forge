@@ -11,9 +11,9 @@ import { MakerDMGConfig } from '../src/Config';
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerDMGConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerDMG', () => {
@@ -37,13 +37,16 @@ describe('MakerDMG', () => {
     renameStub = stub().returns(Promise.resolve());
     config = {};
 
-    MakerDMG = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDMG', {
-      '../../util/ensure-output': { ensureFile: ensureFileStub },
-      'electron-installer-dmg': eidStub,
-      'fs-extra': {
-        rename: renameStub,
-      },
-    }).default;
+    MakerDMG = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerDMG', {
+        '../../util/ensure-output': { ensureFile: ensureFileStub },
+        'electron-installer-dmg': eidStub,
+        'fs-extra': {
+          rename: renameStub,
+        },
+      }).default;
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
@@ -54,7 +57,11 @@ describe('MakerDMG', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -67,7 +74,11 @@ describe('MakerDMG', () => {
 
   it('should attempt to rename the DMG file if no custom name is set', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     expect(renameStub.callCount).to.equal(1);
     expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
@@ -75,7 +86,11 @@ describe('MakerDMG', () => {
 
   it('should rename the DMG file to include the version if no custom name is set', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
@@ -84,7 +99,11 @@ describe('MakerDMG', () => {
     config.name = 'foobar';
     createMaker();
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     expect(renameStub.callCount).to.equal(0);
   });

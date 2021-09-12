@@ -135,8 +135,11 @@ export interface ForgeTemplate {
   initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
 }
 
-export type PackagePerson = undefined | string | {
-  name: string;
-  email?: string;
-  url?: string;
-};
+export type PackagePerson =
+  | undefined
+  | string
+  | {
+      name: string;
+      email?: string;
+      url?: string;
+    };

@@ -68,10 +68,13 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
   }
 
   postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions): Promise<void> => {
-    await runElectronegativity({
-      ...this.config,
-      parserPlugins: this.config.parserPlugins ?? [],
-      input: options.outputPaths[0],
-    }, true);
-  }
+    await runElectronegativity(
+      {
+        ...this.config,
+        parserPlugins: this.config.parserPlugins ?? [],
+        input: options.outputPaths[0],
+      },
+      true
+    );
+  };
 }

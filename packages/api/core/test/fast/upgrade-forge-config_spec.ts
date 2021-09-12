@@ -124,7 +124,7 @@ describe('updateUpgradedForgeDevDeps', () => {
           overrideStartLogic: () => Promise.resolve(false),
           triggerHook: () => Promise.resolve(),
           triggerMutatingHook: () => Promise.resolve(),
-        }
+        },
       } as ForgeConfig,
     },
     devDependencies: {},
@@ -158,10 +158,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('adds publishers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
-    packageJSON.config.forge.publishers = [
-      { name: '@electron-forge/publisher-github' },
-      { name: '@electron-forge/publisher-snapcraft' },
-    ];
+    packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);

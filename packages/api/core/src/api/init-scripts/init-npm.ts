@@ -13,13 +13,7 @@ export function siblingDep(name: string): string {
 }
 
 export const deps = ['electron-squirrel-startup'];
-export const devDeps = [
-  siblingDep('cli'),
-  siblingDep('maker-squirrel'),
-  siblingDep('maker-zip'),
-  siblingDep('maker-deb'),
-  siblingDep('maker-rpm'),
-];
+export const devDeps = [siblingDep('cli'), siblingDep('maker-squirrel'), siblingDep('maker-zip'), siblingDep('maker-deb'), siblingDep('maker-rpm')];
 export const exactDevDeps = ['electron'];
 
 export default async (dir: string): Promise<void> => {

@@ -24,7 +24,7 @@ describe('updateElectronDependency', () => {
   it('moves an Electron dependency from dependencies to devDependencies', () => {
     const packageJSON = {
       dependencies: { electron: '0.37.0' },
-      devDependencies: { },
+      devDependencies: {},
     };
     const [dev, exact] = updateElectronDependency(packageJSON, devDeps, exactDevDeps);
     expect(dev.includes('electron@0.37.0')).to.equal(true);
@@ -35,7 +35,8 @@ describe('updateElectronDependency', () => {
 describe('getElectronVersion', () => {
   it('fails without devDependencies', () => expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
-  it('fails without electron devDependencies', () => expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
+  it('fails without electron devDependencies', () =>
+    expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   it('fails with a non-exact version and no electron installed', () => {
     const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
@@ -98,7 +99,8 @@ describe('getElectronVersion', () => {
 describe('getElectronModulePath', () => {
   it('fails without devDependencies', () => expect(getElectronModulePath('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
-  it('fails without electron devDependencies', () => expect(getElectronModulePath('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
+  it('fails without electron devDependencies', () =>
+    expect(getElectronModulePath('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   describe('with no electron installed', () => {
     let tempDir: string;
@@ -119,7 +121,9 @@ describe('getElectronModulePath', () => {
 
   it('works with electron', () => {
     const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'non-exact');
-    return expect(getElectronModulePath(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+    return expect(getElectronModulePath(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(
+      path.join(fixtureDir, 'node_modules', 'electron')
+    );
   });
 
   describe('with npm workspaces', () => {

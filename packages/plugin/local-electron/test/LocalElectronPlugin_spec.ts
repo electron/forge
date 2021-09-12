@@ -29,10 +29,10 @@ describe('LocalElectronPlugin', () => {
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
     });
 
-    it('should throw an error if platforms don\'t match', async () => {
+    it("should throw an error if platforms don't match", async () => {
       const p = new LocalElectronPlugin({ electronPath: 'test/bar', electronPlatform: 'wut' });
       await expect(p.startLogic()).to.eventually.be.rejectedWith(
-        `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`,
+        `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`
       );
     });
 
@@ -82,21 +82,21 @@ describe('LocalElectronPlugin', () => {
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(true);
       });
 
-      it('should throw an error if the platform doesn\'t match', async () => {
+      it("should throw an error if the platform doesn't match", async () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await expect(fn(null, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
-          `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`,
+          `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`
         );
       });
 
-      it('should throw an error if the arch doesn\'t match', async () => {
+      it("should throw an error if the arch doesn't match", async () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await expect(fn(null, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
-          `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`,
+          `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`
         );
       });
 

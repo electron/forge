@@ -37,10 +37,13 @@ describe('MakerFlatpak', () => {
     eifStub = stub().resolves();
     config = {};
 
-    MakerFlatpak = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
-      'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
-      '@malept/electron-installer-flatpak': eifStub,
-    }).default;
+    MakerFlatpak = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerFlatpak', {
+        'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
+        '@malept/electron-installer-flatpak': eifStub,
+      }).default;
     createMaker = () => {
       maker = new MakerFlatpak(config);
       maker.ensureDirectory = ensureDirectoryStub;
@@ -51,7 +54,11 @@ describe('MakerFlatpak', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
     const expectedArch = flatpakArch(process.arch as ForgeArch);
@@ -72,7 +79,11 @@ describe('MakerFlatpak', () => {
     createMaker();
 
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
     const expectedArch = flatpakArch(process.arch as ForgeArch);

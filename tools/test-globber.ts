@@ -5,11 +5,7 @@ import * as path from 'path';
 
 import { getPackageInfoSync } from './utils';
 
-const argv = minimist(
-  process.argv.slice(
-    process.argv.findIndex((arg) => arg === 'mocha.opts'),
-  ),
-);
+const argv = minimist(process.argv.slice(process.argv.findIndex((arg) => arg === 'mocha.opts')));
 
 const isFast = argv.fast || process.env.TEST_FAST_ONLY;
 

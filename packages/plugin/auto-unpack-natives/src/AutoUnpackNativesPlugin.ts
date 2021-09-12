@@ -31,5 +31,5 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
       forgeConfig.packagerConfig.asar.unpack = newUnpack;
     }
     return forgeConfig;
-  }
+  };
 }

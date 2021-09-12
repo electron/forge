@@ -26,11 +26,7 @@ const d = debug('electron-forge:packager');
  */
 function resolveHooks(hooks: (string | HookFunction)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map((hook) => (
-      typeof hook === 'string'
-        ? requireSearch<HookFunction>(dir, [hook]) as HookFunction
-        : hook
-    ));
+    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<HookFunction>(dir, [hook]) as HookFunction) : hook));
   }
 
   return [];
@@ -44,12 +40,14 @@ type PromisifiedHookFunction = (buildPath: string, electronVersion: string, plat
  * through while awaiting
  */
 function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
-  return [async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
-    for (const hook of hooks) {
-      await promisify(hook)(buildPath, electronVersion, platform, arch);
-    }
-    done();
-  }] as PromisifiedHookFunction[];
+  return [
+    async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
+      for (const hook of hooks) {
+        await promisify(hook)(buildPath, electronVersion, platform, arch);
+      }
+      done();
+    },
+  ] as PromisifiedHookFunction[];
 }
 
 export interface PackageOptions {
@@ -117,19 +115,14 @@ export default async ({
         await fs.remove(bin);
       }
       done();
-    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    },
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
       prepareSpinner.succeed();
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(
-        buildPath,
-        electronVersion,
-        pPlatform,
-        pArch,
-        forgeConfig.electronRebuildConfig,
-      );
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
       packagerSpinner = ora('Packaging Application').start();
       done();
     },
@@ -157,10 +150,12 @@ export default async ({
     done();
   }) as HookFunction);
 
-  const afterExtractHooks = [(async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
-    done();
-  }) as HookFunction];
+  const afterExtractHooks = [
+    (async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
+      done();
+    }) as HookFunction,
+  ];
   afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
 
   type PackagerArch = Exclude<ForgeArch, 'arm'>;
@@ -186,7 +181,10 @@ export default async ({
 
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len
-    warn(interactive, 'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow);
+    warn(
+      interactive,
+      'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow
+    );
   }
 
   if (packageOpts.prebuiltAsar) {

@@ -7,10 +7,7 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 async function copyTSConfig(packageDir: string): Promise<void> {
   const relativeBaseDir = path.relative(packageDir, BASE_DIR);
   const tsconfig = await fs.readJson(path.resolve(BASE_DIR, 'tsconfig.json'));
-  tsconfig.compilerOptions.typeRoots = [
-    path.join(relativeBaseDir, 'node_modules', '@types'),
-    path.join(relativeBaseDir, 'typings'),
-  ];
+  tsconfig.compilerOptions.typeRoots = [path.join(relativeBaseDir, 'node_modules', '@types'), path.join(relativeBaseDir, 'typings')];
   await fs.writeJson(path.resolve(packageDir, 'tsconfig.json'), tsconfig, { spaces: 2 });
 }
 

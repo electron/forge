@@ -60,7 +60,11 @@ describe('start', () => {
 
   it('should not spawn if a plugin overrides the start command', async () => {
     resolveStub.returnsArg(0);
-    shouldOverride = { on: () => { /* fake emitter */ } };
+    shouldOverride = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
     await start({
       dir: __dirname,
       interactive: false,
@@ -68,7 +72,7 @@ describe('start', () => {
     expect(spawnStub.callCount).to.equal(0);
   });
 
-  it('should pass electron \'.\' as the app path if not specified', async () => {
+  it("should pass electron '.' as the app path if not specified", async () => {
     resolveStub.returnsArg(0);
     await start({
       dir: __dirname,
@@ -126,21 +130,19 @@ describe('start', () => {
   it('should throw if no dir could be found', async () => {
     resolveStub.returns(null);
 
-    await expect(start({})).to.eventually.be.rejectedWith(
-      'Failed to locate startable Electron application',
-    );
+    await expect(start({})).to.eventually.be.rejectedWith('Failed to locate startable Electron application');
   });
 
   it('should throw if no version is in package.json', async () => {
     resolveStub.returnsArg(0);
     packageJSON = { ...packageJSON };
     delete packageJSON.version;
-    await expect(start({
-      dir: __dirname,
-      interactive: false,
-    })).to.eventually.be.rejectedWith(
-      `Please set your application's 'version' in '${__dirname}/package.json'.`,
-    );
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+      })
+    ).to.eventually.be.rejectedWith(`Please set your application's 'version' in '${__dirname}/package.json'.`);
   });
 
   it('should pass all args through to the spawned Electron instance', async () => {
@@ -174,13 +176,19 @@ describe('start', () => {
 
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
-    const fakeChild = { on: () => { /* fake emitter */ } };
+    const fakeChild = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
     spawnStub.returns(fakeChild);
 
-    await expect(start({
-      dir: __dirname,
-      interactive: false,
-      enableLogging: true,
-    })).to.eventually.equal(fakeChild);
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+        enableLogging: true,
+      })
+    ).to.eventually.equal(fakeChild);
   });
 });

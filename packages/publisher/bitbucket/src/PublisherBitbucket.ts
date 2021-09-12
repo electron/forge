@@ -17,16 +17,20 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
     const replaceExistingFiles = Boolean(config.replaceExistingFiles);
     const appPassword = process.env.BITBUCKET_APP_PASSWORD;
     const username = process.env.BITBUCKET_USERNAME;
-    const auth = { appPassword, username, ...config.auth || {} };
+    const auth = { appPassword, username, ...(config.auth || {}) };
     const apiUrl = `https://api.bitbucket.org/2.0/repositories/${config.repository.owner}/${config.repository.name}/downloads`;
     const encodedUserAndPass = Buffer.from(`${auth.username}:${auth.appPassword}`).toString('base64');
 
     if (!(hasRepositoryConfig && config.repository.owner && config.repository.name)) {
-      throw new Error('In order to publish to Bitbucket you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info');
+      throw new Error(
+        'In order to publish to Bitbucket you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
+      );
     }
 
     if (!auth.appPassword || !auth.username) {
-      throw new Error('In order to publish to Bitbucket provide credentials, either through "auth.appPassword" and "auth.username" properties in your Forge config or using BITBUCKET_APP_PASSWORD and BITBUCKET_USERNAME environment variables');
+      throw new Error(
+        'In order to publish to Bitbucket provide credentials, either through "auth.appPassword" and "auth.username" properties in your Forge config or using BITBUCKET_APP_PASSWORD and BITBUCKET_USERNAME environment variables'
+      );
     }
 
     for (const [index, makeResult] of makeResults.entries()) {
@@ -54,7 +58,9 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
             });
 
             if (response.status === 302) {
-              throw new Error(`Unable to publish "${fileName}" as it has been published previously. Use the "replaceExistingFiles" property in your Forge config to override this.`);
+              throw new Error(
+                `Unable to publish "${fileName}" as it has been published previously. Use the "replaceExistingFiles" property in your Forge config to override this.`
+              );
             }
           }
         });

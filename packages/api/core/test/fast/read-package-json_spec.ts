@@ -21,8 +21,8 @@ describe('read-package-json', () => {
 
   describe('readMutatedPackageJson', () => {
     it('should find a package.json file from the given directory', async () => {
-      expect(await readMutatedPackageJson(
-        path.resolve(__dirname, '../..'), {
+      expect(
+        await readMutatedPackageJson(path.resolve(__dirname, '../..'), {
           ...emptyForgeConfig,
           pluginInterface: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,21 +30,21 @@ describe('read-package-json', () => {
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
           },
-        } as ForgeConfig,
-      )).to.deep.equal(require('../../package.json'));
+        } as ForgeConfig)
+      ).to.deep.equal(require('../../package.json'));
     });
 
     it('should allow mutations from hooks', async () => {
-      expect(await readMutatedPackageJson(
-        path.resolve(__dirname, '../..'), {
+      expect(
+        await readMutatedPackageJson(path.resolve(__dirname, '../..'), {
           ...emptyForgeConfig,
           pluginInterface: {
             triggerMutatingHook: () => Promise.resolve('test_mut'),
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
           },
-        } as ForgeConfig,
-      )).to.deep.equal('test_mut');
+        } as ForgeConfig)
+      ).to.deep.equal('test_mut');
     });
   });
 });

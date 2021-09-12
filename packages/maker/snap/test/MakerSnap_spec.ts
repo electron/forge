@@ -11,9 +11,9 @@ import { MakerSnapConfig } from '../src/Config';
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerSnapConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerSnap', () => {
@@ -48,7 +48,11 @@ describe('MakerSnap', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -66,7 +70,11 @@ describe('MakerSnap', () => {
     createMaker();
 
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({

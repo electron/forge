@@ -33,7 +33,7 @@ export const getPackageInfoSync = (): Package[] => {
       const packagePath = path.resolve(PACKAGES_DIR, subDir, packageDir);
       packages.push({
         path: packagePath,
-        name: (fs.readJsonSync(path.resolve(packagePath, 'package.json'))).name,
+        name: fs.readJsonSync(path.resolve(packagePath, 'package.json')).name,
       });
     }
   }

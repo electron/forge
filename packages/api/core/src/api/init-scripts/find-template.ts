@@ -23,7 +23,8 @@ export default async (dir: string, template: string): Promise<ForgeTemplate> => 
         d(`Trying ${templateType} template: ${moduleName}`);
         if (templateType === 'global') {
           templateModulePath = await resolvePackage(moduleName);
-        } else { // local
+        } else {
+          // local
           templateModulePath = require.resolve(moduleName);
         }
         foundTemplate = true;

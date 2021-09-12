@@ -13,15 +13,19 @@ describe('out-dir', () => {
     });
 
     it('resolves to the provided identifier', () => {
-      expect(getCurrentOutDir(DIR, {
-        buildIdentifier: 'bar',
-      } as ForgeConfig)).to.equal(`${DIR}${path.sep}out${path.sep}bar`);
+      expect(
+        getCurrentOutDir(DIR, {
+          buildIdentifier: 'bar',
+        } as ForgeConfig)
+      ).to.equal(`${DIR}${path.sep}out${path.sep}bar`);
     });
 
     it('resolves to the return value of provided identifier getter', () => {
-      expect(getCurrentOutDir(DIR, {
-        buildIdentifier: () => 'thing',
-      } as ForgeConfig)).to.equal(`${DIR}${path.sep}out${path.sep}thing`);
+      expect(
+        getCurrentOutDir(DIR, {
+          buildIdentifier: () => 'thing',
+        } as ForgeConfig)
+      ).to.equal(`${DIR}${path.sep}out${path.sep}thing`);
     });
   });
 });

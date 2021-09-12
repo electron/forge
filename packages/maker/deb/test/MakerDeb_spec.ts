@@ -12,9 +12,9 @@ import { debianArch } from '../src/MakerDeb';
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerDebConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerDeb', () => {
@@ -49,7 +49,11 @@ describe('MakerDeb', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -73,7 +77,11 @@ describe('MakerDeb', () => {
     createMaker();
 
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({

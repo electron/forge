@@ -21,11 +21,18 @@ export default class LoggingPlugin {
 
   private addRun() {
     if (this.promiseResolver) this.promiseResolver();
-    asyncOra('Compiling Renderer Code', () => new Promise<void>((resolve, reject) => {
-      const [onceResolve, onceReject] = once(resolve, reject);
-      this.promiseResolver = onceResolve;
-      this.promiseRejector = onceReject;
-    }), () => { /* do not exit */ });
+    asyncOra(
+      'Compiling Renderer Code',
+      () =>
+        new Promise<void>((resolve, reject) => {
+          const [onceResolve, onceReject] = once(resolve, reject);
+          this.promiseResolver = onceResolve;
+          this.promiseRejector = onceReject;
+        }),
+      () => {
+        /* do not exit */
+      }
+    );
   }
 
   private finishRun(error?: string) {
@@ -41,9 +48,11 @@ export default class LoggingPlugin {
     });
     compiler.hooks.done.tap(pluginName, (stats) => {
       if (stats) {
-        this.tab.log(stats.toString({
-          colors: true,
-        }));
+        this.tab.log(
+          stats.toString({
+            colors: true,
+          })
+        );
         if (stats.hasErrors()) {
           this.finishRun(stats.compilation.getErrors().toString());
           return;
@@ -52,12 +61,9 @@ export default class LoggingPlugin {
       this.finishRun();
     });
     compiler.hooks.failed.tap(pluginName, (err) => this.finishRun(err.message));
-    compiler.hooks.infrastructureLog.tap(
-      pluginName,
-      (name: string, _type: string, args: string[]) => {
-        this.tab.log(`${name} - ${args.join(' ')}\n`);
-        return true;
-      },
-    );
+    compiler.hooks.infrastructureLog.tap(pluginName, (name: string, _type: string, args: string[]) => {
+      this.tab.log(`${name} - ${args.join(' ')}\n`);
+      return true;
+    });
   }
 }

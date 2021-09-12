@@ -16,11 +16,7 @@ export const runHook = async (forgeConfig: ForgeConfig, hookName: string, ...hoo
   await forgeConfig.pluginInterface.triggerHook(hookName, hookArgs);
 };
 
-export async function runMutatingHook<T>(
-  forgeConfig: ForgeConfig,
-  hookName: string,
-  item: T,
-): Promise<T> {
+export async function runMutatingHook<T>(forgeConfig: ForgeConfig, hookName: string, item: T): Promise<T> {
   const { hooks } = forgeConfig;
   if (hooks) {
     d(`hook triggered: ${hookName}`);

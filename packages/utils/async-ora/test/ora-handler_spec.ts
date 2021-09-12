@@ -10,7 +10,7 @@ type MockOra = OraImpl & {
   failed: boolean;
   started: boolean;
   succeeded: boolean;
-}
+};
 
 describe('asyncOra', () => {
   let asyncOra: typeof ora;
@@ -64,7 +64,9 @@ describe('asyncOra', () => {
   });
 
   it('should create an ora with an initial value', () => {
-    asyncOra('say this first', async () => { /* no-op async function */ });
+    asyncOra('say this first', async () => {
+      /* no-op async function */
+    });
     expect(currentOra).to.not.equal(undefined);
     // Why: We checked for undefined in the line above
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -73,7 +75,9 @@ describe('asyncOra', () => {
 
   it('should not create an ora when in non-interactive mode', () => {
     asyncOra.interactive = false;
-    asyncOra('say this again', async () => { /* no-op async function */ });
+    asyncOra('say this again', async () => {
+      /* no-op async function */
+    });
     expect(currentOra).to.equal(undefined);
   });
 
@@ -100,10 +104,16 @@ describe('asyncOra', () => {
   });
 
   it('should fail the ora if the async fn throws', async () => {
-    await asyncOra('this is gonna end badly', async () => {
-      // eslint-disable-next-line no-throw-literal
-      throw { message: 'Not an error', stack: 'No Stack - Not an error' };
-    }, () => { /* no-op exit function */ });
+    await asyncOra(
+      'this is gonna end badly',
+      async () => {
+        // eslint-disable-next-line no-throw-literal
+        throw { message: 'Not an error', stack: 'No Stack - Not an error' };
+      },
+      () => {
+        /* no-op exit function */
+      }
+    );
     expect(currentOra).to.not.equal(undefined);
     // Why: We checked for undefined in the line above
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -115,27 +125,37 @@ describe('asyncOra', () => {
 
   it('should exit the process with status 1 if the async fn throws', async () => {
     const processExitSpy = spy();
-    await asyncOra('this is dodge', async () => {
-      throw new Error('woops');
-    }, processExitSpy);
+    await asyncOra(
+      'this is dodge',
+      async () => {
+        throw new Error('woops');
+      },
+      processExitSpy
+    );
     expect(processExitSpy.callCount).to.equal(1);
     expect(processExitSpy.firstCall.args).to.deep.equal([1]);
   });
 
   it('should exit the process with status 1 if the async fn throws a number', async () => {
     const processExitSpy = spy();
-    await asyncOra('this is dodge', async () => {
-      throw 42; // eslint-disable-line no-throw-literal
-    }, processExitSpy);
+    await asyncOra(
+      'this is dodge',
+      async () => {
+        throw 42; // eslint-disable-line no-throw-literal
+      },
+      processExitSpy
+    );
     expect(processExitSpy.callCount).to.equal(1);
     expect(processExitSpy.firstCall.args).to.deep.equal([1]);
   });
 
-  it('should just reject the promise in non-interactive mode if the fn throws', async() => {
+  it('should just reject the promise in non-interactive mode if the fn throws', async () => {
     asyncOra.interactive = false;
-    expect(asyncOra('doo-wop', async () => {
-      throw new Error('uh oh');
-    })).to.eventually.be.rejectedWith('uh oh');
+    expect(
+      asyncOra('doo-wop', async () => {
+        throw new Error('uh oh');
+      })
+    ).to.eventually.be.rejectedWith('uh oh');
   });
 
   it('should provide a fully functioning mock ora in non-interactive mode', async () => {

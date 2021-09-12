@@ -7,7 +7,7 @@ const EXTENSION = '.forge.publish';
 
 export default class PublishState {
   static async loadFromDirectory(directory: string, rootDir: string): Promise<PublishState[][]> {
-    if (!await fs.pathExists(directory)) {
+    if (!(await fs.pathExists(directory))) {
       throw new Error(`Attempted to load publish state from a missing directory: ${directory}`);
     }
 
@@ -17,9 +17,7 @@ export default class PublishState {
       const states: PublishState[] = [];
 
       if ((await fs.stat(subDir)).isDirectory()) {
-        const filePaths = (await fs.readdir(subDir))
-          .filter((fileName) => fileName.endsWith(EXTENSION))
-          .map((fileName) => path.resolve(subDir, fileName));
+        const filePaths = (await fs.readdir(subDir)).filter((fileName) => fileName.endsWith(EXTENSION)).map((fileName) => path.resolve(subDir, fileName));
 
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);

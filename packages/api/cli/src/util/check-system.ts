@@ -39,12 +39,7 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
-export function validPackageManagerVersion(
-  packageManager: string,
-  version: string,
-  whitelistedVersions: string,
-  ora: OraImpl,
-): boolean {
+export function validPackageManagerVersion(packageManager: string, version: string, whitelistedVersions: string, ora: OraImpl): boolean {
   try {
     return semver.satisfies(version, whitelistedVersions);
   } catch (e) {
@@ -55,12 +50,7 @@ export function validPackageManagerVersion(
   }
 }
 
-function warnIfPackageManagerIsntAKnownGoodVersion(
-  packageManager: string,
-  version: string,
-  whitelistedVersions: { [key: string]: string },
-  ora: OraImpl,
-) {
+function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, version: string, whitelistedVersions: { [key: string]: string }, ora: OraImpl) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
@@ -95,13 +85,9 @@ async function checkPackageManagerVersion(ora: OraImpl) {
 const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check');
 
 export default async function checkSystem(ora: OraImpl): Promise<boolean> {
-  if (!await fs.pathExists(SKIP_SYSTEM_CHECK)) {
+  if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
-    return (await Promise.all([
-      checkGitExists(),
-      checkNodeVersion(ora),
-      checkPackageManagerVersion(ora),
-    ])).every((check) => check);
+    return (await Promise.all([checkGitExists(), checkNodeVersion(ora), checkPackageManagerVersion(ora)])).every((check) => check);
   }
   d('skipping system check');
   return true;

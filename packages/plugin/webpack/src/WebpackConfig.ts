@@ -22,12 +22,7 @@ export default class WebpackConfigGenerator {
 
   private webpackDir: string;
 
-  constructor(
-    pluginConfig: WebpackPluginConfig,
-    projectDir: string,
-    isProd: boolean,
-    port: number,
-  ) {
+  constructor(pluginConfig: WebpackPluginConfig, projectDir: string, isProd: boolean, port: number) {
     this.pluginConfig = pluginConfig;
     this.projectDir = projectDir;
     this.webpackDir = path.resolve(projectDir, '.webpack');
@@ -58,11 +53,7 @@ export default class WebpackConfigGenerator {
     return this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
   }
 
-  rendererEntryPoint(
-    entryPoint: WebpackPluginEntryPoint,
-    inRendererDir: boolean,
-    basename: string,
-  ): string {
+  rendererEntryPoint(entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string {
     if (this.isProd) {
       return `\`file://$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')}\``;
     }
@@ -92,10 +83,7 @@ export default class WebpackConfigGenerator {
 
   getDefines(inRendererDir = true): Record<string, string> {
     const defines: Record<string, string> = {};
-    if (
-      !this.pluginConfig.renderer.entryPoints
-      || !Array.isArray(this.pluginConfig.renderer.entryPoints)
-    ) {
+    if (!this.pluginConfig.renderer.entryPoints || !Array.isArray(this.pluginConfig.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.pluginConfig.renderer.entryPoints) {
@@ -133,49 +121,47 @@ export default class WebpackConfigGenerator {
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
 
-    return webpackMerge({
-      devtool: 'source-map',
-      target: 'electron-main',
-      mode: this.mode,
-      output: {
-        path: path.resolve(this.webpackDir, 'main'),
-        filename: 'index.js',
-        libraryTarget: 'commonjs2',
+    return webpackMerge(
+      {
+        devtool: 'source-map',
+        target: 'electron-main',
+        mode: this.mode,
+        output: {
+          path: path.resolve(this.webpackDir, 'main'),
+          filename: 'index.js',
+          libraryTarget: 'commonjs2',
+        },
+        plugins: [new webpack.DefinePlugin(this.getDefines())],
+        node: {
+          __dirname: false,
+          __filename: false,
+        },
       },
-      plugins: [
-        new webpack.DefinePlugin(this.getDefines()),
-      ],
-      node: {
-        __dirname: false,
-        __filename: false,
-      },
-    }, mainConfig || {});
+      mainConfig || {}
+    );
   }
 
-  async getPreloadRendererConfig(
-    parentPoint: WebpackPluginEntryPoint,
-    entryPoint: WebpackPreloadEntryPoint,
-  ): Promise<Configuration> {
+  async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
     const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
-    return webpackMerge({
-      devtool: this.rendererSourceMapOption,
-      mode: this.mode,
-      entry: prefixedEntries.concat([
-        entryPoint.js,
-      ]),
-      output: {
-        path: path.resolve(this.webpackDir, 'renderer', parentPoint.name),
-        filename: 'preload.js',
+    return webpackMerge(
+      {
+        devtool: this.rendererSourceMapOption,
+        mode: this.mode,
+        entry: prefixedEntries.concat([entryPoint.js]),
+        output: {
+          path: path.resolve(this.webpackDir, 'renderer', parentPoint.name),
+          filename: 'preload.js',
+        },
+        node: {
+          __dirname: false,
+          __filename: false,
+        },
       },
-      node: {
-        __dirname: false,
-        __filename: false,
-      },
-    },
-    rendererConfig || {},
-    { target: 'electron-preload' });
+      rendererConfig || {},
+      { target: 'electron-preload' }
+    );
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
@@ -183,39 +169,41 @@ export default class WebpackConfigGenerator {
     const entry: webpack.Entry = {};
     for (const entryPoint of entryPoints) {
       const prefixedEntries = entryPoint.prefixedEntries || [];
-      entry[entryPoint.name] = prefixedEntries
-        .concat([entryPoint.js]);
+      entry[entryPoint.name] = prefixedEntries.concat([entryPoint.js]);
     }
 
     const defines = this.getDefines(false);
-    const plugins = entryPoints.filter((entryPoint) => Boolean(entryPoint.html))
-      .map((entryPoint) => new HtmlWebpackPlugin({
-        title: entryPoint.name,
-        template: entryPoint.html,
-        filename: `${entryPoint.name}/index.html`,
-        chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-      }) as WebpackPluginInstance).concat(
-        [
-          new webpack.DefinePlugin(defines),
-          new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration),
-        ],
-      );
-    return webpackMerge({
-      entry,
-      devtool: this.rendererSourceMapOption,
-      target: this.rendererTarget,
-      mode: this.mode,
-      output: {
-        path: path.resolve(this.webpackDir, 'renderer'),
-        filename: '[name]/index.js',
-        globalObject: 'self',
-        ...(this.isProd ? {} : { publicPath: '/' }),
+    const plugins = entryPoints
+      .filter((entryPoint) => Boolean(entryPoint.html))
+      .map(
+        (entryPoint) =>
+          new HtmlWebpackPlugin({
+            title: entryPoint.name,
+            template: entryPoint.html,
+            filename: `${entryPoint.name}/index.html`,
+            chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
+          }) as WebpackPluginInstance
+      )
+      .concat([new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)]);
+    return webpackMerge(
+      {
+        entry,
+        devtool: this.rendererSourceMapOption,
+        target: this.rendererTarget,
+        mode: this.mode,
+        output: {
+          path: path.resolve(this.webpackDir, 'renderer'),
+          filename: '[name]/index.js',
+          globalObject: 'self',
+          ...(this.isProd ? {} : { publicPath: '/' }),
+        },
+        node: {
+          __dirname: false,
+          __filename: false,
+        },
+        plugins,
       },
-      node: {
-        __dirname: false,
-        __filename: false,
-      },
-      plugins,
-    }, rendererConfig || {});
+      rendererConfig || {}
+    );
   }
 }

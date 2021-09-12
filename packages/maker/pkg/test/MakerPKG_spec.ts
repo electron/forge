@@ -11,9 +11,9 @@ import { MakerPKGConfig } from '../src/Config';
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerPKGConfig> {
- name = 'test';
+  name = 'test';
 
- defaultPlatforms = [];
+  defaultPlatforms = [];
 }
 
 describe('MakerPKG', () => {
@@ -37,15 +37,18 @@ describe('MakerPKG', () => {
     renameStub = stub().returns(Promise.resolve());
     config = {};
 
-    MakerDMG = proxyquire.noPreserveCache().noCallThru().load('../src/MakerPKG', {
-      '../../util/ensure-output': { ensureFile: ensureFileStub },
-      'electron-osx-sign': {
-        flatAsync: eosStub,
-      },
-      'fs-extra': {
-        rename: renameStub,
-      },
-    }).default;
+    MakerDMG = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerPKG', {
+        '../../util/ensure-output': { ensureFile: ensureFileStub },
+        'electron-osx-sign': {
+          flatAsync: eosStub,
+        },
+        'fs-extra': {
+          rename: renameStub,
+        },
+      }).default;
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
@@ -56,7 +59,12 @@ describe('MakerPKG', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas',
+      packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      targetPlatform: 'mas',
     });
     const opts = eosStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -67,9 +75,15 @@ describe('MakerPKG', () => {
   });
 
   it('should throw an error on invalid platform', async () => {
-    await expect((maker.make as MakeFunction)({
-      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32',
-    }))
-      .to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
+    await expect(
+      (maker.make as MakeFunction)({
+        packageJSON,
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform: 'win32',
+      })
+    ).to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
   });
 });

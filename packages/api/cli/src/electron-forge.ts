@@ -54,8 +54,10 @@ program
   });
 
   if (!goodSystem) {
-    console.error((`It looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version ${metadata.engines.node}`).red);
+    console.error(
+      `It looks like you are missing some dependencies you need to get Electron running.
+Make sure you have git installed and Node.js version ${metadata.engines.node}`.red
+    );
     process.exit(1);
   }
 

@@ -13,11 +13,8 @@ export default abstract class InstallerLinux extends InstallerBase {
     } else {
       throw new Error(`${prog} is required to install ${type} packages`);
     }
-  }
+  };
 
-  sudo = (type: string, program: string, args: string): Promise<void> => this.which(
-    type,
-    program,
-    () => promisify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }),
-  )
+  sudo = (type: string, program: string, args: string): Promise<void> =>
+    this.which(type, program, () => promisify(sudoPrompt.exec)(`${program} ${args}`, { name: 'Electron Forge' }));
 }

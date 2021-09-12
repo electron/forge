@@ -1,11 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-export default function workingDir(
-  dir: string,
-  cwd: string,
-  checkExisting = true,
-): string {
+export default function workingDir(dir: string, cwd: string, checkExisting = true): string {
   let finalDir = dir;
   if (cwd) {
     if (path.isAbsolute(cwd) && (!checkExisting || fs.existsSync(cwd))) {

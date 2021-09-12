@@ -54,7 +54,7 @@ describe('WebpackPlugin', () => {
       await fs.writeJson(packageJSONPath, packageJSON);
       await plugin.packageAfterCopy(null, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect((await fs.readJson(packagedPackageJSONPath))).to.not.have.property('config');
+      expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
     });
 
     after(async () => {

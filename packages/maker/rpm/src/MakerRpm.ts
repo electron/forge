@@ -6,11 +6,16 @@ import { MakerRpmConfig } from './Config';
 
 export function rpmArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
-    case 'ia32': return 'i386';
-    case 'x64': return 'x86_64';
-    case 'armv7l': return 'armv7hl';
-    case 'arm': return 'armv6hl';
-    default: return nodeArch;
+    case 'ia32':
+      return 'i386';
+    case 'x64':
+      return 'x86_64';
+    case 'armv7l':
+      return 'armv7hl';
+    case 'arm':
+      return 'armv6hl';
+    default:
+      return nodeArch;
   }
 }
 
@@ -25,11 +30,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     return this.isInstalled('electron-installer-redhat');
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-  }: MakerOptions): Promise<string[]> {
+  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 

@@ -1,9 +1,4 @@
-import {
-  ForgeConfig,
-  ForgePlatform,
-  IForgeResolvableMaker,
-  IForgeResolvablePublisher,
-} from '@electron-forge/shared-types';
+import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import path from 'path';
 import { siblingDep } from '../api/init-scripts/init-npm';
 
@@ -13,7 +8,7 @@ type GitHub5Config = Record<string, unknown> & {
   name: string;
   owner: string;
   options: Record<string, unknown>;
-}
+};
 
 type Forge5Config = {
   make_targets?: Record<ForgePlatform, string[]>;
@@ -38,7 +33,7 @@ type Forge5ConfigKey = keyof Forge5Config;
 
 type ForgePackageJSON = Record<string, unknown> & {
   config: {
-    forge: ForgeConfig
+    forge: ForgeConfig;
   };
   devDependencies: Record<string, string>;
 };
@@ -112,9 +107,7 @@ const forge5PublisherMappings = new Map<Forge5ConfigKey, string>([
  * Transforms v5 GitHub publisher config to v6 syntax.
  */
 function transformGitHubPublisherConfig(config: GitHub5Config) {
-  const {
-    name, owner, options, ...gitHubConfig
-  } = config;
+  const { name, owner, options, ...gitHubConfig } = config;
   gitHubConfig.repository = { name, owner };
   if (options) {
     gitHubConfig.octokitOptions = options;
@@ -150,7 +143,7 @@ function generateForgePublisherConfig(forge5Config: Forge5Config): IForgeResolva
  * Upgrades Forge v5 config to v6.
  */
 export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeConfig {
-  const forgeConfig: ForgeConfig = ({} as ForgeConfig);
+  const forgeConfig: ForgeConfig = {} as ForgeConfig;
 
   if (forge5Config.electronPackagerConfig) {
     delete forge5Config.electronPackagerConfig.packageManager;
@@ -171,7 +164,9 @@ export function updateUpgradedForgeDevDeps(packageJSON: ForgePackageJSON, devDep
   // eslint-disable-next-line max-len
   devDeps = devDeps.concat((forgeConfig.makers as IForgeResolvableMaker[]).map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
   // eslint-disable-next-line max-len
-  devDeps = devDeps.concat((forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name))));
+  devDeps = devDeps.concat(
+    (forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
+  );
 
   if (Object.keys(packageJSON.devDependencies).find((dep: string) => dep === 'electron-prebuilt-compile')) {
     devDeps = devDeps.concat(siblingDep('plugin-compile'));

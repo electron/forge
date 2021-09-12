@@ -12,7 +12,9 @@ import workingDir from './util/working-dir';
   program
     .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[name]')
-    .action((name) => { dir = workingDir(dir, name, false); })
+    .action((name) => {
+      dir = workingDir(dir, name, false);
+    })
     .parse(process.argv);
 
   await api.import({

@@ -2,7 +2,12 @@ import { expect } from 'chai';
 import { ForgeConfig } from '@electron-forge/shared-types';
 import path from 'path';
 
-import findConfig, { forgeConfigIsValidFilePath, PackageJSONForInitialForgeConfig, renderConfigTemplate, setInitialForgeConfig } from '../../src/util/forge-config';
+import findConfig, {
+  forgeConfigIsValidFilePath,
+  PackageJSONForInitialForgeConfig,
+  renderConfigTemplate,
+  setInitialForgeConfig,
+} from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
@@ -14,7 +19,9 @@ const defaults = {
 
 describe('forge-config', () => {
   it('should fail if the config is not an object or requirable path', async () => {
-    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_forge_config'))).to.eventually.be.rejectedWith('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
+    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_forge_config'))).to.eventually.be.rejectedWith(
+      'Expected packageJSON.config.forge to be an object or point to a requirable JS file'
+    );
   });
 
   it('should fail if the external config is not parseable', async () => {
@@ -62,14 +69,21 @@ describe('forge-config', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const conf: any = await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'));
     expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
-    expect(() => { conf.packagerConfig.baz = 'bar'; }).to.not.throw();
+    expect(() => {
+      conf.packagerConfig.baz = 'bar';
+    }).to.not.throw();
     process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
     const descriptor = {
-      writable: true, enumerable: true, configurable: true, value: 'SecretyThing',
+      writable: true,
+      enumerable: true,
+      configurable: true,
+      value: 'SecretyThing',
     };
     expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).to.be.deep.equal(descriptor);
-    expect(() => { conf.s3.secretAccessKey = 'bar'; }).to.not.throw();
+    expect(() => {
+      conf.s3.secretAccessKey = 'bar';
+    }).to.not.throw();
     expect(conf.s3.secretAccessKey).to.equal('bar');
     delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
   });
@@ -107,12 +121,12 @@ describe('forge-config', () => {
   it('should magically map properties to environment variables', async () => {
     type MappedConfig = ForgeConfig & {
       s3: {
-        secretAccessKey?: string
-      },
+        secretAccessKey?: string;
+      };
       electronReleaseServer: {
-        baseUrl: string
-      }
-    }
+        baseUrl: string;
+      };
+    };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as MappedConfig;
     expect(conf.s3.secretAccessKey).to.equal(undefined);
 
@@ -130,11 +144,11 @@ describe('forge-config', () => {
       sub: {
         prop: {
           deep: {
-            prop: string
-          },
-          inArray: string[]
-        }
-      }
+            prop: string;
+          };
+          inArray: string[];
+        };
+      };
     };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as ResolveBIConfig;
     expect(conf.topLevelProp).to.equal('foo');
@@ -143,18 +157,14 @@ describe('forge-config', () => {
         deep: {
           prop: 'bar',
         },
-        inArray: [
-          'arr',
-          'natural',
-          'array',
-        ],
+        inArray: ['arr', 'natural', 'array'],
       },
     });
   });
 
   it('should resolve undefined from fromBuildIdentifier if no value is provided', async () => {
     type ResolveUndefConfig = ForgeConfig & { topLevelUndef?: string };
-    const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf')) as ResolveUndefConfig);
+    const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as ResolveUndefConfig;
     expect(conf.topLevelUndef).to.equal(undefined);
   });
 
@@ -162,9 +172,9 @@ describe('forge-config', () => {
     type NestedConfig = ForgeConfig & {
       sub: {
         prop: {
-          inArray: string[]
-        }
-      }
+          inArray: string[];
+        };
+      };
     };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as NestedConfig;
     expect(Array.isArray(conf.sub.prop.inArray)).to.equal(true, 'original array should be recognized as array');

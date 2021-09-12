@@ -7,15 +7,19 @@ import { readRawPackageJson } from './read-package-json';
 import PluginInterface from './plugin-interface';
 import { runMutatingHook } from './hook';
 
-const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+const underscoreCase = (str: string) =>
+  str
+    .replace(/(.)([A-Z][a-z]+)/g, '$1_$2')
+    .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+    .toUpperCase();
 
 export type PackageJSONForInitialForgeConfig = {
   name?: string;
   config: {
     forge: {
-      makers: Pick<IForgeResolvableMaker, 'name' | 'config'>[]
-    }
-  }
+      makers: Pick<IForgeResolvableMaker, 'name' | 'config'>[];
+    };
+  };
 };
 
 // Why: needs access to Object methods and also needs to be able to match any interface.
@@ -24,11 +28,7 @@ type ProxiedObject = object;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line arrow-parens
-const proxify = <T extends ProxiedObject>(
-  buildIdentifier: string | (() => string),
-  proxifiedObject: T,
-  envPrefix: string,
-): T => {
+const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => string), proxifiedObject: T, envPrefix: string): T => {
   let newObject: T = {} as any;
   if (Array.isArray(proxifiedObject)) {
     newObject = [] as any;
@@ -83,7 +83,8 @@ const proxify = <T extends ProxiedObject>(
 /**
  * Sets sensible defaults for the `config.forge` object.
  */
-export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void { // eslint-disable-line @typescript-eslint/no-explicit-any
+export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void {
+  // eslint-disable-line @typescript-eslint/no-explicit-any
   const { name = '' } = packageJSON;
 
   ((packageJSON.config.forge as ForgeConfig).makers as IForgeResolvableMaker[])[0].config.name = name.replace(/-/g, '_');
@@ -103,11 +104,7 @@ export function fromBuildIdentifier<T>(map: BuildIdentifierMap<T>): BuildIdentif
 }
 
 export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig): Promise<boolean> {
-  return typeof forgeConfig === 'string'
-    && (
-      await fs.pathExists(path.resolve(dir, forgeConfig))
-      || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`))
-    );
+  return typeof forgeConfig === 'string' && ((await fs.pathExists(path.resolve(dir, forgeConfig))) || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)));
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
@@ -127,9 +124,7 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
 
 export default async (dir: string): Promise<ForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string | null = (packageJSON.config && packageJSON.config.forge)
-    ? packageJSON.config.forge
-    : null;
+  let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
 
   if (!forgeConfig) {
     if (await fs.pathExists(path.resolve(dir, 'forge.config.js'))) {
@@ -163,7 +158,7 @@ export default async (dir: string): Promise<ForgeConfig> => {
     ...forgeConfig,
   };
 
-  const templateObj = { ...packageJSON, year: (new Date()).getFullYear() };
+  const templateObj = { ...packageJSON, year: new Date().getFullYear() };
   renderConfigTemplate(dir, templateObj, forgeConfig);
 
   forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);

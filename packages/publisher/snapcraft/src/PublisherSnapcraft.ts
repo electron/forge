@@ -27,9 +27,11 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
 
     const snapcraftCfgPath = path.join(dir, '.snapcraft', 'snapcraft.cfg');
 
-    if (!await fs.pathExists(snapcraftCfgPath)) {
-      throw new Error(`Snapcraft credentials not found at "${snapcraftCfgPath}". It can be generated with the command "snapcraft export-login"`
-        + '(snapcraft 2.37 and above).');
+    if (!(await fs.pathExists(snapcraftCfgPath))) {
+      throw new Error(
+        `Snapcraft credentials not found at "${snapcraftCfgPath}". It can be generated with the command "snapcraft export-login"` +
+          '(snapcraft 2.37 and above).'
+      );
     }
 
     await asyncOra('Pushing snap to the snap store', async () => {

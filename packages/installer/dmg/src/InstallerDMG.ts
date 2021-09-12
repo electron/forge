@@ -9,10 +9,7 @@ import { getMountedImages, mountImage, unmountImage } from './util/hdiutil';
 export default class InstallerDMG extends InstallerDarwin {
   name = 'dmg';
 
-  async install({
-    filePath,
-    installSpinner,
-  }: InstallerOptions): Promise<void> {
+  async install({ filePath, installSpinner }: InstallerOptions): Promise<void> {
     const mounts = await getMountedImages();
     let targetMount = mounts.find((mount) => mount.imagePath === filePath);
 

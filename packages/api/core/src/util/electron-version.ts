@@ -7,12 +7,7 @@ import yarnOrNpm from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');
 
-const electronPackageNames = [
-  'electron-prebuilt-compile',
-  'electron-prebuilt',
-  'electron-nightly',
-  'electron',
-];
+const electronPackageNames = ['electron-prebuilt-compile', 'electron-prebuilt', 'electron-nightly', 'electron'];
 
 type PackageJSONWithDeps = {
   devDependencies?: Record<string, string>;
@@ -23,10 +18,7 @@ function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
 }
 
-async function findAncestorNodeModulesPath(
-  dir: string,
-  packageName: string,
-): Promise<string | undefined> {
+async function findAncestorNodeModulesPath(dir: string, packageName: string): Promise<string | undefined> {
   d('Looking for a lock file to indicate the root of the repo');
   const lockPath = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], { cwd: dir, type: 'file' });
   if (lockPath) {
@@ -40,10 +32,7 @@ async function findAncestorNodeModulesPath(
   return Promise.resolve(undefined);
 }
 
-async function determineNodeModulesPath(
-  dir: string,
-  packageName: string,
-): Promise<string | undefined> {
+async function determineNodeModulesPath(dir: string, packageName: string): Promise<string | undefined> {
   const nodeModulesPath: string | undefined = path.join(dir, 'node_modules', packageName);
   if (await fs.pathExists(nodeModulesPath)) {
     return nodeModulesPath;
@@ -72,10 +61,7 @@ function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
   return packageName;
 }
 
-async function getElectronPackageJSONPath(
-  dir: string,
-  packageName: string,
-): Promise<string | undefined> {
+async function getElectronPackageJSONPath(dir: string, packageName: string): Promise<string | undefined> {
   const nodeModulesPath = await determineNodeModulesPath(dir, packageName);
   if (!nodeModulesPath) {
     throw new PackageNotFoundError(packageName, dir);
@@ -89,10 +75,7 @@ async function getElectronPackageJSONPath(
   return undefined;
 }
 
-export async function getElectronModulePath(
-  dir: string,
-  packageJSON: PackageJSONWithDeps,
-): Promise<string | undefined> {
+export async function getElectronModulePath(dir: string, packageJSON: PackageJSONWithDeps): Promise<string | undefined> {
   const moduleName = getElectronModuleName(packageJSON);
   const packageJSONPath = await getElectronPackageJSONPath(dir, moduleName);
   if (packageJSONPath) {
@@ -108,7 +91,8 @@ export async function getElectronVersion(dir: string, packageJSON: PackageJSONWi
   // Why: checked in getElectronModuleName
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   let version = packageJSON.devDependencies![packageName];
-  if (!semver.valid(version)) { // It's not an exact version, find it in the actual module
+  if (!semver.valid(version)) {
+    // It's not an exact version, find it in the actual module
     const electronPackageJSONPath = await getElectronPackageJSONPath(dir, packageName);
     if (electronPackageJSONPath) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
@@ -122,11 +106,7 @@ export async function getElectronVersion(dir: string, packageJSON: PackageJSONWi
   return version;
 }
 
-export function updateElectronDependency(
-  packageJSON: PackageJSONWithDeps,
-  dev: string[],
-  exact: string[],
-): [string[], string[]] {
+export function updateElectronDependency(packageJSON: PackageJSONWithDeps, dev: string[], exact: string[]): [string[], string[]] {
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
   // Why: checked in getElectronModuleName

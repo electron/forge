@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import Listr from 'listr';
 import * as path from 'path';
 
-const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined }} = {
+const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined } } = {
   maker: {
     wix: 'wix-msi',
     squirrel: 'squirrel.windows',
@@ -60,24 +60,26 @@ function sync(): Listr {
     },
     {
       title: 'Fetching READMEs',
-      task: (ctx: SyncContext) => new Listr(ctx.packageKeys.map(
-        ([workspace, workspaceDir, packageKey, packageName]) => ({
-          title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
-          task: async () => {
-            let rp: ReturnType<typeof fetch>;
-            if (workspace !== 'api') {
-              rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
-            } else {
-              rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
-            }
-            const r = await rp;
-            if (r.status !== 200) return;
+      task: (ctx: SyncContext) =>
+        new Listr(
+          ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
+            title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
+            task: async () => {
+              let rp: ReturnType<typeof fetch>;
+              if (workspace !== 'api') {
+                rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
+              } else {
+                rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
+              }
+              const r = await rp;
+              if (r.status !== 200) return;
 
-            const md = sanitize(await r.text());
-            await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
-          },
-        }),
-      ), { concurrent: 3 }),
+              const md = sanitize(await r.text());
+              await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
+            },
+          })),
+          { concurrent: 3 }
+        ),
     },
   ]);
 }

@@ -67,10 +67,12 @@ describe('WebpackConfigGenerator', () => {
     it('sets the renderer entry point to a JS file in development', () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
+          entryPoints: [
+            {
+              name: 'hello',
+              js: 'foo.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
@@ -82,10 +84,12 @@ describe('WebpackConfigGenerator', () => {
     it('sets the renderer entry point to a JS file in production', () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'hello',
-            js: 'foo.js',
-          }],
+          entryPoints: [
+            {
+              name: 'hello',
+              js: 'foo.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', true, 3000);
@@ -98,11 +102,13 @@ describe('WebpackConfigGenerator', () => {
     it('sets the renderer entry point to an HTML file if both an HTML & JS file are specified', () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'hello',
-            html: 'foo.html',
-            js: 'foo.js',
-          }],
+          entryPoints: [
+            {
+              name: 'hello',
+              html: 'foo.html',
+              js: 'foo.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
@@ -245,12 +251,14 @@ describe('WebpackConfigGenerator', () => {
     it('generates a development config', async () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'main',
-            preload: {
-              js: 'preloadScript.js',
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preloadScript.js',
+              },
             },
-          }],
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
@@ -258,7 +266,7 @@ describe('WebpackConfigGenerator', () => {
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!,
+        entryPoint.preload!
       );
       expect(webpackConfig.target).to.equal('electron-preload');
       expect(webpackConfig.mode).to.equal('development');
@@ -273,12 +281,14 @@ describe('WebpackConfigGenerator', () => {
     it('generates a production config', async () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'main',
-            preload: {
-              js: 'preload.js',
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+              },
             },
-          }],
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
@@ -286,7 +296,7 @@ describe('WebpackConfigGenerator', () => {
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!,
+        entryPoint.preload!
       );
       expect(webpackConfig.target).to.equal('electron-preload');
       expect(webpackConfig.mode).to.equal('production');
@@ -303,12 +313,14 @@ describe('WebpackConfigGenerator', () => {
           config: {
             target: 'web',
           },
-          entryPoints: [{
-            name: 'main',
-            preload: {
-              js: 'preload.js',
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+              },
             },
-          }],
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
@@ -316,7 +328,7 @@ describe('WebpackConfigGenerator', () => {
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!,
+        entryPoint.preload!
       );
       expect(webpackConfig.target).to.equal('electron-preload');
     });
@@ -326,10 +338,12 @@ describe('WebpackConfigGenerator', () => {
     it('generates a development config', async () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'main',
-            js: 'rendererScript.js',
-          }],
+          entryPoints: [
+            {
+              name: 'main',
+              js: 'rendererScript.js',
+            },
+          ],
           nodeIntegration: true,
         },
       } as WebpackPluginConfig;
@@ -354,19 +368,19 @@ describe('WebpackConfigGenerator', () => {
     it('generates a development config with an HTML endpoint', async () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'main',
-            html: 'renderer.html',
-            js: 'rendererScript.js',
-          }],
+          entryPoints: [
+            {
+              name: 'main',
+              html: 'renderer.html',
+              js: 'rendererScript.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       expect(webpackConfig.entry).to.deep.equal({
-        main: [
-          'rendererScript.js',
-        ],
+        main: ['rendererScript.js'],
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig.plugins!.length).to.equal(3);
@@ -376,10 +390,12 @@ describe('WebpackConfigGenerator', () => {
     it('generates a production config', async () => {
       const config = {
         renderer: {
-          entryPoints: [{
-            name: 'main',
-            js: 'rendererScript.js',
-          }],
+          entryPoints: [
+            {
+              name: 'main',
+              js: 'rendererScript.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
@@ -405,10 +421,12 @@ describe('WebpackConfigGenerator', () => {
           config: {
             target: 'web',
           },
-          entryPoints: [{
-            name: 'main',
-            js: 'renderer.js',
-          }],
+          entryPoints: [
+            {
+              name: 'main',
+              js: 'renderer.js',
+            },
+          ],
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);

@@ -21,7 +21,7 @@ describe('publish', () => {
   let voidStub: SinonStub;
   let nowhereStub: SinonStub;
   let publishers: (SinonStub | ForgeConfigPublisher)[];
-  let fooPublisher: { name: string, providedConfig: Record<string, unknown> };
+  let fooPublisher: { name: string; providedConfig: Record<string, unknown> };
 
   beforeEach(() => {
     resolveStub = stub();
@@ -31,16 +31,17 @@ describe('publish', () => {
     nowhereStub = stub();
     publishers = ['@electron-forge/publisher-test'];
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const fakePublisher = (stub: SinonStub, name = 'default') => class _FakePublisher {
-      private publish: SinonStub;
+    const fakePublisher = (stub: SinonStub, name = 'default') =>
+      class _FakePublisher {
+        private publish: SinonStub;
 
-      public name = name;
+        public name = name;
 
-      constructor(public providedConfig: Record<string, unknown>) {
-        fooPublisher = this;
-        this.publish = stub;
-      }
-    };
+        constructor(public providedConfig: Record<string, unknown>) {
+          fooPublisher = this;
+          this.publish = stub;
+        }
+      };
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,13 +87,16 @@ describe('publish', () => {
   });
 
   it('should resolve publishers from the forge config if provided', async () => {
-    publishers = [{
-      name: 'bad',
-      config: 'foo',
-    }, {
-      name: '@electron-forge/publisher-foo',
-      config: 'resolved',
-    }];
+    publishers = [
+      {
+        name: 'bad',
+        config: 'foo',
+      },
+      {
+        name: '@electron-forge/publisher-foo',
+        config: 'resolved',
+      },
+    ];
     await publish({
       dir: __dirname,
       interactive: false,
@@ -118,11 +122,13 @@ describe('publish', () => {
     testConfig.publishers = publishers;
 
     delete testConfig.pluginInterface;
-    expect(publisherSpy.firstCall.args).to.deep.equal([{
-      dir: resolveStub(),
-      makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      forgeConfig: testConfig,
-    }]);
+    expect(publisherSpy.firstCall.args).to.deep.equal([
+      {
+        dir: resolveStub(),
+        makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
+        forgeConfig: testConfig,
+      },
+    ]);
   });
 
   it('should call the provided publisher with the appropriate args', async () => {
@@ -131,11 +137,13 @@ describe('publish', () => {
       dir: __dirname,
       interactive: false,
       // Fake instance of a publisher
-      publishTargets: [{
-        __isElectronForgePublisher: true,
-        publish: publisherSpy,
-        platforms: undefined,
-      } as IForgePublisher],
+      publishTargets: [
+        {
+          __isElectronForgePublisher: true,
+          publish: publisherSpy,
+          platforms: undefined,
+        } as IForgePublisher,
+      ],
     });
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
@@ -145,11 +153,13 @@ describe('publish', () => {
     testConfig.publishers = publishers;
 
     delete testConfig.pluginInterface;
-    expect(publisherSpy.firstCall.args).to.deep.equal([{
-      dir: resolveStub(),
-      makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      forgeConfig: testConfig,
-    }]);
+    expect(publisherSpy.firstCall.args).to.deep.equal([
+      {
+        dir: resolveStub(),
+        makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
+        forgeConfig: testConfig,
+      },
+    ]);
   });
 
   it('should default to publishing nothing', async () => {
@@ -189,19 +199,13 @@ describe('publish', () => {
     const fakeMake = (platform: string) => {
       const ret = [
         {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact1-${platform}`),
-            path.resolve(dir, `out/make/artifact2-${platform}`),
-          ],
-        }, {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact3-${platform}`),
-          ],
+          artifacts: [path.resolve(dir, `out/make/artifact1-${platform}`), path.resolve(dir, `out/make/artifact2-${platform}`)],
         },
         {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact4-${platform}`),
-          ],
+          artifacts: [path.resolve(dir, `out/make/artifact3-${platform}`)],
+        },
+        {
+          artifacts: [path.resolve(dir, `out/make/artifact4-${platform}`)],
         },
       ];
       const state = {
@@ -296,7 +300,9 @@ describe('publish', () => {
           darwinArtifacts.push(...result.artifacts);
         }
         expect(darwinArtifacts.sort()).to.deep.equal(
-          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
+          fakeMake('darwin')
+            .reduce((accum, val) => accum.concat(val.artifacts), [] as string[])
+            .sort()
         );
         const win32Args = publisherSpy.getCall(win32Index).args[0];
         const win32Artifacts = [];
@@ -304,7 +310,9 @@ describe('publish', () => {
           win32Artifacts.push(...result.artifacts);
         }
         expect(win32Artifacts.sort()).to.deep.equal(
-          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
+          fakeMake('win32')
+            .reduce((accum, val) => accum.concat(val.artifacts), [] as string[])
+            .sort()
         );
       });
     });

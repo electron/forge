@@ -22,7 +22,8 @@ describe('install', () => {
 
     install = proxyquire.noCallThru().load('../../src/api/install', {
       'node-fetch': fetch,
-      nugget: (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      nugget: (...args: any[]) => {
         nuggetSpy(...args);
         args[args.length - 1]();
       },
@@ -51,16 +52,16 @@ describe('install', () => {
       throws: new Error('it broke'),
     });
     await expect(install({ chooseAsset, repo: 'a/b', interactive: false })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "a/b".  Please check the name and try again.',
+      'Failed to find releases for repository "a/b".  Please check the name and try again.'
     );
   });
 
-  it('should throw an error if we can\'t find the repo', async () => {
+  it("should throw an error if we can't find the repo", async () => {
     fetch.get('*', {
       message: 'Not Found',
     });
     await expect(install({ chooseAsset, repo: 'b/c', interactive: false })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "b/c".  Please check the name and try again.',
+      'Failed to find releases for repository "b/c".  Please check the name and try again.'
     );
   });
 
@@ -69,20 +70,13 @@ describe('install', () => {
       lolz: 'this aint no array',
     });
     await expect(install({ chooseAsset, repo: 'c/d', interactive: false })).to.eventually.be.rejectedWith(
-      'Failed to find releases for repository "c/d".  Please check the name and try again.',
+      'Failed to find releases for repository "c/d".  Please check the name and try again.'
     );
   });
 
   it('should throw an error if the latest release has no assets', async () => {
-    fetch.get('*', [
-      { tag_name: 'v1.0.0' },
-      { tag_name: '0.3.0' },
-      { tag_name: 'v1.2.0' },
-      { tag_name: '0.1.0' },
-    ]);
-    await expect(install({ chooseAsset, repo: 'e/f', interactive: false })).to.eventually.be.rejectedWith(
-      'Could not find any assets for the latest release',
-    );
+    fetch.get('*', [{ tag_name: 'v1.0.0' }, { tag_name: '0.3.0' }, { tag_name: 'v1.2.0' }, { tag_name: '0.1.0' }]);
+    await expect(install({ chooseAsset, repo: 'e/f', interactive: false })).to.eventually.be.rejectedWith('Could not find any assets for the latest release');
   });
 
   it('should throw an error if there are no release compatible with the current platform', async () => {
@@ -97,12 +91,12 @@ describe('install', () => {
       },
     ]);
     await expect(install({ chooseAsset, repo: 'f/g', interactive: false })).to.eventually.be.rejectedWith(
-      `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`,
+      `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`
     );
   });
 
   // eslint-disable-next-line no-nested-ternary
-  const compatSuffix = process.platform === 'darwin' ? 'dmg' : (process.platform === 'win32' ? 'exe' : 'deb');
+  const compatSuffix = process.platform === 'darwin' ? 'dmg' : process.platform === 'win32' ? 'exe' : 'deb';
 
   it('should download a release if there is a single compatible asset', async () => {
     fetch.get('*', [
@@ -138,9 +132,7 @@ describe('install', () => {
         ],
       },
     ]);
-    await expect(install({ repo: 'h/i', interactive: false })).to.eventually.be.rejectedWith(
-      'Expected chooseAsset to be a function in install call',
-    );
+    await expect(install({ repo: 'h/i', interactive: false })).to.eventually.be.rejectedWith('Expected chooseAsset to be a function in install call');
   });
 
   it('should provide compatible assets to chooseAsset if more than one exists', async () => {

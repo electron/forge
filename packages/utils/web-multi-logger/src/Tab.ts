@@ -22,10 +22,12 @@ export default class Tab {
     this.logs.push(log);
 
     for (const client of this.ws.getWss().clients) {
-      client.send(JSON.stringify({
-        tab: this.id,
-        payload: log,
-      }));
+      client.send(
+        JSON.stringify({
+          tab: this.id,
+          payload: log,
+        })
+      );
     }
   }
 

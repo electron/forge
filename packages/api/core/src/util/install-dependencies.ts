@@ -14,12 +14,8 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export default async (
-  dir: string,
-  deps: string[],
-  depType = DepType.PROD,
-  versionRestriction = DepVersionRestriction.RANGE,
-): Promise<void> => { // eslint-disable-line consistent-return
+export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
+  // eslint-disable-line consistent-return
   d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');

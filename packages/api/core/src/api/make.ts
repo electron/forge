@@ -1,9 +1,7 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import { getHostArch } from '@electron/get';
-import {
-  IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult,
-} from '@electron-forge/shared-types';
+import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult } from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
@@ -34,9 +32,7 @@ function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[
   if (overrideTargets) {
     return overrideTargets.map((target) => {
       if (typeof target === 'string') {
-        return forgeConfig.makers.find(
-          (maker) => (maker as IForgeResolvableMaker).name === target,
-        ) || { name: target };
+        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || { name: target };
       }
 
       return target;
@@ -141,18 +137,17 @@ export default async ({
     }
 
     if (!maker.isSupportedOnCurrentPlatform) {
-      throw new Error([
-        `Maker for target ${maker.name} is incompatible with this version of `,
-        'electron-forge, please upgrade or contact the maintainer ',
-        '(needs to implement \'isSupportedOnCurrentPlatform)\')',
-      ].join(''));
+      throw new Error(
+        [
+          `Maker for target ${maker.name} is incompatible with this version of `,
+          'electron-forge, please upgrade or contact the maintainer ',
+          "(needs to implement 'isSupportedOnCurrentPlatform)')",
+        ].join('')
+      );
     }
 
     if (!maker.isSupportedOnCurrentPlatform()) {
-      throw new Error([
-        `Cannot make for ${platform} and target ${maker.name}: the maker declared `,
-        `that it cannot run on ${process.platform}`,
-      ].join(''));
+      throw new Error([`Cannot make for ${platform} and target ${maker.name}: the maker declared `, `that it cannot run on ${process.platform}`].join(''));
     }
 
     maker.ensureExternalBinariesExist();

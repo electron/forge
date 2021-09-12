@@ -99,7 +99,21 @@ export interface MakerFlatpakOptionsConfig {
    *
    * `(${$$('.informaltable tr td:first-child').map(td => `'$\{td.innerText\}'`).join(' | ')})[]`
    */
-  categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
+  categories?: (
+    | 'AudioVideo'
+    | 'Audio'
+    | 'Video'
+    | 'Development'
+    | 'Education'
+    | 'Game'
+    | 'Graphics'
+    | 'Network'
+    | 'Office'
+    | 'Science'
+    | 'Settings'
+    | 'System'
+    | 'Utility'
+  )[];
   /**
    * MIME types the application is able to open, used in the MimeType field of the desktop
    * specification.

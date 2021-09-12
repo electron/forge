@@ -12,16 +12,15 @@ import { readRawPackageJson } from '../../src/util/read-package-json';
 import { InitOptions } from '../../src/api';
 
 const forge = proxyquire.noCallThru().load('../../src/api', {
-  './install': async () => { /* don't load the install module for this spec */ },
+  './install': async () => {
+    /* don't load the install module for this spec */
+  },
 }).api;
 
 type BeforeInitFunction = () => void;
 type PackageJSON = Record<string, unknown>;
 
-async function updatePackageJSON(
-  dir: string,
-  packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>,
-) {
+async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>) {
   const packageJSON = await readRawPackageJson(dir);
   await packageJSONUpdater(packageJSON);
   await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
@@ -128,10 +127,12 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       it('should fail in initializing', async () => {
-        await expect(forge.init({
-          dir,
-          template: path.resolve(__dirname, '../fixture/template-sans-forge-version'),
-        })).to.eventually.be.rejectedWith(/it does not specify its required Forge version\.$/);
+        await expect(
+          forge.init({
+            dir,
+            template: path.resolve(__dirname, '../fixture/template-sans-forge-version'),
+          })
+        ).to.eventually.be.rejectedWith(/it does not specify its required Forge version\.$/);
       });
 
       after(async () => {
@@ -145,10 +146,12 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       it('should fail in initializing', async () => {
-        await expect(forge.init({
-          dir,
-          template: path.resolve(__dirname, '../fixture/template-nonmatching-forge-version'),
-        })).to.eventually.be.rejectedWith(/is not compatible with this version of Electron Forge/);
+        await expect(
+          forge.init({
+            dir,
+            template: path.resolve(__dirname, '../fixture/template-nonmatching-forge-version'),
+          })
+        ).to.eventually.be.rejectedWith(/is not compatible with this version of Electron Forge/);
       });
 
       after(async () => {
@@ -162,10 +165,12 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       it('should fail in initializing', async () => {
-        await expect(forge.init({
-          dir,
-          template: 'does-not-exist',
-        })).to.eventually.be.rejectedWith('Failed to locate custom template');
+        await expect(
+          forge.init({
+            dir,
+            template: 'does-not-exist',
+          })
+        ).to.eventually.be.rejectedWith('Failed to locate custom template');
       });
 
       after(async () => {
@@ -196,9 +201,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
             forge: {
               makers: [
                 {
-                  config: {
-                    name: winstallerName,
-                  },
+                  config: { name: winstallerName },
                 },
               ],
             },
@@ -233,14 +236,8 @@ describe('Electron Forge API', () => {
         packageJSON.productName = 'Test-App';
         packageJSON.config.forge.packagerConfig.asar = false;
         if (process.platform === 'win32') {
-          await fs.copy(
-            path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
-            path.join(dir, 'default.pvk'),
-          );
-          devCert = await createDefaultCertificate(
-            'CN=Test Author',
-            { certFilePath: dir },
-          );
+          await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
+          devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
         } else if (process.platform === 'linux') {
           packageJSON.config.forge.packagerConfig.executableName = 'testapp';
         }
@@ -338,12 +335,12 @@ describe('Electron Forge API', () => {
           '@electron-forge/maker-wix',
           '@electron-forge/maker-zip',
         ];
-        return allMakers.map((maker) => require.resolve(maker))
+        return allMakers
+          .map((maker) => require.resolve(maker))
           .filter((makerPath) => {
             const MakerClass = require(makerPath).default;
             const maker = new MakerClass();
-            return maker.isSupportedOnCurrentPlatform() === good
-              && maker.externalBinariesExist() === good;
+            return maker.isSupportedOnCurrentPlatform() === good && maker.externalBinariesExist() === good;
           })
           .map((makerPath) => () => {
             const makerDefinition = {
@@ -413,47 +410,61 @@ describe('Electron Forge API', () => {
           await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
         });
 
-        it('throws an error when the specified maker doesn\'t support the current platform', async () => {
+        it("throws an error when the specified maker doesn't support the current platform", async () => {
           const makerPath = path.resolve(__dirname, '../fixture/maker-unsupported');
-          await expect(forge.make({
-            dir,
-            overrideTargets: [{
-              name: makerPath,
-            }],
-            skipPackage: true,
-          })).to.eventually.be.rejectedWith(/the maker declared that it cannot run/);
+          await expect(
+            forge.make({
+              dir,
+              overrideTargets: [
+                {
+                  name: makerPath,
+                },
+              ],
+              skipPackage: true,
+            })
+          ).to.eventually.be.rejectedWith(/the maker declared that it cannot run/);
         });
 
-        it('throws an error when the specified maker doesn\'t implement isSupportedOnCurrentPlatform()', async () => {
+        it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
           const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
-          await expect(forge.make({
-            dir,
-            overrideTargets: [{
-              name: makerPath,
-            }],
-            skipPackage: true,
-          })).to.eventually.be.rejectedWith(/incompatible with this version/);
+          await expect(
+            forge.make({
+              dir,
+              overrideTargets: [
+                {
+                  name: makerPath,
+                },
+              ],
+              skipPackage: true,
+            })
+          ).to.eventually.be.rejectedWith(/incompatible with this version/);
         });
 
         it('throws an error when no makers are configured for the given platform', async () => {
-          await expect(forge.make({
-            dir,
-            overrideTargets: [{
-              name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
-            }],
-            platform: 'linux',
-            skipPackage: true,
-          })).to.eventually.be.rejectedWith('Could not find any make targets configured for the "linux" platform.');
+          await expect(
+            forge.make({
+              dir,
+              overrideTargets: [
+                {
+                  name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
+                },
+              ],
+              platform: 'linux',
+              skipPackage: true,
+            })
+          ).to.eventually.be.rejectedWith('Could not find any make targets configured for the "linux" platform.');
         });
 
         it('can make for the MAS platform successfully', async () => {
           if (process.platform !== 'darwin') return;
-          await expect(forge.make({
-            dir,
-            // eslint-disable-next-line node/no-missing-require
-            overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
-            platform: 'mas',
-          })).to.eventually.have.length(2);
+          await expect(
+            forge.make({
+              dir,
+              // eslint-disable-next-line node/no-missing-require
+              overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
+              platform: 'mas',
+            })
+          ).to.eventually.have.length(2);
         });
       });
     });

@@ -1,6 +1,4 @@
-import {
-  ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions,
-} from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions } from '@electron-forge/shared-types';
 
 export { StartOptions };
 

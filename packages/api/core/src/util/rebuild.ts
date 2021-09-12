@@ -8,7 +8,7 @@ export default async (
   electronVersion: string,
   platform: ForgePlatform,
   arch: ForgeArch,
-  config: Partial<RebuildOptions> = {},
+  config: Partial<RebuildOptions> = {}
 ): Promise<void> => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
     const rebuilder = rebuild({
@@ -26,8 +26,14 @@ export default async (
       rebuildSpinner.text = `Preparing native dependencies: ${done} / ${found}`;
     };
 
-    lifecycle.on('module-found', () => { found += 1; redraw(); });
-    lifecycle.on('module-done', () => { done += 1; redraw(); });
+    lifecycle.on('module-found', () => {
+      found += 1;
+      redraw();
+    });
+    lifecycle.on('module-done', () => {
+      done += 1;
+      redraw();
+    });
 
     await rebuilder;
   });

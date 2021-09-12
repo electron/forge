@@ -6,11 +6,16 @@ import { MakerDebConfig } from './Config';
 
 export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
-    case 'ia32': return 'i386';
-    case 'x64': return 'amd64';
-    case 'armv7l': return 'armhf';
-    case 'arm': return 'armel';
-    default: return nodeArch;
+    case 'ia32':
+      return 'i386';
+    case 'x64':
+      return 'amd64';
+    case 'armv7l':
+      return 'armhf';
+    case 'arm':
+      return 'armel';
+    default:
+      return nodeArch;
   }
 }
 
@@ -25,11 +30,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     return this.isInstalled('electron-installer-debian');
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-  }: MakerOptions): Promise<string[]> {
+  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-debian');
 

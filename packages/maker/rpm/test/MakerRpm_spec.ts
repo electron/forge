@@ -49,7 +49,11 @@ describe('MakerRpm', () => {
 
   it('should pass through correct defaults', async () => {
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -70,7 +74,11 @@ describe('MakerRpm', () => {
     createMaker();
 
     await (maker.make as MakeFunction)({
-      dir, makeDir, appName, targetArch, packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
