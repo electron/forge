@@ -15,7 +15,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'win32';
   }
 
@@ -25,7 +25,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     targetArch,
     packageJSON,
     appName,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 

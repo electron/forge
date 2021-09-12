@@ -81,7 +81,7 @@ export interface MakerFlatpakOptionsConfig {
    * if you are using native node modules that require certain libraries on
    * the system, this may be necessary.
    */
-  modules?: any[];
+  modules?: (Record<string, unknown> | string)[];
   /**
    * Relative path to the executable that will act as binary for the application, used in the
    * Exec field of the desktop specification.
@@ -97,7 +97,7 @@ export interface MakerFlatpakOptionsConfig {
    *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
    *
-   * `(${$$('.informaltable tr td:first-child').map(td => `'${td.innerText}'`).join(' | ')})[]`
+   * `(${$$('.informaltable tr td:first-child').map(td => `'$\{td.innerText\}'`).join(' | ')})[]`
    */
   categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
   /**

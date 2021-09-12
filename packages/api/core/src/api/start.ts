@@ -26,7 +26,7 @@ export default async ({
   args = [],
   runAsNode = false,
   inspect = false,
-}: StartOptions) => {
+}: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
 
   await asyncOra('Locating Application', async () => {
@@ -114,7 +114,7 @@ export default async ({
 
     await asyncOra('Launching Application', async () => {
       spawned = spawn(
-        electronExecPath!,
+        electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
         prefixArgs.concat([appPath]).concat(args as string[]),
         spawnOpts as SpawnOptions,
       ) as ElectronProcess;

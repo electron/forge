@@ -17,7 +17,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
     });
   }
 
-  init(_dir: string, _config: ForgeConfig) {
+  init(_dir: string, _config: ForgeConfig): void {
     // By default, do nothing. This can be overridden.
   }
 

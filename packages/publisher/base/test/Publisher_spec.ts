@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import Publisher from '../src/Publisher';
+import Publisher, { PublisherOptions } from '../src/Publisher';
 
 class PublisherImpl extends Publisher<null> {
   defaultPlatforms = [];
@@ -17,7 +17,7 @@ describe('Publisher', () => {
   it('__isElectronForgePublisher should not be settable', () => {
     const publisher = new PublisherImpl(null);
     expect(() => {
-      // eslint-disable-next-line no-underscore-dangle
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-underscore-dangle
       (publisher as any).__isElectronForgePublisher = false;
     }).to.throw();
     expect(() => {
@@ -28,8 +28,8 @@ describe('Publisher', () => {
     expect(publisher).to.have.property('__isElectronForgePublisher', true);
   });
 
-  it('should throw an error when publish is called is called', (done) => {
+  it('should throw an error when publish is called is called', async () => {
     const publisher = new PublisherImpl(null);
-    publisher.publish({} as any).catch(() => done());
+    await expect(publisher.publish({} as PublisherOptions)).to.eventually.be.rejected;
   });
 });

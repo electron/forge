@@ -1,4 +1,5 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 
 import { expect } from 'chai';
 import path from 'path';
@@ -6,6 +7,8 @@ import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
+
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerPKGConfig> {
  name = 'test';
@@ -46,13 +49,13 @@ describe('MakerPKG', () => {
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
+    await (maker.make as MakeFunction)({
       packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas',
     });
     const opts = eosStub.firstCall.args[0];
@@ -64,7 +67,7 @@ describe('MakerPKG', () => {
   });
 
   it('should throw an error on invalid platform', async () => {
-    await expect((maker.make as any)({
+    await expect((maker.make as MakeFunction)({
       packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32',
     }))
       .to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');

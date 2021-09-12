@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import fs from 'fs-extra';
+import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
 import os from 'os';
 import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { PublishOptions } from '../../src/api';
 
@@ -19,15 +20,15 @@ describe('publish', () => {
   let publisherSpy: SinonStub;
   let voidStub: SinonStub;
   let nowhereStub: SinonStub;
-  let publishers: any[];
-  let fooPublisher: { name: string, providedConfig: any };
+  let publishers: (SinonStub | ForgeConfigPublisher)[];
+  let fooPublisher: { name: string, providedConfig: Record<string, unknown> };
 
   beforeEach(() => {
-    resolveStub = sinon.stub();
-    makeStub = sinon.stub();
-    publisherSpy = sinon.stub();
-    voidStub = sinon.stub();
-    nowhereStub = sinon.stub();
+    resolveStub = stub();
+    makeStub = stub();
+    publisherSpy = stub();
+    voidStub = stub();
+    nowhereStub = stub();
     publishers = ['@electron-forge/publisher-test'];
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const fakePublisher = (stub: SinonStub, name = 'default') => class _FakePublisher {
@@ -35,13 +36,14 @@ describe('publish', () => {
 
       public name = name;
 
-      constructor(public providedConfig: any) {
+      constructor(public providedConfig: Record<string, unknown>) {
         fooPublisher = this;
         this.publish = stub;
       }
     };
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       './make': async (...args: any[]) => makeStub(...args),
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
@@ -132,8 +134,8 @@ describe('publish', () => {
       publishTargets: [{
         __isElectronForgePublisher: true,
         publish: publisherSpy,
-        platforms: null,
-      } as any],
+        platforms: undefined,
+      } as IForgePublisher],
     });
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it

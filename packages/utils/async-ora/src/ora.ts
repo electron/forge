@@ -16,7 +16,7 @@ if (useFakeOra) {
   console.warn('to the value of DEBUG in order to view progress indicators.'.red);
 }
 
-export const fakeOra = (name: string) => {
+export const fakeOra = (name: string): OraImpl => {
   let oraName = name;
   let startTime: number | null = null;
   const timing = () => (startTime ? `-- after ${`${prettyMs(Date.now() - startTime)}`.cyan}` : null);

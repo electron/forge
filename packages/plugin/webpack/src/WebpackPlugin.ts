@@ -1,7 +1,7 @@
 /* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -71,7 +71,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
+  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
@@ -122,7 +122,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       });
   });
 
-  init = (dir: string) => {
+  init = (dir: string): void => {
     this.setDirectories(dir);
 
     d('hooking process events');
@@ -130,12 +130,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
   }
 
-  setDirectories = (dir: string) => {
+  setDirectories = (dir: string): void => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
   }
 
-  get configGenerator() {
+  get configGenerator(): WebpackConfigGenerator {
     // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
       // eslint-disable-next-line no-underscore-dangle
@@ -153,7 +153,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private loggedOutputUrl = false;
 
-  getHook(name: string) {
+  getHook(name: string): ForgeHookFn | null {
     switch (name) {
       case 'prePackage':
         this.isProd = true;
@@ -183,7 +183,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
+  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -211,7 +211,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   }
 
-  packageAfterCopy = async (_: any, buildPath: string) => {
+  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
     if (pj.config) {
       delete pj.config.forge;
@@ -232,13 +232,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
   }
 
-  compileMain = async (watch = false, logger?: Logger) => {
+  compileMain = async (watch = false, logger?: Logger): Promise<void> => {
     let tab: Tab;
     if (logger) {
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = await this.configGenerator.getMainConfig();
+      const mainConfig = this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
@@ -268,7 +268,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     });
   }
 
-  compileRenderers = async (watch = false) => {
+  compileRenderers = async (watch = false): Promise<void> => {
     await asyncOra('Compiling Renderer Template', async () => {
       const stats = await this.runWebpack(
         await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
@@ -283,6 +283,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
           const stats = await this.runWebpack(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
           );
 
@@ -294,7 +295,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
   }
 
-  launchDevServers = async (logger: Logger) => {
+  launchDevServers = async (logger: Logger): Promise<void> => {
     await asyncOra('Launch Dev Servers', async () => {
       const tab = logger.createTab('Renderers');
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
@@ -314,6 +315,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         if (entryPoint.preload) {
           const config = await this.configGenerator.getPreloadRendererConfig(
             entryPoint,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             entryPoint.preload!,
           );
           await new Promise((resolve, reject) => {

@@ -11,7 +11,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas', 'win32', 'linux'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return true;
   }
 
@@ -22,7 +22,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     packageJSON,
     targetArch,
     targetPlatform,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require
     const { zip } = require('cross-zip');
 

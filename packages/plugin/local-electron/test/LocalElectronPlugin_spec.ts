@@ -73,6 +73,7 @@ describe('LocalElectronPlugin', () => {
 
       it('should do nothing when disabled', async () => {
         p.config.enabled = false;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await fn(null, tmpDir, null, process.platform, process.arch);
@@ -82,6 +83,7 @@ describe('LocalElectronPlugin', () => {
       });
 
       it('should throw an error if the platform doesn\'t match', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await expect(fn(null, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
@@ -90,6 +92,7 @@ describe('LocalElectronPlugin', () => {
       });
 
       it('should throw an error if the arch doesn\'t match', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await expect(fn(null, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
@@ -101,6 +104,7 @@ describe('LocalElectronPlugin', () => {
         const electronDir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'electron-tmp-'));
         await fs.writeFile(path.resolve(electronDir, 'electron'), 'hi i am electron I swear');
         p.config.electronPath = electronDir;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
         await fn(null, tmpDir, null, process.platform, process.arch);

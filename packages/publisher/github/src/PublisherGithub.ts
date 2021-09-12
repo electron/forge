@@ -23,7 +23,7 @@ interface GitHubRelease {
 export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     const perReleaseArtifacts: {
@@ -100,14 +100,16 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             updateSpinner();
           };
           const artifactName = path.basename(artifactPath);
-          // eslint-disable-next-line max-len
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
             return done();
           }
           await github.getGitHub().repos.uploadReleaseAsset({
             owner: config.repository.owner,
             repo: config.repository.name,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             release_id: release!.id,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             url: release!.upload_url,
             // https://github.com/octokit/rest.js/issues/1645
             data: ((await fs.readFile(artifactPath)) as unknown) as string,

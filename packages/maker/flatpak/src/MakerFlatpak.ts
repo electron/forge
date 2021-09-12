@@ -6,7 +6,7 @@ import path from 'path';
 
 import { MakerFlatpakConfig } from './Config';
 
-export function flatpakArch(nodeArch: ForgeArch) {
+export function flatpakArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
@@ -23,7 +23,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
   requiredExternalBinaries: string[] = ['flatpak-builder', 'eu-strip'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('@malept/electron-installer-flatpak');
   }
 
@@ -31,7 +31,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     dir,
     makeDir,
     targetArch,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('@malept/electron-installer-flatpak');
 

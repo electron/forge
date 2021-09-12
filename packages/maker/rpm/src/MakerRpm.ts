@@ -4,7 +4,7 @@ import path from 'path';
 
 import { MakerRpmConfig } from './Config';
 
-export function rpmArch(nodeArch: ForgeArch) {
+export function rpmArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'x86_64';
@@ -21,7 +21,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
 
   requiredExternalBinaries: string[] = ['rpmbuild'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('electron-installer-redhat');
   }
 
@@ -29,7 +29,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     dir,
     makeDir,
     targetArch,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-redhat');
 

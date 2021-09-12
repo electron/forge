@@ -12,7 +12,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('electron-winstaller') && !process.env.DISABLE_SQUIRREL_TEST;
   }
 
@@ -23,7 +23,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     packageJSON,
     appName,
     forgeConfig,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 

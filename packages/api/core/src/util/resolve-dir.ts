@@ -9,7 +9,7 @@ const d = debug('electron-forge:project-resolver');
 // FIXME: If we want getElectronVersion to be overridable by plugins
 //        and / or forge config then we need to be able to resolve
 //        the dir without calling getElectronVersion
-export default async (dir: string) => {
+export default async (dir: string): Promise<string | null> => {
   let mDir = dir;
   let bestGuessDir: string | null = null;
   let lastError: string | null = null;

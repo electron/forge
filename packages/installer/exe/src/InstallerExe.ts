@@ -7,7 +7,7 @@ export default class InstallerExe extends InstallerBase {
 
   async install({
     filePath,
-  }: InstallerOptions) {
+  }: InstallerOptions): Promise<void> {
     await open(filePath, { wait: false });
   }
 }

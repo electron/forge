@@ -10,6 +10,7 @@ export default class LoggingPlugin {
 
   promiseResolver: (() => void) | undefined;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promiseRejector: ((reason?: any) => void) | undefined;
 
   constructor(tab: Tab) {
@@ -34,7 +35,7 @@ export default class LoggingPlugin {
     this.promiseResolver = undefined;
   }
 
-  apply(compiler: Compiler) {
+  apply(compiler: Compiler): void {
     compiler.hooks.watchRun.tap(pluginName, (_compiler) => {
       this.addRun();
     });

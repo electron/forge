@@ -7,9 +7,9 @@ import { runHook, runMutatingHook } from '../../src/util/hook';
 const fakeConfig = {
   pluginInterface: {
     triggerHook: async () => false,
-    triggerMutatingHook: async (_: any, item: any) => item,
+    triggerMutatingHook: async (_hookName: string, item: unknown) => item,
   },
-} as any as ForgeConfig;
+} as unknown as ForgeConfig;
 
 describe('hooks', () => {
   describe('runHook', () => {

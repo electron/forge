@@ -17,7 +17,7 @@ export default class Tab {
   /**
    * Log a line to the web UI, a new line is automatically appended to the line
    */
-  log(line: string) {
+  log(line: string): void {
     const log = new Log(line, new Date());
     this.logs.push(log);
 

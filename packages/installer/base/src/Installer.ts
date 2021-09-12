@@ -22,7 +22,7 @@ export default abstract class Installer {
    * Installers must implement this method and install the given filePath
    * when called.  This method must return a promise
    */
-  async install(_opts: InstallerOptions) {
+  async install(_opts: InstallerOptions): Promise<void> {
     throw new Error(`Installer ${this.name} did not implement the install method`);
   }
 }

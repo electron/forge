@@ -11,7 +11,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
 
   requiredExternalBinaries: string[] = ['snapcraft'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'linux';
   }
 
@@ -19,7 +19,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     dir,
     makeDir,
     targetArch,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require
     const installer = require('electron-installer-snap');
 

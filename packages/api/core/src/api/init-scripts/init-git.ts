@@ -4,7 +4,7 @@ import debug from 'debug';
 
 const d = debug('electron-forge:init:git');
 
-export default async (dir: string) => {
+export default async (dir: string): Promise<void> => {
   await asyncOra('Initializing Git Repository', async () => {
     await new Promise<void>((resolve, reject) => {
       exec('git rev-parse --show-toplevel', {

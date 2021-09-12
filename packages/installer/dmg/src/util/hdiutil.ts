@@ -17,10 +17,12 @@ export const getMountedImages = async (): Promise<Mount[]> => {
 
   for (const mount of mounts) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const mountPath = /\/Volumes\/(.+)\n/g.exec(mount)![1];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const imagePath = /image-path +: +(.+)\n/g.exec(mount)![1];
       mountObjects.push({ mountPath, imagePath });
-    } catch (err) {
+    } catch {
       // Ignore
     }
   }
@@ -32,6 +34,7 @@ export const getMountedImages = async (): Promise<Mount[]> => {
 export const mountImage = async (filePath: string): Promise<Mount> => {
   d('mounting image:', filePath);
   const output = await spawn('hdiutil', ['attach', '-noautoopen', '-nobrowse', '-noverify', filePath]);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const mountPath = /\/Volumes\/(.+)\n/g.exec(output.toString())![1];
   d('mounted at:', mountPath);
 
@@ -41,7 +44,7 @@ export const mountImage = async (filePath: string): Promise<Mount> => {
   };
 };
 
-export const unmountImage = async (mount: Mount) => {
+export const unmountImage = async (mount: Mount): Promise<void> => {
   d('unmounting current mount:', mount);
   await spawn('hdiutil', ['unmount', '-force', `/Volumes/${mount.mountPath}`]);
 };

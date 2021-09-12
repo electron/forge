@@ -81,7 +81,7 @@ export default async ({
   arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   outDir,
-}: PackageOptions) => {
+}: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
   let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
@@ -207,5 +207,6 @@ export default async ({
     spinner: packagerSpinner,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (packagerSpinner) packagerSpinner!.succeed();
 };

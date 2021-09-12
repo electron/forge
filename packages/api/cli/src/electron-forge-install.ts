@@ -29,6 +29,7 @@ import './util/terminate';
       message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return assets.find((asset) => asset.id === assetID)!;
   };
 

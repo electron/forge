@@ -10,10 +10,10 @@ export default class InstallerZip extends InstallerDarwin {
   async install({
     filePath,
     installSpinner,
-  }: InstallerOptions) {
+  }: InstallerOptions): Promise<void> {
     await spawn('unzip', ['-q', '-o', path.basename(filePath)], {
       cwd: path.dirname(filePath),
-    } as any);
+    });
 
     const appPath = (await fs.readdir(path.dirname(filePath))).filter((file) => file.endsWith('.app'))
       .map((file) => path.resolve(path.dirname(filePath), file))
@@ -23,6 +23,6 @@ export default class InstallerZip extends InstallerDarwin {
 
     await this.moveApp(appPath, targetApplicationPath, installSpinner);
 
-    await spawn('open', ['-R', targetApplicationPath], { detached: true } as any);
+    await spawn('open', ['-R', targetApplicationPath], { detached: true });
   }
 }

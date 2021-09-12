@@ -1,8 +1,8 @@
-import { spawn } from '@malept/cross-spawn-promise';
+import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
 
-const safeYarnOrNpm = () => {
+const safeYarnOrNpm = (): string => {
   const system = yarnOrNpm();
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
@@ -20,6 +20,6 @@ const safeYarnOrNpm = () => {
 export default safeYarnOrNpm;
 
 // eslint-disable-next-line max-len
-export const yarnOrNpmSpawn = (args?: string[], opts?: any) => spawn(safeYarnOrNpm(), args, opts);
+export const yarnOrNpmSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(safeYarnOrNpm(), args, opts);
 
-export const hasYarn = () => safeYarnOrNpm() === 'yarn';
+export const hasYarn = (): boolean => safeYarnOrNpm() === 'yarn';

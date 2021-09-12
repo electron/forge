@@ -55,7 +55,7 @@ export default async ({
   copyCIFiles = false,
   force = false,
   template = 'base',
-}: InitOptions) => {
+}: InitOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);

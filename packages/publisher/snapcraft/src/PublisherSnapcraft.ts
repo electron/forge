@@ -13,7 +13,7 @@ const Snapcraft = require('electron-installer-snap/src/snapcraft');
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {
   name = 'snapcraft';
 
-  async publish({ dir, makeResults }: PublisherOptions) {
+  async publish({ dir, makeResults }: PublisherOptions): Promise<void> {
     const artifacts = makeResults.reduce((flat, makeResult) => {
       flat.push(...makeResult.artifacts);
       return flat;

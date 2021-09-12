@@ -1,13 +1,15 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 
 import { expect } from 'chai';
 import path from 'path';
 import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
-import { ForgeArch } from '@electron-forge/shared-types';
 import { MakerDebConfig } from '../src/Config';
 import { debianArch } from '../src/MakerDeb';
+
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerDebConfig> {
  name = 'test';
@@ -40,13 +42,13 @@ describe('MakerDeb', () => {
     createMaker = () => {
       maker = new MakerDeb(config, []);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
+    await (maker.make as MakeFunction)({
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eidStub.firstCall.args[0];
@@ -66,11 +68,11 @@ describe('MakerDeb', () => {
       options: {
         productName: 'Debian',
       },
-    } as any;
+    } as Record<string, unknown>;
 
     createMaker();
 
-    await (maker.make as any)({
+    await (maker.make as MakeFunction)({
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eidStub.firstCall.args[0];

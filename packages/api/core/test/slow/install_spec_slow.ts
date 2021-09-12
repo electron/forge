@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
-import sinon, { SinonSpy } from 'sinon';
+import { SinonSpy, spy, stub } from 'sinon';
 
 import { InstallOptions, InstallAsset } from '../../src/api';
 
 describe('install', () => {
   let install: (opts: InstallOptions) => Promise<void>;
   let nuggetSpy: SinonSpy;
-  let fetch: any;
+  let fetch;
   class MockInstaller {
     async install() {
       return undefined;
@@ -17,12 +17,12 @@ describe('install', () => {
   const chooseAsset = (arr: InstallAsset[]) => arr[0];
 
   beforeEach(() => {
-    fetch = (fetchMock as any).sandbox();
-    nuggetSpy = sinon.stub();
+    fetch = fetchMock.sandbox();
+    nuggetSpy = stub();
 
     install = proxyquire.noCallThru().load('../../src/api/install', {
       'node-fetch': fetch,
-      nugget: (...args: any[]) => {
+      nugget: (...args: any[]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         nuggetSpy(...args);
         args[args.length - 1]();
       },
@@ -39,7 +39,7 @@ describe('install', () => {
   });
 
   it('should throw an error when a repo name is not given', async () => {
-    await expect(install({} as any)).to.eventually.be.rejected;
+    await expect(install({})).to.eventually.be.rejected;
   });
 
   it('should throw an error when given an invalid repository name', async () => {
@@ -138,13 +138,13 @@ describe('install', () => {
         ],
       },
     ]);
-    await expect(install({ repo: 'h/i', interactive: false } as any)).to.eventually.be.rejectedWith(
+    await expect(install({ repo: 'h/i', interactive: false })).to.eventually.be.rejectedWith(
       'Expected chooseAsset to be a function in install call',
     );
   });
 
   it('should provide compatible assets to chooseAsset if more than one exists', async () => {
-    const chooseAssetSpy = sinon.spy(async (assets: InstallAsset[]) => assets[0]);
+    const chooseAssetSpy = spy(async (assets: InstallAsset[]) => assets[0]);
     fetch.get('*', [
       {
         tag_name: '1.0.0',

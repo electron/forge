@@ -67,7 +67,7 @@ export default async ({
   prerelease = false,
   repo,
   chooseAsset,
-}: InstallOptions) => {
+}: InstallOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   if (typeof chooseAsset !== 'function') {
@@ -90,6 +90,8 @@ export default async ({
       // Ignore error
     }
 
+    // TODO: fix up the type so that errors are handled correctly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!releases || (releases as any).message === 'Not Found' || !Array.isArray(releases)) {
       throw new Error(`Failed to find releases for repository "${repo}".  Please check the name and try again.`);
     }

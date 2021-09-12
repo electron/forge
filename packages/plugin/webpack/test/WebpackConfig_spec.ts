@@ -257,6 +257,7 @@ describe('WebpackConfigGenerator', () => {
       const entryPoint = config.renderer.entryPoints[0];
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!,
       );
       expect(webpackConfig.target).to.equal('electron-preload');
@@ -284,6 +285,7 @@ describe('WebpackConfigGenerator', () => {
       const entryPoint = config.renderer.entryPoints[0];
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!,
       );
       expect(webpackConfig.target).to.equal('electron-preload');
@@ -313,6 +315,7 @@ describe('WebpackConfigGenerator', () => {
       const entryPoint = config.renderer.entryPoints[0];
       const webpackConfig = await generator.getPreloadRendererConfig(
         entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!,
       );
       expect(webpackConfig.target).to.equal('electron-preload');
@@ -343,6 +346,7 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '/',
       });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig.plugins!.length).to.equal(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
@@ -364,6 +368,7 @@ describe('WebpackConfigGenerator', () => {
           'rendererScript.js',
         ],
       });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig.plugins!.length).to.equal(3);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });
@@ -389,6 +394,7 @@ describe('WebpackConfigGenerator', () => {
         filename: '[name]/index.js',
         globalObject: 'self',
       });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig.plugins!.length).to.equal(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(true);
     });

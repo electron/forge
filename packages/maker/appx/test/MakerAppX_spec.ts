@@ -17,10 +17,7 @@ describe('MakerApPX', () => {
       await fs.remove(tmpDir);
     });
 
-    let def: any = it;
-    if (process.platform !== 'win32') {
-      def = it.skip;
-    }
+    const def = process.platform === 'win32' ? it : it.skip;
 
     def('should create a .pfx file', async () => {
       await fs.copy(

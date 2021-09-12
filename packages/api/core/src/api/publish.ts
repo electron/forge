@@ -69,7 +69,7 @@ const publish = async ({
   dryRunResume = false,
   makeResults = undefined,
   outDir,
-}: PublishOptions) => {
+}: PublishOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   if (dryRun && dryRunResume) {
@@ -157,12 +157,15 @@ const publish = async ({
   });
 
   for (const publishTarget of publishTargets) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let publisher: PublisherBase<any>;
     // eslint-disable-next-line no-underscore-dangle
     if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
-      publisher = publishTarget as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      publisher = publishTarget as PublisherBase<any>;
     } else {
       const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let PublisherClass: any;
       await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);

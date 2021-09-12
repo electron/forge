@@ -2,21 +2,21 @@ import { expect } from 'chai';
 import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 import proxyquire from 'proxyquire';
-import sinon, { SinonSpy } from 'sinon';
+import { SinonSpy, spy } from 'sinon';
 
 import InternalGitHub from '../src/util/github';
 
 describe('GitHub', () => {
   let GitHub: typeof InternalGitHub;
   let gitHubSpy: SinonSpy;
-  let MockGitHub: any;
+  let MockGitHub;
 
   beforeEach(() => {
-    gitHubSpy = sinon.spy();
+    gitHubSpy = spy();
     MockGitHub = class {
-      private options: any;
+      private options: OctokitOptions;
 
-      constructor(options: any) {
+      constructor(options: OctokitOptions) {
         gitHubSpy();
         this.options = options;
       }
@@ -40,6 +40,8 @@ describe('GitHub', () => {
 
   describe('getGitHub', () => {
     function getOptions(api: Octokit): OctokitOptions {
+      // TODO: figure out if there's a legit way to extract options
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { options } = api as any;
       delete options.log;
       return options;

@@ -25,7 +25,7 @@ export default class AssetRelocatorPatch {
     return '""';
   }
 
-  public apply(compiler: Compiler) {
+  public apply(compiler: Compiler): void {
     compiler.hooks.compilation.tap(
       'asset-relocator-forge-patch',
       (compilation) => {

@@ -5,7 +5,7 @@ import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:init:directory');
 
-export default async (dir: string, force = false) => {
+export default async (dir: string, force = false): Promise<void> => {
   await asyncOra('Initializing Project Directory', async (initSpinner) => {
     d('creating directory:', dir);
     await fs.mkdirs(dir);

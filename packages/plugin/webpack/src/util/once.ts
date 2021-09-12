@@ -1,4 +1,4 @@
-/* eslint "arrow-parens": "off" */
+/* eslint "arrow-parens": "off", "@typescript-eslint/no-explicit-any": "off" */
 export default <A, B>(fn1: A, fn2: B): [A, B] => {
   let once = true;
   let val: any;
@@ -8,7 +8,7 @@ export default <A, B>(fn1: A, fn2: B): [A, B] => {
       once = false;
     }
     return val;
-  }) as any as T;
+  }) as unknown as T;
   return [
     make(fn1),
     make(fn2),

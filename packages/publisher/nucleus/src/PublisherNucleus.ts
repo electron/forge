@@ -28,7 +28,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
     return newMakeResults;
   }
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     const collapsedResults = this.collapseMakeResults(makeResults);

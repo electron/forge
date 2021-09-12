@@ -1,4 +1,4 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
 import { template } from 'lodash';
@@ -9,10 +9,20 @@ import { runMutatingHook } from './hook';
 
 const underscoreCase = (str: string) => str.replace(/(.)([A-Z][a-z]+)/g, '$1_$2').replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
 
+export type PackageJSONForInitialForgeConfig = {
+  name?: string;
+  config: {
+    forge: {
+      makers: Pick<IForgeResolvableMaker, 'name' | 'config'>[]
+    }
+  }
+};
+
 // Why: needs access to Object methods and also needs to be able to match any interface.
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ProxiedObject = object;
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line arrow-parens
 const proxify = <T extends ProxiedObject>(
   buildIdentifier: string | (() => string),
@@ -68,24 +78,31 @@ const proxify = <T extends ProxiedObject>(
     },
   });
 };
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /**
  * Sets sensible defaults for the `config.forge` object.
  */
-export function setInitialForgeConfig(packageJSON: any) {
+export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void { // eslint-disable-line @typescript-eslint/no-explicit-any
   const { name = '' } = packageJSON;
 
-  packageJSON.config.forge.makers[0].config.name = name.replace(/-/g, '_');
+  ((packageJSON.config.forge as ForgeConfig).makers as IForgeResolvableMaker[])[0].config.name = name.replace(/-/g, '_');
 }
 
-export function fromBuildIdentifier<T>(map: { [key: string]: T | undefined }) {
+export type BuildIdentifierMap<T> = Record<string, T | undefined>;
+export type BuildIdentifierConfig<T> = {
+  map: BuildIdentifierMap<T>;
+  __isMagicBuildIdentifierMap: true;
+};
+
+export function fromBuildIdentifier<T>(map: BuildIdentifierMap<T>): BuildIdentifierConfig<T> {
   return {
     map,
     __isMagicBuildIdentifierMap: true,
   };
 }
 
-export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig) {
+export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig): Promise<boolean> {
   return typeof forgeConfig === 'string'
     && (
       await fs.pathExists(path.resolve(dir, forgeConfig))
@@ -93,7 +110,8 @@ export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: strin
     );
 }
 
-export function renderConfigTemplate(dir: string, templateObj: any, obj: any) {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+export function renderConfigTemplate(dir: string, templateObj: any, obj: any): void {
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'object' && value !== null) {
       renderConfigTemplate(dir, templateObj, value);
@@ -107,7 +125,7 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any) {
   }
 }
 
-export default async (dir: string) => {
+export default async (dir: string): Promise<ForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
   let forgeConfig: ForgeConfig | string | null = (packageJSON.config && packageJSON.config.forge)
     ? packageJSON.config.forge
@@ -117,7 +135,7 @@ export default async (dir: string) => {
     if (await fs.pathExists(path.resolve(dir, 'forge.config.js'))) {
       forgeConfig = 'forge.config.js';
     } else {
-      forgeConfig = {} as any as ForgeConfig;
+      forgeConfig = {} as ForgeConfig;
     }
   }
 

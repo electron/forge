@@ -58,7 +58,7 @@ export default async ({
   shouldRemoveDependency,
   shouldUpdateScript,
   outDir,
-}: ImportOptions) => {
+}: ImportOptions): Promise<void> => {
   const calculatedOutDir = outDir || 'out';
   asyncOra.interactive = interactive;
 
@@ -113,9 +113,7 @@ export default async ({
 
   const keys = Object.keys(packageJSON.dependencies)
     .concat(Object.keys(packageJSON.devDependencies));
-  const buildToolPackages: {
-    [key: string]: string | undefined;
-  } = {
+  const buildToolPackages: Record<string, string | undefined> = {
     '@electron/get': 'already uses this module as a transitive dependency',
     'electron-builder': 'provides mostly equivalent functionality',
     'electron-download': 'already uses this module as a transitive dependency',
@@ -131,6 +129,7 @@ export default async ({
 
   for (const key of keys) {
     if (buildToolPackages[key]) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const explanation = buildToolPackages[key]!;
       // eslint-disable-next-line max-len
       let remove = true;

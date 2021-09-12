@@ -8,7 +8,7 @@ import installDepList, { DepType, DepVersionRestriction } from '../../util/insta
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
 
-export function siblingDep(name: string) {
+export function siblingDep(name: string): string {
   return `@electron-forge/${name}@^${corePackage.version}`;
 }
 
@@ -22,7 +22,7 @@ export const devDeps = [
 ];
 export const exactDevDeps = ['electron'];
 
-export default async (dir: string) => {
+export default async (dir: string): Promise<void> => {
   await asyncOra('Installing NPM Dependencies', async () => {
     d('installing dependencies');
     await installDepList(dir, deps);

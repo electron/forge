@@ -16,7 +16,7 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
 }).api;
 
 type BeforeInitFunction = () => void;
-type PackageJSON = Record<string, any>;
+type PackageJSON = Record<string, unknown>;
 
 async function updatePackageJSON(
   dir: string,
@@ -355,7 +355,7 @@ describe('Electron Forge API', () => {
             };
 
             if (process.platform === 'win32') {
-              (makerDefinition.config as any).makeVersionWinStoreCompatible = true;
+              makerDefinition.config.makeVersionWinStoreCompatible = true;
             }
 
             return makerDefinition;
@@ -368,6 +368,7 @@ describe('Electron Forge API', () => {
       const testMakeTarget = function testMakeTarget(
         target: () => { name: string },
         shouldPass: boolean,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...options: any[]
       ) {
         describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {

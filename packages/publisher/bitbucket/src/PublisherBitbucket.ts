@@ -11,7 +11,7 @@ import { PublisherBitbucketConfig } from './Config';
 export default class PublisherBitbucket extends PublisherBase<PublisherBitbucketConfig> {
   name = 'bitbucket';
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
     const hasRepositoryConfig = config.repository && typeof config.repository;
     const replaceExistingFiles = Boolean(config.replaceExistingFiles);

@@ -20,12 +20,14 @@ import requireSearch from '../util/require-search';
 
 import packager from './package';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 class MakerImpl extends MakerBase<any> {
   name = 'impl';
 
   defaultPlatforms = [];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MakeTarget = IForgeResolvableMaker | MakerBase<any> | string;
 
 function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[]) {
@@ -82,7 +84,7 @@ export default async ({
   platform = process.platform as ForgePlatform,
   overrideTargets,
   outDir,
-}: MakeOptions) => {
+}: MakeOptions): Promise<ForgeMakeResult[]> => {
   asyncOra.interactive = interactive;
 
   let forgeConfig!: ForgeConfig;
@@ -104,18 +106,19 @@ export default async ({
     throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);
   }
 
-  const makers: {
-    [key: number]: MakerBase<any>;
-  } = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const makers: Record<number, MakerBase<any>> = {};
 
   let targets = generateTargets(forgeConfig, overrideTargets);
 
   let targetId = 0;
   for (const target of targets) {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     let maker: MakerBase<any>;
     // eslint-disable-next-line no-underscore-dangle
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
+      /* eslint-enable @typescript-eslint/no-explicit-any */
       // eslint-disable-next-line no-continue
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
@@ -145,7 +148,7 @@ export default async ({
       ].join(''));
     }
 
-    if (!await maker.isSupportedOnCurrentPlatform()) {
+    if (!maker.isSupportedOnCurrentPlatform()) {
       throw new Error([
         `Cannot make for ${platform} and target ${maker.name}: the maker declared `,
         `that it cannot run on ${process.platform}`,
@@ -177,7 +180,7 @@ export default async ({
     throw new Error(`Could not find any make targets configured for the "${actualTargetPlatform}" platform.`);
   }
 
-  info(interactive, `Making for the following targets: ${`${targets.map((t, i) => makers[i].name).join(', ')}`.cyan}`);
+  info(interactive, `Making for the following targets: ${`${targets.map((_t, i) => makers[i].name).join(', ')}`.cyan}`);
 
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
   const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;

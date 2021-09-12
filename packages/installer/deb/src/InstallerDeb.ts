@@ -5,7 +5,7 @@ export default class InstallerDeb extends InstallerLinux {
 
   async install({
     filePath,
-  }: InstallerOptions) {
+  }: InstallerOptions): Promise<void> {
     await this.sudo('Debian', 'gdebi', `-n ${filePath}`);
   }
 }

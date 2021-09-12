@@ -36,10 +36,10 @@ export default abstract class Publisher<C> implements IForgePublisher {
     });
   }
 
-  get platforms() {
+  get platforms(): ForgePlatform[] {
     if (this.providedPlatforms) return this.providedPlatforms;
     if (this.defaultPlatforms) return this.defaultPlatforms;
-    return ['win32', 'linux', 'darwin', 'mas'] as ForgePlatform[];
+    return ['win32', 'linux', 'darwin', 'mas'];
   }
 
   /**
@@ -53,7 +53,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * you will have to create the version on GitHub and the second call will just
    * be appending files to the existing version.
    */
-  async publish(opts: PublisherOptions) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  async publish(opts: PublisherOptions): Promise<void> { // eslint-disable-line @typescript-eslint/no-unused-vars
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }

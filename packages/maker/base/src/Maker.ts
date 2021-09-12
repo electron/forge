@@ -34,9 +34,9 @@ export interface MakerOptions {
    */
   forgeConfig: ForgeConfig;
   /**
-   * The applications package.json file
+   * The application's package.json file
    */
-  packageJSON: any;
+  packageJSON: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export default abstract class Maker<C> implements IForgeMaker {
@@ -61,16 +61,16 @@ export default abstract class Maker<C> implements IForgeMaker {
     });
   }
 
-  get platforms() {
+  get platforms(): ForgePlatform[] {
     if (this.providedPlatforms) return this.providedPlatforms;
     return this.defaultPlatforms;
   }
 
   // TODO: Remove this, it is an eye-sore and is a nasty hack to provide forge
   //       v5 style functionality in the new API
-  prepareConfig(targetArch: ForgeArch) {
+  prepareConfig(targetArch: ForgeArch): void {
     if (typeof this.configFetcher === 'function') {
-      this.config = (this.configFetcher as any as ((arch: ForgeArch) => C))(targetArch);
+      this.config = (this.configFetcher as unknown as ((arch: ForgeArch) => C))(targetArch);
     } else {
       this.config = this.configFetcher as C;
     }
@@ -144,7 +144,7 @@ export default abstract class Maker<C> implements IForgeMaker {
   /**
    * Throws an error if any of the binaries don't exist.
    */
-  ensureExternalBinariesExist() {
+  ensureExternalBinariesExist(): void {
     if (!this.externalBinariesExist()) {
       throw new Error(`Cannot make for ${this.name}, the following external binaries need to be installed: ${this.requiredExternalBinaries.join(', ')}`);
     }

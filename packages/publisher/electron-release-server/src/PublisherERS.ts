@@ -28,7 +28,7 @@ const fetchAndCheckStatus = async (
   throw new Error(`ERS publish failed with status code: ${result.status} (${result.url})`);
 };
 
-export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch) => {
+export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch): string => {
   switch (platform) {
     case 'darwin':
       return 'osx_64';
@@ -44,7 +44,7 @@ export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch) => {
 export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
   name = 'electron-release-server';
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     if (!(config.baseUrl && config.username && config.password)) {
@@ -67,7 +67,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     })).json();
 
     // eslint-disable-next-line max-len
-    const authFetch = (apiPath: string, options?: any) => fetchAndCheckStatus(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
+    const authFetch = (apiPath: string, options?: RequestInit) => fetchAndCheckStatus(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 

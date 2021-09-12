@@ -12,7 +12,7 @@ export default class InstallerDMG extends InstallerDarwin {
   async install({
     filePath,
     installSpinner,
-  }: InstallerOptions) {
+  }: InstallerOptions): Promise<void> {
     const mounts = await getMountedImages();
     let targetMount = mounts.find((mount) => mount.imagePath === filePath);
 
@@ -31,7 +31,7 @@ export default class InstallerDMG extends InstallerDarwin {
 
       await this.moveApp(appPath, targetApplicationPath, installSpinner, true);
 
-      await spawn('open', ['-R', targetApplicationPath], { detached: true } as any);
+      await spawn('open', ['-R', targetApplicationPath], { detached: true });
     } finally {
       await unmountImage(targetMount);
     }

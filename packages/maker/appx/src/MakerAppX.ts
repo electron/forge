@@ -60,7 +60,7 @@ export interface CreateDefaultCertOpts {
 
 export async function createDefaultCertificate(publisherName: string, {
   certFilePath, certFileName, install, program,
-}: CreateDefaultCertOpts) {
+}: CreateDefaultCertOpts): Promise<string> {
   const makeCertOptions = {
     publisherName,
     certFilePath: certFilePath || process.cwd(),
@@ -81,7 +81,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'win32';
   }
 
@@ -91,7 +91,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     appName,
     packageJSON,
     targetArch,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `appx/${targetArch}`);
     await this.ensureDirectory(outPath);
 

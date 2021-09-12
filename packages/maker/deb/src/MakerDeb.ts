@@ -4,7 +4,7 @@ import path from 'path';
 
 import { MakerDebConfig } from './Config';
 
-export function debianArch(nodeArch: ForgeArch) {
+export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32': return 'i386';
     case 'x64': return 'amd64';
@@ -21,7 +21,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
 
   requiredExternalBinaries: string[] = ['dpkg', 'fakeroot'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('electron-installer-debian');
   }
 
@@ -29,7 +29,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     dir,
     makeDir,
     targetArch,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved
     const installer = require('electron-installer-debian');
 

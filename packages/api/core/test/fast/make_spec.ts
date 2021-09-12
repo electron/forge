@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { ForgeMakeResult } from '@electron-forge/shared-types';
 import * as path from 'path';
 import proxyquire from 'proxyquire';
 
@@ -9,7 +10,7 @@ describe('make', () => {
   const fixtureDir = path.resolve(__dirname, '..', 'fixture');
 
   describe('overrideTargets inherits from forge config', () => {
-    let stubbedMake: (opts: MakeOptions) => Promise<any[]>;
+    let stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]>;
 
     before(() => {
       const electronPath = path.resolve(__dirname, 'node_modules/electron');

@@ -26,7 +26,7 @@ export interface PublisherGitHubConfig {
    */
   authToken?: string;
   /**
-   * This options object is directly passed to @octokit/rest so you can
+   * This options object is directly passed to \@octokit/rest so you can
    * customize any of the options that module uses.  This is particularly
    * helpful for publishing to GitHub Enterprise servers.
    */

@@ -9,7 +9,7 @@ export default async (
   platform: ForgePlatform,
   arch: ForgeArch,
   config: Partial<RebuildOptions> = {},
-) => {
+): Promise<void> => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
     const rebuilder = rebuild({
       ...config,

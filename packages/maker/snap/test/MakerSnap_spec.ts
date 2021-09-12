@@ -1,4 +1,5 @@
-import MakerBase from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 
 import { expect } from 'chai';
 import path from 'path';
@@ -6,6 +7,8 @@ import proxyquire from 'proxyquire';
 import { stub, SinonStub } from 'sinon';
 
 import { MakerSnapConfig } from '../src/Config';
+
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerSnapConfig> {
  name = 'test';
@@ -38,13 +41,13 @@ describe('MakerSnap', () => {
     createMaker = () => {
       maker = new MakerSnapModule(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
+    await (maker.make as MakeFunction)({
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eisStub.firstCall.args[0];
@@ -59,10 +62,10 @@ describe('MakerSnap', () => {
     Object.assign(config, {
       arch: 'overridden',
       description: 'Snap description',
-    } as any);
+    } as Record<string, string>);
     createMaker();
 
-    await (maker.make as any)({
+    await (maker.make as MakeFunction)({
       dir, makeDir, appName, targetArch, packageJSON,
     });
     const opts = eisStub.firstCall.args[0];

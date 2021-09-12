@@ -7,6 +7,7 @@ import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint 
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
+type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
@@ -36,7 +37,7 @@ export default class WebpackConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  resolveConfig(config: Configuration | string) {
+  resolveConfig(config: Configuration | string): Configuration {
     if (typeof config === 'string') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
       return require(path.resolve(this.projectDir, config)) as Configuration;
@@ -45,15 +46,15 @@ export default class WebpackConfigGenerator {
     return config;
   }
 
-  get mode() {
+  get mode(): WebpackMode {
     return this.isProd ? 'production' : 'development';
   }
 
-  get rendererSourceMapOption() {
+  get rendererSourceMapOption(): string {
     return this.isProd ? 'source-map' : 'eval-source-map';
   }
 
-  get rendererTarget() {
+  get rendererTarget(): string {
     return this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
   }
 
@@ -89,7 +90,7 @@ export default class WebpackConfigGenerator {
     return 'undefined';
   }
 
-  getDefines(inRendererDir = true) {
+  getDefines(inRendererDir = true): Record<string, string> {
     const defines: Record<string, string> = {};
     if (
       !this.pluginConfig.renderer.entryPoints
@@ -113,7 +114,7 @@ export default class WebpackConfigGenerator {
     return defines;
   }
 
-  getMainConfig() {
+  getMainConfig(): Configuration {
     const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
 
     if (!mainConfig.entry) {
@@ -154,7 +155,7 @@ export default class WebpackConfigGenerator {
   async getPreloadRendererConfig(
     parentPoint: WebpackPluginEntryPoint,
     entryPoint: WebpackPreloadEntryPoint,
-  ) {
+  ): Promise<Configuration> {
     const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
@@ -177,7 +178,7 @@ export default class WebpackConfigGenerator {
     { target: 'electron-preload' });
   }
 
-  async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]) {
+  async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
     const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
     const entry: webpack.Entry = {};
     for (const entryPoint of entryPoints) {

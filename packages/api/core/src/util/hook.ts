@@ -3,7 +3,8 @@ import debug from 'debug';
 
 const d = debug('electron-forge:hook');
 
-export const runHook = async (forgeConfig: ForgeConfig, hookName: string, ...hookArgs: any[]) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const runHook = async (forgeConfig: ForgeConfig, hookName: string, ...hookArgs: any[]): Promise<void> => {
   const { hooks } = forgeConfig;
   if (hooks) {
     d(`hook triggered: ${hookName}`);

@@ -24,7 +24,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
   async publish({
     makeResults,
-  }: PublisherOptions) {
+  }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
 
     if (!this.config.bucket) {

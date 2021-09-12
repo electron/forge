@@ -15,7 +15,7 @@ export default abstract class InstallerDarwin extends InstallerBase {
     targetApplicationPath: string,
     spinner: OraImpl,
     copyInstead = false,
-  ) {
+  ): Promise<void> {
     let writeAccess = true;
     try {
       await fs.access('/Applications', fs.constants.W_OK);

@@ -6,15 +6,15 @@ export class OraImpl {
   // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(public text: string = '') {}
 
-  succeed(_symbol?: string) { return this; }
+  succeed(_symbol?: string): OraImpl { return this; }
 
-  fail(_symbol?: string) { return this; }
+  fail(_symbol?: string): OraImpl { return this; }
 
-  start() { return this; }
+  start(): OraImpl { return this; }
 
-  stop(_symbol?: string) { return this; }
+  stop(_symbol?: string): OraImpl { return this; }
 
-  warn(_message: string) { return this; }
+  warn(_message: string): OraImpl { return this; }
 }
 
 export interface AsyncOraMethod {

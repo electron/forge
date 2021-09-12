@@ -1,21 +1,21 @@
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { StartOptions } from '../../src/api';
 
 describe('start', () => {
   let start: (opts: StartOptions) => Promise<ElectronProcess>;
-  let packageJSON: any;
+  let packageJSON: Record<string, string>;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
-  let shouldOverride: any;
+  let shouldOverride: false | { on: () => void };
   let processOn: SinonStub<['timeout', () => void]>;
 
   beforeEach(() => {
-    resolveStub = sinon.stub();
-    spawnStub = sinon.stub();
+    resolveStub = stub();
+    spawnStub = stub();
     shouldOverride = false;
     packageJSON = require('../fixture/dummy_app/package.json');
 
@@ -39,7 +39,7 @@ describe('start', () => {
         spawn: spawnStub,
       },
     }).default;
-    processOn = sinon.stub(process.stdin, 'on');
+    processOn = stub(process.stdin, 'on');
   });
 
   afterEach(() => {

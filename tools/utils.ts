@@ -9,7 +9,7 @@ export interface Package {
   name: string;
 }
 
-export const getPackageInfo = async () => {
+export const getPackageInfo = async (): Promise<Package[]> => {
   const packages: Package[] = [];
 
   for (const subDir of await fs.readdir(PACKAGES_DIR)) {
@@ -25,7 +25,7 @@ export const getPackageInfo = async () => {
   return packages;
 };
 
-export const getPackageInfoSync = () => {
+export const getPackageInfoSync = (): Package[] => {
   const packages: Package[] = [];
 
   for (const subDir of fs.readdirSync(PACKAGES_DIR)) {

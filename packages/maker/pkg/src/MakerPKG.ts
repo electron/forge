@@ -10,7 +10,7 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'darwin';
   }
 
@@ -20,7 +20,7 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
     appName,
     packageJSON,
     targetPlatform,
-  }: MakerOptions) {
+  }: MakerOptions): Promise<string[]> {
     if (!['darwin', 'mas'].includes(targetPlatform)) {
       throw new Error(`The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "${targetPlatform}"`);
     }

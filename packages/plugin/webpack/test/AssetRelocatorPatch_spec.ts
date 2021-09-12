@@ -141,6 +141,7 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint, entryPoint.preload!,
       );
       await asyncWebpack(preloadConfig);
@@ -194,6 +195,7 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint, entryPoint.preload!,
       );
       await asyncWebpack(preloadConfig);
