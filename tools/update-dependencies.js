@@ -112,13 +112,13 @@ async function main() {
     console.log('No packages to update.');
   } catch (error) {
     const table = JSON.parse(error.stdout.split('\n')[1]);
-    for (const [packageName, currentVersion, wantedVersion, latestVersion, packageType, _url] of table.data.body) {
+    for (const [packageName, currentVersion, wantedVersion, latestVersion, packageType /*, _url */] of table.data.body) {
       if (DO_NOT_UPGRADE.includes(packageName)) {
         continue;
       }
       let commitPackageName = null;
-      const package = new Package(packageName, currentVersion, wantedVersion, latestVersion, packageType);
-      await package.upgrade();
+      const nodePackage = new Package(packageName, currentVersion, wantedVersion, latestVersion, packageType);
+      await nodePackage.upgrade();
 
       if (packageName === '@typescript-eslint/parser') {
         const eslintPlugin = new Package('@typescript-eslint/eslint-plugin', currentVersion, wantedVersion, latestVersion, packageType);
@@ -126,7 +126,7 @@ async function main() {
         commitPackageName = '@typescript-eslint/{parser,eslint-plugin}';
       }
 
-      await package.smoketestAndCommit(commitPackageName);
+      await nodePackage.smoketestAndCommit(commitPackageName);
     }
   }
 

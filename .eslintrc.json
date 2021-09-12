@@ -3,12 +3,12 @@
   "env": {
     "mocha": true
   },
-  "extends": ["@malept/eslint-config/src/common", "@malept/eslint-config/src/typescript"],
+  "extends": ["@malept/eslint-config/src/common"],
   "globals": {
     "NodeJS": "readonly"
   },
   "rules": {
-    "@typescript-eslint/no-unused-vars": [
+    "no-unused-vars": [
       "error",
       {
         "args": "after-used",
@@ -17,11 +17,24 @@
         "vars": "all"
       }
     ],
-    "import/no-cycle": "off",
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["packages/**/test/**/*_spec*.ts"] }],
     "mocha/no-exclusive-tests": "error"
   },
   "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "extends": ["@malept/eslint-config/src/typescript"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "args": "after-used",
+            "argsIgnorePattern": "^_",
+            "ignoreRestSiblings": true,
+            "vars": "all"
+          }
+        ]
+      }
+    },
     {
       "files": ["packages/*/*/test/**/*_spec*.ts"],
       "rules": {
@@ -30,7 +43,7 @@
       }
     },
     {
-      "files": ["packages/api/cli/src/**/*.ts", "tools/*.ts"],
+      "files": ["packages/api/cli/src/**/*.ts", "tools/*.{js,ts}"],
       "rules": {
         "no-process-exit": "off"
       }
@@ -42,7 +55,31 @@
       }
     },
     {
-      "files": ["tools/*.ts"],
+      "files": ["packages/*/*/test/fixture/**/*.js", "packages/*/*/test/fixtures/**/*.js"],
+      "rules": {
+        "node/no-extraneous-require": "off",
+        "node/no-missing-require": "off",
+        "node/no-unpublished-require": "off"
+      }
+    },
+    {
+      "files": ["packages/plugin/webpack/test/fixtures/**/*.js"],
+      "rules": {
+        "no-process-exit": "off",
+        "no-undef": "off",
+        "node/no-unpublished-import": "off",
+        "node/no-unsupported-features/es-syntax": "off"
+      }
+    },
+    {
+      "files": ["packages/utils/web-multi-logger/static/*.js"],
+      "env": {
+        "browser": true,
+        "node": false
+      }
+    },
+    {
+      "files": ["tools/*.{js,ts}"],
       "rules": {
         "node/no-unpublished-import": "off",
         "node/no-unpublished-require": "off",

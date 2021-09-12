@@ -1,3 +1,4 @@
+/* global Terminal, FitAddon, SearchAddon */
 const split = (text) => {
   return text.split(/\n/g);
 };
@@ -110,4 +111,4 @@ class Renderer {
 
 // term.write('Hello from \033[1;3;31mxterm.js\033[0m $ ');
 
-const r = new Renderer();
+window.r = new Renderer();

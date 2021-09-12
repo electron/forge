@@ -31,7 +31,7 @@
     "docs:position": "ts-node tools/position-docs.ts",
     "docs:deploy": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now && now alias",
     "docs:deploy:ci": "ts-node tools/sync-readmes.ts && bolt docs && ts-node tools/copy-now.ts && cd docs && now --token $NOW_TOKEN && now alias --token $NOW_TOKEN",
-    "lint": "eslint --ext .ts .",
+    "lint": "eslint .",
     "test": "xvfb-maybe cross-env TS_NODE_FILES=true mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
@@ -161,8 +161,8 @@
     "electron-wix-msi": "^3.0.6"
   },
   "lint-staged": {
-    "*.{html,js,json,md,yml}": "prettier --write",
-    "*.ts": "eslint --fix"
+    "*.{html,json,md,yml}": "prettier --write",
+    "*.{js,ts}": "eslint --fix"
   },
   "nyc": {
     "exclude": [
