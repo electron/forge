@@ -161,7 +161,8 @@
     "electron-wix-msi": "^3.0.6"
   },
   "lint-staged": {
-    "*.ts": "eslint --ext .ts --fix"
+    "*.{html,js,json,md,yml}": "prettier --write",
+    "*.ts": "eslint --fix"
   },
   "nyc": {
     "exclude": [

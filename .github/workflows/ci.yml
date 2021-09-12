@@ -12,18 +12,18 @@ jobs:
   dependabolt:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.4
-    - name: Use Node.js LTS
-      uses: actions/setup-node@v2.4.0
-      with:
-        node-version: 14.x
-        cache: yarn
-    - name: Run dependabolt
-      if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
-      uses: malept/github-action-dependabolt@v4.0.1
-      env:
-        DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2.3.4
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: 14.x
+          cache: yarn
+      - name: Run dependabolt
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
+        uses: malept/github-action-dependabolt@v4.0.1
+        env:
+          DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   fast-tests:
     runs-on: ${{ matrix.os }}
     needs: dependabolt

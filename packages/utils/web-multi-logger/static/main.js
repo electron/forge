@@ -1,6 +1,6 @@
 const split = (text) => {
   return text.split(/\n/g);
-}
+};
 
 class Renderer {
   constructor() {
@@ -27,8 +27,8 @@ class Renderer {
         brightBlue: '#839496',
         brightMagenta: '#6c71c4',
         brightCyan: '#93a1a1',
-        brightWhite: '#fdf6e3'
-      }
+        brightWhite: '#fdf6e3',
+      },
     });
     const fitAddon = new FitAddon.FitAddon();
     this.term.loadAddon(fitAddon);
@@ -63,7 +63,7 @@ class Renderer {
     const sub = new WebSocket(`ws://localhost:${location.port}/sub`);
     sub.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      const tab = tabs.find(tab => tab.id === data.tab);
+      const tab = tabs.find((tab) => tab.id === data.tab);
       if (tab) {
         tab.logs.push(data.payload);
         if (this.currentTab.id === tab.id) {
@@ -72,7 +72,7 @@ class Renderer {
           }
         }
       }
-    }
+    };
   }
 
   renderTabs() {
@@ -89,7 +89,7 @@ class Renderer {
       tabsContainer.appendChild(elem);
     }
   }
-  
+
   selectTab(tab) {
     const selected = document.querySelector('.selected-tab');
     if (selected) selected.classList.remove('selected-tab');

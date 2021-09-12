@@ -1,7 +1,5 @@
 {
   "name": "forge-docs",
   "type": "static",
-  "alias": [
-    "js.electronforge.io"
-  ]
+  "alias": ["js.electronforge.io"]
 }
