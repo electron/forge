@@ -3,7 +3,7 @@ import path from 'path';
 
 const BASE_OUT_DIR = 'out';
 
-export default (baseDir: string, forgeConfig: ForgeConfig) => {
+export default (baseDir: string, forgeConfig: ForgeConfig): string => {
   if (forgeConfig.buildIdentifier) {
     let identifier = forgeConfig.buildIdentifier;
     if (typeof identifier === 'function') {

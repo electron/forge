@@ -69,7 +69,7 @@ const publish = async ({
   dryRunResume = false,
   makeResults = undefined,
   outDir,
-}: PublishOptions) => {
+}: PublishOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   if (dryRun && dryRunResume) {
@@ -118,7 +118,7 @@ const publish = async ({
       makeOptions.arch = makeResult.arch;
 
       for (const makePath of makeResult.artifacts) {
-        if (!await fs.pathExists(makePath)) {
+        if (!(await fs.pathExists(makePath))) {
           throw new Error(`Attempted to resume a dry run but an artifact (${makePath}) could not be found`);
         }
       }
@@ -140,41 +140,46 @@ const publish = async ({
 
   // const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
   if (!publishTargets) {
-    publishTargets = (forgeConfig.publishers || []);
+    publishTargets = forgeConfig.publishers || [];
     // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
     //   ? publisher.platforms.includes(testPlatform) : true);
   }
   publishTargets = (publishTargets as ForgeConfigPublisher[]).map((target) => {
     if (typeof target === 'string') {
-      return (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
-        if (typeof p === 'string') return false;
-        // eslint-disable-next-line no-underscore-dangle
-        if ((p as IForgePublisher).__isElectronForgePublisher) return false;
-        return (p as IForgeResolvablePublisher).name === target;
-      }) || { name: target };
+      return (
+        (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
+          if (typeof p === 'string') return false;
+          // eslint-disable-next-line no-underscore-dangle
+          if ((p as IForgePublisher).__isElectronForgePublisher) return false;
+          return (p as IForgeResolvablePublisher).name === target;
+        }) || { name: target }
+      );
     }
     return target;
   });
 
   for (const publishTarget of publishTargets) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let publisher: PublisherBase<any>;
     // eslint-disable-next-line no-underscore-dangle
     if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
-      publisher = publishTarget as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      publisher = publishTarget as PublisherBase<any>;
     } else {
       const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let PublisherClass: any;
-      await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => { // eslint-disable-line no-loop-func
+      await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => {
+        // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {
-          throw new Error(`Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`);
+          throw new Error(
+            `Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`
+          );
         }
       });
 
-      publisher = new PublisherClass(
-        resolvablePublishTarget.config || {},
-        resolvablePublishTarget.platforms,
-      );
+      publisher = new PublisherClass(resolvablePublishTarget.config || {}, resolvablePublishTarget.platforms);
     }
 
     await publisher.publish({

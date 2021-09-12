@@ -1,7 +1,7 @@
 /* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -69,14 +69,16 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     } else {
       return true;
     }
-  }
+  };
 
-  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
+  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
         d('cleaning webpack watcher');
-        watcher.close(() => {});
+        watcher.close(() => {
+          /* Do nothing when the watcher closes */
+        });
       }
       this.watchers = [];
       for (const server of this.servers) {
@@ -91,14 +93,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       this.loggers = [];
     }
     if (err) console.error(err.stack);
+    // Why: This is literally what the option says to do.
+    // eslint-disable-next-line no-process-exit
     if (options.exit) process.exit();
-  }
+  };
 
-  async writeJSONStats(
-    type: string,
-    stats: webpack.Stats | undefined,
-    statsOptions: WebpackToJsonOptions,
-  ): Promise<void> {
+  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
@@ -107,9 +107,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> => new Promise((resolve, reject) => {
-    webpack(options)
-      .run(async (err, stats) => {
+  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> =>
+    new Promise((resolve, reject) => {
+      webpack(options).run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
           await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
         }
@@ -118,31 +118,26 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         }
         return resolve(stats);
       });
-  });
+    });
 
-  init = (dir: string) => {
+  init = (dir: string): void => {
     this.setDirectories(dir);
 
     d('hooking process events');
     process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
-  }
+  };
 
-  setDirectories = (dir: string) => {
+  setDirectories = (dir: string): void => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
-  }
+  };
 
-  get configGenerator() {
+  get configGenerator(): WebpackConfigGenerator {
     // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
       // eslint-disable-next-line no-underscore-dangle
-      this._configGenerator = new WebpackConfigGenerator(
-        this.config,
-        this.projectDir,
-        this.isProd,
-        this.port,
-      );
+      this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
     }
 
     // eslint-disable-next-line no-underscore-dangle
@@ -151,7 +146,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private loggedOutputUrl = false;
 
-  getHook(name: string) {
+  getHook(name: string): ForgeHookFn | null {
     switch (name) {
       case 'prePackage':
         this.isProd = true;
@@ -163,7 +158,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'postStart':
         return async (_config: ForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
+            console.info(`\n\nWebpack Output Available: ${`http://localhost:${this.loggerPort}`.cyan}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
@@ -181,15 +176,17 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
+  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
-        console.error(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
+        console.error(
+          `You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red);
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red
+        );
       }
       return forgeConfig;
     }
@@ -207,9 +204,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
-  }
+  };
 
-  packageAfterCopy = async (_: any, buildPath: string) => {
+  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
     if (pj.config) {
       delete pj.config.forge;
@@ -219,32 +216,30 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     pj.optionalDependencies = {};
     pj.peerDependencies = {};
 
-    await fs.writeJson(
-      path.resolve(buildPath, 'package.json'),
-      pj,
-      {
-        spaces: 2,
-      },
-    );
+    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+      spaces: 2,
+    });
 
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
-  }
+  };
 
-  compileMain = async (watch = false, logger?: Logger) => {
+  compileMain = async (watch = false, logger?: Logger): Promise<void> => {
     let tab: Tab;
     if (logger) {
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = await this.configGenerator.getMainConfig();
+      const mainConfig = this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
         const cb: WebpackWatchHandler = async (err, stats) => {
           if (tab && stats) {
-            tab.log(stats.toString({
-              colors: true,
-            }));
+            tab.log(
+              stats.toString({
+                colors: true,
+              })
+            );
           }
           if (this.config.jsonStats) {
             await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions);
@@ -264,14 +259,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         }
       });
     });
-  }
+  };
 
-  compileRenderers = async (watch = false) => {
+  compileRenderers = async (watch = false): Promise<void> => {
     await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(
-        await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
-        true,
-      );
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
       if (!watch && stats?.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
       }
@@ -281,7 +273,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       if (entryPoint.preload) {
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
           const stats = await this.runWebpack(
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
           );
 
           if (stats?.hasErrors()) {
@@ -290,9 +283,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         });
       }
     }
-  }
+  };
 
-  launchDevServers = async (logger: Logger) => {
+  launchDevServers = async (logger: Logger): Promise<void> => {
     await asyncOra('Launch Dev Servers', async () => {
       const tab = logger.createTab('Renderers');
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
@@ -312,31 +305,36 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         if (entryPoint.preload) {
           const config = await this.configGenerator.getPreloadRendererConfig(
             entryPoint,
-            entryPoint.preload!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            entryPoint.preload!
           );
           await new Promise((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
 
-            this.watchers.push(webpack(config).watch({}, (err, stats) => {
-              if (stats) {
-                tab.log(stats.toString({
-                  colors: true,
-                }));
-              }
+            this.watchers.push(
+              webpack(config).watch({}, (err, stats) => {
+                if (stats) {
+                  tab.log(
+                    stats.toString({
+                      colors: true,
+                    })
+                  );
+                }
 
-              if (err) return onceReject(err);
-              return onceResolve(undefined);
-            }));
+                if (err) return onceReject(err);
+                return onceResolve(undefined);
+              })
+            );
           });
         }
       }
     });
-  }
+  };
 
   devServerOptions(): Record<string, unknown> {
-    const cspDirectives = this.config.devContentSecurityPolicy
-      ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
+    const cspDirectives =
+      this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
     const defaults = {
       hot: true,

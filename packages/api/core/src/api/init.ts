@@ -45,17 +45,13 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
 
   const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
   if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
-    throw new Error(`Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`);
+    throw new Error(
+      `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`
+    );
   }
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-  copyCIFiles = false,
-  force = false,
-  template = 'base',
-}: InitOptions) => {
+export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);

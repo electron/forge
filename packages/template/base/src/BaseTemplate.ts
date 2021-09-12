@@ -6,6 +6,7 @@ import path from 'path';
 
 import determineAuthor from './determine-author';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const currentForgeVersion = require('../package.json').version;
 
 const d = debug('electron-forge:template:base');
@@ -33,7 +34,7 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
+  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<void> {
     await asyncOra('Copying Starter Files', async () => {
       d('creating directory:', path.resolve(directory, 'src'));
       await fs.mkdirs(path.resolve(directory, 'src'));
@@ -52,16 +53,17 @@ export class BaseTemplate implements ForgeTemplate {
     await this.initializePackageJSON(directory);
   }
 
-  async copy(source: string, target: string) {
+  async copy(source: string, target: string): Promise<void> {
     d(`copying "${source}" --> "${target}"`);
     await fs.copy(source, target);
   }
 
-  async copyTemplateFile(destDir: string, basename: string) {
+  async copyTemplateFile(destDir: string, basename: string): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
   }
 
-  async initializePackageJSON(directory: string) {
+  async initializePackageJSON(directory: string): Promise<void> {
     await asyncOra('Initializing NPM Module', async () => {
       const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
       // eslint-disable-next-line no-multi-assign
@@ -75,11 +77,7 @@ export class BaseTemplate implements ForgeTemplate {
     });
   }
 
-  async updateFileByLine(
-    inputPath: string,
-    lineHandler: (line: string) => string,
-    outputPath?: string | undefined,
-  ) {
+  async updateFileByLine(inputPath: string, lineHandler: (line: string) => string, outputPath?: string | undefined): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {

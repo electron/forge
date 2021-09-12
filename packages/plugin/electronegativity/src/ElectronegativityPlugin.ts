@@ -1,4 +1,4 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import PluginBase from '@electron-forge/plugin-base';
 import runElectronegativity from '@doyensec/electronegativity';
 
@@ -60,18 +60,21 @@ export type ElectronegativityConfig = {
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
   name = 'electronegativity';
 
-  getHook(hookName: string) {
+  getHook(hookName: string): ForgeHookFn | null {
     if (hookName === 'postPackage') {
       return this.postPackage;
     }
     return null;
   }
 
-  postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions) => {
-    await runElectronegativity({
-      ...this.config,
-      parserPlugins: this.config.parserPlugins ?? [],
-      input: options.outputPaths[0],
-    }, true);
-  }
+  postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions): Promise<void> => {
+    await runElectronegativity(
+      {
+        ...this.config,
+        parserPlugins: this.config.parserPlugins ?? [],
+        input: options.outputPaths[0],
+      },
+      true
+    );
+  };
 }

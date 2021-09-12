@@ -18,7 +18,7 @@ export function pluginCompileExists(packageJSON: PackageJSON): boolean {
     return true;
   }
 
-  if (Object.keys(packageJSON.dependencies as Dependencies || {}).find(findPluginCompile)) {
+  if (Object.keys((packageJSON.dependencies as Dependencies) || {}).find(findPluginCompile)) {
     // eslint-disable-next-line no-console
     console.warn(logSymbols.warning, `${pluginCompileName} was detected in dependencies, it should be in devDependencies`.yellow);
     return true;
@@ -27,18 +27,19 @@ export function pluginCompileExists(packageJSON: PackageJSON): boolean {
   return false;
 }
 
-export default async function locateElectronExecutable(
-  dir: string,
-  packageJSON: PackageJSON,
-): Promise<string> {
+export default async function locateElectronExecutable(dir: string, packageJSON: PackageJSON): Promise<string> {
   let electronModulePath: string | undefined = await getElectronModulePath(dir, packageJSON);
   if (electronModulePath?.endsWith('electron-prebuilt-compile') && !pluginCompileExists(packageJSON)) {
     // eslint-disable-next-line no-console
-    console.warn(logSymbols.warning, 'WARNING: found electron-prebuilt-compile without the Electron Forge compile plugin. Please remove the deprecated electron-prebuilt-compile from your devDependencies.'.yellow);
+    console.warn(
+      logSymbols.warning,
+      'WARNING: found electron-prebuilt-compile without the Electron Forge compile plugin. Please remove the deprecated electron-prebuilt-compile from your devDependencies.'
+        .yellow
+    );
     electronModulePath = undefined;
   }
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
   let electronExecPath = require(electronModulePath || path.resolve(dir, 'node_modules/electron'));
 
   if (typeof electronExecPath !== 'string') {

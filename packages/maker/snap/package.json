@@ -7,6 +7,10 @@
   "license": "MIT",
   "main": "dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
+  "scripts": {
+    "test": "yarn test:base test/**/*_spec.ts",
+    "test:base": "cross-env TS_NODE_FILES=1 mocha --config ../../../.mocharc.js"
+  },
   "devDependencies": {
     "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",

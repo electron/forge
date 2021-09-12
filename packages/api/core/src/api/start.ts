@@ -1,9 +1,7 @@
 import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-import {
-  ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
-} from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import { spawn, SpawnOptions } from 'child_process';
 
 import { getElectronVersion } from '../util/electron-version';
@@ -26,7 +24,7 @@ export default async ({
   args = [],
   runAsNode = false,
   inspect = false,
-}: StartOptions) => {
+}: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
 
   await asyncOra('Locating Application', async () => {
@@ -47,13 +45,7 @@ export default async ({
   const platform = process.env.npm_config_platform || process.platform;
   const arch = process.env.npm_config_arch || process.arch;
 
-  await rebuild(
-    dir,
-    await getElectronVersion(dir, packageJSON),
-    platform as ForgePlatform,
-    arch as ForgeArch,
-    forgeConfig.electronRebuildConfig,
-  );
+  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.electronRebuildConfig);
 
   await runHook(forgeConfig, 'generateAssets', platform, arch);
 
@@ -91,13 +83,15 @@ export default async ({
     const spawnOpts = {
       cwd: dir,
       stdio: 'inherit',
-      env: ({
+      env: {
         ...process.env,
-        ...(enableLogging ? {
-          ELECTRON_ENABLE_LOGGING: 'true',
-          ELECTRON_ENABLE_STACK_DUMPING: 'true',
-        } : {}),
-      }) as NodeJS.ProcessEnv,
+        ...(enableLogging
+          ? {
+              ELECTRON_ENABLE_LOGGING: 'true',
+              ELECTRON_ENABLE_STACK_DUMPING: 'true',
+            }
+          : {}),
+      } as NodeJS.ProcessEnv,
     };
 
     if (runAsNode) {
@@ -107,16 +101,16 @@ export default async ({
     }
 
     if (inspect) {
-      args = ['--inspect' as (string|number)].concat(args);
+      args = ['--inspect' as string | number].concat(args);
     }
 
     let spawned!: ElectronProcess;
 
     await asyncOra('Launching Application', async () => {
       spawned = spawn(
-        electronExecPath!,
+        electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
         prefixArgs.concat([appPath]).concat(args as string[]),
-        spawnOpts as SpawnOptions,
+        spawnOpts as SpawnOptions
       ) as ElectronProcess;
     });
 

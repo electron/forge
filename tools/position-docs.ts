@@ -10,10 +10,7 @@ async function normalizeLinks(htmlFile: string, subPath: string): Promise<string
   const relative: string = path.relative(path.resolve(DOCS_PATH, subPath), path.dirname(htmlFile));
   return content
     .replace(/="[^"]*assets\//gi, '="/assets/')
-    .replace(
-      /(<a href="(?!(?:https?:\/\/)|\/|#))(.+?)"/gi,
-      (subString: string, m1: string, m2: string) => `${m1}/${path.posix.join(subPath, relative, m2)}"`,
-    );
+    .replace(/(<a href="(?!(?:https?:\/\/)|\/|#))(.+?)"/gi, (subString: string, m1: string, m2: string) => `${m1}/${path.posix.join(subPath, relative, m2)}"`);
 }
 
 (async () => {

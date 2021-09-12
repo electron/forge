@@ -1,21 +1,21 @@
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { StartOptions } from '../../src/api';
 
 describe('start', () => {
   let start: (opts: StartOptions) => Promise<ElectronProcess>;
-  let packageJSON: any;
+  let packageJSON: Record<string, string>;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
-  let shouldOverride: any;
+  let shouldOverride: false | { on: () => void };
   let processOn: SinonStub<['timeout', () => void]>;
 
   beforeEach(() => {
-    resolveStub = sinon.stub();
-    spawnStub = sinon.stub();
+    resolveStub = stub();
+    spawnStub = stub();
     shouldOverride = false;
     packageJSON = require('../fixture/dummy_app/package.json');
 
@@ -39,7 +39,7 @@ describe('start', () => {
         spawn: spawnStub,
       },
     }).default;
-    processOn = sinon.stub(process.stdin, 'on');
+    processOn = stub(process.stdin, 'on');
   });
 
   afterEach(() => {
@@ -60,7 +60,11 @@ describe('start', () => {
 
   it('should not spawn if a plugin overrides the start command', async () => {
     resolveStub.returnsArg(0);
-    shouldOverride = { on: () => {} };
+    shouldOverride = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
     await start({
       dir: __dirname,
       interactive: false,
@@ -68,7 +72,7 @@ describe('start', () => {
     expect(spawnStub.callCount).to.equal(0);
   });
 
-  it('should pass electron \'.\' as the app path if not specified', async () => {
+  it("should pass electron '.' as the app path if not specified", async () => {
     resolveStub.returnsArg(0);
     await start({
       dir: __dirname,
@@ -126,21 +130,19 @@ describe('start', () => {
   it('should throw if no dir could be found', async () => {
     resolveStub.returns(null);
 
-    await expect(start({})).to.eventually.be.rejectedWith(
-      'Failed to locate startable Electron application',
-    );
+    await expect(start({})).to.eventually.be.rejectedWith('Failed to locate startable Electron application');
   });
 
   it('should throw if no version is in package.json', async () => {
     resolveStub.returnsArg(0);
     packageJSON = { ...packageJSON };
     delete packageJSON.version;
-    await expect(start({
-      dir: __dirname,
-      interactive: false,
-    })).to.eventually.be.rejectedWith(
-      `Please set your application's 'version' in '${__dirname}/package.json'.`,
-    );
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+      })
+    ).to.eventually.be.rejectedWith(`Please set your application's 'version' in '${__dirname}/package.json'.`);
   });
 
   it('should pass all args through to the spawned Electron instance', async () => {
@@ -174,13 +176,19 @@ describe('start', () => {
 
   it('should resolve with a handle to the spawned instance', async () => {
     resolveStub.returnsArg(0);
-    const fakeChild = { on: () => {} };
+    const fakeChild = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
     spawnStub.returns(fakeChild);
 
-    await expect(start({
-      dir: __dirname,
-      interactive: false,
-      enableLogging: true,
-    })).to.eventually.equal(fakeChild);
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+        enableLogging: true,
+      })
+    ).to.eventually.equal(fakeChild);
   });
 });

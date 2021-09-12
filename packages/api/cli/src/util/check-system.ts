@@ -21,6 +21,7 @@ async function checkNodeVersion(ora: OraImpl) {
   const versionSatisified = semver.satisfies(process.versions.node, engines.node);
 
   if (!versionSatisified) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ora.warn!(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
   }
 
@@ -38,31 +39,23 @@ const YARN_WHITELISTED_VERSIONS = {
   linux: '0.27.5',
 };
 
-export function validPackageManagerVersion(
-  packageManager: string,
-  version: string,
-  whitelistedVersions: string,
-  ora: OraImpl,
-) {
+export function validPackageManagerVersion(packageManager: string, version: string, whitelistedVersions: string, ora: OraImpl): boolean {
   try {
     return semver.satisfies(version, whitelistedVersions);
   } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ora.warn!(`Could not check ${packageManager} version "${version}", assuming incompatible`);
     d(`Exception while checking version: ${e}`);
     return false;
   }
 }
 
-function warnIfPackageManagerIsntAKnownGoodVersion(
-  packageManager: string,
-  version: string,
-  whitelistedVersions: { [key: string]: string },
-  ora: OraImpl,
-) {
+function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, version: string, whitelistedVersions: { [key: string]: string }, ora: OraImpl) {
   const osVersions = whitelistedVersions[process.platform];
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
   if (!validPackageManagerVersion(packageManager, versionString, versions, ora)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     ora.warn!(`You are using ${packageManager}, but not a known good version.
 The known versions that work with Electron Forge are: ${versions}`);
   }
@@ -92,13 +85,9 @@ async function checkPackageManagerVersion(ora: OraImpl) {
 const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check');
 
 export default async function checkSystem(ora: OraImpl): Promise<boolean> {
-  if (!await fs.pathExists(SKIP_SYSTEM_CHECK)) {
+  if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
-    return (await Promise.all([
-      checkGitExists(),
-      checkNodeVersion(ora),
-      checkPackageManagerVersion(ora),
-    ])).every((check) => check);
+    return (await Promise.all([checkGitExists(), checkNodeVersion(ora), checkPackageManagerVersion(ora)])).every((check) => check);
   }
   d('skipping system check');
   return true;

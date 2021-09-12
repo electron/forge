@@ -6,8 +6,8 @@ import path from 'path';
 const EXTENSION = '.forge.publish';
 
 export default class PublishState {
-  static async loadFromDirectory(directory: string, rootDir: string) {
-    if (!await fs.pathExists(directory)) {
+  static async loadFromDirectory(directory: string, rootDir: string): Promise<PublishState[][]> {
+    if (!(await fs.pathExists(directory))) {
       throw new Error(`Attempted to load publish state from a missing directory: ${directory}`);
     }
 
@@ -17,9 +17,7 @@ export default class PublishState {
       const states: PublishState[] = [];
 
       if ((await fs.stat(subDir)).isDirectory()) {
-        const filePaths = (await fs.readdir(subDir))
-          .filter((fileName) => fileName.endsWith(EXTENSION))
-          .map((fileName) => path.resolve(subDir, fileName));
+        const filePaths = (await fs.readdir(subDir)).filter((fileName) => fileName.endsWith(EXTENSION)).map((fileName) => path.resolve(subDir, fileName));
 
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);
@@ -34,7 +32,7 @@ export default class PublishState {
     return publishes;
   }
 
-  static async saveToDirectory(directory: string, artifacts: ForgeMakeResult[], rootDir: string) {
+  static async saveToDirectory(directory: string, artifacts: ForgeMakeResult[], rootDir: string): Promise<void> {
     const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
       // eslint-disable-next-line max-len
@@ -59,16 +57,16 @@ export default class PublishState {
     this.hasHash = hasHash;
   }
 
-  generateHash() {
+  generateHash(): string {
     const content = JSON.stringify(this.state || {});
     return crypto.createHash('SHA256').update(content).digest('hex');
   }
 
-  async load() {
+  async load(): Promise<void> {
     this.state = await fs.readJson(this.path);
   }
 
-  async saveToDisk() {
+  async saveToDisk(): Promise<void> {
     if (!this.hasHash) {
       this.path = path.resolve(this.dir, `${this.generateHash()}${EXTENSION}`);
       this.hasHash = true;

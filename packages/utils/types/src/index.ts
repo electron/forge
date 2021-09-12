@@ -7,32 +7,35 @@ export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
 export type ForgeArch = ArchOption;
+// Why: hooks have any number/kind of args/return values
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
 export interface IForgePluginInterface {
   triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
   triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
-  overrideStartLogic(opts: any): Promise<ElectronProcess | string | string[] | false>;
+  overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 export interface ForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
    * to the out dir to generate a nested directory.  E.g. out/current-timestamp
    *
-   * If a function is provided it must syncronously return the buildIdentifier
+   * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
   hooks?: {
     [hookName: string]: ForgeHookFn;
   };
   /**
-   * @generated
+   * @internal
    */
   pluginInterface: IForgePluginInterface;
   /**
    * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
-  plugins: (IForgePlugin | [string, any])[];
+  plugins: (IForgePlugin | [string, Record<string, unknown>])[];
   electronRebuildConfig: Partial<RebuildOptions>;
   packagerConfig: Partial<Options>;
   makers: (IForgeResolvableMaker | IForgeMaker)[];
@@ -46,7 +49,7 @@ export interface ForgeMakeResult {
   /**
    * The state of the package.json file when the make happened
    */
-  packageJSON: any;
+  packageJSON: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   /**
    * The platform this make run was for
    */
@@ -63,13 +66,13 @@ export interface IForgePlugin {
 
   init(dir: string, forgeConfig: ForgeConfig): void;
   getHook?(hookName: string): ForgeHookFn | null;
-  startLogic?(opts: StartOptions): Promise<ElectronProcess | string | string[] | false>;
+  startLogic?(opts: StartOptions): Promise<StartResult>;
 }
 
 export interface IForgeResolvableMaker {
   name: string;
   platforms: ForgePlatform[] | null;
-  config: any;
+  config: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface IForgeMaker {
@@ -80,7 +83,7 @@ export interface IForgeMaker {
 export interface IForgeResolvablePublisher {
   name: string;
   platforms?: ForgePlatform[] | null;
-  config?: any;
+  config?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface IForgePublisher {
@@ -119,6 +122,8 @@ export interface StartOptions {
   inspect?: boolean;
 }
 
+export type StartResult = ElectronProcess | string | string[] | false;
+
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
@@ -127,11 +132,14 @@ export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => void;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
 }
 
-export type PackagePerson = undefined | string | {
-  name: string;
-  email?: string;
-  url?: string;
-};
+export type PackagePerson =
+  | undefined
+  | string
+  | {
+      name: string;
+      email?: string;
+      url?: string;
+    };

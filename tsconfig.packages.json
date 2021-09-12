@@ -3,14 +3,5 @@
   "compilerOptions": {
     "rootDir": "packages"
   },
-  "exclude": [
-    "dist",
-    "node_modules",
-    "ci",
-    "tools",
-    "**/dist",
-    "**/node_modules",
-    "**/test",
-    "**/tmpl"
-  ]
+  "exclude": ["dist", "node_modules", "ci", "tools", "**/dist", "**/node_modules", "**/test", "**/tmpl"]
 }

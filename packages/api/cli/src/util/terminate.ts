@@ -1,8 +1,8 @@
 import colors from 'colors';
 
-process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+process.on('unhandledRejection', (reason: string, promise: Promise<unknown>) => {
   console.error('\nAn unhandled rejection has occurred inside Forge:'.red);
-  console.error(colors.red(reason));
+  console.error(colors.red(reason.toString()));
   console.error('\nElectron Forge was terminated. Location:'.red);
   console.error(colors.red(JSON.stringify(promise)));
   process.exit(1);

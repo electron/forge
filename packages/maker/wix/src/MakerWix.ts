@@ -15,17 +15,11 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'win32';
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-    packageJSON,
-    appName,
-  }: MakerOptions) {
+  async make({ dir, makeDir, targetArch, packageJSON, appName }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
@@ -36,7 +30,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       version = this.normalizeWindowsVersion(version);
     }
 
-    const creator = new MSICreator(({
+    const creator = new MSICreator({
       description: packageJSON.description,
       name: appName,
       version,
@@ -45,7 +39,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,
-    }) as MSICreatorOptions);
+    } as MSICreatorOptions);
 
     if (this.config.beforeCreate) {
       await Promise.resolve(this.config.beforeCreate(creator));

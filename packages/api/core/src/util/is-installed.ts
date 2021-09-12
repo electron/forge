@@ -1,9 +1,9 @@
 /* eslint "global-require": "off", "import/no-dynamic-require": "off" */
-export default function isInstalled(pkg: string) {
+export default function isInstalled(pkg: string): boolean {
   try {
     require(pkg);
     return true;
-  } catch (e) {
+  } catch {
     // Package doesn't exist -- must not be installable on this platform
     return false;
   }

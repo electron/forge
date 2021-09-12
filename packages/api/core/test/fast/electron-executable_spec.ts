@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import path from 'path';
-import sinon from 'sinon';
+import { createSandbox } from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import locateElectronExecutable, { pluginCompileExists } from '../../src/util/electron-executable';
@@ -10,7 +10,7 @@ chai.use(sinonChai);
 const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'electron-executable');
 
 describe('locateElectronExecutable', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = createSandbox();
 
   beforeEach(() => {
     sandbox.spy(console, 'warn');
@@ -77,7 +77,7 @@ describe('locateElectronExecutable', () => {
 });
 
 describe('pluginCompileExists', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = createSandbox();
 
   beforeEach(() => {
     sandbox.spy(console, 'warn');

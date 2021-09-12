@@ -3,7 +3,7 @@
 > Display multiple streams of logs in one window
 
 This module allows you to pipe multiple logically separated streams of logs into
-multiple visually separated views in a web console.  It comes with full ANSI
+multiple visually separated views in a web console. It comes with full ANSI
 support so you can pipe anything that would work in a Terminal into this tool
 as well.
 

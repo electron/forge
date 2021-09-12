@@ -6,13 +6,17 @@ import path from 'path';
 
 import { MakerFlatpakConfig } from './Config';
 
-export function flatpakArch(nodeArch: ForgeArch) {
+export function flatpakArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
-    case 'ia32': return 'i386';
-    case 'x64': return 'x86_64';
-    case 'armv7l': return 'arm';
+    case 'ia32':
+      return 'i386';
+    case 'x64':
+      return 'x86_64';
+    case 'armv7l':
+      return 'arm';
     // arm => arm
-    default: return nodeArch;
+    default:
+      return nodeArch;
   }
 }
 
@@ -23,16 +27,12 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
   requiredExternalBinaries: string[] = ['flatpak-builder', 'eu-strip'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('@malept/electron-installer-flatpak');
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-  }: MakerOptions) {
-    // eslint-disable-next-line global-require, import/no-unresolved
+  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
+    // eslint-disable-next-line global-require, import/no-unresolved, node/no-missing-require
     const installer = require('@malept/electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);
@@ -48,8 +48,6 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
     await installer(flatpakConfig);
 
-    return (await fs.readdir(outDir))
-      .filter((basename) => basename.endsWith('.flatpak'))
-      .map((basename) => path.join(outDir, basename));
+    return (await fs.readdir(outDir)).filter((basename) => basename.endsWith('.flatpak')).map((basename) => path.join(outDir, basename));
   }
 }

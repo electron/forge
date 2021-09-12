@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { ForgeConfig } from '@electron-forge/shared-types';
 import * as fs from 'fs-extra';
+import { IgnoreFunction } from 'electron-packager';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -43,7 +44,7 @@ describe('WebpackPlugin', () => {
     it('should remove config.forge from package.json', async () => {
       const packageJSON = { config: { forge: 'config.js' } };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
     });
@@ -51,9 +52,9 @@ describe('WebpackPlugin', () => {
     it('should succeed if there is no config.forge', async () => {
       const packageJSON = { name: 'test' };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect((await fs.readJson(packagedPackageJSONPath))).to.not.have.property('config');
+      expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
     });
 
     after(async () => {
@@ -87,7 +88,7 @@ describe('WebpackPlugin', () => {
 
       it('ignores everything but files in .webpack', async () => {
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore('')).to.equal(false);
         expect(ignore('/abc')).to.equal(true);
@@ -100,7 +101,7 @@ describe('WebpackPlugin', () => {
         webpackConfig.renderer.jsonStats = true;
         plugin = new WebpackPlugin(webpackConfig);
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
         expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);

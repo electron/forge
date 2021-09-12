@@ -12,7 +12,7 @@ async function runNPMInstall(dir: string, ...args: string[]) {
   await runNPM(dir, 'install', ...args);
 }
 
-export async function ensureModulesInstalled(dir: string, deps: string[], devDeps: string[]) {
+export async function ensureModulesInstalled(dir: string, deps: string[], devDeps: string[]): Promise<void> {
   await runNPMInstall(dir, ...deps);
   await runNPMInstall(dir, '--save-dev', ...devDeps);
 }
@@ -27,7 +27,7 @@ export async function ensureTestDirIsNonexistent(): Promise<string> {
   return dir;
 }
 
-export async function expectLintToPass(dir: string) {
+export async function expectLintToPass(dir: string): Promise<void> {
   try {
     await runNPM(dir, 'run', 'lint');
   } catch (err) {
@@ -41,15 +41,10 @@ export async function expectLintToPass(dir: string) {
   }
 }
 
-export async function expectProjectPathExists(
-  dir: string,
-  subPath: string,
-  pathType: string,
-  exists = true,
-) {
+export async function expectProjectPathExists(dir: string, subPath: string, pathType: string, exists = true): Promise<void> {
   expect(await fs.pathExists(path.resolve(dir, subPath)), `the ${subPath} ${pathType} should exist`).to.equal(exists);
 }
 
-export async function expectProjectPathNotExists(dir: string, subPath: string, pathType: string) {
+export async function expectProjectPathNotExists(dir: string, subPath: string, pathType: string): Promise<void> {
   await expectProjectPathExists(dir, subPath, pathType, false);
 }

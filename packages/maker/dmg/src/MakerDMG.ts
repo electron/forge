@@ -10,17 +10,11 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'darwin';
   }
 
-  async make({
-    dir,
-    makeDir,
-    appName,
-    packageJSON,
-    targetArch,
-  }: MakerOptions) {
+  async make({ dir, makeDir, appName, packageJSON, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require
     const electronDMG = require('electron-installer-dmg');
 

@@ -5,25 +5,18 @@ import { convertVersion, createWindowsInstaller, Options as ElectronWinstallerOp
 import fs from 'fs-extra';
 import path from 'path';
 
-type MakerSquirrelConfig = Omit<ElectronWinstallerOptions, 'appDirectory' | 'outputDirectory'>
+type MakerSquirrelConfig = Omit<ElectronWinstallerOptions, 'appDirectory' | 'outputDirectory'>;
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('electron-winstaller') && !process.env.DISABLE_SQUIRREL_TEST;
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-    packageJSON,
-    appName,
-    forgeConfig,
-  }: MakerOptions) {
+  async make({ dir, makeDir, targetArch, packageJSON, appName, forgeConfig }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `squirrel.windows/${targetArch}`);
     await this.ensureDirectory(outPath);
 
@@ -48,11 +41,11 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-full.nupkg`),
     ];
     const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-delta.nupkg`);
-    if (winstallerConfig.remoteReleases || await fs.pathExists(deltaPath)) {
+    if (winstallerConfig.remoteReleases || (await fs.pathExists(deltaPath))) {
       artifacts.push(deltaPath);
     }
     const msiPath = path.resolve(outPath, winstallerConfig.setupMsi || `${appName}Setup.msi`);
-    if (!winstallerConfig.noMsi && await fs.pathExists(msiPath)) {
+    if (!winstallerConfig.noMsi && (await fs.pathExists(msiPath))) {
       artifacts.push(msiPath);
     }
     return artifacts;

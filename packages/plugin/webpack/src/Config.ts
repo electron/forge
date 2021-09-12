@@ -69,7 +69,7 @@ export interface WebpackPluginRendererConfig {
    * Unfortunately, we cannot derive the value from the main process code as it can be a
    * dynamically generated value at runtime, and Webpack processes at build-time.
    *
-   * Defaults to `false` (as it is disabled by default in Electron >= 5).
+   * Defaults to `false` (as it is disabled by default in Electron \>= 5).
    */
   nodeIntegration?: boolean;
   /**

@@ -3,9 +3,7 @@ import InstallerLinux, { InstallerOptions } from '@electron-forge/installer-linu
 export default class InstallerRpm extends InstallerLinux {
   name = 'rpm';
 
-  async install({
-    filePath,
-  }: InstallerOptions) {
+  async install({ filePath }: InstallerOptions): Promise<void> {
     await this.sudo('RPM', 'dnf', `--assumeyes --nogpgcheck install ${filePath}`);
   }
 }

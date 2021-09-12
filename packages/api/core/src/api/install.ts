@@ -17,13 +17,17 @@ import ExeInstaller from '@electron-forge/installer-exe';
 
 import { info } from '../util/messages';
 
+// TODO: replace with a got-based module
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const nugget = require('nugget');
 
 const d = debug('electron-forge:install');
 
 const GITHUB_API = 'https://api.github.com';
 
-class InstallerImpl extends InstallerBase { name = 'impl'; }
+class InstallerImpl extends InstallerBase {
+  name = 'impl';
+}
 
 export interface Asset {
   id: string;
@@ -60,12 +64,7 @@ export interface InstallOptions {
   chooseAsset: (assets: Asset[]) => Promise<Asset> | Asset;
 }
 
-export default async ({
-  interactive = false,
-  prerelease = false,
-  repo,
-  chooseAsset,
-}: InstallOptions) => {
+export default async ({ interactive = false, prerelease = false, repo, chooseAsset }: InstallOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   if (typeof chooseAsset !== 'function') {
@@ -88,6 +87,8 @@ export default async ({
       // Ignore error
     }
 
+    // TODO: fix up the type so that errors are handled correctly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!releases || (releases as any).message === 'Not Found' || !Array.isArray(releases)) {
       throw new Error(`Failed to find releases for repository "${repo}".  Please check the name and try again.`);
     }
@@ -103,7 +104,7 @@ export default async ({
       if (tagA.substr(0, 1) === 'v') tagA = tagA.substr(1);
       let tagB = releaseB.tag_name;
       if (tagB.substr(0, 1) === 'v') tagB = tagB.substr(1);
-      return (semver.gt(tagB, tagA) ? 1 : -1);
+      return semver.gt(tagB, tagA) ? 1 : -1;
     });
     // eslint-disable-next-line prefer-destructuring
     latestRelease = sortedReleases[0];
@@ -148,8 +149,7 @@ export default async ({
   const filename = `${pathSafeRepo}-${latestRelease.tag_name}-${targetAsset.name}`;
 
   const fullFilePath = path.resolve(tmpdir, filename);
-  if (!await fs.pathExists(fullFilePath)
-      || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
+  if (!(await fs.pathExists(fullFilePath)) || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
     await fs.mkdirs(tmpdir);
 
     const nuggetOpts = {
@@ -180,8 +180,7 @@ export default async ({
       },
     };
 
-    const suffixFnIdent = Object.keys(installActions[process.platform])
-      .find((suffix) => targetAsset.name.endsWith(suffix));
+    const suffixFnIdent = Object.keys(installActions[process.platform]).find((suffix) => targetAsset.name.endsWith(suffix));
     if (!suffixFnIdent) {
       throw new Error(`No installer to handle "${targetAsset.name}"`);
     }

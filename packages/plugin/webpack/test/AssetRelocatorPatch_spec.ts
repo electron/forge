@@ -9,7 +9,7 @@ import WebpackConfigGenerator from '../src/WebpackConfig';
 
 type Closeable = {
   close: () => void;
-}
+};
 
 let servers: Closeable[] = [];
 
@@ -44,26 +44,28 @@ async function asyncWebpack(config: Configuration): Promise<void> {
  * basic server.
  */
 function createSimpleDevServer(rendererOut: string): http.Server {
-  return http.createServer(async (req, res) => {
-    const url = (req.url || '');
-    const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
-    const fullPath = path.join(rendererOut, file);
-    try {
-      const data = await readFile(fullPath);
-      res.writeHead(200);
-      res.end(data);
-    } catch (err) {
-      res.writeHead(404);
-      res.end(JSON.stringify(err));
-    }
-  }).listen(3000);
+  return http
+    .createServer(async (req, res) => {
+      const url = req.url || '';
+      const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
+      const fullPath = path.join(rendererOut, file);
+      try {
+        const data = await readFile(fullPath);
+        res.writeHead(200);
+        res.end(data);
+      } catch (err) {
+        res.writeHead(404);
+        res.end(JSON.stringify(err));
+      }
+    })
+    .listen(3000);
 }
 
 type ExpectNativeModulePathOptions = {
-  outDir: string,
-  jsPath: string,
-  nativeModulesString: string,
-  nativePathString: string
+  outDir: string;
+  jsPath: string;
+  nativeModulesString: string;
+  nativePathString: string;
 };
 
 async function expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -141,7 +143,9 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint, entryPoint.preload!,
+        entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        entryPoint.preload!
       );
       await asyncWebpack(preloadConfig);
 
@@ -194,7 +198,9 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint, entryPoint.preload!,
+        entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        entryPoint.preload!
       );
       await asyncWebpack(preloadConfig);
 

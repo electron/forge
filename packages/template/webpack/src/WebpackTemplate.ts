@@ -20,11 +20,13 @@ class WebpackTemplate extends BaseTemplate {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
-            entryPoints: [{
-              html: './src/index.html',
-              js: './src/renderer.js',
-              name: 'main_window',
-            }],
+            entryPoints: [
+              {
+                html: './src/index.html',
+                js: './src/renderer.js',
+                name: 'main_window',
+              },
+            ],
           },
         },
       ]);
@@ -38,10 +40,14 @@ class WebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(directory, 'webpack.rules.js');
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
 
-      await this.updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
-        if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
-        return line;
-      }, path.resolve(directory, 'src', 'main.js'));
+      await this.updateFileByLine(
+        path.resolve(directory, 'src', 'index.js'),
+        (line) => {
+          if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+          return line;
+        },
+        path.resolve(directory, 'src', 'main.js')
+      );
 
       await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';

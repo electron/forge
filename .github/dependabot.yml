@@ -1,16 +1,16 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     # Check the npm registry for updates every weekday
     schedule:
-      interval: "daily"
+      interval: 'daily'
     ignore: # Everything not annotated here is documented in tools/update-dependencies.js
       # @aws-sdk/* upgrades too often, do this manually
-      - dependency-name: "@aws-sdk/client-s3"
-      - dependency-name: "@aws-sdk/lib-storage"
-      - dependency-name: "@aws-sdk/types"
-      - dependency-name: "@types/node-fetch"
+      - dependency-name: '@aws-sdk/client-s3'
+      - dependency-name: '@aws-sdk/lib-storage'
+      - dependency-name: '@aws-sdk/types'
+      - dependency-name: '@types/node-fetch'
       - dependency-name: commander
       - dependency-name: electron-notarize
       - dependency-name: find-up
@@ -18,23 +18,23 @@ updates:
       - dependency-name: node-fetch
       - dependency-name: ora
       - dependency-name: username
-  - package-ecosystem: "npm"
-    directory: "/packages/template/typescript/tmpl"
+  - package-ecosystem: 'npm'
+    directory: '/packages/template/typescript/tmpl'
     # Check the npm registry for updates every weekday
     schedule:
-      interval: "daily"
-  - package-ecosystem: "npm"
-    directory: "/packages/template/typescript-webpack/tmpl"
+      interval: 'daily'
+  - package-ecosystem: 'npm'
+    directory: '/packages/template/typescript-webpack/tmpl'
     # Check the npm registry for updates every weekday
     schedule:
-      interval: "daily"
-  - package-ecosystem: "npm"
-    directory: "/packages/template/webpack/tmpl"
+      interval: 'daily'
+  - package-ecosystem: 'npm'
+    directory: '/packages/template/webpack/tmpl'
     # Check the npm registry for updates every weekday
     schedule:
-      interval: "daily"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      interval: 'daily'
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
       # Check for updates to GitHub Actions every weekday
-      interval: "daily"
+      interval: 'daily'

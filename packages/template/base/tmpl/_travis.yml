@@ -1,8 +1,8 @@
 language: node_js
-node_js: "10"
+node_js: '10'
 os:
-- linux
-- osx
+  - linux
+  - osx
 dist: bionic
 osx_image: xcode10.1
 
@@ -10,20 +10,20 @@ cache:
   npm: true
   yarn: true
   directories:
-  - $HOME/.cache/electron
+    - $HOME/.cache/electron
 
 addons:
   apt:
     packages:
-    - fakeroot
-    - rpm
+      - fakeroot
+      - rpm
 
 branches:
   only:
-  - master
-  - /^v\d+\.\d+\.\d+/
+    - master
+    - /^v\d+\.\d+\.\d+/
 
 script:
-- npm run lint
-- if test -z "$TRAVIS_TAG"; then npm run make; fi
+  - npm run lint
+  - if test -z "$TRAVIS_TAG"; then npm run make; fi
 after_success: if test -n "$TRAVIS_TAG"; then npm run publish; fi

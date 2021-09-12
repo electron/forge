@@ -9,7 +9,9 @@ if (!(process.platform === 'linux' && process.env.CI)) {
   describe('install-dependencies', () => {
     const installDir = path.resolve(os.tmpdir(), 'electron-forge-test-install-dependencies');
 
-    before(async () => { fs.ensureDir(installDir); });
+    before(async () => {
+      fs.ensureDir(installDir);
+    });
 
     it('should install the latest minor version when the dependency has a caret', async () => {
       await installDeps(installDir, ['debug@^2.0.0']);

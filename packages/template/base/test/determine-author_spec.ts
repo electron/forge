@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { stub } from 'sinon';
 
 import { PackagePerson } from '@electron-forge/shared-types';
 
@@ -29,8 +29,8 @@ describe('determineAuthor', () => {
 
   beforeEach(() => {
     determineAuthor = proxyquire.noCallThru().load('../src/determine-author', {
-      '@malept/cross-spawn-promise': { spawn: sinon.stub().callsFake(fakeSpawn) },
-      username: sinon.stub().resolves('fromUsername'),
+      '@malept/cross-spawn-promise': { spawn: stub().callsFake(fakeSpawn) },
+      username: stub().resolves('fromUsername'),
     }).default;
   });
 

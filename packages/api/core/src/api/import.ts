@@ -58,18 +58,20 @@ export default async ({
   shouldRemoveDependency,
   shouldUpdateScript,
   outDir,
-}: ImportOptions) => {
+}: ImportOptions): Promise<void> => {
   const calculatedOutDir = outDir || 'out';
   asyncOra.interactive = interactive;
 
   d(`Attempting to import project in: ${dir}`);
-  if (!await fs.pathExists(dir) || !await fs.pathExists(path.resolve(dir, 'package.json'))) {
+  if (!(await fs.pathExists(dir)) || !(await fs.pathExists(path.resolve(dir, 'package.json')))) {
     throw new Error(`We couldn't find a project in: ${dir}`);
   }
 
   // eslint-disable-next-line max-len
   if (typeof confirmImport === 'function') {
-    if (!await confirmImport()) {
+    if (!(await confirmImport())) {
+      // TODO: figure out if we can just return early here
+      // eslint-disable-next-line no-process-exit
       process.exit(0);
     }
   }
@@ -85,12 +87,18 @@ export default async ({
     if (packageJSON.config.forge.makers) {
       warn(interactive, 'It looks like this project is already configured for Electron Forge'.green);
       if (typeof shouldContinueOnExisting === 'function') {
-        if (!await shouldContinueOnExisting()) {
+        if (!(await shouldContinueOnExisting())) {
+          // TODO: figure out if we can just return early here
+          // eslint-disable-next-line no-process-exit
           process.exit(0);
         }
       }
     } else if (typeof packageJSON.config.forge === 'string') {
-      warn(interactive, "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway".yellow);
+      warn(
+        interactive,
+        "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway"
+          .yellow
+      );
     } else {
       d('Upgrading an Electron Forge < 6 project');
       packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge);
@@ -101,17 +109,10 @@ export default async ({
   packageJSON.dependencies = packageJSON.dependencies || {};
   packageJSON.devDependencies = packageJSON.devDependencies || {};
 
-  [importDevDeps, importExactDevDeps] = updateElectronDependency(
-    packageJSON,
-    importDevDeps,
-    importExactDevDeps,
-  );
+  [importDevDeps, importExactDevDeps] = updateElectronDependency(packageJSON, importDevDeps, importExactDevDeps);
 
-  const keys = Object.keys(packageJSON.dependencies)
-    .concat(Object.keys(packageJSON.devDependencies));
-  const buildToolPackages: {
-    [key: string]: string | undefined;
-  } = {
+  const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
+  const buildToolPackages: Record<string, string | undefined> = {
     '@electron/get': 'already uses this module as a transitive dependency',
     'electron-builder': 'provides mostly equivalent functionality',
     'electron-download': 'already uses this module as a transitive dependency',
@@ -127,6 +128,7 @@ export default async ({
 
   for (const key of keys) {
     if (buildToolPackages[key]) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const explanation = buildToolPackages[key]!;
       // eslint-disable-next-line max-len
       let remove = true;
@@ -217,9 +219,12 @@ export default async ({
     }
   });
 
-  info(interactive, `
+  info(
+    interactive,
+    `
 
 We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
 
-Thanks for using ${'"electron-forge"'.green}!!!`);
+Thanks for using ${'"electron-forge"'.green}!!!`
+  );
 };

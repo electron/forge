@@ -19,7 +19,9 @@ describe('PublisherERS', () => {
       username: 'test',
       password: 'test',
     });
-    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith('ERS publish failed with status code: 400 (http://example.com/api/auth/login)');
+    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+      'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
+    );
   });
 
   afterEach(() => {
