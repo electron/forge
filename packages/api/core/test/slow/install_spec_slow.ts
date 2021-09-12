@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import fetchMock from 'fetch-mock';
+import fetchMock, { FetchMockSandbox } from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import { SinonSpy, spy, stub } from 'sinon';
 
@@ -8,7 +8,7 @@ import { InstallOptions, InstallAsset } from '../../src/api';
 describe('install', () => {
   let install: (opts: InstallOptions) => Promise<void>;
   let nuggetSpy: SinonSpy;
-  let fetch;
+  let fetch: FetchMockSandbox;
   class MockInstaller {
     async install() {
       return undefined;
@@ -40,7 +40,7 @@ describe('install', () => {
   });
 
   it('should throw an error when a repo name is not given', async () => {
-    await expect(install({})).to.eventually.be.rejected;
+    await expect(install({} as InstallOptions)).to.eventually.be.rejected;
   });
 
   it('should throw an error when given an invalid repository name', async () => {
@@ -132,7 +132,9 @@ describe('install', () => {
         ],
       },
     ]);
-    await expect(install({ repo: 'h/i', interactive: false })).to.eventually.be.rejectedWith('Expected chooseAsset to be a function in install call');
+    await expect(install({ repo: 'h/i', interactive: false } as InstallOptions)).to.eventually.be.rejectedWith(
+      'Expected chooseAsset to be a function in install call'
+    );
   });
 
   it('should provide compatible assets to chooseAsset if more than one exists', async () => {

@@ -44,7 +44,7 @@ describe('WebpackPlugin', () => {
     it('should remove config.forge from package.json', async () => {
       const packageJSON = { config: { forge: 'config.js' } };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
     });
@@ -52,7 +52,7 @@ describe('WebpackPlugin', () => {
     it('should succeed if there is no config.forge', async () => {
       const packageJSON = { name: 'test' };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
     });

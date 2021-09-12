@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -76,7 +77,7 @@ describe('LocalElectronPlugin', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await fn(null, tmpDir, null, process.platform, process.arch);
+        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
 
         expect(await fs.pathExists(tmpDir)).to.equal(true);
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(true);
@@ -86,7 +87,7 @@ describe('LocalElectronPlugin', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await expect(fn(null, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
+        await expect(fn({} as ForgeConfig, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
           `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`
         );
       });
@@ -95,7 +96,7 @@ describe('LocalElectronPlugin', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await expect(fn(null, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
+        await expect(fn({} as ForgeConfig, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
           `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`
         );
       });
@@ -107,7 +108,7 @@ describe('LocalElectronPlugin', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await fn(null, tmpDir, null, process.platform, process.arch);
+        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
 
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(false);
         expect(await fs.pathExists(path.resolve(tmpDir, 'electron'))).to.equal(true);

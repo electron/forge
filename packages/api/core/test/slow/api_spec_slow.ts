@@ -2,6 +2,7 @@ import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
+import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
 import proxyquire from 'proxyquire';
@@ -18,7 +19,12 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
 }).api;
 
 type BeforeInitFunction = () => void;
-type PackageJSON = Record<string, unknown>;
+type PackageJSON = Record<string, unknown> & {
+  config: {
+    forge: ForgeConfig;
+  };
+  dependencies: Record<string, string>;
+};
 
 async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>) {
   const packageJSON = await readRawPackageJson(dir);
@@ -269,7 +275,7 @@ describe('Electron Forge API', () => {
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
         // eslint-disable-next-line node/no-missing-require
-        packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') }];
+        packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
 
       await forge.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
@@ -352,7 +358,7 @@ describe('Electron Forge API', () => {
             };
 
             if (process.platform === 'win32') {
-              makerDefinition.config.makeVersionWinStoreCompatible = true;
+              (makerDefinition.config as Record<string, unknown>).makeVersionWinStoreCompatible = true;
             }
 
             return makerDefinition;
@@ -371,7 +377,7 @@ describe('Electron Forge API', () => {
         describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
           before(async () => {
             await updatePackageJSON(dir, async (packageJSON) => {
-              packageJSON.config.forge.makers = [target()];
+              packageJSON.config.forge.makers = [target() as IForgeResolvableMaker];
             });
           });
 
