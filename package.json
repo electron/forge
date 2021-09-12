@@ -146,7 +146,7 @@
     "sinon-chai": "^3.6.0",
     "ts-node": "^10.0.0",
     "typedoc": "^0.22.0",
-    "typescript": "~4.4.2",
+    "typescript": "~4.4.3",
     "xvfb-maybe": "^0.2.1"
   },
   "optionalDependencies": {
