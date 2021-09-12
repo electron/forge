@@ -27,8 +27,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private isProd = false;
 
+  // The root of the Electron app
   private projectDir!: string;
 
+  // Where the Webpack output is generated. Usually `$projectDir/.webpack`
   private baseDir!: string;
 
   private _configGenerator!: WebpackConfigGenerator;
@@ -208,6 +210,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
   packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+
+    if (!pj.main?.endsWith('.webpack/main')) {
+      throw new Error(`Electron Forge is configured to use the Webpack plugin. The plugin expects the
+"main" entry point in "package.json" to be ".webpack/main" (where the plugin outputs
+the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
+    }
+
     if (pj.config) {
       delete pj.config.forge;
     }

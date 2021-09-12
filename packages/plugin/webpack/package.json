@@ -8,7 +8,7 @@
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "scripts": {
-    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts test/**/**/*_spec.ts"
+    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",

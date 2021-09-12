@@ -42,7 +42,7 @@ describe('WebpackPlugin', () => {
     });
 
     it('should remove config.forge from package.json', async () => {
-      const packageJSON = { config: { forge: 'config.js' } };
+      const packageJSON = { main: './.webpack/main', config: { forge: 'config.js' } };
       await fs.writeJson(packageJSONPath, packageJSON);
       await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
@@ -50,11 +50,23 @@ describe('WebpackPlugin', () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { name: 'test' };
+      const packageJSON = { main: '.webpack/main' };
       await fs.writeJson(packageJSONPath, packageJSON);
       await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
+    });
+
+    it('should fail if there is no main key in package.json', async () => {
+      const packageJSON = {};
+      await fs.writeJson(packageJSONPath, packageJSON);
+      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+    });
+
+    it('should fail if main in package.json does not end with .webpack/main', async () => {
+      const packageJSON = { main: 'src/main.js' };
+      await fs.writeJson(packageJSONPath, packageJSON);
+      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
     });
 
     after(async () => {
