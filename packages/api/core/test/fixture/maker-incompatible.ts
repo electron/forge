@@ -2,7 +2,7 @@ export default class Maker {
   // Just so the maker isn't excluded
   platforms = [process.platform];
 
-  async lol(): void {
+  async lol(): Promise<void> {
     // lol
   }
 }
