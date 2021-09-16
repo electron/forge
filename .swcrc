@@ -6,6 +6,9 @@
       "node": "12"
     }
   },
+  "module": {
+    "type": "commonjs"
+  },
   "jsc": {
     "parser": {
       "syntax": "typescript",
