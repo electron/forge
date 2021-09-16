@@ -25,7 +25,7 @@ describe('forge-config', () => {
   });
 
   it('should fail if the external config is not parseable', async () => {
-    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_external_forge_config'))).to.eventually.be.rejectedWith(/bad.js: Unexpected token/);
+    await expect(findConfig(path.resolve(__dirname, '../fixture/bad_external_forge_config'))).to.eventually.be.rejectedWith(/Unexpected token/);
   });
 
   it('should be set to the defaults if no Forge config is specified in package.json', async () => {
