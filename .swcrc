@@ -1,0 +1,17 @@
+{
+  "sourceMaps": "inline",
+  "exclude": ["/tmpl/"],
+  "env": {
+    "targets": {
+      "node": "10"
+    }
+  },
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": false,
+      "decorators": false,
+      "dynamicImport": false
+    }
+  }
+}
