@@ -74,6 +74,10 @@ export interface MakerWixConfig {
    * Allows for the modification of the MSICreator before create is called.
    */
   beforeCreate?: (creator: MSICreator) => Promise<void> | void;
+   /**
+   *  A path to the Apps icon used for the stub executable. If not provided a lower quality version will be extracted form the exe
+   */
+  appIconPath?: string;
 }
 export interface UIOptions {
   /**
