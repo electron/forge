@@ -20,6 +20,11 @@ describe('GitHub', () => {
         gitHubSpy();
         this.options = options;
       }
+
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      static plugin(): object {
+        return this;
+      }
     };
     GitHub = proxyquire.noCallThru().load('../src/util/github', {
       '@octokit/rest': {
