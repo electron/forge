@@ -22,7 +22,6 @@ export default class PublishState {
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);
           await state.load();
-          // eslint-disable-next-line max-len
           state.state.artifacts = state.state.artifacts.map((artifactPath) => path.resolve(rootDir, artifactPath));
           states.push(state);
         }
@@ -35,7 +34,6 @@ export default class PublishState {
   static async saveToDirectory(directory: string, artifacts: ForgeMakeResult[], rootDir: string): Promise<void> {
     const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
     for (const artifact of artifacts) {
-      // eslint-disable-next-line max-len
       artifact.artifacts = artifact.artifacts.map((artifactPath) => path.relative(rootDir, artifactPath));
       const publishState = new PublishState(path.resolve(directory, id, 'null'), false);
       publishState.state = artifact;
