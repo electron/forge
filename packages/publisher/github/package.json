@@ -25,6 +25,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.61",
     "@electron-forge/shared-types": "6.0.0-beta.61",
     "@octokit/core": "^3.2.4",
+    "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",
     "debug": "^4.3.1",
