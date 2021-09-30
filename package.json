@@ -47,7 +47,7 @@
     "@octokit/core": "^3.2.4",
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^18.0.11",
-    "@octokit/types": "^6.1.2",
+    "@octokit/types": "^6.31.2",
     "@types/which": "^2.0.0",
     "colors": "^1.4.0",
     "commander": "^4.1.1",
