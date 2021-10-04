@@ -56,12 +56,20 @@
     "@aws-sdk/util-utf8-browser" "^3.0.0"
     tslib "^1.11.1"
 
-"@aws-sdk/abort-controller@3.34.0", "@aws-sdk/abort-controller@^3.29.0":
+"@aws-sdk/abort-controller@3.34.0":
   version "3.34.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/abort-controller/-/abort-controller-3.34.0.tgz#35c4daee7c8343f2040249c90c4f6bd22ecbf7f2"
   integrity sha512-+Qz8/e5sieViXW2qKbfGsXt73Mo87duI2n8HwfDmshjPRXBjpaN478bFHmAjvq9L4MbvW3hSL0mEGrpPErP9Tw==
   dependencies:
     "@aws-sdk/types" "3.34.0"
+    tslib "^2.3.0"
+
+"@aws-sdk/abort-controller@^3.35.0":
+  version "3.35.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/abort-controller/-/abort-controller-3.35.0.tgz#66665a2bc80ea9db9901bf4c6ca4cac06812713a"
+  integrity sha512-88DAWQNT3IMGvCQkTCaOngJ7F6czoDDVbEmJ3vRvWa4B1Gve3U/pKIw26eJJsiR5BlihDRksjPJ6oqKlBj/QYQ==
+  dependencies:
+    "@aws-sdk/types" "3.35.0"
     tslib "^2.3.0"
 
 "@aws-sdk/chunked-blob-reader-native@3.34.0":
@@ -653,10 +661,15 @@
     "@aws-sdk/types" "3.34.0"
     tslib "^2.3.0"
 
-"@aws-sdk/types@3.34.0", "@aws-sdk/types@^3.1.0", "@aws-sdk/types@^3.25.0":
+"@aws-sdk/types@3.34.0":
   version "3.34.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.34.0.tgz#832a802838d0f0ae568db8e3ce1ee550f05bb4b4"
   integrity sha512-rx9mJp+yKEgb6HVyMtytG+45xwiX3eaHy1VrPC0RV/Uxym1iGyFmpHYo+0/UgL1BTRrJXLA9gTfj15H5kyZ6/Q==
+
+"@aws-sdk/types@3.35.0", "@aws-sdk/types@^3.1.0", "@aws-sdk/types@^3.25.0":
+  version "3.35.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.35.0.tgz#15515921490a2adcc039071f0b724b13551563c3"
+  integrity sha512-6HGiPfw2hgs9q+rSFUqIs7g7V1BmQAwJYiZJ1XexVX1BgqvVe9zcRvyLqrv5zeWM/zj4pJ7q6JBoXjlQWb1ybw==
 
 "@aws-sdk/url-parser@3.34.0":
   version "3.34.0"
