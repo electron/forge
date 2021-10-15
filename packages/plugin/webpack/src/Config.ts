@@ -85,6 +85,12 @@ export interface WebpackPluginConfig {
    */
   mainConfig: WebpackConfiguration | string;
   /**
+   * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
+   * which results in a `.map` file being generated), this option will cause it to not be
+   * packaged with your app.
+   */
+  ignoreSourcemap?: boolean;
+  /**
    * Instructs webpack to emit a JSON file containing statistics about modules, the dependency
    * graph, and various other build information for the main process. This file is located in
    * `.webpack/main/stats.json`, but is not packaged with your app.

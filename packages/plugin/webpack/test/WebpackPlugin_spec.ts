@@ -118,6 +118,18 @@ describe('WebpackPlugin', () => {
         expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
         expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);
       });
+
+      it('ignores sourcemap files', async () => {
+        const webpackConfig = { ...baseConfig, ignoreSourcemap: true };
+        plugin = new WebpackPlugin(webpackConfig);
+        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).to.equal(true);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).to.equal(true);
+      });
     });
   });
 
