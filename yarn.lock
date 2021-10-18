@@ -399,9 +399,9 @@
     tslib "^2.3.0"
 
 "@aws-sdk/lib-storage@^3.28.0":
-  version "3.34.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.34.0.tgz#755fb78bffa213dc96c5b4f5f7a7d8a7dcd3f934"
-  integrity sha512-T7WYTwML2whSxNp+wp86rFEkUyQwdID0pNPvFrJyfXawAIeVqM52HBD+PT2F59AcaJ8bWWQn4W3QWnhg5UuGRg==
+  version "3.37.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.37.0.tgz#49fe85cd414093d4a6910152f1bb3a3fb2a8d64e"
+  integrity sha512-R5QTaz1oTk7s3GeSDB5UVCeHbzGXCTeEBd6MP6j3kU213nq2Em8jklk0ssUzjbP5ASU4T9/M/FieEmZU4KGDPw==
   dependencies:
     buffer "^5.6.0"
     stream-browserify "^3.0.0"
