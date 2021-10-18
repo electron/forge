@@ -107,6 +107,10 @@ class Package {
 }
 
 async function main() {
+  const onlyModules = [];
+  if (process.argv.length > 2) {
+    onlyModules.push(...process.argv.slice(2));
+  }
   try {
     await spawn('yarn', ['outdated', '--json']);
     console.log('No packages to update.');
@@ -114,6 +118,11 @@ async function main() {
     const table = JSON.parse(error.stdout.split('\n')[1]);
     for (const [packageName, currentVersion, wantedVersion, latestVersion, packageType /*, _url */] of table.data.body) {
       if (DO_NOT_UPGRADE.includes(packageName)) {
+        console.log(`Skipping "${packageName} from update as it is in the denylist`);
+        continue;
+      }
+      if (onlyModules.length > 0 && !onlyModules.includes(packageName)) {
+        console.log(`Skipping "${packageName}" from update as it was not specified on the command line`);
         continue;
       }
       let commitPackageName = null;
@@ -130,10 +139,12 @@ async function main() {
     }
   }
 
-  console.log(`Upgrading transitive dependencies in yarn.lock...`);
-  await yarn('upgrade');
-  await git('add', 'yarn.lock');
-  await git('commit', '-m', `build(deps): upgrade transitive dependencies`);
+  if (onlyModules.length == 0) {
+    console.log(`Upgrading transitive dependencies in yarn.lock...`);
+    await yarn('upgrade');
+    await git('add', 'yarn.lock');
+    await git('commit', '-m', `build(deps): upgrade transitive dependencies`);
+  }
 }
 
 main().catch((err) => {
