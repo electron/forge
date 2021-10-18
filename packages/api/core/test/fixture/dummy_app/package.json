@@ -19,6 +19,6 @@
     }
   },
   "devDependencies": {
-    "electron": "9.9.9"
+    "electron": "1000.100.10"
   }
 }
