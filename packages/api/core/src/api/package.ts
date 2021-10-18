@@ -192,7 +192,7 @@ export default async ({
   }
 
   await runHook(forgeConfig, 'generateAssets', platform, arch);
-  await runHook(forgeConfig, 'prePackage');
+  await runHook(forgeConfig, 'prePackage', platform, arch);
 
   d('packaging with options', packageOpts);
 
