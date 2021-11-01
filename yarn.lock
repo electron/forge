@@ -2515,15 +2515,15 @@
     "@typescript-eslint/typescript-estree" "4.33.0"
     debug "^4.3.1"
 
-"@typescript-eslint/parser@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.0.0.tgz#50d1be2e0def82d73e863cceba74aeeac9973592"
-  integrity sha512-B6D5rmmQ14I1fdzs71eL3DAuvnPHTY/t7rQABrL9BLnx/H51Un8ox1xqYAchs0/V2trcoyxB1lMJLlrwrJCDgw==
+"@typescript-eslint/parser@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.3.0.tgz#7879f15e26d370ed3f653fb7dd06479531ed3ab9"
+  integrity sha512-rKu/yAReip7ovx8UwOAszJVO5MgBquo8WjIQcp1gx4pYQCwYzag+I5nVNHO4MqyMkAo0gWt2gWUi+36gWAVKcw==
   dependencies:
-    "@typescript-eslint/scope-manager" "5.0.0"
-    "@typescript-eslint/types" "5.0.0"
-    "@typescript-eslint/typescript-estree" "5.0.0"
-    debug "^4.3.1"
+    "@typescript-eslint/scope-manager" "5.3.0"
+    "@typescript-eslint/types" "5.3.0"
+    "@typescript-eslint/typescript-estree" "5.3.0"
+    debug "^4.3.2"
 
 "@typescript-eslint/scope-manager@4.33.0":
   version "4.33.0"
@@ -2541,6 +2541,14 @@
     "@typescript-eslint/types" "5.0.0"
     "@typescript-eslint/visitor-keys" "5.0.0"
 
+"@typescript-eslint/scope-manager@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.3.0.tgz#97d0ccc7c9158e89e202d5e24ce6ba49052d432e"
+  integrity sha512-22Uic9oRlTsPppy5Tcwfj+QET5RWEnZ5414Prby465XxQrQFZ6nnm5KnXgnsAJefG4hEgMnaxTB3kNEyjdjj6A==
+  dependencies:
+    "@typescript-eslint/types" "5.3.0"
+    "@typescript-eslint/visitor-keys" "5.3.0"
+
 "@typescript-eslint/types@4.33.0":
   version "4.33.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.33.0.tgz#a1e59036a3b53ae8430ceebf2a919dc7f9af6d72"
@@ -2550,6 +2558,11 @@
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.0.0.tgz#25d93f6d269b2d25fdc51a0407eb81ccba60eb0f"
   integrity sha512-dU/pKBUpehdEqYuvkojmlv0FtHuZnLXFBn16zsDmlFF3LXkOpkAQ2vrKc3BidIIve9EMH2zfTlxqw9XM0fFN5w==
+
+"@typescript-eslint/types@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.3.0.tgz#af29fd53867c2df0028c57c36a655bd7e9e05416"
+  integrity sha512-fce5pG41/w8O6ahQEhXmMV+xuh4+GayzqEogN24EK+vECA3I6pUwKuLi5QbXO721EMitpQne5VKXofPonYlAQg==
 
 "@typescript-eslint/typescript-estree@4.33.0", "@typescript-eslint/typescript-estree@^4.24.0":
   version "4.33.0"
@@ -2577,6 +2590,19 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+"@typescript-eslint/typescript-estree@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.3.0.tgz#4f68ddd46dc2983182402d2ab21fb44ad94988cf"
+  integrity sha512-FJ0nqcaUOpn/6Z4Jwbtf+o0valjBLkqc3MWkMvrhA2TvzFXtcclIM8F4MBEmYa2kgcI8EZeSAzwoSrIC8JYkug==
+  dependencies:
+    "@typescript-eslint/types" "5.3.0"
+    "@typescript-eslint/visitor-keys" "5.3.0"
+    debug "^4.3.2"
+    globby "^11.0.4"
+    is-glob "^4.0.3"
+    semver "^7.3.5"
+    tsutils "^3.21.0"
+
 "@typescript-eslint/visitor-keys@4.33.0":
   version "4.33.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.33.0.tgz#2a22f77a41604289b7a186586e9ec48ca92ef1dd"
@@ -2591,6 +2617,14 @@
   integrity sha512-yRyd2++o/IrJdyHuYMxyFyBhU762MRHQ/bAGQeTnN3pGikfh+nEmM61XTqaDH1XDp53afZ+waXrk0ZvenoZ6xw==
   dependencies:
     "@typescript-eslint/types" "5.0.0"
+    eslint-visitor-keys "^3.0.0"
+
+"@typescript-eslint/visitor-keys@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.3.0.tgz#a6258790f3b7b2547f70ed8d4a1e0c3499994523"
+  integrity sha512-oVIAfIQuq0x2TFDNLVavUn548WL+7hdhxYn+9j3YdJJXB7mH9dAmZNJsPDa7Jc+B9WGqoiex7GUDbyMxV0a/aw==
+  dependencies:
+    "@typescript-eslint/types" "5.3.0"
     eslint-visitor-keys "^3.0.0"
 
 "@ungap/promise-all-settled@1.1.2":
@@ -5777,7 +5811,7 @@ globalthis@^1.0.1:
   dependencies:
     define-properties "^1.1.3"
 
-globby@^11.0.1, globby@^11.0.3:
+globby@^11.0.1, globby@^11.0.3, globby@^11.0.4:
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.4.tgz#2cbaff77c2f2a62e71e9b2813a67b97a3a3001a5"
   integrity sha512-9O4MVG9ioZJ08ffbcyVYyLOJLk5JQ688pJ4eMGLpdWLHq/Wr1D9BlriLQyL0E+jbkuePVZXYFj47QM/v093wHg==
