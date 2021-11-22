@@ -1,4 +1,4 @@
-import { MSICreator } from 'electron-wix-msi/lib/creator';
+import { MSICreator, Features } from 'electron-wix-msi/lib/creator';
 
 export interface MakerWixConfig {
   /**
@@ -70,6 +70,11 @@ export interface MakerWixConfig {
    * The password to decrypt the certificate given in `certificateFile`.
    */
   certificatePassword?: string;
+  /**
+   * Enables configuration of the autoUpdate and autoLaunch features.
+   * By default, they are disabled.
+   */
+  features?: Features | false;
   /**
    * Allows for the modification of the MSICreator before create is called.
    */
