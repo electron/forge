@@ -68,7 +68,7 @@
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.0",
     "nugget": "^2.0.1",
     "open": "^8.1.0",
     "ora": "^5.0.0",
