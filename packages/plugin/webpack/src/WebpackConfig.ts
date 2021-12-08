@@ -193,7 +193,7 @@ export default class WebpackConfigGenerator {
         mode: this.mode,
         output: {
           path: path.resolve(this.webpackDir, 'renderer'),
-          filename: '[name]/index.js',
+          filename: this.pluginConfig.renderer.entryPoints.length === 1 && this.pluginConfig.renderer.entryPoints[0].name === '' ? 'index.js' : '[name]/index.js',
           globalObject: 'self',
           ...(this.isProd ? {} : { publicPath: '/' }),
         },
