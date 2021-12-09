@@ -66,7 +66,7 @@ export default class WebpackConfigGenerator {
 
   toEnvironmentVariable(entryPoint: WebpackPluginEntryPoint, preload = false): string {
     const suffix = preload ? '_PRELOAD_WEBPACK_ENTRY' : '_WEBPACK_ENTRY';
-    return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
+    return `${this.pluginConfig.renderer.entryPoints.length === 1 && this.pluginConfig.renderer.entryPoints[0].name === '.' ? '_ROOT' : entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
   }
 
   getPreloadDefine(entryPoint: WebpackPluginEntryPoint): string {
