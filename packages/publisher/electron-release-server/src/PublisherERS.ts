@@ -18,7 +18,7 @@ interface ERSVersion {
 }
 
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
-  const result = await fetch(new URL(url), init);
+  const result = await fetch(url, init);
   if (result.ok) {
     // res.status >= 200 && res.status < 300
     return result;
@@ -66,13 +66,13 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           'Content-Type': 'application/json',
         },
       })
-    ).json();
+    ).json() as any;
 
     // eslint-disable-next-line max-len
     const authFetch = (apiPath: string, options?: RequestInit) =>
       fetchAndCheckStatus(api(apiPath), { ...(options || {}), headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
-    const versions: ERSVersion[] = await (await authFetch('api/version')).json();
+    const versions: ERSVersion[] = await (await authFetch('api/version')).json() as ERSVersion[];
 
     for (const makeResult of makeResults) {
       const { artifacts, packageJSON } = makeResult;

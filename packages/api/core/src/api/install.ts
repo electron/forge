@@ -82,7 +82,7 @@ export default async ({ interactive = false, prerelease = false, repo, chooseAss
     d('searching for repo:', repo);
     let releases!: Release[];
     try {
-      releases = await (await fetch(new URL(`${GITHUB_API}/repos/${repo}/releases`))).json();
+      releases = await (await fetch(`${GITHUB_API}/repos/${repo}/releases`)).json() as Release[];
     } catch (err) {
       // Ignore error
     }

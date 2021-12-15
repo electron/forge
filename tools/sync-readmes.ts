@@ -67,9 +67,9 @@ function sync(): Listr {
             task: async () => {
               let rp: ReturnType<typeof fetch>;
               if (workspace !== 'api') {
-                rp = fetch(new URL(`${DOCS_BASE}/${workspace}s/${packageKey}.md`));
+                rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
               } else {
-                rp = fetch(new URL(`${DOCS_BASE}/${packageKey}.md`));
+                rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
               }
               const r = await rp;
               if (r.status !== 200) return;

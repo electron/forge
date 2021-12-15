@@ -47,7 +47,7 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
           for (const artifactPath of makeResult.artifacts) {
             const fileName = path.basename(artifactPath);
 
-            const response = await fetch(new URL(`${apiUrl}/${fileName}`), {
+            const response = await fetch(`${apiUrl}/${fileName}`, {
               headers: {
                 Authorization: `Basic ${encodedUserAndPass}`,
               },
@@ -67,7 +67,7 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
       }
 
       await asyncOra(`Uploading result (${index + 1}/${makeResults.length})`, async () => {
-        const response = await fetch(new URL(apiUrl), {
+        const response = await fetch(apiUrl, {
           headers: {
             Authorization: `Basic ${encodedUserAndPass}`,
           },
