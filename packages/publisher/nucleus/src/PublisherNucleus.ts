@@ -52,7 +52,7 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
           artifactIdx += 1;
         }
 
-        const response = await fetch(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`, {
+        const response = await fetch(new URL(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`), {
           headers: {
             Authorization: config.token,
           },

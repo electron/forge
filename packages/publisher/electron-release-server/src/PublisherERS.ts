@@ -18,7 +18,7 @@ interface ERSVersion {
 }
 
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
-  const result = await fetch(url, init);
+  const result = await fetch(new URL(url), init);
   if (result.ok) {
     // res.status >= 200 && res.status < 300
     return result;
