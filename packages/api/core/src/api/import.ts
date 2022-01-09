@@ -1,8 +1,9 @@
-import { merge } from 'lodash';
 import { asyncOra } from '@electron-forge/async-ora';
 import baseTemplate from '@electron-forge/template-base';
+import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
+import { merge } from 'lodash';
 import path from 'path';
 
 import initGit from './init-scripts/init-git';
@@ -85,7 +86,7 @@ export default async ({
   let packageJSON = await readRawPackageJson(dir);
   if (packageJSON.config && packageJSON.config.forge) {
     if (packageJSON.config.forge.makers) {
-      warn(interactive, 'It looks like this project is already configured for Electron Forge'.green);
+      warn(interactive, chalk.green('It looks like this project is already configured for Electron Forge'));
       if (typeof shouldContinueOnExisting === 'function') {
         if (!(await shouldContinueOnExisting())) {
           // TODO: figure out if we can just return early here
@@ -96,8 +97,9 @@ export default async ({
     } else if (typeof packageJSON.config.forge === 'string') {
       warn(
         interactive,
-        "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway"
-          .yellow
+        chalk.yellow(
+          "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway"
+        )
       );
     } else {
       d('Upgrading an Electron Forge < 6 project');
@@ -191,7 +193,7 @@ export default async ({
   packageJSON = await readRawPackageJson(dir);
 
   if (!packageJSON.version) {
-    warn(interactive, 'Please set the "version" in your application\'s package.json'.yellow);
+    warn(interactive, chalk.yellow('Please set the "version" in your application\'s package.json'));
   }
 
   packageJSON.config = packageJSON.config || {};
@@ -225,6 +227,6 @@ export default async ({
 
 We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
 
-Thanks for using ${'"electron-forge"'.green}!!!`
+Thanks for using ${chalk.green('Electron Forge')}!!!`
   );
 };

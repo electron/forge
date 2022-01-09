@@ -1,6 +1,6 @@
 #!node_modules/.bin/ts-node
 
-import 'colors';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import path from 'path';
 import { spawn } from '@malept/cross-spawn-promise';
@@ -20,7 +20,7 @@ async function git(...args: string[]): Promise<string> {
 
 async function checkCleanWorkingDir(): Promise<void> {
   if ((await git('status', '--short')) !== '') {
-    throw 'Your working directory is not clean, please ensure you have a clean working directory before version bumping'.red;
+    throw chalk.red('Your working directory is not clean, please ensure you have a clean working directory before version bumping');
   }
 }
 
@@ -38,13 +38,13 @@ async function main(): Promise<void> {
 
   const version = process.argv[2];
   if (!version) {
-    throw 'Must provide a version in argv[2]'.red;
+    throw chalk.red('Must provide a version in argv[2]');
   }
   if (!semver.valid(version)) {
-    throw `Must provide a valid semver version in argv[2].  Got ${version}`.red;
+    throw chalk.red(`Must provide a valid semver version in argv[2].  Got ${version}`);
   }
 
-  console.info(`Setting version of all dependencies: ${version.cyan}`);
+  console.info(`Setting version of all dependencies: ${chalk.cyan(version)}`);
 
   const { version: lastVersion } = await fs.readJson(path.join(BASE_DIR, 'package.json'));
   const dirsToUpdate = [BASE_DIR];

@@ -1,4 +1,3 @@
-import 'colors';
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
 import _import, { ImportOptions } from './import';

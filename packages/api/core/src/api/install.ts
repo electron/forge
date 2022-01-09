@@ -1,6 +1,5 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import InstallerBase from '@electron-forge/installer-base';
+import chalk from 'chalk';
 import debug from 'debug';
 import fetch from 'node-fetch';
 import fs from 'fs-extra';
@@ -9,6 +8,7 @@ import path from 'path';
 import { promisify } from 'util';
 import semver from 'semver';
 
+import InstallerBase from '@electron-forge/installer-base';
 import DMGInstaller from '@electron-forge/installer-dmg';
 import ZipInstaller from '@electron-forge/installer-zip';
 import DebInstaller from '@electron-forge/installer-deb';
@@ -133,11 +133,11 @@ export default async ({ interactive = false, prerelease = false, repo, chooseAss
     });
 
     if (possibleAssets.length === 0) {
-      throw new Error(`Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`);
+      throw new Error(`Failed to find any installable assets for target platform: ${chalk.cyan(`${process.platform}`)}`);
     }
   });
 
-  info(interactive, `Found latest release${prerelease ? ' (including prereleases)' : ''}: ${latestRelease.tag_name.cyan}`);
+  info(interactive, `Found latest release${prerelease ? ' (including prereleases)' : ''}: ${chalk.cyan(latestRelease.tag_name)}`);
 
   let targetAsset = possibleAssets[0];
   if (possibleAssets.length > 1) {

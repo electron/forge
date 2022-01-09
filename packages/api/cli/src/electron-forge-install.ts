@@ -1,5 +1,6 @@
 import { api, InstallAsset } from '@electron-forge/core';
 
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import program from 'commander';
@@ -28,7 +29,7 @@ import './util/terminate';
       choices,
       type: 'list',
       name: 'assetID',
-      message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
+      message: chalk.cyan('Multiple potential assets found, please choose one from the list below:'),
     });
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
