@@ -96,7 +96,7 @@
     "@babel/preset-typescript": "^7.12.7",
     "@babel/register": "^7.12.10",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@malept/eslint-config": "^1.2.1",
+    "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
     "@types/cross-spawn": "^6.0.1",
