@@ -1,4 +1,4 @@
-require('colors');
+const chalk = require('chalk');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
@@ -20,7 +20,7 @@ const prepare = new Listr([
           })
           .toString() !== ''
       ) {
-        throw new Error('Your working directory is not clean, please ensure you have a clean working directory before publishing'.red);
+        throw new Error(chalk.red('Your working directory is not clean, please ensure you have a clean working directory before publishing'));
       }
     },
   },
@@ -62,14 +62,14 @@ const publisher = new Listr([
             // const isBeta = version.includes('beta');
             const isBeta = false;
             return {
-              title: `Publishing: ${`${name}@${version}`.cyan} (beta=${isBeta ? 'true'.green : 'false'.red})`,
+              title: `Publishing: ${chalk.cyan(`${name}@${version}`)} (beta=${isBeta ? chalk.green('true') : chalk.red('false')})`,
               task: async () => {
                 try {
                   await spawn('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
                     cwd: dir,
                   });
                 } catch (err) {
-                  throw new Error(`Failed to publish ${`${name}@${version}`.cyan} \n${err.stderr.toString()}`);
+                  throw new Error(`Failed to publish ${chalk.cyan(`${name}@${version}`)} \n${err.stderr.toString()}`);
                 }
               },
             };

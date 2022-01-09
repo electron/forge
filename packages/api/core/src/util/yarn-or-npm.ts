@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
@@ -11,7 +12,7 @@ const safeYarnOrNpm = (): string => {
     default:
       if (process.env.NODE_INSTALLER) {
         // eslint-disable-next-line no-console
-        console.warn(`${logSymbols.warning} Unknown NODE_INSTALLER, using detected installer ${system}`.yellow);
+        console.warn(logSymbols.warning, chalk.yellow(`Unknown NODE_INSTALLER, using detected installer ${system}`));
       }
       return system;
   }

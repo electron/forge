@@ -12,6 +12,7 @@ updates:
       - dependency-name: '@aws-sdk/lib-storage'
       - dependency-name: '@aws-sdk/types'
       - dependency-name: '@types/node-fetch'
+      - dependency-name: 'chalk'
       - dependency-name: commander
       - dependency-name: electron-notarize
       - dependency-name: find-up

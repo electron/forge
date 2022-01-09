@@ -1,5 +1,5 @@
 /* eslint "no-console": "off" */
-import colors from 'colors';
+import chalk from 'chalk';
 import ora from './ora';
 
 export class OraImpl {
@@ -47,12 +47,12 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
         fnOra.fail();
         if (asyncOra.interactive) {
           if (err && err.message && err.stack) {
-            console.error('\nAn unhandled error has occurred inside Forge:'.red);
-            console.error(colors.red(err.message));
-            console.error(colors.red(err.stack));
+            console.error(chalk.red('\nAn unhandled error has occurred inside Forge:'));
+            console.error(chalk.red(err.message));
+            console.error(chalk.red(err.stack));
           } else {
-            console.error('\nElectron Forge was terminated:'.red);
-            console.error(colors.red(typeof err === 'string' ? err : JSON.stringify(err)));
+            console.error(chalk.red('\nElectron Forge was terminated:'));
+            console.error(chalk.red(typeof err === 'string' ? err : JSON.stringify(err)));
           }
           processExitFn(1);
           // If the process is still alive we should continue because either

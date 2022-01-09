@@ -1,5 +1,5 @@
 /* eslint "no-console": "off" */
-import 'colors';
+import chalk from 'chalk';
 import debug from 'debug';
 import 'log-symbols';
 import realOra from 'ora';
@@ -12,14 +12,14 @@ const d = debug('electron-forge:async-ora');
 const useFakeOra = Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge'));
 
 if (useFakeOra) {
-  console.warn('WARNING: DEBUG environment variable detected. Append the electron-forge:lifecycle namespace'.red);
-  console.warn('to the value of DEBUG in order to view progress indicators.'.red);
+  console.warn(chalk.red('WARNING: DEBUG environment variable detected. Append the electron-forge:lifecycle namespace'));
+  console.warn(chalk.red('to the value of DEBUG in order to view progress indicators.'));
 }
 
 export const fakeOra = (name: string): OraImpl => {
   let oraName = name;
   let startTime: number | null = null;
-  const timing = () => (startTime ? `-- after ${`${prettyMs(Date.now() - startTime)}`.cyan}` : null);
+  const timing = () => (startTime ? `-- after ${chalk.cyan(`${prettyMs(Date.now() - startTime)}`)}` : null);
   const fake: OraImpl = {
     start: () => {
       startTime = Date.now();
@@ -27,7 +27,7 @@ export const fakeOra = (name: string): OraImpl => {
       return fake;
     },
     fail: () => {
-      d(`Process Failed: ${fake.text}`.red, timing());
+      d(chalk.red(`Process Failed: ${fake.text}`), timing());
       return fake;
     },
     succeed: () => {

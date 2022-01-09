@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 import path from 'path';
 
@@ -20,7 +21,7 @@ export function pluginCompileExists(packageJSON: PackageJSON): boolean {
 
   if (Object.keys((packageJSON.dependencies as Dependencies) || {}).find(findPluginCompile)) {
     // eslint-disable-next-line no-console
-    console.warn(logSymbols.warning, `${pluginCompileName} was detected in dependencies, it should be in devDependencies`.yellow);
+    console.warn(logSymbols.warning, chalk.yellow(`${pluginCompileName} was detected in dependencies, it should be in devDependencies`));
     return true;
   }
 
@@ -33,8 +34,9 @@ export default async function locateElectronExecutable(dir: string, packageJSON:
     // eslint-disable-next-line no-console
     console.warn(
       logSymbols.warning,
-      'WARNING: found electron-prebuilt-compile without the Electron Forge compile plugin. Please remove the deprecated electron-prebuilt-compile from your devDependencies.'
-        .yellow
+      chalk.yellow(
+        'WARNING: found electron-prebuilt-compile without the Electron Forge compile plugin. Please remove the deprecated electron-prebuilt-compile from your devDependencies.'
+      )
     );
     electronModulePath = undefined;
   }

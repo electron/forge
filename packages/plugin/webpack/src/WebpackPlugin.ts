@@ -3,6 +3,8 @@ import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
 import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
+
+import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import http from 'http';
@@ -169,7 +171,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       case 'postStart':
         return async (_config: ForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${`http://localhost:${this.loggerPort}`.cyan}\n`);
+            console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
             this.loggedOutputUrl = true;
           }
           d('hooking electron process exit');
@@ -194,9 +196,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
         console.error(
-          `You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
+          chalk.red(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`)
         );
       }
       return forgeConfig;

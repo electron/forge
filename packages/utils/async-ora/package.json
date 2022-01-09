@@ -17,7 +17,7 @@
     "sinon": "^11.1.1"
   },
   "dependencies": {
-    "colors": "^1.4.0",
+    "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "log-symbols": "^4.0.0",
     "ora": "^5.0.0",
