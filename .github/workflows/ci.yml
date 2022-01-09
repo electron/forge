@@ -12,7 +12,7 @@ jobs:
   dependabolt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
       - name: Use Node.js LTS
         uses: actions/setup-node@v2.4.1
         with:
@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
       - name: Use Node.js 12.x
         uses: actions/setup-node@v2.4.1
         with:
@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         shell: bash
