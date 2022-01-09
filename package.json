@@ -130,7 +130,7 @@
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "fetch-mock": "^9.10.7",
     "generate-changelog": "^1.8.0",
