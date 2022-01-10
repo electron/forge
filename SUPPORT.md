@@ -2,7 +2,7 @@
 
 If you have questions about usage, we encourage you to browse the [website](https://www.electronforge.io/),
 and visit one of the several [community-driven sites](https://github.com/electron/electron#community),
-including the [official Electron Discord server](https://discord.gg/electron), where there is a
+including the [official Electron Discord server](https://discord.gg/electronjs), where there is a
 dedicated channel for Electron Forge.
 
 ## Troubleshooting
