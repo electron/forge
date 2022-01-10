@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+// This file requires a shebang above. If it is missing, this is an error.
+
 import { asyncOra } from '@electron-forge/async-ora';
 import chalk from 'chalk';
 import program from 'commander';
