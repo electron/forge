@@ -5,7 +5,6 @@ import path from 'path';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
-import { at } from 'lodash';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 
@@ -349,9 +348,9 @@ describe('WebpackConfigGenerator', () => {
                 js: 'preload.js',
                 config: {
                   name: 'preload',
-                  target: 'electron-preload', 
+                  target: 'electron-preload',
                   entry: 'preload',
-                }
+                },
               },
             },
           ],
@@ -368,7 +367,7 @@ describe('WebpackConfigGenerator', () => {
       // Our preload config plugins is an empty list while our renderer config plugins has a member
       expect(preloadWebpackConfig.name).to.equal('preload');
       expect(rendererWebpackConfig.name).to.equal('renderer');
-    })
+    });
   });
 
   describe('getRendererConfig', () => {
