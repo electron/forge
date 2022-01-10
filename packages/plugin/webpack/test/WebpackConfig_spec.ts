@@ -5,6 +5,7 @@ import path from 'path';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 import { WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
+import { at } from 'lodash';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 
@@ -332,6 +333,42 @@ describe('WebpackConfigGenerator', () => {
       );
       expect(webpackConfig.target).to.equal('electron-preload');
     });
+
+    it('allows you to specify a preload webpack config', async () => {
+      const config = {
+        renderer: {
+          config: {
+            name: 'renderer',
+            target: 'web',
+            entry: 'renderer',
+          },
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+                config: {
+                  name: 'preload',
+                  target: 'electron-preload', 
+                  entry: 'preload',
+                }
+              },
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const entryPoint = config.renderer.entryPoints[0];
+      const preloadWebpackConfig = await generator.getPreloadRendererConfig(
+        entryPoint,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        entryPoint.preload!
+      );
+      const rendererWebpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      // Our preload config plugins is an empty list while our renderer config plugins has a member
+      expect(preloadWebpackConfig.name).to.equal('preload');
+      expect(rendererWebpackConfig.name).to.equal('renderer');
+    })
   });
 
   describe('getRendererConfig', () => {
