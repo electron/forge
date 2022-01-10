@@ -1,3 +1,9 @@
+#### [6.0.0-beta.63](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.63) (2022-01-10)
+
+##### Bug Fixes
+
+- **cli:** re-add shebang to electron-forge binary (#2671) ([1ca418ec](https://github.com/electron-userland/electron-forge/commit/1ca418ec))
+
 #### [6.0.0-beta.62](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.62) (2022-01-09)
 
 ##### New Features
