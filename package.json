@@ -94,7 +94,7 @@
     "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.7",
-    "@babel/register": "^7.12.10",
+    "@babel/register": "^7.16.9",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
