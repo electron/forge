@@ -245,6 +245,32 @@ describe('WebpackConfigGenerator', () => {
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
     });
+
+    it('generates a config from a requirable file w/ sync function return', async () => {
+      const config = {
+        mainConfig: 'mainConfig.sync.js',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
+    });
+
+    it('generates a config from a requirable file w/ async function return', async () => {
+      const config = {
+        mainConfig: 'mainConfig.async.js',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
+    });
   });
 
   describe('getPreloadRendererConfig', () => {
