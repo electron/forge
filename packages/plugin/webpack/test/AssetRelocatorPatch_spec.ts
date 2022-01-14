@@ -130,7 +130,7 @@ describe('AssetRelocatorPatch', () => {
     const generator = new WebpackConfigGenerator(config, appPath, false, 3000);
 
     it('builds main', async () => {
-      await asyncWebpack(generator.getMainConfig());
+      await asyncWebpack(await generator.getMainConfig());
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: mainOut,
@@ -184,7 +184,7 @@ describe('AssetRelocatorPatch', () => {
     let generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
     it('builds main', async () => {
-      const mainConfig = generator.getMainConfig();
+      const mainConfig = await generator.getMainConfig();
       await asyncWebpack(mainConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({

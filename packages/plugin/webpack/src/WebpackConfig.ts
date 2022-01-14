@@ -32,10 +32,16 @@ export default class WebpackConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  resolveConfig(config: Configuration | string): Configuration {
+  async resolveConfig(config: Configuration | string): Promise<Configuration> {
     if (typeof config === 'string') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
-      return require(path.resolve(this.projectDir, config)) as Configuration;
+      const result = require(path.resolve(this.projectDir, config)) as Configuration;
+
+      if (typeof result === 'function') {
+        return await (result as () => Promise<Configuration>)();
+      }
+
+      return result as Configuration;
     }
 
     return config;
@@ -102,8 +108,8 @@ export default class WebpackConfigGenerator {
     return defines;
   }
 
-  getMainConfig(): Configuration {
-    const mainConfig = this.resolveConfig(this.pluginConfig.mainConfig);
+  async getMainConfig(): Promise<Configuration> {
+    const mainConfig = await this.resolveConfig(this.pluginConfig.mainConfig);
 
     if (!mainConfig.entry) {
       throw new Error('Required option "mainConfig.entry" has not been defined');
@@ -142,7 +148,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
-    const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
+    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge(
@@ -165,7 +171,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
-    const rendererConfig = this.resolveConfig(this.pluginConfig.renderer.config);
+    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
     const entry: webpack.Entry = {};
     for (const entryPoint of entryPoints) {
       const prefixedEntries = entryPoint.prefixedEntries || [];
