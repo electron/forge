@@ -35,10 +35,10 @@ export default class WebpackConfigGenerator {
   async resolveConfig(config: Configuration | string): Promise<Configuration> {
     if (typeof config === 'string') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
-      const result = require(path.resolve(this.projectDir, config)) as Configuration;
+      const result = require(path.resolve(this.projectDir, config));
 
       if (typeof result === 'function') {
-        return await (result as () => Promise<Configuration>)();
+        return (await result()) as Configuration;
       }
 
       return result as Configuration;

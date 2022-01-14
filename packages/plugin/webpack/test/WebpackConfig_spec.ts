@@ -154,13 +154,12 @@ describe('WebpackConfigGenerator', () => {
   });
 
   describe('getMainConfig', () => {
-    it('fails when there is no mainConfig.entry', async () => {
+    it('fails when there is no mainConfig.entry', () => {
       const config = {
         mainConfig: {},
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const result = await generator.getMainConfig();
-      expect(() => result).to.throw('Required option "mainConfig.entry" has not been defined');
+      expect(generator.getMainConfig()).to.eventually.throw('Required option "mainConfig.entry" has not been defined');
     });
 
     it('generates a development config', async () => {
