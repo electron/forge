@@ -62,7 +62,7 @@
     "fs-extra": "^10.0.0",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "nugget": "^2.0.1",
     "resolve-package": "^1.0.1",
     "semver": "^7.2.1",
