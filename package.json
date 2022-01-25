@@ -121,7 +121,7 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "babel-plugin-source-map-support": "^2.1.2",
-    "chai": "^4.3.3",
+    "chai": "^4.3.5",
     "chai-as-promised": "^7.0.0",
     "cross-env": "^7.0.2",
     "electron-installer-common": "^0.10.2",
