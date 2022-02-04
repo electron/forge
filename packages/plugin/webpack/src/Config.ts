@@ -45,6 +45,11 @@ export interface WebpackPreloadEntryPoint {
    * entry files into your application.
    */
   prefixedEntries?: string[];
+  /**
+   * The optional webpack config for your preload process, defaults to the
+   * renderer webpack config if blank
+   */
+  config?: WebpackConfiguration | string;
 }
 
 export interface WebpackPluginRendererConfig {

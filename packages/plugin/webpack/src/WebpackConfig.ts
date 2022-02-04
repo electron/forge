@@ -148,7 +148,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
-    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
+    const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge(
