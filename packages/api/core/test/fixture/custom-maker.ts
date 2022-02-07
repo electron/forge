@@ -10,11 +10,11 @@ export default class Maker extends MakerBase<Config> {
 
   defaultPlatforms = ['linux'] as ForgePlatform[];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return true;
   }
 
-  async make() {
+  async make(): Promise<string[]> {
     return Promise.resolve([this.config.artifactPath || 'default']);
   }
 }

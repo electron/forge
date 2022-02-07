@@ -9,7 +9,7 @@ import './util/terminate';
 import workingDir from './util/working-dir';
 
 // eslint-disable-next-line import/prefer-default-export
-export async function getMakeOptions() {
+export async function getMakeOptions(): Promise<MakeOptions> {
   let dir = process.cwd();
   program
     .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
@@ -19,7 +19,9 @@ export async function getMakeOptions() {
     .option('-p, --platform [platform]', 'Target build platform')
     .option('--targets [targets]', 'Override your make targets for this run')
     .allowUnknownOption(true)
-    .action((cwd) => { dir = workingDir(dir, cwd); })
+    .action((cwd) => {
+      dir = workingDir(dir, cwd);
+    })
     .parse(process.argv);
 
   const makeOpts: MakeOptions = {
@@ -34,8 +36,8 @@ export async function getMakeOptions() {
   return makeOpts;
 }
 
-// eslint-disable-next-line no-underscore-dangle
-if (process.mainModule === module || (global as any).__LINKED_FORGE__) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-underscore-dangle
+if (require.main === module || (global as any).__LINKED_FORGE__) {
   (async () => {
     const makeOpts = await getMakeOptions();
 

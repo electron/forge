@@ -17,16 +17,10 @@ describe('MakerApPX', () => {
       await fs.remove(tmpDir);
     });
 
-    let def: any = it;
-    if (process.platform !== 'win32') {
-      def = it.skip;
-    }
+    const def = process.platform === 'win32' ? it : it.skip;
 
     def('should create a .pfx file', async () => {
-      await fs.copy(
-        join(__dirname, '../../../api/core/test/fixture', 'bogus-private-key.pvk'),
-        join(tmpDir, 'dummy.pvk'),
-      );
+      await fs.copy(join(__dirname, '../../../api/core/test/fixture', 'bogus-private-key.pvk'), join(tmpDir, 'dummy.pvk'));
       const outputCertPath = await createDefaultCertificate('CN=Test', {
         certFilePath: tmpDir,
         certFileName: 'dummy',

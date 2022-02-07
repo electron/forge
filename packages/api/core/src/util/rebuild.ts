@@ -1,16 +1,15 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
 
-import rebuild from 'electron-rebuild';
-import { RebuildOptions } from 'electron-rebuild/lib/src/rebuild';
+import { rebuild, RebuildOptions } from 'electron-rebuild';
 
 export default async (
   buildPath: string,
   electronVersion: string,
   platform: ForgePlatform,
   arch: ForgeArch,
-  config: Partial<RebuildOptions> = {},
-) => {
+  config: Partial<RebuildOptions> = {}
+): Promise<void> => {
   await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
     const rebuilder = rebuild({
       ...config,
@@ -27,8 +26,14 @@ export default async (
       rebuildSpinner.text = `Preparing native dependencies: ${done} / ${found}`;
     };
 
-    lifecycle.on('module-found', () => { found += 1; redraw(); });
-    lifecycle.on('module-done', () => { done += 1; redraw(); });
+    lifecycle.on('module-found', () => {
+      found += 1;
+      redraw();
+    });
+    lifecycle.on('module-done', () => {
+      done += 1;
+      redraw();
+    });
 
     await rebuilder;
   });

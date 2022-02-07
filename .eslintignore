@@ -1,5 +1,8 @@
 dist
+docs/
 node_modules
 *.d.ts
+packages/*/*/doc
 packages/*/*/index.ts
+packages/**/bad.js
 tmpl

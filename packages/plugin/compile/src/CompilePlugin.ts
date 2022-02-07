@@ -1,3 +1,4 @@
+import { ForgeHookFn } from '@electron-forge/shared-types';
 import PluginBase, { StartOptions } from '@electron-forge/plugin-base';
 import * as path from 'path';
 
@@ -17,18 +18,18 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
     this.startLogic = this.startLogic.bind(this);
   }
 
-  init(dir: string) {
+  init(dir: string): void {
     this.dir = dir;
   }
 
-  getHook(hookName: string) {
+  getHook(hookName: string): ForgeHookFn | null {
     if (hookName === 'packageAfterCopy') {
       return createCompileHook(this.dir);
     }
     return null;
   }
 
-  async startLogic(_opts: StartOptions) {
+  async startLogic(_opts: StartOptions): Promise<string[]> {
     return [process.execPath, path.resolve(this.dir, 'node_modules/electron-prebuilt-compile/lib/cli')];
   }
 }

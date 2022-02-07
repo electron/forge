@@ -15,7 +15,9 @@ import workingDir from './util/working-dir';
     .option('-t, --template [name]', 'Name of the Forge template to use')
     .option('-c, --copy-ci-files', 'Whether to copy the templated CI files (defaults to false)', false)
     .option('-f, --force', 'Whether to overwrite an existing directory (defaults to false)', false)
-    .action((name) => { dir = workingDir(dir, name, false); })
+    .action((name) => {
+      dir = workingDir(dir, name, false);
+    })
     .parse(process.argv);
 
   const initOpts: InitOptions = {

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-s3",
-  "version": "6.0.0-beta.50",
+  "version": "6.0.0-beta.63",
   "description": "S3 publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,17 +8,20 @@
   "main": "dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
   "devDependencies": {
-    "chai": "4.2.0",
-    "mocha": "^7.1.0"
+    "chai": "^4.3.3",
+    "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.50",
-    "@electron-forge/publisher-base": "6.0.0-beta.50",
-    "@electron-forge/shared-types": "6.0.0-beta.50",
-    "aws-sdk": "^2.472.0",
-    "debug": "^4.1.0"
+    "@aws-sdk/abort-controller": "^3.29.0",
+    "@aws-sdk/client-s3": "^3.28.0",
+    "@aws-sdk/lib-storage": "^3.28.0",
+    "@aws-sdk/types": "^3.25.0",
+    "@electron-forge/async-ora": "6.0.0-beta.63",
+    "@electron-forge/publisher-base": "6.0.0-beta.63",
+    "@electron-forge/shared-types": "6.0.0-beta.63",
+    "debug": "^4.3.1"
   }
 }

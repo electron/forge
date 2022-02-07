@@ -13,10 +13,7 @@ import { MakerAppXConfig } from './Config';
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
 // be Wow64 redirected
-const windowsSdkPaths = [
-  'C:\\Program Files\\Windows Kits\\10\\bin\\x64',
-  'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64',
-];
+const windowsSdkPaths = ['C:\\Program Files\\Windows Kits\\10\\bin\\x64', 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64'];
 
 async function findSdkTool(exe: string) {
   let sdkTool: string | undefined;
@@ -40,11 +37,11 @@ async function findSdkTool(exe: string) {
       }
     }
   }
-  if (!sdkTool || !await fs.pathExists(sdkTool)) {
+  if (!sdkTool || !(await fs.pathExists(sdkTool))) {
     sdkTool = resolveCommand({ command: exe, options: { cwd: null } }, true);
   }
 
-  if (!sdkTool || !await fs.pathExists(sdkTool)) {
+  if (!sdkTool || !(await fs.pathExists(sdkTool))) {
     throw new Error(`Can't find ${exe} in PATH. You probably need to install the Windows SDK.`);
   }
 
@@ -58,9 +55,10 @@ export interface CreateDefaultCertOpts {
   install?: boolean;
 }
 
-export async function createDefaultCertificate(publisherName: string, {
-  certFilePath, certFileName, install, program,
-}: CreateDefaultCertOpts) {
+export async function createDefaultCertificate(
+  publisherName: string,
+  { certFilePath, certFileName, install, program }: CreateDefaultCertOpts
+): Promise<string> {
   const makeCertOptions = {
     publisherName,
     certFilePath: certFilePath || process.cwd(),
@@ -81,17 +79,11 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'win32';
   }
 
-  async make({
-    dir,
-    makeDir,
-    appName,
-    packageJSON,
-    targetArch,
-  }: MakerOptions) {
+  async make({ dir, makeDir, appName, packageJSON, targetArch }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `appx/${targetArch}`);
     await this.ensureDirectory(outPath);
 
@@ -111,16 +103,11 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     };
 
     if (!opts.publisher) {
-      throw new Error(
-        'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target',
-      );
+      throw new Error('Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target');
     }
 
     if (!opts.devCert) {
-      opts.devCert = await createDefaultCertificate(
-        opts.publisher,
-        { certFilePath: outPath, program: opts },
-      );
+      opts.devCert = await createDefaultCertificate(opts.publisher, { certFilePath: outPath, program: opts });
     }
 
     if (opts.packageVersion.includes('-')) {
@@ -128,9 +115,9 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
         opts.packageVersion = this.normalizeWindowsVersion(opts.packageVersion);
       } else {
         throw new Error(
-          "Windows Store version numbers don't support semver beta tags. To "
-          + 'automatically fix this, set makeVersionWinStoreCompatible to true or '
-          + 'explicitly set packageVersion to a version of the format X.Y.Z.A',
+          "Windows Store version numbers don't support semver beta tags. To " +
+            'automatically fix this, set makeVersionWinStoreCompatible to true or ' +
+            'explicitly set packageVersion to a version of the format X.Y.Z.A'
         );
       }
     }

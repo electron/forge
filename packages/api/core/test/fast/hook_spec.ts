@@ -7,9 +7,9 @@ import { runHook, runMutatingHook } from '../../src/util/hook';
 const fakeConfig = {
   pluginInterface: {
     triggerHook: async () => false,
-    triggerMutatingHook: async (_: any, item: any) => item,
+    triggerMutatingHook: async (_hookName: string, item: unknown) => item,
   },
-} as any as ForgeConfig;
+} as unknown as ForgeConfig;
 
 describe('hooks', () => {
   describe('runHook', () => {
@@ -18,7 +18,7 @@ describe('hooks', () => {
     });
 
     it('should not error when running a hook that is not a function', async () => {
-      await runHook({ hooks: { myHook: ('abc' as unknown) as ForgeHookFn }, ...fakeConfig }, 'abc');
+      await runHook({ hooks: { myHook: 'abc' as unknown as ForgeHookFn }, ...fakeConfig }, 'abc');
     });
 
     it('should run the hook if it is provided as a function', async () => {

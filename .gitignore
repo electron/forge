@@ -1,5 +1,6 @@
 .nyc_output
 .vscode
+*.lcov
 /coverage
 dist
 docs
@@ -24,3 +25,4 @@ packages/plugin/**/README.md
 packages/api/cli/README.md
 !packages/**/base/README.md
 !/README.md
+.webpack

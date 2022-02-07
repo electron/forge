@@ -1,4 +1,5 @@
 import debug from 'debug';
+import { ExitError } from '@malept/cross-spawn-promise';
 import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
 
 const d = debug('electron-forge:dependency-installer');
@@ -13,12 +14,7 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export default async (
-  dir: string,
-  deps: string[],
-  depType = DepType.PROD,
-  versionRestriction = DepVersionRestriction.RANGE,
-) => { // eslint-disable-line consistent-return
+export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
   d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
@@ -41,6 +37,10 @@ export default async (
       stdio: 'pipe',
     });
   } catch (err) {
-    throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
+    if (err instanceof ExitError) {
+      throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
+    } else {
+      throw err;
+    }
   }
 };

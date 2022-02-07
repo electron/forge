@@ -1,20 +1,33 @@
 /* eslint "no-underscore-dangle": "off" */
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { spy } from 'sinon';
 
 import { asyncOra as ora, OraImpl } from '../src/index';
 
+type MockOra = OraImpl & {
+  _text: string;
+  failed: boolean;
+  started: boolean;
+  succeeded: boolean;
+};
+
 describe('asyncOra', () => {
   let asyncOra: typeof ora;
-  let mockOra: (text: string) => OraImpl | undefined;
-  let currentOra: OraImpl | undefined;
+  let mockOra: (text: string) => MockOra | undefined;
+  let currentOra: MockOra | undefined;
 
   beforeEach(() => {
     currentOra = undefined;
     mockOra = (text) => {
       currentOra = {
+        _text: '',
         failed: false,
+        started: false,
+        succeeded: false,
+        warn() {
+          return currentOra;
+        },
         start() {
           this.started = true;
           return currentOra;
@@ -31,16 +44,18 @@ describe('asyncOra', () => {
           this.failed = true;
           return currentOra;
         },
-        get text() {
-          return (currentOra! as any)._text;
+        get text(): string {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          return currentOra!._text;
         },
         set text(newText) {
-          (currentOra! as any)._text = newText;
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          currentOra!._text = newText;
         },
-      } as any;
-      (currentOra as any).succeeded = false;
-      (currentOra as any).failed = false;
-      (currentOra as any)._text = text;
+      } as MockOra;
+      currentOra.succeeded = false;
+      currentOra.failed = false;
+      currentOra._text = text;
       return currentOra;
     };
     asyncOra = proxyquire.noCallThru().load('../src/ora-handler', {
@@ -49,23 +64,29 @@ describe('asyncOra', () => {
   });
 
   it('should create an ora with an initial value', () => {
-    asyncOra('say this first', async () => {});
+    asyncOra('say this first', async () => {
+      /* no-op async function */
+    });
     expect(currentOra).to.not.equal(undefined);
+    // Why: We checked for undefined in the line above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(currentOra!.text).to.equal('say this first');
   });
 
   it('should not create an ora when in non-interactive mode', () => {
     asyncOra.interactive = false;
-    asyncOra('say this again', async () => {});
+    asyncOra('say this again', async () => {
+      /* no-op async function */
+    });
     expect(currentOra).to.equal(undefined);
   });
 
   it('should call the provided async function', async () => {
-    const spy = sinon.spy();
+    const oraSpy = spy();
     await asyncOra('random text', async () => {
-      spy();
+      oraSpy();
     });
-    expect(spy.callCount).to.equal(1);
+    expect(oraSpy.callCount).to.equal(1);
   });
 
   it('should succeed the ora if the async fn passes', async () => {
@@ -73,43 +94,68 @@ describe('asyncOra', () => {
       // eslint-disable-next-line no-console, no-constant-condition
       if (2 + 2 === 5) console.error('Big brother is at it again');
     });
-    expect((currentOra as any).succeeded).to.equal(true);
-    expect((currentOra as any).failed).to.equal(false);
+    expect(currentOra).to.not.equal(undefined);
+    // Why: We checked for undefined in the line above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(currentOra!.succeeded).to.equal(true);
+    // Why: We checked for undefined in the line above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(currentOra!.failed).to.equal(false);
   });
 
   it('should fail the ora if the async fn throws', async () => {
-    await asyncOra('this is gonna end badly', async () => {
-      // eslint-disable-next-line no-throw-literal
-      throw { message: 'Not an error', stack: 'No Stack - Not an error' };
-    }, () => {});
-    expect((currentOra as any).succeeded).to.equal(false);
-    expect((currentOra as any).failed).to.equal(true);
+    await asyncOra(
+      'this is gonna end badly',
+      async () => {
+        // eslint-disable-next-line no-throw-literal
+        throw { message: 'Not an error', stack: 'No Stack - Not an error' };
+      },
+      () => {
+        /* no-op exit function */
+      }
+    );
+    expect(currentOra).to.not.equal(undefined);
+    // Why: We checked for undefined in the line above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(currentOra!.succeeded).to.equal(false);
+    // Why: We checked for undefined in the line above
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    expect(currentOra!.failed).to.equal(true);
   });
 
   it('should exit the process with status 1 if the async fn throws', async () => {
-    const processExitSpy = sinon.spy();
-    await asyncOra('this is dodge', async () => {
-      throw new Error('woops');
-    }, processExitSpy);
+    const processExitSpy = spy();
+    await asyncOra(
+      'this is dodge',
+      async () => {
+        throw new Error('woops');
+      },
+      processExitSpy
+    );
     expect(processExitSpy.callCount).to.equal(1);
     expect(processExitSpy.firstCall.args).to.deep.equal([1]);
   });
 
   it('should exit the process with status 1 if the async fn throws a number', async () => {
-    const processExitSpy = sinon.spy();
-    await asyncOra('this is dodge', async () => {
-      throw 42; // eslint-disable-line no-throw-literal
-    }, processExitSpy);
+    const processExitSpy = spy();
+    await asyncOra(
+      'this is dodge',
+      async () => {
+        throw 42; // eslint-disable-line no-throw-literal
+      },
+      processExitSpy
+    );
     expect(processExitSpy.callCount).to.equal(1);
     expect(processExitSpy.firstCall.args).to.deep.equal([1]);
   });
 
-  it('should just reject the promise in non-interactive mode if the fn throws', (done) => {
+  it('should just reject the promise in non-interactive mode if the fn throws', async () => {
     asyncOra.interactive = false;
-    asyncOra('doo-wop', async () => {
-      throw new Error('uh oh');
-    }).then(() => done(new Error('expected asyncOra to be rejected')))
-      .catch(() => done());
+    expect(
+      asyncOra('doo-wop', async () => {
+        throw new Error('uh oh');
+      })
+    ).to.eventually.be.rejectedWith('uh oh');
   });
 
   it('should provide a fully functioning mock ora in non-interactive mode', async () => {

@@ -1,9 +1,13 @@
 /* eslint "no-console": "off" */
-import 'colors';
+import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 
-export default (what: string) => ({
-  replaceWith: (replacement: string) => {
-    console.warn(logSymbols.warning, `WARNING: ${what} is deprecated, please use ${replacement} instead`.yellow);
+type Deprecation = {
+  replaceWith: (replacement: string) => void;
+};
+
+export default (what: string): Deprecation => ({
+  replaceWith: (replacement: string): void => {
+    console.warn(logSymbols.warning, chalk.yellow(`WARNING: ${what} is deprecated, please use ${replacement} instead`));
   },
 });

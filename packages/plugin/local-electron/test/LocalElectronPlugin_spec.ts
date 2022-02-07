@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -29,10 +30,10 @@ describe('LocalElectronPlugin', () => {
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
     });
 
-    it('should throw an error if platforms don\'t match', async () => {
+    it("should throw an error if platforms don't match", async () => {
       const p = new LocalElectronPlugin({ electronPath: 'test/bar', electronPlatform: 'wut' });
       await expect(p.startLogic()).to.eventually.be.rejectedWith(
-        `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`,
+        `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`
       );
     });
 
@@ -73,27 +74,30 @@ describe('LocalElectronPlugin', () => {
 
       it('should do nothing when disabled', async () => {
         p.config.enabled = false;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await fn(null, tmpDir, null, process.platform, process.arch);
+        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
 
         expect(await fs.pathExists(tmpDir)).to.equal(true);
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(true);
       });
 
-      it('should throw an error if the platform doesn\'t match', async () => {
+      it("should throw an error if the platform doesn't match", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await expect(fn(null, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
-          `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`,
+        await expect(fn({} as ForgeConfig, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
+          `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`
         );
       });
 
-      it('should throw an error if the arch doesn\'t match', async () => {
+      it("should throw an error if the arch doesn't match", async () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await expect(fn(null, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
-          `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`,
+        await expect(fn({} as ForgeConfig, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
+          `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`
         );
       });
 
@@ -101,9 +105,10 @@ describe('LocalElectronPlugin', () => {
         const electronDir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'electron-tmp-'));
         await fs.writeFile(path.resolve(electronDir, 'electron'), 'hi i am electron I swear');
         p.config.electronPath = electronDir;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHook('packageAfterExtract')!;
 
-        await fn(null, tmpDir, null, process.platform, process.arch);
+        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
 
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(false);
         expect(await fs.pathExists(path.resolve(tmpDir, 'electron'))).to.equal(true);

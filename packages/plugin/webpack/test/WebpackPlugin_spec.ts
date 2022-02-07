@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { ForgeConfig } from '@electron-forge/shared-types';
 import * as fs from 'fs-extra';
+import { IgnoreFunction } from 'electron-packager';
+import * as os from 'os';
 import * as path from 'path';
-import { tmpdir } from 'os';
 
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackPlugin from '../src/WebpackPlugin';
@@ -16,7 +17,7 @@ describe('WebpackPlugin', () => {
     },
   };
 
-  const webpackTestDir = path.resolve(tmpdir(), 'electron-forge-plugin-webpack-test');
+  const webpackTestDir = path.resolve(os.tmpdir(), 'electron-forge-plugin-webpack-test');
 
   describe('TCP port', () => {
     it('should fail for privileged ports', () => {
@@ -41,19 +42,31 @@ describe('WebpackPlugin', () => {
     });
 
     it('should remove config.forge from package.json', async () => {
-      const packageJSON = { config: { forge: 'config.js' } };
+      const packageJSON = { main: './.webpack/main', config: { forge: 'config.js' } };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { name: 'test' };
+      const packageJSON = { main: '.webpack/main' };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy(null, packagedPath);
+      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect((await fs.readJson(packagedPackageJSONPath))).to.not.have.property('config');
+      expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
+    });
+
+    it('should fail if there is no main key in package.json', async () => {
+      const packageJSON = {};
+      await fs.writeJson(packageJSONPath, packageJSON);
+      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+    });
+
+    it('should fail if main in package.json does not end with .webpack/main', async () => {
+      const packageJSON = { main: 'src/main.js' };
+      await fs.writeJson(packageJSONPath, packageJSON);
+      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
     });
 
     after(async () => {
@@ -87,7 +100,7 @@ describe('WebpackPlugin', () => {
 
       it('ignores everything but files in .webpack', async () => {
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore('')).to.equal(false);
         expect(ignore('/abc')).to.equal(true);
@@ -100,11 +113,55 @@ describe('WebpackPlugin', () => {
         webpackConfig.renderer.jsonStats = true;
         plugin = new WebpackPlugin(webpackConfig);
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
-        const ignore = config.packagerConfig.ignore as Function;
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
         expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);
       });
+    });
+  });
+
+  describe('devServerOptions', () => {
+    it('can override defaults', () => {
+      const defaultPlugin = new WebpackPlugin(baseConfig);
+      defaultPlugin.setDirectories(webpackTestDir);
+      expect(defaultPlugin.devServerOptions().hot).to.equal(true);
+
+      const webpackConfig = {
+        ...baseConfig,
+        devServer: {
+          hot: false,
+        },
+      };
+
+      const plugin = new WebpackPlugin(webpackConfig);
+      plugin.setDirectories(webpackTestDir);
+      const devServerConfig = plugin.devServerOptions();
+
+      expect(devServerConfig.hot).to.equal(false);
+    });
+
+    it('cannot override certain configuration', () => {
+      const webpackConfig = {
+        ...baseConfig,
+        port: 9999,
+        devServer: {
+          port: 8888,
+          headers: {
+            'Content-Security-Policy': 'invalid',
+            'X-Test-Header': 'test',
+          },
+        },
+      };
+
+      const plugin = new WebpackPlugin(webpackConfig);
+      plugin.setDirectories(webpackTestDir);
+      const devServerConfig = plugin.devServerOptions();
+
+      expect(devServerConfig.port).to.equal(9999);
+      const headers = devServerConfig.headers as Record<string, string>;
+      expect(headers['Content-Security-Policy']).to.not.equal('invalid');
+      expect(headers['X-Test-Header']).to.equal('test');
     });
   });
 });

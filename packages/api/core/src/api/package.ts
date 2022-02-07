@@ -1,11 +1,11 @@
-import 'colors';
 import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { getHostArch } from '@electron/get';
-import glob from 'glob';
-import packager from 'electron-packager';
+import glob from 'fast-glob';
+import packager, { HookFunction } from 'electron-packager';
 import path from 'path';
 import { promisify } from 'util';
 
@@ -21,42 +21,33 @@ import { getElectronVersion } from '../util/electron-version';
 
 const d = debug('electron-forge:packager');
 
-type ElectronPackagerAfterCopyHook = (
-  buildPath: string,
-  electronVersion: string,
-  pPlatform: ForgePlatform,
-  pArch: ForgeArch,
-  done: (err?: Error) => void
-) => void;
-
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
-function resolveHooks(hooks: (string | ElectronPackagerAfterCopyHook)[] | undefined, dir: string) {
+function resolveHooks(hooks: (string | HookFunction)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map((hook) => (
-      typeof hook === 'string'
-        ? requireSearch<ElectronPackagerAfterCopyHook>(dir, [hook]) as ElectronPackagerAfterCopyHook
-        : hook
-    ));
+    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<HookFunction>(dir, [hook]) as HookFunction) : hook));
   }
 
   return [];
 }
 
+type DoneFunction = () => void;
+type PromisifiedHookFunction = (buildPath: string, electronVersion: string, platform: string, arch: string) => Promise<void>;
+
 /**
  * Runs given hooks sequentially by mapping them to promises and iterating
  * through while awaiting
  */
-function sequentialHooks(hooks: Function[]) {
-  return [async (...args: any[]) => {
-    const done = args[args.length - 1];
-    const passedArgs = args.splice(0, args.length - 1);
-    for (const hook of hooks) {
-      await promisify(hook)(...passedArgs);
-    }
-    done();
-  }] as [(...args: any[]) => Promise<void>];
+function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
+  return [
+    async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
+      for (const hook of hooks) {
+        await promisify(hook)(buildPath, electronVersion, platform, arch);
+      }
+      done();
+    },
+  ] as PromisifiedHookFunction[];
 }
 
 export interface PackageOptions {
@@ -88,10 +79,10 @@ export default async ({
   arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   outDir,
-}: PackageOptions) => {
+}: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
-  let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
+  let prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch === 'all' ? 'ia32' : arch)}`).start();
   let prepareCounter = 0;
 
   const resolvedDir = await resolveDir(dir);
@@ -108,35 +99,30 @@ export default async ({
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-  let packagerSpinner: OraImpl | null = null;
+  let packagerSpinner: OraImpl | undefined;
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
-  const afterCopyHooks: ElectronPackagerAfterCopyHook[] = [
+  const afterCopyHooks: HookFunction[] = [
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
       if (packagerSpinner) {
         packagerSpinner.succeed();
         prepareCounter += 1;
-        prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
+        prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(prepareCounter === 2 ? 'armv7l' : 'x64')}`).start();
       }
-      const bins = await promisify(glob)(path.join(buildPath, '**/.bin/**/*'));
+      const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
       }
       done();
-    }, async (buildPath, electronVersion, pPlatform, pArch, done) => {
+    },
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
       prepareSpinner.succeed();
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(
-        buildPath,
-        electronVersion,
-        pPlatform,
-        pArch,
-        forgeConfig.electronRebuildConfig,
-      );
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
       packagerSpinner = ora('Packaging Application').start();
       done();
     },
@@ -162,12 +148,14 @@ export default async ({
   afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
     await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
     done();
-  }) as ElectronPackagerAfterCopyHook);
+  }) as HookFunction);
 
-  const afterExtractHooks = [(async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
-    done();
-  }) as ElectronPackagerAfterCopyHook];
+  const afterExtractHooks = [
+    (async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
+      done();
+    }) as HookFunction,
+  ];
   afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
 
   type PackagerArch = Exclude<ForgeArch, 'arm'>;
@@ -193,21 +181,30 @@ export default async ({
 
   if (!packageJSON.version && !packageOpts.appVersion) {
     // eslint-disable-next-line max-len
-    warn(interactive, 'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow);
+    warn(
+      interactive,
+      chalk.yellow('Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly')
+    );
   }
 
   if (packageOpts.prebuiltAsar) {
     throw new Error('config.forge.packagerConfig.prebuiltAsar is not supported by Electron Forge');
   }
 
-  await runHook(forgeConfig, 'generateAssets');
-  await runHook(forgeConfig, 'prePackage');
+  await runHook(forgeConfig, 'generateAssets', platform, arch);
+  await runHook(forgeConfig, 'prePackage', platform, arch);
 
   d('packaging with options', packageOpts);
 
-  await packager(packageOpts);
+  const outputPaths = await packager(packageOpts);
 
-  await runHook(forgeConfig, 'postPackage');
+  await runHook(forgeConfig, 'postPackage', {
+    arch,
+    outputPaths,
+    platform,
+    spinner: packagerSpinner,
+  });
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (packagerSpinner) packagerSpinner!.succeed();
 };

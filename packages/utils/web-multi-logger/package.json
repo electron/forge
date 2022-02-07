@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/web-multi-logger",
-  "version": "6.0.0-beta.50",
+  "version": "6.0.0-beta.63",
   "description": "Display multiple streams of logs in one window",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -10,12 +10,12 @@
   "devDependencies": {},
   "dependencies": {
     "express": "^4.17.1",
-    "express-ws": "^4.0.0",
-    "xterm": "^4.4.0",
-    "xterm-addon-fit": "^0.3.0",
-    "xterm-addon-search": "^0.5.0"
+    "express-ws": "^5.0.2",
+    "xterm": "^4.9.0",
+    "xterm-addon-fit": "^0.5.0",
+    "xterm-addon-search": "^0.8.0"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   }
 }

@@ -1,5 +1,6 @@
 import { api, InstallAsset } from '@electron-forge/core';
 
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import program from 'commander';
@@ -14,11 +15,13 @@ import './util/terminate';
     .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
     .arguments('[repository]')
     .option('--prerelease', 'Fetch prerelease versions')
-    .action((repository) => { repo = repository; })
+    .action((repository) => {
+      repo = repository;
+    })
     .parse(process.argv);
 
   const chooseAsset = async (assets: InstallAsset[]) => {
-    const choices: { name: string, value: string }[] = [];
+    const choices: { name: string; value: string }[] = [];
     assets.forEach((asset) => {
       choices.push({ name: asset.name, value: asset.id });
     });
@@ -26,9 +29,10 @@ import './util/terminate';
       choices,
       type: 'list',
       name: 'assetID',
-      message: 'Multiple potential assets found, please choose one from the list below:'.cyan,
+      message: chalk.cyan('Multiple potential assets found, please choose one from the list below:'),
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return assets.find((asset) => asset.id === assetID)!;
   };
 

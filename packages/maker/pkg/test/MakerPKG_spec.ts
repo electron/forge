@@ -1,4 +1,5 @@
-import MakerBase from '@electron-forge/maker-base';
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 
 import { expect } from 'chai';
 import path from 'path';
@@ -7,10 +8,12 @@ import { stub, SinonStub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerPKGConfig> {
- name = 'test';
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
- defaultPlatforms = [];
+class MakerImpl extends MakerBase<MakerPKGConfig> {
+  name = 'test';
+
+  defaultPlatforms = [];
 }
 
 describe('MakerPKG', () => {
@@ -34,26 +37,34 @@ describe('MakerPKG', () => {
     renameStub = stub().returns(Promise.resolve());
     config = {};
 
-    MakerDMG = proxyquire.noPreserveCache().noCallThru().load('../src/MakerPKG', {
-      '../../util/ensure-output': { ensureFile: ensureFileStub },
-      'electron-osx-sign': {
-        flatAsync: eosStub,
-      },
-      'fs-extra': {
-        rename: renameStub,
-      },
-    }).default;
+    MakerDMG = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerPKG', {
+        '../../util/ensure-output': { ensureFile: ensureFileStub },
+        'electron-osx-sign': {
+          flatAsync: eosStub,
+        },
+        'fs-extra': {
+          rename: renameStub,
+        },
+      }).default;
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
-      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'mas',
+    await (maker.make as MakeFunction)({
+      packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      targetPlatform: 'mas',
     });
     const opts = eosStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -64,9 +75,15 @@ describe('MakerPKG', () => {
   });
 
   it('should throw an error on invalid platform', async () => {
-    await expect((maker.make as any)({
-      packageJSON, dir, makeDir, appName, targetArch, targetPlatform: 'win32',
-    }))
-      .to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
+    await expect(
+      (maker.make as MakeFunction)({
+        packageJSON,
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform: 'win32',
+      })
+    ).to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
   });
 });

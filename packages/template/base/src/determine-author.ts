@@ -1,21 +1,19 @@
-import childProcess from 'child_process';
 import debug from 'debug';
 import { PackagePerson } from '@electron-forge/shared-types';
-import { promisify } from 'util';
+import { spawn } from '@malept/cross-spawn-promise';
 import username from 'username';
 
 const d = debug('electron-forge:determine-author');
-const exec = promisify(childProcess.exec);
 
-const execAndTrimResult = async (command: string, dir: string) => {
-  const { stdout } = await exec(command, { cwd: dir });
-  return stdout.trim();
-};
+async function getGitConfig(name: string, cwd: string): Promise<string> {
+  const value = await spawn('git', ['config', '--get', name], { cwd });
+  return value.trim();
+}
 
 const getAuthorFromGitConfig = async (dir: string): Promise<PackagePerson> => {
   try {
-    const name = await execAndTrimResult('git config --get user.name', dir);
-    const email = await execAndTrimResult('git config --get user.email', dir);
+    const name = await getGitConfig('user.name', dir);
+    const email = await getGitConfig('user.email', dir);
     return { name, email };
   } catch (err) {
     d('Error when getting git config:', err);
@@ -23,4 +21,4 @@ const getAuthorFromGitConfig = async (dir: string): Promise<PackagePerson> => {
   }
 };
 
-export default async (dir: string) => (await getAuthorFromGitConfig(dir)) || username();
+export default async (dir: string): Promise<PackagePerson> => (await getAuthorFromGitConfig(dir)) || username();

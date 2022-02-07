@@ -23,13 +23,14 @@ export default async (dir: string, template: string): Promise<ForgeTemplate> => 
         d(`Trying ${templateType} template: ${moduleName}`);
         if (templateType === 'global') {
           templateModulePath = await resolvePackage(moduleName);
-        } else { // local
+        } else {
+          // local
           templateModulePath = require.resolve(moduleName);
         }
         foundTemplate = true;
         break;
       } catch (err) {
-        d(`Error: ${err.message || err}`);
+        d(`Error: ${err instanceof Error ? err.message : err}`);
       }
     }
     if (!foundTemplate) {
@@ -37,7 +38,7 @@ export default async (dir: string, template: string): Promise<ForgeTemplate> => 
     }
   });
 
-  // eslint-disable-next-line import/no-dynamic-require, global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
   const templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
   return templateModule.default || templateModule;

@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
+    "@vercel/webpack-asset-relocator-loader": "1.7.0",
+    "css-loader": "^6.0.0",
+    "node-loader": "^2.0.0",
+    "ts-loader": "^9.2.2",
+    "style-loader": "^3.0.0",
+    "typescript": "~4.5.4",
+    "fork-ts-checker-webpack-plugin": "^6.0.1",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0"
+  }
+}

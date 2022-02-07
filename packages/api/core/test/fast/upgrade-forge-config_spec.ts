@@ -1,4 +1,4 @@
-import { IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { merge } from 'lodash';
 
@@ -28,7 +28,7 @@ describe('upgradeForgeConfig', () => {
 
   it('converts maker config', () => {
     const oldConfig = {
-      makeTargets: {
+      make_targets: {
         linux: ['deb'],
       },
       electronInstallerDebian: {
@@ -49,9 +49,9 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.makers).to.deep.equal(expected);
   });
 
-  it('adds the zip maker when specified in makeTargets', () => {
+  it('adds the zip maker when specified in make_targets', () => {
     const oldConfig = {
-      makeTargets: {
+      make_targets: {
         darwin: ['zip'],
         linux: ['zip'],
       },
@@ -115,9 +115,17 @@ describe('updateUpgradedForgeDevDeps', () => {
   const skeletonPackageJSON = {
     config: {
       forge: {
-        makers: [] as IForgeResolvableMaker[],
-        publishers: [] as IForgeResolvablePublisher[],
-      },
+        packagerConfig: {},
+        electronRebuildConfig: {},
+        makers: [],
+        publishers: [],
+        plugins: [],
+        pluginInterface: {
+          overrideStartLogic: () => Promise.resolve(false),
+          triggerHook: () => Promise.resolve(),
+          triggerMutatingHook: () => Promise.resolve(),
+        },
+      } as ForgeConfig,
     },
     devDependencies: {},
   };
@@ -150,10 +158,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('adds publishers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
-    packageJSON.config.forge.publishers = [
-      { name: '@electron-forge/publisher-github' },
-      { name: '@electron-forge/publisher-snapcraft' },
-    ];
+    packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);

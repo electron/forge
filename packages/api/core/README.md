@@ -6,7 +6,7 @@ API as a number of simple JS functions.
 ## Basic Usage
 
 ```js
-import { api } from '@electron-forge/core'
+import { api } from '@electron-forge/core';
 
 // Package the current directory as an Electron app
 api.package(__dirname);
@@ -15,7 +15,7 @@ api.package(__dirname);
 The named export `api` has it's methods documented over at [ForgeAPI](https://js.electronforge.io/api/core/classes/forgeapi).
 All the methods are async and expose the core forge methods, please note that all
 user-side configuration is still done through your forge config file or the "config.forge"
-section of your package.json.  This API simply let's you call the methods in
+section of your package.json. This API simply let's you call the methods in
 node land without using the CLI.
 
 ## Error Handling

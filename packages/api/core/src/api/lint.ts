@@ -1,4 +1,3 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import { yarnOrNpmSpawn } from '../util/yarn-or-npm';
@@ -12,10 +11,7 @@ export interface LintOptions {
   interactive?: boolean;
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-}: LintOptions) => {
+export default async ({ dir = process.cwd(), interactive = false }: LintOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   let success = true;

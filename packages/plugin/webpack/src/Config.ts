@@ -45,6 +45,11 @@ export interface WebpackPreloadEntryPoint {
    * entry files into your application.
    */
   prefixedEntries?: string[];
+  /**
+   * The optional webpack config for your preload process, defaults to the
+   * renderer webpack config if blank
+   */
+  config?: WebpackConfiguration | string;
 }
 
 export interface WebpackPluginRendererConfig {
@@ -59,6 +64,19 @@ export interface WebpackPluginRendererConfig {
    * actually packaged with your app.
    */
   jsonStats?: boolean;
+  /**
+   * Adjusts the Webpack config for the renderer based on whether `nodeIntegration` for the
+   * `BrowserWindow` is enabled. Namely, for Webpack's `target` option:
+   *
+   * * When `nodeIntegration` is true, the `target` is `electron-renderer`.
+   * * When `nodeIntegration` is false, the `target` is `web`.
+   *
+   * Unfortunately, we cannot derive the value from the main process code as it can be a
+   * dynamically generated value at runtime, and Webpack processes at build-time.
+   *
+   * Defaults to `false` (as it is disabled by default in Electron \>= 5).
+   */
+  nodeIntegration?: boolean;
   /**
    * Array of entry points, these should map to the windows your app needs to
    * open.  Each window requires it's own entry point
@@ -89,4 +107,29 @@ export interface WebpackPluginConfig {
    * The TCP port for web-multi-logger. Defaults to 9000.
    */
   loggerPort?: number;
+  /**
+   * Sets the [`Content-Security-Policy` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
+   * for the Webpack development server.
+   *
+   * Normally you would want to only specify this as a `<meta>` tag. However, in development mode,
+   * the Webpack plugin uses the `devtool: eval-source-map` source map setting for efficiency
+   * purposes. This requires the `'unsafe-eval'` source for the `script-src` directive that wouldn't
+   * normally be recommended to use. If this value is set, make sure that you keep this
+   * directive-source pair intact if you want to use source maps.
+   *
+   * Default: `default-src 'self' 'unsafe-inline' data:;`
+   * `script-src 'self' 'unsafe-eval' 'unsafe-inline' data:`
+   */
+  devContentSecurityPolicy?: string;
+  /**
+   * Overrides for [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) options.
+   *
+   * The following options cannot be overridden here:
+   * * `port` (use the `port` config option)
+   * * `static`
+   * * `setupExitSignals`
+   * * `headers.Content-Security-Policy` (use the `devContentSecurityPolicy` config option)
+   */
+  devServer?: Record<string, unknown>;
+  // TODO: use webpack-dev-server.Configuration when @types/webpack-dev-server upgrades to v4
 }

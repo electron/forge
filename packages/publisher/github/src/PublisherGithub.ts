@@ -1,13 +1,13 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import { asyncOra } from '@electron-forge/async-ora';
-
+import { ForgeMakeResult } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 
-import { ForgeMakeResult } from '@electron-forge/shared-types';
-import { Octokit } from '@octokit/rest';
 import GitHub from './util/github';
+import NoReleaseError from './util/no-release-error';
 import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
@@ -23,7 +23,7 @@ interface GitHubRelease {
 export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     const perReleaseArtifacts: {
@@ -38,39 +38,47 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
       perReleaseArtifacts[release].push(makeResult);
     }
 
-    if (!(config.repository && typeof config.repository === 'object'
-      && config.repository.owner && config.repository.name)) {
-      throw new Error('In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your Forge config. See the docs for more info');
+    if (!(config.repository && typeof config.repository === 'object' && config.repository.owner && config.repository.name)) {
+      throw new Error(
+        'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your Forge config. See the docs for more info'
+      );
     }
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);
 
+    const octokit = github.getGitHub();
+    type OctokitRelease = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.getRelease>;
+    type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.updateReleaseAsset>;
+
     for (const releaseName of Object.keys(perReleaseArtifacts)) {
-      let release: Octokit.ReposListReleasesResponseItem | undefined;
+      let release: OctokitRelease | undefined;
       const artifacts = perReleaseArtifacts[releaseName];
 
       await asyncOra(`Searching for target release: ${releaseName}`, async () => {
         try {
-          release = (await github.getGitHub().repos.listReleases({
-            owner: config.repository.owner,
-            repo: config.repository.name,
-            per_page: 100,
-          })).data.find((testRelease: GitHubRelease) => testRelease.tag_name === `v${releaseName}`);
-          if (!release) {
-            // eslint-disable-next-line no-throw-literal
-            throw { code: 404 };
-          }
-        } catch (err) {
-          if (err.code === 404) {
-            // Release does not exist, let's make it
-            release = (await github.getGitHub().repos.createRelease({
+          release = (
+            await github.getGitHub().repos.listReleases({
               owner: config.repository.owner,
               repo: config.repository.name,
-              tag_name: `v${releaseName}`,
-              name: `v${releaseName}`,
-              draft: config.draft !== false,
-              prerelease: config.prerelease === true,
-            })).data;
+              per_page: 100,
+            })
+          ).data.find((testRelease: GitHubRelease) => testRelease.tag_name === `v${releaseName}`);
+          if (!release) {
+            throw new NoReleaseError(404);
+          }
+        } catch (err) {
+          if (err instanceof NoReleaseError && err.code === 404) {
+            // Release does not exist, let's make it
+            release = (
+              await github.getGitHub().repos.createRelease({
+                owner: config.repository.owner,
+                repo: config.repository.name,
+                tag_name: `v${releaseName}`,
+                name: `v${releaseName}`,
+                draft: config.draft !== false,
+                prerelease: config.prerelease === true,
+              })
+            ).data;
           } else {
             // Unknown error
             throw err;
@@ -89,25 +97,35 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           flatArtifacts.push(...artifact.artifacts);
         }
 
-        await Promise.all(flatArtifacts.map(async (artifactPath) => {
-          const done = () => {
-            uploaded += 1;
-            updateSpinner();
-          };
-          if (release!.assets.find((asset) => asset.name === path.basename(artifactPath))) {
+        await Promise.all(
+          flatArtifacts.map(async (artifactPath) => {
+            const done = () => {
+              uploaded += 1;
+              updateSpinner();
+            };
+            const artifactName = path.basename(artifactPath);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
+              return done();
+            }
+            await github.getGitHub().repos.uploadReleaseAsset({
+              owner: config.repository.owner,
+              repo: config.repository.name,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              release_id: release!.id,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              url: release!.upload_url,
+              // https://github.com/octokit/rest.js/issues/1645
+              data: (await fs.readFile(artifactPath)) as unknown as string,
+              headers: {
+                'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
+                'content-length': (await fs.stat(artifactPath)).size,
+              },
+              name: path.basename(artifactPath),
+            });
             return done();
-          }
-          await github.getGitHub().repos.uploadReleaseAsset({
-            url: release!.upload_url,
-            file: fs.createReadStream(artifactPath),
-            headers: {
-              'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
-              'content-length': (await fs.stat(artifactPath)).size,
-            },
-            name: path.basename(artifactPath),
-          });
-          return done();
-        }));
+          })
+        );
       });
     }
   }

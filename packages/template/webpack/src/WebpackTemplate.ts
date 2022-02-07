@@ -4,19 +4,8 @@ import fs from 'fs-extra';
 import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
-const currentVersion = require('../package').version;
-
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
-
-  public devDependencies = [
-    `@electron-forge/plugin-webpack@${currentVersion}`,
-    // TODO: Use the @zeit publish once https://github.com/zeit/webpack-asset-relocator-loader/pull/41 has been merged
-    '@marshallofsound/webpack-asset-relocator-loader@^0.5.0',
-    'css-loader@^3.0.0',
-    'node-loader@^0.6.0',
-    'style-loader@^0.23.1',
-  ];
 
   public async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);
@@ -31,11 +20,13 @@ class WebpackTemplate extends BaseTemplate {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
-            entryPoints: [{
-              html: './src/index.html',
-              js: './src/renderer.js',
-              name: 'main_window',
-            }],
+            entryPoints: [
+              {
+                html: './src/index.html',
+                js: './src/renderer.js',
+                name: 'main_window',
+              },
+            ],
           },
         },
       ]);
@@ -49,10 +40,14 @@ class WebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(directory, 'webpack.rules.js');
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
 
-      await this.updateFileByLine(path.resolve(directory, 'src', 'index.js'), (line) => {
-        if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
-        return line;
-      }, path.resolve(directory, 'src', 'main.js'));
+      await this.updateFileByLine(
+        path.resolve(directory, 'src', 'index.js'),
+        (line) => {
+          if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+          return line;
+        },
+        path.resolve(directory, 'src', 'main.js')
+      );
 
       await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';

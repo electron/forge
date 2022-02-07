@@ -16,12 +16,7 @@ describe('WebpackTemplate', () => {
   });
 
   it('should copy the appropriate template files', async () => {
-    const expectedFiles = [
-      'webpack.main.config.js',
-      'webpack.renderer.config.js',
-      'webpack.rules.js',
-      path.join('src', 'renderer.js'),
-    ];
+    const expectedFiles = ['webpack.main.config.js', 'webpack.renderer.config.js', 'webpack.rules.js', path.join('src', 'renderer.js')];
     for (const filename of expectedFiles) {
       await testUtils.expectProjectPathExists(dir, filename, 'file');
     }

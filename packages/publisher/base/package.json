@@ -1,18 +1,24 @@
 {
   "name": "@electron-forge/publisher-base",
-  "version": "6.0.0-beta.50",
+  "version": "6.0.0-beta.63",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/Publisher.js",
   "typings": "dist/Publisher.d.ts",
+  "scripts": {
+    "test": "yarn test:base test/**/*_spec.ts",
+    "test:base": "cross-env TS_NODE_FILES=1 mocha --config ../../../.mocharc.js"
+  },
+  "dependencies": {
+    "@electron-forge/shared-types": "6.0.0-beta.63"
+  },
   "devDependencies": {
-    "@electron-forge/shared-types": "6.0.0-beta.50",
-    "chai": "4.2.0",
-    "mocha": "^7.1.0"
+    "chai": "^4.3.3",
+    "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   }
 }

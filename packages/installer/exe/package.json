@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-exe",
-  "version": "6.0.0-beta.50",
+  "version": "6.0.0-beta.63",
   "description": "EXE file installer for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -8,13 +8,13 @@
   "main": "dist/InstallerExe.js",
   "typings": "dist/InstallerExe.d.ts",
   "devDependencies": {
-    "mocha": "^7.1.0"
+    "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/installer-base": "6.0.0-beta.50",
-    "open": "^7.0.1"
+    "@electron-forge/installer-base": "6.0.0-beta.63",
+    "open": "^8.1.0"
   }
 }

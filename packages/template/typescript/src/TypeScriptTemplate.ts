@@ -6,14 +6,6 @@ import path from 'path';
 class TypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-  public devDependencies = [
-    'typescript@^3.7.0',
-    'eslint@^6.8.0',
-    'eslint-plugin-import@^2.20.0',
-    '@typescript-eslint/eslint-plugin@^2.18.0',
-    '@typescript-eslint/parser@^2.18.0',
-  ];
-
   async initializeTemplate(directory: string) {
     await super.initializeTemplate(directory, {});
     await asyncOra('Setting up Forge configuration', async () => {

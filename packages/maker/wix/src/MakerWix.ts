@@ -1,13 +1,12 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import 'colors';
+import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 import path from 'path';
 
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 import getNameFromAuthor from './util/author-name';
-
 
 import { MakerWixConfig } from './Config';
 
@@ -16,28 +15,25 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'win32';
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-    packageJSON,
-    appName,
-  }: MakerOptions) {
+  async make({ dir, makeDir, targetArch, packageJSON, appName }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
     let { version } = packageJSON;
     if (version.includes('-')) {
       // eslint-disable-next-line no-console
-      console.warn(logSymbols.warning, 'WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI'.yellow);
+      console.warn(
+        logSymbols.warning,
+        chalk.yellow('WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI')
+      );
       version = this.normalizeWindowsVersion(version);
     }
 
-    const creator = new MSICreator(({
+    const creator = new MSICreator({
       description: packageJSON.description,
       name: appName,
       version,
@@ -46,7 +42,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,
-    }) as MSICreatorOptions);
+    } as MSICreatorOptions);
 
     if (this.config.beforeCreate) {
       await Promise.resolve(this.config.beforeCreate(creator));

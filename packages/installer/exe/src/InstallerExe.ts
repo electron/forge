@@ -5,9 +5,7 @@ import open from 'open';
 export default class InstallerExe extends InstallerBase {
   name = 'exe';
 
-  async install({
-    filePath,
-  }: InstallerOptions) {
+  async install({ filePath }: InstallerOptions): Promise<void> {
     await open(filePath, { wait: false });
   }
 }

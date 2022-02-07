@@ -14,21 +14,19 @@ const d = debug('electron-forge:publish:ers');
 
 interface ERSVersion {
   name: string;
-  assets: { name: string; }[];
+  assets: { name: string }[];
 }
 
-const fetchAndCheckStatus = async (
-  url: RequestInfo,
-  init?: RequestInit,
-): Promise<Response> => {
+const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
   const result = await fetch(url, init);
-  if (result.ok) { // res.status >= 200 && res.status < 300
+  if (result.ok) {
+    // res.status >= 200 && res.status < 300
     return result;
   }
   throw new Error(`ERS publish failed with status code: ${result.status} (${result.url})`);
 };
 
-export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch) => {
+export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch): string => {
   switch (platform) {
     case 'darwin':
       return 'osx_64';
@@ -44,35 +42,42 @@ export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch) => {
 export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
   name = 'electron-release-server';
 
-  async publish({ makeResults }: PublisherOptions) {
+  async publish({ makeResults }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     if (!(config.baseUrl && config.username && config.password)) {
-      throw new Error('In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info');
+      throw new Error(
+        'In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info'
+      );
     }
 
     d('attempting to authenticate to ERS');
 
     const api = (apiPath: string) => `${config.baseUrl}/${apiPath}`;
 
-    const { token } = await (await fetchAndCheckStatus(api('api/auth/login'), {
-      method: 'POST',
-      body: JSON.stringify({
-        username: config.username,
-        password: config.password,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })).json();
+    const { token } = await (
+      await fetchAndCheckStatus(api('api/auth/login'), {
+        method: 'POST',
+        body: JSON.stringify({
+          username: config.username,
+          password: config.password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    ).json();
 
     // eslint-disable-next-line max-len
-    const authFetch = (apiPath: string, options?: any) => fetchAndCheckStatus(api(apiPath), { ...options || {}, headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
+    const authFetch = (apiPath: string, options?: RequestInit) =>
+      fetchAndCheckStatus(api(apiPath), { ...(options || {}), headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
     const versions: ERSVersion[] = await (await authFetch('api/version')).json();
 
     for (const makeResult of makeResults) {
-      const { artifacts, packageJSON } = makeResult;
+      const { packageJSON } = makeResult;
+      const artifacts = makeResult.artifacts
+        .filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
       const existingVersion = versions.find((version) => version.name === packageJSON.version);
 
@@ -110,34 +115,34 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           uploadSpinner.text = getText();
         };
 
-        await Promise.all(artifacts.map(async (artifactPath) => {
-          if (existingVersion) {
-            const existingAsset = existingVersion.assets.find(
-              (asset) => asset.name === path.basename(artifactPath),
-            );
+        await Promise.all(
+          artifacts.map(async (artifactPath) => {
+            if (existingVersion) {
+              const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath));
 
-            if (existingAsset) {
-              d('asset at path:', artifactPath, 'already exists on server');
-              uploaded += 1;
-              updateSpinner();
-              return;
+              if (existingAsset) {
+                d('asset at path:', artifactPath, 'already exists on server');
+                uploaded += 1;
+                updateSpinner();
+                return;
+              }
             }
-          }
-          d('attempting to upload asset:', artifactPath);
-          const artifactForm = new FormData();
-          artifactForm.append('token', token);
-          artifactForm.append('version', packageJSON.version);
-          artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
-          artifactForm.append('file', fs.createReadStream(artifactPath));
-          await authFetch('api/asset', {
-            method: 'POST',
-            body: artifactForm,
-            headers: artifactForm.getHeaders(),
-          });
-          d('upload successful for asset:', artifactPath);
-          uploaded += 1;
-          updateSpinner();
-        }));
+            d('attempting to upload asset:', artifactPath);
+            const artifactForm = new FormData();
+            artifactForm.append('token', token);
+            artifactForm.append('version', packageJSON.version);
+            artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
+            artifactForm.append('file', fs.createReadStream(artifactPath));
+            await authFetch('api/asset', {
+              method: 'POST',
+              body: artifactForm,
+              headers: artifactForm.getHeaders(),
+            });
+            d('upload successful for asset:', artifactPath);
+            uploaded += 1;
+            updateSpinner();
+          })
+        );
       });
     }
   }

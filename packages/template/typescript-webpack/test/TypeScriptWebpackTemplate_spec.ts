@@ -36,7 +36,7 @@ describe('TypeScriptWebpackTemplate', () => {
       await testUtils.ensureModulesInstalled(
         dir,
         ['electron', 'electron-squirrel-startup'],
-        template.devDependencies.filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript')),
+        template.devDependencies.filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript'))
       );
     });
 

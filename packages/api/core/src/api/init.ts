@@ -1,7 +1,9 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
+import { ForgeTemplate } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
+import semver from 'semver';
 
 import findTemplate from './init-scripts/find-template';
 import initDirectory from './init-scripts/init-directory';
@@ -36,13 +38,20 @@ export interface InitOptions {
   template?: string;
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-  copyCIFiles = false,
-  force = false,
-  template = 'base',
-}: InitOptions) => {
+async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
+  if (!templateModule.requiredForgeVersion) {
+    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
+  }
+
+  const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
+  if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
+    throw new Error(
+      `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`
+    );
+  }
+}
+
+export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);
@@ -50,6 +59,8 @@ export default async ({
   await initDirectory(dir, force);
   await initGit(dir);
   const templateModule = await findTemplate(dir, template);
+
+  await validateTemplate(template, templateModule);
 
   if (typeof templateModule.initializeTemplate === 'function') {
     await templateModule.initializeTemplate(dir, { copyCIFiles });

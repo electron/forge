@@ -1,28 +1,21 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import MakerBase, { EmptyConfig, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
 import path from 'path';
 import { promisify } from 'util';
 
-export type MakerZIPConfig = {};
+export type MakerZIPConfig = EmptyConfig;
 
 export default class MakerZIP extends MakerBase<MakerZIPConfig> {
   name = 'zip';
 
   defaultPlatforms: ForgePlatform[] = ['darwin', 'mas', 'win32', 'linux'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return true;
   }
 
-  async make({
-    dir,
-    makeDir,
-    appName,
-    packageJSON,
-    targetArch,
-    targetPlatform,
-  }: MakerOptions) {
+  async make({ dir, makeDir, appName, packageJSON, targetArch, targetPlatform }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require
     const { zip } = require('cross-zip');
 

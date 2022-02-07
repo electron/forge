@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import Installer from '../src/Installer';
+import Installer, { InstallerOptions } from '../src/Installer';
 
 class InstallerImpl extends Installer {
   name = 'test';
@@ -13,8 +13,8 @@ describe('Installer', () => {
     expect(installer.name).to.equal('test');
   });
 
-  it('should throw an error when install is called', (done) => {
+  it('should throw an error when install is called', async () => {
     const installer = new InstallerImpl();
-    installer.install({} as any).catch(() => done());
+    await expect(installer.install({} as InstallerOptions)).to.eventually.be.rejected;
   });
 });

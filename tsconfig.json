@@ -1,23 +1,15 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es2018",
-		"outDir": "dist",
-		"lib": [
-			"dom",
-			"es2018"
-		],
-		"sourceMap": true,
-		"rootDir": ".",
-		"experimentalDecorators": true,
-		"strict": true,
-		"esModuleInterop": true,
-		"declaration": true
-	},
-	"exclude": [
-		"node_modules",
-		"dist",
-		"test",
-		"index.ts"
-	]
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2019",
+    "outDir": "dist",
+    "lib": ["dom", "es2019"],
+    "sourceMap": true,
+    "rootDir": ".",
+    "experimentalDecorators": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true
+  },
+  "exclude": ["node_modules", "dist", "test", "index.ts"]
 }

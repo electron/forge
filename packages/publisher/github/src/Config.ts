@@ -1,4 +1,4 @@
-import { Octokit } from '@octokit/rest';
+import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 
 export interface GitHubRepository {
   /**
@@ -26,11 +26,11 @@ export interface PublisherGitHubConfig {
    */
   authToken?: string;
   /**
-   * This options object is directly passed to @octokit/rest so you can
+   * This options object is directly passed to \@octokit/rest so you can
    * customize any of the options that module uses.  This is particularly
    * helpful for publishing to GitHub Enterprise servers.
    */
-  octokitOptions?: Octokit.Options;
+  octokitOptions?: OctokitOptions;
   /**
    * Whether or not this release should be tagged as a prerelease
    */

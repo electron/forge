@@ -16,10 +16,7 @@ describe('TypeScriptTemplate', () => {
   });
 
   it('should copy the appropriate template files', async () => {
-    const expectedFiles = [
-      '.eslintrc.json',
-      'tsconfig.json',
-    ];
+    const expectedFiles = ['.eslintrc.json', 'tsconfig.json'];
     for (const filename of expectedFiles) {
       await testUtils.expectProjectPathExists(dir, filename, 'file');
     }
@@ -33,11 +30,7 @@ describe('TypeScriptTemplate', () => {
 
   describe('lint', () => {
     before(async () => {
-      await testUtils.ensureModulesInstalled(
-        dir,
-        ['electron', 'electron-squirrel-startup'],
-        template.devDependencies,
-      );
+      await testUtils.ensureModulesInstalled(dir, ['electron', 'electron-squirrel-startup'], template.devDependencies);
     });
 
     it('should initially pass the linting process', async () => {

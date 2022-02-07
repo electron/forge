@@ -14,13 +14,14 @@ describe('PublisherERS', () => {
       'node-fetch': fetch,
     }).default;
 
-
     const publisher = new PublisherERS({
       baseUrl: 'http://example.com',
       username: 'test',
       password: 'test',
     });
-    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith('ERS publish failed with status code: 400 (http://example.com/api/auth/login)');
+    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+      'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
+    );
   });
 
   afterEach(() => {

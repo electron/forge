@@ -4,25 +4,8 @@ import fs from 'fs-extra';
 import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
-const currentVersion = require('../package').version;
-
 class TypeScriptWebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
-
-  public devDependencies = [
-    `@electron-forge/plugin-webpack@${currentVersion}`,
-    '@marshallofsound/webpack-asset-relocator-loader@^0.5.0',
-    'css-loader@^3.0.0',
-    'node-loader@^0.6.0',
-    'ts-loader@^6.2.1',
-    'style-loader@^0.23.1',
-    'typescript@^3.7.0',
-    'fork-ts-checker-webpack-plugin@^3.1.1',
-    'eslint@^6.8.0',
-    'eslint-plugin-import@^2.20.0',
-    '@typescript-eslint/eslint-plugin@^2.18.0',
-    '@typescript-eslint/parser@^2.18.0',
-  ];
 
   async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);
@@ -38,17 +21,19 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
-            entryPoints: [{
-              html: './src/index.html',
-              js: './src/renderer.ts',
-              name: 'main_window',
-            }],
+            entryPoints: [
+              {
+                html: './src/index.html',
+                js: './src/renderer.ts',
+                name: 'main_window',
+              },
+            ],
           },
         },
       ]);
 
       // Configure scripts for TS template
-      packageJSON.scripts.lint = 'eslint --ext .ts .';
+      packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
 
       await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });

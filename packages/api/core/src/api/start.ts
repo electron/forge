@@ -1,17 +1,18 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
-import {
-  ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
-} from '@electron-forge/shared-types';
+import chalk from 'chalk';
+import debug from 'debug';
+import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import { spawn, SpawnOptions } from 'child_process';
-import path from 'path';
 
+import { getElectronVersion } from '../util/electron-version';
+import getForgeConfig from '../util/forge-config';
+import locateElectronExecutable from '../util/electron-executable';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
-import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
-import { getElectronModulePath, getElectronVersion } from '../util/electron-version';
+
+const d = debug('electron-forge:start');
 
 export { StartOptions };
 
@@ -24,7 +25,7 @@ export default async ({
   runAsNode = false,
   inspect = false,
   inspectBrk = false,
-}: StartOptions) => {
+}: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
 
   await asyncOra('Locating Application', async () => {
@@ -42,15 +43,12 @@ export default async ({
     throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
   }
 
-  await rebuild(
-    dir,
-    await getElectronVersion(dir, packageJSON),
-    process.platform as ForgePlatform,
-    process.arch as ForgeArch,
-    forgeConfig.electronRebuildConfig,
-  );
+  const platform = process.env.npm_config_platform || process.platform;
+  const arch = process.env.npm_config_arch || process.arch;
 
-  await runHook(forgeConfig, 'generateAssets');
+  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.electronRebuildConfig);
+
+  await runHook(forgeConfig, 'generateAssets', platform, arch);
 
   let lastSpawned: ElectronProcess | null = null;
 
@@ -79,20 +77,23 @@ export default async ({
     }
 
     if (!electronExecPath) {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      electronExecPath = require((await getElectronModulePath(dir, packageJSON)) || path.resolve(dir, 'node_modules/electron'));
+      electronExecPath = await locateElectronExecutable(dir, packageJSON);
     }
+
+    d('Electron binary path:', electronExecPath);
 
     const spawnOpts = {
       cwd: dir,
       stdio: 'inherit',
-      env: ({
+      env: {
         ...process.env,
-        ...(enableLogging ? {
-          ELECTRON_ENABLE_LOGGING: 'true',
-          ELECTRON_ENABLE_STACK_DUMPING: 'true',
-        } : {}),
-      }) as NodeJS.ProcessEnv,
+        ...(enableLogging
+          ? {
+              ELECTRON_ENABLE_LOGGING: 'true',
+              ELECTRON_ENABLE_STACK_DUMPING: 'true',
+            }
+          : {}),
+      } as NodeJS.ProcessEnv,
     };
 
     if (runAsNode) {
@@ -102,7 +103,7 @@ export default async ({
     }
 
     if (inspect) {
-      args = ['--inspect' as (string|number)].concat(args);
+      args = ['--inspect' as string | number].concat(args);
     }
     if (inspectBrk) {
       args = ['--inspect-brk' as (string|number)].concat(args);
@@ -112,9 +113,9 @@ export default async ({
 
     await asyncOra('Launching Application', async () => {
       spawned = spawn(
-        electronExecPath!,
+        electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
         prefixArgs.concat([appPath]).concat(args as string[]),
-        spawnOpts as SpawnOptions,
+        spawnOpts as SpawnOptions
       ) as ElectronProcess;
     });
 
@@ -146,7 +147,7 @@ export default async ({
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
         // eslint-disable-next-line no-console
-        console.info('\nRestarting App\n'.cyan);
+        console.info(chalk.cyan('\nRestarting App\n'));
         lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');
         lastSpawned.emit('restarted', await forgeSpawnWrapper());
