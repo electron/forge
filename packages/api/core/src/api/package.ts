@@ -98,7 +98,7 @@ export default async ({
     throw new Error('packageJSON.main must be set to a valid entry point for your Electron app');
   }
 
-  const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
+  const calculatedOutDir = outDir || forgeConfig.outDir || getCurrentOutDir(dir, forgeConfig);
   let packagerSpinner: OraImpl | undefined;
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;

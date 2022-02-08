@@ -94,7 +94,7 @@ export default async ({
     forgeConfig = await getForgeConfig(dir);
   });
 
-  const actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
+  const actualOutDir = outDir || forgeConfig.outDir || getCurrentOutDir(dir, forgeConfig);
 
   const actualTargetPlatform = platform;
   platform = platform === 'mas' ? 'darwin' : platform;

@@ -25,6 +25,7 @@ export interface ForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
+  outDir?: string,
   hooks?: {
     [hookName: string]: ForgeHookFn;
   };

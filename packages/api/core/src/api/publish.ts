@@ -82,7 +82,7 @@ const publish = async ({
 
   const forgeConfig = await getForgeConfig(dir);
 
-  const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
+  const calculatedOutDir = outDir || forgeConfig.outDir || getCurrentOutDir(dir, forgeConfig);
   const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
 
   if (dryRunResume) {
