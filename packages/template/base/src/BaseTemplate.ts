@@ -40,7 +40,7 @@ export class BaseTemplate implements ForgeTemplate {
       await fs.mkdirs(path.resolve(directory, 'src'));
       const rootFiles = ['_gitignore'];
       if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
-      const srcFiles = ['index.css', 'index.js', 'index.html'];
+      const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
       for (const file of rootFiles) {
         await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
