@@ -76,8 +76,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
     for (const makeResult of makeResults) {
       const { packageJSON } = makeResult;
-      const artifacts = makeResult.artifacts
-        .filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
+      const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
       const existingVersion = versions.find((version) => version.name === packageJSON.version);
 
