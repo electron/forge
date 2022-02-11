@@ -16,7 +16,13 @@ describe('WebpackTemplate', () => {
   });
 
   it('should copy the appropriate template files', async () => {
-    const expectedFiles = ['webpack.main.config.js', 'webpack.renderer.config.js', 'webpack.rules.js', path.join('src', 'renderer.js')];
+    const expectedFiles = [
+      'webpack.main.config.js',
+      'webpack.renderer.config.js',
+      'webpack.rules.js',
+      path.join('src', 'renderer.js'),
+      path.join('src', 'preload.js'),
+    ];
     for (const filename of expectedFiles) {
       await testUtils.expectProjectPathExists(dir, filename, 'file');
     }
@@ -25,7 +31,9 @@ describe('WebpackTemplate', () => {
   it('should move and rewrite the main process file', async () => {
     await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
     await testUtils.expectProjectPathExists(dir, path.join('src', 'main.js'), 'file');
-    expect((await fs.readFile(path.join(dir, 'src', 'main.js'))).toString()).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
+    const mainFile = (await fs.readFile(path.join(dir, 'src', 'main.js'))).toString();
+    expect(mainFile).to.match(/MAIN_WINDOW_WEBPACK_ENTRY/);
+    expect(mainFile).to.match(/MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY/);
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {
