@@ -23,9 +23,9 @@ describe('WebpackTemplate', () => {
       path.join('src', 'renderer.js'),
       path.join('src', 'preload.js'),
     ];
-    for (const expectedFile of expectedFiles) {
-      it(`${expectedFile} should exist`, async () => {
-        await testUtils.expectProjectPathExists(dir, expectedFile, 'file');
+    for (const filename of expectedFiles) {
+      it(`${filename} should exist`, async () => {
+        await testUtils.expectProjectPathExists(dir, filename, 'file');
       });
     }
   });
