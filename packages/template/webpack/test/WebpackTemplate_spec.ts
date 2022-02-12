@@ -15,7 +15,7 @@ describe('WebpackTemplate', () => {
     await template.initializeTemplate(dir, {});
   });
 
-  it('should copy the appropriate template files', async () => {
+  context('template files are copied to project', () => {
     const expectedFiles = [
       'webpack.main.config.js',
       'webpack.renderer.config.js',
@@ -23,8 +23,10 @@ describe('WebpackTemplate', () => {
       path.join('src', 'renderer.js'),
       path.join('src', 'preload.js'),
     ];
-    for (const filename of expectedFiles) {
-      await testUtils.expectProjectPathExists(dir, filename, 'file');
+    for (const expectedFile of expectedFiles) {
+      it(`${expectedFile} should exist`, async () => {
+        await testUtils.expectProjectPathExists(dir, expectedFile, 'file');
+      });
     }
   });
 

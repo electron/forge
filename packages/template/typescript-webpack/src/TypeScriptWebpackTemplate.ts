@@ -63,7 +63,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
-      await fs.rename(filePath('preload.js'), filePath('preload.ts'));
+      await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
     });
   }
 }
