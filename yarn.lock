@@ -2356,9 +2356,9 @@
     "@types/responselike" "*"
 
 "@types/chai-as-promised@^7.1.2":
-  version "7.1.4"
-  resolved "https://registry.yarnpkg.com/@types/chai-as-promised/-/chai-as-promised-7.1.4.tgz#caf64e76fb056b8c8ced4b761ed499272b737601"
-  integrity sha512-1y3L1cHePcIm5vXkh1DSGf/zQq5n5xDKG1fpCvf18+uOkpce0Z1ozNFPkyWsVswK7ntN1sZBw3oU6gmN+pDUcA==
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/@types/chai-as-promised/-/chai-as-promised-7.1.5.tgz#6e016811f6c7a64f2eed823191c3a6955094e255"
+  integrity sha512-jStwss93SITGBwt/niYrkf2C+/1KTeZCZl1LaeezTlqppAKeoQC7jxyqYuP72sxBGKCIbw7oHgbYssIRzT5FCQ==
   dependencies:
     "@types/chai" "*"
 
