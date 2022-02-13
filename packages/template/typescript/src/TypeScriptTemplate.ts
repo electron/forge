@@ -32,6 +32,8 @@ class TypeScriptTemplate extends BaseTemplate {
       // Remove index.js and replace with index.ts
       await fs.remove(filePath('index.js'));
       await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
+
+      await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
     });
   }
 }
