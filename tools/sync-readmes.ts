@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs-extra';
-import Listr from 'listr';
+import { Listr } from 'listr2';
 import * as path from 'path';
 
 const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined } } = {
@@ -40,7 +40,7 @@ interface SyncContext {
   packageKeys: [string, string, string, string][];
 }
 
-function sync(): Listr {
+function sync(): Listr<SyncContext> {
   return new Listr([
     {
       title: 'Collecting package keys',
