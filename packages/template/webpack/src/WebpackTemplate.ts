@@ -25,6 +25,9 @@ class WebpackTemplate extends BaseTemplate {
                 html: './src/index.html',
                 js: './src/renderer.js',
                 name: 'main_window',
+                preload: {
+                  js: './src/preload.js',
+                },
               },
             ],
           },
@@ -39,11 +42,13 @@ class WebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(directory, 'webpack.renderer.config.js');
       await this.copyTemplateFile(directory, 'webpack.rules.js');
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
+      await this.copyTemplateFile(path.join(directory, 'src'), 'preload.js');
 
       await this.updateFileByLine(
         path.resolve(directory, 'src', 'index.js'),
         (line) => {
           if (line.includes('mainWindow.loadFile')) return '  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);';
+          if (line.includes('preload: ')) return '      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,';
           return line;
         },
         path.resolve(directory, 'src', 'main.js')

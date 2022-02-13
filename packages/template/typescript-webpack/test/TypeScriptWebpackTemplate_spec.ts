@@ -14,7 +14,7 @@ describe('TypeScriptWebpackTemplate', () => {
     await template.initializeTemplate(dir, {});
   });
 
-  it('should copy the appropriate template files', async () => {
+  context('template files are copied to project', () => {
     const expectedFiles = [
       'tsconfig.json',
       '.eslintrc.json',
@@ -24,10 +24,12 @@ describe('TypeScriptWebpackTemplate', () => {
       'webpack.plugins.js',
       path.join('src', 'index.ts'),
       path.join('src', 'renderer.ts'),
+      path.join('src', 'preload.ts'),
     ];
-
     for (const filename of expectedFiles) {
-      await testUtils.expectProjectPathExists(dir, filename, 'file');
+      it(`${filename} should exist`, async () => {
+        await testUtils.expectProjectPathExists(dir, filename, 'file');
+      });
     }
   });
 

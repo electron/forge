@@ -133,7 +133,7 @@
     "generate-changelog": "^1.8.0",
     "husky": "^7.0.1",
     "lint-staged": "^12.1.7",
-    "listr": "^0.14.1",
+    "listr2": "^4.0.4",
     "minimist": "^1.2.5",
     "mocha": "^9.0.1",
     "nyc": "^15.1.0",
