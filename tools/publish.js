@@ -1,9 +1,9 @@
 const chalk = require('chalk');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
+const { Listr } = require('listr2');
 const path = require('path');
 const { spawn } = require('@malept/cross-spawn-promise');
-const Listr = require('listr');
 require('ts-node').register();
 
 const BASE_DIR = path.resolve(__dirname, '..');
