@@ -1,5 +1,6 @@
 import debug from 'debug';
 import { Octokit } from '@octokit/rest';
+import { retry } from '@octokit/plugin-retry';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 
 const logInfo = debug('electron-forge:publisher:github:info');
@@ -40,7 +41,8 @@ export default class GitHub {
     if (this.token) {
       options.auth = this.token;
     }
-    const github = new Octokit(options);
+    const RetryableOctokit = Octokit.plugin(retry);
+    const github = new RetryableOctokit(options);
     return github;
   }
 }

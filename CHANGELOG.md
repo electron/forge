@@ -1,3 +1,22 @@
+#### [6.0.0-beta.63](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.63) (2022-01-10)
+
+##### Bug Fixes
+
+- **cli:** re-add shebang to electron-forge binary (#2671) ([1ca418ec](https://github.com/electron-userland/electron-forge/commit/1ca418ec))
+
+#### [6.0.0-beta.62](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.62) (2022-01-09)
+
+##### New Features
+
+- **publisher-github:** add retry support (#2550) ([a400066d](https://github.com/electron-userland/electron-forge/commit/a400066d))
+
+##### Bug Fixes
+
+- replace colors with chalk (#2666) ([e909ae83](https://github.com/electron-userland/electron-forge/commit/e909ae83))
+- **plugin-webpack:**
+  - rebuild native modules before packaging (#2584) ([21310bbf](https://github.com/electron-userland/electron-forge/commit/21310bbf))
+  - validate that the correct entry point is used (#2522) ([3de904b6](https://github.com/electron-userland/electron-forge/commit/3de904b6))
+
 #### [6.0.0-beta.61](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.61) (2021-09-10)
 
 ##### New Features

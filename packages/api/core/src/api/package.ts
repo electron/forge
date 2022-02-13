@@ -1,6 +1,6 @@
-import 'colors';
 import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { getHostArch } from '@electron/get';
@@ -82,7 +82,7 @@ export default async ({
 }: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
-  let prepareSpinner = ora(`Preparing to Package Application for arch: ${(arch === 'all' ? 'ia32' : arch).cyan}`).start();
+  let prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch === 'all' ? 'ia32' : arch)}`).start();
   let prepareCounter = 0;
 
   const resolvedDir = await resolveDir(dir);
@@ -108,7 +108,7 @@ export default async ({
       if (packagerSpinner) {
         packagerSpinner.succeed();
         prepareCounter += 1;
-        prepareSpinner = ora(`Preparing to Package Application for arch: ${(prepareCounter === 2 ? 'armv7l' : 'x64').cyan}`).start();
+        prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(prepareCounter === 2 ? 'armv7l' : 'x64')}`).start();
       }
       const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
@@ -183,7 +183,7 @@ export default async ({
     // eslint-disable-next-line max-len
     warn(
       interactive,
-      'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'.yellow
+      chalk.yellow('Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly')
     );
   }
 
@@ -192,7 +192,7 @@ export default async ({
   }
 
   await runHook(forgeConfig, 'generateAssets', platform, arch);
-  await runHook(forgeConfig, 'prePackage');
+  await runHook(forgeConfig, 'prePackage', platform, arch);
 
   d('packaging with options', packageOpts);
 

@@ -1,5 +1,5 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
+import chalk from 'chalk';
 import debug from 'debug';
 import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import { spawn, SpawnOptions } from 'child_process';
@@ -142,7 +142,7 @@ export default async ({
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
         // eslint-disable-next-line no-console
-        console.info('\nRestarting App\n'.cyan);
+        console.info(chalk.cyan('\nRestarting App\n'));
         lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');
         lastSpawned.emit('restarted', await forgeSpawnWrapper());

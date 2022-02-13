@@ -12,9 +12,9 @@ jobs:
   dependabolt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Use Node.js LTS
-        uses: actions/setup-node@v2.4.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 14.x
           cache: yarn
@@ -33,9 +33,9 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.4.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 12.x
           cache: yarn
@@ -56,7 +56,7 @@ jobs:
       - name: Run tests
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v2.0.3
+        uses: codecov/codecov-action@v2.1.0
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.4.0
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         shell: bash
@@ -91,7 +91,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.4.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: 12.x
           cache: yarn
@@ -110,7 +110,7 @@ jobs:
         env:
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v2.0.3
+        uses: codecov/codecov-action@v2.1.0
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -121,8 +121,11 @@ jobs:
   automerge:
     needs: [fast-tests, slow-tests]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
-      - uses: fastify/github-action-merge-dependabot@v2.4.0
+      - uses: fastify/github-action-merge-dependabot@v3.0.2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -133,7 +136,7 @@ jobs:
   #   steps:
   #     - uses: actions/checkout@v1
   #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v2.4.0
+  #       uses: actions/setup-node@v2.5.1
   #       with:
   #         node-version: 12.x
   #         cache: yarn

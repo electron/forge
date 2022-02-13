@@ -45,7 +45,15 @@
     {
       "files": ["packages/api/cli/src/**/*.ts", "tools/*.{js,ts}"],
       "rules": {
-        "no-process-exit": "off"
+        "no-process-exit": "off",
+        "node/shebang": [
+          "error",
+          {
+            "convertPath": {
+              "src/*.ts": ["src/(.+?)\\.ts$", "dist/$1.js"]
+            }
+          }
+        ]
       }
     },
     {

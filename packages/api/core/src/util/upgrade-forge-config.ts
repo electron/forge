@@ -80,7 +80,7 @@ function generateForgeMakerConfig(forge5Config: Forge5Config): IForgeResolvableM
       makers.push({
         name: `@electron-forge/maker-${makerType}`,
         config: forge5Config[forge5Key],
-        platforms: makeTargets.get(makerType) || null,
+        platforms: makeTargets.get(makerType) || [],
       } as IForgeResolvableMaker);
     }
   }

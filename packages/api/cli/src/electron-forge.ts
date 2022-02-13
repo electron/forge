@@ -1,5 +1,8 @@
-import 'colors';
+#!/usr/bin/env node
+// This file requires a shebang above. If it is missing, this is an error.
+
 import { asyncOra } from '@electron-forge/async-ora';
+import chalk from 'chalk';
 import program from 'commander';
 
 import './util/terminate';
@@ -41,7 +44,7 @@ program
     // eslint-disable-next-line no-underscore-dangle
     if (!program._execs.has(commands[0])) {
       console.error();
-      console.error(`Unknown command "${program.args.join(' ')}".`.red);
+      console.error(chalk.red(`Unknown command "${program.args.join(' ')}".`));
       console.error('See --help for a list of available commands.');
       process.exit(1);
     }
@@ -55,8 +58,8 @@ program
 
   if (!goodSystem) {
     console.error(
-      `It looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version ${metadata.engines.node}`.red
+      chalk.red(`It looks like you are missing some dependencies you need to get Electron running.
+Make sure you have git installed and Node.js version ${metadata.engines.node}`)
     );
     process.exit(1);
   }

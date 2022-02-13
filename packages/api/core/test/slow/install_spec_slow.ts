@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { expect } from 'chai';
 import fetchMock, { FetchMockSandbox } from 'fetch-mock';
 import proxyquire from 'proxyquire';
@@ -91,7 +92,7 @@ describe('install', () => {
       },
     ]);
     await expect(install({ chooseAsset, repo: 'f/g', interactive: false })).to.eventually.be.rejectedWith(
-      `Failed to find any installable assets for target platform: ${`${process.platform}`.cyan}`
+      `Failed to find any installable assets for target platform: ${chalk.cyan(process.platform)}`
     );
   });
 

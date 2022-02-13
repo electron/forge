@@ -1,4 +1,3 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import { yarnOrNpmSpawn } from '../util/yarn-or-npm';

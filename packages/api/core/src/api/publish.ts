@@ -1,4 +1,3 @@
-import 'colors';
 import { asyncOra } from '@electron-forge/async-ora';
 import {
   IForgeResolvablePublisher,
@@ -8,6 +7,8 @@ import {
   // ForgePlatform,
 } from '@electron-forge/shared-types';
 import PublisherBase from '@electron-forge/publisher-base';
+
+import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import path from 'path';
@@ -169,7 +170,7 @@ const publish = async ({
       const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let PublisherClass: any;
-      await asyncOra(`Resolving publish target: ${`${resolvablePublishTarget.name}`.cyan}`, async () => {
+      await asyncOra(`Resolving publish target: ${chalk.cyan(resolvablePublishTarget.name)}`, async () => {
         // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {

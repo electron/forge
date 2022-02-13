@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/installer-base",
-  "version": "6.0.0-beta.61",
+  "version": "6.0.0-beta.63",
   "description": "Base installer helper for Electron Forge",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Samuel Attard",
@@ -15,6 +15,6 @@
     "node": ">= 12.13.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.61"
+    "@electron-forge/async-ora": "6.0.0-beta.63"
   }
 }
