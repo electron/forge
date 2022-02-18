@@ -6,6 +6,7 @@ import { pathExists, readFile } from 'fs-extra';
 import { spawn } from '@malept/cross-spawn-promise';
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
+import which from 'which';
 
 type Closeable = {
   close: () => void;
@@ -15,7 +16,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
-const yarnCmd = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
+const yarnCmd = process.platform === 'win32' ? which.sync('yarn.cmd') : 'yarn';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
