@@ -42,6 +42,9 @@ jobs:
         with:
           node-version: 12.x
           cache: yarn
+      - name: Install VS 2017
+        if: matrix.os == 'windows-latest'
+        run: npm install -g windows-build-tools
       - name: Install bolt
         shell: bash
         run: |
