@@ -15,6 +15,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
+const yarnCmd = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -83,8 +84,6 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
 }
 
 async function yarnStart(): Promise<string> {
-  console.log('PLATFORM', process.platform);
-  const yarnCmd = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
   return spawn(yarnCmd, ['start'], {
     cwd: appPath,
     shell: true,
@@ -100,7 +99,7 @@ describe('AssetRelocatorPatch', () => {
   const mainOut = path.join(appPath, '.webpack/main');
 
   before(async () => {
-    await spawn('yarn', [], { cwd: appPath, shell: true });
+    await spawn(yarnCmd, [], { cwd: appPath, shell: true });
   });
 
   after(() => {
