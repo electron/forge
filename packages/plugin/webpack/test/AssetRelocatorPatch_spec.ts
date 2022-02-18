@@ -83,6 +83,7 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
 }
 
 async function yarnStart(): Promise<string> {
+  console.log('PLATFORM', process.platform);
   const yarnCmd = process.platform === 'win32' ? 'yarn.cmd' : 'yarn';
   return spawn(yarnCmd, ['start'], {
     cwd: appPath,
