@@ -50,6 +50,9 @@ jobs:
             *) BOLT_VERSION=latest ;;
           esac
           npm install -g bolt@$BOLT_VERSION
+      - name: Install yarn 1
+        if: matrix.os == 'windows-latest'
+        run: npm install -g yarn
       - name: Install
         run: bolt
       - name: Lint
