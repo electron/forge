@@ -6,6 +6,7 @@ import { pathExists, readFile } from 'fs-extra';
 import { spawn } from '@malept/cross-spawn-promise';
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
+import which from 'which';
 
 type Closeable = {
   close: () => void;
@@ -15,6 +16,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
+const pmCmd = process.platform === 'win32' ? which.sync('npm.cmd') : 'npm';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -83,7 +85,7 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
 }
 
 async function yarnStart(): Promise<string> {
-  return spawn('yarn', ['start'], {
+  return spawn(pmCmd, ['start'], {
     cwd: appPath,
     shell: true,
     env: {
@@ -98,7 +100,7 @@ describe('AssetRelocatorPatch', () => {
   const mainOut = path.join(appPath, '.webpack/main');
 
   before(async () => {
-    await spawn('yarn', [], { cwd: appPath, shell: true });
+    await spawn(pmCmd, ['install'], { cwd: appPath, shell: true });
   });
 
   after(() => {

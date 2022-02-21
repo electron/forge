@@ -32,7 +32,7 @@ jobs:
     needs: dependabolt
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-latest]
+        os: [windows-2019, macOS-latest, ubuntu-latest]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
@@ -121,16 +121,30 @@ jobs:
           CI_OS: ${{ matrix.os }}
           TEST_TYPE: slow
 
-  automerge:
+  dependabot-automerge:
     needs: [fast-tests, slow-tests]
     runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
     permissions:
       pull-requests: write
       contents: write
     steps:
-      - uses: fastify/github-action-merge-dependabot@v3.0.2
+      - name: Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v1.1.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Approve Dependabot PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Auto-merge devDependency or non-major dependency PR
+        if: ${{ steps.dependabot-metadata.outputs.dependency-type || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' }}
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # docs:
   #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
