@@ -106,7 +106,7 @@ export default async ({
       args = ['--inspect' as string | number].concat(args);
     }
     if (inspectBrk) {
-      args = ['--inspect-brk' as (string|number)].concat(args);
+      args = ['--inspect-brk' as string | number].concat(args);
     }
 
     let spawned!: ElectronProcess;
