@@ -24,6 +24,7 @@ export default async ({
   args = [],
   runAsNode = false,
   inspect = false,
+  inspectBrk = false,
 }: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
 
@@ -63,6 +64,7 @@ export default async ({
       args,
       runAsNode,
       inspect,
+      inspectBrk,
     });
     let prefixArgs: string[] = [];
     if (typeof spawnedPluginChild === 'string') {
@@ -102,6 +104,9 @@ export default async ({
 
     if (inspect) {
       args = ['--inspect' as string | number].concat(args);
+    }
+    if (inspectBrk) {
+      args = ['--inspect-brk' as string | number].concat(args);
     }
 
     let spawned!: ElectronProcess;

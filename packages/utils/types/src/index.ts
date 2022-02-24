@@ -120,6 +120,11 @@ export interface StartOptions {
    * Enables the node inspector, you can connect to this from chrome://inspect
    */
   inspect?: boolean;
+  /**
+   * Enables the node inspector, you can connect to this from chrome://inspect
+   * Pauses the execution on first JavaScript line until debugger connects.
+   */
+  inspectBrk?: boolean;
 }
 
 export type StartResult = ElectronProcess | string | string[] | false;
