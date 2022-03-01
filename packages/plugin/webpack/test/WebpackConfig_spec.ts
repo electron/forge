@@ -172,7 +172,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getMainConfig();
+      const webpackConfig = generator.getMainConfig();
       expect(webpackConfig.target).to.equal('electron-main');
       expect(webpackConfig.mode).to.equal('development');
       expect(webpackConfig.entry).to.equal('main.js');
@@ -194,7 +194,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getMainConfig();
+      const webpackConfig = generator.getMainConfig();
       expect(webpackConfig.mode).to.equal('production');
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).to.equal(false);
     });
@@ -209,7 +209,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getMainConfig();
+      const webpackConfig = generator.getMainConfig();
       expect(webpackConfig.entry).to.equal(path.join(mockProjectDir, 'foo', 'main.js'));
     });
 
@@ -226,7 +226,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getMainConfig();
+      const webpackConfig = generator.getMainConfig();
       expect(webpackConfig.entry).to.deep.equal({
         foo: path.join(mockProjectDir, 'foo', 'main.js'),
         bar: 'bar.js',
@@ -242,8 +242,33 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
       const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
-      const webpackConfig = await generator.getMainConfig();
+      const webpackConfig = generator.getMainConfig();
       expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
+    });
+
+    it('generates a config from a requirable non-js file', async () => {
+      const config = {
+        mainConfig: 'mainConfig.ts',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      const webpackConfig = generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.ts'));
+    });
+
+    it('errors when an unsupported extension of a requirable non-js file', async () => {
+      const config = {
+        mainConfig: 'mainConfig.coffee',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      expect(() => generator.getMainConfig()).to.throw(/Failed to load webpack config for/);
     });
   });
 

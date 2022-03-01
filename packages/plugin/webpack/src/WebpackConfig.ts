@@ -1,6 +1,9 @@
+import chalk from 'chalk';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import interpret from 'interpret';
 import path from 'path';
+import rechoir from 'rechoir';
 import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
@@ -8,6 +11,14 @@ import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
+interface RechoirError extends Error {
+  failures: RechoirError[];
+  error: Error;
+}
+
+function isRechoirError(error: unknown): error is RechoirError {
+  return !!(error as RechoirError)?.failures;
+}
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
@@ -34,6 +45,26 @@ export default class WebpackConfigGenerator {
 
   resolveConfig(config: Configuration | string): Configuration {
     if (typeof config === 'string') {
+      const ext = path.extname(config);
+      const interpreted = Object.keys(interpret.jsVariants).find((variant) => variant === ext);
+      if (interpreted) {
+        try {
+          rechoir.prepare(interpret.extensions, config);
+        } catch (error) {
+          if (isRechoirError(error)) {
+            const { message, failures } = error;
+            const logLines = [
+              `\nUnable to load webpack config '${config}'`,
+              message,
+              ...failures.map(({ error }) => error.message),
+              `Please install one of them`,
+            ];
+            logLines.forEach((line) => console.error(chalk.red(line)));
+            throw new Error(`Failed to load webpack config for ${config}`);
+          }
+          throw error;
+        }
+      }
       // eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require, global-require
       return require(path.resolve(this.projectDir, config)) as Configuration;
     }
