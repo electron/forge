@@ -5,6 +5,7 @@ import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMake
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
+import filenamify from 'filenamify';
 
 import getForgeConfig from '../util/forge-config';
 import { runHook, runMutatingHook } from '../util/hook';
@@ -178,7 +179,7 @@ export default async ({
   info(interactive, `Making for the following targets: ${chalk.cyan(`${targets.map((_t, i) => makers[i].name).join(', ')}`)}`);
 
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-  const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
+  const appName = filenamify(forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name, { replacement: '-' });
   const outputs: ForgeMakeResult[] = [];
 
   await runHook(forgeConfig, 'preMake');
