@@ -15,7 +15,7 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - name: Use Node.js LTS
         uses: actions/setup-node@v2.5.1
         with:
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - name: Use Node.js 12.x
         uses: actions/setup-node@v2.5.1
         with:
@@ -76,7 +76,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         shell: bash
