@@ -9,6 +9,24 @@ import make from '../../src/api/make';
 describe('make', () => {
   const fixtureDir = path.resolve(__dirname, '..', 'fixture');
 
+  it('works with scoped package names', async () => {
+    const stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]> = proxyquire.noCallThru().load('../../src/api/make', {
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(require('../fixture/dummy_app_scoped_name/package.json')),
+      },
+    }).default;
+    await expect(
+      stubbedMake({
+        arch: 'x64',
+        dir: path.join(fixtureDir, 'maker-scoped'),
+        overrideTargets: ['@electron-forge/maker-zip'],
+        platform: 'linux',
+        skipPackage: true,
+      })
+    ).to.eventually.be.rejectedWith(/@scope-package-linux-x64/);
+    after(() => proxyquire.callThru());
+  });
+
   describe('overrideTargets inherits from forge config', () => {
     let stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]>;
 
