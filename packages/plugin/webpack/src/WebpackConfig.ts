@@ -59,9 +59,9 @@ export default class WebpackConfigGenerator {
     }
     const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
     if (basename !== 'index.html') {
-      return `'${baseUrl}/${basename}'`;
+      return `${baseUrl}/${basename}`;
     }
-    return `'${baseUrl}'`;
+    return `${baseUrl}`;
   }
 
   toEnvironmentVariable(entryPoint: WebpackPluginEntryPoint, preload = false): string {
@@ -69,37 +69,51 @@ export default class WebpackConfigGenerator {
     return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
   }
 
-  getPreloadDefine(entryPoint: WebpackPluginEntryPoint): string {
+  getPreloadEntryPoint(entryPoint: WebpackPluginEntryPoint): string | undefined {
     if (entryPoint.preload) {
       if (this.isProd) {
         return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
       }
-      return `'${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+      return `${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}`;
     }
     // If this entry-point has no configured preload script just map this constant to `undefined`
     // so that any code using it still works.  This makes quick-start / docs simpler.
-    return 'undefined';
+    return;
   }
 
-  getDefines(inRendererDir = true): Record<string, string> {
-    const defines: Record<string, string> = {};
+  getEntryPointConstants(inRendererDir = true): Record<string, string | undefined> {
+    const constants: Record<string, string | undefined> = {};
     if (!this.pluginConfig.renderer.entryPoints || !Array.isArray(this.pluginConfig.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
     for (const entryPoint of this.pluginConfig.renderer.entryPoints) {
       const entryKey = this.toEnvironmentVariable(entryPoint);
       if (entryPoint.html) {
-        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.html');
+        constants[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.html');
       } else {
-        defines[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
+        constants[entryKey] = this.rendererEntryPoint(entryPoint, inRendererDir, 'index.js');
       }
-      defines[`process.env.${entryKey}`] = defines[entryKey];
 
       const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
-      defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
-      defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
+      constants[preloadDefineKey] = this.getPreloadEntryPoint(entryPoint);
     }
-    return defines;
+    return constants;
+  }
+
+  getDefines(inRendererDir = true): Record<string, string> {
+    const entryPointConstants = this.getEntryPointConstants(inRendererDir);
+    const defines = Object.fromEntries(
+      Object.entries(entryPointConstants).map(([key, value]) => {
+        return value ? [key, JSON.stringify(value)] : [key, 'undefined'];
+      })
+    );
+    const processEnvDefines = Object.fromEntries(
+      Object.entries(defines).map(([key, value]) => {
+        return [`process.env.${key}`, value];
+      })
+    );
+
+    return { ...defines, ...processEnvDefines };
   }
 
   getMainConfig(): Configuration {

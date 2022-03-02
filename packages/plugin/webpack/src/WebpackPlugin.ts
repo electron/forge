@@ -37,6 +37,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   // Where the Webpack output is generated. Usually `$projectDir/.webpack`
   private baseDir!: string;
 
+  // The magic module we'll dynamically create for webpack entry point constants
+  private magicModuleDir!: string;
+
   private _configGenerator!: WebpackConfigGenerator;
 
   private watchers: Watching[] = [];
@@ -137,6 +140,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   setDirectories = (dir: string): void => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
+    this.magicModuleDir = path.resolve(this.projectDir, 'node_modules', '@electron-forge', 'webpack-magic-constants');
   };
 
   get configGenerator(): WebpackConfigGenerator {
@@ -184,6 +188,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         return this.resolveForgeConfig;
       case 'packageAfterCopy':
         return this.packageAfterCopy;
+      case 'generateAssets':
+        return this.generateMagicConstantsPackage;
       default:
         return null;
     }
@@ -303,6 +309,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         });
       }
     }
+  };
+
+  private writeFileInMagicModule = async (file: string, contents: string) => {
+    await fs.writeFile(path.resolve(this.magicModuleDir, file), contents);
+  };
+
+  generateMagicConstantsPackage = async (): Promise<void> => {
+    fs.ensureDir(this.magicModuleDir);
+
+    await this.writeFileInMagicModule(
+      'package.json',
+      JSON.stringify(
+        {
+          name: 'forge-webpack-magic-constants',
+          version: '0.0.0',
+        },
+        null,
+        2
+      )
+    );
+    const constants = this.configGenerator.getEntryPointConstants();
+    await this.writeFileInMagicModule('index.js', `module.exports = ${JSON.stringify(constants, null, 2)}`);
+    await this.writeFileInMagicModule(
+      'index.d.ts',
+      Object.keys(constants)
+        .map((key) => `export const ${key}: string;`)
+        .join('\n')
+    );
   };
 
   launchDevServers = async (logger: Logger): Promise<void> => {
