@@ -70,6 +70,7 @@ describe('make', () => {
     await expect(
       stubbedMake({
         arch: 'x64',
+        dir: path.join(fixtureDir, 'app-with-maker-disable'),
         platform: 'linux',
         skipPackage: true,
       })
