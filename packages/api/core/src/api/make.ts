@@ -115,10 +115,10 @@ export default async ({
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
       /* eslint-enable @typescript-eslint/no-explicit-any */
-      // eslint-disable-next-line no-continue
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
+      if (resolvableTarget.disabled) continue;
 
       if (!resolvableTarget.name) {
         throw new Error(`The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`);
