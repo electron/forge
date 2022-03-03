@@ -12,10 +12,14 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {
-        "baz": {}
-      },
-      "s3": {}
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "linux"
+          ]
+        }
+      ]
     }
   },
   "devDependencies": {
