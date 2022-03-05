@@ -32,7 +32,7 @@ jobs:
     needs: dependabolt
     strategy:
       matrix:
-        os: [windows-2019, macOS-latest, ubuntu-latest]
+        os: [windows-latest, macOS-latest, ubuntu-latest]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
@@ -42,6 +42,13 @@ jobs:
         with:
           node-version: 12.x
           cache: yarn
+      - name: Install latest NPM on Windows
+        if: matrix.os == 'windows-latest'
+        # See https://github.com/actions/virtual-environments/issues/4856#issuecomment-1043256330
+        # and https://github.com/actions/setup-node/issues/411#issuecomment-1051084491
+        run: |
+          npm install -g npm@8.3.1
+          npm install -g npm@latest
       - name: Install bolt
         shell: bash
         run: |
