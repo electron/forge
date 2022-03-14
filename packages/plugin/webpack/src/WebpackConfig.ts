@@ -38,7 +38,7 @@ export default class WebpackConfigGenerator {
       const result = require(path.resolve(this.projectDir, config));
 
       if (typeof result === 'function') {
-        return (await result()) as Configuration;
+        return (await Promise.resolve(result())) as Configuration;
       }
 
       return result as Configuration;
