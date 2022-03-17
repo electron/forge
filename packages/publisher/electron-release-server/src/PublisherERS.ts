@@ -97,6 +97,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
             channel: {
               name: channel,
             },
+            flavor: config.flavor,
             name: packageJSON.version,
             notes: '',
           }),
