@@ -15,6 +15,7 @@ const d = debug('electron-forge:publish:ers');
 interface ERSVersion {
   name: string;
   assets: { name: string }[];
+  flavor?: string;
 }
 
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
@@ -78,7 +79,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
-      const existingVersion = versions.find((version) => version.name === packageJSON.version);
+      const existingVersion = versions.find((version) => version.name === packageJSON.version && version.flavor === config.flavor);
 
       let channel = 'stable';
       if (config.channel) {
