@@ -1,7 +1,5 @@
-import {
-  Configuration as RawWebpackConfiguration,
-  ConfigurationFactory as WebpackConfigurationFactory,
-} from 'webpack';
+import { Configuration as RawWebpackConfiguration } from 'webpack';
+import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
 
 export interface WebpackPluginEntryPoint {
   /**

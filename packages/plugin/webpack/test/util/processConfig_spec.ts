@@ -1,13 +1,15 @@
 import { expect } from 'chai';
-import { ConfigurationFactory } from 'webpack';
+import { ConfigurationFactory } from '../../src/WebpackConfig';
 import processConfig, { ConfigProcessor } from '../../src/util/processConfig';
 
 const sampleWebpackConfig = {
   module: {
-    rules: [{
-      test: /\.(png|jpg|gif|webp)$/,
-      use: 'file-loader',
-    }],
+    rules: [
+      {
+        test: /\.(png|jpg|gif|webp)$/,
+        use: 'file-loader',
+      },
+    ],
   },
 };
 
@@ -32,7 +34,7 @@ describe('processConfig', () => {
       return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
     };
 
-    const fnConfig: ConfigurationFactory = async (arg0, arg1) => {
+    const fnConfig: ConfigurationFactory = (arg0, arg1) => {
       expect(arg0).to.be.equal(sampleConfigFactoryParams[0]);
       expect(arg1).to.be.equal(sampleConfigFactoryParams[1]);
       return sampleWebpackConfig;
@@ -49,7 +51,7 @@ describe('processConfig', () => {
       return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
     };
 
-    const promiseConfig: ConfigurationFactory = async (arg0, arg1) => {
+    const promiseConfig: ConfigurationFactory = (arg0, arg1) => {
       expect(arg0).to.be.equal(sampleConfigFactoryParams[0]);
       expect(arg1).to.be.equal(sampleConfigFactoryParams[1]);
       return sampleWebpackConfig;
