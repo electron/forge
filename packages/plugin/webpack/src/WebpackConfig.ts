@@ -12,7 +12,10 @@ type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
-export type ConfigurationFactory = (env: string | Record<string, string | boolean | number> | unknown, args: Record<string, unknown>) => Configuration;
+export type ConfigurationFactory = (
+  env: string | Record<string, string | boolean | number> | unknown,
+  args: Record<string, unknown>
+) => Configuration | Promise<Configuration>;
 
 export default class WebpackConfigGenerator {
   private isProd: boolean;
