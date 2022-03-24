@@ -249,7 +249,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = this.configGenerator.getMainConfig();
+      const mainConfig = await this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
