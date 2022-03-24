@@ -118,7 +118,8 @@ export default async ({
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
-      if (resolvableTarget.disabled) continue;
+      // non-false falsy values should be 'true'
+      if (resolvableTarget.enabled === false) continue;
 
       if (!resolvableTarget.name) {
         throw new Error(`The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`);

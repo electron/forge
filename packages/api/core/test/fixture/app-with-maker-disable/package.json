@@ -5,7 +5,7 @@
       "makers": [
         {
           "name": "@electron-forge/maker-zip",
-          "disabled": true,
+          "enabled": false,
           "platforms": [
             "linux"
           ]
