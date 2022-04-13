@@ -18,22 +18,20 @@
     ]
   },
   "scripts": {
-    "clean": "rimraf dist && bolt ws exec -- rimraf dist",
-    "prebuild": "bolt clean && ts-node tools/link-ts.ts && ts-node tools/copy-shared-types.ts && tsc --project ./tsconfig.packages.json --emitDeclarationOnly && ts-node tools/copy-types.ts",
-    "build": "yarn build:quick",
+    "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
+    "build": "bolt ws exec -- tsc -b",
     "build:quick": "bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
     "postbuild": "ts-node tools/test-dist",
     "commit": "git-cz",
     "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:slow": "xvfb-maybe cross-env TS_NODE_FILES=true nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
-    "docs": "bolt docs:generate && bolt docs:position",
-    "docs:generate": "bolt ws exec -- typedoc --out doc --excludeExternals --excludePrivate --excludeProtected --hideGenerator",
-    "docs:position": "ts-node tools/position-docs.ts",
+    "docs": "bolt docs:generate",
+    "docs:generate": "typedoc --out doc --excludeExternals --excludePrivate --excludeProtected --hideGenerator",
     "docs:deploy:build": "ts-node tools/sync-readmes.ts && bolt docs",
     "lint": "prettier --check . && eslint .",
     "test": "xvfb-maybe cross-env TS_NODE_FILES=true mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TEST_FAST_ONLY=1 TS_NODE_FILES=true mocha './tools/test-globber.ts'",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node tools/link-ts.ts"
+    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts"
   },
   "dependencies": {
     "@aws-sdk/abort-controller": "^3.29.0",
@@ -142,8 +140,8 @@
     "sinon": "^13.0.1",
     "sinon-chai": "^3.6.0",
     "ts-node": "^10.0.0",
-    "typedoc": "^0.22.0",
-    "typescript": "^4.5.4",
+    "typedoc": "^0.22.15",
+    "typescript": "^4.6.3",
     "xvfb-maybe": "^0.2.1"
   },
   "optionalDependencies": {
