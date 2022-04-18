@@ -22,4 +22,5 @@ packages/api/cli/README.md
 !packages/**/base/README.md
 !/README.md
 packages/**/tsconfig.tsbuildinfo
+packages/**/.swc
 .webpack
