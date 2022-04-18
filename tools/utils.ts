@@ -7,7 +7,7 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 export interface Package {
   path: string;
   name: string;
-  manifest: unknown; // the parsed package.json
+  manifest: object; // the parsed package.json
 }
 
 export const getPackageInfo = async (): Promise<Package[]> => {

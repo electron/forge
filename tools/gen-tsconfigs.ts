@@ -21,6 +21,9 @@ const BASE_TS_CONFIG = {
   exclude: ['node_modules', 'dist', 'test', 'index.ts', 'tmpl'],
 };
 
+/**
+ * Filters out non-unique items in an array.
+ */
 function filterDupes<T>(arr: readonly T[]): T[] {
   return Array.from(new Set(arr));
 }
@@ -31,8 +34,14 @@ function filterDupes<T>(arr: readonly T[]): T[] {
   // Do each package in parallel
   await Promise.all(
     packages.map((pkg) => {
+      // Carve out a subset of types on the package manifest object
+      const pkgManifest = pkg.manifest as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+      };
+
       // Figure out which other local packages this package references
-      const pkgDeps = [pkg.manifest['dependencies'], pkg.manifest['devDependencies']].flatMap((deps) => (deps === undefined ? [] : Object.keys(deps)));
+      const pkgDeps = [pkgManifest.dependencies, pkgManifest.devDependencies].flatMap((deps) => (deps === undefined ? [] : Object.keys(deps)));
       const refs = filterDupes(
         pkgDeps.flatMap((depName) => {
           const depPkg = packages.find((maybeDepPkg) => maybeDepPkg.name === depName);
