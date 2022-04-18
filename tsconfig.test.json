@@ -4,10 +4,7 @@
     "module": "commonjs",
     "target": "es2019",
     "outDir": "dist",
-    "lib": [
-      "dom",
-      "es2019"
-    ],
+    "lib": ["dom", "es2019"],
     "sourceMap": true,
     "experimentalDecorators": true,
     "strict": true,
