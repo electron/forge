@@ -32,7 +32,7 @@ function filterDupes<T>(arr: readonly T[]): T[] {
   await Promise.all(
     packages.map((pkg) => {
       // Figure out which other local packages this package references
-      const pkgDeps = [pkg.manifest.dependencies, pkg.manifest.devDependencies].flatMap((deps) => (deps === undefined ? [] : Object.keys(deps)));
+      const pkgDeps = [pkg.manifest['dependencies'], pkg.manifest['devDependencies']].flatMap((deps) => (deps === undefined ? [] : Object.keys(deps)));
       const refs = filterDupes(
         pkgDeps.flatMap((depName) => {
           const depPkg = packages.find((maybeDepPkg) => maybeDepPkg.name === depName);
