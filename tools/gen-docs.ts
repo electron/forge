@@ -21,4 +21,4 @@ import * as typedoc from 'typedoc';
   }
 
   await typedocApp.generateDocs(projReflection, path.resolve(__dirname, '..', 'docs'));
-})();
+})().catch(console.error);

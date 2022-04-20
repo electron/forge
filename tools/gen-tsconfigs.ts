@@ -70,4 +70,4 @@ function filterDupes<T>(arr: readonly T[]): T[] {
       return fs.writeFile(tsConfigPath, JSON.stringify(tsConfig, undefined, 2));
     })
   );
-})();
+})().catch(console.error);
