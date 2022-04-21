@@ -2,12 +2,22 @@ import { expect } from 'chai';
 import { ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
 import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
+import { stub } from 'sinon';
 
 describe('PublisherERS', () => {
   let fetch: typeof fetchMock;
+  let PublisherERS: any;
 
   beforeEach(() => {
     fetch = fetchMock.sandbox();
+    PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
+      'node-fetch': fetch,
+      'fs-extra': { createReadStream: stub().returns(''), statSync: stub().returns({ size: 100 }) },
+    }).default;
+  });
+
+  afterEach(() => {
+    fetch.restore();
   });
 
   describe('new version', () => {
@@ -25,9 +35,6 @@ describe('PublisherERS', () => {
       fetch.postOnce('path:/api/version', { status: 200 });
       // mock asset upload
       fetch.post('path:/api/asset', { status: 200 });
-      const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-        'node-fetch': fetch,
-      }).default;
 
       const publisher = new PublisherERS({
         baseUrl,
@@ -75,10 +82,6 @@ describe('PublisherERS', () => {
       // mock asset upload
       fetch.post('path:/api/asset', { status: 200 });
 
-      const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-        'node-fetch': fetch,
-      }).default;
-
       const publisher = new PublisherERS({
         baseUrl,
         username: 'test',
@@ -116,10 +119,6 @@ describe('PublisherERS', () => {
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
       fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: 'default' }], status: 200 });
-
-      const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-        'node-fetch': fetch,
-      }).default;
 
       const publisher = new PublisherERS({
         baseUrl,
@@ -160,10 +159,6 @@ describe('PublisherERS', () => {
       // mock asset upload
       fetch.post('path:/api/asset', { status: 200 });
 
-      const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-        'node-fetch': fetch,
-      }).default;
-
       const publisher = new PublisherERS({
         baseUrl,
         username: 'test',
@@ -200,10 +195,6 @@ describe('PublisherERS', () => {
   });
 
   it('fails if username and password are not provided', () => {
-    const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-      'node-fetch': fetch,
-    }).default;
-
     const publisher = new PublisherERS({});
 
     expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
@@ -213,9 +204,6 @@ describe('PublisherERS', () => {
 
   it('fails if the server returns 4xx', async () => {
     fetch.mock('begin:http://example.com', { body: {}, status: 400 });
-    const PublisherERS = proxyquire.noCallThru().load('../src/PublisherERS', {
-      'node-fetch': fetch,
-    }).default;
 
     const publisher = new PublisherERS({
       baseUrl: 'http://example.com',
@@ -225,9 +213,5 @@ describe('PublisherERS', () => {
     return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
       'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
     );
-  });
-
-  afterEach(() => {
-    fetch.restore();
   });
 });
