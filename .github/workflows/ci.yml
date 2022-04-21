@@ -115,6 +115,8 @@ jobs:
           npm install -g bolt@$BOLT_VERSION
       - name: Install
         run: bolt
+      - name: Build
+        run: bolt build
       - name: Test
         run: bolt coverage:slow
         env:
@@ -155,26 +157,19 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # docs:
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-  #   needs: [fast-tests, slow-tests]
-  #   runs-on: [ubuntu-latest]
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v2.5.1
-  #       with:
-  #         node-version: 12.x
-  #         cache: yarn
-  #     - name: Install bolt
-  #       shell: bash
-  #       run: |
-  #         case "$(uname -s)" in
-  #           Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
-  #           *) BOLT_VERSION=latest ;;
-  #         esac
-  #         npm install -g bolt@$BOLT_VERSION
-  #     - name: Deploy docs
-  #       run: ci/docs.sh
-  #       env:
-  #         NOW_TOKEN: ${{ secrets.NOW_TOKEN }}
+  docs:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [fast-tests, slow-tests]
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: '16'
+          cache: yarn
+      - name: Install bolt
+        run: npm install -g bolt
+      - name: Generate docs
+        run: bolt docs:deploy:build
