@@ -39,7 +39,9 @@
       "files": ["packages/*/*/test/**/*_spec*.ts"],
       "rules": {
         "global-require": "off",
-        "import/no-dynamic-require": "off"
+        "import/no-dynamic-require": "off",
+        "node/no-unpublished-import": "off",
+        "node/no-unpublished-require": "off"
       }
     },
     {
