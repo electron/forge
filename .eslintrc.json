@@ -39,9 +39,7 @@
       "files": ["packages/*/*/test/**/*_spec*.ts"],
       "rules": {
         "global-require": "off",
-        "import/no-dynamic-require": "off",
-        "node/no-unpublished-import": "off",
-        "node/no-unpublished-require": "off"
+        "import/no-dynamic-require": "off"
       }
     },
     {
@@ -56,13 +54,6 @@
             }
           }
         ]
-      }
-    },
-    {
-      "files": ["tools/*.{js,ts}"],
-      "rules": {
-        "node/no-unpublished-import": "off",
-        "node/no-unpublished-require": "off"
       }
     },
     {
@@ -100,6 +91,8 @@
     {
       "files": ["tools/*.{js,ts}"],
       "rules": {
+        "node/no-unpublished-import": "off",
+        "node/no-unpublished-require": "off",
         "node/shebang": "off"
       }
     }
