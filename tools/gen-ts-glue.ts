@@ -1,11 +1,15 @@
 /**
  * Mixing glue with lint is probably something you never want to do in real
- * life, but in this project it helps the linter do its job.
+ * life, but in this project it helps the linter do its job. And sometimes the
+ * test suite too.
  *
  * This script creates `index.ts` files in each package directory that simply
- * re-export the exports of the real main file. Not fully sure why this fixes
- * things or why the linter plugins for dependencies need this, but hey I'm just
- * trying to glue some lint here.
+ * re-export the exports of the real main file. This is necessary for when all
+ * the packages are run under a common context (instead of each individually).
+ * This is because the symlinks bolt makes for each package are descendants of
+ * the context node is running in and therefore aren't treated as modules, only
+ * as directories. Therefore package.json isn't considered and we need an index
+ * file (like index.ts) to redirect to the right file.
  */
 
 import { promises as fs } from 'fs';
