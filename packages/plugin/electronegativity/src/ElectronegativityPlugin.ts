@@ -55,6 +55,13 @@ export type ElectronegativityConfig = {
    * Defaults to empty array (`[]`)
    */
   parserPlugins: Array<string>;
+
+  /**
+   * Assume the set Electron version, overriding the detected one
+   *
+   * See https://github.com/doyensec/electronegativity#programmatically
+   */
+  electronVersion?: string,
 };
 
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
