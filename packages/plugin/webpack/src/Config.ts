@@ -86,10 +86,10 @@ export interface WebpackPluginConfig {
   mainConfig: WebpackConfiguration | string;
   /**
    * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
-   * which results in a `.map` file being generated), this option will cause it to not be
-   * packaged with your app.
+   * which results in a `.map` file being generated), this option will cause the source map files be
+   * packaged with your app. By default they are not included.
    */
-  ignoreSourcemap?: boolean;
+  includeSourceMap?: boolean;
   /**
    * Instructs webpack to emit a JSON file containing statistics about modules, the dependency
    * graph, and various other build information for the main process. This file is located in

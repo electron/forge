@@ -119,8 +119,8 @@ describe('WebpackPlugin', () => {
         expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);
       });
 
-      it('ignores sourcemap files', async () => {
-        const webpackConfig = { ...baseConfig, ignoreSourcemap: true };
+      it('ignores source map files by default', async () => {
+        const webpackConfig = { ...baseConfig };
         plugin = new WebpackPlugin(webpackConfig);
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
@@ -129,6 +129,18 @@ describe('WebpackPlugin', () => {
         expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).to.equal(true);
         expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).to.equal(false);
         expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).to.equal(true);
+      });
+
+      it('includes source map files when specified by config', async () => {
+        const webpackConfig = { ...baseConfig, includeSourceMap: true };
+        plugin = new WebpackPlugin(webpackConfig);
+        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).to.equal(false);
       });
     });
   });
