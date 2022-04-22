@@ -157,19 +157,19 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  docs:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [fast-tests, slow-tests]
-    runs-on: [ubuntu-latest]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Use Node.js 16
-        uses: actions/setup-node@v3.1.1
-        with:
-          node-version: '16'
-          cache: yarn
-      - name: Install bolt
-        run: npm install -g bolt
-      - name: Generate docs
-        run: bolt docs:deploy:build
+  # docs:
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  #   needs: [fast-tests, slow-tests]
+  #   runs-on: [ubuntu-latest]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+  #     - name: Use Node.js 16
+  #       uses: actions/setup-node@v3.1.1
+  #       with:
+  #         node-version: '16'
+  #         cache: yarn
+  #     - name: Install bolt
+  #       run: npm install -g bolt
+  #     - name: Generate docs
+  #       run: bolt docs:deploy:build
