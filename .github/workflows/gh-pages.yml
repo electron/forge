@@ -34,7 +34,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: /
+        run: |
           bolt
           bolt docs
 
