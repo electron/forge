@@ -3,7 +3,7 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - erick-deploy-test-2 # Set a branch name to trigger deployment
+      - master
   pull_request:
 
 jobs:
