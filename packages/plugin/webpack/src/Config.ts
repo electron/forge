@@ -85,12 +85,6 @@ export interface WebpackPluginConfig {
    */
   mainConfig: WebpackConfiguration | string;
   /**
-   * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
-   * which results in a `.map` file being generated), this option will cause the source map files be
-   * packaged with your app. By default they are not included.
-   */
-  includeSourceMap?: boolean;
-  /**
    * Instructs webpack to emit a JSON file containing statistics about modules, the dependency
    * graph, and various other build information for the main process. This file is located in
    * `.webpack/main/stats.json`, but is not packaged with your app.
@@ -108,6 +102,12 @@ export interface WebpackPluginConfig {
    * The TCP port for web-multi-logger. Defaults to 9000.
    */
   loggerPort?: number;
+  /**
+   * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
+   * which results in `.map` files being generated), this option will cause the source map files be
+   * packaged with your app. By default they are not included.
+   */
+  packageSourceMaps?: boolean;
   /**
    * Sets the [`Content-Security-Policy` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
    * for the Webpack development server.

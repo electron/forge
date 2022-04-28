@@ -132,7 +132,7 @@ describe('WebpackPlugin', () => {
       });
 
       it('includes source map files when specified by config', async () => {
-        const webpackConfig = { ...baseConfig, includeSourceMap: true };
+        const webpackConfig = { ...baseConfig, packageSourceMaps: true };
         plugin = new WebpackPlugin(webpackConfig);
         const config = await plugin.resolveForgeConfig({} as ForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
