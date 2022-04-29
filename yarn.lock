@@ -2366,10 +2366,10 @@ anymatch@~3.1.1, anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-appdmg@^0.6.0:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/appdmg/-/appdmg-0.6.2.tgz#3acd6246ffb25ae3e109bdba564aa3ddce1b64a8"
-  integrity sha512-mbJyAxn2/JmDpckNpXDU4AQ/XF7fltOyrLcETZxGfYwESt0NdCjQB8L2vIxxAyZKT0R/c0aSzb9yE+P2yDh9TQ==
+appdmg@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/appdmg/-/appdmg-0.6.4.tgz#283b85cc761c1d924f2370bd5cdbd92824b12ef3"
+  integrity sha512-YTilgNF0DF2DSRzGzzGDxaTMLXlhe3b3HB8RAaoJJ/VJXZbOlzIAcZ7gdPniHUVUuHjGwnS7fUMd4FvO2Rp94A==
   dependencies:
     async "^1.4.2"
     ds-store "^0.1.5"
@@ -3736,16 +3736,15 @@ electron-installer-debian@^3.0.0:
     word-wrap "^1.2.3"
     yargs "^15.0.1"
 
-electron-installer-dmg@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-3.0.0.tgz#08935b602f3120981c8d5fd24d3f6525f8b0198a"
-  integrity sha512-a3z9ABUfLJtrLK1ize4j+wJKslodb0kRHgBuUN4GTckiUxtGdo49XCvvAHvQaOqQk3S5VTvuc6PoofnI9mKSCQ==
+electron-installer-dmg@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-4.0.0.tgz#0520bcc8a928e559b3f16fc5cbc12b182a66ea1c"
+  integrity sha512-g3W6XnyUa7QGrAF7ViewHdt6bXV2KYU1Pm1CY3pZpp+H6mOjCHHAhf/iZAxtaX1ERCb+SQHz7xSsAHuNH9I8ZQ==
   dependencies:
-    debug "^4.1.1"
-    fs-extra "^8.0.1"
+    debug "^4.3.2"
     minimist "^1.1.1"
   optionalDependencies:
-    appdmg "^0.6.0"
+    appdmg "^0.6.4"
 
 electron-installer-redhat@^3.2.0:
   version "3.3.0"
@@ -4821,7 +4820,7 @@ fs-extra@^7.0.0, fs-extra@^7.0.1:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@^8.0.1, fs-extra@^8.1.0:
+fs-extra@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-8.1.0.tgz#49d43c45a88cd9677668cb7be1b46efdb8d2e1c0"
   integrity sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==
