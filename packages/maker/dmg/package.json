@@ -27,6 +27,6 @@
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {
-    "electron-installer-dmg": "^3.0.0"
+    "electron-installer-dmg": "^4.0.0"
   }
 }
