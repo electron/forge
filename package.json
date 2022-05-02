@@ -114,7 +114,7 @@
     "@types/sinon": "^10.0.0",
     "@types/sinon-chai": "^3.2.5",
     "@types/which": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.0.0",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
@@ -148,7 +148,7 @@
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.2",
     "electron-installer-debian": "^3.0.0",
-    "electron-installer-dmg": "^3.0.0",
+    "electron-installer-dmg": "^4.0.0",
     "electron-installer-redhat": "^3.2.0",
     "electron-installer-snap": "^5.1.0",
     "electron-windows-store": "^2.1.0",
