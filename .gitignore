@@ -7,15 +7,11 @@ docs
 doc
 node_modules
 yarn-error.log
-**/.npmignore
-!/.npmignore
-**/tsconfig.json
-!/tsconfig.json
+packages/**/.npmignore
+packages/**/tsconfig.json
 !packages/template/*/tmpl/tsconfig.json
-**/tslint.json
-!/tslint.json
-**/yarn.lock
-!/yarn.lock
+packages/**/tslint.json
+packages/**/yarn.lock
 packages/*/*/index.ts
 packages/.old
 packages/utils/types/index.d.ts
@@ -25,4 +21,6 @@ packages/plugin/**/README.md
 packages/api/cli/README.md
 !packages/**/base/README.md
 !/README.md
+packages/**/tsconfig.tsbuildinfo
+packages/**/.swc
 .webpack
