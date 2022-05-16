@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2.4.0
       - name: Use Node.js LTS
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3.2.0
         with:
           node-version: 14.x
           cache: yarn
@@ -38,7 +38,7 @@ jobs:
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v2.4.0
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3.2.0
         with:
           node-version: 12.x
           cache: yarn
@@ -101,7 +101,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
       - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@v3.2.0
         with:
           node-version: 12.x
           cache: yarn
