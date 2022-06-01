@@ -32,6 +32,10 @@ export interface WebpackPluginEntryPoint {
    * preload scripts you don't need to set this.
    */
   preload?: WebpackPreloadEntryPoint;
+  /**
+   * Override the `target` for this entry point
+   */
+  target?: WebpackConfiguration['target'];
 }
 
 export interface WebpackPreloadEntryPoint {

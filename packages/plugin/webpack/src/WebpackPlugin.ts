@@ -104,20 +104,23 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   };
 
-  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions): Promise<void> {
+  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions, suffix: string): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
-    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    const jsonStatsFilename = path.resolve(this.baseDir, type, `stats-${suffix}.json`);
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
   // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> =>
+  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
+          for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
+            const name = this.config.renderer.entryPoints[index].name;
+            await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
+          }
         }
         if (err) {
           return reject(err);
@@ -266,7 +269,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
             );
           }
           if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions);
+            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
           }
 
           if (err) return onceReject(err);
@@ -298,7 +301,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
           const stats = await this.runWebpack(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
+            [await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)]
           );
 
           if (stats?.hasErrors()) {
@@ -315,8 +318,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      if (!config.plugins) config.plugins = [];
-      config.plugins.push(pluginLogs);
+      for (const entryConfig of config) {
+        if (!entryConfig.plugins) entryConfig.plugins = [];
+        entryConfig.plugins.push(pluginLogs);
+      }
 
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);

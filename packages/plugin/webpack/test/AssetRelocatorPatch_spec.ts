@@ -161,7 +161,9 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -216,7 +218,9 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -239,7 +243,9 @@ describe('AssetRelocatorPatch', () => {
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
