@@ -27,7 +27,7 @@ export default abstract class InstallerDarwin extends InstallerBase {
     if (writeAccess) {
       await promisify(exec)(moveCommand);
     } else {
-      await promisify(sudo.exec)(moveCommand, {
+      await (promisify(sudo.exec) as (cmd: string, opts: unknown) => Promise<unknown>)(moveCommand, {
         name: 'Electron Forge',
       });
     }

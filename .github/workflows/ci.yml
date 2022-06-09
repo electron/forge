@@ -32,7 +32,7 @@ jobs:
     needs: dependabolt
     strategy:
       matrix:
-        os: [windows-2019, macOS-latest, ubuntu-latest]
+        os: [windows-latest, macOS-latest, ubuntu-latest]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
@@ -42,6 +42,13 @@ jobs:
         with:
           node-version: 12.x
           cache: yarn
+      - name: Install latest NPM on Windows
+        if: matrix.os == 'windows-latest'
+        # See https://github.com/actions/virtual-environments/issues/4856#issuecomment-1043256330
+        # and https://github.com/actions/setup-node/issues/411#issuecomment-1051084491
+        run: |
+          npm install -g npm@8.3.1
+          npm install -g npm@latest
       - name: Install bolt
         shell: bash
         run: |
@@ -108,6 +115,8 @@ jobs:
           npm install -g bolt@$BOLT_VERSION
       - name: Install
         run: bolt
+      - name: Build
+        run: bolt build
       - name: Test
         run: bolt coverage:slow
         env:
@@ -147,27 +156,3 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # docs:
-  #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-  #   needs: [fast-tests, slow-tests]
-  #   runs-on: [ubuntu-latest]
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - name: Use Node.js 12.x
-  #       uses: actions/setup-node@v2.5.1
-  #       with:
-  #         node-version: 12.x
-  #         cache: yarn
-  #     - name: Install bolt
-  #       shell: bash
-  #       run: |
-  #         case "$(uname -s)" in
-  #           Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
-  #           *) BOLT_VERSION=latest ;;
-  #         esac
-  #         npm install -g bolt@$BOLT_VERSION
-  #     - name: Deploy docs
-  #       run: ci/docs.sh
-  #       env:
-  #         NOW_TOKEN: ${{ secrets.NOW_TOKEN }}

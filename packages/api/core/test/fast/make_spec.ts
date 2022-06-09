@@ -60,4 +60,21 @@ describe('make', () => {
       ).to.eventually.be.rejectedWith(/^The following maker config has a maker name that is not a string:/);
     });
   });
+
+  it('can skip makers via config', async () => {
+    const stubbedMake = proxyquire.noCallThru().load('../../src/api/make', {
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(require('../fixture/app-with-maker-disable/package.json')),
+      },
+    }).default;
+    await expect(
+      stubbedMake({
+        arch: 'x64',
+        dir: path.join(fixtureDir, 'app-with-maker-disable'),
+        platform: 'linux',
+        skipPackage: true,
+      })
+    ).to.eventually.be.rejectedWith(/Could not find any make targets configured for the "linux" platform./);
+    proxyquire.callThru();
+  });
 });

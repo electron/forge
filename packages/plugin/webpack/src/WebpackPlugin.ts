@@ -214,6 +214,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
+      if (!this.config.packageSourceMaps && /[^/\\]+\.js\.map$/.test(file)) {
+        return true;
+      }
+
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;

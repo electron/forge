@@ -1,0 +1,45 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: 16.x
+          cache: yarn
+
+      - name: Install Bolt CLI
+        shell: bash
+        run: |
+          case "$(uname -s)" in
+            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+            *) BOLT_VERSION=latest ;;
+          esac
+          npm install -g bolt@$BOLT_VERSION
+
+      - name: Build
+        shell: bash
+        run: |
+          bolt
+          bolt docs
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs

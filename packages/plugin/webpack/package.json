@@ -13,7 +13,7 @@
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/interpret": "^1.1.1",
-    "@types/node": "^17.0.8",
+    "@types/node": "^17.0.25",
     "@types/rechoir": "^0.6.1",
     "chai": "^4.3.3",
     "electron-packager": "^15.4.0",

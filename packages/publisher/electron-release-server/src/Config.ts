@@ -24,4 +24,12 @@ export interface PublisherERSConfig {
    * Default: stable
    */
   channel?: string;
+
+  /**
+   * The "flavor" of the binary that you want to release to.
+   * This is useful if you want to provide multiple versions
+   * of the same application version (e.g. full and lite)
+   * to end users.
+   */
+  flavor?: string;
 }
