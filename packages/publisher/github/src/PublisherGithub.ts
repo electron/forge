@@ -27,7 +27,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     const { config } = this;
 
     const perReleaseArtifacts: {
-      [release: string]: ForgeMakeResult[];
+      [version: string]: ForgeMakeResult[];
     } = {};
 
     for (const makeResult of makeResults) {
@@ -50,9 +50,10 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     type OctokitRelease = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.getRelease>;
     type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.updateReleaseAsset>;
 
-    for (const releaseName of Object.keys(perReleaseArtifacts)) {
+    for (const releaseVersion of Object.keys(perReleaseArtifacts)) {
       let release: OctokitRelease | undefined;
-      const artifacts = perReleaseArtifacts[releaseName];
+      const artifacts = perReleaseArtifacts[releaseVersion];
+      const releaseName = `${config.tagPrefix ?? 'v'}${releaseVersion}`;
 
       await asyncOra(`Searching for target release: ${releaseName}`, async () => {
         try {
@@ -62,7 +63,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               repo: config.repository.name,
               per_page: 100,
             })
-          ).data.find((testRelease: GitHubRelease) => testRelease.tag_name === `v${releaseName}`);
+          ).data.find((testRelease: GitHubRelease) => testRelease.tag_name === releaseName);
           if (!release) {
             throw new NoReleaseError(404);
           }
@@ -73,8 +74,8 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               await github.getGitHub().repos.createRelease({
                 owner: config.repository.owner,
                 repo: config.repository.name,
-                tag_name: `v${releaseName}`,
-                name: `v${releaseName}`,
+                tag_name: releaseName,
+                name: releaseName,
                 draft: config.draft !== false,
                 prerelease: config.prerelease === true,
               })
@@ -87,9 +88,9 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
       });
 
       let uploaded = 0;
-      await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`, async (uploadSpinner) => {
+      await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length} to ${releaseName}`, async (uploadSpinner) => {
         const updateSpinner = () => {
-          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length} to v${releaseName}`;
+          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length} to ${releaseName}`;
         };
 
         const flatArtifacts: string[] = [];
