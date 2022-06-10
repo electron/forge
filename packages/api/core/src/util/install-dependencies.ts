@@ -24,7 +24,11 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
   if (hasYarn()) {
     cmd = ['add'].concat(deps);
     if (depType === DepType.DEV) cmd.push('--dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
+    if (versionRestriction === DepVersionRestriction.EXACT) {
+      d('emergency pinning electron@18');
+      cmd = cmd.map((c) => (c === 'electron' ? 'electron@18' : c));
+      cmd.push('--exact');
+    }
   } else {
     if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
     if (depType === DepType.DEV) cmd.push('--save-dev');
