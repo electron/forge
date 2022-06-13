@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
-    "@types/node": "^17.0.25",
+    "@types/node": "^17.0.42",
     "chai": "^4.3.3",
     "electron-packager": "^15.4.0",
     "mocha": "^9.0.1",
