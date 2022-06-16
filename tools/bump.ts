@@ -73,12 +73,12 @@ async function main(): Promise<void> {
   }
 
   await git('commit', '-m', `Release ${version}`);
-  await git('tag', `v${version}`);
+  await git('tag', `v${version}`, '-m', `v${version}`);
 
   await updateChangelog(lastVersion, version);
 
   // re-tag to include the changelog
-  await git('tag', '--force', `v${version}`);
+  await git('tag', '--force', `v${version}`, '-m', `v${version}`);
 }
 
 main().catch(console.error);
