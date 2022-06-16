@@ -2,23 +2,23 @@
 
 ##### New Features
 
-* **webpack-plugin:**  webpack 5 configuration factory (#2776) ([f4a77741](https://github.com/electron-userland/electron-forge/commit/f4a77741))
-*  🎸 allow specifying alternative tag prefix (#2605) ([88d9d722](https://github.com/electron-userland/electron-forge/commit/88d9d722))
-*  allow disabling maker in config (#2754) ([69777402](https://github.com/electron-userland/electron-forge/commit/69777402))
-*  🎸 Add packageSourceMaps option to WebpackPluginConfig (#2581) ([2bb5e0d8](https://github.com/electron-userland/electron-forge/commit/2bb5e0d8))
-*  Make autoUpdate and autoLaunch features configurable in MakerWixConfig (#2620) ([bf7d271a](https://github.com/electron-userland/electron-forge/commit/bf7d271a))
-* **publisher-ers:**  support flavor config (#2766) ([6069ebe1](https://github.com/electron-userland/electron-forge/commit/6069ebe1))
-* **cli:**  add --inspect-brk-electron option (#1328) ([c5a6ea17](https://github.com/electron-userland/electron-forge/commit/c5a6ea17))
-* **template:**  add a default preload script (#2722) ([636e2c5d](https://github.com/electron-userland/electron-forge/commit/636e2c5d))
-* **plugin-webpack:**  allow specifing a seperate webpack config for your preload (#2679) ([f5909424](https://github.com/electron-userland/electron-forge/commit/f5909424))
+- **webpack-plugin:** webpack 5 configuration factory (#2776) ([f4a77741](https://github.com/electron-userland/electron-forge/commit/f4a77741))
+- 🎸 allow specifying alternative tag prefix (#2605) ([88d9d722](https://github.com/electron-userland/electron-forge/commit/88d9d722))
+- allow disabling maker in config (#2754) ([69777402](https://github.com/electron-userland/electron-forge/commit/69777402))
+- 🎸 Add packageSourceMaps option to WebpackPluginConfig (#2581) ([2bb5e0d8](https://github.com/electron-userland/electron-forge/commit/2bb5e0d8))
+- Make autoUpdate and autoLaunch features configurable in MakerWixConfig (#2620) ([bf7d271a](https://github.com/electron-userland/electron-forge/commit/bf7d271a))
+- **publisher-ers:** support flavor config (#2766) ([6069ebe1](https://github.com/electron-userland/electron-forge/commit/6069ebe1))
+- **cli:** add --inspect-brk-electron option (#1328) ([c5a6ea17](https://github.com/electron-userland/electron-forge/commit/c5a6ea17))
+- **template:** add a default preload script (#2722) ([636e2c5d](https://github.com/electron-userland/electron-forge/commit/636e2c5d))
+- **plugin-webpack:** allow specifing a seperate webpack config for your preload (#2679) ([f5909424](https://github.com/electron-userland/electron-forge/commit/f5909424))
 
 ##### Bug Fixes
 
-*  escape file names for `make` step (#2752) ([beb93056](https://github.com/electron-userland/electron-forge/commit/beb93056))
-*  default platforms to empty array instead of null ([9abc581b](https://github.com/electron-userland/electron-forge/commit/9abc581b))
-* **publisher-electron-release-server:**
-  *  set knownLength option for asset upload (#2706) ([cf08cd62](https://github.com/electron-userland/electron-forge/commit/cf08cd62))
-  *  omit RELEASES file when uploading assets (#2089) ([2202dcd3](https://github.com/electron-userland/electron-forge/commit/2202dcd3))
+- escape file names for `make` step (#2752) ([beb93056](https://github.com/electron-userland/electron-forge/commit/beb93056))
+- default platforms to empty array instead of null ([9abc581b](https://github.com/electron-userland/electron-forge/commit/9abc581b))
+- **publisher-electron-release-server:**
+  - set knownLength option for asset upload (#2706) ([cf08cd62](https://github.com/electron-userland/electron-forge/commit/cf08cd62))
+  - omit RELEASES file when uploading assets (#2089) ([2202dcd3](https://github.com/electron-userland/electron-forge/commit/2202dcd3))
 
 #### [6.0.0-beta.63](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.63) (2022-01-10)
 
