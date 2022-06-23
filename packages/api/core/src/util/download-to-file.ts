@@ -25,8 +25,8 @@ export async function downloadToFile(targetFilePath: string, url: string): Promi
     }
   }, PROGRESS_BAR_DELAY_IN_SECONDS * 1000);
 
-  await new Promise((resolve, reject) => {
-    const downloadStream = got.stream({ method: 'GET', url });
+  await new Promise<void>((resolve, reject) => {
+    const downloadStream = got.stream(url);
     downloadStream.on('downloadProgress', async (progress) => {
       progressPercent = progress.percent;
       if (bar) {
