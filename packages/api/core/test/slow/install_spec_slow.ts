@@ -8,7 +8,7 @@ import { InstallOptions, InstallAsset } from '../../src/api';
 
 describe('install', () => {
   let install: (opts: InstallOptions) => Promise<void>;
-  let nuggetSpy: SinonSpy;
+  let downloadToFileSpy: SinonSpy;
   let fetch: FetchMockSandbox;
   class MockInstaller {
     async install() {
@@ -19,15 +19,11 @@ describe('install', () => {
 
   beforeEach(() => {
     fetch = fetchMock.sandbox();
-    nuggetSpy = stub();
+    downloadToFileSpy = stub();
 
     install = proxyquire.noCallThru().load('../../src/api/install', {
       'node-fetch': fetch,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      nugget: (...args: any[]) => {
-        nuggetSpy(...args);
-        args[args.length - 1]();
-      },
+      '../../src/util/download-to-file': { downloadToFile: downloadToFileSpy },
       '@electron-forge/installer-dmg': MockInstaller,
       '@electron-forge/installer-zip': MockInstaller,
       '@electron-forge/installer-deb': MockInstaller,
@@ -111,10 +107,10 @@ describe('install', () => {
         ],
       },
     ]);
-    expect(nuggetSpy.callCount).to.equal(0);
+    expect(downloadToFileSpy.callCount).to.equal(0);
     await install({ chooseAsset, repo: 'g/h', interactive: false });
-    expect(nuggetSpy.callCount).to.equal(1);
-    expect(nuggetSpy.firstCall.args[0]).to.equal('fetch.it');
+    expect(downloadToFileSpy.callCount).to.equal(1);
+    expect(downloadToFileSpy.firstCall.args[1]).to.equal('fetch.it');
   });
 
   it('should throw an error if there is more than one compatible asset with no chooseAsset method', async () => {
