@@ -74,9 +74,9 @@ export default class WebpackConfigGenerator {
     if (this.isProd) {
       return `\`file://$\{require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', '${basename}')}\``;
     }
-    const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
+    const baseUrl = `http://localhost:${this.port}/${entryPoint.name}/`;
     if (basename !== 'index.html') {
-      return `'${baseUrl}/${basename}'`;
+      return new URL(basename, baseUrl).href;
     }
     return `'${baseUrl}'`;
   }
