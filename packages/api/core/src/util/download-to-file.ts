@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import * as got from 'got';
+import got, { HTTPError } from 'got';
 import * as path from 'path';
 import ProgressBar from 'progress';
 
@@ -34,8 +34,8 @@ export async function downloadToFile(targetFilePath: string, url: string): Promi
       }
     });
     downloadStream.on('error', (error) => {
-      if (error.name === 'HTTPError' && error.statusCode === 404) {
-        error.message += ` for ${error.url}`;
+      if (error instanceof HTTPError && error.response.statusCode === 404) {
+        error.message += ` for ${error.response.url}`;
       }
       if (writeStream.destroy) {
         writeStream.destroy(error);
