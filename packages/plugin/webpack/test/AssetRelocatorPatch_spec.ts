@@ -49,7 +49,7 @@ function createSimpleDevServer(rendererOut: string): http.Server {
   return http
     .createServer(async (req, res) => {
       const url = req.url || '';
-      const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
+      const file = url.endsWith('main_window/') ? path.join(url, 'index.html') : url;
       const fullPath = path.join(rendererOut, file);
       try {
         const data = await readFile(fullPath);
