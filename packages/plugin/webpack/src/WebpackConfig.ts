@@ -76,7 +76,7 @@ export default class WebpackConfigGenerator {
     }
     const baseUrl = `http://localhost:${this.port}/${entryPoint.name}/`;
     if (basename !== 'index.html') {
-      return new URL(basename, baseUrl).href;
+      return `'${new URL(basename, baseUrl).href}'`;
     }
     return `'${baseUrl}'`;
   }
