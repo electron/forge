@@ -116,7 +116,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
-        if (isRenderer && this.config.renderer.jsonStats) {
+        if (isRenderer && this.config.renderer?.jsonStats) {
           await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
         }
         if (err) {
@@ -210,7 +210,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
-      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (this.config.renderer?.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
         return true;
       }
 
@@ -287,24 +287,26 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
   compileRenderers = async (watch = false): Promise<void> => {
     await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer!.entryPoints), true);
       if (!watch && stats?.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
       }
     });
 
-    for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.preload) {
-        await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          const stats = await this.runWebpack(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
-          );
-
-          if (stats?.hasErrors()) {
-            throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
-          }
-        });
+    if (this.config.renderer) {
+      for (const entryPoint of this.config.renderer.entryPoints) {
+        if (entryPoint.preload) {
+          await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
+            const stats = await this.runWebpack(
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
+            );
+  
+            if (stats?.hasErrors()) {
+              throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
+            }
+          });
+        }
       }
     }
   };
@@ -314,7 +316,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       const tab = logger.createTab('Renderers');
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
-      const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+      const config = this.config.renderer ? await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints) : {};
       if (!config.plugins) config.plugins = [];
       config.plugins.push(pluginLogs);
 
@@ -325,32 +327,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {
-      for (const entryPoint of this.config.renderer.entryPoints) {
-        if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(
-            entryPoint,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            entryPoint.preload!
-          );
-          await new Promise((resolve, reject) => {
-            const tab = logger.createTab(`${entryPoint.name} - Preload`);
-            const [onceResolve, onceReject] = once(resolve, reject);
-
-            this.watchers.push(
-              webpack(config).watch({}, (err, stats) => {
-                if (stats) {
-                  tab.log(
-                    stats.toString({
-                      colors: true,
-                    })
-                  );
-                }
-
-                if (err) return onceReject(err);
-                return onceResolve(undefined);
-              })
+      if (this.config.renderer) {
+        for (const entryPoint of this.config.renderer.entryPoints) {
+          if (entryPoint.preload) {
+            const config = await this.configGenerator.getPreloadRendererConfig(
+              entryPoint,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              entryPoint.preload!
             );
-          });
+            await new Promise((resolve, reject) => {
+              const tab = logger.createTab(`${entryPoint.name} - Preload`);
+              const [onceResolve, onceReject] = once(resolve, reject);
+  
+              this.watchers.push(
+                webpack(config).watch({}, (err, stats) => {
+                  if (stats) {
+                    tab.log(
+                      stats.toString({
+                        colors: true,
+                      })
+                    );
+                  }
+  
+                  if (err) return onceReject(err);
+                  return onceResolve(undefined);
+                })
+              );
+            });
+          }
         }
       }
     });

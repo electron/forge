@@ -143,7 +143,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
+      const entryPoint = config.renderer!.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -160,7 +160,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(config.renderer!.entryPoints);
       await asyncWebpack(rendererConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -198,7 +198,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
+      const entryPoint = config.renderer!.entryPoints[0];
       const preloadConfig = await generator.getPreloadRendererConfig(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -215,7 +215,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(config.renderer!.entryPoints);
       await asyncWebpack(rendererConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -235,10 +235,10 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer with nodeIntegration = false', async () => {
-      config.renderer.nodeIntegration = false;
+      config.renderer!.nodeIntegration = false;
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(config.renderer!.entryPoints);
       await asyncWebpack(rendererConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({

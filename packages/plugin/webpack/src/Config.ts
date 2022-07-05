@@ -97,9 +97,10 @@ export interface WebpackPluginConfig {
    */
   jsonStats?: boolean;
   /**
-   * Electron Forge webpack configuration for your renderer process
+   * Electron Forge webpack configuration for your renderer process. 
+   * This is optional, to allow apps to use webpack without a renderer process.
    */
-  renderer: WebpackPluginRendererConfig;
+  renderer?: WebpackPluginRendererConfig;
   /**
    * The TCP port for the dev servers. Defaults to 3000.
    */

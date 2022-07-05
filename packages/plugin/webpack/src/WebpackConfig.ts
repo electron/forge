@@ -67,7 +67,7 @@ export default class WebpackConfigGenerator {
   }
 
   get rendererTarget(): string {
-    return this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
+    return this.pluginConfig.renderer?.nodeIntegration ? 'electron-renderer' : 'web';
   }
 
   rendererEntryPoint(entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string {
@@ -100,6 +100,8 @@ export default class WebpackConfigGenerator {
 
   getDefines(inRendererDir = true): Record<string, string> {
     const defines: Record<string, string> = {};
+    if (!this.pluginConfig.renderer) return defines;
+
     if (!this.pluginConfig.renderer.entryPoints || !Array.isArray(this.pluginConfig.renderer.entryPoints)) {
       throw new Error('Required config option "renderer.entryPoints" has not been defined');
     }
@@ -159,7 +161,8 @@ export default class WebpackConfigGenerator {
   }
 
   async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
-    const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
+    const pluginConfig = this.pluginConfig.renderer?.config || {};
+    const rendererConfig = await this.resolveConfig(entryPoint.config || pluginConfig);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 
     return webpackMerge(
@@ -182,7 +185,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
-    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
+    const rendererConfig = (this.pluginConfig.renderer) ? await this.resolveConfig(this.pluginConfig.renderer.config) : {};
     const entry: webpack.Entry = {};
     for (const entryPoint of entryPoints) {
       const prefixedEntries = entryPoint.prefixedEntries || [];
@@ -190,6 +193,7 @@ export default class WebpackConfigGenerator {
     }
 
     const defines = this.getDefines(false);
+    const nodeIntegration = !!this.pluginConfig.renderer?.nodeIntegration || false;
     const plugins = entryPoints
       .filter((entryPoint) => Boolean(entryPoint.html))
       .map(
@@ -201,7 +205,7 @@ export default class WebpackConfigGenerator {
             chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
           }) as WebpackPluginInstance
       )
-      .concat([new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)]);
+      .concat([new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, nodeIntegration)]);
     return webpackMerge(
       {
         entry,
