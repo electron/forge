@@ -27,6 +27,7 @@ export default async ({
   inspectBrk = false,
 }: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
+  asyncOra.keepStdinFlowing = true;
 
   await asyncOra('Locating Application', async () => {
     const resolvedDir = await resolveDir(dir);
@@ -131,9 +132,13 @@ export default async ({
         process.stdin.resume();
       }
       spawned.on('exit', () => {
-        if (spawned.restarted) return;
+        if (spawned.restarted) {
+          return;
+        }
 
-        if (!process.stdin.isPaused()) process.stdin.pause();
+        if (interactive && !process.stdin.isPaused()) {
+          process.stdin.pause();
+        }
       });
     } else if (interactive && !process.stdin.isPaused()) {
       process.stdin.pause();
@@ -153,6 +158,7 @@ export default async ({
         lastSpawned.emit('restarted', await forgeSpawnWrapper());
       }
     });
+    process.stdin.resume();
   }
 
   return forgeSpawnWrapper();
