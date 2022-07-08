@@ -27,6 +27,10 @@ export default async ({
   inspectBrk = false,
 }: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
+  // Since the `start` command is meant to be long-living (i.e. run forever,
+  // until interrupted) we should enable this to keep stdin flowing after ora
+  // completes. For more context:
+  // https://github.com/electron-userland/electron-forge/issues/2319
   asyncOra.keepStdinFlowing = true;
 
   await asyncOra('Locating Application', async () => {
