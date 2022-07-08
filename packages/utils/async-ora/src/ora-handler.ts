@@ -35,6 +35,9 @@ export interface AsyncOraMethod {
    * This will keep stdin unpaused if ora inadvertently pauses it. Beware that
    * enabling this may keep the node process alive even when there is no more
    * work to be done, as it will forever be waiting for input on stdin.
+   *
+   * More context:
+   *   https://github.com/electron-userland/electron-forge/issues/2319
    */
   keepStdinFlowing?: boolean;
 }
