@@ -62,7 +62,7 @@
     "filenamify": "^4.1.0",
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
-    "got": "^11.8.5",
+    "got": "^12.1.0",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "node-fetch": "^2.6.7",
