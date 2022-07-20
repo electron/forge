@@ -10,4 +10,5 @@ module.exports = {
   module: {
     rules,
   },
+  target: "electron-renderer",
 };
