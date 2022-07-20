@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 14.17.5"
   },
   "bolt": {
     "workspaces": [
@@ -171,6 +171,6 @@
     "singleQuote": true
   },
   "volta": {
-    "node": "12.22.4"
+    "node": "14.17.5"
   }
 }

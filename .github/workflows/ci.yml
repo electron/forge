@@ -37,10 +37,10 @@ jobs:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
       - uses: actions/checkout@v3.0.2
-      - name: Use Node.js 12.x
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v2.5.1
         with:
-          node-version: 12.x
+          node-version: 14.x
           cache: yarn
       - name: Install latest NPM on Windows
         if: matrix.os == 'windows-latest'
@@ -100,10 +100,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
-      - name: Use Node.js 12.x
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v2.5.1
         with:
-          node-version: 12.x
+          node-version: 14.x
           cache: yarn
       - name: Install bolt
         shell: bash

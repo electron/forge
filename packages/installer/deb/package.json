@@ -11,7 +11,7 @@
     "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 14.17.5"
   },
   "dependencies": {
     "@electron-forge/installer-linux": "6.0.0-beta.64"

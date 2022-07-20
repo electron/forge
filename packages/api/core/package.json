@@ -75,7 +75,7 @@
     "yarn-or-npm": "^3.0.1"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 14.17.5"
   },
   "funding": [
     {
