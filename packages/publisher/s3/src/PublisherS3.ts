@@ -100,3 +100,5 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     return undefined;
   }
 }
+
+export { PublisherS3Config };

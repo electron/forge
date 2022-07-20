@@ -40,3 +40,5 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
     });
   }
 }
+
+export { PublisherSnapcraftConfig };

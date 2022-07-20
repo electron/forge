@@ -157,3 +157,5 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     }
   }
 }
+
+export { PublisherERSConfig };

@@ -33,3 +33,5 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
     return forgeConfig;
   };
 }
+
+export { AutoUnpackNativesConfig };

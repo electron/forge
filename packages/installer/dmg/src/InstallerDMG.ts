@@ -34,3 +34,5 @@ export default class InstallerDMG extends InstallerDarwin {
     }
   }
 }
+
+export { InstallerOptions };

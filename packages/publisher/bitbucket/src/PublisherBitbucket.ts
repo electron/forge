@@ -83,3 +83,5 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
     }
   }
 }
+
+export { PublisherBitbucketConfig };

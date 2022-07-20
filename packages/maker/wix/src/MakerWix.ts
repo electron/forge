@@ -53,3 +53,5 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     return [msiFile];
   }
 }
+
+export { MakerWixConfig };

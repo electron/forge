@@ -129,3 +129,5 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     return [path.resolve(outPath, `${opts.packageName}.appx`)];
   }
 }
+
+export { MakerAppXConfig };

@@ -39,3 +39,5 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     return [opts.dmgPath];
   }
 }
+
+export { MakerDMGConfig };

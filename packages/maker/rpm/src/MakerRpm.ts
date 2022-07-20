@@ -47,3 +47,5 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
     return packagePaths;
   }
 }
+
+export { MakerRpmConfig };
