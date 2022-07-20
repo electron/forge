@@ -1,4 +1,5 @@
-import { Configuration as WebpackConfiguration } from 'webpack';
+import { Configuration as RawWebpackConfiguration } from 'webpack';
+import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
 
 export interface WebpackPluginEntryPoint {
   /**
@@ -108,6 +109,12 @@ export interface WebpackPluginConfig {
    */
   loggerPort?: number;
   /**
+   * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
+   * which results in `.map` files being generated), this option will cause the source map files be
+   * packaged with your app. By default they are not included.
+   */
+  packageSourceMaps?: boolean;
+  /**
    * Sets the [`Content-Security-Policy` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
    * for the Webpack development server.
    *
@@ -133,3 +140,5 @@ export interface WebpackPluginConfig {
   devServer?: Record<string, unknown>;
   // TODO: use webpack-dev-server.Configuration when @types/webpack-dev-server upgrades to v4
 }
+
+export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;

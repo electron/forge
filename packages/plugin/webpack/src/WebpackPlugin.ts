@@ -214,6 +214,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
+      if (!this.config.packageSourceMaps && /[^/\\]+\.js\.map$/.test(file)) {
+        return true;
+      }
+
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
@@ -249,7 +253,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = this.configGenerator.getMainConfig();
+      const mainConfig = await this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);

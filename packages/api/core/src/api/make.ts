@@ -5,6 +5,7 @@ import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMake
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
+import filenamify from 'filenamify';
 
 import getForgeConfig from '../util/forge-config';
 import { runHook, runMutatingHook } from '../util/hook';
@@ -115,10 +116,11 @@ export default async ({
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
       /* eslint-enable @typescript-eslint/no-explicit-any */
-      // eslint-disable-next-line no-continue
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
       const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
+      // non-false falsy values should be 'true'
+      if (resolvableTarget.enabled === false) continue;
 
       if (!resolvableTarget.name) {
         throw new Error(`The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`);
@@ -178,7 +180,7 @@ export default async ({
   info(interactive, `Making for the following targets: ${chalk.cyan(`${targets.map((_t, i) => makers[i].name).join(', ')}`)}`);
 
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-  const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
+  const appName = filenamify(forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name, { replacement: '-' });
   const outputs: ForgeMakeResult[] = [];
 
   await runHook(forgeConfig, 'preMake');

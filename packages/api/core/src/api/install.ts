@@ -5,7 +5,6 @@ import fetch from 'node-fetch';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { promisify } from 'util';
 import semver from 'semver';
 
 import InstallerBase from '@electron-forge/installer-base';
@@ -16,10 +15,7 @@ import RPMInstaller from '@electron-forge/installer-rpm';
 import ExeInstaller from '@electron-forge/installer-exe';
 
 import { info } from '../util/messages';
-
-// TODO: replace with a got-based module
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const nugget = require('nugget');
+import { downloadToFile } from '../util/download-to-file';
 
 const d = debug('electron-forge:install');
 
@@ -151,14 +147,7 @@ export default async ({ interactive = false, prerelease = false, repo, chooseAss
   const fullFilePath = path.resolve(tmpdir, filename);
   if (!(await fs.pathExists(fullFilePath)) || (await fs.stat(fullFilePath)).size !== targetAsset.size) {
     await fs.mkdirs(tmpdir);
-
-    const nuggetOpts = {
-      target: filename,
-      dir: tmpdir,
-      resume: true,
-      strictSSL: true,
-    };
-    await promisify(nugget)(targetAsset.browser_download_url, nuggetOpts);
+    await downloadToFile(fullFilePath, targetAsset.browser_download_url);
   }
 
   await asyncOra('Installing Application', async (installSpinner) => {

@@ -9,6 +9,22 @@ import make from '../../src/api/make';
 describe('make', () => {
   const fixtureDir = path.resolve(__dirname, '..', 'fixture');
 
+  it('works with scoped package names', async () => {
+    const stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]> = proxyquire.noCallThru().load('../../src/api/make', {
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(require('../fixture/app-with-scoped-name/package.json')),
+      },
+    }).default;
+    await stubbedMake({
+      arch: 'x64',
+      dir: path.join(fixtureDir, 'app-with-scoped-name'),
+      overrideTargets: ['@electron-forge/maker-zip'],
+      platform: 'linux',
+      skipPackage: true,
+    });
+    after(() => proxyquire.callThru());
+  });
+
   describe('overrideTargets inherits from forge config', () => {
     let stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]>;
 
@@ -59,5 +75,22 @@ describe('make', () => {
         })
       ).to.eventually.be.rejectedWith(/^The following maker config has a maker name that is not a string:/);
     });
+  });
+
+  it('can skip makers via config', async () => {
+    const stubbedMake = proxyquire.noCallThru().load('../../src/api/make', {
+      '../util/read-package-json': {
+        readMutatedPackageJson: () => Promise.resolve(require('../fixture/app-with-maker-disable/package.json')),
+      },
+    }).default;
+    await expect(
+      stubbedMake({
+        arch: 'x64',
+        dir: path.join(fixtureDir, 'app-with-maker-disable'),
+        platform: 'linux',
+        skipPackage: true,
+      })
+    ).to.eventually.be.rejectedWith(/Could not find any make targets configured for the "linux" platform./);
+    proxyquire.callThru();
   });
 });

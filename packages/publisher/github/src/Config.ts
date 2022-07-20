@@ -39,4 +39,8 @@ export interface PublisherGitHubConfig {
    * Whether or not this release should be tagged as a draft
    */
   draft?: boolean;
+  /**
+   * Prepended to the package version to determine the release name (default "v")
+   */
+  tagPrefix?: string;
 }
