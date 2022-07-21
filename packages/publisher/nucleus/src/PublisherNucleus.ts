@@ -67,3 +67,5 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
     }
   }
 }
+
+export { PublisherNucleusConfig };

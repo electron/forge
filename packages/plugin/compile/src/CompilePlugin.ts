@@ -33,3 +33,5 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
     return [process.execPath, path.resolve(this.dir, 'node_modules/electron-prebuilt-compile/lib/cli')];
   }
 }
+
+export { CompilePluginConfig };

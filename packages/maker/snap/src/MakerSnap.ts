@@ -33,3 +33,5 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     return [await installer(snapConfig)];
   }
 }
+
+export { MakerSnapConfig };

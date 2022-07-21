@@ -9,3 +9,5 @@ export default class InstallerExe extends InstallerBase {
     await open(filePath, { wait: false });
   }
 }
+
+export { InstallerOptions };

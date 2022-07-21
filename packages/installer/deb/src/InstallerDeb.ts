@@ -7,3 +7,5 @@ export default class InstallerDeb extends InstallerLinux {
     await this.sudo('Debian', 'gdebi', `-n ${filePath}`);
   }
 }
+
+export { InstallerOptions };

@@ -49,3 +49,5 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     return packagePaths;
   }
 }
+
+export { MakerDebConfig };

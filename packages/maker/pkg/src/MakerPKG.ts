@@ -34,3 +34,5 @@ export default class MakerDMG extends MakerBase<MakerPKGConfig> {
     return [outPath];
   }
 }
+
+export { MakerPKGConfig };

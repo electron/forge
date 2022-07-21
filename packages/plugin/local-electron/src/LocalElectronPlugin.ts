@@ -61,3 +61,5 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     await fs.copy(this.config.electronPath, buildPath);
   };
 }
+
+export { LocalElectronPluginConfig };

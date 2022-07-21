@@ -51,3 +51,5 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
     return (await fs.readdir(outDir)).filter((basename) => basename.endsWith('.flatpak')).map((basename) => path.join(outDir, basename));
   }
 }
+
+export { MakerFlatpak };

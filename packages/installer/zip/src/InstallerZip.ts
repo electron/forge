@@ -24,3 +24,5 @@ export default class InstallerZip extends InstallerDarwin {
     await spawn('open', ['-R', targetApplicationPath], { detached: true });
   }
 }
+
+export { InstallerOptions };

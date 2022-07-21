@@ -7,3 +7,5 @@ export default class InstallerRpm extends InstallerLinux {
     await this.sudo('RPM', 'dnf', `--assumeyes --nogpgcheck install ${filePath}`);
   }
 }
+
+export { InstallerOptions };

@@ -131,3 +131,5 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     }
   }
 }
+
+export { PublisherGitHubConfig };

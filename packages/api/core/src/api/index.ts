@@ -84,6 +84,8 @@ const utils = new ForgeUtils();
 
 export {
   ForgeMakeResult,
+  ElectronProcess,
+  ForgeUtils,
   ImportOptions,
   InitOptions,
   InstallAsset,
