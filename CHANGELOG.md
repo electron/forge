@@ -1,4 +1,4 @@
-#### 6.0.0-beta.65 (2022-07-25)
+#### [6.0.0-beta.65](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.65) (2022-07-25)
 
 ##### Bug Fixes
 

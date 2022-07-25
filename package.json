@@ -28,6 +28,7 @@
     "docs:generate": "node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:deploy:build": "ts-node tools/sync-readmes.ts && bolt docs",
     "lint": "prettier --check . && eslint .",
+    "lint:fix": "prettier --write . && eslint . --fix",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts"
