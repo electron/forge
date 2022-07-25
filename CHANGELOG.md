@@ -1,3 +1,14 @@
+#### 6.0.0-beta.65 (2022-07-25)
+
+##### Bug Fixes
+
+- add missing exports from packages (#2920) ([460546b7](https://github.com/electron-userland/electron-forge/commit/460546b7))
+- keep stdin unpaused after ora completes (#2904) ([aad9c7e4](https://github.com/electron-userland/electron-forge/commit/aad9c7e4))
+
+##### Chores
+
+- upgrade Node.js to 14 LTS (#2921) ([4dcca1ce](https://github.com/electron-userland/electron-forge/commit/4dcca1ce))
+
 #### [6.0.0-beta.64](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.64) (2022-06-16)
 
 ##### New Features
