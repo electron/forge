@@ -2,9 +2,10 @@
 // See: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/55300#issuecomment-904636931
 declare module 'webpack-dev-server' {
   import { Server } from 'http';
-  import { Compiler } from 'webpack';
+  import { Compiler, MultiCompiler } from 'webpack';
   class WebpackDevServer {
     constructor(options: {}, compiler: Compiler);
+    constructor(options: {}, compiler: MultiCompiler);
     server: Server;
     start(): Promise<void>;
     close(): void;

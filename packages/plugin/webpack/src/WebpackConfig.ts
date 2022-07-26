@@ -66,8 +66,8 @@ export default class WebpackConfigGenerator {
     return this.isProd ? 'source-map' : 'eval-source-map';
   }
 
-  get rendererTarget(): string {
-    return this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
+  rendererTarget(entryPoint: WebpackPluginEntryPoint): string {
+    return entryPoint.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration ? 'electron-renderer' : 'web';
   }
 
   rendererEntryPoint(entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string {
@@ -181,46 +181,48 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration> {
+  async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration[]> {
     const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
-    const entry: webpack.Entry = {};
-    for (const entryPoint of entryPoints) {
-      const prefixedEntries = entryPoint.prefixedEntries || [];
-      entry[entryPoint.name] = prefixedEntries.concat([entryPoint.js]);
-    }
-
     const defines = this.getDefines(false);
-    const plugins = entryPoints
-      .filter((entryPoint) => Boolean(entryPoint.html))
-      .map(
-        (entryPoint) =>
-          new HtmlWebpackPlugin({
-            title: entryPoint.name,
-            template: entryPoint.html,
-            filename: `${entryPoint.name}/index.html`,
-            chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-          }) as WebpackPluginInstance
-      )
-      .concat([new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)]);
-    return webpackMerge(
-      {
-        entry,
-        devtool: this.rendererSourceMapOption,
-        target: this.rendererTarget,
-        mode: this.mode,
-        output: {
-          path: path.resolve(this.webpackDir, 'renderer'),
-          filename: '[name]/index.js',
-          globalObject: 'self',
-          ...(this.isProd ? {} : { publicPath: '/' }),
+
+    return entryPoints.map((entryPoint) => {
+      const config = webpackMerge(
+        {
+          entry: {
+            [entryPoint.name]: (entryPoint.prefixedEntries || []).concat([entryPoint.js]),
+          },
+          target: this.rendererTarget(entryPoint),
+          devtool: this.rendererSourceMapOption,
+          mode: this.mode,
+          output: {
+            path: path.resolve(this.webpackDir, 'renderer'),
+            filename: '[name]/index.js',
+            globalObject: 'self',
+            ...(this.isProd ? {} : { publicPath: '/' }),
+          },
+          node: {
+            __dirname: false,
+            __filename: false,
+          },
+          plugins: [
+            ...(entryPoint.html
+              ? [
+                  new HtmlWebpackPlugin({
+                    title: entryPoint.name,
+                    template: entryPoint.html,
+                    filename: `${entryPoint.name}/index.html`,
+                    chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
+                  }) as WebpackPluginInstance,
+                ]
+              : []),
+            new webpack.DefinePlugin(defines),
+            new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration),
+          ],
         },
-        node: {
-          __dirname: false,
-          __filename: false,
-        },
-        plugins,
-      },
-      rendererConfig || {}
-    );
+        rendererConfig || {}
+      );
+
+      return config;
+    });
   }
 }

@@ -33,6 +33,20 @@ export interface WebpackPluginEntryPoint {
    * preload scripts you don't need to set this.
    */
   preload?: WebpackPreloadEntryPoint;
+  /**
+   * Override the Webpack config for this renderer based on whether `nodeIntegration` for
+   * the `BrowserWindow` is enabled. Namely, for Webpack's `target` option:
+   *
+   * * When `nodeIntegration` is true, the `target` is `electron-renderer`.
+   * * When `nodeIntegration` is false, the `target` is `web`.
+   *
+   * Unfortunately, we cannot derive the value from the main process code as it can be a
+   * dynamically generated value at runtime, and Webpack processes at build-time.
+   *
+   * Defaults to `false` (as it is disabled by default in Electron \>= 5) or the value set
+   * for all entries.
+   */
+  nodeIntegration?: boolean;
 }
 
 export interface WebpackPreloadEntryPoint {
@@ -66,8 +80,8 @@ export interface WebpackPluginRendererConfig {
    */
   jsonStats?: boolean;
   /**
-   * Adjusts the Webpack config for the renderer based on whether `nodeIntegration` for the
-   * `BrowserWindow` is enabled. Namely, for Webpack's `target` option:
+   * Adjusts the Webpack config for all renderer entries based on whether `nodeIntegration`
+   * for the `BrowserWindow` is enabled. Namely, for Webpack's `target` option:
    *
    * * When `nodeIntegration` is true, the `target` is `electron-renderer`.
    * * When `nodeIntegration` is false, the `target` is `web`.
