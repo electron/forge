@@ -56,7 +56,7 @@
     "@malept/cross-spawn-promise": "^2.0.0",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
-    "electron-packager": "^15.4.0",
+    "electron-packager": "^16.0.0",
     "electron-rebuild": "^3.2.6",
     "fast-glob": "^3.2.7",
     "filenamify": "^4.1.0",
