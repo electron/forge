@@ -1,4 +1,14 @@
-#### 6.0.0-beta.65 (2022-07-25)
+#### [6.0.0-beta.66](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.66) (2022-09-07)
+
+##### New Features
+
+- **plugin-webpack:** Allow each entrypoints to specify `nodeIntegration` (#2867) ([1f45e2ca](https://github.com/electron-userland/electron-forge/commit/1f45e2ca))
+
+##### Other Changes
+
+- update got to 2.0.0 (#2924) ([23eebf19](https://github.com/electron-userland/electron-forge/commit/23eebf19))
+
+#### [6.0.0-beta.65](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.65) (2022-07-25)
 
 ##### Bug Fixes
 
