@@ -106,3 +106,4 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 - make sure the tests pass
 - `./tools/bump.ts $NEW_VERSION`
 - `node tools/publish.js`
+- update CHANGELOG.md
