@@ -27,7 +27,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
                 js: './src/renderer.ts',
                 name: 'main_window',
                 preload: {
-                  js: 'preload.js',
+                  js: './src/preload.ts',
                 },
               },
             ],
