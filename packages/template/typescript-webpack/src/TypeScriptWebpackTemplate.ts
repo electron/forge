@@ -26,6 +26,9 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
                 html: './src/index.html',
                 js: './src/renderer.ts',
                 name: 'main_window',
+                preload: {
+                  js: './src/preload.ts',
+                },
               },
             ],
           },
@@ -63,6 +66,9 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
+
+      // Remove preload.js and replace with preload.ts
+      await fs.remove(filePath('preload.js'));
       await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
     });
   }
