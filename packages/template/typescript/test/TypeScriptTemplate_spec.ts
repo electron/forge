@@ -17,12 +17,7 @@ describe('TypeScriptTemplate', () => {
   });
 
   context('template files are copied to project', () => {
-    const expectedFiles = [
-      '.eslintrc.json',
-      'tsconfig.json',
-      path.join('src', 'index.ts'),
-      path.join('src', 'preload.ts'),
-    ];
+    const expectedFiles = ['.eslintrc.json', 'tsconfig.json', path.join('src', 'index.ts'), path.join('src', 'preload.ts')];
     for (const filename of expectedFiles) {
       it(`${filename} should exist`, async () => {
         await testUtils.expectProjectPathExists(dir, filename, 'file');
@@ -31,11 +26,8 @@ describe('TypeScriptTemplate', () => {
   });
 
   it('should ensure js source files from base template are removed', async () => {
-      const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
-      expect(jsFiles.length).to.equal(
-        0,
-        `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`
-      );
+    const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+    expect(jsFiles.length).to.equal(0, `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`);
   });
 
   describe('lint', () => {
