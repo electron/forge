@@ -1,7 +1,9 @@
 import * as testUtils from '@electron-forge/test-utils';
 import fs from 'fs-extra';
+import glob from 'fast-glob';
 import path from 'path';
 import template from '../src/TypeScriptWebpackTemplate';
+import { expect } from 'chai';
 
 describe('TypeScriptWebpackTemplate', () => {
   let dir: string;
@@ -31,6 +33,11 @@ describe('TypeScriptWebpackTemplate', () => {
         await testUtils.expectProjectPathExists(dir, filename, 'file');
       });
     }
+  });
+
+  it('should ensure js source files from base template are removed', async () => {
+    const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+    expect(jsFiles.length).to.equal(0, `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`);
   });
 
   describe('lint', () => {

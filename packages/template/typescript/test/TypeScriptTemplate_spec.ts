@@ -1,6 +1,7 @@
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
+import glob from 'fast-glob';
 import path from 'path';
 import template from '../src/TypeScriptTemplate';
 
@@ -16,7 +17,7 @@ describe('TypeScriptTemplate', () => {
   });
 
   context('template files are copied to project', () => {
-    const expectedFiles = ['.eslintrc.json', 'tsconfig.json', path.join('src', 'preload.ts')];
+    const expectedFiles = ['.eslintrc.json', 'tsconfig.json', path.join('src', 'index.ts'), path.join('src', 'preload.ts')];
     for (const filename of expectedFiles) {
       it(`${filename} should exist`, async () => {
         await testUtils.expectProjectPathExists(dir, filename, 'file');
@@ -24,10 +25,9 @@ describe('TypeScriptTemplate', () => {
     }
   });
 
-  it('should convert the main process file to typescript', async () => {
-    await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
-    await testUtils.expectProjectPathExists(dir, path.join('src', 'index.ts'), 'file');
-    expect((await fs.readFile(path.join(dir, 'src', 'index.ts'))).toString()).to.match(/import\b.*\bBrowserWindow\b/);
+  it('should ensure js source files from base template are removed', async () => {
+    const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+    expect(jsFiles.length).to.equal(0, `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`);
   });
 
   describe('lint', () => {
