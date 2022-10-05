@@ -102,8 +102,17 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
-- if you aren't sure if a release should happen, open an issue
-- make sure the tests pass
-- `./tools/bump.ts $NEW_VERSION`
-- `node tools/publish.js`
-- update CHANGELOG.md
+- If you aren't sure if a release should happen, open an issue
+- Make sure the tests pass
+- `$ ./tools/bump.ts $NEW_VERSION`
+  - This will commit the changes automatically. Run `git log` to confirm that the changes have been
+  committed.
+  - `$NEW_VERSION` i.e. `6.0.0-beta.67` (no `v` prefix)
+- `$ node tools/publish.js`
+- Push to default branch
+- Do a github release
+  - Go to releases tab
+  - Draft new release and make a new tag
+  - Target default branch
+  - Generate release notes by copying in CHANGELOG.md contents into release description, or use the
+  github button feature.
