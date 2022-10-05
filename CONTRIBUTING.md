@@ -106,7 +106,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 - Make sure the tests pass
 - `$ ./tools/bump.ts $NEW_VERSION`
   - This will commit the changes automatically. Run `git log` to confirm that the changes have been
-  committed.
+    committed.
   - `$NEW_VERSION` i.e. `6.0.0-beta.67` (no `v` prefix)
 - `$ node tools/publish.js`
 - Push to default branch
@@ -115,4 +115,4 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   - Draft new release and make a new tag
   - Target default branch
   - Generate release notes by copying in CHANGELOG.md contents into release description, or use the
-  github button feature.
+    github button feature.
