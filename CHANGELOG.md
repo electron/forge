@@ -1,3 +1,13 @@
+#### [6.0.0-beta.67](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.67) (2022-10-05)
+
+##### New Features
+
+- remove preload.js from TypeScript templates (#2938) ([50484dcc](https://github.com/electron-userland/electron-forge/commit/50484dcc))
+
+##### Bug Fixes
+
+- **template-typescript-webpack:** preload file to webpack config (#2936) ([cb1e5600](https://github.com/electron-userland/electron-forge/commit/cb1e5600))
+
 #### [6.0.0-beta.66](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.66) (2022-09-07)
 
 ##### New Features
