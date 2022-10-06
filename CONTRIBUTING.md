@@ -27,7 +27,7 @@ sites](https://github.com/electron/electron#community).
 ### Debugging
 
 Troubleshooting suggestions can be found in the [support
-documentation](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md#troubleshooting).
+documentation](https://github.com/electron-userland/electron-forge/blob/main/SUPPORT.md#troubleshooting).
 
 ## Contribution suggestions
 
@@ -67,7 +67,7 @@ bolt build
 
 ### Making Commits
 
-Please ensure that all changes are committed using [semantic commit messages](https://github.com/bcoe/conventional-changelog-standard/blob/master/convention.md).
+Please ensure that all changes are committed using [semantic commit messages](https://github.com/bcoe/conventional-changelog-standard/blob/main/convention.md).
 We expose a helper (`bolt commit`) to make this easier.
 
 ### Running the Tests

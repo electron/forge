@@ -27,6 +27,20 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
   requiredExternalBinaries: string[] = ['flatpak-builder', 'eu-strip'];
 
+  /**
+   * \@malept/electron-installer-flatpak has the default branch as master
+   * to avoid upstream changes we manually change the default
+   */
+  private setDefaultBranchAndBaseVersionToMain() {
+    if (this.config.options && !this.config.options?.branch) {
+      this.config.options.branch = 'main';
+    }
+
+    if (this.config.options && !this.config.options.baseVersion) {
+      this.config.options.baseVersion = 'main';
+    }
+  }
+
   isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('@malept/electron-installer-flatpak');
   }
@@ -34,6 +48,8 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line global-require, import/no-unresolved, node/no-missing-require
     const installer = require('@malept/electron-installer-flatpak');
+
+    this.setDefaultBranchAndBaseVersionToMain();
 
     const arch = flatpakArch(targetArch);
     const outDir = path.resolve(makeDir, 'flatpak', arch);
