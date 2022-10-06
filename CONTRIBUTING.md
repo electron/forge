@@ -108,8 +108,12 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
     committed.
   - `$NEW_VERSION` should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
 - `$ node tools/publish.js`
-- Push to default branch
-  - this will create an appropriate tag.
+- After running the command, you should have a commit which:
+  - Updates the version field in the package.json file
+  - Updates the version fields in each of the submodule package.json files
+  - Includes a git tag corresponding with the new version number.
+- Push your commit upstream to the main/default branch.
+- Push your tag upstream with `git push origin <tag_name>` .
 - Create a new github release
   - Go to releases tab
   - Draft a new release and choose the appropriate tag
