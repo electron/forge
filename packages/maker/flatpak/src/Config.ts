@@ -21,7 +21,7 @@ export interface MakerFlatpakOptionsConfig {
   /**
    * Release branch of the flatpak, used in the branch field of a flatpak-builder manifest.
    *
-   * Default: master
+   * Default: main
    */
   branch?: string;
   /**
@@ -34,7 +34,7 @@ export interface MakerFlatpakOptionsConfig {
   /**
    * Base app version, used in the base-version field of a flatpak-builder manifest.
    *
-   * Default: master
+   * Default: main
    */
   baseVersion?: string;
   /**

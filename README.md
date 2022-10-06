@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/electron-userland/electron-forge/workflows/CI/badge.svg)](https://github.com/electron-userland/electron-forge/actions?query=workflow:CI)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 [![npm version](https://img.shields.io/npm/v/@electron-forge/cli)](https://npm.im/@electron-forge/cli)
-[![license](https://img.shields.io/github/license/electron-userland/electron-forge.svg)](https://github.com/electron-userland/electron-forge/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/electron-userland/electron-forge.svg)](https://github.com/electron-userland/electron-forge/blob/main/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
 A complete tool for building modern Electron applications.
@@ -18,7 +18,7 @@ jump right in to Electron development.
 
 :building_construction:
 
-The `master` branch is a rewrite of Electron Forge that will eventually be the 6.x series. If you
+The `main` branch is a rewrite of Electron Forge that will eventually be the 6.x series. If you
 are looking for the 5.x series (the version currently published to NPM under `electron-forge`), please view the [5.x branch](https://github.com/electron-userland/electron-forge/tree/5.x).
 
 ---
@@ -27,9 +27,9 @@ are looking for the 5.x series (the version currently published to NPM under `el
 [Goals](#project-goals) |
 [Docs and Usage](#docs-and-usage) |
 [Configuration](https://www.electronforge.io/configuration) |
-[Support](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md) |
-[Contributing](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) |
-[Changelog](https://github.com/electron-userland/electron-forge/blob/master/CHANGELOG.md)
+[Support](https://github.com/electron-userland/electron-forge/blob/main/SUPPORT.md) |
+[Contributing](https://github.com/electron-userland/electron-forge/blob/main/CONTRIBUTING.md) |
+[Changelog](https://github.com/electron-userland/electron-forge/blob/main/CHANGELOG.md)
 
 # Getting Started
 
