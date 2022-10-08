@@ -97,6 +97,9 @@ export interface WebpackPluginRendererConfig {
    * open.  Each window requires it's own entry point
    */
   entryPoints: WebpackPluginEntryPoint[];
+
+  //FIXME(ERICK)
+  preloadEntries?: any;
 }
 
 export interface WebpackPluginConfig {

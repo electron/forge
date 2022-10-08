@@ -98,6 +98,7 @@ export default class WebpackConfigGenerator {
     return 'undefined';
   }
 
+  //FIXME(ERICK): MAKE EXTRA PRELOAD DEFINES WORK
   getDefines(inRendererDir = true): Record<string, string> {
     const defines: Record<string, string> = {};
     if (!this.pluginConfig.renderer.entryPoints || !Array.isArray(this.pluginConfig.renderer.entryPoints)) {
@@ -158,9 +159,12 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  async getPreloadRendererConfig(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
+  async getPreloadRendererConfig(entryPoint: WebpackPreloadEntryPoint, parentPoint?: WebpackPluginEntryPoint): Promise<Configuration> {
     const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
+
+    //FIXME(ERICK)
+    const folder = parentPoint ? parentPoint.name : 'HardCodedMess';
 
     return webpackMerge(
       {
@@ -168,7 +172,7 @@ export default class WebpackConfigGenerator {
         mode: this.mode,
         entry: prefixedEntries.concat([entryPoint.js]),
         output: {
-          path: path.resolve(this.webpackDir, 'renderer', parentPoint.name),
+          path: path.resolve(this.webpackDir, 'renderer', folder),
           filename: 'preload.js',
         },
         node: {
