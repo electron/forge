@@ -301,7 +301,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         await asyncOra(`Compiling Renderer Preload: ${chalk.cyan(entryPoint.name)}`, async () => {
           const stats = await this.runWebpack(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            [await this.configGenerator.getPreloadRendererConfig(entryPoint.preload!, entryPoint)]
+            [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint, entryPoint.preload!)]
           );
 
           if (stats?.hasErrors()) {
@@ -315,7 +315,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       await asyncOra(`Compiling Extra Preload Scripts`, async () => {
         const stats = await this.runWebpack(
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          [await this.configGenerator.getPreloadRendererConfig(preload)]
+          [await this.configGenerator.getStandalonePreloadConfig(preload)]
         );
 
         if (stats?.hasErrors()) {
@@ -345,7 +345,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     await asyncOra('Compiling Preload Scripts', async () => {
       for (const entryPoint of this.config.renderer.entryPoints) {
         if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(entryPoint.preload, entryPoint);
+          const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint, entryPoint.preload);
           await new Promise((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
@@ -370,7 +370,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
       if (Array.isArray(this.config.renderer.preloadEntries)) {
         for (const preload of this.config.renderer.preloadEntries) {
-          const config = await this.configGenerator.getPreloadRendererConfig(preload);
+          const config = await this.configGenerator.getStandalonePreloadConfig(preload);
           await new Promise((resolve, reject) => {
             const tab = logger.createTab(`AAAAAAAAAAAAA`);
             const [onceResolve, onceReject] = once(resolve, reject);

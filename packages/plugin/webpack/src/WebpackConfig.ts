@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
-import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint } from './Config';
+import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint, WebpackPreloadEntryPoint2 } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';
 
@@ -159,12 +159,9 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  async getPreloadRendererConfig(entryPoint: WebpackPreloadEntryPoint, parentPoint?: WebpackPluginEntryPoint): Promise<Configuration> {
+  async getStandalonePreloadConfig(entryPoint: WebpackPreloadEntryPoint2) {
     const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
-
-    //FIXME(ERICK)
-    const folder = parentPoint ? parentPoint.name : 'HardCodedMess';
 
     return webpackMerge(
       {
@@ -172,7 +169,30 @@ export default class WebpackConfigGenerator {
         mode: this.mode,
         entry: prefixedEntries.concat([entryPoint.js]),
         output: {
-          path: path.resolve(this.webpackDir, 'renderer', folder),
+          path: path.resolve(this.webpackDir, 'renderer', entryPoint.name),
+          filename: 'preload.js',
+        },
+        node: {
+          __dirname: false,
+          __filename: false,
+        },
+      },
+      rendererConfig || {},
+      { target: 'electron-preload' }
+    );
+  }
+
+  async getPreloadConfigForEntryPoint(parentPoint: WebpackPluginEntryPoint, entryPoint: WebpackPreloadEntryPoint): Promise<Configuration> {
+    const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
+    const prefixedEntries = entryPoint.prefixedEntries || [];
+
+    return webpackMerge(
+      {
+        devtool: this.rendererSourceMapOption,
+        mode: this.mode,
+        entry: prefixedEntries.concat([entryPoint.js]),
+        output: {
+          path: path.resolve(this.webpackDir, 'renderer', parentPoint.name),
           filename: 'preload.js',
         },
         node: {

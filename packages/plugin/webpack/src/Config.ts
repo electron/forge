@@ -67,6 +67,11 @@ export interface WebpackPreloadEntryPoint {
   config?: WebpackConfiguration | string;
 }
 
+//TODO(erick): rename this
+export interface WebpackPreloadEntryPoint2 extends WebpackPreloadEntryPoint {
+  name: string;
+}
+
 export interface WebpackPluginRendererConfig {
   /**
    * The webpack config for your renderer process
