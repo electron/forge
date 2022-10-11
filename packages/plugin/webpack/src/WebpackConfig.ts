@@ -98,7 +98,14 @@ export default class WebpackConfigGenerator {
     return 'undefined';
   }
 
-  //FIXME(ERICK): MAKE EXTRA PRELOAD DEFINES WORK
+  getStandalonePreloadDefine(entryPoint: WebpackPreloadEntryPoint2) {
+    if (this.isProd) {
+      return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+    } else {
+      return `'${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+    }
+  }
+
   getDefines(inRendererDir = true): Record<string, string> {
     const defines: Record<string, string> = {};
     if (!this.pluginConfig.renderer.entryPoints || !Array.isArray(this.pluginConfig.renderer.entryPoints)) {
@@ -117,6 +124,15 @@ export default class WebpackConfigGenerator {
       defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
       defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
     }
+
+    if (Array.isArray(this.pluginConfig.renderer.preloadEntries)) {
+      for (const entryPoint of this.pluginConfig.renderer.preloadEntries) {
+        const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
+        defines[preloadDefineKey] = this.getStandalonePreloadDefine(entryPoint);
+        defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
+      }
+    }
+
     return defines;
   }
 

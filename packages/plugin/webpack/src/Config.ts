@@ -103,8 +103,11 @@ export interface WebpackPluginRendererConfig {
    */
   entryPoints: WebpackPluginEntryPoint[];
 
-  //FIXME(ERICK)
-  preloadEntries?: any;
+  /**
+   * Array of preload entry points, to use if you want to use a preload script without
+   * a local renderer process entry point.
+   */
+  preloadEntries?: WebpackPreloadEntryPoint2[];
 }
 
 export interface WebpackPluginConfig {

@@ -311,17 +311,19 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       }
     }
 
-    for (const preload of this.config.renderer.preloadEntries) {
-      await asyncOra(`Compiling Extra Preload Scripts`, async () => {
-        const stats = await this.runWebpack(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          [await this.configGenerator.getStandalonePreloadConfig(preload)]
-        );
+    if (Array.isArray(this.config.renderer.preloadEntries)) {
+      for (const preload of this.config.renderer.preloadEntries) {
+        await asyncOra(`Compiling Extra Preload Scripts`, async () => {
+          const stats = await this.runWebpack(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            [await this.configGenerator.getStandalonePreloadConfig(preload)]
+          );
 
-        if (stats?.hasErrors()) {
-          throw new Error(`Compilation errors in the preload): ${stats.toString()}`);
-        }
-      });
+          if (stats?.hasErrors()) {
+            throw new Error(`Compilation errors in the preload): ${stats.toString()}`);
+          }
+        });
+      }
     }
   };
 
@@ -331,6 +333,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+
+      if (config.length === 0) {
+        return;
+      }
+
       for (const entryConfig of config) {
         if (!entryConfig.plugins) entryConfig.plugins = [];
         entryConfig.plugins.push(pluginLogs);
