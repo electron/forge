@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
-import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint, WebpackPreloadEntryPoint2 } from './Config';
+import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPreloadEntryPoint, StandaloneWebpackPreloadEntryPoint } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';
 
@@ -98,7 +98,7 @@ export default class WebpackConfigGenerator {
     return 'undefined';
   }
 
-  getStandalonePreloadDefine(entryPoint: WebpackPreloadEntryPoint2) {
+  getStandalonePreloadDefine(entryPoint: StandaloneWebpackPreloadEntryPoint) {
     if (this.isProd) {
       return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
     } else {
@@ -175,7 +175,7 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  async getStandalonePreloadConfig(entryPoint: WebpackPreloadEntryPoint2) {
+  async getStandalonePreloadConfig(entryPoint: StandaloneWebpackPreloadEntryPoint) {
     const rendererConfig = await this.resolveConfig(entryPoint.config || this.pluginConfig.renderer.config);
     const prefixedEntries = entryPoint.prefixedEntries || [];
 

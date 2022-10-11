@@ -67,8 +67,7 @@ export interface WebpackPreloadEntryPoint {
   config?: WebpackConfiguration | string;
 }
 
-//TODO(erick): rename this
-export interface WebpackPreloadEntryPoint2 extends WebpackPreloadEntryPoint {
+export interface StandaloneWebpackPreloadEntryPoint extends WebpackPreloadEntryPoint {
   name: string;
 }
 
@@ -107,7 +106,7 @@ export interface WebpackPluginRendererConfig {
    * Array of preload entry points, to use if you want to use a preload script without
    * a local renderer process entry point.
    */
-  preloadEntries?: WebpackPreloadEntryPoint2[];
+  preloadEntries?: StandaloneWebpackPreloadEntryPoint[];
 }
 
 export interface WebpackPluginConfig {
