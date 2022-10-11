@@ -307,7 +307,7 @@ describe('WebpackConfigGenerator', () => {
     });
   });
 
-  describe('getPreloadRendererConfig', () => {
+  describe('getPreloadConfigForEntryPoint', () => {
     it('generates a development config', async () => {
       const config = {
         renderer: {
@@ -323,7 +323,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const entryPoint = config.renderer.entryPoints[0];
-      const webpackConfig = await generator.getPreloadRendererConfig(
+      const webpackConfig = await generator.getPreloadConfigForEntryPoint(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!
@@ -353,7 +353,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const entryPoint = config.renderer.entryPoints[0];
-      const webpackConfig = await generator.getPreloadRendererConfig(
+      const webpackConfig = await generator.getPreloadConfigForEntryPoint(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!
@@ -385,7 +385,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const entryPoint = config.renderer.entryPoints[0];
-      const webpackConfig = await generator.getPreloadRendererConfig(
+      const webpackConfig = await generator.getPreloadConfigForEntryPoint(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!
@@ -418,7 +418,7 @@ describe('WebpackConfigGenerator', () => {
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
       const entryPoint = config.renderer.entryPoints[0];
-      const preloadWebpackConfig = await generator.getPreloadRendererConfig(
+      const preloadWebpackConfig = await generator.getPreloadConfigForEntryPoint(
         entryPoint,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         entryPoint.preload!
