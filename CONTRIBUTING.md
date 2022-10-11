@@ -27,7 +27,7 @@ sites](https://github.com/electron/electron#community).
 ### Debugging
 
 Troubleshooting suggestions can be found in the [support
-documentation](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md#troubleshooting).
+documentation](https://github.com/electron-userland/electron-forge/blob/main/SUPPORT.md#troubleshooting).
 
 ## Contribution suggestions
 

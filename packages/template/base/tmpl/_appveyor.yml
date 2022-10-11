@@ -8,7 +8,7 @@ cache:
   - node_modules
 branches:
   only:
-    - master
+    - main
     - /^v\d+\.\d+\.\d+/
 install:
   - ps: Install-Product node $env:nodejs_version $env:platform
