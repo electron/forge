@@ -92,7 +92,6 @@ describe('install', () => {
     );
   });
 
-  // eslint-disable-next-line no-nested-ternary
   const compatSuffix = process.platform === 'darwin' ? 'dmg' : process.platform === 'win32' ? 'exe' : 'deb';
 
   it('should download a release if there is a single compatible asset', async () => {

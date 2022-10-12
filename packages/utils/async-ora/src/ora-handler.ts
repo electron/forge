@@ -1,9 +1,7 @@
-/* eslint "no-console": "off" */
 import chalk from 'chalk';
 import ora from './ora';
 
 export class OraImpl {
-  // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(public text: string = '') {}
 
   succeed(_symbol?: string): OraImpl {

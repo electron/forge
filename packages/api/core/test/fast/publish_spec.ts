@@ -30,7 +30,6 @@ describe('publish', () => {
     voidStub = stub();
     nowhereStub = stub();
     publishers = ['@electron-forge/publisher-test'];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const fakePublisher = (stub: SinonStub, name = 'default') =>
       class _FakePublisher {
         private publish: SinonStub;

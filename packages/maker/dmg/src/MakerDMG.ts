@@ -15,7 +15,6 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   }
 
   async make({ dir, makeDir, appName, packageJSON, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line global-require
     const electronDMG = require('electron-installer-dmg');
 
     const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);

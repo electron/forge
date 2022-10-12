@@ -274,7 +274,6 @@ describe('Electron Forge API', () => {
 
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
-        // eslint-disable-next-line node/no-missing-require
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
 
@@ -317,7 +316,6 @@ describe('Electron Forge API', () => {
       it('should have deleted the forge config from the packaged app', async () => {
         const cleanPackageJSON = await readMetadata({
           src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
-          // eslint-disable-next-line no-console
           logger: console.error,
         });
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
@@ -386,7 +384,6 @@ describe('Electron Forge API', () => {
 
           for (const optionsFetcher of options) {
             if (shouldPass) {
-              // eslint-disable-next-line no-loop-func
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {
@@ -469,7 +466,6 @@ describe('Electron Forge API', () => {
           await expect(
             forge.make({
               dir,
-              // eslint-disable-next-line node/no-missing-require
               overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
               platform: 'mas',
             })

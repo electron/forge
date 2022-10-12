@@ -68,7 +68,6 @@ export default async ({
     throw new Error(`We couldn't find a project in: ${dir}`);
   }
 
-  // eslint-disable-next-line max-len
   if (typeof confirmImport === 'function') {
     if (!(await confirmImport())) {
       // TODO: figure out if we can just return early here
@@ -132,7 +131,6 @@ export default async ({
     if (buildToolPackages[key]) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const explanation = buildToolPackages[key]!;
-      // eslint-disable-next-line max-len
       let remove = true;
       if (typeof shouldRemoveDependency === 'function') {
         remove = await shouldRemoveDependency(key, explanation);
@@ -150,7 +148,6 @@ export default async ({
 
   const updatePackageScript = async (scriptName: string, newValue: string) => {
     if (packageJSON.scripts[scriptName] !== newValue) {
-      // eslint-disable-next-line max-len
       let update = true;
       if (typeof shouldUpdateScript === 'function') {
         update = await shouldUpdateScript(scriptName, newValue);

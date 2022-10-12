@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export interface LocalElectronPluginConfig {
   /**
    * Whether or not the plugin is enabled.

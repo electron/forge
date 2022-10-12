@@ -29,12 +29,10 @@ export interface Asset {
   id: string;
   name: string;
   size: number;
-  // eslint-disable-next-line camelcase
   browser_download_url: string;
 }
 
 interface Release {
-  // eslint-disable-next-line camelcase
   tag_name: string;
   prerelease: boolean;
   assets: Asset[];
@@ -102,7 +100,6 @@ export default async ({ interactive = false, prerelease = false, repo, chooseAss
       if (tagB.substr(0, 1) === 'v') tagB = tagB.substr(1);
       return semver.gt(tagB, tagA) ? 1 : -1;
     });
-    // eslint-disable-next-line prefer-destructuring
     latestRelease = sortedReleases[0];
 
     searchSpinner.text = 'Searching for Releases';

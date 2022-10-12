@@ -11,12 +11,10 @@ import NoReleaseError from './util/no-release-error';
 import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
-  // eslint-disable-next-line camelcase
   tag_name: string;
   assets: {
     name: string;
   }[];
-  // eslint-disable-next-line camelcase
   upload_url: string;
 }
 

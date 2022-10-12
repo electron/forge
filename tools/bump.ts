@@ -27,7 +27,7 @@ async function checkCleanWorkingDir(): Promise<void> {
 async function updateChangelog(lastVersion: string, version: string): Promise<void> {
   await run('yarn', ['changelog', `--tag=v${lastVersion}..v${version}`, '--exclude=build,chore,ci,docs,refactor,style,test']);
 
-  require('../ci/fix-changelog'); // eslint-disable-line global-require
+  require('../ci/fix-changelog');
 
   await git('add', 'CHANGELOG.md');
   await git('commit', '-m', `Update CHANGELOG.md for ${version}`);

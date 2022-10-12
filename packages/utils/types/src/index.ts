@@ -1,5 +1,4 @@
 import { ChildProcess } from 'child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ArchOption, Options, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
 

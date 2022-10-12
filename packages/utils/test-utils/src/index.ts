@@ -32,9 +32,7 @@ export async function expectLintToPass(dir: string): Promise<void> {
     await runNPM(dir, 'run', 'lint');
   } catch (err) {
     if (err instanceof ExitError) {
-      // eslint-disable-next-line no-console
       console.error('STDOUT:', err.stdout.toString());
-      // eslint-disable-next-line no-console
       console.error('STDERR:', err.stderr.toString());
     }
     throw err;

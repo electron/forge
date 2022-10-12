@@ -96,7 +96,6 @@ export async function getElectronVersion(dir: string, packageJSON: PackageJSONWi
     const electronPackageJSONPath = await getElectronPackageJSONPath(dir, packageName);
     if (electronPackageJSONPath) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
-      // eslint-disable-next-line prefer-destructuring
       version = electronPackageJSON.version;
     } else {
       throw new PackageNotFoundError(packageName, dir);

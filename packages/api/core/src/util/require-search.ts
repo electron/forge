@@ -18,7 +18,6 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
   for (const testPath of testPaths) {
     try {
       d('testing', testPath);
-      // eslint-disable-next-line global-require, import/no-dynamic-require
       return require(testPath);
     } catch (err) {
       if (err instanceof Error) {
@@ -38,7 +37,6 @@ export type PossibleModule<T> = {
   default?: T;
 } & T;
 
-// eslint-disable-next-line arrow-parens
 export default <T>(relativeTo: string, paths: string[]): T | null => {
   const result = requireSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default ? result.default : (result as T | null);

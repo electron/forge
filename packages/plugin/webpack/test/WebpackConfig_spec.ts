@@ -121,7 +121,6 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', true, 3000);
       const defines = generator.getDefines(false);
 
-      // eslint-disable-next-line no-template-curly-in-string
       expect(defines.HELLO_WEBPACK_ENTRY).to.equal("`file://${require('path').resolve(__dirname, '..', '.', 'hello', 'index.js')}`");
     });
 

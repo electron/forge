@@ -25,7 +25,6 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
     let { version } = packageJSON;
     if (version.includes('-')) {
-      // eslint-disable-next-line no-console
       console.warn(
         logSymbols.warning,
         chalk.yellow('WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI')

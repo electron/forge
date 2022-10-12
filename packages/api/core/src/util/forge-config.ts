@@ -27,7 +27,6 @@ export type PackageJSONForInitialForgeConfig = {
 type ProxiedObject = object;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// eslint-disable-next-line arrow-parens
 const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => string), proxifiedObject: T, envPrefix: string): T => {
   let newObject: T = {} as any;
   if (Array.isArray(proxifiedObject)) {
@@ -51,7 +50,6 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
       }
       const value = Reflect.get(target, name, receiver);
 
-      // eslint-disable-next-line no-underscore-dangle
       if (value && typeof value === 'object' && value.__isMagicBuildIdentifierMap) {
         const identifier = typeof buildIdentifier === 'function' ? buildIdentifier() : buildIdentifier;
         return value.map[identifier];
@@ -84,7 +82,6 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
  * Sets sensible defaults for the `config.forge` object.
  */
 export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void {
-  // eslint-disable-line @typescript-eslint/no-explicit-any
   const { name = '' } = packageJSON;
 
   ((packageJSON.config.forge as ForgeConfig).makers as IForgeResolvableMaker[])[0].config.name = name.replace(/-/g, '_');
@@ -107,7 +104,7 @@ export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: strin
   return typeof forgeConfig === 'string' && ((await fs.pathExists(path.resolve(dir, forgeConfig))) || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)));
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderConfigTemplate(dir: string, templateObj: any, obj: any): void {
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'object' && value !== null) {
@@ -115,7 +112,6 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
     } else if (typeof value === 'string') {
       obj[key] = template(value)(templateObj);
       if (obj[key].startsWith('require:')) {
-        // eslint-disable-next-line global-require, import/no-dynamic-require
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));
       }
     }
@@ -136,10 +132,9 @@ export default async (dir: string): Promise<ForgeConfig> => {
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require, import/no-dynamic-require
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       forgeConfig = require(path.resolve(dir, forgeConfig as string)) as ForgeConfig;
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
     }

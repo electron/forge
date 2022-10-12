@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export interface PublisherERSConfig {
   /**
    * The base URL of your instance of ERS.

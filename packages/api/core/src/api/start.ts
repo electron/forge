@@ -155,7 +155,6 @@ export default async ({
   if (interactive) {
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
-        // eslint-disable-next-line no-console
         console.info(chalk.cyan('\nRestarting App\n'));
         lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');

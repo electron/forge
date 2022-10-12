@@ -150,7 +150,6 @@ export default abstract class Maker<C> implements IForgeMaker {
    */
   isInstalled(module: string): boolean {
     try {
-      // eslint-disable-next-line global-require, import/no-dynamic-require
       require(module);
       return true;
     } catch (e) {

@@ -180,7 +180,6 @@ export default async ({
   }
 
   if (!packageJSON.version && !packageOpts.appVersion) {
-    // eslint-disable-next-line max-len
     warn(
       interactive,
       chalk.yellow('Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly')

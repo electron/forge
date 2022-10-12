@@ -41,7 +41,7 @@ export default class WebpackConfigGenerator {
   async resolveConfig(config: Configuration | ConfigurationFactory | string): Promise<Configuration> {
     const rawConfig =
       typeof config === 'string'
-        ? // eslint-disable-next-line import/no-dynamic-require, global-require, @typescript-eslint/no-var-requires
+        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
           (require(path.resolve(this.projectDir, config)) as Configuration | ConfigurationFactory)
         : config;
 

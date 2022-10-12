@@ -46,7 +46,6 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
         let artifactIdx = 0;
         for (const artifactPath of makeResult.artifacts) {
           // Skip the RELEASES file, it is automatically generated on the server
-          // eslint-disable-next-line no-continue
           if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
           data.append(`file${artifactIdx}`, fs.createReadStream(artifactPath));
           artifactIdx += 1;

@@ -112,7 +112,6 @@ export default async ({
   for (const target of targets) {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     let maker: MakerBase<any>;
-    // eslint-disable-next-line no-underscore-dangle
     if ((target as MakerBase<any>).__isElectronForgeMaker) {
       maker = target as MakerBase<any>;
       /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -134,7 +133,6 @@ export default async ({
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
-      // eslint-disable-next-line no-continue
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     }
 
@@ -192,12 +190,11 @@ export default async ({
     }
 
     targetId = 0;
-    // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const _target of targets) {
       const maker = makers[targetId];
       targetId += 1;
 
-      // eslint-disable-next-line no-loop-func
       await asyncOra(
         `Making for target: ${chalk.green(maker.name)} - On platform: ${chalk.cyan(actualTargetPlatform)} - For arch: ${chalk.cyan(targetArch)}`,
         async () => {
@@ -234,7 +231,6 @@ export default async ({
             });
           } catch (err) {
             if (err instanceof Error) {
-              // eslint-disable-next-line no-throw-literal
               throw {
                 message: `An error occured while making for target: ${maker.name}`,
                 stack: `${err.message}\n${err.stack}`,
