@@ -12,7 +12,7 @@ export interface MakerPKGConfig {
    *
    * Default: `true`.
    */
-  'identity-validation'?: boolean;
+  identityValidation?: boolean;
   /**
    * Path to install the bundle. Default to `/Applications`.
    */
