@@ -1,11 +1,9 @@
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import { flatAsync } from '@electron/osx-sign';
+import { buildPkg } from '@electron/osx-sign';
 
 import path from 'path';
 import { MakerPKGConfig } from './Config';
-
-type flatAsyncOptions = Parameters<typeof flatAsync>[0];
 
 export default class MakerPKG extends MakerBase<MakerPKGConfig> {
   name = 'pkg';
@@ -25,13 +23,13 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
 
     await this.ensureFile(outPath);
 
-    const pkgConfig: flatAsyncOptions = {
+    const pkgConfig = {
       ...this.config,
       app: path.resolve(dir, `${appName}.app`),
       pkg: outPath,
       platform: targetPlatform,
     };
-    await flatAsync(pkgConfig);
+    await buildPkg(pkgConfig);
 
     return [outPath];
   }
