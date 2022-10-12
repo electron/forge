@@ -9,7 +9,7 @@ export const isLocalWindow = (entry: WebpackPluginEntryPoint): entry is WebpackP
 };
 
 export const isPreloadOnly = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointPreloadOnly => {
-  return entry.type === 'preload-only';
+  return entry.type === 'preload-only' || (entry.type === undefined && !(entry as any).html && !(entry as any).js && !(entry as any).preload);
 };
 
 export const isNoWindow = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointNoWindow => {

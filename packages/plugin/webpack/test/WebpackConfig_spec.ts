@@ -121,7 +121,6 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', true, 3000);
       const defines = generator.getDefines(false);
 
-      // eslint-disable-next-line no-template-curly-in-string
       expect(defines.HELLO_WEBPACK_ENTRY).to.equal("`file://${require('path').resolve(__dirname, '..', '.', 'hello', 'index.js')}`");
     });
 
@@ -468,6 +467,31 @@ describe('WebpackConfigGenerator', () => {
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
     });
 
+    it('generates a preload-only development config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [
+            {
+              type: 'preload-only',
+              name: 'main',
+              preload: {
+                js: 'rendererScript.js',
+              },
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('electron-preload');
+      expect(webpackConfig[0].entry).to.deep.equal({
+        main: ['rendererScript.js'],
+      });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(webpackConfig[0].plugins!.length).to.equal(2);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
+    });
+
     it('generates a production config', async () => {
       const config = {
         renderer: {
@@ -489,6 +513,37 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].output).to.deep.equal({
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
         filename: '[name]/index.js',
+        globalObject: 'self',
+      });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(webpackConfig[0].plugins!.length).to.equal(2);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
+    });
+
+    it('generates a preload-only production config', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [
+            {
+              type: 'preload-only',
+              name: 'main',
+              preload: {
+                js: 'rendererScript.js',
+              },
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.deep.equal('electron-preload');
+      expect(webpackConfig[0].mode).to.equal('production');
+      expect(webpackConfig[0].entry).to.deep.equal({
+        main: ['rendererScript.js'],
+      });
+      expect(webpackConfig[0].output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer'),
+        filename: 'preload.js',
         globalObject: 'self',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
