@@ -79,7 +79,7 @@ jobs:
     needs: dependabolt
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-18.04]
+        os: [windows-latest, macOS-latest, ubuntu-20.04]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
