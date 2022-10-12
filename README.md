@@ -84,9 +84,9 @@ For Electron Forge documentation and usage you should check out our website:
 
 # FAQ
 
-## How do I use this with `webpack`/`babel`/`typescript`/other build tool?
+## How do I use this with `webpack`/`babel`/other build tool?
 
-By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but for typescript, webpack, and other build tool support check out the [plugins](https://www.electronforge.io/config/plugins)
+By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but for webpack and other build tooling support check out the [plugins](https://www.electronforge.io/config/plugins)
 section of our docs site. We currently have plugins for Webpack and Electron Compile, and a
 [template for Webpack](https://www.electronforge.io/templates/webpack-template).
 
