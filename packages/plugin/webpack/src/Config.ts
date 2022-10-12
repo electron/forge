@@ -1,4 +1,5 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
 
 export interface WebpackPluginEntryPoint {
@@ -151,8 +152,7 @@ export interface WebpackPluginConfig {
    * * `setupExitSignals`
    * * `headers.Content-Security-Policy` (use the `devContentSecurityPolicy` config option)
    */
-  devServer?: Record<string, unknown>;
-  // TODO: use webpack-dev-server.Configuration when @types/webpack-dev-server upgrades to v4
+  devServer?: Omit<WebpackDevServer.Configuration, 'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'>;
 }
 
 export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;
