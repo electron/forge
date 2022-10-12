@@ -326,7 +326,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
       await webpackDevServer.start();
-      this.servers.push(webpackDevServer.server);
+      this.servers.push(webpackDevServer.server!);
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {
@@ -365,14 +365,14 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const cspDirectives =
       this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
-    const defaults = {
+    const defaults: Partial<WebpackDevServer.Configuration> = {
       hot: true,
       devMiddleware: {
         writeToDisk: true,
       },
       historyApiFallback: true,
     };
-    const overrides = {
+    const overrides: Partial<WebpackDevServer.Configuration> = {
       port: this.port,
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
