@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import http from 'http';
 import { pathExists, readFile } from 'fs-extra';
 import { spawn } from '@malept/cross-spawn-promise';
-import { WebpackPluginConfig } from '../src/Config';
+import { WebpackPluginConfig, WebpackPluginEntryPointLocalWindow } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 import which from 'which';
 
@@ -143,12 +143,8 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadConfigForEntryPoint(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
+      const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getPreloadConfigForEntryPoint(entryPoint);
       await asyncWebpack(preloadConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -200,12 +196,8 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadConfigForEntryPoint(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
+      const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getPreloadConfigForEntryPoint(entryPoint);
       await asyncWebpack(preloadConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({

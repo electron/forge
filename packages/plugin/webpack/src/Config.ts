@@ -1,18 +1,12 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
 
-export interface WebpackPluginEntryPoint {
+export interface WebpackPluginEntryPointBase {
   /**
-   * Relative or absolute path to the HTML template file for this entry point
-   *
-   * If this is a window, you MUST provide this.  Only leave it unset for things
-   * like WebWorker scripts.
+   * Type of renderer process to initialize
+   * Defaults to 'local-window' if not specified
    */
-  html?: string;
-  /**
-   * Relative or absolute path to the main JS file for this entry point
-   */
-  js: string;
+  type?: 'local-window' | 'preload-only' | 'no-window';
   /**
    * Human friendly name of your entry point
    */
@@ -29,11 +23,6 @@ export interface WebpackPluginEntryPoint {
    */
   additionalChunks?: string[];
   /**
-   * Information about the preload script for this entry point, if you don't use
-   * preload scripts you don't need to set this.
-   */
-  preload?: WebpackPreloadEntryPoint;
-  /**
    * Override the Webpack config for this renderer based on whether `nodeIntegration` for
    * the `BrowserWindow` is enabled. Namely, for Webpack's `target` option:
    *
@@ -48,6 +37,42 @@ export interface WebpackPluginEntryPoint {
    */
   nodeIntegration?: boolean;
 }
+
+export interface WebpackPluginEntryPointLocalWindow extends WebpackPluginEntryPointBase {
+  /**
+   * Relative or absolute path to the HTML template file for this entry point
+   *
+   * If this is a window, you MUST provide this.  Only leave it unset for things
+   * like WebWorker scripts.
+   */
+  html: string;
+  /**
+   * Relative or absolute path to the main JS file for this entry point
+   */
+  js: string;
+  /**
+   * Information about the preload script for this entry point, if you don't use
+   * preload scripts you don't need to set this.
+   */
+  preload?: WebpackPreloadEntryPoint;
+}
+
+export interface WebpackPluginEntryPointPreloadOnly extends WebpackPluginEntryPointBase {
+  /**
+   * Information about the preload script for this entry point, if you don't use
+   * preload scripts you don't need to set this.
+   */
+  preload: WebpackPreloadEntryPoint;
+}
+
+export interface WebpackPluginEntryPointNoWindow extends WebpackPluginEntryPointBase {
+  /**
+   * Relative or absolute path to the main JS file for this entry point
+   */
+  js: string;
+}
+
+export type WebpackPluginEntryPoint = WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPointNoWindow | WebpackPluginEntryPointPreloadOnly;
 
 export interface WebpackPreloadEntryPoint {
   /**
@@ -101,12 +126,6 @@ export interface WebpackPluginRendererConfig {
    * open.  Each window requires it's own entry point
    */
   entryPoints: WebpackPluginEntryPoint[];
-
-  /**
-   * Array of preload entry points, to use if you want to use a preload script without
-   * a local renderer process entry point.
-   */
-  preloadEntries?: StandaloneWebpackPreloadEntryPoint[];
 }
 
 export interface WebpackPluginConfig {
