@@ -20,6 +20,6 @@
   "dependencies": {
     "@electron-forge/maker-base": "6.0.0-beta.67",
     "@electron-forge/shared-types": "6.0.0-beta.67",
-    "electron-osx-sign": "^0.5.0"
+    "@electron/osx-sign": "^1.0.1"
   }
 }
