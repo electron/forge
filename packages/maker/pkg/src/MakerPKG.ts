@@ -30,7 +30,7 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
       app: path.resolve(dir, `${appName}.app`),
       pkg: outPath,
       platform: targetPlatform,
-    };should pass through correct default
+    };
     await flatAsync(pkgConfig);
 
     return [outPath];
