@@ -274,6 +274,7 @@ describe('Electron Forge API', () => {
 
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        // eslint-disable-next-line node/no-missing-require
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
 
@@ -466,6 +467,7 @@ describe('Electron Forge API', () => {
           await expect(
             forge.make({
               dir,
+              // eslint-disable-next-line node/no-missing-require
               overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
               platform: 'mas',
             })
