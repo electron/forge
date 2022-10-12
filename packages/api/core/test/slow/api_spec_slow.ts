@@ -317,7 +317,6 @@ describe('Electron Forge API', () => {
       it('should have deleted the forge config from the packaged app', async () => {
         const cleanPackageJSON = await readMetadata({
           src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
-          // eslint-disable-next-line no-console
           logger: console.error,
         });
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
@@ -386,7 +385,6 @@ describe('Electron Forge API', () => {
 
           for (const optionsFetcher of options) {
             if (shouldPass) {
-              // eslint-disable-next-line no-loop-func
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {

@@ -6,6 +6,7 @@ import { stub } from 'sinon';
 
 describe('PublisherERS', () => {
   let fetch: typeof fetchMock;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let PublisherERS: any;
 
   beforeEach(() => {

@@ -26,8 +26,8 @@ async function findSdkTool(exe: string) {
       }
       const topDir = path.dirname(testPath);
       for (const subVersion of await fs.readdir(topDir)) {
-        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue; // eslint-disable-line max-len, no-continue
-        if (subVersion.substr(0, 2) !== '10') continue; // eslint-disable-line no-continue
+        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue;
+        if (subVersion.substr(0, 2) !== '10') continue;
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
         if (await fs.pathExists(testExe)) {

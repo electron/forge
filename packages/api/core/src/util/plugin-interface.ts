@@ -14,7 +14,6 @@ export default class PluginInterface implements IForgePluginInterface {
 
   constructor(dir: string, forgeConfig: ForgeConfig) {
     this.plugins = forgeConfig.plugins.map((plugin) => {
-      // eslint-disable-next-line no-underscore-dangle
       if ((plugin as IForgePlugin).__isElectronForgePlugin) {
         return plugin;
       }

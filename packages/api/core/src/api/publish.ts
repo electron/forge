@@ -150,7 +150,6 @@ const publish = async ({
       return (
         (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
           if (typeof p === 'string') return false;
-          // eslint-disable-next-line no-underscore-dangle
           if ((p as IForgePublisher).__isElectronForgePublisher) return false;
           return (p as IForgeResolvablePublisher).name === target;
         }) || { name: target }
@@ -162,7 +161,6 @@ const publish = async ({
   for (const publishTarget of publishTargets) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let publisher: PublisherBase<any>;
-    // eslint-disable-next-line no-underscore-dangle
     if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       publisher = publishTarget as PublisherBase<any>;
@@ -171,7 +169,6 @@ const publish = async ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let PublisherClass: any;
       await asyncOra(`Resolving publish target: ${chalk.cyan(resolvablePublishTarget.name)}`, async () => {
-        // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {
           throw new Error(

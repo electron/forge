@@ -1,4 +1,3 @@
-/* eslint "no-console": "off" */
 import { asyncOra } from '@electron-forge/async-ora';
 import PluginBase from '@electron-forge/plugin-base';
 import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
@@ -112,7 +111,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  // eslint-disable-next-line max-len
   private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
@@ -143,13 +141,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   };
 
   get configGenerator(): WebpackConfigGenerator {
-    // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-      // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     return this._configGenerator;
   }
 

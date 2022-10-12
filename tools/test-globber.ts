@@ -1,4 +1,3 @@
-/* eslint "global-require": "off", "import/no-dynamic-require": "off" */
 import glob from 'fast-glob';
 import minimist from 'minimist';
 import * as path from 'path';

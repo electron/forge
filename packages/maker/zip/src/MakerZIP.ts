@@ -16,7 +16,6 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
   }
 
   async make({ dir, makeDir, appName, packageJSON, targetArch, targetPlatform }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line global-require
     const { zip } = require('cross-zip');
 
     const zipDir = ['darwin', 'mas'].includes(targetPlatform) ? path.resolve(dir, `${appName}.app`) : dir;

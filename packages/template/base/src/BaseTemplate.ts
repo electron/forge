@@ -66,7 +66,6 @@ export class BaseTemplate implements ForgeTemplate {
   async initializePackageJSON(directory: string): Promise<void> {
     await asyncOra('Initializing NPM Module', async () => {
       const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-      // eslint-disable-next-line no-multi-assign
       packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
       packageJSON.author = await determineAuthor(directory);
 

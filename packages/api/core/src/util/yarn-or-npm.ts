@@ -11,7 +11,6 @@ const safeYarnOrNpm = (): string => {
       return process.env.NODE_INSTALLER;
     default:
       if (process.env.NODE_INSTALLER) {
-        // eslint-disable-next-line no-console
         console.warn(logSymbols.warning, chalk.yellow(`Unknown NODE_INSTALLER, using detected installer ${system}`));
       }
       return system;
@@ -20,7 +19,6 @@ const safeYarnOrNpm = (): string => {
 
 export default safeYarnOrNpm;
 
-// eslint-disable-next-line max-len
 export const yarnOrNpmSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(safeYarnOrNpm(), args, opts);
 
 export const hasYarn = (): boolean => safeYarnOrNpm() === 'yarn';

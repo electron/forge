@@ -8,7 +8,6 @@ import path from 'path';
 import './util/terminate';
 import workingDir from './util/working-dir';
 
-// eslint-disable-next-line import/prefer-default-export
 export async function getMakeOptions(): Promise<MakeOptions> {
   let dir = process.cwd();
   program
@@ -36,7 +35,7 @@ export async function getMakeOptions(): Promise<MakeOptions> {
   return makeOpts;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-underscore-dangle
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (require.main === module || (global as any).__LINKED_FORGE__) {
   (async () => {
     const makeOpts = await getMakeOptions();
