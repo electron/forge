@@ -2,7 +2,6 @@ import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
-import lint, { LintOptions } from './lint';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
@@ -26,16 +25,6 @@ export class ForgeAPI {
    */
   init(opts: InitOptions): Promise<void> {
     return init(opts);
-  }
-
-  /**
-   * Lint a local Electron application.
-   *
-   * The promise will be rejected with the stdout+stderr of the linting process
-   * if linting fails or will be resolved if it succeeds.
-   */
-  lint(opts: LintOptions): Promise<void> {
-    return lint(opts);
   }
 
   /**
@@ -72,17 +61,4 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export {
-  ForgeMakeResult,
-  ElectronProcess,
-  ForgeUtils,
-  ImportOptions,
-  InitOptions,
-  LintOptions,
-  MakeOptions,
-  PackageOptions,
-  PublishOptions,
-  StartOptions,
-  api,
-  utils,
-};
+export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };
