@@ -9,7 +9,6 @@
   "bolt": {
     "workspaces": [
       "packages/api/*",
-      "packages/installer/*",
       "packages/maker/*",
       "packages/publisher/*",
       "packages/utils/*",
