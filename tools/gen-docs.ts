@@ -10,10 +10,13 @@ import * as typedoc from 'typedoc';
     entryPointStrategy: 'packages',
     entryPoints: packages.map((pkg) => pkg.path),
     excludeExternals: true,
+    excludeInternal: true,
     excludePrivate: true,
     excludeProtected: true,
-    hideGenerator: true,
     externalPattern: ['**/node_modules/@types/node/**'],
+    hideGenerator: true,
+    includeVersion: true,
+    name: 'Electron Forge',
     plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports'],
   });
 

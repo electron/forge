@@ -22,6 +22,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
 
   public defaultPlatforms?: ForgePlatform[];
 
+  /** @internal */
   __isElectronForgePublisher!: true;
 
   constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {

@@ -60,6 +60,7 @@ export interface ForgeMakeResult {
 }
 
 export interface IForgePlugin {
+  /** @internal */
   __isElectronForgePlugin: boolean;
   name: string;
 
@@ -76,6 +77,7 @@ export interface IForgeResolvableMaker {
 }
 
 export interface IForgeMaker {
+  /** @internal */
   __isElectronForgeMaker: boolean;
   readonly platforms?: ForgePlatform[];
 }
@@ -87,6 +89,7 @@ export interface IForgeResolvablePublisher {
 }
 
 export interface IForgePublisher {
+  /** @internal */
   __isElectronForgePublisher: boolean;
   readonly platforms?: ForgePlatform[];
 }
