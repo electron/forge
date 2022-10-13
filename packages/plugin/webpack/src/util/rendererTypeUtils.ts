@@ -13,5 +13,5 @@ export const isPreloadOnly = (entry: WebpackPluginEntryPoint): entry is WebpackP
 };
 
 export const isNoWindow = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointNoWindow => {
-  return entry.type === undefined && !(entry as any).html && !!(entry as any).js;
+  return !(entry as any).html && !!(entry as any).js;
 };

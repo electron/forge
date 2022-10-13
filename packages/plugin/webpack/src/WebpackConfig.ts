@@ -267,10 +267,9 @@ export default class WebpackConfigGenerator {
           },
           rendererConfig || {}
         );
+      } else {
+        throw new Error('Invalid renderer entry point detected.');
       }
-      const config = webpackMerge(baseConfig, rendererConfig || {});
-
-      return config;
     });
   }
 }
