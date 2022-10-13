@@ -1,5 +1,5 @@
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
-import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
+import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
 import { expect } from 'chai';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
@@ -78,7 +78,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       describe('lint', () => {
-        it('should initially pass the linting process', () => forge.lint({ dir }));
+        it('should initially pass the linting process', () => expectLintToPass(dir));
       });
 
       after(() => fs.remove(dir));
@@ -116,7 +116,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       describe('lint', () => {
-        it('should initially pass the linting process', () => forge.lint({ dir }));
+        it('should initially pass the linting process', () => expectLintToPass(dir));
       });
 
       after(async () => {
