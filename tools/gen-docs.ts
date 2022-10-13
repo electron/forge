@@ -13,7 +13,8 @@ import * as typedoc from 'typedoc';
     excludePrivate: true,
     excludeProtected: true,
     hideGenerator: true,
-    plugin: ['typedoc-plugin-rename-defaults'],
+    externalPattern: ['**/node_modules/@types/node/**'],
+    plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports'],
   });
 
   const projReflection = typedocApp.convert();
