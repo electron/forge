@@ -2,7 +2,6 @@ import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
-import install, { InstallOptions, Asset as InstallAsset } from './install';
 import lint, { LintOptions } from './lint';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
@@ -27,15 +26,6 @@ export class ForgeAPI {
    */
   init(opts: InitOptions): Promise<void> {
     return init(opts);
-  }
-
-  /**
-   * Install an Electron application from GitHub.
-   *
-   * Works on all three platforms for all major distributable types.
-   */
-  install(opts: InstallOptions): Promise<void> {
-    return install(opts);
   }
 
   /**
@@ -88,8 +78,6 @@ export {
   ForgeUtils,
   ImportOptions,
   InitOptions,
-  InstallAsset,
-  InstallOptions,
   LintOptions,
   MakeOptions,
   PackageOptions,
