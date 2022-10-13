@@ -5,6 +5,7 @@ export { StartOptions };
 export default abstract class Plugin<C> implements IForgePlugin {
   public abstract name: string;
 
+  /** @internal */
   __isElectronForgePlugin!: true;
 
   constructor(public config: C) {
