@@ -220,15 +220,12 @@ describe('forge-config', () => {
         config: {
           forge: {
             makers: [
-              // {
-              //   name: '@electron-forge/maker-test',
-              //   config: {
-              //     name: 'will be overwritten',
-              //   },
-              // },
-              // new MakerZip({
-              //   name: 'will be overwritten',
-              // }),
+              {
+                name: '@electron-forge/maker-test',
+                config: {
+                  name: 'will be overwritten',
+                },
+              },
             ],
           },
         },
