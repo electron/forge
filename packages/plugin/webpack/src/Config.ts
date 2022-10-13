@@ -3,14 +3,6 @@ import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackCo
 
 export interface WebpackPluginEntryPointBase {
   /**
-   * Type of renderer process to initialize.
-   *  * 'local-window' contains an HTML template, a JavaScript entry point, and an optional preload script
-   *  * 'preload-only' contains a preload script (e.g. for remote web content)
-   *  * 'no-window' contains a JavaScript entry point (e.g. for Web Workers)
-   * Defaults to 'local-window' if not specified.
-   */
-  type?: 'local-window' | 'preload-only' | 'no-window';
-  /**
    * Human friendly name of your entry point
    */
   name: string;

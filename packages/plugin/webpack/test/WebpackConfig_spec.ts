@@ -472,7 +472,6 @@ describe('WebpackConfigGenerator', () => {
         renderer: {
           entryPoints: [
             {
-              type: 'preload-only',
               name: 'main',
               preload: {
                 js: 'rendererScript.js',
@@ -525,7 +524,6 @@ describe('WebpackConfigGenerator', () => {
         renderer: {
           entryPoints: [
             {
-              type: 'preload-only',
               name: 'main',
               preload: {
                 js: 'rendererScript.js',
