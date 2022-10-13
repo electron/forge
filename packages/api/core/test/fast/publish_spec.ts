@@ -29,7 +29,7 @@ describe('publish', () => {
     publisherSpy = stub();
     voidStub = stub();
     nowhereStub = stub();
-    publishers = ['@electron-forge/publisher-test'];
+    publishers = [{ name: '@electron-forge/publisher-test' }];
     const fakePublisher = (stub: SinonStub, name = 'default') =>
       class _FakePublisher {
         private publish: SinonStub;
