@@ -142,7 +142,7 @@ export default async (dir: string): Promise<ForgeConfig> => {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
   }
   const defaultForgeConfig = {
-    electronRebuildConfig: {},
+    rebuildConfig: {},
     packagerConfig: {},
     makers: [],
     publishers: [],

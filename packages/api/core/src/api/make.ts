@@ -1,7 +1,7 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import chalk from 'chalk';
 import { getHostArch } from '@electron/get';
-import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult } from '@electron-forge/shared-types';
+import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult, ForgeConfigMaker } from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import path from 'path';
@@ -26,20 +26,25 @@ class MakerImpl extends MakerBase<any> {
   defaultPlatforms = [];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MakeTarget = IForgeResolvableMaker | MakerBase<any> | string;
+type MakeTargets = ForgeConfigMaker[] | string[];
 
-function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[]) {
+function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTargets) {
   if (overrideTargets) {
     return overrideTargets.map((target) => {
       if (typeof target === 'string') {
-        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || { name: target };
+        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || ({ name: target } as IForgeResolvableMaker);
       }
 
       return target;
     });
   }
   return forgeConfig.makers;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isElectronForgeMaker(target: MakerBase<any> | unknown): target is MakerBase<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (target as MakerBase<any>).__isElectronForgeMaker;
 }
 
 export interface MakeOptions {
@@ -58,7 +63,7 @@ export interface MakeOptions {
   /**
    * An array of make targets to override your forge config
    */
-  overrideTargets?: MakeTarget[];
+  overrideTargets?: MakeTargets;
   /**
    * The target architecture
    */
@@ -110,14 +115,13 @@ export default async ({
 
   let targetId = 0;
   for (const target of targets) {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     let maker: MakerBase<any>;
-    if ((target as MakerBase<any>).__isElectronForgeMaker) {
-      maker = target as MakerBase<any>;
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+    if (isElectronForgeMaker(target)) {
+      maker = target;
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
-      const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
+      const resolvableTarget = target as IForgeResolvableMaker;
       // non-false falsy values should be 'true'
       if (resolvableTarget.enabled === false) continue;
 

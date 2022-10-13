@@ -6,7 +6,7 @@ import { readRawPackageJson, readMutatedPackageJson } from '../../src/util/read-
 
 const emptyForgeConfig: Partial<ForgeConfig> = {
   packagerConfig: {},
-  electronRebuildConfig: {},
+  rebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],

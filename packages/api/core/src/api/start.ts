@@ -51,7 +51,7 @@ export default async ({
   const platform = process.env.npm_config_platform || process.platform;
   const arch = process.env.npm_config_arch || process.arch;
 
-  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.electronRebuildConfig);
+  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.rebuildConfig);
 
   await runHook(forgeConfig, 'generateAssets', platform, arch);
 
