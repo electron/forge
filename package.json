@@ -58,16 +58,6 @@
     "@electron-forge/web-multi-logger": "file:packages/utils/web-multi-logger"
   },
   "devDependencies": {
-    "@electron-forge/maker-appx": "file:../../maker/appx",
-    "@electron-forge/maker-deb": "file:../../maker/deb",
-    "@electron-forge/maker-dmg": "file:../../maker/dmg",
-    "@electron-forge/maker-flatpak": "file:../../maker/flatpak",
-    "@electron-forge/maker-rpm": "file:../../maker/rpm",
-    "@electron-forge/maker-snap": "file:../../maker/snap",
-    "@electron-forge/maker-squirrel": "file:../../maker/squirrel",
-    "@electron-forge/maker-wix": "file:../../maker/wix",
-    "@electron-forge/maker-zip": "file:../../maker/zip",
-    "@electron-forge/test-utils": "file:../../utils/test-utils",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@malept/eslint-config": "^2.0.0",

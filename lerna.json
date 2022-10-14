@@ -3,12 +3,5 @@
   "useWorkspaces": true,
   "version": "0.0.0",
   "useNx": true,
-  "packages": [
-    "packages/api/*",
-    "packages/maker/*",
-    "packages/publisher/*",
-    "packages/utils/*",
-    "packages/plugin/*",
-    "packages/template/*"
-  ]
+  "packages": ["packages/api/*", "packages/maker/*", "packages/publisher/*", "packages/utils/*", "packages/plugin/*", "packages/template/*"]
 }
