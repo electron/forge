@@ -6,26 +6,16 @@
   "engines": {
     "node": ">= 14.17.5"
   },
-  "bolt": {
-    "workspaces": [
-      "packages/api/*",
-      "packages/maker/*",
-      "packages/publisher/*",
-      "packages/utils/*",
-      "packages/plugin/*",
-      "packages/template/*"
-    ]
-  },
   "scripts": {
-    "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
-    "build:full": "bolt ws exec -- tsc -b",
+    "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
+    "build": "lerna exec -- tsc --emitDeclarationOnly && lerna exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "lerna exec -- tsc -b",
     "postbuild": "ts-node tools/test-dist",
     "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:slow": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
-    "docs": "bolt build:full && bolt docs:generate",
+    "docs": "yarn build:full && yarn docs:generate",
     "docs:generate": "node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
-    "docs:deploy:build": "ts-node tools/sync-readmes.ts && bolt docs",
+    "docs:deploy:build": "ts-node tools/sync-readmes.ts && yarn docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
