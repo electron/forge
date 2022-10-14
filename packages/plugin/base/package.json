@@ -15,6 +15,6 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "../../utils/types"
+    "@electron-forge/shared-types": "file:../../utils/types"
   }
 }

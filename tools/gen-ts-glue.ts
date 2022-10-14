@@ -6,7 +6,7 @@
  * This script creates `index.ts` files in each package directory that simply
  * re-export the exports of the real main file. This is necessary for when all
  * the packages are run under a common context (instead of each individually).
- * This is because the symlinks bolt makes for each package are descendants of
+ * This is because the symlinks lerna makes for each package are descendants of
  * the context node is running in and therefore aren't treated as modules, only
  * as directories. Therefore package.json isn't considered and we need an index
  * file (like index.ts) to redirect to the right file.

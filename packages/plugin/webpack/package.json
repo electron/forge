@@ -24,11 +24,11 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "../../utils/types",
-    "@electron-forge/core": "../../api/core",
-    "@electron-forge/plugin-base": "../base",
-    "@electron-forge/shared-types": "../../utils/types",
-    "@electron-forge/web-multi-logger": "../../utils/web-multi-logger",
+    "@electron-forge/async-ora": "file:../../utils/types",
+    "@electron-forge/core": "file:../../api/core",
+    "@electron-forge/plugin-base": "file:../base",
+    "@electron-forge/shared-types": "file:../../utils/types",
+    "@electron-forge/web-multi-logger": "file:../../utils/web-multi-logger",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",

@@ -15,8 +15,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "../base",
-    "@electron-forge/shared-types": "../../utils/types",
+    "@electron-forge/maker-base": "file:../base",
+    "@electron-forge/shared-types": "file:../../utils/types",
     "chalk": "^4.0.0",
     "electron-wix-msi": "^3.0.6",
     "log-symbols": "^4.0.0",

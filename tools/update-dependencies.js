@@ -25,10 +25,6 @@ async function spawnPassthrough(cmd, args, options) {
   await spawn(cmd, args, { stdio: 'inherit', ...options });
 }
 
-async function bolt(...args) {
-  await spawnPassthrough('bolt', args);
-}
-
 async function git(...args) {
   await spawnPassthrough('git', args);
 }
@@ -85,25 +81,24 @@ class Package {
   async smoketestAndCommit(packageName = null) {
     const packageJSONs = await glob('packages/*/*/package.json');
     await yarn('lint');
-    await bolt('build');
     await git('add', 'package.json', 'yarn.lock', ...packageJSONs);
     await git('commit', '-m', `build(${this.commitType}): upgrade ${packageName || this.name} to ${this.commitVersion}`);
   }
 
   async upgrade() {
     if (this.isMajorVersionBump() || this.isMinorVersionBump()) {
-      await this.bolt_upgrade();
+      await this.upgrade_with_packagejson_update();
     } else {
-      await this.yarn_upgrade();
+      await this.upgrade_without_packagejson_update();
     }
   }
 
-  async bolt_upgrade() {
+  async upgrade_with_packagejson_update() {
     console.log(`Upgrading ${this.name} from ${this.wantedVersion} to ^${this.latestVersion} (and updating package.json)...`);
-    await bolt('upgrade', `${this.name}@^${this.latestVersion}`);
+    await yarn('upgrade', `${this.name}@^${this.latestVersion}`);
   }
 
-  async yarn_upgrade() {
+  async upgrade_without_packagejson_update() {
     console.log(`Upgrading ${this.name} from ${this.currentVersion} to ${this.latestVersion} in yarn.lock...`);
     await yarn('upgrade', this.name);
   }

@@ -18,8 +18,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "../base",
-    "@electron-forge/shared-types": "../../utils/types",
+    "@electron-forge/maker-base": "file:../base",
+    "@electron-forge/shared-types": "file:../../utils/types",
     "@electron/osx-sign": "^1.0.1"
   }
 }

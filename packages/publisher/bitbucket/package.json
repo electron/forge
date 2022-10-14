@@ -15,8 +15,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "../../utils/types",
-    "@electron-forge/publisher-base": "../base",
+    "@electron-forge/async-ora": "file:../../utils/types",
+    "@electron-forge/publisher-base": "file:../base",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
     "node-fetch": "^2.6.7"

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@doyensec/electronegativity": "^1.9.1",
-    "@electron-forge/plugin-base": "../base",
-    "@electron-forge/shared-types": "../../utils/types"
+    "@electron-forge/plugin-base": "file:../base",
+    "@electron-forge/shared-types": "file:../../utils/types"
   }
 }

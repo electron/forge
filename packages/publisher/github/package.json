@@ -21,9 +21,9 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "../../utils/async-ora",
-    "@electron-forge/publisher-base": "../base",
-    "@electron-forge/shared-types": "../../utils/types",
+    "@electron-forge/async-ora": "file:../../utils/async-ora",
+    "@electron-forge/publisher-base": "file:../base",
+    "@electron-forge/shared-types": "file:../../utils/types",
     "@octokit/core": "^3.2.4",
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^18.0.11",

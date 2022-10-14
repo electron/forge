@@ -167,12 +167,14 @@
   "volta": {
     "node": "14.17.5"
   },
-  "workspaces": [
-    "packages/api/*",
-    "packages/maker/*",
-    "packages/publisher/*",
-    "packages/utils/*",
-    "packages/plugin/*",
-    "packages/template/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/api/*",
+      "packages/maker/*",
+      "packages/publisher/*",
+      "packages/utils/*",
+      "packages/plugin/*",
+      "packages/template/*"
+    ]
+  }
 }
