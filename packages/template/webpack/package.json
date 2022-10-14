@@ -20,7 +20,6 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "file:../../utils/test-utils",
-    "chai": "^4.3.3"
+    "@electron-forge/test-utils": "file:../../utils/test-utils"
   }
 }

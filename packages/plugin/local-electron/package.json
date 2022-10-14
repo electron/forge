@@ -14,9 +14,5 @@
     "@electron-forge/plugin-base": "file:../base",
     "@electron-forge/shared-types": "file:../../utils/types",
     "fs-extra": "^10.0.0"
-  },
-  "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1"
   }
 }

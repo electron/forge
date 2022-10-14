@@ -7,10 +7,6 @@
   "license": "MIT",
   "main": "dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
-  "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1"
-  },
   "engines": {
     "node": ">= 14.17.5"
   },
