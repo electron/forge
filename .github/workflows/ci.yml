@@ -15,11 +15,11 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
       - name: Use Node.js LTS
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
-          node-version: 14.x
+          node-version: 16.x
           cache: yarn
       - name: Run dependabolt
         if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
@@ -36,11 +36,11 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v3.0.2
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v2.5.1
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
-          node-version: 14.x
+          node-version: 16.x
           cache: yarn
       - name: Install latest NPM on Windows
         if: matrix.os == 'windows-latest'
@@ -66,7 +66,7 @@ jobs:
       - name: Run tests
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -83,7 +83,7 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         shell: bash
@@ -100,10 +100,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v2.5.1
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
-          node-version: 14.x
+          node-version: 16.x
           cache: yarn
       - name: Install bolt
         shell: bash
@@ -122,7 +122,7 @@ jobs:
         env:
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v3.1.0
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
