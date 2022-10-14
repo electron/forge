@@ -14,7 +14,7 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "file:../../utils/types",
+    "@electron-forge/async-ora": "file:../../utils/async-ora",
     "@electron-forge/core": "file:../../api/core",
     "@electron-forge/plugin-base": "file:../base",
     "@electron-forge/shared-types": "file:../../utils/types",
