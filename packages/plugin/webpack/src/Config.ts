@@ -1,6 +1,9 @@
-import { Configuration as RawWebpackConfiguration } from 'webpack';
+import { Configuration as RawWebpackConfiguration, WebpackPluginInstance } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+
+type ExtraHtmlPluginOptions = Omit<HtmlWebpackPlugin.Options, 'title' | 'template' | 'filename' | 'chunks'>;
 
 export interface WebpackPluginEntryPoint {
   /**
@@ -48,6 +51,20 @@ export interface WebpackPluginEntryPoint {
    * for all entries.
    */
   nodeIntegration?: boolean;
+  /**
+   * Custom options to merge into the configuration passed to `HtmlWebpackPlugin`.
+   */
+  htmlOptions?: Partial<ExtraHtmlPluginOptions>;
+  /**
+   * Plugins to include before `HtmlWebpackPlugin`; typically, HTML plugin add-ons will
+   * need to be placed here.
+   */
+  htmlPlugins?: WebpackPluginInstance[];
+  /**
+   * Additional options to merge into the Webpack `output` configuration for this entry-
+   * point.
+   */
+  output?: object;
 }
 
 export interface WebpackPreloadEntryPoint {

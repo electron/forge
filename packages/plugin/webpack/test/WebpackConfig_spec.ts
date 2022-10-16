@@ -643,6 +643,37 @@ describe('WebpackConfigGenerator', () => {
         await generator.getRendererConfig(config.renderer.entryPoints);
         expect(getInvokedCounter()).to.equal(2);
       });
+
+      it('honors custom entrypoint output options', async () => {
+        const { MyWebpackConfigGenerator } = makeSubclass();
+
+        const config = {
+          mainConfig: () => ({
+            entry: 'main.js',
+            ...sampleWebpackConfig,
+          }),
+          renderer: {
+            config: { ...sampleWebpackConfig },
+            entryPoints: [
+              {
+                name: 'main',
+                js: 'rendererScript.js',
+                output: {
+                  crossorigin: 'anonymous',
+                },
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+
+        const generator = new MyWebpackConfigGenerator(config, mockProjectDir, false, 3000);
+
+        const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const outputSettings = rendererConfig[0].output as any;
+        expect(outputSettings).not.to.be.undefined;
+        expect(outputSettings['crossorigin']).to.equal('anonymous');
+      });
     });
   });
 });
