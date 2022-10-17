@@ -6,17 +6,9 @@
   "engines": {
     "node": ">= 14.17.5"
   },
-  "bolt": {
-    "workspaces": [
-      "packages/api/*",
-      "packages/external/*",
-      "packages/maker/*",
-      "packages/publisher/*",
-      "packages/utils/*",
-      "packages/plugin/*",
-      "packages/template/*"
-    ]
-  },
+  "packages": [
+    "packages/*"
+  ],
   "scripts": {
     "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
     "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt build:fast",
@@ -68,6 +60,7 @@
     "interpret": "^3.1.1",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
+    "macos-alias": "^0.2.11",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.7",
     "parse-author": "^2.0.0",
@@ -133,9 +126,10 @@
     "fetch-mock": "^9.10.7",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "generate-changelog": "^1.8.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
-    "listr2": "^5.0.3",
+    "husky": "^7.0.1",
+    "lerna": "^6.0.1",
+    "lint-staged": "^12.1.7",
+    "listr2": "^4.0.4",
     "minimist": "^1.2.6",
     "mocha": "^9.0.1",
     "prettier": "^2.4.0",
@@ -172,5 +166,8 @@
   },
   "volta": {
     "node": "14.17.5"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
