@@ -3,5 +3,12 @@
   "useWorkspaces": true,
   "version": "0.0.0",
   "npmClient": "yarn",
-  "packages": ["/packages/*"]
+  "packages": [
+    "packages/api/*",
+    "packages/plugin/*",
+    "packages/maker/*",
+    "packages/publisher/*",
+    "packages/template/*",
+    "packages/utils/*"
+  ]
 }
