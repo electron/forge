@@ -6,19 +6,18 @@
   "engines": {
     "node": ">= 14.17.5"
   },
-  "packages": [
-    "packages/*"
-  ],
   "scripts": {
-    "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt build:fast",
-    "build:fast": "bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
-    "build:full": "bolt ws exec -- tsc -b",
+    "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
+    "build": "lerna exec -- tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "lerna exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "lerna exec -- tsc -b",
     "postbuild": "ts-node tools/test-dist",
-    "docs": "bolt build:full && bolt docs:generate",
-    "docs:generate": "bolt docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
+    "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:slow": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
+    "docs": "yarn build:full && yarn docs:generate",
+    "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
-    "docs:deploy:build": "bolt docs",
+    "docs:deploy:build": "yarn docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "link:prepare": "bolt ws exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
@@ -167,7 +166,14 @@
   "volta": {
     "node": "14.17.5"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/api/*",
+      "packages/plugin/*",
+      "packages/maker/*",
+      "packages/publisher/*",
+      "packages/template/*",
+      "packages/utils/*"
+    ]
+  }
 }
