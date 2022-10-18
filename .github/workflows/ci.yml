@@ -9,27 +9,8 @@ on:
   pull_request:
 
 jobs:
-  dependabolt:
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
-      - name: Use Node.js LTS
-        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
-        with:
-          node-version: 14.x
-          cache: yarn
-      - name: Run dependabolt
-        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
-        uses: malept/github-action-dependabolt@v4.0.1
-        env:
-          DEPENDABOLT_SSH_DEPLOY_KEY: ${{ secrets.DEPENDABOLT_SSH_DEPLOY_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   fast-tests:
     runs-on: ${{ matrix.os }}
-    needs: dependabolt
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-latest]
@@ -49,26 +30,17 @@ jobs:
         run: |
           npm install -g npm@8.3.1
           npm install -g npm@latest
-      - name: Install bolt
-        shell: bash
-        run: |
-          case "$(uname -s)" in
-            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.24.10 ;;
-            *) BOLT_VERSION=latest ;;
-          esac
-          npm install -g bolt@$BOLT_VERSION
       - name: Install
-        run: bolt
+        run: yarn | lerna bootstrap
       - name: Lint
-        run: bolt lint
+        run: yarn lint
       - name: Build
-        run: bolt build
+        run: yarn build
       - name: Run tests
-        run: bolt test:fast
+        run: yarn coverage:fast
 
   slow-tests:
     runs-on: ${{ matrix.os }}
-    needs: dependabolt
     strategy:
       matrix:
         os: [windows-latest, macOS-latest, ubuntu-20.04]
@@ -97,19 +69,11 @@ jobs:
         with:
           node-version: 14.x
           cache: yarn
-      - name: Install bolt
-        shell: bash
-        run: |
-          case "$(uname -s)" in
-            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.24.10 ;;
-            *) BOLT_VERSION=latest ;;
-          esac
-          npm install -g bolt@$BOLT_VERSION
       - name: Install
-        run: bolt
+        run: yarn | lerna bootstrap
       - name: Build
-        run: bolt build
+        run: yarn build
       - name: Test
-        run: bolt test
+        run: yarn coverage:slow
         env:
           DEBUG: electron-installer-snap:snapcraft

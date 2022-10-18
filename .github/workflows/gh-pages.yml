@@ -22,20 +22,11 @@ jobs:
           node-version: 16.x
           cache: yarn
 
-      - name: Install Bolt CLI
-        shell: bash
-        run: |
-          case "$(uname -s)" in
-            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
-            *) BOLT_VERSION=latest ;;
-          esac
-          npm install -g bolt@$BOLT_VERSION
-
       - name: Build
         shell: bash
         run: |
-          bolt
-          bolt docs
+          yarn
+          yarn docs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
