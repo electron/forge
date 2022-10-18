@@ -1,0 +1,43 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "coverage:base",
+          "test",
+          "test:base",
+          "test:fast",
+          "test:slow"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "coverage:base": {
+      "dependsOn": [
+        "^coverage:base"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^test"
+      ]
+    },
+    "test:base": {
+      "dependsOn": [
+        "^test:base"
+      ]
+    },
+    "test:fast": {
+      "dependsOn": [
+        "^test:fast"
+      ]
+    },
+    "test:slow": {
+      "dependsOn": [
+        "^test:slow"
+      ]
+    }
+  }
+}
