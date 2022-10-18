@@ -53,22 +53,20 @@ issues/pull requests at [its separate repository](https://github.com/electron-fo
 
 ## Changing the Code
 
-Getting the code base running locally requires the `bolt` command installed globally. An example is given below.
+An example of how to make your own code edits:
 
 ```bash
-npm i -g bolt
 git clone https://github.com/electron/forge
 cd forge
-# Installs all dependencies, don't run "yarn" or "npm install" yourself
-bolt
+# Installs all dependencies
+yarn
 # Builds all the TS code
-bolt build
+yarn build
 ```
 
 ### Making Commits
 
 Please ensure that all changes are committed using [semantic commit messages](https://github.com/bcoe/conventional-changelog-standard/blob/master/convention.md).
-We expose a helper (`bolt commit`) to make this easier.
 
 ### Running the Tests
 
@@ -76,7 +74,7 @@ The Electron Forge repository has a lot of tests, some of which take a decent
 amount of time to run.
 
 ```bash
-bolt test
+yarn test
 ```
 
 ## Filing Pull Requests
