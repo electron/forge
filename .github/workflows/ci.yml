@@ -31,7 +31,7 @@ jobs:
           npm install -g npm@8.3.1
           npm install -g npm@latest
       - name: Install
-        run: yarn | lerna bootstrap
+        run: yarn && lerna bootstrap
       - name: Lint
         run: yarn lint
       - name: Build
@@ -70,7 +70,7 @@ jobs:
           node-version: 14.x
           cache: yarn
       - name: Install
-        run: yarn | lerna bootstrap
+        run: yarn && lerna bootstrap
       - name: Build
         run: yarn build
       - name: Test
