@@ -18,6 +18,7 @@ import * as typedoc from 'typedoc';
     includeVersion: true,
     name: 'Electron Forge',
     plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports', './tools/doc-plugin/dist/index.js'],
+    theme: 'forge-theme',
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore (overloaded param `internalModule` lets us rename "<internal>"
     // in the generated docs to "InternalOptions")
@@ -34,24 +35,20 @@ import * as typedoc from 'typedoc';
   const templates = new typedoc.ReflectionGroup('Templates', 2);
   const utils = new typedoc.ReflectionGroup('Utils', 2);
 
-  for (let child of projReflection.groups![0].children) {
+  for (const child of projReflection.groups![0].children) {
     if (child.name.includes('maker')) {
       makers.children.push(child);
-    }
-    else if (child.name.includes('plugin')) {
+    } else if (child.name.includes('plugin')) {
       plugins.children.push(child);
-    }
-    else if (child.name.includes('publisher')) {
+    } else if (child.name.includes('publisher')) {
       publishers.children.push(child);
-    }
-    else if (child.name.includes('template')) {
+    } else if (child.name.includes('template')) {
       templates.children.push(child);
-    }
-    else {
+    } else {
       utils.children.push(child);
     }
   }
-  
+
   projReflection.groups = [makers, plugins, publishers, templates, utils];
 
   await typedocApp.generateDocs(projReflection, path.resolve(__dirname, '..', 'docs'));

@@ -9,18 +9,14 @@ import {
   Reflection,
   ReflectionKind,
   ReflectionGroup,
-} from "typedoc";
+} from 'typedoc';
 
 export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
   constructor(theme: DefaultTheme, options: Options) {
     super(theme, options);
 
     this.navigation = (props) => {
-      return (
-        <>
-          {overridePrimaryNavigation(this, props)}
-        </>
-      );
+      return <>{overridePrimaryNavigation(this, props)}</>;
     };
   }
 }
@@ -38,20 +34,30 @@ export class NavigationOverrideTheme extends DefaultTheme {
 }
 
 // Replicated from the TypeDoc codebase. This should be exported by TypeDoc.
-function classNames(names: Record<string, boolean | null | undefined>, extraCss?: string) {
+function classNames(
+  names: Record<string, boolean | null | undefined>,
+  extraCss?: string
+) {
   const css = Object.keys(names)
     .filter((key) => names[key])
-    .concat(extraCss || "")
-    .join(" ")
+    .concat(extraCss || '')
+    .join(' ')
     .trim()
-    .replace(/\s+/g, " ");
+    .replace(/\s+/g, ' ');
   return css.length ? css : undefined;
 }
 
-function overridePrimaryNavigation(context: DefaultThemeRenderContext, props: PageEvent<Reflection>) {
+function overridePrimaryNavigation(
+  context: DefaultThemeRenderContext,
+  props: PageEvent<Reflection>
+) {
   // TODO: We should filter out modules with <a href="_electron_forge_core._internal_.html"><internal></a>
-  const modules = props.model.project.getChildrenByKind(ReflectionKind.SomeModule);
-  const projectLinkName = modules.some((m) => m.kindOf(ReflectionKind.Module)) ? "All Modules" : "Exports";
+  const modules = props.model.project.getChildrenByKind(
+    ReflectionKind.SomeModule
+  );
+  const projectLinkName = modules.some((m) => m.kindOf(ReflectionKind.Module))
+    ? 'All Modules'
+    : 'Exports';
 
   const groups = props.model.project.groups;
 
@@ -60,7 +66,9 @@ function overridePrimaryNavigation(context: DefaultThemeRenderContext, props: Pa
       <nav class="tsd-navigation primary">
         <ul>
           <li class={classNames({ current: props.model.isProject() })}>
-            <h3><a href={context.urlTo(props.model.project)}>{projectLinkName}</a></h3>
+            <h3>
+              <a href={context.urlTo(props.model.project)}>{projectLinkName}</a>
+            </h3>
           </li>
           {groups.map(generateChildren)}
         </ul>
@@ -87,7 +95,9 @@ function overridePrimaryNavigation(context: DefaultThemeRenderContext, props: Pa
       }
 
       return (
-        <li class={title + " " + classNames({ current: props.model.isProject() })}>
+        <li
+          class={title + ' ' + classNames({ current: props.model.isProject() })}
+        >
           <h3>{title}</h3>
           {childNav}
         </li>
@@ -97,17 +107,21 @@ function overridePrimaryNavigation(context: DefaultThemeRenderContext, props: Pa
 
   function link(mod: DeclarationReflection) {
     return (
-      <li class={mod.name + " " + classNames({ current: props.model.isProject() })}>
+      <li
+        class={
+          mod.name + ' ' + classNames({ current: props.model.isProject() })
+        }
+      >
         <a href={context.urlTo(mod)}>{renderedName(mod)}</a>
       </li>
     );
   }
 
   function renderedName(mod: DeclarationReflection) {
-    return mod.name.split("/")[1];
+    return mod.name.split('/')[1];
   }
 }
 
 export function load(app: Application) {
-  app.renderer.defineTheme("forge-theme", NavigationOverrideTheme);
+  app.renderer.defineTheme('forge-theme', NavigationOverrideTheme);
 }

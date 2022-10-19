@@ -1,21 +1,19 @@
 {
-    "include": ["src"],
+  "include": ["src"],
 
-    "compilerOptions": {
-        "target": "es2018",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "outDir": "dist",
-        "esModuleInterop": true,
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
 
-        "jsx": "react",
-        "jsxFactory": "JSX.createElement",
-        "jsxFragmentFactory": "JSX.Fragment"
-    },
-    "exclude": [
-        "src/assets"
-    ]
+    "jsx": "react",
+    "jsxFactory": "JSX.createElement",
+    "jsxFragmentFactory": "JSX.Fragment"
+  },
+  "exclude": ["src/assets"]
 }
