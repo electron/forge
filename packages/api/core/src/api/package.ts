@@ -122,7 +122,7 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
       packagerSpinner = ora('Packaging Application').start();
       done();
     },

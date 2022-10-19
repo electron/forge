@@ -161,7 +161,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
             platform,
             arch,
-            config.electronRebuildConfig
+            config.rebuildConfig
           );
           await this.compileMain();
           await this.compileRenderers();

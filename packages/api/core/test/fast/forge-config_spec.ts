@@ -11,7 +11,7 @@ import findConfig, {
 
 const defaults = {
   packagerConfig: {},
-  electronRebuildConfig: {},
+  rebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],

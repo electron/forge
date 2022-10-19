@@ -36,7 +36,7 @@ export interface PublishOptions {
    * The publish targets, by default pulled from forge config, set this prop to
    * override that list
    */
-  publishTargets?: ForgeConfigPublisher[];
+  publishTargets?: ForgeConfigPublisher[] | string[];
   /**
    * Options object to passed through to make()
    */

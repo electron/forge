@@ -1,5 +1,5 @@
 import { ChildProcess } from 'child_process';
-import { ArchOption, Options, TargetPlatform } from 'electron-packager';
+import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
 
 export type ElectronProcess = ChildProcess & { restarted: boolean };
@@ -9,13 +9,18 @@ export type ForgeArch = ArchOption;
 // Why: hooks have any number/kind of args/return values
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
-export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
+export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
+export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
+export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 export interface IForgePluginInterface {
   triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
   triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
+export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
+export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
 export interface ForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
@@ -34,10 +39,10 @@ export interface ForgeConfig {
   /**
    * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
-  plugins: (IForgePlugin | [string, Record<string, unknown>])[];
-  electronRebuildConfig: Partial<RebuildOptions>;
-  packagerConfig: Partial<Options>;
-  makers: (IForgeResolvableMaker | IForgeMaker)[];
+  plugins: ForgeConfigPlugin[];
+  rebuildConfig: ForgeRebuildOptions;
+  packagerConfig: ForgePackagerOptions;
+  makers: ForgeConfigMaker[];
   publishers: ForgeConfigPublisher[];
 }
 export interface ForgeMakeResult {
@@ -57,6 +62,11 @@ export interface ForgeMakeResult {
    * The arch this make run was for
    */
   arch: ForgeArch;
+}
+
+export interface IForgeResolvablePlugin {
+  name: string;
+  config?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface IForgePlugin {

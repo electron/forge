@@ -7,6 +7,10 @@ import requireSearch from './require-search';
 
 const d = debug('electron-forge:plugins');
 
+function isForgePlugin(plugin: IForgePlugin | unknown): plugin is IForgePlugin {
+  return (plugin as IForgePlugin).__isElectronForgePlugin;
+}
+
 export default class PluginInterface implements IForgePluginInterface {
   private plugins: IForgePlugin[];
 
@@ -14,23 +18,24 @@ export default class PluginInterface implements IForgePluginInterface {
 
   constructor(dir: string, forgeConfig: ForgeConfig) {
     this.plugins = forgeConfig.plugins.map((plugin) => {
-      if ((plugin as IForgePlugin).__isElectronForgePlugin) {
+      if (isForgePlugin(plugin)) {
         return plugin;
       }
 
-      if (Array.isArray(plugin)) {
-        const [pluginName, opts = {}] = plugin;
+      if (typeof plugin === 'object' && 'name' in plugin && 'config' in plugin) {
+        const { name: pluginName, config: opts } = plugin;
         if (typeof pluginName !== 'string') {
           throw new Error(`Expected plugin[0] to be a string but found ${pluginName}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const Plugin = requireSearch<any>(dir, [pluginName]);
         if (!Plugin) {
-          throw new Error(`Could not find module with name: ${plugin[0]}. Make sure it's listed in the devDependencies of your package.json`);
+          throw new Error(`Could not find module with name: ${pluginName}. Make sure it's listed in the devDependencies of your package.json`);
         }
         return new Plugin(opts);
       }
-      throw new Error(`Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`);
+
+      throw new Error(`Expected plugin to either be a plugin instance or a { name, config } object but found ${plugin}`);
     });
     // TODO: fix hack
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

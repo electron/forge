@@ -150,7 +150,7 @@ export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeCon
     forgeConfig.packagerConfig = forge5Config.electronPackagerConfig;
   }
   if (forge5Config.electronRebuildConfig) {
-    forgeConfig.electronRebuildConfig = forge5Config.electronRebuildConfig;
+    forgeConfig.rebuildConfig = forge5Config.electronRebuildConfig;
   }
   forgeConfig.makers = generateForgeMakerConfig(forge5Config);
   forgeConfig.publishers = generateForgePublisherConfig(forge5Config);

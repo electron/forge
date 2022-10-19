@@ -23,7 +23,7 @@ describe('upgradeForgeConfig', () => {
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.electronRebuildConfig).to.deep.equal(rebuildConfig);
+    expect(newConfig.rebuildConfig).to.deep.equal(rebuildConfig);
   });
 
   it('converts maker config', () => {
@@ -116,7 +116,7 @@ describe('updateUpgradedForgeDevDeps', () => {
     config: {
       forge: {
         packagerConfig: {},
-        electronRebuildConfig: {},
+        rebuildConfig: {},
         makers: [],
         publishers: [],
         plugins: [],
