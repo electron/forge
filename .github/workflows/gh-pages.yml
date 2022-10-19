@@ -1,9 +1,9 @@
-name: GitHub Pages
+name: API Documentation
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - v6.**
 
 jobs:
   deploy:
