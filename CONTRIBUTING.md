@@ -71,10 +71,16 @@ Please ensure that all changes are committed using [semantic commit messages](ht
 ### Running the Tests
 
 The Electron Forge repository has a lot of tests, some of which take a decent
-amount of time to run.
+amount of time to run when uncached. The repository will automatically cache test results for future runs.
 
 ```bash
-yarn test
+lerna run test
+```
+
+Tests can also run within a specific scope.
+
+```bash
+lerna run test --scope @electron-forge/core
 ```
 
 ## Filing Pull Requests
@@ -100,32 +106,23 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
-When updating a dependency, we also need to make sure that the package is updated in all of the modules where
-the packages is needed. To do this, run:
-
-```
-bolt upgrade {package-name}@latest
-
-// i.e.
-bolt upgrade electron-wix-msi@latest
-```
-
-### Release process
-
-- Make sure the tests pass
-- `$ ./tools/bump.ts $NEW_VERSION`
-  - This will commit the changes automatically. Run `git log` to confirm that the changes have been
-    committed.
-  - `$NEW_VERSION` should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
+- Make sure the tests pass with `lerna run test`
 - Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
-- `$ node tools/publish.js`
-  - Ensure that you are logged into npm via command line (`npm login`)
+- Ensure that you are logged into npm via command line (`npm login`)
+- `lerna publish --force-publish`
+  - running this command without the `--force-publish` flag will only publish packages that have changes since
+  last release.
+  - for beta releases, select `custom prerelease` when prompted, and enter `y` to increment the beta version.
+  - version numbers should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
+  - The script will then ask you for your `npm` OTP password.
+  - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
+    committed.
+
+- The command will have published your packages to `npm`, and pushed  an appropriate tag to github.
 - After running the command, you should have a commit which:
   - Updates the version field in the package.json file
   - Updates the version fields in each of the submodule package.json files
-  - Includes a git tag corresponding with the new version number.
 - Push your commit upstream to the main/default branch.
-- Push your tag upstream with `git push origin <tag_name>` .
 - Create a new github release
   - Go to releases tab
   - Draft a new release and choose the appropriate tag
