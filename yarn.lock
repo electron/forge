@@ -1096,6 +1096,18 @@
     typescript "~4.2.4"
     winston "^2.3.1"
 
+"@electron/asar@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.1.tgz#c4143896f3dd43b59a80a9c9068d76f77efb62ea"
+  integrity sha512-hE2cQMZ5+4o7+6T2lUaVbxIzrOjZZfX7dB02xuapyYFJZEAiWTelq6J3mMoxzd0iONDvYLPVKecB5tyjIoVDVA==
+  dependencies:
+    chromium-pickle-js "^0.2.0"
+    commander "^5.0.0"
+    glob "^7.1.6"
+    minimatch "^3.0.4"
+  optionalDependencies:
+    "@types/glob" "^7.1.1"
+
 "@electron/get@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-2.0.0.tgz#d991e68dc089fc66b521ec3ca4021515482bef91"
@@ -1124,13 +1136,13 @@
     minimist "^1.2.6"
     plist "^3.0.5"
 
-"@electron/universal@^1.2.1":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@electron/universal/-/universal-1.3.0.tgz#5854e41cf5bac03f4a78b9282358661fd0a66d4e"
-  integrity sha512-6SAIlMZZRj1qpe3z3qhMWf3fmqhAdzferiQ5kpspCI9sH1GjkzRXY0RLaz0ktHtYonOj9XMpXNkhDy7QQagQEg==
+"@electron/universal@^1.3.2":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@electron/universal/-/universal-1.3.3.tgz#f22088dce7f2e808130fd1bbcd43925246adfa59"
+  integrity sha512-79yc61D5QWaQpia+sLQbIIi5iVoV4y9HtgOTlE0fYT0xoyg+ChwndBl4a0Q7yJfDsqq+/nLEPE655F0bTpDiCg==
   dependencies:
+    "@electron/asar" "^3.2.1"
     "@malept/cross-spawn-promise" "^1.1.0"
-    asar "^3.1.0"
     debug "^4.3.1"
     dir-compare "^2.4.0"
     fs-extra "^9.0.1"
@@ -2543,7 +2555,7 @@ asar@^2.0.1:
   optionalDependencies:
     "@types/glob" "^7.1.1"
 
-asar@^3.0.0, asar@^3.0.3, asar@^3.1.0:
+asar@^3.0.0, asar@^3.0.3:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/asar/-/asar-3.1.0.tgz#70b0509449fe3daccc63beb4d3c7d2e24d3c6473"
   integrity sha512-vyxPxP5arcAqN4F/ebHd/HhwnAiZtwhglvdmc7BR2f0ywbVNTOpSeyhLDbGXtE/y58hv1oC75TaNIXutnsOZsQ==
@@ -3851,18 +3863,18 @@ electron-osx-sign@^0.5.0:
     minimist "^1.2.0"
     plist "^3.0.1"
 
-electron-packager@^16.0.0:
-  version "16.0.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-16.0.0.tgz#2eb7f14114e06b545207496ef66b10c24b7c8ba1"
-  integrity sha512-7Ey4UUaHg3FYhA7ktsAvCWP8srp9+iPljGdeJBsNaZBakU6HWhvRC+Pc7LWXGCgAVIN5BQsUwR3xrCbFno91VA==
+electron-packager@^17.0.0:
+  version "17.0.0"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-17.0.0.tgz#09e86734da51049de08b14cee8fc6b2d424efeec"
+  integrity sha512-dDy/gMR7Zl9t5AOFNIDjX+7T0d6GEifh1o/ciDUUf/fnHpVVNjDG92HsWgToGN/H9CZi5NEdlHWUQ49Wj7TN5g==
   dependencies:
+    "@electron/asar" "^3.2.1"
     "@electron/get" "^2.0.0"
-    "@electron/universal" "^1.2.1"
-    asar "^3.1.0"
+    "@electron/osx-sign" "^1.0.1"
+    "@electron/universal" "^1.3.2"
     cross-spawn-windows-exe "^1.2.0"
     debug "^4.0.1"
     electron-notarize "^1.1.1"
-    electron-osx-sign "^0.5.0"
     extract-zip "^2.0.0"
     filenamify "^4.1.0"
     fs-extra "^10.1.0"
