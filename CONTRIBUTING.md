@@ -116,7 +116,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
     committed.
 
-- The command will have published your packages to `npm`, and pushed  an appropriate tag to github.
+- The command will have published your packages to `npm`, and pushed an appropriate tag to github.
 - After running the command, you should have a commit which:
   - Updates the version field in the package.json file
   - Updates the version fields in each of the submodule package.json files
