@@ -18,6 +18,10 @@ import * as typedoc from 'typedoc';
     includeVersion: true,
     name: 'Electron Forge',
     plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports'],
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore (overloaded param `internalModule` lets us rename "<internal>"
+    // in the generated docs to "InternalOptions")
+    internalModule: 'InternalOptions',
   });
 
   const projReflection = typedocApp.convert();
