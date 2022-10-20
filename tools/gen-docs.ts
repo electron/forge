@@ -13,7 +13,7 @@ import * as typedoc from 'typedoc';
     excludeInternal: true,
     excludePrivate: true,
     excludeProtected: true,
-    externalPattern: ['**/node_modules/@types/node/**'],
+    externalPattern: ['**/node_modules/@types/node/**', '**/node_modules/typescript/**'],
     hideGenerator: true,
     includeVersion: true,
     name: 'Electron Forge',
