@@ -8,7 +8,7 @@ import * as typedoc from 'typedoc';
   const typedocApp = new typedoc.Application();
   typedocApp.bootstrap({
     entryPointStrategy: 'packages',
-    entryPoints: packages.map((pkg) => pkg.path),
+    entryPoints: packages.filter((pkg) => !!pkg.manifest['main']).map((pkg) => pkg.path),
     excludeExternals: true,
     excludeInternal: true,
     excludePrivate: true,
