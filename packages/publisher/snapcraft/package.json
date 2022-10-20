@@ -20,5 +20,8 @@
   },
   "optionalDependencies": {
     "electron-installer-snap": "^5.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
