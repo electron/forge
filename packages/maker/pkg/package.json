@@ -20,5 +20,8 @@
     "@electron-forge/maker-base": "6.0.0",
     "@electron-forge/shared-types": "6.0.0",
     "@electron/osx-sign": "^1.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -35,5 +35,8 @@
     "webpack": "^5.69.1",
     "webpack-dev-server": "^4.0.0",
     "webpack-merge": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

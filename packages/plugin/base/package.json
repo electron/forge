@@ -16,5 +16,8 @@
   },
   "dependencies": {
     "@electron-forge/shared-types": "6.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

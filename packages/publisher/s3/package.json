@@ -22,5 +22,8 @@
     "@electron-forge/publisher-base": "6.0.0",
     "@electron-forge/shared-types": "6.0.0",
     "debug": "^4.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
