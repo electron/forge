@@ -2,16 +2,24 @@ export interface PublisherS3Config {
   /**
    * Your AWS Access Key ID
    *
-   * Falls back to the AWS_ACCESS_KEY_ID environment variable if not provided
+   * Falls back to the the default credential provider chain if not
+   * provided
    */
   accessKeyId?: string;
   /**
    * The secret for your AWS Access Key
    *
-   * Falls back to the AWS_SECRET_ACCESS_KEY environment variable if not
+   * Falls back to the the default credential provider chain if not
    * provided
    */
   secretAccessKey?: string;
+  /**
+   * The session token for your AWS Access Key
+   *
+   * Falls back to the the default credential provider chain if not
+   * provided
+   */
+  sessionToken?: string;
   /**
    * The name of the S3 bucket to upload artifacts to
    */
