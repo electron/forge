@@ -195,6 +195,7 @@ export default class WebpackConfigGenerator {
           devtool: this.rendererSourceMapOption,
           mode: this.mode,
           output: {
+            ...(entryPoint.output || {}),
             path: path.resolve(this.webpackDir, 'renderer'),
             filename: '[name]/index.js',
             globalObject: 'self',
@@ -205,9 +206,11 @@ export default class WebpackConfigGenerator {
             __filename: false,
           },
           plugins: [
+            ...(entryPoint.htmlPlugins || []),
             ...(entryPoint.html
               ? [
                   new HtmlWebpackPlugin({
+                    ...(entryPoint.htmlOptions || {}),
                     title: entryPoint.name,
                     template: entryPoint.html,
                     filename: `${entryPoint.name}/index.html`,
