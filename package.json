@@ -26,7 +26,7 @@
     "docs": "bolt build:full && bolt docs:generate",
     "docs:generate": "bolt docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
-    "docs:deploy:build": "ts-node tools/sync-readmes.ts && bolt docs",
+    "docs:deploy:build": "bolt docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
@@ -150,6 +150,7 @@
     "typedoc": "^0.22.15",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-rename-defaults": "^0.6.4",
+    "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "typescript": "^4.6.3",
     "xvfb-maybe": "^0.2.1"
   },
