@@ -6,7 +6,7 @@ import { ForgeHookFn } from '@electron-forge/shared-types';
 import { CompilePluginConfig } from './Config';
 import { createCompileHook } from './lib/compile-hook';
 
-export default class CompileElectronPlugin extends PluginBase<CompilePluginConfig> {
+export default class CompilePlugin extends PluginBase<CompilePluginConfig> {
   name = 'electron-compile';
 
   private dir!: string;
