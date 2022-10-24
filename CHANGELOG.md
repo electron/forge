@@ -1,3 +1,19 @@
+#### [6.0.0-beta.68](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.68) (2022-10-24)
+
+##### Bug Fixes
+
+- **docs:**
+  - only load modules if package has entry point (#2981) ([bb29cd51](https://github.com/electron-userland/electron-forge/commit/bb29cd51))
+  - only publish API docs on v6 tags (#2976) ([a8b9dfc5](https://github.com/electron-userland/electron-forge/commit/a8b9dfc5))
+- pin gh-actions to SHAs, update to remove deprecation warning (#2966) ([fbc92e46](https://github.com/electron-userland/electron-forge/commit/fbc92e46))
+- **plugin-webpack:** better webpack-dev-server types (#2952) ([6c0c222b](https://github.com/electron-userland/electron-forge/commit/6c0c222b))
+
+##### Other Changes
+
+- upgrade electron-packager@17 (#2978) ([629872da](https://github.com/electron-userland/electron-forge/commit/629872da))
+- improve forge configuration DX (#2963) ([2c12d73f](https://github.com/electron-userland/electron-forge/commit/2c12d73f))
+- **maker-pkg:** upgrade to `@electron/osx-sign` (#2959) ([dba93590](https://github.com/electron-userland/electron-forge/commit/dba93590))
+
 #### [6.0.0-beta.67](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.67) (2022-10-05)
 
 ##### New Features
