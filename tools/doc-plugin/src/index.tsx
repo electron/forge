@@ -51,7 +51,6 @@ function overridePrimaryNavigation(
   context: DefaultThemeRenderContext,
   props: PageEvent<Reflection>
 ) {
-  // TODO: We should filter out modules with <a href="_electron_forge_core._internal_.html"><internal></a>
   const modules = props.model.project.getChildrenByKind(
     ReflectionKind.SomeModule
   );
@@ -65,10 +64,10 @@ function overridePrimaryNavigation(
     return (
       <nav class="tsd-navigation primary">
         <ul>
-          <li class={classNames({ current: props.model.isProject() })}>
-            <h3>
+          <li>
+            <h2>
               <a href={context.urlTo(props.model.project)}>{projectLinkName}</a>
-            </h3>
+            </h2>
           </li>
           {groups.map(generateChildren)}
         </ul>
@@ -79,7 +78,7 @@ function overridePrimaryNavigation(
   return (
     <nav class="tsd-navigation primary">
       <ul>
-        <li class={classNames({ current: props.model.isProject() })}>
+        <li>
           <a href={context.urlTo(props.model.project)}>{projectLinkName}</a>
         </li>
       </ul>
@@ -95,10 +94,8 @@ function overridePrimaryNavigation(
       }
 
       return (
-        <li
-          class={title + ' ' + classNames({ current: props.model.isProject() })}
-        >
-          <h3>{title}</h3>
+        <li class={title}>
+          <a href={context.urlTo(props.model.project)}>{title}</a>
           {childNav}
         </li>
       );
@@ -107,11 +104,7 @@ function overridePrimaryNavigation(
 
   function link(mod: DeclarationReflection) {
     return (
-      <li
-        class={
-          mod.name + ' ' + classNames({ current: props.model.isProject() })
-        }
-      >
+      <li class={mod.name}>
         <a href={context.urlTo(mod)}>{renderedName(mod)}</a>
       </li>
     );
