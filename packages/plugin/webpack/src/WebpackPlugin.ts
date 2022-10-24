@@ -17,6 +17,7 @@ import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
 import WebpackConfigGenerator from './WebpackConfig';
+import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
@@ -292,11 +293,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     });
 
     for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.preload) {
-        await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
+      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+        await asyncOra(`Compiling Renderer Preload: ${chalk.cyan(entryPoint.name)}`, async () => {
           const stats = await this.runWebpack(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            [await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)]
+            [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
           );
 
           if (stats?.hasErrors()) {
@@ -307,12 +308,17 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     }
   };
 
-  launchDevServers = async (logger: Logger): Promise<void> => {
-    await asyncOra('Launch Dev Servers', async () => {
+  launchRendererDevServers = async (logger: Logger): Promise<void> => {
+    await asyncOra('Launching Dev Servers for Renderer Process Code', async () => {
       const tab = logger.createTab('Renderers');
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+
+      if (config.length === 0) {
+        return;
+      }
+
       for (const entryConfig of config) {
         if (!entryConfig.plugins) entryConfig.plugins = [];
         entryConfig.plugins.push(pluginLogs);
@@ -326,12 +332,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     await asyncOra('Compiling Preload Scripts', async () => {
       for (const entryPoint of this.config.renderer.entryPoints) {
-        if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(
-            entryPoint,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            entryPoint.preload!
-          );
+        if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+          const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
           await new Promise((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
@@ -390,7 +392,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
     await this.compileMain(true, logger);
-    await this.launchDevServers(logger);
+    await this.launchRendererDevServers(logger);
     await logger.start();
     return false;
   }
