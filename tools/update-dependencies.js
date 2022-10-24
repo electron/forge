@@ -9,7 +9,6 @@ const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'chalk', // Requires ESM
   'commander', // TODO: convert to yargs
-  'electron-osx-sign', // Requires Electron Packager's dependency to also be upgraded
   'eslint-plugin-mocha', // Requires Node 14
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM
