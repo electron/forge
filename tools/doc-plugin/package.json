@@ -1,0 +1,25 @@
+{
+  "name": "typedoc-forge-custom-sidebar-theme",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "",
+  "license": "MIT",
+  "keywords": [
+    "typedoc-theme",
+    "custom-sidebar"
+  ],
+  "engines": {
+    "node": ">= 14"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  },
+  "peerDependencies": {
+    "typedoc": "^0.22.15"
+  },
+  "scripts": {
+    "build": "tsc",
+    "predocs": "tsc",
+    "docs": "typedoc src --plugin dist/index.js"
+  }
+}
