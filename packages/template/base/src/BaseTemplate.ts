@@ -1,6 +1,6 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
-import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import { ForgeTemplate } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -34,12 +34,11 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<void> {
+  public async initializeTemplate(directory: string): Promise<void> {
     await asyncOra('Copying Starter Files', async () => {
       d('creating directory:', path.resolve(directory, 'src'));
       await fs.mkdirs(path.resolve(directory, 'src'));
       const rootFiles = ['_gitignore'];
-      if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
       const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
       for (const file of rootFiles) {

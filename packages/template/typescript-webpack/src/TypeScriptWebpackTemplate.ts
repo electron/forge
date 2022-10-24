@@ -1,14 +1,13 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
-import { InitTemplateOptions } from '@electron-forge/shared-types';
 import path from 'path';
 
 class TypeScriptWebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-  async initializeTemplate(directory: string, options: InitTemplateOptions) {
-    await super.initializeTemplate(directory, options);
+  async initializeTemplate(directory: string) {
+    await super.initializeTemplate(directory);
     await asyncOra('Setting up Forge configuration', async () => {
       const packageJSONPath = path.resolve(directory, 'package.json');
       const packageJSON = await fs.readJson(packageJSONPath);

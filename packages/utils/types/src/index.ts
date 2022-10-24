@@ -132,15 +132,11 @@ export interface StartOptions {
 
 export type StartResult = ElectronProcess | string | string[] | false;
 
-export interface InitTemplateOptions {
-  copyCIFiles?: boolean;
-}
-
 export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
+  initializeTemplate?: (dir: string) => Promise<void>;
 }
 
 export type PackagePerson =

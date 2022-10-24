@@ -25,10 +25,6 @@ export interface InitOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to copy Travis and AppVeyor CI files
-   */
-  copyCIFiles?: boolean;
-  /**
    * Whether to overwrite an existing directory
    */
   force?: boolean;
@@ -51,7 +47,7 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
   }
 }
 
-export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
+export default async ({ dir = process.cwd(), interactive = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   asyncOra.interactive = interactive;
 
   d(`Initializing in: ${dir}`);
@@ -63,7 +59,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
   await validateTemplate(template, templateModule);
 
   if (typeof templateModule.initializeTemplate === 'function') {
-    await templateModule.initializeTemplate(dir, { copyCIFiles });
+    await templateModule.initializeTemplate(dir);
     const packageJSON = await readRawPackageJson(dir);
     setInitialForgeConfig(packageJSON);
     await fs.writeJson(path.join(dir, 'package.json'), packageJSON, { spaces: 2 });

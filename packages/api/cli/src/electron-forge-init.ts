@@ -23,7 +23,6 @@ import workingDir from './util/working-dir';
   const initOpts: InitOptions = {
     dir,
     interactive: true,
-    copyCIFiles: !!program.copyCiFiles,
     force: !!program.force,
   };
   if (program.template) initOpts.template = program.template;
