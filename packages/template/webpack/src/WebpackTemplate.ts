@@ -14,9 +14,9 @@ class WebpackTemplate extends BaseTemplate {
       const currentPJ = await fs.readJson(pjPath);
       currentPJ.main = '.webpack/main';
       currentPJ.config.forge.plugins = currentPJ.config.forge.plugins || [];
-      currentPJ.config.forge.plugins.push([
-        '@electron-forge/plugin-webpack',
-        {
+      currentPJ.config.forge.plugins.push({
+        name: '@electron-forge/plugin-webpack',
+        config: {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
@@ -32,7 +32,7 @@ class WebpackTemplate extends BaseTemplate {
             ],
           },
         },
-      ]);
+      });
       await fs.writeJson(pjPath, currentPJ, {
         spaces: 2,
       });
