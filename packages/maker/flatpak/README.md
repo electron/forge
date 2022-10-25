@@ -1,4 +1,4 @@
-## Electron Forge: Maker Flatpak
+## maker-flatpak
 
 `@electron-forge/maker-flatpak` [`.flatpak` files](http://flatpak.org/), which is a packaging format for Linux distributions that allows for sandboxed installation of applications in isolation from the rest of their system.
 

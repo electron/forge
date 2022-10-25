@@ -1,4 +1,4 @@
-## Electron Forge: Publisher Snapcraft
+## publisher-snapcraft
 
 The Snapcraft target publishes your .snap artifacts to the Snap Store. All configuration of your package is done via the Snapcraft maker.
 

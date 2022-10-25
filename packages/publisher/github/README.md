@@ -1,4 +1,4 @@
-## Electron Forge: GitHub
+## publisher-github
 
 `@electron-forge/publisher-github` publishes all your artifacts to GitHub releases, this allows your users to download the files straight from your repository or if your repository is open source you can use [update.electronjs.org](https://github.com/electron/update.electronjs.org) and get a free hosted update service.
 

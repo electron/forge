@@ -1,4 +1,4 @@
-## Electron Forge: Publisher Bitbucket
+## Electron Forge: publisher-bitbucket
 
 `@electron-forge/publisher-bitbucket` publishes your artifacts to Bitbucket where users will be able to download them.
 

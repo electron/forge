@@ -1,4 +1,4 @@
-## Electron Forge: Publisher S3
+## publisher-s3
 
 `@electron-forge/publisher-s3` publishes all your artifacts to an Amazon S3 bucket where users will be able to download them.
 

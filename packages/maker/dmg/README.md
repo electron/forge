@@ -1,4 +1,4 @@
-## Electron Forge: Maker DMG
+## maker-dmg
 
 `@electron-forge/maker-dmg` builds `.dmg` files, which are the standard format for sharing macOS apps. You can only build the DMG target on macOS machines.
 

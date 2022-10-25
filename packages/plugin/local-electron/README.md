@@ -1,4 +1,4 @@
-## Electron Forge: Local Electron
+## plugin-local-electron
 
 This plugin allows you to both run and build your app using a local build of Electron. This can be incredibly useful if you want to test a feature or a bug fix in your app before making a PR up to the Electron repository.
 

@@ -1,4 +1,4 @@
-## Electron Forge: Maker RPM
+## maker-rpm
 
 `@electron-forge/maker-rpm` builds `.rpm` files, which is the standard package format for RedHat-based Linux distributions such as Fedora.
 

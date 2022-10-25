@@ -1,4 +1,4 @@
-## Electron Forge: Publisher Nucleus
+## publisher-nucleus
 
 `@electron-forge/publisher-nucleus` publishes all your artifacts to an instance of Nucleus Update Server where users will be able to download them. This update service supports all three platforms.
 

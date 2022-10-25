@@ -1,4 +1,4 @@
-## Electron Forge: Maker Snap
+## maker-snap
 
 `@electron-forge/maker-snap` builds `.snap` files, which is the packaging format created and sponsored by Canonical, the company behind Ubuntu. It is a sandboxed package format that lets users of various Linux distributions install your application in an isolated environment on their machine.
 

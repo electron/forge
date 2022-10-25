@@ -1,4 +1,4 @@
-## Electron Forge: Publisher Electron Release Server
+## publisher-electron-release-server
 
 `@electron-forge/publisher-electron-release-server` publishes all your artifacts to a hosted instance of [Electron Release Server](https://github.com/ArekSredzki/electron-release-server) where users will be able to download them.
 

@@ -1,5 +1,5 @@
 
-## ## Electron Forge: Maker Wix MSI
+## maker-wix-msi
 
 The WiX MSI target builds `.msi` files, which are "traditional" Windows installer files.
 
