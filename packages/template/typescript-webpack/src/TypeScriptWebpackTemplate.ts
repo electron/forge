@@ -15,9 +15,9 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
 
       packageJSON.main = '.webpack/main';
       packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
-      packageJSON.config.forge.plugins.push([
-        '@electron-forge/plugin-webpack',
-        {
+      packageJSON.config.forge.plugins.push({
+        name: '@electron-forge/plugin-webpack',
+        config: {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
@@ -33,7 +33,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
             ],
           },
         },
-      ]);
+      });
 
       // Configure scripts for TS template
       packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
