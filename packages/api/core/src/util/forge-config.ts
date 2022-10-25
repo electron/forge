@@ -16,15 +16,6 @@ const underscoreCase = (str: string) =>
     .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
     .toUpperCase();
 
-export type PackageJSONForInitialForgeConfig = {
-  name?: string;
-  config: {
-    forge: {
-      makers: Pick<IForgeResolvableMaker, 'name' | 'config'>[];
-    };
-  };
-};
-
 // Why: needs access to Object methods and also needs to be able to match any interface.
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ProxiedObject = object;

@@ -11,12 +11,11 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
   async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
-      const packageJSONPath = path.resolve(directory, 'package.json');
-      const packageJSON = await fs.readJson(packageJSONPath);
-
-      packageJSON.main = '.webpack/main';
-      packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
-      packageJSON.config.forge.plugins.push({
+      const forgeConfigPath = path.resolve(directory, 'forge.config.js');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const forgeConfig = require(forgeConfigPath);
+      forgeConfig.plugins = forgeConfig.plugins || [];
+      forgeConfig.plugins.push({
         name: '@electron-forge/plugin-webpack',
         config: {
           mainConfig: './webpack.main.config.js',
@@ -35,13 +34,8 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
           },
         },
       });
-
-      // Configure scripts for TS template
-      packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
-
-      await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
+      await fs.writeFile(forgeConfigPath, `module.exports = ${JSON.stringify(forgeConfig, null, 2)}`);
     });
-
     await asyncOra('Setting up TypeScript configuration', async () => {
       const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
@@ -71,6 +65,18 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       // Remove preload.js and replace with preload.ts
       await fs.remove(filePath('preload.js'));
       await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
+
+      // update package.json
+      const packageJSONPath = path.resolve(directory, 'package.json');
+      const packageJSON = await fs.readJson(packageJSONPath);
+      packageJSON.main = '.webpack/main';
+      // Configure scripts for TS template
+      packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
+      await fs.writeJson(packageJSONPath, packageJSON, {
+        spaces: 2,
+      });
+
+      await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });
   }
 }
