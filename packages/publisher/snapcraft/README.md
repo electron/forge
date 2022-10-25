@@ -7,11 +7,17 @@ This target requires that the system has the snapcraft utility installed.
 Configuration options are documented in [PublisherSnapConfig](https://js.electronforge.io/interfaces/_electron_forge_publisher_snapcraft.PublisherSnapcraftConfig.htmls).
 
 
-```javascript
-{
-  name: '@electron-forge/publisher-snapcraft',
-  config: {
-    release: "1"
-  }
+```javascript title=forge.config.js
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-snapcraft',
+      config: {
+        release: "latest/edge, insider/stable"
+      }
+    }
+  ]
 }
+```
 ```

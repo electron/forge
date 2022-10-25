@@ -8,15 +8,20 @@ Configuration options are documented in [`Publisher
 NucleusConfig](https://js.electronforge.io/interfaces/_electron_forge_publisher_nucleus.PublisherNucleusConfig.html).
 
 
-```javascript
-{
-  name: '@electron-forge/publisher-nucleus',
-  config: {
-    host: 'https://my-nucleus.mysite.com',
-    appId: 1,
-    channelId: 'abcdefg',
-    token: 'my-token'
-  }
+```javascript title=forge.config.js
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-nucleus',
+      config: {
+        host: 'https://my-nucleus.mysite.com',
+        appId: 1,
+        channelId: 'abcdefg',
+        token: 'my-token'
+      }
+    }
+  ]
 }
 ```
 

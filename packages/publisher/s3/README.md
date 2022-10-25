@@ -9,13 +9,18 @@ ${config.folder || appVersion}/${artifactName}
 Configuration options are documented in [PublisherS3Config](https://js.electronforge.io/interfaces/_electron_forge_publisher_s3.PublisherS3Config.html).
 
 
-```javascript
-{
-  name: '@electron-forge/publisher-s3',
-  config: {
-    bucket: 'my-bucket',
-    public: true
-  }
+```javascript title=forge.config.js
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-s3',
+      config: {
+        bucket: 'my-bucket',
+        public: true
+      }
+    }
+  ]
 }
 ```
 

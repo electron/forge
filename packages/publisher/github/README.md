@@ -5,15 +5,21 @@
 Configuration options are documented in [`PublisherGithubConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_github.PublisherGitHubConfig.html).
 
 
-```javascript
-{
-  name: '@electron-forge/publisher-github',
-  config: {
-    repository: {
-      owner: 'me',
-      name: 'awesome-thing'
-    },
-    prerelease: true
-  }
+```javascript title=forge.config.js
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'me',
+          name: 'awesome-thing'
+        },
+        prerelease: true
+      }
+    }
+  ]
 }
+```
 ```

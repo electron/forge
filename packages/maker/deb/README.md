@@ -4,13 +4,15 @@
 
 Configuration options are documented in [MakerDebConfigOptions](https://js.electronforge.io/interfaces/_electron_forge_maker_deb._internal_.MakerDebConfigOptions.html).
 
+```
 {
   name: '@electron-forge/maker-deb',
   config: {
     options: {
-      maintainer: 'Joe Bloggs',
+      maintainer: 'The Forgers',
       homepage: 'https://example.com',
       icon: 'path/to/icon.svg'
     }
   }
 }
+```

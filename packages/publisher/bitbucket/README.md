@@ -7,18 +7,23 @@ This publish target is for Bitbucket Cloud only and will not work with self host
 Configuration options are documented in [`PublisherBitbucketConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_bitbucket.PublisherBitbucketConfig.html).
 
 
-```javascript
-{
-  name: "@electron-forge/publisher-bitbucket",
-  config: {
-    repository: {
-      owner: "myusername",
-      name: "myreponame"
-    },
-    auth: {
-      username: "myusername",
-      appPassword: "mysecretapppassword"
+```javascript title=forge.config.js
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-bitbucket',
+      config: {
+        repository: {
+          owner: 'myusername',
+          name: 'myreponame'
+        },
+        auth: {
+          username: 'myusername',
+          appPassword: 'mysecretapppassword'
+        }
     }
+  ]
 }
 ```
 
