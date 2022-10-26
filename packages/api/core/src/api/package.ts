@@ -1,7 +1,7 @@
 import path from 'path';
 import { promisify } from 'util';
 
-import { OraImpl, fakeOra, ora as realOra } from '@electron-forge/async-ora';
+import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';

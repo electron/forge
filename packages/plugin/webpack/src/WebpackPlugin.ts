@@ -14,10 +14,10 @@ import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig } from './Config';
-import WebpackConfigGenerator from './WebpackConfig';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
 import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
+import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;

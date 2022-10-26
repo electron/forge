@@ -24,7 +24,8 @@
         "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
         "newlines-between": "always",
         "alphabetize": {
-          "order": "asc"
+          "order": "asc",
+          "caseInsensitive": true
         }
       }
     ],
@@ -32,7 +33,8 @@
       "error",
       {
         "ignoreDeclarationSort": true,
-        "allowSeparatedGroups": true
+        "allowSeparatedGroups": true,
+        "ignoreCase": true
       }
     ]
   },

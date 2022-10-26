@@ -4,8 +4,8 @@ import { ForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 
 import findConfig, {
-  PackageJSONForInitialForgeConfig,
   forgeConfigIsValidFilePath,
+  PackageJSONForInitialForgeConfig,
   renderConfigTemplate,
   setInitialForgeConfig,
 } from '../../src/util/forge-config';

@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 
 let count = 0;
 ipcMain.on('stdout', (_, line) => {

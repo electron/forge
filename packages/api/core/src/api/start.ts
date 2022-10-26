@@ -1,4 +1,4 @@
-import { SpawnOptions, spawn } from 'child_process';
+import { spawn, SpawnOptions } from 'child_process';
 
 import { asyncOra } from '@electron-forge/async-ora';
 import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';

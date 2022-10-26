@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { StartOptions, api } from '@electron-forge/core';
+import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
 import program from 'commander';
 import fs from 'fs-extra';
