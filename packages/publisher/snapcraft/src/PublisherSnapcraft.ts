@@ -1,8 +1,8 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
-
-import fs from 'fs-extra';
 import path from 'path';
+
+import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import fs from 'fs-extra';
 
 import { PublisherSnapcraftConfig } from './Config';
 

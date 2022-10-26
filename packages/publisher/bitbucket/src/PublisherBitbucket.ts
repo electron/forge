@@ -1,10 +1,10 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
+import path from 'path';
 
-import fetch from 'node-fetch';
+import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import path from 'path';
+import fetch from 'node-fetch';
 
 import { PublisherBitbucketConfig } from './Config';
 

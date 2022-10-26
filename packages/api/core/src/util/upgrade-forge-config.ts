@@ -1,5 +1,7 @@
-import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import path from 'path';
+
+import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+
 import { siblingDep } from '../api/init-scripts/init-npm';
 
 type MakeTargets = { string: string[] };

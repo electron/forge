@@ -1,8 +1,9 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
-import { InitTemplateOptions } from '@electron-forge/shared-types';
-import path from 'path';
 
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');

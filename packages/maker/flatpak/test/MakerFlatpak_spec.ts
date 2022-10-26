@@ -1,14 +1,14 @@
+import path from 'path';
+
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
-
 import { expect } from 'chai';
 import 'chai-as-promised';
-import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
-import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
+import { flatpakArch } from '../src/MakerFlatpak';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

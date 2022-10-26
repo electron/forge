@@ -1,8 +1,10 @@
+import path from 'path';
+
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import path from 'path';
 import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
+
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPluginEntryPointLocalWindow, WebpackPluginEntryPointPreloadOnly } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';

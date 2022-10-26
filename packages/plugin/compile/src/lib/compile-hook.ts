@@ -1,7 +1,8 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
 import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import path from 'path';
 
 export const createCompileHook =
   (originalDir: string) =>

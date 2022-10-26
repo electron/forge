@@ -1,4 +1,5 @@
 import { ChildProcess } from 'child_process';
+
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
 

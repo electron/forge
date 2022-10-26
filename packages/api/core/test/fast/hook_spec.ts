@@ -1,6 +1,6 @@
 import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { runHook, runMutatingHook } from '../../src/util/hook';
 

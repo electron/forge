@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+
 import { ConfigurationFactory } from '../../src/WebpackConfig';
 import processConfig, { ConfigProcessor } from '../../src/util/processConfig';
 

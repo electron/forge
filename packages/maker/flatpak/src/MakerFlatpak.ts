@@ -1,8 +1,8 @@
+import path from 'path';
+
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-
 import fs from 'fs-extra';
-import path from 'path';
 
 import { MakerFlatpakConfig } from './Config';
 

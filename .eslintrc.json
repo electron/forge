@@ -28,10 +28,13 @@
         }
       }
     ],
-    "sort-imports": ["error", {
-      "ignoreDeclarationSort": true,
-      "allowSeparatedGroups": true
-    }]
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true,
+        "allowSeparatedGroups": true
+      }
+    ]
   },
   "overrides": [
     {

@@ -1,7 +1,8 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
 
 import installDepList, { DepType, DepVersionRestriction } from '../../util/install-dependencies';
 

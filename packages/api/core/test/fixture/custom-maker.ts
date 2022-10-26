@@ -1,5 +1,5 @@
-import { ForgePlatform } from '@electron-forge/shared-types';
 import MakerBase from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 interface Config {
   artifactPath: string;

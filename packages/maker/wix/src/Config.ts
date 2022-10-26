@@ -1,4 +1,4 @@
-import { MSICreator, Features } from 'electron-wix-msi/lib/creator';
+import { Features, MSICreator } from 'electron-wix-msi/lib/creator';
 
 export interface MakerWixConfig {
   /**

@@ -1,20 +1,21 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
 import baseTemplate from '@electron-forge/template-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { merge } from 'lodash';
-import path from 'path';
-
-import initGit from './init-scripts/init-git';
-import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 import { updateElectronDependency } from '../util/electron-version';
 import { setInitialForgeConfig } from '../util/forge-config';
-import { info, warn } from '../util/messages';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
+import { info, warn } from '../util/messages';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
+
+import initGit from './init-scripts/init-git';
+import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:import');
 

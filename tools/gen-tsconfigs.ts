@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
+
 import { getPackageInfo } from './utils';
 
 const BASE_TS_CONFIG = {

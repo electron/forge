@@ -1,4 +1,4 @@
-import { ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher } from '@electron-forge/shared-types';
+import { ForgeConfig, ForgeMakeResult, ForgePlatform, IForgePublisher } from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**

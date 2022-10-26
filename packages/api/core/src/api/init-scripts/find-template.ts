@@ -1,8 +1,8 @@
 import { asyncOra } from '@electron-forge/async-ora';
+import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 import resolvePackage from 'resolve-package';
 
-import { ForgeTemplate } from '@electron-forge/shared-types';
 import { PossibleModule } from '../../util/require-search';
 
 const d = debug('electron-forge:init:find-template');

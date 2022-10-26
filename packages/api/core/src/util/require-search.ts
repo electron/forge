@@ -1,5 +1,6 @@
-import debug from 'debug';
 import path from 'path';
+
+import debug from 'debug';
 
 const d = debug('electron-forge:require-search');
 

@@ -1,21 +1,22 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import chalk from 'chalk';
-import { getHostArch } from '@electron/get';
-import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult, ForgeConfigMaker } from '@electron-forge/shared-types';
-import MakerBase from '@electron-forge/maker-base';
-import fs from 'fs-extra';
 import path from 'path';
-import filenamify from 'filenamify';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import MakerBase from '@electron-forge/maker-base';
+import { ForgeArch, ForgeConfig, ForgeConfigMaker, ForgeMakeResult, ForgePlatform, IForgeResolvableMaker } from '@electron-forge/shared-types';
+import { getHostArch } from '@electron/get';
+import chalk from 'chalk';
+import filenamify from 'filenamify';
+import fs from 'fs-extra';
+
+import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook, runMutatingHook } from '../util/hook';
 import { info, warn } from '../util/messages';
+import getCurrentOutDir from '../util/out-dir';
 import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
-import getCurrentOutDir from '../util/out-dir';
-import { getElectronVersion } from '../util/electron-version';
 import requireSearch from '../util/require-search';
+import resolveDir from '../util/resolve-dir';
 
 import packager from './package';
 

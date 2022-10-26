@@ -1,6 +1,6 @@
-import { expect } from 'chai';
-import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
+import { Octokit } from '@octokit/rest';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import { SinonSpy, spy } from 'sinon';
 

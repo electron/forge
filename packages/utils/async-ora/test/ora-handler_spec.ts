@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import { spy } from 'sinon';
 
-import { asyncOra as ora, OraImpl } from '../src/index';
+import { OraImpl, asyncOra as ora } from '../src/index';
 
 type MockOra = OraImpl & {
   _text: string;

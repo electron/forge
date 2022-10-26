@@ -1,10 +1,10 @@
+import path from 'path';
+
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
-
 import { expect } from 'chai';
-import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
 

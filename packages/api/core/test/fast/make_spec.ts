@@ -1,6 +1,7 @@
-import { expect } from 'chai';
-import { ForgeMakeResult } from '@electron-forge/shared-types';
 import * as path from 'path';
+
+import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
 import { MakeOptions } from '../../src/api';

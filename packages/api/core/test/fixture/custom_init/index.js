@@ -1,6 +1,7 @@
+const path = require('path');
+
 const baseTemplate = require('@electron-forge/template-base').default;
 const fs = require('fs-extra');
-const path = require('path');
 
 module.exports = {
   requiredForgeVersion: '>= 6.0.0-beta.1',

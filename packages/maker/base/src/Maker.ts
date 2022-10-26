@@ -1,6 +1,7 @@
+import path from 'path';
+
 import { ForgeArch, ForgeConfig, ForgePlatform, IForgeMaker } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import path from 'path';
 import which from 'which';
 
 export type EmptyConfig = Record<string, never>;

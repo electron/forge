@@ -1,13 +1,13 @@
-import { api, PublishOptions } from '@electron-forge/core';
-
-import fs from 'fs-extra';
-import { initializeProxy } from '@electron/get';
-import program from 'commander';
 import path from 'path';
 
+import { PublishOptions, api } from '@electron-forge/core';
+import { initializeProxy } from '@electron/get';
+import program from 'commander';
+import fs from 'fs-extra';
+
 import './util/terminate';
-import workingDir from './util/working-dir';
 import { getMakeOptions } from './electron-forge-make';
+import workingDir from './util/working-dir';
 
 (async () => {
   let dir = process.cwd();

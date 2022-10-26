@@ -1,8 +1,9 @@
 import PluginBase from '@electron-forge/plugin-base';
-import { IForgePluginInterface, ForgeConfig, IForgePlugin, StartResult } from '@electron-forge/shared-types';
+import { ForgeConfig, IForgePlugin, IForgePluginInterface, StartResult } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 import { StartOptions } from '../api';
+
 import requireSearch from './require-search';
 
 const d = debug('electron-forge:plugins');

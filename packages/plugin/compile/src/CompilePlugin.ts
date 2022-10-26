@@ -1,6 +1,7 @@
-import { ForgeHookFn } from '@electron-forge/shared-types';
-import PluginBase, { StartOptions } from '@electron-forge/plugin-base';
 import * as path from 'path';
+
+import PluginBase, { StartOptions } from '@electron-forge/plugin-base';
+import { ForgeHookFn } from '@electron-forge/shared-types';
 
 import { CompilePluginConfig } from './Config';
 import { createCompileHook } from './lib/compile-hook';

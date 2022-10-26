@@ -1,12 +1,12 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
-import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
+import path from 'path';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import path from 'path';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import { PublisherERSConfig } from './Config';
 

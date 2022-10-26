@@ -1,10 +1,11 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import fs from 'fs';
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 import FormData from 'form-data';
-import fs from 'fs';
 import fetch from 'node-fetch';
-import path from 'path';
 
 import { PublisherNucleusConfig } from './Config';
 

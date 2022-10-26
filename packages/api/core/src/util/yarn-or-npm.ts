@@ -1,5 +1,5 @@
-import chalk from 'chalk';
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
+import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
 

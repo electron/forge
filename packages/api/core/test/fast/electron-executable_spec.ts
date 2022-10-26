@@ -1,5 +1,6 @@
-import chai, { expect } from 'chai';
 import path from 'path';
+
+import chai, { expect } from 'chai';
 import { createSandbox } from 'sinon';
 import sinonChai from 'sinon-chai';
 

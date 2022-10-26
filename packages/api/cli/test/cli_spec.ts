@@ -1,7 +1,8 @@
+import path from 'path';
+
+import { spawn } from '@malept/cross-spawn-promise';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import path from 'path';
-import { spawn } from '@malept/cross-spawn-promise';
 
 chai.use(chaiAsPromised);
 

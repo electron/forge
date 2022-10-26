@@ -1,6 +1,7 @@
 #!/usr/bin/env ts-node
 
 import path from 'path';
+
 import { readJsonSync, writeJsonSync } from 'fs-extra';
 
 import { getPackageInfoSync } from './utils';

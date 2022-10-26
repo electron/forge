@@ -1,8 +1,10 @@
+import path from 'path';
+
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
-import { readRawPackageJson } from './read-package-json';
+
 import { getElectronVersion } from './electron-version';
+import { readRawPackageJson } from './read-package-json';
 
 const d = debug('electron-forge:project-resolver');
 

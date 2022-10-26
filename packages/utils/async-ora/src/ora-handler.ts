@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+
 import ora from './ora';
 
 export class OraImpl {

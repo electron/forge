@@ -1,16 +1,17 @@
+import { SpawnOptions, spawn } from 'child_process';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
-import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
-import { spawn, SpawnOptions } from 'child_process';
 
+import locateElectronExecutable from '../util/electron-executable';
 import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
-import locateElectronExecutable from '../util/electron-executable';
+import { runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
-import { runHook } from '../util/hook';
 
 const d = debug('electron-forge:start');
 
