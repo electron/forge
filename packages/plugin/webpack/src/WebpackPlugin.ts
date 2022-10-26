@@ -4,7 +4,7 @@ import path from 'path';
 import { asyncOra } from '@electron-forge/async-ora';
 import { utils } from '@electron-forge/core';
 import { PluginBase } from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeArch, ForgeHookFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -155,7 +155,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     switch (name) {
       case 'prePackage':
         this.isProd = true;
-        return async (config: ForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
+        return async (config: ResolvedForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
           await fs.remove(this.baseDir);
           await utils.rebuildHook(
             this.projectDir,
@@ -168,7 +168,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await this.compileRenderers();
         };
       case 'postStart':
-        return async (_config: ForgeConfig, child: ElectronProcess) => {
+        return async (_config: ResolvedForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
             console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
             this.loggedOutputUrl = true;
@@ -188,7 +188,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -222,7 +222,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   };
 
-  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {

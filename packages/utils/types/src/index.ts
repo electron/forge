@@ -9,7 +9,7 @@ export type ForgePlatform = TargetPlatform;
 export type ForgeArch = ArchOption;
 // Why: hooks have any number/kind of args/return values
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
+export type ForgeHookFn = (forgeConfig: ResolvedForgeConfig, ...args: any[]) => Promise<any>;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
@@ -22,7 +22,7 @@ export interface IForgePluginInterface {
 
 export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
 export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
-export interface ForgeConfig {
+export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
    * to the out dir to generate a nested directory.  E.g. out/current-timestamp
@@ -46,6 +46,7 @@ export interface ForgeConfig {
   makers: ForgeConfigMaker[];
   publishers: ForgeConfigPublisher[];
 }
+export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
 export interface ForgeMakeResult {
   /**
    * An array of paths to artifacts generated for this make run
@@ -75,7 +76,7 @@ export interface IForgePlugin {
   __isElectronForgePlugin: boolean;
   name: string;
 
-  init(dir: string, forgeConfig: ForgeConfig): void;
+  init(dir: string, forgeConfig: ResolvedForgeConfig): void;
   getHook?(hookName: string): ForgeHookFn | null;
   startLogic?(opts: StartOptions): Promise<StartResult>;
 }

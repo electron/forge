@@ -1,4 +1,4 @@
-import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
+import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { SinonStub, stub } from 'sinon';
 
@@ -9,7 +9,7 @@ const fakeConfig = {
     triggerHook: async () => false,
     triggerMutatingHook: async (_hookName: string, item: unknown) => item,
   },
-} as unknown as ForgeConfig;
+} as unknown as ResolvedForgeConfig;
 
 describe('hooks', () => {
   describe('runHook', () => {

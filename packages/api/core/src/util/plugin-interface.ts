@@ -1,5 +1,5 @@
 import PluginBase from '@electron-forge/plugin-base';
-import { ForgeConfig, IForgePlugin, IForgePluginInterface, StartResult } from '@electron-forge/shared-types';
+import { IForgePlugin, IForgePluginInterface, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 import { StartOptions } from '../api';
@@ -15,9 +15,9 @@ function isForgePlugin(plugin: IForgePlugin | unknown): plugin is IForgePlugin {
 export default class PluginInterface implements IForgePluginInterface {
   private plugins: IForgePlugin[];
 
-  private config: ForgeConfig;
+  private config: ResolvedForgeConfig;
 
-  constructor(dir: string, forgeConfig: ForgeConfig) {
+  constructor(dir: string, forgeConfig: ResolvedForgeConfig) {
     this.plugins = forgeConfig.plugins.map((plugin) => {
       if (isForgePlugin(plugin)) {
         return plugin;

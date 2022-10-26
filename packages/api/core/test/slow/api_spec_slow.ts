@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { execSync } from 'child_process';
 import path from 'path';
 
@@ -241,6 +242,7 @@ describe('Electron Forge API', () => {
         packageJSON.name = 'testapp';
         packageJSON.version = '1.0.0-beta.1';
         packageJSON.productName = 'Test-App';
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.asar = false;
         if (process.platform === 'win32') {
           await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
@@ -255,10 +257,12 @@ describe('Electron Forge API', () => {
 
     it('throws an error when all is set', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.all = true;
       });
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         delete packageJSON.config.forge.packagerConfig.all;
       });
     });
@@ -308,6 +312,7 @@ describe('Electron Forge API', () => {
 
     it('can package without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 

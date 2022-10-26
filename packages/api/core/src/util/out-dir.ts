@@ -1,10 +1,10 @@
 import path from 'path';
 
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 
 const BASE_OUT_DIR = 'out';
 
-export default (baseDir: string, forgeConfig: ForgeConfig): string => {
+export default (baseDir: string, forgeConfig: ResolvedForgeConfig): string => {
   if (forgeConfig.buildIdentifier) {
     let identifier = forgeConfig.buildIdentifier;
     if (typeof identifier === 'function') {
