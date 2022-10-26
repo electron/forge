@@ -10,6 +10,6 @@
     "@electron-forge/cli": "6.0.0-beta.68"
   },
   "bin": {
-    "electron-forge": "dist/index.js"
+    "create-electron-app": "dist/index.js"
   }
 }
