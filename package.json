@@ -31,7 +31,8 @@
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts"
+    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@aws-sdk/abort-controller": "^3.29.0",
@@ -134,8 +135,8 @@
     "eslint-plugin-tsdoc": "^0.2.14",
     "fetch-mock": "^9.10.7",
     "generate-changelog": "^1.8.0",
-    "husky": "^7.0.1",
-    "lint-staged": "^12.1.7",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
     "listr2": "^4.0.4",
     "minimist": "^1.2.6",
     "mocha": "^9.0.1",
@@ -164,7 +165,10 @@
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
-    "*.{js,ts}": "eslint --fix"
+    "*.{js,ts}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "nyc": {
     "exclude": [
