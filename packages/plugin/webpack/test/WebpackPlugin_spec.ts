@@ -7,7 +7,7 @@ import { IgnoreFunction } from 'electron-packager';
 import * as fs from 'fs-extra';
 
 import { WebpackPluginConfig } from '../src/Config';
-import WebpackPlugin from '../src/WebpackPlugin';
+import { WebpackPlugin } from '../src/WebpackPlugin';
 
 describe('WebpackPlugin', () => {
   const baseConfig: WebpackPluginConfig = {

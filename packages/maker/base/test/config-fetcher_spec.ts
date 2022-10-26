@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
 
-import MakerBase from '../src/Maker';
+import { MakerBase } from '../src/Maker';
 
 class MakerImpl extends MakerBase<{ a: number }> {
   name = 'test';

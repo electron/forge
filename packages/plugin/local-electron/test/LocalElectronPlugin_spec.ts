@@ -5,7 +5,7 @@ import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
-import LocalElectronPlugin from '../src/LocalElectronPlugin';
+import { LocalElectronPlugin } from '../src/LocalElectronPlugin';
 
 describe('LocalElectronPlugin', () => {
   describe('start logic', () => {
