@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase from '@electron-forge/publisher-base';
+import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
   ForgeMakeResult,

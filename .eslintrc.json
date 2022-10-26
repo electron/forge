@@ -36,7 +36,8 @@
         "allowSeparatedGroups": true,
         "ignoreCase": true
       }
-    ]
+    ],
+    "import/no-named-as-default": "error"
   },
   "overrides": [
     {

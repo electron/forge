@@ -1,4 +1,4 @@
-import PluginBase from '@electron-forge/plugin-base';
+import { PluginBase } from '@electron-forge/plugin-base';
 import { IForgePlugin, IForgePluginInterface, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import debug from 'debug';
 
