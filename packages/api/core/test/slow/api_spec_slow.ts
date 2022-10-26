@@ -244,7 +244,10 @@ describe('Electron Forge API', () => {
           await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
           devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
         } else if (process.platform === 'linux') {
-          packageJSON.config.forge.packagerConfig.executableName = 'testapp';
+          packageJSON.config.forge.packagerConfig = {
+            ...packageJSON.config.forge.packagerConfig,
+            executableName: 'testapp',
+          };
         }
         packageJSON.homepage = 'http://www.example.com/';
         packageJSON.author = 'Test Author';
