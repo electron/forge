@@ -9,6 +9,7 @@
   "bolt": {
     "workspaces": [
       "packages/api/*",
+      "packages/external/*",
       "packages/maker/*",
       "packages/publisher/*",
       "packages/utils/*",

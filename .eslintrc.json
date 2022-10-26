@@ -65,7 +65,7 @@
       }
     },
     {
-      "files": ["packages/api/cli/src/**/*.ts", "tools/*.{js,ts}"],
+      "files": ["packages/api/cli/src/**/*.ts", "packages/external/create-electron-app/src/**/*.ts", "tools/*.{js,ts}"],
       "rules": {
         "no-process-exit": "off",
         "node/shebang": [
