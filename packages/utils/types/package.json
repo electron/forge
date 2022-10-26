@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.68",
+    "@electron-forge/async-ora": "^6.0.0-beta.68",
     "electron-packager": "^17.0.0",
     "electron-rebuild": "^3.2.6",
     "ora": "^5.0.0"

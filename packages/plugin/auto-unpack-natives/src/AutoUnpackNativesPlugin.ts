@@ -1,19 +1,18 @@
 import { PluginBase } from '@electron-forge/plugin-base';
-import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 
 import { AutoUnpackNativesConfig } from './Config';
 
 export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNativesConfig> {
   name = 'auto-unpack-natives';
 
-  getHook(hookName: string): ForgeHookFn | null {
-    if (hookName === 'resolveForgeConfig') {
-      return this.resolveForgeConfig;
-    }
-    return null;
+  getHooks(): ForgeHookMap {
+    return {
+      resolveForgeConfig: this.resolveForgeConfig,
+    };
   }
 
-  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
+  resolveForgeConfig: ForgeHookFn<'resolveForgeConfig'> = async (forgeConfig) => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }

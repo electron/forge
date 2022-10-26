@@ -1,12 +1,12 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import { ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeHookFn } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
 export const createCompileHook =
-  (originalDir: string) =>
-  async (_config: ResolvedForgeConfig, buildPath: string): Promise<void> => {
+  (originalDir: string): ForgeHookFn<'packageAfterCopy'> =>
+  async (_config, buildPath): Promise<void> => {
     await asyncOra('Compiling Application', async () => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const compileCLI = require(path.resolve(originalDir, 'node_modules/electron-compile/lib/cli.js'));
