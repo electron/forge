@@ -9,7 +9,8 @@
   "typings": "dist/Maker.d.ts",
   "devDependencies": {
     "chai": "^4.3.3",
-    "mocha": "^9.0.1"
+    "mocha": "^9.0.1",
+    "sinon": "^13.0.1"
   },
   "engines": {
     "node": ">= 14.17.5"
