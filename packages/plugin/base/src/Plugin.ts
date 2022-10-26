@@ -1,4 +1,4 @@
-import { ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeHookFn, IForgePlugin, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 
 export { StartOptions };
 
@@ -16,7 +16,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
     });
   }
 
-  init(_dir: string, _config: ForgeConfig): void {
+  init(_dir: string, _config: ResolvedForgeConfig): void {
     // By default, do nothing. This can be overridden.
   }
 

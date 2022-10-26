@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
 
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { IgnoreFunction } from 'electron-packager';
 import * as fs from 'fs-extra';
@@ -45,7 +45,7 @@ describe('WebpackPlugin', () => {
     it('should remove config.forge from package.json', async () => {
       const packageJSON = { main: './.webpack/main', config: { forge: 'config.js' } };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
+      await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
     });
@@ -53,7 +53,7 @@ describe('WebpackPlugin', () => {
     it('should succeed if there is no config.forge', async () => {
       const packageJSON = { main: '.webpack/main' };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await plugin.packageAfterCopy({} as ForgeConfig, packagedPath);
+      await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
       expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
       expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
     });
@@ -61,13 +61,13 @@ describe('WebpackPlugin', () => {
     it('should fail if there is no main key in package.json', async () => {
       const packageJSON = {};
       await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
     });
 
     it('should fail if main in package.json does not end with .webpack/main', async () => {
       const packageJSON = { main: 'src/main.js' };
       await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
     });
 
     after(async () => {
@@ -83,7 +83,7 @@ describe('WebpackPlugin', () => {
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
-      const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+      const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
       expect(config.packagerConfig).to.not.equal(undefined);
       expect(config.packagerConfig.ignore).to.be.a('function');
     });
@@ -94,13 +94,13 @@ describe('WebpackPlugin', () => {
           packagerConfig: {
             ignore: /test/,
           },
-        } as ForgeConfig);
+        } as ResolvedForgeConfig);
 
         expect(config.packagerConfig.ignore).to.deep.equal(/test/);
       });
 
       it('ignores everything but files in .webpack', async () => {
-        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore('')).to.equal(false);
@@ -113,7 +113,7 @@ describe('WebpackPlugin', () => {
         const webpackConfig = { ...baseConfig, jsonStats: true };
         webpackConfig.renderer.jsonStats = true;
         plugin = new WebpackPlugin(webpackConfig);
-        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
@@ -123,7 +123,7 @@ describe('WebpackPlugin', () => {
       it('ignores source map files by default', async () => {
         const webpackConfig = { ...baseConfig };
         plugin = new WebpackPlugin(webpackConfig);
-        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);
@@ -135,7 +135,7 @@ describe('WebpackPlugin', () => {
       it('includes source map files when specified by config', async () => {
         const webpackConfig = { ...baseConfig, packageSourceMaps: true };
         plugin = new WebpackPlugin(webpackConfig);
-        const config = await plugin.resolveForgeConfig({} as ForgeConfig);
+        const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
         expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);

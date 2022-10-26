@@ -1,4 +1,4 @@
-import { ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
+import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
@@ -55,7 +55,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
 
       const calls = fetch.calls();
 
@@ -102,7 +102,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
 
       const calls = fetch.calls();
 
@@ -139,7 +139,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
 
       const calls = fetch.calls();
       expect(calls).to.have.length(2);
@@ -178,7 +178,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
 
       const calls = fetch.calls();
 
@@ -198,7 +198,7 @@ describe('PublisherERS', () => {
   it('fails if username and password are not provided', () => {
     const publisher = new PublisherERS({});
 
-    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig })).to.eventually.be.rejectedWith(
       'In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info'
     );
   });
@@ -211,7 +211,7 @@ describe('PublisherERS', () => {
       username: 'test',
       password: 'test',
     });
-    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig })).to.eventually.be.rejectedWith(
       'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
     );
   });
