@@ -169,3 +169,5 @@ export default abstract class Maker<C> implements IForgeMaker {
     return `${noPrerelease}.0`;
   }
 }
+
+export { Maker as MakerBase };

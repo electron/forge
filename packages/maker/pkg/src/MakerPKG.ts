@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { flatAsync } from '@electron/osx-sign';
 
@@ -40,4 +40,4 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
   }
 }
 
-export { MakerPKGConfig };
+export { MakerPKG, MakerPKGConfig };

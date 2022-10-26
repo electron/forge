@@ -1,7 +1,7 @@
 import path from 'path';
 import { promisify } from 'util';
 
-import MakerBase, { EmptyConfig, MakerOptions } from '@electron-forge/maker-base';
+import { EmptyConfig, MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
 export type MakerZIPConfig = EmptyConfig;
@@ -28,3 +28,5 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     return [zipPath];
   }
 }
+
+export { MakerZIP };

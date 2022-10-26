@@ -1,4 +1,4 @@
-import MakerBase from '@electron-forge/maker-base';
+import { MakerBase } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
 interface Config {

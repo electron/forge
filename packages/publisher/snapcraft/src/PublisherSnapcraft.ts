@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import fs from 'fs-extra';
 
 import { PublisherSnapcraftConfig } from './Config';
@@ -41,4 +41,4 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
   }
 }
 
-export { PublisherSnapcraftConfig };
+export { PublisherSnapcraft, PublisherSnapcraftConfig };
