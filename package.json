@@ -162,7 +162,7 @@
     "electron-installer-snap": "^5.1.0",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
-    "electron-wix-msi": "^3.0.6"
+    "electron-wix-msi": "^4.0.0"
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
