@@ -25,7 +25,11 @@ export default abstract class Publisher<C> implements IForgePublisher {
   /** @internal */
   __isElectronForgePublisher!: true;
 
-  constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {
+  /**
+   * @param config - A configuration object for this publisher
+   * @param platformsToPublishOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
+   */
+  constructor(public config: C, protected platformsToPublishOn?: ForgePlatform[]) {
     this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
@@ -35,7 +39,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
   }
 
   get platforms(): ForgePlatform[] {
-    if (this.providedPlatforms) return this.providedPlatforms;
+    if (this.platformsToPublishOn) return this.platformsToPublishOn;
     if (this.defaultPlatforms) return this.defaultPlatforms;
     return ['win32', 'linux', 'darwin', 'mas'];
   }
