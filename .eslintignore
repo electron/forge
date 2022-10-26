@@ -5,5 +5,4 @@ node_modules
 packages/*/*/doc
 packages/*/*/index.ts
 packages/**/bad.js
-packages/externals/create-electron-app/src/*
 tmpl
