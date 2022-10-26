@@ -8,7 +8,6 @@ import fs from 'fs-extra';
 import { merge } from 'lodash';
 
 import { updateElectronDependency } from '../util/electron-version';
-import { setInitialForgeConfig } from '../util/forge-config';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { info, warn } from '../util/messages';
 import { readRawPackageJson } from '../util/read-package-json';
@@ -202,10 +201,6 @@ export default async ({
     }
   } else {
     packageJSON.config.forge = templatePackageJSON.config.forge;
-  }
-
-  if (typeof packageJSON.config.forge !== 'string') {
-    setInitialForgeConfig(packageJSON);
   }
 
   await writeChanges();

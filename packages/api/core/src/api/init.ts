@@ -3,10 +3,8 @@ import path from 'path';
 import { asyncOra } from '@electron-forge/async-ora';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
 import semver from 'semver';
 
-import { setInitialForgeConfig } from '../util/forge-config';
 import installDepList, { DepType } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
@@ -66,9 +64,6 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
 
   if (typeof templateModule.initializeTemplate === 'function') {
     await templateModule.initializeTemplate(dir, { copyCIFiles });
-    const packageJSON = await readRawPackageJson(dir);
-    setInitialForgeConfig(packageJSON);
-    await fs.writeJson(path.join(dir, 'package.json'), packageJSON, { spaces: 2 });
   }
 
   await asyncOra('Installing Template Dependencies', async () => {

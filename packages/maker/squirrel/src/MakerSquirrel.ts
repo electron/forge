@@ -21,7 +21,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     await this.ensureDirectory(outPath);
 
     const winstallerConfig: ElectronWinstallerOptions = {
-      name: packageJSON.name,
+      name: (packageJSON.name as string).replace(/-/g, '_'), // squirrel hates hyphens
       title: appName,
       noMsi: true,
       exe: `${forgeConfig.packagerConfig.executableName || appName}.exe`,
