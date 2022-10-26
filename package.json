@@ -70,7 +70,6 @@
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.7",
-    "nugget": "^2.0.1",
     "ora": "^5.0.0",
     "parse-author": "^2.0.0",
     "pretty-ms": "^7.0.0",
