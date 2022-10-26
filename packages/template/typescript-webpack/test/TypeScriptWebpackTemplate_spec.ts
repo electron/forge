@@ -1,9 +1,11 @@
-import * as testUtils from '@electron-forge/test-utils';
-import fs from 'fs-extra';
-import glob from 'fast-glob';
 import path from 'path';
-import template from '../src/TypeScriptWebpackTemplate';
+
+import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
+import glob from 'fast-glob';
+import fs from 'fs-extra';
+
+import template from '../src/TypeScriptWebpackTemplate';
 
 describe('TypeScriptWebpackTemplate', () => {
   let dir: string;

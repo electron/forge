@@ -1,8 +1,7 @@
+import { PackagePerson } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
-
-import { PackagePerson } from '@electron-forge/shared-types';
 
 describe('determineAuthor', () => {
   let determineAuthor: (dir: string) => Promise<PackagePerson>;

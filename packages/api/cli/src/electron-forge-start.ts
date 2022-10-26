@@ -1,8 +1,9 @@
+import path from 'path';
+
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
-import path from 'path';
 import program from 'commander';
+import fs from 'fs-extra';
 
 import './util/terminate';
 import workingDir from './util/working-dir';

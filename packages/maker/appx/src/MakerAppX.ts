@@ -1,14 +1,14 @@
+import path from 'path';
+
 import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-
-import fs from 'fs-extra';
-import path from 'path';
 import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
 import windowsStore from 'electron-windows-store';
 import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
+import fs from 'fs-extra';
 
-import getNameFromAuthor from './util/author-name';
 import { MakerAppXConfig } from './Config';
+import getNameFromAuthor from './util/author-name';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to

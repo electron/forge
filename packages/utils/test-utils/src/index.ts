@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
 import { ExitError, spawn } from '@malept/cross-spawn-promise';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 
 async function runNPM(dir: string, ...args: string[]) {
   await spawn('npm', args, { cwd: dir });

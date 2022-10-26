@@ -1,5 +1,6 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
 import path from 'path';
+
+import { ForgeConfig } from '@electron-forge/shared-types';
 
 const BASE_OUT_DIR = 'out';
 

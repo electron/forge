@@ -1,8 +1,10 @@
+import path from 'path';
+
 import debug from 'debug';
 import findUp from 'find-up';
 import fs from 'fs-extra';
-import path from 'path';
 import semver from 'semver';
+
 import yarnOrNpm from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');

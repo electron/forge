@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+const { spawn } = require('@malept/cross-spawn-promise');
 const glob = require('fast-glob');
 const { satisfies } = require('semver');
-const { spawn } = require('@malept/cross-spawn-promise');
 
 const DO_NOT_UPGRADE = [
   '@types/node-fetch', // No longer needed when node-fetch is upgraded to >= 3.0.0

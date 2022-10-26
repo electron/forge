@@ -1,16 +1,17 @@
-import { createDefaultCertificate } from '@electron-forge/maker-appx';
-import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
 import { execSync } from 'child_process';
-import { expect } from 'chai';
-import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
-import proxyquire from 'proxyquire';
-import { readMetadata } from 'electron-installer-common';
 
+import { createDefaultCertificate } from '@electron-forge/maker-appx';
+import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
+import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
+import { expect } from 'chai';
+import { readMetadata } from 'electron-installer-common';
+import fs from 'fs-extra';
+import proxyquire from 'proxyquire';
+
+import { InitOptions } from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
-import { InitOptions } from '../../src/api';
 
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {

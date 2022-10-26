@@ -1,5 +1,5 @@
 {
-  "plugins": ["mocha"],
+  "plugins": ["mocha", "import"],
   "env": {
     "mocha": true
   },
@@ -17,7 +17,26 @@
         "vars": "all"
       }
     ],
-    "mocha/no-exclusive-tests": "error"
+    "mocha/no-exclusive-tests": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true,
+        "allowSeparatedGroups": true,
+        "ignoreCase": true
+      }
+    ]
   },
   "overrides": [
     {

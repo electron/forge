@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import { ForgeConfig } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
+import { ForgeConfig } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 
 import LocalElectronPlugin from '../src/LocalElectronPlugin';
 

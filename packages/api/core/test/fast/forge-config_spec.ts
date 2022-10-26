@@ -1,6 +1,7 @@
-import { expect } from 'chai';
-import { ForgeConfig } from '@electron-forge/shared-types';
 import path from 'path';
+
+import { ForgeConfig } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 
 import findConfig, {
   forgeConfigIsValidFilePath,

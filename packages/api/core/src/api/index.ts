@@ -1,13 +1,13 @@
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
+import ForgeUtils from '../util';
+
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
-
-import ForgeUtils from '../util';
 
 export class ForgeAPI {
   /**

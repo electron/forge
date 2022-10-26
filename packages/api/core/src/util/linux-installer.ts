@@ -1,5 +1,6 @@
-import { promisify } from 'util';
 import { spawnSync } from 'child_process';
+import { promisify } from 'util';
+
 import sudoPrompt from 'sudo-prompt';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

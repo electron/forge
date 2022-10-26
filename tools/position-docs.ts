@@ -1,6 +1,8 @@
-import * as fs from 'fs-extra';
-import glob from 'fast-glob';
 import * as path from 'path';
+
+import glob from 'fast-glob';
+import * as fs from 'fs-extra';
+
 import { getPackageInfo } from './utils';
 
 const DOCS_PATH = path.resolve(__dirname, '..', 'docs');

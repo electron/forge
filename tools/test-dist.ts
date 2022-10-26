@@ -1,6 +1,7 @@
+import * as path from 'path';
+
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');

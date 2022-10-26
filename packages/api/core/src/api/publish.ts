@@ -1,25 +1,25 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase from '@electron-forge/publisher-base';
 import {
-  IForgeResolvablePublisher,
-  IForgePublisher,
   ForgeConfigPublisher,
   ForgeMakeResult,
+  IForgePublisher,
+  IForgeResolvablePublisher,
   // ForgePlatform,
 } from '@electron-forge/shared-types';
-import PublisherBase from '@electron-forge/publisher-base';
-
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
 
 import getForgeConfig from '../util/forge-config';
-import resolveDir from '../util/resolve-dir';
-import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
+import PublishState from '../util/publish-state';
+import requireSearch from '../util/require-search';
+import resolveDir from '../util/resolve-dir';
 
 import make, { MakeOptions } from './make';
-import requireSearch from '../util/require-search';
 
 const d = debug('electron-forge:publish');
 

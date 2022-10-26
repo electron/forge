@@ -1,6 +1,7 @@
+import path from 'path';
+
 import { ForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import path from 'path';
 
 import { runMutatingHook } from './hook';
 

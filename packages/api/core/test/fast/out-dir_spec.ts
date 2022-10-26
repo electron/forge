@@ -1,6 +1,7 @@
+import path from 'path';
+
 import { ForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import path from 'path';
 
 import getCurrentOutDir from '../../src/util/out-dir';
 

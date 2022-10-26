@@ -1,14 +1,13 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgePlatform } from '@electron-forge/shared-types';
-
-import chalk from 'chalk';
-import logSymbols from 'log-symbols';
 import path from 'path';
 
+import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
-import getNameFromAuthor from './util/author-name';
+import logSymbols from 'log-symbols';
 
 import { MakerWixConfig } from './Config';
+import getNameFromAuthor from './util/author-name';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';

@@ -1,11 +1,12 @@
+import path from 'path';
+
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import path from 'path';
 import { template } from 'lodash';
 
-import { readRawPackageJson } from './read-package-json';
-import PluginInterface from './plugin-interface';
 import { runMutatingHook } from './hook';
+import PluginInterface from './plugin-interface';
+import { readRawPackageJson } from './read-package-json';
 
 const underscoreCase = (str: string) =>
   str

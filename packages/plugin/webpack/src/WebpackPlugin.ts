@@ -1,23 +1,23 @@
+import http from 'http';
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { utils } from '@electron-forge/core';
 import PluginBase from '@electron-forge/plugin-base';
 import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
-
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import http from 'http';
-import { merge } from 'webpack-merge';
-import path from 'path';
-import { utils } from '@electron-forge/core';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
-import WebpackConfigGenerator from './WebpackConfig';
 import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
+import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;

@@ -1,5 +1,6 @@
-import { expect } from 'chai';
 import path from 'path';
+
+import { expect } from 'chai';
 
 import resolveDir from '../../src/util/resolve-dir';
 

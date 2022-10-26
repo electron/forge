@@ -1,12 +1,12 @@
 import { exec } from 'child_process';
-import debug from 'debug';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import semver from 'semver';
 
-import { utils as forgeUtils } from '@electron-forge/core';
 import { OraImpl } from '@electron-forge/async-ora';
+import { utils as forgeUtils } from '@electron-forge/core';
+import debug from 'debug';
+import fs from 'fs-extra';
+import semver from 'semver';
 
 const d = debug('electron-forge:check-system');
 

@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
-import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
 import os from 'os';
 import path from 'path';
+
+import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
 

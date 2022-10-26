@@ -1,6 +1,6 @@
-import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
-import PluginBase from '@electron-forge/plugin-base';
 import runElectronegativity from '@doyensec/electronegativity';
+import PluginBase from '@electron-forge/plugin-base';
+import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 
 // To be more precise, postPackage options we care about.
 type PostPackageOptions = {

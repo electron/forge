@@ -1,7 +1,7 @@
-import debug from 'debug';
-import { Octokit } from '@octokit/rest';
-import { retry } from '@octokit/plugin-retry';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
+import { retry } from '@octokit/plugin-retry';
+import { Octokit } from '@octokit/rest';
+import debug from 'debug';
 
 const logInfo = debug('electron-forge:publisher:github:info');
 const logDebug = debug('electron-forge:publisher:github:debug');

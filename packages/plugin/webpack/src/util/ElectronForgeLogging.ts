@@ -1,6 +1,7 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import { Tab } from '@electron-forge/web-multi-logger';
 import { Compiler } from 'webpack';
+
 import once from './once';
 
 const pluginName = 'ElectronForgeLogging';

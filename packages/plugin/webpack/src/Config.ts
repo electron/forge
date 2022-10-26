@@ -1,5 +1,6 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
 
 export interface WebpackPluginEntryPointBase {

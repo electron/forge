@@ -1,10 +1,11 @@
-import { Compiler, Entry, WebpackPluginInstance, Configuration } from 'webpack';
-import { expect } from 'chai';
 import path from 'path';
 
-import WebpackConfigGenerator, { ConfigurationFactory } from '../src/WebpackConfig';
-import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackConfiguration, WebpackPluginEntryPointLocalWindow } from '../src/Config';
+import { expect } from 'chai';
+import { Compiler, Configuration, Entry, WebpackPluginInstance } from 'webpack';
+
+import { WebpackConfiguration, WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPluginEntryPointLocalWindow } from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
+import WebpackConfigGenerator, { ConfigurationFactory } from '../src/WebpackConfig';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 

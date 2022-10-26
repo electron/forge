@@ -1,8 +1,9 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
-import { expect } from 'chai';
 import path from 'path';
 
-import { readRawPackageJson, readMutatedPackageJson } from '../../src/util/read-package-json';
+import { ForgeConfig } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+
+import { readMutatedPackageJson, readRawPackageJson } from '../../src/util/read-package-json';
 
 const emptyForgeConfig: Partial<ForgeConfig> = {
   packagerConfig: {},

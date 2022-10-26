@@ -1,7 +1,9 @@
+import path from 'path';
+
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
-import path from 'path';
+
 import template from '../src/WebpackTemplate';
 
 describe('WebpackTemplate', () => {

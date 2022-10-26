@@ -1,12 +1,14 @@
-import { Configuration, webpack } from 'webpack';
-import path from 'path';
-import { expect } from 'chai';
 import http from 'http';
-import { pathExists, readFile } from 'fs-extra';
+import path from 'path';
+
 import { spawn } from '@malept/cross-spawn-promise';
+import { expect } from 'chai';
+import { pathExists, readFile } from 'fs-extra';
+import { Configuration, webpack } from 'webpack';
+import which from 'which';
+
 import { WebpackPluginConfig, WebpackPluginEntryPointLocalWindow } from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
-import which from 'which';
 
 type Closeable = {
   close: () => void;

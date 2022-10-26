@@ -1,5 +1,5 @@
-import { expect } from 'chai';
 import { ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';

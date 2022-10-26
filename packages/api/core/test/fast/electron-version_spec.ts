@@ -1,9 +1,11 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
+
+import { expect } from 'chai';
+import fs from 'fs-extra';
+
 import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
+import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {

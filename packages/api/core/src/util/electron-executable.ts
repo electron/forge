@@ -1,6 +1,7 @@
+import path from 'path';
+
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-import path from 'path';
 
 import { getElectronModulePath } from './electron-version';
 

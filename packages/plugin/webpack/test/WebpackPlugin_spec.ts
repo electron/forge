@@ -1,9 +1,10 @@
-import { expect } from 'chai';
-import { ForgeConfig } from '@electron-forge/shared-types';
-import * as fs from 'fs-extra';
-import { IgnoreFunction } from 'electron-packager';
 import * as os from 'os';
 import * as path from 'path';
+
+import { ForgeConfig } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import { IgnoreFunction } from 'electron-packager';
+import * as fs from 'fs-extra';
 
 import { WebpackPluginConfig } from '../src/Config';
 import WebpackPlugin from '../src/WebpackPlugin';

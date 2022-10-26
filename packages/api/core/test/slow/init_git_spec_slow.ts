@@ -1,9 +1,9 @@
 import { execSync } from 'child_process';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
 import { expect } from 'chai';
+import fs from 'fs-extra';
 
 import initGit from '../../src/api/init-scripts/init-git';
 

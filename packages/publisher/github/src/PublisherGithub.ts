@@ -1,14 +1,15 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import fs from 'fs-extra';
 import mime from 'mime-types';
-import path from 'path';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 
+import { PublisherGitHubConfig } from './Config';
 import GitHub from './util/github';
 import NoReleaseError from './util/no-release-error';
-import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
   tag_name: string;

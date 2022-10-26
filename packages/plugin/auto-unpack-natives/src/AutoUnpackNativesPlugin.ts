@@ -1,5 +1,5 @@
-import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import PluginBase from '@electron-forge/plugin-base';
+import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 
 import { AutoUnpackNativesConfig } from './Config';
 

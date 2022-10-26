@@ -14,6 +14,7 @@
 
 import { promises as fs } from 'fs';
 import path from 'path';
+
 import { getPackageInfo } from './utils';
 
 // NOTE: this interface only defines the fields in the package.json that are

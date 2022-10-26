@@ -1,8 +1,9 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { asyncOra } from '@electron-forge/async-ora';
+import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import debug from 'debug';
+import fs from 'fs-extra';
 
 import determineAuthor from './determine-author';
 

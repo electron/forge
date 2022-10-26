@@ -1,9 +1,10 @@
 #!node_modules/.bin/ts-node
 
+import path from 'path';
+
+import { spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import path from 'path';
-import { spawn } from '@malept/cross-spawn-promise';
 import * as semver from 'semver';
 
 const BASE_DIR = path.resolve(__dirname, '..');

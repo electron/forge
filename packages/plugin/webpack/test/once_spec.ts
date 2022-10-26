@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { fake } from 'sinon';
+
 import once from '../src/util/once';
 
 describe('Once', () => {

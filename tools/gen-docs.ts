@@ -1,6 +1,8 @@
 import * as path from 'path';
-import { getPackageInfo } from './utils';
+
 import * as typedoc from 'typedoc';
+
+import { getPackageInfo } from './utils';
 
 function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
   const maker = new typedoc.ReflectionGroup('Makers', 2);

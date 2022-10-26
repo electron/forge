@@ -1,8 +1,8 @@
-import { api, InitOptions } from '@electron-forge/core';
-
-import fs from 'fs-extra';
-import program from 'commander';
 import path from 'path';
+
+import { api, InitOptions } from '@electron-forge/core';
+import program from 'commander';
+import fs from 'fs-extra';
 
 import './util/terminate';
 import workingDir from './util/working-dir';
