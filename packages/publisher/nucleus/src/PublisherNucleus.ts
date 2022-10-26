@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
@@ -68,4 +68,4 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
   }
 }
 
-export { PublisherNucleusConfig };
+export { PublisherNucleus, PublisherNucleusConfig };

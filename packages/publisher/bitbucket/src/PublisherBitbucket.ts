@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import fetch from 'node-fetch';
@@ -84,4 +84,4 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
   }
 }
 
-export { PublisherBitbucketConfig };
+export { PublisherBitbucket, PublisherBitbucketConfig };

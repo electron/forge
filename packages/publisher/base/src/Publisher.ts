@@ -56,3 +56,5 @@ export default abstract class Publisher<C> implements IForgePublisher {
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }
+
+export { Publisher as PublisherBase };

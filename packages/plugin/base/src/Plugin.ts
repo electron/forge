@@ -28,3 +28,5 @@ export default abstract class Plugin<C> implements IForgePlugin {
     return false;
   }
 }
+
+export { Plugin as PluginBase };

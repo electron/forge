@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerDebConfig } from './Config';
@@ -51,4 +51,4 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
   }
 }
 
-export { MakerDebConfig };
+export { MakerDeb, MakerDebConfig };

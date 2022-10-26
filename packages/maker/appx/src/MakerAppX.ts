@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
 import windowsStore from 'electron-windows-store';
@@ -130,4 +130,4 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   }
 }
 
-export { MakerAppXConfig };
+export { MakerAppX, MakerAppXConfig };

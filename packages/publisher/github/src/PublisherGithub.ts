@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import fs from 'fs-extra';
@@ -131,4 +131,4 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
   }
 }
 
-export { PublisherGitHubConfig };
+export { PublisherGithub, PublisherGitHubConfig };

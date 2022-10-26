@@ -1,4 +1,4 @@
-import PluginBase from '@electron-forge/plugin-base';
+import { PluginBase } from '@electron-forge/plugin-base';
 import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
@@ -62,4 +62,4 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   };
 }
 
-export { LocalElectronPluginConfig };
+export { LocalElectronPlugin, LocalElectronPluginConfig };

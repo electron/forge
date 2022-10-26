@@ -3,7 +3,7 @@ import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
 import { utils } from '@electron-forge/core';
-import PluginBase from '@electron-forge/plugin-base';
+import { PluginBase } from '@electron-forge/plugin-base';
 import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
@@ -398,4 +398,4 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   }
 }
 
-export { WebpackPluginConfig };
+export { WebpackPlugin, WebpackPluginConfig };
