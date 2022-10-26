@@ -1,11 +1,6 @@
 import runElectronegativity from '@doyensec/electronegativity';
 import { PluginBase } from '@electron-forge/plugin-base';
-import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
-
-// To be more precise, postPackage options we care about.
-type PostPackageOptions = {
-  outputPaths: string[];
-};
+import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 
 export type Confidence = 'certain' | 'firm' | 'tentative';
 export type CustomCheck = 'dangerousfunctionsjscheck' | 'remotemodulejscheck';
@@ -60,14 +55,13 @@ export type ElectronegativityConfig = {
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
   name = 'electronegativity';
 
-  getHook(hookName: string): ForgeHookFn | null {
-    if (hookName === 'postPackage') {
-      return this.postPackage;
-    }
-    return null;
+  getHooks(): ForgeHookMap {
+    return {
+      postPackage: this.postPackage,
+    };
   }
 
-  postPackage = async (_forgeConfig: ResolvedForgeConfig, options: PostPackageOptions): Promise<void> => {
+  postPackage: ForgeHookFn<'postPackage'> = async (_forgeConfig, options): Promise<void> => {
     await runElectronegativity(
       {
         ...this.config,

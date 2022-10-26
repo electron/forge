@@ -1,5 +1,5 @@
 import { PluginBase } from '@electron-forge/plugin-base';
-import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
 import { LocalElectronPluginConfig } from './Config';
@@ -10,7 +10,7 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   constructor(c: LocalElectronPluginConfig) {
     super(c);
 
-    this.getHook = this.getHook.bind(this);
+    this.getHooks = this.getHooks.bind(this);
     this.startLogic = this.startLogic.bind(this);
   }
 
@@ -29,11 +29,10 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     return false;
   }
 
-  getHook(hookName: string): ForgeHookFn | null {
-    if (hookName === 'packageAfterExtract') {
-      return this.afterExtract;
-    }
-    return null;
+  getHooks(): ForgeHookMap {
+    return {
+      packageAfterExtract: this.afterExtract,
+    };
   }
 
   private checkPlatform = (platform: string) => {
@@ -50,7 +49,7 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     }
   };
 
-  private afterExtract = async (_config: ResolvedForgeConfig, buildPath: string, _electronVersion: string, platform: string, arch: string) => {
+  private afterExtract: ForgeHookFn<'packageAfterExtract'> = async (_config, buildPath, _electronVersion, platform, arch) => {
     if (!this.enabled) return;
 
     this.checkPlatform(platform);

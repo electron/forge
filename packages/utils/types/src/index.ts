@@ -1,5 +1,6 @@
 import { ChildProcess } from 'child_process';
 
+import { OraImpl } from '@electron-forge/async-ora';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
 
@@ -7,15 +8,59 @@ export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
 export type ForgeArch = ArchOption;
-// Why: hooks have any number/kind of args/return values
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type ForgeHookFn = (forgeConfig: ResolvedForgeConfig, ...args: any[]) => Promise<any>;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
+
+export interface ForgeSimpleHookSignatures {
+  generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  postStart: [appProcess: ElectronProcess];
+  prePackage: [platform: ForgePlatform, version: ForgeArch];
+  packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterPrune: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterExtract: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  postPackage: [
+    packageResult: {
+      platform: ForgePlatform;
+      arch: ForgeArch;
+      outputPaths: string[];
+      spinner?: OraImpl;
+    }
+  ];
+  preMake: [];
+}
+
+export interface ForgeMutatingHookSignatures {
+  postMake: [makeResults: ForgeMakeResult[]];
+  resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readPackageJson: [packageJson: Record<string, any>];
+}
+
+export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHookSignatures);
+export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeSimpleHookSignatures[Hook]
+) => Promise<void>;
+export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeMutatingHookSignatures[Hook]
+) => Promise<ForgeMutatingHookSignatures[Hook][0] | undefined>;
+export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
+  ? ForgeSimpleHookFn<Hook>
+  : Hook extends keyof ForgeMutatingHookSignatures
+  ? ForgeMutatingHookFn<Hook>
+  : never;
+export type ForgeHookMap = {
+  [S in ForgeHookName]?: ForgeHookFn<S>;
+};
+
 export interface IForgePluginInterface {
-  triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
-  triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
+  triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
+  triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
+    hookName: Hook,
+    item: ForgeMutatingHookSignatures[Hook][0]
+  ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
@@ -30,9 +75,7 @@ export interface ResolvedForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
-  hooks?: {
-    [hookName: string]: ForgeHookFn;
-  };
+  hooks?: ForgeHookMap;
   /**
    * @internal
    */
@@ -77,7 +120,7 @@ export interface IForgePlugin {
   name: string;
 
   init(dir: string, forgeConfig: ResolvedForgeConfig): void;
-  getHook?(hookName: string): ForgeHookFn | null;
+  getHooks?(): ForgeHookMap;
   startLogic?(opts: StartOptions): Promise<StartResult>;
 }
 
