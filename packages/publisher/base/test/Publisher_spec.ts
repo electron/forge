@@ -17,7 +17,7 @@ describe('Publisher', () => {
   it('__isElectronForgePublisher should not be settable', () => {
     const publisher = new PublisherImpl(null);
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, no-underscore-dangle
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (publisher as any).__isElectronForgePublisher = false;
     }).to.throw();
     expect(() => {

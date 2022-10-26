@@ -1,6 +1,5 @@
 import { asyncOra } from '@electron-forge/async-ora';
-import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
-
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { rebuild, RebuildOptions } from 'electron-rebuild';
 
 export default async (

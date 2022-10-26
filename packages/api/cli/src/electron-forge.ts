@@ -41,7 +41,6 @@ program
   .command('publish', 'Publish the current Electron application to GitHub')
   .command('install', 'Install an Electron application from GitHub')
   .on('command:*', (commands) => {
-    // eslint-disable-next-line no-underscore-dangle
     if (!program._execs.has(commands[0])) {
       console.error();
       console.error(chalk.red(`Unknown command "${program.args.join(' ')}".`));

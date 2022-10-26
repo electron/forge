@@ -1,7 +1,8 @@
 import { tmpdir } from 'os';
 import { join } from 'path';
-import fs from 'fs-extra';
+
 import { expect } from 'chai';
+import fs from 'fs-extra';
 
 import { createDefaultCertificate } from '../src/MakerAppX';
 

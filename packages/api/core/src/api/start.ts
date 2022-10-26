@@ -1,16 +1,17 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import chalk from 'chalk';
-import debug from 'debug';
-import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import { spawn, SpawnOptions } from 'child_process';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
+import chalk from 'chalk';
+import debug from 'debug';
+
+import locateElectronExecutable from '../util/electron-executable';
 import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
-import locateElectronExecutable from '../util/electron-executable';
+import { runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuild from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
-import { runHook } from '../util/hook';
 
 const d = debug('electron-forge:start');
 
@@ -27,6 +28,11 @@ export default async ({
   inspectBrk = false,
 }: StartOptions): Promise<ElectronProcess> => {
   asyncOra.interactive = interactive;
+  // Since the `start` command is meant to be long-living (i.e. run forever,
+  // until interrupted) we should enable this to keep stdin flowing after ora
+  // completes. For more context:
+  // https://github.com/electron-userland/electron-forge/issues/2319
+  asyncOra.keepStdinFlowing = true;
 
   await asyncOra('Locating Application', async () => {
     const resolvedDir = await resolveDir(dir);
@@ -46,7 +52,7 @@ export default async ({
   const platform = process.env.npm_config_platform || process.platform;
   const arch = process.env.npm_config_arch || process.arch;
 
-  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.electronRebuildConfig);
+  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.rebuildConfig);
 
   await runHook(forgeConfig, 'generateAssets', platform, arch);
 
@@ -131,9 +137,13 @@ export default async ({
         process.stdin.resume();
       }
       spawned.on('exit', () => {
-        if (spawned.restarted) return;
+        if (spawned.restarted) {
+          return;
+        }
 
-        if (!process.stdin.isPaused()) process.stdin.pause();
+        if (interactive && !process.stdin.isPaused()) {
+          process.stdin.pause();
+        }
       });
     } else if (interactive && !process.stdin.isPaused()) {
       process.stdin.pause();
@@ -146,13 +156,13 @@ export default async ({
   if (interactive) {
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
-        // eslint-disable-next-line no-console
         console.info(chalk.cyan('\nRestarting App\n'));
         lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');
         lastSpawned.emit('restarted', await forgeSpawnWrapper());
       }
     });
+    process.stdin.resume();
   }
 
   return forgeSpawnWrapper();

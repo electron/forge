@@ -1,7 +1,8 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
+import { expect } from 'chai';
+import fs from 'fs-extra';
 
 import installDeps from '../../src/util/install-dependencies';
 

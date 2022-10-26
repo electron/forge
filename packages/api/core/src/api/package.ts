@@ -1,23 +1,24 @@
-import { ora as realOra, fakeOra, OraImpl } from '@electron-forge/async-ora';
-import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-import chalk from 'chalk';
-import debug from 'debug';
-import fs from 'fs-extra';
-import { getHostArch } from '@electron/get';
-import glob from 'fast-glob';
-import packager, { HookFunction } from 'electron-packager';
 import path from 'path';
 import { promisify } from 'util';
 
+import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
+import { getHostArch } from '@electron/get';
+import chalk from 'chalk';
+import debug from 'debug';
+import packager, { HookFunction } from 'electron-packager';
+import glob from 'fast-glob';
+import fs from 'fs-extra';
+
+import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
+import getCurrentOutDir from '../util/out-dir';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
-import getCurrentOutDir from '../util/out-dir';
-import { getElectronVersion } from '../util/electron-version';
 
 const d = debug('electron-forge:packager');
 
@@ -122,7 +123,7 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.electronRebuildConfig);
+      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
       packagerSpinner = ora('Packaging Application').start();
       done();
     },
@@ -180,7 +181,6 @@ export default async ({
   }
 
   if (!packageJSON.version && !packageOpts.appVersion) {
-    // eslint-disable-next-line max-len
     warn(
       interactive,
       chalk.yellow('Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly')

@@ -1,9 +1,10 @@
 #!node_modules/.bin/ts-node
 
+import path from 'path';
+
+import { spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import path from 'path';
-import { spawn } from '@malept/cross-spawn-promise';
 import * as semver from 'semver';
 
 const BASE_DIR = path.resolve(__dirname, '..');
@@ -27,7 +28,7 @@ async function checkCleanWorkingDir(): Promise<void> {
 async function updateChangelog(lastVersion: string, version: string): Promise<void> {
   await run('yarn', ['changelog', `--tag=v${lastVersion}..v${version}`, '--exclude=build,chore,ci,docs,refactor,style,test']);
 
-  require('../ci/fix-changelog'); // eslint-disable-line global-require
+  require('../ci/fix-changelog');
 
   await git('add', 'CHANGELOG.md');
   await git('commit', '-m', `Update CHANGELOG.md for ${version}`);
@@ -73,12 +74,12 @@ async function main(): Promise<void> {
   }
 
   await git('commit', '-m', `Release ${version}`);
-  await git('tag', `v${version}`);
+  await git('tag', `v${version}`, '-m', `v${version}`);
 
   await updateChangelog(lastVersion, version);
 
   // re-tag to include the changelog
-  await git('tag', '--force', `v${version}`);
+  await git('tag', '--force', `v${version}`, '-m', `v${version}`);
 }
 
 main().catch(console.error);

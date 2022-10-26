@@ -1,12 +1,12 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
-import { ForgePlatform, ForgeArch } from '@electron-forge/shared-types';
+import path from 'path';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import path from 'path';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import { PublisherERSConfig } from './Config';
 
@@ -69,7 +69,6 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       })
     ).json();
 
-    // eslint-disable-next-line max-len
     const authFetch = (apiPath: string, options?: RequestInit) =>
       fetchAndCheckStatus(api(apiPath), { ...(options || {}), headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
@@ -86,7 +85,6 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
       let channel = 'stable';
       if (config.channel) {
-        // eslint-disable-next-line prefer-destructuring
         channel = config.channel;
       } else if (packageJSON.version.includes('beta')) {
         channel = 'beta';
@@ -157,3 +155,5 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     }
   }
 }
+
+export { PublisherERS, PublisherERSConfig };

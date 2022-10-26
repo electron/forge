@@ -1,9 +1,8 @@
-/* eslint "no-console": "off" */
 import chalk from 'chalk';
+
 import ora from './ora';
 
 export class OraImpl {
-  // eslint-disable-next-line no-empty-function, no-useless-constructor
   constructor(public text: string = '') {}
 
   succeed(_symbol?: string): OraImpl {
@@ -30,6 +29,16 @@ export class OraImpl {
 export interface AsyncOraMethod {
   (initialOraValue: string, asyncFn: (oraImpl: OraImpl) => Promise<void>, processExitFn?: (code: number) => void): Promise<void>;
   interactive?: boolean;
+
+  /**
+   * This will keep stdin unpaused if ora inadvertently pauses it. Beware that
+   * enabling this may keep the node process alive even when there is no more
+   * work to be done, as it will forever be waiting for input on stdin.
+   *
+   * More context:
+   *   https://github.com/electron-userland/electron-forge/issues/2319
+   */
+  keepStdinFlowing?: boolean;
 }
 
 const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = process.exit) => {
@@ -40,7 +49,15 @@ const asyncOra: AsyncOraMethod = (initialOraValue, asyncFn, processExitFn = proc
   return new Promise((resolve, reject) => {
     asyncFn(fnOra)
       .then(() => {
+        const wasPaused = process.stdin.isPaused();
+
+        // Note: this may pause stdin as a side-effect in certain cases
         fnOra.succeed();
+
+        if (asyncOra.keepStdinFlowing && !wasPaused && process.stdin.isPaused()) {
+          process.stdin.resume();
+        }
+
         return resolve();
       })
       .catch((err) => {

@@ -1,12 +1,12 @@
-import { Credentials } from '@aws-sdk/types';
-import debug from 'debug';
 import fs from 'fs';
 import path from 'path';
+
 import { S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
-
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { Credentials } from '@aws-sdk/types';
 import { asyncOra } from '@electron-forge/async-ora';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import debug from 'debug';
 
 import { PublisherS3Config } from './Config';
 
@@ -100,3 +100,5 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     return undefined;
   }
 }
+
+export { PublisherS3, PublisherS3Config };

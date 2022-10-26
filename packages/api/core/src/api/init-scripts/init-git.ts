@@ -1,5 +1,6 @@
-import { asyncOra } from '@electron-forge/async-ora';
 import { exec } from 'child_process';
+
+import { asyncOra } from '@electron-forge/async-ora';
 import debug from 'debug';
 
 const d = debug('electron-forge:init:git');

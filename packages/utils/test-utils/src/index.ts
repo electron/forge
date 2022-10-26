@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
 import { ExitError, spawn } from '@malept/cross-spawn-promise';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 
 async function runNPM(dir: string, ...args: string[]) {
   await spawn('npm', args, { cwd: dir });
@@ -32,9 +33,7 @@ export async function expectLintToPass(dir: string): Promise<void> {
     await runNPM(dir, 'run', 'lint');
   } catch (err) {
     if (err instanceof ExitError) {
-      // eslint-disable-next-line no-console
       console.error('STDOUT:', err.stdout.toString());
-      // eslint-disable-next-line no-console
       console.error('STDERR:', err.stderr.toString());
     }
     throw err;

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/test-utils",
-  "version": "6.0.0-beta.63",
+  "version": "6.0.0-beta.68",
   "description": "Helper utilities for the Electron Forge testsuite",
   "repository": "https://github.com/electron-userland/electron-forge",
   "author": "Mark Lee",
@@ -13,6 +13,6 @@
     "fs-extra": "^10.0.0"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 14.17.5"
   }
 }

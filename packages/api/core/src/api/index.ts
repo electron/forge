@@ -1,15 +1,13 @@
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
+import ForgeUtils from '../util';
+
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
-import install, { InstallOptions, Asset as InstallAsset } from './install';
-import lint, { LintOptions } from './lint';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
-
-import ForgeUtils from '../util';
 
 export class ForgeAPI {
   /**
@@ -27,25 +25,6 @@ export class ForgeAPI {
    */
   init(opts: InitOptions): Promise<void> {
     return init(opts);
-  }
-
-  /**
-   * Install an Electron application from GitHub.
-   *
-   * Works on all three platforms for all major distributable types.
-   */
-  install(opts: InstallOptions): Promise<void> {
-    return install(opts);
-  }
-
-  /**
-   * Lint a local Electron application.
-   *
-   * The promise will be rejected with the stdout+stderr of the linting process
-   * if linting fails or will be resolved if it succeeds.
-   */
-  lint(opts: LintOptions): Promise<void> {
-    return lint(opts);
   }
 
   /**
@@ -82,17 +61,4 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export {
-  ForgeMakeResult,
-  ImportOptions,
-  InitOptions,
-  InstallAsset,
-  InstallOptions,
-  LintOptions,
-  MakeOptions,
-  PackageOptions,
-  PublishOptions,
-  StartOptions,
-  api,
-  utils,
-};
+export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };

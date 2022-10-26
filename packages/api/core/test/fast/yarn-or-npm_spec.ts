@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-
 import systemYarnOrNpm from 'yarn-or-npm';
+
 import yarnOrNpm from '../../src/util/yarn-or-npm';
 
 describe('yarn-or-npm', () => {

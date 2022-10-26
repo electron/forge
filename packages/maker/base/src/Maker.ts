@@ -1,6 +1,7 @@
-import { ForgeArch, ForgeConfig, ForgePlatform, IForgeMaker } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import fs from 'fs-extra';
 import which from 'which';
 
 export type EmptyConfig = Record<string, never>;
@@ -30,7 +31,7 @@ export interface MakerOptions {
   /**
    * Fully resolved forge configuration, you shouldn't really need this
    */
-  forgeConfig: ForgeConfig;
+  forgeConfig: ResolvedForgeConfig;
   /**
    * The application's package.json file
    */
@@ -46,9 +47,14 @@ export default abstract class Maker<C> implements IForgeMaker {
 
   public requiredExternalBinaries: string[] = [];
 
+  /** @internal */
   __isElectronForgeMaker!: true;
 
-  constructor(private configFetcher: C | ((arch: ForgeArch) => C) = {} as C, protected providedPlatforms?: ForgePlatform[]) {
+  /**
+   * @param configOrConfigFetcher - Either a configuration object for this maker or a simple method that returns such a configuration for a given target architecture
+   * @param platformsToMakeOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
+   */
+  constructor(private configOrConfigFetcher: C | ((arch: ForgeArch) => C) = {} as C, protected platformsToMakeOn?: ForgePlatform[]) {
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
@@ -57,17 +63,17 @@ export default abstract class Maker<C> implements IForgeMaker {
   }
 
   get platforms(): ForgePlatform[] {
-    if (this.providedPlatforms) return this.providedPlatforms;
+    if (this.platformsToMakeOn) return this.platformsToMakeOn;
     return this.defaultPlatforms;
   }
 
   // TODO: Remove this, it is an eye-sore and is a nasty hack to provide forge
   //       v5 style functionality in the new API
   prepareConfig(targetArch: ForgeArch): void {
-    if (typeof this.configFetcher === 'function') {
-      this.config = (this.configFetcher as unknown as (arch: ForgeArch) => C)(targetArch);
+    if (typeof this.configOrConfigFetcher === 'function') {
+      this.config = (this.configOrConfigFetcher as unknown as (arch: ForgeArch) => C)(targetArch);
     } else {
-      this.config = this.configFetcher as C;
+      this.config = this.configOrConfigFetcher as C;
     }
   }
 
@@ -150,7 +156,6 @@ export default abstract class Maker<C> implements IForgeMaker {
    */
   isInstalled(module: string): boolean {
     try {
-      // eslint-disable-next-line global-require, import/no-dynamic-require
       require(module);
       return true;
     } catch (e) {
@@ -168,3 +173,5 @@ export default abstract class Maker<C> implements IForgeMaker {
     return `${noPrerelease}.0`;
   }
 }
+
+export { Maker as MakerBase };

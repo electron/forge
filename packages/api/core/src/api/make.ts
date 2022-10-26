@@ -1,20 +1,22 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import chalk from 'chalk';
-import { getHostArch } from '@electron/get';
-import { IForgeResolvableMaker, ForgeConfig, ForgeArch, ForgePlatform, ForgeMakeResult } from '@electron-forge/shared-types';
-import MakerBase from '@electron-forge/maker-base';
-import fs from 'fs-extra';
 import path from 'path';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import { MakerBase } from '@electron-forge/maker-base';
+import { ForgeArch, ForgeConfigMaker, ForgeMakeResult, ForgePlatform, IForgeResolvableMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { getHostArch } from '@electron/get';
+import chalk from 'chalk';
+import filenamify from 'filenamify';
+import fs from 'fs-extra';
+
+import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook, runMutatingHook } from '../util/hook';
 import { info, warn } from '../util/messages';
+import getCurrentOutDir from '../util/out-dir';
 import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
-import getCurrentOutDir from '../util/out-dir';
-import { getElectronVersion } from '../util/electron-version';
 import requireSearch from '../util/require-search';
+import resolveDir from '../util/resolve-dir';
 
 import packager from './package';
 
@@ -25,20 +27,25 @@ class MakerImpl extends MakerBase<any> {
   defaultPlatforms = [];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MakeTarget = IForgeResolvableMaker | MakerBase<any> | string;
+type MakeTargets = ForgeConfigMaker[] | string[];
 
-function generateTargets(forgeConfig: ForgeConfig, overrideTargets?: MakeTarget[]) {
+function generateTargets(forgeConfig: ResolvedForgeConfig, overrideTargets?: MakeTargets) {
   if (overrideTargets) {
     return overrideTargets.map((target) => {
       if (typeof target === 'string') {
-        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || { name: target };
+        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || ({ name: target } as IForgeResolvableMaker);
       }
 
       return target;
     });
   }
   return forgeConfig.makers;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isElectronForgeMaker(target: MakerBase<any> | unknown): target is MakerBase<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (target as MakerBase<any>).__isElectronForgeMaker;
 }
 
 export interface MakeOptions {
@@ -57,7 +64,7 @@ export interface MakeOptions {
   /**
    * An array of make targets to override your forge config
    */
-  overrideTargets?: MakeTarget[];
+  overrideTargets?: MakeTargets;
   /**
    * The target architecture
    */
@@ -83,7 +90,7 @@ export default async ({
 }: MakeOptions): Promise<ForgeMakeResult[]> => {
   asyncOra.interactive = interactive;
 
-  let forgeConfig!: ForgeConfig;
+  let forgeConfig!: ResolvedForgeConfig;
   await asyncOra('Resolving Forge Config', async () => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
@@ -109,15 +116,13 @@ export default async ({
 
   let targetId = 0;
   for (const target of targets) {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     let maker: MakerBase<any>;
-    // eslint-disable-next-line no-underscore-dangle
-    if ((target as MakerBase<any>).__isElectronForgeMaker) {
-      maker = target as MakerBase<any>;
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+    if (isElectronForgeMaker(target)) {
+      maker = target;
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     } else {
-      const resolvableTarget: IForgeResolvableMaker = target as IForgeResolvableMaker;
+      const resolvableTarget = target as IForgeResolvableMaker;
       // non-false falsy values should be 'true'
       if (resolvableTarget.enabled === false) continue;
 
@@ -133,7 +138,6 @@ export default async ({
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
-      // eslint-disable-next-line no-continue
       if (!maker.platforms.includes(actualTargetPlatform)) continue;
     }
 
@@ -179,7 +183,7 @@ export default async ({
   info(interactive, `Making for the following targets: ${chalk.cyan(`${targets.map((_t, i) => makers[i].name).join(', ')}`)}`);
 
   const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-  const appName = forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name;
+  const appName = filenamify(forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name, { replacement: '-' });
   const outputs: ForgeMakeResult[] = [];
 
   await runHook(forgeConfig, 'preMake');
@@ -191,12 +195,11 @@ export default async ({
     }
 
     targetId = 0;
-    // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const _target of targets) {
       const maker = makers[targetId];
       targetId += 1;
 
-      // eslint-disable-next-line no-loop-func
       await asyncOra(
         `Making for target: ${chalk.green(maker.name)} - On platform: ${chalk.cyan(actualTargetPlatform)} - For arch: ${chalk.cyan(targetArch)}`,
         async () => {
@@ -233,7 +236,6 @@ export default async ({
             });
           } catch (err) {
             if (err instanceof Error) {
-              // eslint-disable-next-line no-throw-literal
               throw {
                 message: `An error occured while making for target: ${maker.name}`,
                 stack: `${err.message}\n${err.stack}`,

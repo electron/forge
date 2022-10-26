@@ -1,5 +1,6 @@
-import chai, { expect } from 'chai';
 import path from 'path';
+
+import chai, { expect } from 'chai';
 import { createSandbox } from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -27,8 +28,6 @@ describe('locateElectronExecutable', () => {
     };
 
     await expect(locateElectronExecutable(appFixture, packageJSON)).to.eventually.equal('execPath');
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.not.have.been.called;
   });
 
@@ -42,8 +41,6 @@ describe('locateElectronExecutable', () => {
     };
 
     await expect(locateElectronExecutable(appFixture, packageJSON)).to.eventually.equal('execPath');
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.have.been.calledOnce;
   });
 
@@ -54,8 +51,6 @@ describe('locateElectronExecutable', () => {
     const compileFixture = path.join(fixtureDir, 'prebuilt-compile');
 
     await expect(locateElectronExecutable(compileFixture, packageJSON)).to.eventually.be.rejected;
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.have.been.calledOnce;
   });
 
@@ -68,10 +63,7 @@ describe('locateElectronExecutable', () => {
     };
 
     const compileFixture = path.join(fixtureDir, 'prebuilt-compile');
-    // eslint-disable-next-line no-unused-expressions
     await expect(locateElectronExecutable(compileFixture, packageJSON)).to.eventually.be.rejected;
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.not.have.been.called;
   });
 });
@@ -101,8 +93,6 @@ describe('pluginCompileExists', () => {
     };
 
     expect(pluginCompileExists(packageJSON)).to.equal(true);
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.not.have.been.called;
   });
 
@@ -113,8 +103,6 @@ describe('pluginCompileExists', () => {
     };
 
     expect(pluginCompileExists(packageJSON)).to.equal(true);
-
-    // eslint-disable-next-line no-console, no-unused-expressions
     expect(console.warn).to.have.been.calledOnce;
   });
 });

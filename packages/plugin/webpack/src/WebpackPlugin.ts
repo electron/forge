@@ -1,22 +1,22 @@
-/* eslint "no-console": "off" */
-import { asyncOra } from '@electron-forge/async-ora';
-import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
+import http from 'http';
+import path from 'path';
 
+import { asyncOra } from '@electron-forge/async-ora';
+import { utils } from '@electron-forge/core';
+import { PluginBase } from '@electron-forge/plugin-base';
+import { ElectronProcess, ForgeArch, ForgeHookFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import http from 'http';
-import { merge } from 'webpack-merge';
-import path from 'path';
-import { utils } from '@electron-forge/core';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
+import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
 import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
@@ -104,20 +104,22 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   };
 
-  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions): Promise<void> {
+  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions, suffix: string): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
-    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    const jsonStatsFilename = path.resolve(this.baseDir, type, `stats-${suffix}.json`);
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> =>
+  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
+          for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
+            const name = this.config.renderer.entryPoints[index].name;
+            await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
+          }
         }
         if (err) {
           return reject(err);
@@ -140,13 +142,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   };
 
   get configGenerator(): WebpackConfigGenerator {
-    // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-      // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     return this._configGenerator;
   }
 
@@ -156,20 +155,20 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     switch (name) {
       case 'prePackage':
         this.isProd = true;
-        return async (config: ForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
+        return async (config: ResolvedForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
           await fs.remove(this.baseDir);
           await utils.rebuildHook(
             this.projectDir,
             await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
             platform,
             arch,
-            config.electronRebuildConfig
+            config.rebuildConfig
           );
           await this.compileMain();
           await this.compileRenderers();
         };
       case 'postStart':
-        return async (_config: ForgeConfig, child: ElectronProcess) => {
+        return async (_config: ResolvedForgeConfig, child: ElectronProcess) => {
           if (!this.loggedOutputUrl) {
             console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
             this.loggedOutputUrl = true;
@@ -189,7 +188,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -223,7 +222,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   };
 
-  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {
@@ -253,7 +252,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       tab = logger.createTab('Main Process');
     }
     await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = this.configGenerator.getMainConfig();
+      const mainConfig = await this.configGenerator.getMainConfig();
       await new Promise((resolve, reject) => {
         const compiler = webpack(mainConfig);
         const [onceResolve, onceReject] = once(resolve, reject);
@@ -266,7 +265,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
             );
           }
           if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions);
+            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
           }
 
           if (err) return onceReject(err);
@@ -294,11 +293,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     });
 
     for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.preload) {
-        await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
+      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+        await asyncOra(`Compiling Renderer Preload: ${chalk.cyan(entryPoint.name)}`, async () => {
           const stats = await this.runWebpack(
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
+            [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
           );
 
           if (stats?.hasErrors()) {
@@ -309,29 +308,32 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     }
   };
 
-  launchDevServers = async (logger: Logger): Promise<void> => {
-    await asyncOra('Launch Dev Servers', async () => {
+  launchRendererDevServers = async (logger: Logger): Promise<void> => {
+    await asyncOra('Launching Dev Servers for Renderer Process Code', async () => {
       const tab = logger.createTab('Renderers');
       const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
       const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      if (!config.plugins) config.plugins = [];
-      config.plugins.push(pluginLogs);
+
+      if (config.length === 0) {
+        return;
+      }
+
+      for (const entryConfig of config) {
+        if (!entryConfig.plugins) entryConfig.plugins = [];
+        entryConfig.plugins.push(pluginLogs);
+      }
 
       const compiler = webpack(config);
       const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
       await webpackDevServer.start();
-      this.servers.push(webpackDevServer.server);
+      this.servers.push(webpackDevServer.server!);
     });
 
     await asyncOra('Compiling Preload Scripts', async () => {
       for (const entryPoint of this.config.renderer.entryPoints) {
-        if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(
-            entryPoint,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            entryPoint.preload!
-          );
+        if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+          const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
           await new Promise((resolve, reject) => {
             const tab = logger.createTab(`${entryPoint.name} - Preload`);
             const [onceResolve, onceReject] = once(resolve, reject);
@@ -360,14 +362,14 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const cspDirectives =
       this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
-    const defaults = {
+    const defaults: Partial<WebpackDevServer.Configuration> = {
       hot: true,
       devMiddleware: {
         writeToDisk: true,
       },
       historyApiFallback: true,
     };
-    const overrides = {
+    const overrides: Partial<WebpackDevServer.Configuration> = {
       port: this.port,
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
@@ -390,8 +392,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
     await this.compileMain(true, logger);
-    await this.launchDevServers(logger);
+    await this.launchRendererDevServers(logger);
     await logger.start();
     return false;
   }
 }
+
+export { WebpackPlugin, WebpackPluginConfig };

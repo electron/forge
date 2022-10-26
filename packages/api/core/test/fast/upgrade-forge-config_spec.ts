@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { merge } from 'lodash';
@@ -23,7 +25,7 @@ describe('upgradeForgeConfig', () => {
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.electronRebuildConfig).to.deep.equal(rebuildConfig);
+    expect(newConfig.rebuildConfig).to.deep.equal(rebuildConfig);
   });
 
   it('converts maker config', () => {
@@ -104,6 +106,7 @@ describe('upgradeForgeConfig', () => {
     };
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.publishers).to.have.lengthOf(1);
+    assert(newConfig.publishers);
     const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
     expect(publisherConfig.repository).to.deep.equal(repo);
     expect(publisherConfig.octokitOptions).to.deep.equal(octokitOptions);
@@ -116,7 +119,7 @@ describe('updateUpgradedForgeDevDeps', () => {
     config: {
       forge: {
         packagerConfig: {},
-        electronRebuildConfig: {},
+        rebuildConfig: {},
         makers: [],
         publishers: [],
         plugins: [],

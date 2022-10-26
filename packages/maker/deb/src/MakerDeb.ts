@@ -1,6 +1,7 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerDebConfig } from './Config';
 
@@ -31,7 +32,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line global-require, import/no-unresolved, node/no-missing-require
+    // eslint-disable-next-line node/no-missing-require
     const installer = require('electron-installer-debian');
 
     const outDir = path.resolve(makeDir, 'deb', targetArch);
@@ -49,3 +50,5 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     return packagePaths;
   }
 }
+
+export { MakerDeb, MakerDebConfig };

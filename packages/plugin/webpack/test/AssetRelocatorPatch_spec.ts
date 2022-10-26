@@ -1,12 +1,14 @@
-import { Configuration, webpack } from 'webpack';
-import path from 'path';
-import { expect } from 'chai';
 import http from 'http';
-import { pathExists, readFile } from 'fs-extra';
+import path from 'path';
+
 import { spawn } from '@malept/cross-spawn-promise';
-import { WebpackPluginConfig } from '../src/Config';
-import WebpackConfigGenerator from '../src/WebpackConfig';
+import { expect } from 'chai';
+import { pathExists, readFile } from 'fs-extra';
+import { Configuration, webpack } from 'webpack';
 import which from 'which';
+
+import { WebpackPluginConfig, WebpackPluginEntryPointLocalWindow } from '../src/Config';
+import WebpackConfigGenerator from '../src/WebpackConfig';
 
 type Closeable = {
   close: () => void;
@@ -132,7 +134,7 @@ describe('AssetRelocatorPatch', () => {
     const generator = new WebpackConfigGenerator(config, appPath, false, 3000);
 
     it('builds main', async () => {
-      await asyncWebpack(generator.getMainConfig());
+      await asyncWebpack(await generator.getMainConfig());
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: mainOut,
@@ -143,12 +145,8 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
+      const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getPreloadConfigForEntryPoint(entryPoint);
       await asyncWebpack(preloadConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -161,7 +159,9 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -186,7 +186,7 @@ describe('AssetRelocatorPatch', () => {
     let generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
     it('builds main', async () => {
-      const mainConfig = generator.getMainConfig();
+      const mainConfig = await generator.getMainConfig();
       await asyncWebpack(mainConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -198,12 +198,8 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
+      const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getPreloadConfigForEntryPoint(entryPoint);
       await asyncWebpack(preloadConfig);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -216,7 +212,9 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds renderer', async () => {
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -239,7 +237,9 @@ describe('AssetRelocatorPatch', () => {
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
       const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,

@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v[0-9]+.[0-9]+.[0-9]+*
   pull_request:
@@ -15,9 +15,9 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
       - name: Use Node.js LTS
-        uses: actions/setup-node@v2.5.1
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
           node-version: 14.x
           cache: yarn
@@ -36,11 +36,11 @@ jobs:
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.4.0
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.5.1
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
-          node-version: 12.x
+          node-version: 14.x
           cache: yarn
       - name: Install latest NPM on Windows
         if: matrix.os == 'windows-latest'
@@ -66,7 +66,7 @@ jobs:
       - name: Run tests
         run: bolt coverage:fast
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
@@ -79,11 +79,11 @@ jobs:
     needs: dependabolt
     strategy:
       matrix:
-        os: [windows-latest, macOS-latest, ubuntu-18.04]
+        os: [windows-latest, macOS-latest, ubuntu-20.04]
     steps:
       - name: Fix git checkout line endings
         run: git config --global core.autocrlf input
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
         shell: bash
@@ -100,10 +100,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
           ci/install_runtimes.sh
-      - name: Use Node.js 12.x
-        uses: actions/setup-node@v2.5.1
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
-          node-version: 12.x
+          node-version: 14.x
           cache: yarn
       - name: Install bolt
         shell: bash
@@ -122,37 +122,10 @@ jobs:
         env:
           DEBUG: electron-installer-snap:snapcraft
       - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
         with:
           file: ./coverage.lcov
           env_vars: CI_OS,TEST_TYPE
         env:
           CI_OS: ${{ matrix.os }}
           TEST_TYPE: slow
-
-  dependabot-automerge:
-    needs: [fast-tests, slow-tests]
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - name: Dependabot metadata
-        id: dependabot-metadata
-        uses: dependabot/fetch-metadata@v1.1.1
-        with:
-          github-token: '${{ secrets.GITHUB_TOKEN }}'
-      - name: Approve Dependabot PR
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Auto-merge devDependency or non-major dependency PR
-        if: ${{ steps.dependabot-metadata.outputs.dependency-type || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor' || steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' }}
-        run: |
-          gh auth status
-          gh pr merge --admin --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

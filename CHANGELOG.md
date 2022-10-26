@@ -1,3 +1,72 @@
+#### [6.0.0-beta.68](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.68) (2022-10-24)
+
+##### Bug Fixes
+
+- **docs:**
+  - only load modules if package has entry point (#2981) ([bb29cd51](https://github.com/electron-userland/electron-forge/commit/bb29cd51))
+  - only publish API docs on v6 tags (#2976) ([a8b9dfc5](https://github.com/electron-userland/electron-forge/commit/a8b9dfc5))
+- pin gh-actions to SHAs, update to remove deprecation warning (#2966) ([fbc92e46](https://github.com/electron-userland/electron-forge/commit/fbc92e46))
+- **plugin-webpack:** better webpack-dev-server types (#2952) ([6c0c222b](https://github.com/electron-userland/electron-forge/commit/6c0c222b))
+
+##### Other Changes
+
+- upgrade electron-packager@17 (#2978) ([629872da](https://github.com/electron-userland/electron-forge/commit/629872da))
+- improve forge configuration DX (#2963) ([2c12d73f](https://github.com/electron-userland/electron-forge/commit/2c12d73f))
+- **maker-pkg:** upgrade to `@electron/osx-sign` (#2959) ([dba93590](https://github.com/electron-userland/electron-forge/commit/dba93590))
+
+#### [6.0.0-beta.67](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.67) (2022-10-05)
+
+##### New Features
+
+- remove preload.js from TypeScript templates (#2938) ([50484dcc](https://github.com/electron-userland/electron-forge/commit/50484dcc))
+
+##### Bug Fixes
+
+- **template-typescript-webpack:** preload file to webpack config (#2936) ([cb1e5600](https://github.com/electron-userland/electron-forge/commit/cb1e5600))
+
+#### [6.0.0-beta.66](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.66) (2022-09-07)
+
+##### New Features
+
+- **plugin-webpack:** Allow each entrypoints to specify `nodeIntegration` (#2867) ([1f45e2ca](https://github.com/electron-userland/electron-forge/commit/1f45e2ca))
+
+##### Other Changes
+
+- update got to 2.0.0 (#2924) ([23eebf19](https://github.com/electron-userland/electron-forge/commit/23eebf19))
+
+#### [6.0.0-beta.65](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.65) (2022-07-25)
+
+##### Bug Fixes
+
+- add missing exports from packages (#2920) ([460546b7](https://github.com/electron-userland/electron-forge/commit/460546b7))
+- keep stdin unpaused after ora completes (#2904) ([aad9c7e4](https://github.com/electron-userland/electron-forge/commit/aad9c7e4))
+
+##### Chores
+
+- upgrade Node.js to 14 LTS (#2921) ([4dcca1ce](https://github.com/electron-userland/electron-forge/commit/4dcca1ce))
+
+#### [6.0.0-beta.64](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.64) (2022-06-16)
+
+##### New Features
+
+- **webpack-plugin:** webpack 5 configuration factory (#2776) ([f4a77741](https://github.com/electron-userland/electron-forge/commit/f4a77741))
+- 🎸 allow specifying alternative tag prefix (#2605) ([88d9d722](https://github.com/electron-userland/electron-forge/commit/88d9d722))
+- allow disabling maker in config (#2754) ([69777402](https://github.com/electron-userland/electron-forge/commit/69777402))
+- 🎸 Add packageSourceMaps option to WebpackPluginConfig (#2581) ([2bb5e0d8](https://github.com/electron-userland/electron-forge/commit/2bb5e0d8))
+- Make autoUpdate and autoLaunch features configurable in MakerWixConfig (#2620) ([bf7d271a](https://github.com/electron-userland/electron-forge/commit/bf7d271a))
+- **publisher-ers:** support flavor config (#2766) ([6069ebe1](https://github.com/electron-userland/electron-forge/commit/6069ebe1))
+- **cli:** add --inspect-brk-electron option (#1328) ([c5a6ea17](https://github.com/electron-userland/electron-forge/commit/c5a6ea17))
+- **template:** add a default preload script (#2722) ([636e2c5d](https://github.com/electron-userland/electron-forge/commit/636e2c5d))
+- **plugin-webpack:** allow specifing a seperate webpack config for your preload (#2679) ([f5909424](https://github.com/electron-userland/electron-forge/commit/f5909424))
+
+##### Bug Fixes
+
+- escape file names for `make` step (#2752) ([beb93056](https://github.com/electron-userland/electron-forge/commit/beb93056))
+- default platforms to empty array instead of null ([9abc581b](https://github.com/electron-userland/electron-forge/commit/9abc581b))
+- **publisher-electron-release-server:**
+  - set knownLength option for asset upload (#2706) ([cf08cd62](https://github.com/electron-userland/electron-forge/commit/cf08cd62))
+  - omit RELEASES file when uploading assets (#2089) ([2202dcd3](https://github.com/electron-userland/electron-forge/commit/2202dcd3))
+
 #### [6.0.0-beta.63](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.63) (2022-01-10)
 
 ##### Bug Fixes

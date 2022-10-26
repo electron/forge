@@ -1,8 +1,9 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
-import { InitTemplateOptions } from '@electron-forge/shared-types';
-import path from 'path';
 
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
@@ -14,9 +15,9 @@ class WebpackTemplate extends BaseTemplate {
       const currentPJ = await fs.readJson(pjPath);
       currentPJ.main = '.webpack/main';
       currentPJ.config.forge.plugins = currentPJ.config.forge.plugins || [];
-      currentPJ.config.forge.plugins.push([
-        '@electron-forge/plugin-webpack',
-        {
+      currentPJ.config.forge.plugins.push({
+        name: '@electron-forge/plugin-webpack',
+        config: {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
@@ -32,7 +33,7 @@ class WebpackTemplate extends BaseTemplate {
             ],
           },
         },
-      ]);
+      });
       await fs.writeJson(pjPath, currentPJ, {
         spaces: 2,
       });

@@ -1,5 +1,5 @@
-import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
-import PluginBase from '@electron-forge/plugin-base';
+import { PluginBase } from '@electron-forge/plugin-base';
+import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
 
 import { AutoUnpackNativesConfig } from './Config';
 
@@ -13,7 +13,7 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
     return null;
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -33,3 +33,5 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
     return forgeConfig;
   };
 }
+
+export { AutoUnpackNativesPlugin, AutoUnpackNativesConfig };

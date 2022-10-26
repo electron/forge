@@ -1,15 +1,14 @@
 {
   "name": "electron-forge",
-  "version": "6.0.0-beta.63",
+  "version": "6.0.0-beta.68",
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 14.17.5"
   },
   "bolt": {
     "workspaces": [
       "packages/api/*",
-      "packages/installer/*",
       "packages/maker/*",
       "packages/publisher/*",
       "packages/utils/*",
@@ -25,9 +24,11 @@
     "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
     "coverage:slow": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' --integration && nyc report --reporter=text-lcov > coverage.lcov",
     "docs": "bolt build:full && bolt docs:generate",
-    "docs:generate": "node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
+    "docs:generate": "bolt docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
+    "docs:plugin": "cd ./tools/doc-plugin && yarn build",
     "docs:deploy:build": "ts-node tools/sync-readmes.ts && bolt docs",
     "lint": "prettier --check . && eslint .",
+    "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts"
@@ -38,7 +39,8 @@
     "@aws-sdk/lib-storage": "^3.28.0",
     "@aws-sdk/types": "^3.25.0",
     "@doyensec/electronegativity": "^1.9.1",
-    "@electron/get": "^1.9.0",
+    "@electron/get": "^2.0.0",
+    "@electron/osx-sign": "^1.0.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@octokit/core": "^3.2.4",
     "@octokit/plugin-retry": "^3.0.9",
@@ -49,28 +51,29 @@
     "cross-spawn": "^7.0.3",
     "cross-zip": "^4.0.0",
     "debug": "^4.3.1",
-    "electron-osx-sign": "^0.5.0",
-    "electron-packager": "^15.4.0",
+    "electron-packager": "^17.0.0",
     "electron-rebuild": "^3.2.6",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",
+    "filenamify": "^4.1.0",
     "find-up": "^5.0.0",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
     "global": "^4.3.2",
+    "got": "^11.8.5",
     "html-webpack-plugin": "^5.3.1",
     "inquirer": "^8.0.0",
-    "interpret": "^2.2.0",
+    "interpret": "^3.1.1",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.7",
     "nugget": "^2.0.1",
-    "open": "^8.1.0",
     "ora": "^5.0.0",
     "parse-author": "^2.0.0",
     "pretty-ms": "^7.0.0",
+    "progress": "^2.0.3",
     "rechoir": "^0.8.0",
     "resolve-package": "^1.0.1",
     "semver": "^7.2.1",
@@ -107,8 +110,9 @@
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^17.0.25",
+    "@types/node": "^18.0.3",
     "@types/node-fetch": "^2.5.5",
+    "@types/progress": "^2.0.5",
     "@types/proxyquire": "^1.3.28",
     "@types/rechoir": "^0.6.1",
     "@types/semver": "^7.3.4",
@@ -122,7 +126,7 @@
     "cross-env": "^7.0.2",
     "electron-installer-common": "^0.10.2",
     "eslint": "^8.0.1",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -143,6 +147,8 @@
     "sinon-chai": "^3.6.0",
     "ts-node": "^10.0.0",
     "typedoc": "^0.22.15",
+    "typedoc-plugin-missing-exports": "^1.0.0",
+    "typedoc-plugin-rename-defaults": "^0.6.4",
     "typescript": "^4.6.3",
     "xvfb-maybe": "^0.2.1"
   },
@@ -171,6 +177,6 @@
     "singleQuote": true
   },
   "volta": {
-    "node": "12.22.4"
+    "node": "14.17.5"
   }
 }

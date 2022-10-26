@@ -1,10 +1,10 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
-
-import { expect } from 'chai';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerPKGConfig } from '../src/Config';
 
@@ -19,7 +19,7 @@ class MakerImpl extends MakerBase<MakerPKGConfig> {
 describe('MakerPKG', () => {
   let MakerDMG: typeof MakerImpl;
   let ensureFileStub: SinonStub;
-  let eosStub: SinonStub;
+  let osxSignStub: SinonStub;
   let renameStub: SinonStub;
   let config: MakerPKGConfig;
   let maker: MakerImpl;
@@ -33,7 +33,7 @@ describe('MakerPKG', () => {
 
   beforeEach(() => {
     ensureFileStub = stub().returns(Promise.resolve());
-    eosStub = stub();
+    osxSignStub = stub();
     renameStub = stub().returns(Promise.resolve());
     config = {};
 
@@ -42,8 +42,8 @@ describe('MakerPKG', () => {
       .noCallThru()
       .load('../src/MakerPKG', {
         '../../util/ensure-output': { ensureFile: ensureFileStub },
-        'electron-osx-sign': {
-          flatAsync: eosStub,
+        '@electron/osx-sign': {
+          flatAsync: osxSignStub,
         },
         'fs-extra': {
           rename: renameStub,
@@ -66,7 +66,7 @@ describe('MakerPKG', () => {
       targetArch,
       targetPlatform: 'mas',
     });
-    const opts = eosStub.firstCall.args[0];
+    const opts = osxSignStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       app: path.resolve(`${dir}/My Test App.app`),
       pkg: path.resolve(`${dir.substr(0, dir.length - 4)}/make/My Test App-1.2.3.pkg`),
@@ -84,6 +84,6 @@ describe('MakerPKG', () => {
         targetArch,
         targetPlatform: 'win32',
       })
-    ).to.eventually.be.rejectedWith('The pkg maker only supports targetting "mas" and "darwin" builds.  You provided "win32"');
+    ).to.eventually.be.rejectedWith('The pkg maker only supports targeting "mas" and "darwin" builds. You provided "win32".');
   });
 });

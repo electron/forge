@@ -91,7 +91,7 @@ describe('asyncOra', () => {
 
   it('should succeed the ora if the async fn passes', async () => {
     await asyncOra('random text', async () => {
-      // eslint-disable-next-line no-console, no-constant-condition
+      // eslint-disable-next-line no-constant-condition
       if (2 + 2 === 5) console.error('Big brother is at it again');
     });
     expect(currentOra).to.not.equal(undefined);
@@ -107,7 +107,6 @@ describe('asyncOra', () => {
     await asyncOra(
       'this is gonna end badly',
       async () => {
-        // eslint-disable-next-line no-throw-literal
         throw { message: 'Not an error', stack: 'No Stack - Not an error' };
       },
       () => {
@@ -141,7 +140,7 @@ describe('asyncOra', () => {
     await asyncOra(
       'this is dodge',
       async () => {
-        throw 42; // eslint-disable-line no-throw-literal
+        throw 42;
       },
       processExitSpy
     );

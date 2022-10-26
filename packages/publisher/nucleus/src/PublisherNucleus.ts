@@ -1,10 +1,11 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import fs from 'fs';
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 import FormData from 'form-data';
-import fs from 'fs';
 import fetch from 'node-fetch';
-import path from 'path';
 
 import { PublisherNucleusConfig } from './Config';
 
@@ -46,7 +47,6 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
         let artifactIdx = 0;
         for (const artifactPath of makeResult.artifacts) {
           // Skip the RELEASES file, it is automatically generated on the server
-          // eslint-disable-next-line no-continue
           if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
           data.append(`file${artifactIdx}`, fs.createReadStream(artifactPath));
           artifactIdx += 1;
@@ -67,3 +67,5 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
     }
   }
 }
+
+export { PublisherNucleus, PublisherNucleusConfig };

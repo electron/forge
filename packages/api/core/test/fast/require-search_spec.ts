@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import requireSearch from '../../src/util/require-search';
 import findConfig from '../../src/util/forge-config';
+import requireSearch from '../../src/util/require-search';
 
 describe('require-search', () => {
   it('should resolve null if no file exists', () => {

@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
-import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
 import os from 'os';
 import path from 'path';
+
+import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
 
@@ -29,8 +30,7 @@ describe('publish', () => {
     publisherSpy = stub();
     voidStub = stub();
     nowhereStub = stub();
-    publishers = ['@electron-forge/publisher-test'];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    publishers = [{ name: '@electron-forge/publisher-test' }];
     const fakePublisher = (stub: SinonStub, name = 'default') =>
       class _FakePublisher {
         private publish: SinonStub;

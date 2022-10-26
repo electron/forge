@@ -1,12 +1,13 @@
-import { ForgeConfig } from '@electron-forge/shared-types';
-import { expect } from 'chai';
 import path from 'path';
 
-import { readRawPackageJson, readMutatedPackageJson } from '../../src/util/read-package-json';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 
-const emptyForgeConfig: Partial<ForgeConfig> = {
+import { readMutatedPackageJson, readRawPackageJson } from '../../src/util/read-package-json';
+
+const emptyForgeConfig: Partial<ResolvedForgeConfig> = {
   packagerConfig: {},
-  electronRebuildConfig: {},
+  rebuildConfig: {},
   makers: [],
   publishers: [],
   plugins: [],
@@ -30,7 +31,7 @@ describe('read-package-json', () => {
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
           },
-        } as ForgeConfig)
+        } as ResolvedForgeConfig)
       ).to.deep.equal(require('../../package.json'));
     });
 
@@ -43,7 +44,7 @@ describe('read-package-json', () => {
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
           },
-        } as ForgeConfig)
+        } as ResolvedForgeConfig)
       ).to.deep.equal('test_mut');
     });
   });

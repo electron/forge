@@ -1,5 +1,6 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+
+import * as fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -7,7 +8,7 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 export interface Package {
   path: string;
   name: string;
-  manifest: object; // the parsed package.json
+  manifest: Record<string, unknown>; // the parsed package.json
 }
 
 export const getPackageInfo = async (): Promise<Package[]> => {

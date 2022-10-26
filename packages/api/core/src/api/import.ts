@@ -1,20 +1,21 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
 import baseTemplate from '@electron-forge/template-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { merge } from 'lodash';
-import path from 'path';
-
-import initGit from './init-scripts/init-git';
-import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 import { updateElectronDependency } from '../util/electron-version';
 import { setInitialForgeConfig } from '../util/forge-config';
-import { info, warn } from '../util/messages';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
+import { info, warn } from '../util/messages';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
+
+import initGit from './init-scripts/init-git';
+import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:import');
 
@@ -68,7 +69,6 @@ export default async ({
     throw new Error(`We couldn't find a project in: ${dir}`);
   }
 
-  // eslint-disable-next-line max-len
   if (typeof confirmImport === 'function') {
     if (!(await confirmImport())) {
       // TODO: figure out if we can just return early here
@@ -116,6 +116,7 @@ export default async ({
   const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
   const buildToolPackages: Record<string, string | undefined> = {
     '@electron/get': 'already uses this module as a transitive dependency',
+    '@electron/osx-sign': 'already uses this module as a transitive dependency',
     'electron-builder': 'provides mostly equivalent functionality',
     'electron-download': 'already uses this module as a transitive dependency',
     'electron-forge': 'replaced with @electron-forge/cli',
@@ -123,7 +124,6 @@ export default async ({
     'electron-installer-dmg': 'already uses this module as a transitive dependency',
     'electron-installer-flatpak': 'already uses this module as a transitive dependency',
     'electron-installer-redhat': 'already uses this module as a transitive dependency',
-    'electron-osx-sign': 'already uses this module as a transitive dependency',
     'electron-packager': 'already uses this module as a transitive dependency',
     'electron-winstaller': 'already uses this module as a transitive dependency',
   };
@@ -132,7 +132,6 @@ export default async ({
     if (buildToolPackages[key]) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const explanation = buildToolPackages[key]!;
-      // eslint-disable-next-line max-len
       let remove = true;
       if (typeof shouldRemoveDependency === 'function') {
         remove = await shouldRemoveDependency(key, explanation);
@@ -150,7 +149,6 @@ export default async ({
 
   const updatePackageScript = async (scriptName: string, newValue: string) => {
     if (packageJSON.scripts[scriptName] !== newValue) {
-      // eslint-disable-next-line max-len
       let update = true;
       if (typeof shouldUpdateScript === 'function') {
         update = await shouldUpdateScript(scriptName, newValue);

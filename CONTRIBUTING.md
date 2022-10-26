@@ -27,7 +27,7 @@ sites](https://github.com/electron/electron#community).
 ### Debugging
 
 Troubleshooting suggestions can be found in the [support
-documentation](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md#troubleshooting).
+documentation](https://github.com/electron-userland/electron-forge/blob/main/SUPPORT.md#troubleshooting).
 
 ## Contribution suggestions
 
@@ -102,7 +102,21 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
-- if you aren't sure if a release should happen, open an issue
-- make sure the tests pass
-- `./tools/bump.ts $NEW_VERSION`
-- `node tools/publish.js`
+- Make sure the tests pass
+- `$ ./tools/bump.ts $NEW_VERSION`
+  - This will commit the changes automatically. Run `git log` to confirm that the changes have been
+    committed.
+  - `$NEW_VERSION` should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
+- `$ node tools/publish.js`
+- After running the command, you should have a commit which:
+  - Updates the version field in the package.json file
+  - Updates the version fields in each of the submodule package.json files
+  - Includes a git tag corresponding with the new version number.
+- Push your commit upstream to the main/default branch.
+- Push your tag upstream with `git push origin <tag_name>` .
+- Create a new github release
+  - Go to releases tab
+  - Draft a new release and choose the appropriate tag
+  - Target default branch
+  - Generate release notes by copying in CHANGELOG.md contents into the release description or use
+    GitHub's [automatically generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)

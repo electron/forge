@@ -1,8 +1,9 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { asyncOra } from '@electron-forge/async-ora';
+import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import debug from 'debug';
+import fs from 'fs-extra';
 
 import determineAuthor from './determine-author';
 
@@ -66,7 +67,6 @@ export class BaseTemplate implements ForgeTemplate {
   async initializePackageJSON(directory: string): Promise<void> {
     await asyncOra('Initializing NPM Module', async () => {
       const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-      // eslint-disable-next-line no-multi-assign
       packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
       packageJSON.author = await determineAuthor(directory);
 

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export interface PublisherNucleusConfig {
   /**
    * Hostname (with https?://) of your instance of Nucleus

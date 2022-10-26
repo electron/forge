@@ -1,9 +1,9 @@
-import { api, PackageOptions } from '@electron-forge/core';
+import path from 'path';
 
-import fs from 'fs-extra';
+import { api, PackageOptions } from '@electron-forge/core';
 import { initializeProxy } from '@electron/get';
 import program from 'commander';
-import path from 'path';
+import fs from 'fs-extra';
 
 import './util/terminate';
 import workingDir from './util/working-dir';

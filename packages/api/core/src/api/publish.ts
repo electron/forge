@@ -1,25 +1,25 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import PublisherBase from '@electron-forge/publisher-base';
 import {
-  IForgeResolvablePublisher,
-  IForgePublisher,
   ForgeConfigPublisher,
   ForgeMakeResult,
+  IForgePublisher,
+  IForgeResolvablePublisher,
   // ForgePlatform,
 } from '@electron-forge/shared-types';
-import PublisherBase from '@electron-forge/publisher-base';
-
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
 
 import getForgeConfig from '../util/forge-config';
-import resolveDir from '../util/resolve-dir';
-import PublishState from '../util/publish-state';
 import getCurrentOutDir from '../util/out-dir';
+import PublishState from '../util/publish-state';
+import requireSearch from '../util/require-search';
+import resolveDir from '../util/resolve-dir';
 
 import make, { MakeOptions } from './make';
-import requireSearch from '../util/require-search';
 
 const d = debug('electron-forge:publish');
 
@@ -36,7 +36,7 @@ export interface PublishOptions {
    * The publish targets, by default pulled from forge config, set this prop to
    * override that list
    */
-  publishTargets?: ForgeConfigPublisher[];
+  publishTargets?: ForgeConfigPublisher[] | string[];
   /**
    * Options object to passed through to make()
    */
@@ -150,7 +150,6 @@ const publish = async ({
       return (
         (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
           if (typeof p === 'string') return false;
-          // eslint-disable-next-line no-underscore-dangle
           if ((p as IForgePublisher).__isElectronForgePublisher) return false;
           return (p as IForgeResolvablePublisher).name === target;
         }) || { name: target }
@@ -162,7 +161,6 @@ const publish = async ({
   for (const publishTarget of publishTargets) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let publisher: PublisherBase<any>;
-    // eslint-disable-next-line no-underscore-dangle
     if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       publisher = publishTarget as PublisherBase<any>;
@@ -171,7 +169,6 @@ const publish = async ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let PublisherClass: any;
       await asyncOra(`Resolving publish target: ${chalk.cyan(resolvablePublishTarget.name)}`, async () => {
-        // eslint-disable-line no-loop-func
         PublisherClass = requireSearch(dir, [resolvablePublishTarget.name]);
         if (!PublisherClass) {
           throw new Error(

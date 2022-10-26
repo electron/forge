@@ -1,8 +1,9 @@
+import path from 'path';
+
 import { asyncOra } from '@electron-forge/async-ora';
+import { InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
-import { InitTemplateOptions } from '@electron-forge/shared-types';
-import path from 'path';
 
 class TypeScriptWebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
@@ -15,9 +16,9 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
 
       packageJSON.main = '.webpack/main';
       packageJSON.config.forge.plugins = packageJSON.config.forge.plugins || [];
-      packageJSON.config.forge.plugins.push([
-        '@electron-forge/plugin-webpack',
-        {
+      packageJSON.config.forge.plugins.push({
+        name: '@electron-forge/plugin-webpack',
+        config: {
           mainConfig: './webpack.main.config.js',
           renderer: {
             config: './webpack.renderer.config.js',
@@ -26,11 +27,14 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
                 html: './src/index.html',
                 js: './src/renderer.ts',
                 name: 'main_window',
+                preload: {
+                  js: './src/preload.ts',
+                },
               },
             ],
           },
         },
-      ]);
+      });
 
       // Configure scripts for TS template
       packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
@@ -63,6 +67,9 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
       await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
+
+      // Remove preload.js and replace with preload.ts
+      await fs.remove(filePath('preload.js'));
       await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
     });
   }

@@ -1,12 +1,12 @@
 import { exec } from 'child_process';
-import debug from 'debug';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import semver from 'semver';
 
-import { utils as forgeUtils } from '@electron-forge/core';
 import { OraImpl } from '@electron-forge/async-ora';
+import { utils as forgeUtils } from '@electron-forge/core';
+import debug from 'debug';
+import fs from 'fs-extra';
+import semver from 'semver';
 
 const d = debug('electron-forge:check-system');
 
@@ -21,8 +21,7 @@ async function checkNodeVersion(ora: OraImpl) {
   const versionSatisified = semver.satisfies(process.versions.node, engines.node);
 
   if (!versionSatisified) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ora.warn!(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
+    ora.warn(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
   }
 
   return versionSatisified;
@@ -55,8 +54,7 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
   const versions = osVersions ? `${whitelistedVersions.all} || ${osVersions}` : whitelistedVersions.all;
   const versionString = version.toString();
   if (!validPackageManagerVersion(packageManager, versionString, versions, ora)) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    ora.warn!(`You are using ${packageManager}, but not a known good version.
+    ora.warn(`You are using ${packageManager}, but not a known good version.
 The known versions that work with Electron Forge are: ${versions}`);
   }
 }

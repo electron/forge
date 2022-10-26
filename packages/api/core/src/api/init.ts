@@ -1,17 +1,19 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ForgeTemplate } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { asyncOra } from '@electron-forge/async-ora';
+import { ForgeTemplate } from '@electron-forge/shared-types';
+import debug from 'debug';
+import fs from 'fs-extra';
 import semver from 'semver';
+
+import { setInitialForgeConfig } from '../util/forge-config';
+import installDepList, { DepType } from '../util/install-dependencies';
+import { readRawPackageJson } from '../util/read-package-json';
 
 import findTemplate from './init-scripts/find-template';
 import initDirectory from './init-scripts/init-directory';
 import initGit from './init-scripts/init-git';
 import initNPM from './init-scripts/init-npm';
-import installDepList, { DepType } from '../util/install-dependencies';
-import { readRawPackageJson } from '../util/read-package-json';
-import { setInitialForgeConfig } from '../util/forge-config';
 
 const d = debug('electron-forge:init');
 

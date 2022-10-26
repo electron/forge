@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
+const { spawn } = require('@malept/cross-spawn-promise');
 const glob = require('fast-glob');
 const { satisfies } = require('semver');
-const { spawn } = require('@malept/cross-spawn-promise');
 
 const DO_NOT_UPGRADE = [
   '@types/node-fetch', // No longer needed when node-fetch is upgraded to >= 3.0.0
   '@typescript-eslint/eslint-plugin', // special case
   'chalk', // Requires ESM
   'commander', // TODO: convert to yargs
-  'electron-osx-sign', // Requires Electron Packager's dependency to also be upgraded
   'eslint-plugin-mocha', // Requires Node 14
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM

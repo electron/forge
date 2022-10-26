@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export interface MakerPKGConfig {
   /**
    * Name of certificate to use when signing.
@@ -13,7 +12,7 @@ export interface MakerPKGConfig {
    *
    * Default: `true`.
    */
-  'identity-validation'?: boolean;
+  identityValidation?: boolean;
   /**
    * Path to install the bundle. Default to `/Applications`.
    */
