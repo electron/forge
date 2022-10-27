@@ -227,10 +227,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (pj.config) {
       delete pj.config.forge;
     }
-    pj.devDependencies = {};
-    pj.dependencies = {};
-    pj.optionalDependencies = {};
-    pj.peerDependencies = {};
 
     await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
       spaces: 2,
