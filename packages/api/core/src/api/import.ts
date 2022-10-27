@@ -82,7 +82,7 @@ export default async ({
   let importDevDeps = ([] as string[]).concat(devDeps);
   let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
 
-  const packageJSON = await readRawPackageJson(dir);
+  let packageJSON = await readRawPackageJson(dir);
   if (!packageJSON.version) {
     warn(interactive, chalk.yellow(`Please set the ${chalk.green('"version"')} in your application's package.json`));
   }
@@ -190,16 +190,22 @@ export default async ({
     await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
   });
 
-  await asyncOra('Creating forge.config.js configuration', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
+  await asyncOra('Copying base template Forge configuration', async () => {
+    const pathToTemplateConfig = path.resolve(baseTemplate.templateDir, 'forge.config.js');
 
+    // if there's an existing config.forge object in package.json
     if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
       d('detected existing Forge config in package.json, merging with base template Forge config');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
+      packageJSON = await readRawPackageJson(dir);
       merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+      await writeChanges();
+      // otherwise, write to forge.config.js
+    } else {
+      d('writing new forge.config.js');
+      await fs.copyFile(pathToTemplateConfig, path.resolve(dir, 'forge.config.js'));
     }
-
-    await writeChanges();
   });
 
   await asyncOra('Fixing .gitignore', async () => {
