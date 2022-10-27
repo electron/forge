@@ -2,7 +2,7 @@
   "name": "@electron-forge/publisher-bitbucket",
   "version": "6.0.0-beta.68",
   "description": "Bitbucket publisher for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Luke Batchelor",
   "license": "MIT",
   "main": "dist/PublisherBitbucket.js",

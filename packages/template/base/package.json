@@ -2,7 +2,7 @@
   "name": "@electron-forge/template-base",
   "version": "6.0.0-beta.68",
   "description": "Base template for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/BaseTemplate.js",
