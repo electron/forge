@@ -102,6 +102,18 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
+When updating a dependency, we also need to make sure that the package is updated in all of the modules where
+the packages is needed. To do this, run:
+
+```
+bolt upgrade {package-name}@latest
+
+// i.e.
+bolt upgrade electron-wix-msi@latest
+```
+
+### Release process
+
 - Make sure the tests pass
 - `$ ./tools/bump.ts $NEW_VERSION`
   - This will commit the changes automatically. Run `git log` to confirm that the changes have been
