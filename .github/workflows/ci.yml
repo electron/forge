@@ -20,7 +20,6 @@ jobs:
         uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
           node-version: 14.x
-          cache: yarn
       - name: Run dependabolt
         if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'dependabot/npm_and_yarn') && !contains(github.event.pull_request.head.ref, 'npm_and_yarn/packages') }}
         uses: malept/github-action-dependabolt@v4.0.1
@@ -41,7 +40,6 @@ jobs:
         uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
           node-version: 14.x
-          cache: yarn
       - name: Install latest NPM on Windows
         if: matrix.os == 'windows-latest'
         # See https://github.com/actions/virtual-environments/issues/4856#issuecomment-1043256330
@@ -104,7 +102,6 @@ jobs:
         uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
         with:
           node-version: 14.x
-          cache: yarn
       - name: Install bolt
         shell: bash
         run: |
