@@ -6,7 +6,7 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { HookFunction } from 'electron-packager';
+import packager, { HookFunction, TargetArch } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
@@ -83,7 +83,8 @@ export default async ({
 }: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
-  let prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch === 'all' ? 'ia32' : arch)}`).start();
+  const prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch)}`).start();
+  const prepareSpinnerPerArch: { [keyof: TargetArch]: OraImpl } = {};
   let prepareCounter = 0;
 
   const resolvedDir = await resolveDir(dir);
@@ -101,16 +102,13 @@ export default async ({
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
   let packagerSpinner: OraImpl | undefined;
+  const packagerSpinnerPerArch: { [keyof: TargetArch]: OraImpl } = {};
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
   const afterCopyHooks: HookFunction[] = [
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      if (packagerSpinner) {
-        packagerSpinner.succeed();
-        prepareCounter += 1;
-        prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(prepareCounter === 2 ? 'armv7l' : 'x64')}`).start();
-      }
+      prepareSpinnerPerArch[pArch] = ora(`Preparing to Package Application for arch: ${chalk.cyan(pArch)}`).start();
       const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
@@ -118,27 +116,36 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      prepareSpinner.succeed();
+      prepareSpinnerPerArch[pArch].succeed();
+      prepareCounter += 1;
+      if (Object.values(prepareSpinnerPerArch).length === prepareCounter) {
+        prepareSpinner.succeed();
+      }
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
-      packagerSpinner = ora('Packaging Application').start();
+      if (!packagerSpinner) {
+        packagerSpinner = ora(`Packaging Application for ${arch}`).start();
+      }
+      packagerSpinnerPerArch[pArch] = ora(`Packaging Application for ${pArch}`).start();
+      done();
+    },
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
+      if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
+        delete copiedPackageJSON.config.forge;
+      }
+      await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
+      done();
+    },
+    ...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir),
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      packagerSpinnerPerArch[pArch].succeed();
       done();
     },
   ];
-
-  afterCopyHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
-    if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
-      delete copiedPackageJSON.config.forge;
-    }
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
-    done();
-  });
-
-  afterCopyHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir));
 
   const afterPruneHooks = [];
 
@@ -205,6 +212,5 @@ export default async ({
     spinner: packagerSpinner,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (packagerSpinner) packagerSpinner!.succeed();
+  if (packagerSpinner) packagerSpinner.succeed();
 };
