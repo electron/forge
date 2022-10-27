@@ -90,11 +90,12 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   }
 
   generateCredentials(): Credentials | undefined {
-    const accessKeyId = this.config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = this.config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+    const accessKeyId = this.config.accessKeyId;
+    const secretAccessKey = this.config.secretAccessKey;
+    const sessionToken = this.config.sessionToken;
 
     if (accessKeyId && secretAccessKey) {
-      return { accessKeyId, secretAccessKey };
+      return { accessKeyId, secretAccessKey, sessionToken };
     }
 
     return undefined;
