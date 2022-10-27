@@ -27,11 +27,11 @@ sites](https://github.com/electron/electron#community).
 ### Debugging
 
 Troubleshooting suggestions can be found in the [support
-documentation](https://github.com/electron-userland/electron-forge/blob/main/SUPPORT.md#troubleshooting).
+documentation](https://github.com/electron/forge/blob/main/SUPPORT.md#troubleshooting).
 
 ## Contribution suggestions
 
-We use the label [`help wanted`](https://github.com/electron-userland/electron-forge/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+We use the label [`help wanted`](https://github.com/electron/forge/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
 in the issue tracker to denote fairly-well-scoped-out bugs or feature requests that the community
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
@@ -57,7 +57,7 @@ Getting the code base running locally requires the `bolt` command installed glob
 
 ```bash
 npm i -g bolt
-git clone https://github.com/electron-userland/electron-forge
+git clone https://github.com/electron/forge
 cd electron-forge
 # Installs all dependencies, don't run "yarn" or "npm install" yourself
 bolt
@@ -99,6 +99,18 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
   Feel free to indicate whether the changes are a breaking change in behavior.
 - If you are continuing the work of another person's PR and need to rebase/squash, please retain the
   attribution of the original author(s) and continue the work in subsequent commits.
+
+### Release process
+
+When updating a dependency, we also need to make sure that the package is updated in all of the modules where
+the packages is needed. To do this, run:
+
+```
+bolt upgrade {package-name}@latest
+
+// i.e.
+bolt upgrade electron-wix-msi@latest
+```
 
 ### Release process
 

@@ -36,7 +36,7 @@ export interface AsyncOraMethod {
    * work to be done, as it will forever be waiting for input on stdin.
    *
    * More context:
-   *   https://github.com/electron-userland/electron-forge/issues/2319
+   *   https://github.com/electron/forge/issues/2319
    */
   keepStdinFlowing?: boolean;
 }
