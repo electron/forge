@@ -203,6 +203,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         await updatePackageJSON(dir, async (packageJSON) => {
           packageJSON.name = 'Name';
           packageJSON.productName = 'Product Name';
+          packageJSON.customProp = 'propVal';
         });
 
         await forge.import({ dir });
