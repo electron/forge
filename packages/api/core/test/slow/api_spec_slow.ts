@@ -79,6 +79,10 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
       });
 
+      it('should create a forge.config.js', async () => {
+        await expectProjectPathExists(dir, 'forge.config.js', 'file');
+      });
+
       describe('lint', () => {
         it('should initially pass the linting process', () => expectLintToPass(dir));
       });
@@ -230,13 +234,21 @@ describe('Electron Forge API', () => {
         packageJSON.name = 'testapp';
         packageJSON.version = '1.0.0-beta.1';
         packageJSON.productName = 'Test-App';
-        assert(packageJSON.config.forge.packagerConfig);
-        packageJSON.config.forge.packagerConfig.asar = false;
+        packageJSON.config = packageJSON.config || {};
+        packageJSON.config.forge = {
+          ...packageJSON.config.forge,
+          packagerConfig: {
+            asar: false,
+          },
+        };
         if (process.platform === 'win32') {
           await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
           devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
         } else if (process.platform === 'linux') {
-          packageJSON.config.forge.packagerConfig.executableName = 'testapp';
+          packageJSON.config.forge.packagerConfig = {
+            ...packageJSON.config.forge.packagerConfig,
+            executableName: 'testapp',
+          };
         }
         packageJSON.homepage = 'http://www.example.com/';
         packageJSON.author = 'Test Author';

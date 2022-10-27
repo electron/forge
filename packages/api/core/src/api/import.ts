@@ -83,9 +83,12 @@ export default async ({
   let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
 
   let packageJSON = await readRawPackageJson(dir);
+  if (!packageJSON.version) {
+    warn(interactive, chalk.yellow(`Please set the ${chalk.green('"version"')} in your application's package.json`));
+  }
   if (packageJSON.config && packageJSON.config.forge) {
     if (packageJSON.config.forge.makers) {
-      warn(interactive, chalk.green('It looks like this project is already configured for Electron Forge'));
+      warn(interactive, chalk.green('Existing Electron Forge configuration detected'));
       if (typeof shouldContinueOnExisting === 'function') {
         if (!(await shouldContinueOnExisting())) {
           // TODO: figure out if we can just return early here
@@ -93,7 +96,7 @@ export default async ({
           process.exit(0);
         }
       }
-    } else if (typeof packageJSON.config.forge === 'string') {
+    } else if (!(typeof packageJSON.config.forge === 'object')) {
       warn(
         interactive,
         chalk.yellow(
@@ -187,23 +190,23 @@ export default async ({
     await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
   });
 
-  packageJSON = await readRawPackageJson(dir);
+  await asyncOra('Copying base template Forge configuration', async () => {
+    const pathToTemplateConfig = path.resolve(baseTemplate.templateDir, 'forge.config.js');
 
-  if (!packageJSON.version) {
-    warn(interactive, chalk.yellow('Please set the "version" in your application\'s package.json'));
-  }
-
-  packageJSON.config = packageJSON.config || {};
-  const templatePackageJSON = await readRawPackageJson(baseTemplate.templateDir);
-  if (packageJSON.config.forge) {
-    if (typeof packageJSON.config.forge !== 'string') {
-      packageJSON.config.forge = merge(templatePackageJSON.config.forge, packageJSON.config.forge);
+    // if there's an existing config.forge object in package.json
+    if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
+      d('detected existing Forge config in package.json, merging with base template Forge config');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
+      packageJSON = await readRawPackageJson(dir);
+      merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+      await writeChanges();
+      // otherwise, write to forge.config.js
+    } else {
+      d('writing new forge.config.js');
+      await fs.copyFile(pathToTemplateConfig, path.resolve(dir, 'forge.config.js'));
     }
-  } else {
-    packageJSON.config.forge = templatePackageJSON.config.forge;
-  }
-
-  await writeChanges();
+  });
 
   await asyncOra('Fixing .gitignore', async () => {
     if (await fs.pathExists(path.resolve(dir, '.gitignore'))) {
@@ -218,8 +221,8 @@ export default async ({
     interactive,
     `
 
-We have ATTEMPTED to convert your app to be in a format that electron-forge understands.
+We have attempted to convert your app to be in a format that Electron Forge understands.
 
-Thanks for using ${chalk.green('Electron Forge')}!!!`
+Thanks for using ${chalk.green('Electron Forge')}!`
   );
 };
