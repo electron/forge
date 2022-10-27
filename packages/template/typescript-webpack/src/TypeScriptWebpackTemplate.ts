@@ -12,6 +12,7 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
     await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
       await this.copyTemplateFile(directory, 'forge.config.ts');
+      await fs.remove(path.resolve(directory, 'forge.config.js'));
     });
     await asyncOra('Setting up TypeScript configuration', async () => {
       const filePath = (fileName: string) => path.join(directory, 'src', fileName);
@@ -52,8 +53,6 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       await fs.writeJson(packageJSONPath, packageJSON, {
         spaces: 2,
       });
-
-      await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
     });
   }
 }
