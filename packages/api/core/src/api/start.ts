@@ -1,12 +1,12 @@
 import { spawn, SpawnOptions } from 'child_process';
 
 import { asyncOra } from '@electron-forge/async-ora';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 
 import locateElectronExecutable from '../util/electron-executable';
-import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';

@@ -91,6 +91,7 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "@malept/eslint-config": "^2.0.0",
     "@swc/cli": "^0.1.49",
     "@swc/core": "^1.2.87",
@@ -133,6 +134,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "fetch-mock": "^9.10.7",
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
     "generate-changelog": "^1.8.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
@@ -149,7 +151,6 @@
     "typedoc": "^0.22.15",
     "typedoc-plugin-missing-exports": "^1.0.0",
     "typedoc-plugin-rename-defaults": "^0.6.4",
-    "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "typescript": "^4.6.3",
     "xvfb-maybe": "^0.2.1"
   },

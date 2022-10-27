@@ -1,9 +1,8 @@
 import path from 'path';
 
+import { getElectronModulePath } from '@electron-forge/core-utils';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-
-import { getElectronModulePath } from './electron-version';
 
 type PackageJSON = Record<string, unknown>;
 type Dependencies = Record<string, string>;

@@ -5,15 +5,18 @@ import { MakerDeb } from '@electron-forge/maker-deb';
 import { MakerRpm } from '@electron-forge/maker-rpm';
 import { WebpackPlugin } from '@electron-forge/plugin-webpack';
 
+import { mainConfig } from './webpack.main.config';
+import { rendererConfig } from './webpack.renderer.config';
+
 const config: ForgeConfig = {
   packagerConfig: {},
   rebuildConfig: {},
   makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   plugins: [
     new WebpackPlugin({
-      mainConfig: './webpack.main.config.ts',
+      mainConfig,
       renderer: {
-        config: './webpack.renderer.config.js',
+        config: rendererConfig,
         entryPoints: [
           {
             html: './src/index.html',

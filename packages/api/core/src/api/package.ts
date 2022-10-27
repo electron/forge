@@ -2,6 +2,7 @@ import path from 'path';
 import { promisify } from 'util';
 
 import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
@@ -10,7 +11,6 @@ import packager, { HookFunction } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
-import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
