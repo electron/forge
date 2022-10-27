@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeConfig, IForgeResolvableMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 
 import findConfig, { forgeConfigIsValidFilePath, renderConfigTemplate } from '../../src/util/forge-config';

@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeConfig, IForgeResolvableMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import * as interpret from 'interpret';
 import { template } from 'lodash';
