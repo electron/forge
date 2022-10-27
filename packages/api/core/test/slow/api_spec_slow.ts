@@ -204,20 +204,8 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
         await forge.import({ dir });
 
-        const {
-          config: {
-            forge: {
-              makers: [
-                {
-                  config: { name: winstallerName },
-                },
-              ],
-            },
-          },
-          customProp,
-        } = await readRawPackageJson(dir);
+        const { customProp } = await readRawPackageJson(dir);
 
-        expect(winstallerName).to.equal('Name');
         expect(customProp).to.equal('propVal');
       });
 

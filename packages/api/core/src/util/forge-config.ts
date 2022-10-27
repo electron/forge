@@ -81,15 +81,6 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-/**
- * Sets sensible defaults for the `config.forge` object.
- */
-export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void {
-  const { name = '' } = packageJSON;
-
-  ((packageJSON.config.forge as ForgeConfig).makers as IForgeResolvableMaker[])[0].config.name = name.replace(/-/g, '_');
-}
-
 export type BuildIdentifierMap<T> = Record<string, T | undefined>;
 export type BuildIdentifierConfig<T> = {
   map: BuildIdentifierMap<T>;
