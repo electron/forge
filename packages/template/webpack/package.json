@@ -2,7 +2,7 @@
   "name": "@electron-forge/template-webpack",
   "version": "6.0.0-beta.68",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/WebpackTemplate.js",

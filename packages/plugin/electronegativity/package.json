@@ -4,7 +4,7 @@
   "description": "Integrate Electronegativity into the Electron Forge workflow",
   "repository": {
     "type": "git",
-    "url": "https://github.com/electron-userland/electron-forge",
+    "url": "https://github.com/electron/forge",
     "directory": "packages/plugin/electronegativity"
   },
   "author": "Mark Lee",

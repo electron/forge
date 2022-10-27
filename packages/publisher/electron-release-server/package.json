@@ -2,7 +2,7 @@
   "name": "@electron-forge/publisher-electron-release-server",
   "version": "6.0.0-beta.68",
   "description": "Electron release server publisher for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/PublisherERS.js",

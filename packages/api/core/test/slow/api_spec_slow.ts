@@ -292,7 +292,7 @@ describe('Electron Forge API', () => {
 
     // FIXME(erickzhao): This test hangs on the electron-rebuild step
     // with Electron 19. It was tested to work on Electron 18.
-    // see https://github.com/electron-userland/electron-forge/pull/2869
+    // see https://github.com/electron/forge/pull/2869
     describe.skip('with prebuilt native module deps installed', () => {
       before(async () => {
         await installDeps(dir, ['ref-napi']);
