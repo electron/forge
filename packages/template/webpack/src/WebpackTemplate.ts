@@ -11,30 +11,7 @@ class WebpackTemplate extends BaseTemplate {
   public async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
-      const forgeConfigPath = path.resolve(directory, 'forge.config.js');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const forgeConfig = require(forgeConfigPath);
-      forgeConfig.plugins = forgeConfig.plugins || [];
-      forgeConfig.plugins.push({
-        name: '@electron-forge/plugin-webpack',
-        config: {
-          mainConfig: './webpack.main.config.js',
-          renderer: {
-            config: './webpack.renderer.config.js',
-            entryPoints: [
-              {
-                html: './src/index.html',
-                js: './src/renderer.js',
-                name: 'main_window',
-                preload: {
-                  js: './src/preload.js',
-                },
-              },
-            ],
-          },
-        },
-      });
-      await fs.writeFile(forgeConfigPath, `module.exports = ${JSON.stringify(forgeConfig, null, 2)}`);
+      await this.copyTemplateFile(directory, 'forge.config.js');
     });
     await asyncOra('Setting up webpack configuration', async () => {
       await this.copyTemplateFile(directory, 'webpack.main.config.js');
