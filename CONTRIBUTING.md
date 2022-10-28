@@ -120,6 +120,7 @@ bolt upgrade electron-wix-msi@latest
     committed.
   - `$NEW_VERSION` should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
 - `$ node tools/publish.js`
+  - Ensure that you are logged into npm via command line (`npm login`)
 - After running the command, you should have a commit which:
   - Updates the version field in the package.json file
   - Updates the version fields in each of the submodule package.json files

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-typescript-webpack",
-  "version": "6.0.0-beta.69",
+  "version": "6.0.0-beta.70",
   "description": "Typescript-Webpack template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Shelley Vohr <shelley.vohr@gmail.com>",
@@ -14,18 +14,18 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.69",
-    "@electron-forge/shared-types": "6.0.0-beta.69",
-    "@electron-forge/template-base": "6.0.0-beta.69",
+    "@electron-forge/async-ora": "6.0.0-beta.70",
+    "@electron-forge/shared-types": "6.0.0-beta.70",
+    "@electron-forge/template-base": "6.0.0-beta.70",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/maker-deb": "^6.0.0-beta.69",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.69",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.69",
-    "@electron-forge/maker-zip": "^6.0.0-beta.69",
-    "@electron-forge/plugin-webpack": "^6.0.0-beta.69",
-    "@electron-forge/test-utils": "6.0.0-beta.69",
+    "@electron-forge/maker-deb": "^6.0.0-beta.70",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.70",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.70",
+    "@electron-forge/maker-zip": "^6.0.0-beta.70",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.70",
+    "@electron-forge/test-utils": "6.0.0-beta.70",
     "chai": "^4.3.3",
     "fast-glob": "^3.2.7",
     "fork-ts-checker-webpack-plugin": "^7.2.13"

@@ -1,3 +1,12 @@
+#### [6.0.0-beta.70](https://github.com/electron/forge/releases/tag/v6.0.0-beta.70) (2022-10-28)
+
+##### Bug Fixes
+
+- **template-typescript-webpack:**
+  - install ts-node (#3016) ([ab160d5d](https://github.com/electron/forge/commit/ab160d5d))
+  - webpack entrypoint extensions (#3014) ([378e2009](https://github.com/electron/forge/commit/378e2009))
+  - clean up forge config code (#3009) ([c3a8db44](https://github.com/electron/forge/commit/c3a8db44))
+
 #### [6.0.0-beta.69](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.69) (2022-10-27)
 
 ##### New Features
