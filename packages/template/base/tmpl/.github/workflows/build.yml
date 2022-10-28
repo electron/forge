@@ -1,0 +1,182 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # 3.1.0
+      - name: Setup Node.js
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+        with:
+          node-version: 18.x
+          cache: yarn
+      - name: Install
+        run: yarn
+      - name: lint
+        run: yarn lint
+  bundle:
+    needs: lint
+    runs-on: ${{ matrix.platform.host }}
+    strategy:
+      matrix:
+        platform:
+          - host: windows-latest
+            target: win32
+            arch: x64
+          - host: windows-latest
+            target: win32
+            arch: arm64
+          - host: macOS-latest
+            target: darwin
+            arch: x64
+          - host: macOS-latest
+            target: darwin
+            arch: arm64
+          - host: macOS-latest
+            arch: x64
+            target: mas
+          - host: macOS-latest
+            arch: arm64
+            target: mas
+          - host: ubuntu-latest
+            target: linux
+            arch: x64
+          - host: ubuntu-latest
+            target: linux
+            arch: arm64
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # 3.1.0
+      - name: Setup Node.js
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+        with:
+          node-version: 18.x
+          cache: yarn
+      - name: Bundle app
+        uses: electron-forge/bundle-action@main
+        with:
+          macos-cert-importer: ci/codesign/import-testing-cert-ci.sh
+          target-arch: ${{ matrix.platform.arch }}
+          target-platform: ${{ matrix.platform.target }}
+      # Archives the bundled app before uploading, to preserve permissions and symlinks.
+      # See: https://github.com/actions/upload-artifact#limitations
+      - name: Archive bundled app
+        run: tar cvf bundled-app-${{ matrix.platform.target }}-${{ matrix.platform.arch }}.tar out
+      - name: Save bundled app
+        uses: actions/upload-artifact@v1
+        with:
+          name: bundled-app-${{ matrix.platform.target }}-${{ matrix.platform.arch }}
+          path: bundled-app-${{ matrix.platform.target }}-${{ matrix.platform.arch }}.tar
+  installers:
+    needs: bundle
+    runs-on: ${{ matrix.distributable.os }}
+    strategy:
+      matrix:
+        distributable:
+          - os: Windows-latest
+            platform: win32
+            arch: x64
+            maker: squirrel
+          - os: Windows-latest
+            platform: win32
+            arch: arm64
+            maker: squirrel
+          - os: Windows-latest
+            platform: win32
+            arch: x64
+            maker: zip
+          - os: Windows-latest
+            platform: win32
+            arch: arm64
+            maker: zip
+          - os: macOS-latest
+            platform: darwin
+            arch: x64
+            maker: dmg
+          - os: macOS-latest
+            platform: darwin
+            arch: arm64
+            maker: dmg
+          - os: macOS-latest
+            platform: darwin
+            arch: x64
+            maker: zip
+          - os: macOS-latest
+            platform: darwin
+            arch: arm64
+            maker: zip
+          - os: macOS-latest
+            platform: mas
+            arch: x64
+            maker: dmg
+          - os: macOS-latest
+            platform: mas
+            arch: arm64
+            maker: dmg
+          - os: macOS-latest
+            platform: mas
+            arch: x64
+            maker: zip
+          - os: macOS-latest
+            platform: mas
+            arch: arm64
+            maker: zip
+          - os: Ubuntu-latest
+            platform: linux
+            arch: x64
+            maker: zip
+          - os: Ubuntu-latest
+            platform: linux
+            arch: arm64
+            maker: zip
+          - os: Ubuntu-latest
+            platform: linux
+            arch: x64
+            maker: deb
+          - os: Ubuntu-latest
+            platform: linux
+            arch: arm64
+            maker: deb
+          - os: Ubuntu-latest
+            platform: linux
+            arch: x64
+            maker: rpm
+          - os: Ubuntu-latest
+            platform: linux
+            arch: arm64
+            maker: rpm
+    steps:
+      - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # 3.1.0
+      - name: Download bundled app artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: bundled-app-${{ matrix.distributable.platform }}-${{ matrix.distributable.arch }}
+      - name: Unarchive bundled app
+        shell: bash
+        run: tar xvf bundled-app-${{ matrix.distributable.platform }}-${{ matrix.distributable.arch }}/bundled-app-${{ matrix.distributable.platform }}-${{ matrix.distributable.arch }}.tar
+      - name: Setup Node.js
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3.5.1
+        with:
+          node-version: 18.x
+          cache: yarn
+      - name: Generate distributables
+        uses: electron-forge/distributable-action@main
+        with:
+          macos-cert-importer: ci/codesign/import-testing-cert-ci.sh
+          target-maker: '@electron-forge/maker-${{ matrix.distributable.maker }}'
+          target-arch: ${{ matrix.distributable.arch }}
+          target-platform: ${{ matrix.distributable.platform }}
+          windows-cert-filename: ci/codesign.pfx
+          windows-cert-importer: ci/setup-windows-certificate.sh
+      - name: Save distributable
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.distributable.maker }} (${{ matrix.distributable.platform }} ${{ matrix.distributable.arch }})
+          path: out/make

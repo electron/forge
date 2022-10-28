@@ -42,7 +42,14 @@ export class BaseTemplate implements ForgeTemplate {
           d('creating directory:', path.resolve(directory, 'src'));
           await fs.mkdirs(path.resolve(directory, 'src'));
           const rootFiles = ['_gitignore', 'forge.config.js'];
-          if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
+          const ghActionsFiles = ['build.yml', 'README.md'];
+          const ciFiles = ['setup-windows-cert.sh', 'codesign.pvk'];
+          const codeSignFiles = ['gen-trust.js', 'generate-identity.sh', 'import-testing-cert-ci.sh'];
+          if (copyCIFiles) {
+            await fs.mkdirs(path.resolve(directory, '.github', 'workflows'));
+            await fs.mkdirs(path.resolve(directory, 'ci'));
+            await fs.mkdirs(path.resolve(directory, 'ci', 'codesign'));
+          }
           const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
           for (const file of rootFiles) {
@@ -50,6 +57,18 @@ export class BaseTemplate implements ForgeTemplate {
           }
           for (const file of srcFiles) {
             await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+          }
+  
+          if (copyCIFiles) {
+            for (const file of ghActionsFiles) {
+              await this.copy(path.resolve(tmplDir, '.github', 'workflows', file), path.resolve(directory, '.github', 'workflows', file));
+            }
+            for (const file of ciFiles) {
+              await this.copy(path.resolve(tmplDir, 'ci', file), path.resolve(directory, 'ci', file));
+            }
+            for (const file of codeSignFiles) {
+              await this.copy(path.resolve(tmplDir, 'ci', 'codesign', file), path.resolve(directory, 'ci', 'codesign', file));
+            }
           }
         },
       },
