@@ -3,7 +3,9 @@ import { ChildProcess } from 'child_process';
 import { OraImpl } from '@electron-forge/async-ora';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
+import { ListrDefaultRenderer, ListrTaskWrapper } from 'listr2';
 
+export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
