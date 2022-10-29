@@ -1,12 +1,12 @@
 import path from 'path';
 import { promisify } from 'util';
 
-import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
+import { fakeOra, ora as realOra } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { HookFunction, TargetArch } from 'electron-packager';
+import packager, { FinalizeTargetMatrixHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
@@ -83,9 +83,7 @@ export default async ({
 }: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
-  const prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch)}`).start();
-  const prepareSpinnerPerArch: { [keyof: TargetArch]: OraImpl } = {};
-  let prepareCounter = 0;
+  let spinner = ora(`Preparing to Package Application`).start();
 
   const resolvedDir = await resolveDir(dir);
   if (!resolvedDir) {
@@ -101,14 +99,24 @@ export default async ({
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-  let packagerSpinner: OraImpl | undefined;
-  const packagerSpinnerPerArch: { [keyof: TargetArch]: OraImpl } = {};
+
+  let pending: TargetDefinition[] = [];
+
+  function readableTargets(targets: TargetDefinition[]) {
+    return targets.map(({ platform, arch }) => `${platform}:${arch}`).join(', ');
+  }
+
+  function afterFinalizeTargetMatrixHooks(matrix: TargetDefinition[], done: Parameters<FinalizeTargetMatrixHookFunction>[1]) {
+    spinner.succeed();
+    spinner = ora(`Packaging for ${chalk.cyan(readableTargets(matrix))}`).start();
+    pending.push(...matrix);
+    done();
+  }
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
   const afterCopyHooks: HookFunction[] = [
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      prepareSpinnerPerArch[pArch] = ora(`Preparing to Package Application for arch: ${chalk.cyan(pArch)}`).start();
       const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
@@ -116,20 +124,11 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      prepareSpinnerPerArch[pArch].succeed();
-      prepareCounter += 1;
-      if (Object.values(prepareSpinnerPerArch).length === prepareCounter) {
-        prepareSpinner.succeed();
-      }
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
       await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
-      if (!packagerSpinner) {
-        packagerSpinner = ora(`Packaging Application for ${arch}`).start();
-      }
-      packagerSpinnerPerArch[pArch] = ora(`Packaging Application for ${pArch}`).start();
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
@@ -142,7 +141,15 @@ export default async ({
     },
     ...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir),
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      packagerSpinnerPerArch[pArch].succeed();
+      spinner.text = `Packaging for ${chalk.cyan(pArch)} complete`;
+      spinner.succeed();
+      pending = pending.filter(({ arch, platform }) => !(arch === pArch && platform === pPlatform));
+      if (pending.length > 0) {
+        spinner = ora(`Packaging for ${chalk.cyan(readableTargets(pending))}`).start();
+      } else {
+        spinner = ora(`Packaging complete`).start();
+      }
+
       done();
     },
   ];
@@ -175,6 +182,7 @@ export default async ({
     dir,
     arch: arch as PackagerArch,
     platform,
+    afterFinalizeTargetMatrix: [afterFinalizeTargetMatrixHooks],
     afterCopy: sequentialHooks(afterCopyHooks),
     afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),
@@ -209,8 +217,8 @@ export default async ({
     arch,
     outputPaths,
     platform,
-    spinner: packagerSpinner,
+    spinner,
   });
 
-  if (packagerSpinner) packagerSpinner.succeed();
+  if (spinner) spinner.succeed();
 };
