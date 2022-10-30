@@ -18,8 +18,7 @@ export const deps = ['electron-squirrel-startup'];
 export const devDeps = [siblingDep('cli'), siblingDep('maker-squirrel'), siblingDep('maker-zip'), siblingDep('maker-deb'), siblingDep('maker-rpm')];
 export const exactDevDeps = ['electron'];
 
-export const initNPM = async (dir: string, task: ForgeListrTask<unknown>): Promise<void> => {
-  // await asyncOra('Installing NPM Dependencies', async () => {
+export const initNPM = async (dir: string, task: ForgeListrTask<any>): Promise<void> => {
   d('installing dependencies');
   const packageManager = safeYarnOrNpm();
   task.output = `${packageManager} install ${deps.join(' ')}`;
@@ -34,5 +33,4 @@ export const initNPM = async (dir: string, task: ForgeListrTask<unknown>): Promi
     task.output = `${packageManager} install --dev --exact ${packageName}`;
     await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
   }
-  // });
 };

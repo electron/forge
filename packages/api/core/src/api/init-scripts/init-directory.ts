@@ -5,7 +5,7 @@ import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:init:directory');
 
-export const initDirectory = async (dir: string, task: ForgeListrTask<unknown>, force = false): Promise<void> => {
+export const initDirectory = async (dir: string, task: ForgeListrTask<any>, force = false): Promise<void> => {
   d('creating directory:', dir);
   await fs.mkdirs(dir);
 

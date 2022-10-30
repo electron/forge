@@ -187,13 +187,14 @@ export interface StartOptions {
   inspectBrk?: boolean;
 }
 
-export type StartResult = ElectronProcess | string | string[] | false;
+export type InnerStartResult = ElectronProcess | string | string[] | false;
+export type StartResult = InnerStartResult | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
 
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
 
-export type ForgeListrTaskDefinition = ListrTask<never>;
+export type ForgeListrTaskDefinition = ListrTask<any>;
 
 export interface ForgeTemplate {
   requiredForgeVersion?: string;

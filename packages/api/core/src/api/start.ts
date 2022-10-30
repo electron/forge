@@ -1,24 +1,31 @@
 import { spawn, SpawnOptions } from 'child_process';
 
-import { asyncOra } from '@electron-forge/async-ora';
-import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeArch, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
+import { Listr } from 'listr2';
 
 import locateElectronExecutable from '../util/electron-executable';
 import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import rebuild from '../util/rebuild';
+import { listrCompatibleRebuildHook } from '../util/rebuild';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:start');
 
 export { StartOptions };
 
+type StartContext = {
+  dir: string;
+  forgeConfig: ResolvedForgeConfig;
+  packageJSON: any;
+  spawned: ElectronProcess;
+};
+
 export default async ({
-  dir = process.cwd(),
+  dir: providedDir = process.cwd(),
   appPath = '.',
   interactive = false,
   enableLogging = false,
@@ -27,42 +34,79 @@ export default async ({
   inspect = false,
   inspectBrk = false,
 }: StartOptions): Promise<ElectronProcess> => {
-  asyncOra.interactive = interactive;
-  // Since the `start` command is meant to be long-living (i.e. run forever,
-  // until interrupted) we should enable this to keep stdin flowing after ora
-  // completes. For more context:
-  // https://github.com/electron/forge/issues/2319
-  asyncOra.keepStdinFlowing = true;
-
-  await asyncOra('Locating Application', async () => {
-    const resolvedDir = await resolveDir(dir);
-    if (!resolvedDir) {
-      throw new Error('Failed to locate startable Electron application');
-    }
-    dir = resolvedDir;
-  });
-
-  const forgeConfig = await getForgeConfig(dir);
-  const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-
-  if (!packageJSON.version) {
-    throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
-  }
-
   const platform = process.env.npm_config_platform || process.platform;
   const arch = process.env.npm_config_arch || process.arch;
+  const listrOptions = {
+    concurrent: false,
+    rendererOptions: {
+      collapseErrors: false,
+    },
+    rendererSilent: !interactive,
+    rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+  };
 
-  await rebuild(dir, await getElectronVersion(dir, packageJSON), platform as ForgePlatform, arch as ForgeArch, forgeConfig.rebuildConfig);
+  const runner = new Listr<StartContext>(
+    [
+      {
+        title: 'Locating application',
+        task: async (ctx) => {
+          const resolvedDir = await resolveDir(providedDir);
+          if (!resolvedDir) {
+            throw new Error('Failed to locate startable Electron application');
+          }
+          ctx.dir = resolvedDir;
+        },
+      },
+      {
+        title: 'Loading configuration',
+        task: async (ctx) => {
+          const { dir } = ctx;
+          ctx.forgeConfig = await getForgeConfig(dir);
+          ctx.packageJSON = await readMutatedPackageJson(dir, ctx.forgeConfig);
 
-  await runHook(forgeConfig, 'generateAssets', platform, arch);
+          if (!ctx.packageJSON.version) {
+            throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
+          }
+        },
+      },
+      {
+        title: 'Rebuilding native modules',
+        task: async ({ dir, forgeConfig, packageJSON }, task) => {
+          await listrCompatibleRebuildHook(
+            dir,
+            await getElectronVersion(dir, packageJSON),
+            platform as ForgePlatform,
+            arch as ForgeArch,
+            forgeConfig.rebuildConfig,
+            task
+          );
+        },
+        options: {
+          persistentOutput: true,
+          bottomBar: Infinity,
+          showTimer: true,
+        },
+      },
+      {
+        title: 'Generating assets',
+        task: async ({ forgeConfig }) => {
+          await runHook(forgeConfig, 'generateAssets', platform, arch);
+        },
+      },
+    ],
+    listrOptions
+  );
 
+  await runner.run();
+
+  const { dir, forgeConfig, packageJSON } = runner.ctx;
   let lastSpawned: ElectronProcess | null = null;
 
   const forgeSpawn = async () => {
     let electronExecPath: string | null = null;
 
     // If a plugin has taken over the start command let's stop here
-    const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
+    let spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
       dir,
       appPath,
       interactive,
@@ -72,6 +116,14 @@ export default async ({
       inspect,
       inspectBrk,
     });
+    if (typeof spawnedPluginChild === 'object' && 'tasks' in spawnedPluginChild) {
+      const innerRunner = new Listr([], listrOptions);
+      for (const task of spawnedPluginChild.tasks) {
+        innerRunner.add(task);
+      }
+      await innerRunner.run();
+      spawnedPluginChild = spawnedPluginChild.result;
+    }
     let prefixArgs: string[] = [];
     if (typeof spawnedPluginChild === 'string') {
       electronExecPath = spawnedPluginChild;
@@ -115,15 +167,11 @@ export default async ({
       args = ['--inspect-brk' as string | number].concat(args);
     }
 
-    let spawned!: ElectronProcess;
-
-    await asyncOra('Launching Application', async () => {
-      spawned = spawn(
-        electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
-        prefixArgs.concat([appPath]).concat(args as string[]),
-        spawnOpts as SpawnOptions
-      ) as ElectronProcess;
-    });
+    const spawned = spawn(
+      electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      prefixArgs.concat([appPath]).concat(args as string[]),
+      spawnOpts as SpawnOptions
+    ) as ElectronProcess;
 
     await runHook(forgeConfig, 'postStart', spawned);
     return spawned;
@@ -165,5 +213,9 @@ export default async ({
     process.stdin.resume();
   }
 
-  return forgeSpawnWrapper();
+  const spawned = await forgeSpawnWrapper();
+
+  console.log('');
+
+  return spawned;
 };

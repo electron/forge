@@ -30,6 +30,17 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
       }
     }
   }
+  // TODO: Is this ok to include in releases?
+  if (__dirname.includes('forge/packages/api/core/') && paths.length === 1) {
+    const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
+    try {
+      const localPath = path.resolve(__dirname, '..', '..', '..', '..', moduleType, moduleName);
+      d('testing local forge build', { moduleType, moduleName, localPath });
+      return require(localPath);
+    } catch {
+      // Ignore
+    }
+  }
   d('failed to find a module in', testPaths);
   return null;
 }
