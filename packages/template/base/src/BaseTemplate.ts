@@ -1,7 +1,6 @@
 import path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
-import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
@@ -35,23 +34,32 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<void> {
-    await asyncOra('Copying Starter Files', async () => {
-      d('creating directory:', path.resolve(directory, 'src'));
-      await fs.mkdirs(path.resolve(directory, 'src'));
-      const rootFiles = ['_gitignore', 'forge.config.js'];
-      if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
-      const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
+  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+    return [
+      {
+        title: 'Copying starter files',
+        task: async () => {
+          d('creating directory:', path.resolve(directory, 'src'));
+          await fs.mkdirs(path.resolve(directory, 'src'));
+          const rootFiles = ['_gitignore', 'forge.config.js'];
+          if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
+          const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
-      for (const file of rootFiles) {
-        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
-      }
-      for (const file of srcFiles) {
-        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
-      }
-    });
-
-    await this.initializePackageJSON(directory);
+          for (const file of rootFiles) {
+            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+          }
+          for (const file of srcFiles) {
+            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+          }
+        },
+      },
+      {
+        title: 'Initializing package.json',
+        task: async () => {
+          await this.initializePackageJSON(directory);
+        },
+      },
+    ];
   }
 
   async copy(source: string, target: string): Promise<void> {
@@ -65,16 +73,14 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    await asyncOra('Initializing NPM Module', async () => {
-      const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-      packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
-      packageJSON.author = await determineAuthor(directory);
+    const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
+    packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
+    packageJSON.author = await determineAuthor(directory);
 
-      packageJSON.scripts.lint = 'echo "No linting configured"';
+    packageJSON.scripts.lint = 'echo "No linting configured"';
 
-      d('writing package.json to:', directory);
-      await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
-    });
+    d('writing package.json to:', directory);
+    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
   }
 
   async updateFileByLine(inputPath: string, lineHandler: (line: string) => string, outputPath?: string | undefined): Promise<void> {

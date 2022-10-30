@@ -3,7 +3,7 @@ import { ChildProcess } from 'child_process';
 import { OraImpl } from '@electron-forge/async-ora';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
-import { ListrDefaultRenderer, ListrTaskWrapper } from 'listr2';
+import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
 export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
 export type ElectronProcess = ChildProcess & { restarted: boolean };
@@ -193,11 +193,13 @@ export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
 
+export type ForgeListrTaskDefinition = ListrTask<never>;
+
 export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void | ForgeListrTaskDefinition[]>;
 }
 
 export type PackagePerson =

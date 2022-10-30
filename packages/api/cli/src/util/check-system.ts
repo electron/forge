@@ -84,7 +84,7 @@ type SystemCheckContext = {
   node: boolean;
   packageManager: boolean;
 };
-export default async function checkSystem(task: ForgeListrTask<never>) {
+export async function checkSystem(task: ForgeListrTask<never>) {
   if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return task.newListr<SystemCheckContext>(

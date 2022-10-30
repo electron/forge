@@ -7,7 +7,7 @@ import { Listr } from 'listr2';
 
 import './util/terminate';
 
-import checkSystem from './util/check-system';
+import { checkSystem } from './util/check-system';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const metadata = require('../package.json');

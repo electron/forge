@@ -13,7 +13,7 @@ import { info, warn } from '../util/messages';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
 
-import initGit from './init-scripts/init-git';
+import { initGit } from './init-scripts/init-git';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:import');
