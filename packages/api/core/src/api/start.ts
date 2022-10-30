@@ -215,7 +215,7 @@ export default async ({
 
   const spawned = await forgeSpawnWrapper();
 
-  console.log('');
+  if (interactive) console.log('');
 
   return spawned;
 };

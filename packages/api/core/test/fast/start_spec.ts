@@ -34,7 +34,9 @@ describe('start', () => {
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
       },
-      '../util/rebuild': () => Promise.resolve(),
+      '../util/rebuild': {
+        listrCompatibleRebuildHook: () => Promise.resolve(),
+      },
       child_process: {
         spawn: spawnStub,
       },
