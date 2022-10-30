@@ -12,6 +12,19 @@ type RequireError = Error & {
 };
 
 export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | null {
+  // Attempt to locally short-circuit if we're running from a checkout of forge
+  if (__dirname.includes('forge/packages/api/core/') && paths.length === 1 && paths[0].startsWith('@electron-forge/')) {
+    const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
+    try {
+      const localPath = path.resolve(__dirname, '..', '..', '..', '..', moduleType, moduleName);
+      d('testing local forge build', { moduleType, moduleName, localPath });
+      return require(localPath);
+    } catch {
+      // Ignore
+    }
+  }
+
+  // Load via normal search paths
   const testPaths = paths
     .concat(paths.map((mapPath) => path.resolve(relativeTo, mapPath)))
     .concat(paths.map((mapPath) => path.resolve(relativeTo, 'node_modules', mapPath)));
@@ -28,17 +41,6 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
           throw err;
         }
       }
-    }
-  }
-  // TODO: Is this ok to include in releases?
-  if (__dirname.includes('forge/packages/api/core/') && paths.length === 1) {
-    const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
-    try {
-      const localPath = path.resolve(__dirname, '..', '..', '..', '..', moduleType, moduleName);
-      d('testing local forge build', { moduleType, moduleName, localPath });
-      return require(localPath);
-    } catch {
-      // Ignore
     }
   }
   d('failed to find a module in', testPaths);
