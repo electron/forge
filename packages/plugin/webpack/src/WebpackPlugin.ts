@@ -154,6 +154,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   getHooks(): ForgeHookMap {
     return {
       prePackage: async (config, platform, arch) => {
+        this.isProd = true;
         await fs.remove(this.baseDir);
         await utils.rebuildHook(
           this.projectDir,
