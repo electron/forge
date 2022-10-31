@@ -60,22 +60,12 @@ const publisher = new Listr([
             return {
               title: `Publishing: ${chalk.cyan(`${name}@${version}`)} (beta=${isBeta ? chalk.green('true') : chalk.red('false')})`,
               task: async () => {
-                const npmIgnorePath = path.join(dir, '.npmignore');
-                let writtenNpmIgnore = false;
-
                 try {
-                  await fs.promises.writeFile(npmIgnorePath, ['*.ts', '!*.d.ts', '*.tsbuildinfo', 'tsconfig.json', '*.map', '/test'].join('\n'));
-                  writtenNpmIgnore = true;
-
                   await spawn('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
                     cwd: dir,
                   });
                 } catch (err) {
                   throw new Error(`Failed to publish ${chalk.cyan(`${name}@${version}`)} \n${err.stderr.toString()}`);
-                } finally {
-                  if (writtenNpmIgnore) {
-                    await fs.promises.rm(npmIgnorePath);
-                  }
                 }
               },
             };
