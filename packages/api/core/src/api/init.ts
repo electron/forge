@@ -26,7 +26,7 @@ export interface InitOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to copy Travis and AppVeyor CI files
+   * Whether to copy template CI files
    */
   copyCIFiles?: boolean;
   /**
