@@ -1,5 +1,7 @@
 import type { Configuration } from 'webpack';
 
+import { rules } from './webpack.rules';
+
 export const mainConfig: Configuration = {
   /**
    * This is the main entry point for your application, it's the first file
@@ -8,7 +10,7 @@ export const mainConfig: Configuration = {
   entry: './src/index.ts',
   // Put your normal webpack config below here
   module: {
-    rules: require('./webpack.rules'),
+    rules,
   },
   resolve: {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
