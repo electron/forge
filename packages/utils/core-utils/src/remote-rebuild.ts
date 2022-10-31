@@ -1,4 +1,4 @@
-import { rebuild, RebuildOptions } from 'electron-rebuild';
+import { rebuild, RebuildOptions } from '@electron/rebuild';
 
 if (!process.send) {
   console.error('The remote rebuilder expects to be spawned with an IPC channel');

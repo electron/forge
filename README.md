@@ -78,7 +78,7 @@ For Electron Forge documentation and usage you should check out our website:
 
 With these goals in mind, under the hood this project uses, among others:
 
-- [`electron-rebuild`](https://github.com/electron/electron-rebuild):
+- [`@electron/rebuild`](https://github.com/electron/rebuild):
   Automatically recompiles native Node.js modules against the correct
   Electron version.
 - [Electron Packager](https://github.com/electron/electron-packager):

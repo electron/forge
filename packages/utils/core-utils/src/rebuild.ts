@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
 import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
-import { rebuild, RebuildOptions } from 'electron-rebuild';
+import { rebuild, RebuildOptions } from '@electron/rebuild';
 
 export const listrCompatibleRebuildHook = async (
   buildPath: string,
