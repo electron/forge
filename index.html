@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Electron Forge - v6.0.0-beta.69</title><meta name="description" content="Documentation for Electron Forge - v6.0.0-beta.69"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">Electron Forge - v6.0.0-beta.69</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> Electron Forge - v6.0.0-beta.69 </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Electron Forge - v6.0.0-beta.71</title><meta name="description" content="Documentation for Electron Forge - v6.0.0-beta.71"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">Electron Forge - v6.0.0-beta.71</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> Electron Forge - v6.0.0-beta.71 </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
 <a href="#electron-forge" id="electron-forge" style="color: inherit; text-decoration: none;">
   <h2>Electron Forge</h2>
 </a>
@@ -12,14 +12,6 @@
 Electron development into a simple, easy to use package so that anyone can
 jump right in to Electron development.</p>
 <hr>
-
-<a href="#rotating_light-construction-warning-construction-rotating_light" id="rotating_light-construction-warning-construction-rotating_light" style="color: inherit; text-decoration: none;">
-  <h2>:rotating_light: :construction: <strong>WARNING</strong> :construction: :rotating_light:</h2>
-</a>
-<p>:building_construction:</p>
-<p>The <code>main</code> branch is a rewrite of Electron Forge that will eventually be the 6.x series. If you
-are looking for the 5.x series (the version currently published to NPM under <code>electron-forge</code>), please view the <a href="https://github.com/electron/forge/tree/5.x">5.x branch</a>.</p>
-<hr>
 <p><a href="https://www.electronforge.io">Website</a> |
 <a href="#project-goals">Goals</a> |
 <a href="#docs-and-usage">Docs and Usage</a> |
@@ -27,11 +19,18 @@ are looking for the 5.x series (the version currently published to NPM under <co
 <a href="https://github.com/electron/forge/blob/main/SUPPORT.md">Support</a> |
 <a href="https://github.com/electron/forge/blob/main/CONTRIBUTING.md">Contributing</a> |
 <a href="https://github.com/electron/forge/blob/main/CHANGELOG.md">Changelog</a></p>
+<hr>
+<p><em>Note: The major version bump between v5.0.0 and v6.0.0 contains major breaking API changes and improvements. If you are new to Forge, we highly recommend using the latest version. If using an older version of Forge, we recommend upgrading to v6.0.0 or later.</em></p>
+<hr>
 
 <a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
   <h1>Getting Started</h1>
 </a>
-<p><strong>Note</strong>: Electron Forge requires Node 12.13.0 (LTS) or above, plus git installed.</p>
+<p>Pre-requisities:</p>
+<ul>
+<li>Node 14.17.5 or higher</li>
+<li>Git</li>
+</ul>
 <p>If you have a more recent version of <code>npm</code> or <code>yarn</code>, you can use
 <a href="https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b"><code>npx</code></a>,
 or
@@ -41,6 +40,13 @@ or
 <p>Alternatively (less recommended):</p>
 <pre><code class="language-bash"><span class="hl-0">npm install -g @electron-forge/cli</span><br/><span class="hl-0">electron-forge init my-new-app</span><br/><span class="hl-2">cd</span><span class="hl-0"> my-new-app</span><br/><span class="hl-0">npm start</span>
 </code></pre>
+<p>For more information on creating a new project from a template, <a href="https://www.electronforge.io/cli">see our CLI documentation</a>.</p>
+
+<a href="#docs-and-usage" id="docs-and-usage" style="color: inherit; text-decoration: none;">
+  <h1>Docs and Usage</h1>
+</a>
+<p>For Electron Forge documentation and usage you should check out our website:
+<a href="https://www.electronforge.io">electronforge.io</a></p>
 
 <a href="#project-goals" id="project-goals" style="color: inherit; text-decoration: none;">
   <h1>Project Goals</h1>
@@ -56,43 +62,21 @@ users maximum choice and freedom.</li>
 </ol>
 <p>With these goals in mind, under the hood this project uses, among others:</p>
 <ul>
-<li><a href="https://github.com/electron/electron-rebuild"><code>electron-rebuild</code></a>:
+<li><a href="https://github.com/electron/rebuild"><code>@electron/rebuild</code></a>:
 Automatically recompiles native Node.js modules against the correct
 Electron version.</li>
 <li><a href="https://github.com/electron/electron-packager">Electron Packager</a>:
 Customizes and bundles your Electron app to get it ready for distribution.</li>
 </ul>
 
-<a href="#docs-and-usage" id="docs-and-usage" style="color: inherit; text-decoration: none;">
-  <h1>Docs and Usage</h1>
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
 </a>
-<p>For Electron Forge documentation and usage you should check out our website:
-<a href="https://www.electronforge.io">electronforge.io</a></p>
+<p>If you are interested in reporting/fixing issues and contributing directly to the code base, please see <a href="https://github.com/electron/forge/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for more information on what we&#39;re looking for and how to get started.</p>
 
-<a href="#faq" id="faq" style="color: inherit; text-decoration: none;">
-  <h1>FAQ</h1>
+<a href="#community" id="community" style="color: inherit; text-decoration: none;">
+  <h2>Community</h2>
 </a>
-
-<a href="#how-do-i-use-this-with-webpackbabelother-build-tool" id="how-do-i-use-this-with-webpackbabelother-build-tool" style="color: inherit; text-decoration: none;">
-  <h2>How do I use this with <code>webpack</code>/<code>babel</code>/other build tool?</h2>
-</a>
-<p>By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but for webpack and other build tooling support check out the <a href="https://www.electronforge.io/config/plugins">plugins</a>
-section of our docs site. We currently have plugins for Webpack and Electron Compile, and a
-<a href="https://www.electronforge.io/templates/webpack-template">template for Webpack</a>.</p>
-
-<a href="#team" id="team" style="color: inherit; text-decoration: none;">
-  <h1>Team</h1>
-</a>
-<table>
-<thead>
-<tr>
-<th><img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /></th>
-<th><img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://samuelattard.com">Samuel Attard</a></td>
-<td><a href="https://github.com/malept">Mark Lee</a></td>
-</tr>
-</tbody></table>
-</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li><h2><a href="modules.html">All Modules</a></h2></li><li class="Makers"><a href="modules.html">Makers</a><ul><li class="@electron-forge/maker-appx"><a href="modules/_electron_forge_maker_appx.html">maker-appx</a></li><li class="@electron-forge/maker-deb"><a href="modules/_electron_forge_maker_deb.html">maker-deb</a></li><li class="@electron-forge/maker-dmg"><a href="modules/_electron_forge_maker_dmg.html">maker-dmg</a></li><li class="@electron-forge/maker-flatpak"><a href="modules/_electron_forge_maker_flatpak.html">maker-flatpak</a></li><li class="@electron-forge/maker-pkg"><a href="modules/_electron_forge_maker_pkg.html">maker-pkg</a></li><li class="@electron-forge/maker-rpm"><a href="modules/_electron_forge_maker_rpm.html">maker-rpm</a></li><li class="@electron-forge/maker-snap"><a href="modules/_electron_forge_maker_snap.html">maker-snap</a></li><li class="@electron-forge/maker-squirrel"><a href="modules/_electron_forge_maker_squirrel.html">maker-squirrel</a></li><li class="@electron-forge/maker-wix"><a href="modules/_electron_forge_maker_wix.html">maker-wix</a></li><li class="@electron-forge/maker-zip"><a href="modules/_electron_forge_maker_zip.html">maker-zip</a></li></ul></li><li class="Plugins"><a href="modules.html">Plugins</a><ul><li class="@electron-forge/plugin-auto-unpack-natives"><a href="modules/_electron_forge_plugin_auto_unpack_natives.html">plugin-auto-unpack-natives</a></li><li class="@electron-forge/plugin-base"><a href="modules/_electron_forge_plugin_base.html">plugin-base</a></li><li class="@electron-forge/plugin-compile"><a href="modules/_electron_forge_plugin_compile.html">plugin-compile</a></li><li class="@electron-forge/plugin-electronegativity"><a href="modules/_electron_forge_plugin_electronegativity.html">plugin-electronegativity</a></li><li class="@electron-forge/plugin-local-electron"><a href="modules/_electron_forge_plugin_local_electron.html">plugin-local-electron</a></li><li class="@electron-forge/plugin-webpack"><a href="modules/_electron_forge_plugin_webpack.html">plugin-webpack</a></li></ul></li><li class="Publishers"><a href="modules.html">Publishers</a><ul><li class="@electron-forge/publisher-base"><a href="modules/_electron_forge_publisher_base.html">publisher-base</a></li><li class="@electron-forge/publisher-bitbucket"><a href="modules/_electron_forge_publisher_bitbucket.html">publisher-bitbucket</a></li><li class="@electron-forge/publisher-electron-release-server"><a href="modules/_electron_forge_publisher_electron_release_server.html">publisher-electron-release-server</a></li><li class="@electron-forge/publisher-github"><a href="modules/_electron_forge_publisher_github.html">publisher-github</a></li><li class="@electron-forge/publisher-nucleus"><a href="modules/_electron_forge_publisher_nucleus.html">publisher-nucleus</a></li><li class="@electron-forge/publisher-s3"><a href="modules/_electron_forge_publisher_s3.html">publisher-s3</a></li><li class="@electron-forge/publisher-snapcraft"><a href="modules/_electron_forge_publisher_snapcraft.html">publisher-snapcraft</a></li></ul></li><li class="Templates"><a href="modules.html">Templates</a><ul><li class="@electron-forge/template-base"><a href="modules/_electron_forge_template_base.html">template-base</a></li><li class="@electron-forge/template-typescript-webpack"><a href="modules/_electron_forge_template_typescript_webpack.html">template-typescript-webpack</a></li><li class="@electron-forge/template-webpack"><a href="modules/_electron_forge_template_webpack.html">template-webpack</a></li></ul></li><li class="Utils & Internal Helpers"><a href="modules.html">Utils &amp; Internal Helpers</a><ul><li class="@electron-forge/async-ora"><a href="modules/_electron_forge_async_ora.html">async-ora</a></li><li class="@electron-forge/core"><a href="modules/_electron_forge_core.html">core</a></li><li class="@electron-forge/maker-base"><a href="modules/_electron_forge_maker_base.html">maker-base</a></li><li class="@electron-forge/shared-types"><a href="modules/_electron_forge_shared_types.html">shared-types</a></li><li class="@electron-forge/test-utils"><a href="modules/_electron_forge_test_utils.html">test-utils</a></li><li class="@electron-forge/web-multi-logger"><a href="modules/_electron_forge_web_multi_logger.html">web-multi-logger</a></li></ul></li></ul></nav></div></div></div><footer class=""><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li><li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li><li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li><li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li><li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="assets/main.js"></script></body></html>
+<p>Please report bugs or feature requests in our <a href="https://github.com/electron/forge/issues">issue tracker</a>.
+You can find help for debugging your Electron Forge on the <a href="https://github.com/electron/forge/blob/main/SUPPORT.md">Support page</a>, and ask questions in the <a href="https://discord.gg/invite/APGC3k5yaH">official Electron Discord server</a>, where there is a dedicated channel for Electron Forge.</p>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li><h2><a href="modules.html">All Modules</a></h2></li><li class="Makers"><a href="modules.html">Makers</a><ul><li class="@electron-forge/maker-appx"><a href="modules/_electron_forge_maker_appx.html">maker-appx</a></li><li class="@electron-forge/maker-deb"><a href="modules/_electron_forge_maker_deb.html">maker-deb</a></li><li class="@electron-forge/maker-dmg"><a href="modules/_electron_forge_maker_dmg.html">maker-dmg</a></li><li class="@electron-forge/maker-flatpak"><a href="modules/_electron_forge_maker_flatpak.html">maker-flatpak</a></li><li class="@electron-forge/maker-pkg"><a href="modules/_electron_forge_maker_pkg.html">maker-pkg</a></li><li class="@electron-forge/maker-rpm"><a href="modules/_electron_forge_maker_rpm.html">maker-rpm</a></li><li class="@electron-forge/maker-snap"><a href="modules/_electron_forge_maker_snap.html">maker-snap</a></li><li class="@electron-forge/maker-squirrel"><a href="modules/_electron_forge_maker_squirrel.html">maker-squirrel</a></li><li class="@electron-forge/maker-wix"><a href="modules/_electron_forge_maker_wix.html">maker-wix</a></li><li class="@electron-forge/maker-zip"><a href="modules/_electron_forge_maker_zip.html">maker-zip</a></li></ul></li><li class="Plugins"><a href="modules.html">Plugins</a><ul><li class="@electron-forge/plugin-auto-unpack-natives"><a href="modules/_electron_forge_plugin_auto_unpack_natives.html">plugin-auto-unpack-natives</a></li><li class="@electron-forge/plugin-base"><a href="modules/_electron_forge_plugin_base.html">plugin-base</a></li><li class="@electron-forge/plugin-compile"><a href="modules/_electron_forge_plugin_compile.html">plugin-compile</a></li><li class="@electron-forge/plugin-electronegativity"><a href="modules/_electron_forge_plugin_electronegativity.html">plugin-electronegativity</a></li><li class="@electron-forge/plugin-local-electron"><a href="modules/_electron_forge_plugin_local_electron.html">plugin-local-electron</a></li><li class="@electron-forge/plugin-webpack"><a href="modules/_electron_forge_plugin_webpack.html">plugin-webpack</a></li></ul></li><li class="Publishers"><a href="modules.html">Publishers</a><ul><li class="@electron-forge/publisher-base"><a href="modules/_electron_forge_publisher_base.html">publisher-base</a></li><li class="@electron-forge/publisher-bitbucket"><a href="modules/_electron_forge_publisher_bitbucket.html">publisher-bitbucket</a></li><li class="@electron-forge/publisher-electron-release-server"><a href="modules/_electron_forge_publisher_electron_release_server.html">publisher-electron-release-server</a></li><li class="@electron-forge/publisher-github"><a href="modules/_electron_forge_publisher_github.html">publisher-github</a></li><li class="@electron-forge/publisher-nucleus"><a href="modules/_electron_forge_publisher_nucleus.html">publisher-nucleus</a></li><li class="@electron-forge/publisher-s3"><a href="modules/_electron_forge_publisher_s3.html">publisher-s3</a></li><li class="@electron-forge/publisher-snapcraft"><a href="modules/_electron_forge_publisher_snapcraft.html">publisher-snapcraft</a></li></ul></li><li class="Templates"><a href="modules.html">Templates</a><ul><li class="@electron-forge/template-base"><a href="modules/_electron_forge_template_base.html">template-base</a></li><li class="@electron-forge/template-webpack"><a href="modules/_electron_forge_template_webpack.html">template-webpack</a></li><li class="@electron-forge/template-webpack-typescript"><a href="modules/_electron_forge_template_webpack_typescript.html">template-webpack-typescript</a></li></ul></li><li class="Utils & Internal Helpers"><a href="modules.html">Utils &amp; Internal Helpers</a><ul><li class="@electron-forge/async-ora"><a href="modules/_electron_forge_async_ora.html">async-ora</a></li><li class="@electron-forge/core"><a href="modules/_electron_forge_core.html">core</a></li><li class="@electron-forge/core-utils"><a href="modules/_electron_forge_core_utils.html">core-utils</a></li><li class="@electron-forge/maker-base"><a href="modules/_electron_forge_maker_base.html">maker-base</a></li><li class="@electron-forge/shared-types"><a href="modules/_electron_forge_shared_types.html">shared-types</a></li><li class="@electron-forge/test-utils"><a href="modules/_electron_forge_test_utils.html">test-utils</a></li><li class="@electron-forge/web-multi-logger"><a href="modules/_electron_forge_web_multi_logger.html">web-multi-logger</a></li></ul></li></ul></nav></div></div></div><footer class=""><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li><li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li><li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li><li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li><li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li><li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="overlay"></div><script src="assets/main.js"></script></body></html>
