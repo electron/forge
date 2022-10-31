@@ -20,6 +20,8 @@ export default async (dir: string): Promise<string | null> => {
   while (prevDir !== mDir) {
     prevDir = mDir;
     const testPath = path.resolve(mDir, 'package.json');
+    const tsConfigFilePath = path.resolve(mDir, 'forge.config.ts');
+    const jsConfigFilePath = path.resolve(mDir, 'forge.config.js');
     d('searching for project in:', mDir);
     if (await fs.pathExists(testPath)) {
       const packageJSON = await readRawPackageJson(mDir);
@@ -34,8 +36,8 @@ export default async (dir: string): Promise<string | null> => {
         }
       }
 
-      if (packageJSON.config && packageJSON.config.forge) {
-        d('electron-forge compatible package.json found in', testPath);
+      if ((packageJSON.config && packageJSON.config.forge) || (await fs.pathExists(tsConfigFilePath)) || (await fs.pathExists(jsConfigFilePath))) {
+        d('electron-forge compatible config found in', testPath);
         return mDir;
       }
 
