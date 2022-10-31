@@ -94,7 +94,7 @@ export default async ({
   await asyncOra('Resolving Forge Config', async () => {
     const resolvedDir = await resolveDir(dir);
     if (!resolvedDir) {
-      throw new Error('Failed to locate makeable Electron application');
+      throw new Error(`Failed to locate makeable Electron application at ${dir}`);
     }
     dir = resolvedDir;
 
@@ -106,7 +106,7 @@ export default async ({
   const actualTargetPlatform = platform;
   platform = platform === 'mas' ? 'darwin' : platform;
   if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
-    throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'`);
+    throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'.`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,7 +134,9 @@ export default async ({
 
       const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
       if (!MakerClass) {
-        throw new Error(`Could not find module with name: ${resolvableTarget.name}. Make sure it's listed in the devDependencies of your package.json`);
+        throw new Error(
+          `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`
+        );
       }
 
       maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
@@ -145,14 +147,14 @@ export default async ({
       throw new Error(
         [
           `Maker for target ${maker.name} is incompatible with this version of `,
-          'electron-forge, please upgrade or contact the maintainer ',
+          'Electron Forge, please upgrade or contact the maintainer ',
           "(needs to implement 'isSupportedOnCurrentPlatform)')",
         ].join('')
       );
     }
 
     if (!maker.isSupportedOnCurrentPlatform()) {
-      throw new Error([`Cannot make for ${platform} and target ${maker.name}: the maker declared `, `that it cannot run on ${process.platform}`].join(''));
+      throw new Error(`Cannot make for ${platform} and target ${maker.name}: the maker declared that it cannot run on ${process.platform}.`);
     }
 
     maker.ensureExternalBinariesExist();
