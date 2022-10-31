@@ -46,7 +46,7 @@
     "@electron-forge/publisher-base": "6.0.0-beta.70",
     "@electron-forge/shared-types": "6.0.0-beta.70",
     "@electron-forge/template-base": "6.0.0-beta.70",
-    "@electron-forge/template-typescript-webpack": "6.0.0-beta.70",
+    "@electron-forge/template-webpack-typescript": "6.0.0-beta.70",
     "@electron-forge/template-webpack": "6.0.0-beta.70",
     "@electron/get": "^2.0.0",
     "@electron/rebuild": "^3.2.10",

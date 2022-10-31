@@ -6,9 +6,9 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
-import template from '../src/TypeScriptWebpackTemplate';
+import template from '../src/WebpackTypeScriptTemplate';
 
-describe('TypeScriptWebpackTemplate', () => {
+describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
 
   before(async () => {
@@ -18,7 +18,7 @@ describe('TypeScriptWebpackTemplate', () => {
   it('should succeed in initializing the typescript template', async () => {
     await api.init({
       dir,
-      template: path.resolve(__dirname, '..', 'src', 'TypeScriptWebpackTemplate'),
+      template: path.resolve(__dirname, '..', 'src', 'WebpackTypeScriptTemplate'),
       interactive: false,
     });
   });

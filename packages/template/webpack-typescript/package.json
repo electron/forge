@@ -1,12 +1,12 @@
 {
-  "name": "@electron-forge/template-typescript-webpack",
+  "name": "@electron-forge/template-webpack-typescript",
   "version": "6.0.0-beta.70",
-  "description": "Typescript-Webpack template for Electron Forge",
+  "description": "Webpack-TypeScript template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Shelley Vohr <shelley.vohr@gmail.com>",
   "license": "MIT",
-  "main": "dist/TypeScriptWebpackTemplate.js",
-  "typings": "dist/TypeScriptWebpackTemplate.d.ts",
+  "main": "dist/WebpackTypeScriptTemplate.js",
+  "typings": "dist/WebpackTypeScriptTemplate.d.ts",
   "scripts": {
     "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },

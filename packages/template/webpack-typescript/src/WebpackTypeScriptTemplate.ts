@@ -4,7 +4,7 @@ import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/s
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
-class TypeScriptWebpackTemplate extends BaseTemplate {
+class WebpackTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
   async initializeTemplate(directory: string, options: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
@@ -65,4 +65,4 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
   }
 }
 
-export default new TypeScriptWebpackTemplate();
+export default new WebpackTypeScriptTemplate();
