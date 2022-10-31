@@ -16,9 +16,33 @@ The sample GitHub Actions build.yml file contains three jobs:
 
 **Installers:** Creates distributable installers, using the electron-forge/distributable-action@main. Currently supports squirrel, zip, DMG, deb and rpm.
 
-### Code-Signing Options
+Running the default jobs should result in artifacts saved at the end of the installer job, ready to download and use.
 
-The bundle and installer jobs allow you to code-sign your app, using specific variables. You can see examples of code-signing for Mac in the bundle job here:
+## Code-Signing
+
+Electron Forge's `bundle-action` and `distributable-action` allow you to code-sign your app by setting the needed certificates and private keys as variables in your Action's secrets:
+
+```
+// bundle job
+- name: Bundle app
+  uses: electron-forge/bundle-action@main
+  with:
+    macos-cert-p12: ${{ secrets.MACOS_CERT_P12 }}
+    macos-cert-password: ${{ secrets.MACOS_CERT_PASSWORD }}
+
+// installer job
+- name: Generate distributables
+  uses: electron-forge/distributable-action@main
+  with:
+    macos-cert-p12: ${{ secrets.MACOS_CERT_P12 }}
+    macos-cert-password: ${{ secrets.MACOS_CERT_PASSWORD }}
+    windows-cert-filename: ${{ secrets.WIN32_PFX }}
+    windows-cert-p12: ${{ secrets.WIN32_CERT_P12 }}
+    windows-cert-password: ${{ secrets.WIN32_CERT_PASSWORD }}
+
+```
+
+The `bundle-action` and `distributable-action` also allow inputting a custom script to import your certificate, using `macos-cert-importer` and `windows-cert-importer`. Pass a path to the custom script in your project's directory to the needed `*-importer` key:
 
 ```
 // bundle job
@@ -32,8 +56,7 @@ The bundle and installer jobs allow you to code-sign your app, using specific va
   uses: electron-forge/distributable-action@main
   with:
     macos-cert-importer: ci/codesign/import-testing-cert-ci.sh
-    windows-cert-filename: ci/codesign.pfx
+    windows-cert-filename: ci/windows-cert.pfx
     windows-cert-importer: ci/setup-windows-certificate.sh
-```
 
-Code-signing requires using the included scripts in the `ci` folder. You can substitute the existing sample codesign.pfx file with your own .pfx file, or create a testcertificate using the included script.
+```

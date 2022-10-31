@@ -96,7 +96,6 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       it('should copy over the CI config files correctly', async () => {
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
         await expectProjectPathExists(dir, path.resolve('.github', 'workflows'), 'file');
-        await expectProjectPathExists(dir, path.resolve('ci'), 'file');
       });
     });
 

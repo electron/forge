@@ -62,7 +62,10 @@ jobs:
       - name: Bundle app
         uses: electron-forge/bundle-action@main
         with:
-          macos-cert-importer: ci/codesign/import-testing-cert-ci.sh
+          # Set the app's certificate and password in your Actions secrets.
+          # You can also use the variable "macos-cert-importer" to point to a custom import script.
+          macos-cert-p12: ${{ secrets.MACOS_CERT_P12 }}
+          macos-cert-password: ${{ secrets.MACOS_CERT_PASSWORD }}
           target-arch: ${{ matrix.platform.arch }}
           target-platform: ${{ matrix.platform.target }}
       # Archives the bundled app before uploading, to preserve permissions and symlinks.
@@ -169,12 +172,18 @@ jobs:
       - name: Generate distributables
         uses: electron-forge/distributable-action@main
         with:
-          macos-cert-importer: ci/codesign/import-testing-cert-ci.sh
+          # Set the app's certificate and password in your Actions secrets.
+          # You can also use the variable "macos-cert-importer" to point to a custom import script.
+          macos-cert-p12: ${{ secrets.MACOS_CERT_P12 }}
+          macos-cert-password: ${{ secrets.MACOS_CERT_PASSWORD }}
           target-maker: '@electron-forge/maker-${{ matrix.distributable.maker }}'
           target-arch: ${{ matrix.distributable.arch }}
           target-platform: ${{ matrix.distributable.platform }}
-          windows-cert-filename: ci/codesign.pfx
-          windows-cert-importer: ci/setup-windows-certificate.sh
+          # Set the app's pfx file, certificate and password in your Actions secrets.
+          # You can also use the variable "windows-cert-importer" to point to a custom import script.
+          windows-cert-filename: ${{ secrets.WIN32_PFX }}
+          windows-cert-p12: ${{ secrets.WIN32_CERT_P12 }}
+          windows-cert-password: ${{ secrets.WIN32_CERT_PASSWORD }}
       - name: Save distributable
         uses: actions/upload-artifact@v1
         with:
