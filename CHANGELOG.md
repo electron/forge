@@ -1,3 +1,5 @@
+#### [6.0.0-beta.72](https://github.com/electron/forge/releases/tag/v6.0.0-beta.72) (2022-10-31)
+
 #### [6.0.0-beta.71](https://github.com/electron/forge/releases/tag/v6.0.0-beta.71) (2022-10-31)
 
 ##### Bug Fixes
