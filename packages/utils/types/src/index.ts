@@ -3,7 +3,9 @@ import { ChildProcess } from 'child_process';
 import { OraImpl } from '@electron-forge/async-ora';
 import { RebuildOptions } from '@electron/rebuild';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
+import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
+export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
@@ -185,17 +187,20 @@ export interface StartOptions {
   inspectBrk?: boolean;
 }
 
-export type StartResult = ElectronProcess | string | string[] | false;
+export type InnerStartResult = ElectronProcess | string | string[] | false;
+export type StartResult = InnerStartResult | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
 
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
 
+export type ForgeListrTaskDefinition = ListrTask<any>;
+
 export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void | ForgeListrTaskDefinition[]>;
 }
 
 export type PackagePerson =

@@ -9,6 +9,7 @@ import {
   ResolvedForgeConfig,
   StartResult,
 } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
 
 import { StartOptions } from '../api';
@@ -92,7 +93,7 @@ export default class PluginInterface implements IForgePluginInterface {
 
   async overrideStartLogic(opts: StartOptions): Promise<StartResult> {
     let newStartFn;
-    const claimed = [];
+    const claimed: string[] = [];
     for (const plugin of this.plugins) {
       if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
         claimed.push(plugin.name);
@@ -104,7 +105,14 @@ export default class PluginInterface implements IForgePluginInterface {
     }
     if (claimed.length === 1 && newStartFn) {
       d(`plugin: "${claimed[0]}" has taken control of the start command`);
-      return newStartFn(opts);
+      const result = await newStartFn(opts);
+      if (typeof result === 'object' && 'tasks' in result) {
+        result.tasks = result.tasks.map((task) => ({
+          ...task,
+          title: `${chalk.cyan(`[plugin-${claimed[0]}]`)} ${task.title}`,
+        }));
+      }
+      return result;
     }
     return false;
   }

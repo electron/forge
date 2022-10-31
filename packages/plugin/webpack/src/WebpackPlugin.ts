@@ -4,7 +4,7 @@ import path from 'path';
 import { asyncOra } from '@electron-forge/async-ora';
 import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
 import { PluginBase } from '@electron-forge/plugin-base';
-import { ForgeHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -149,8 +149,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return this._configGenerator;
   }
 
-  private loggedOutputUrl = false;
-
   getHooks(): ForgeHookMap {
     return {
       prePackage: async (config, platform, arch) => {
@@ -167,10 +165,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         await this.compileRenderers();
       },
       postStart: async (_config, child) => {
-        if (!this.loggedOutputUrl) {
-          console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
-          this.loggedOutputUrl = true;
-        }
         d('hooking electron process exit');
         child.on('exit', () => {
           if (child.restarted) return;
@@ -241,36 +235,35 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (logger) {
       tab = logger.createTab('Main Process');
     }
-    await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = await this.configGenerator.getMainConfig();
-      await new Promise((resolve, reject) => {
-        const compiler = webpack(mainConfig);
-        const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: WebpackWatchHandler = async (err, stats) => {
-          if (tab && stats) {
-            tab.log(
-              stats.toString({
-                colors: true,
-              })
-            );
-          }
-          if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
-          }
 
-          if (err) return onceReject(err);
-          if (!watch && stats?.hasErrors()) {
-            return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
-          }
-
-          return onceResolve(undefined);
-        };
-        if (watch) {
-          this.watchers.push(compiler.watch({}, cb));
-        } else {
-          compiler.run(cb);
+    const mainConfig = await this.configGenerator.getMainConfig();
+    await new Promise((resolve, reject) => {
+      const compiler = webpack(mainConfig);
+      const [onceResolve, onceReject] = once(resolve, reject);
+      const cb: WebpackWatchHandler = async (err, stats) => {
+        if (tab && stats) {
+          tab.log(
+            stats.toString({
+              colors: true,
+            })
+          );
         }
-      });
+        if (this.config.jsonStats) {
+          await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
+        }
+
+        if (err) return onceReject(err);
+        if (!watch && stats?.hasErrors()) {
+          return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+        }
+
+        return onceResolve(undefined);
+      };
+      if (watch) {
+        this.watchers.push(compiler.watch({}, cb));
+      } else {
+        compiler.run(cb);
+      }
     });
   };
 
@@ -299,56 +292,61 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    await asyncOra('Launching Dev Servers for Renderer Process Code', async () => {
-      const tab = logger.createTab('Renderers');
-      const pluginLogs = new ElectronForgeLoggingPlugin(tab);
+    const tab = logger.createTab('Renderers');
+    const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
-      const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+    const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
 
-      if (config.length === 0) {
-        return;
+    if (config.length === 0) {
+      return;
+    }
+
+    for (const entryConfig of config) {
+      if (!entryConfig.plugins) entryConfig.plugins = [];
+      entryConfig.plugins.push(pluginLogs);
+
+      entryConfig.infrastructureLogging = {
+        level: 'none',
+      };
+      entryConfig.stats = 'none';
+    }
+
+    const compiler = webpack(config);
+    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+    await webpackDevServer.start();
+    this.servers.push(webpackDevServer.server!);
+
+    for (const entryPoint of this.config.renderer.entryPoints) {
+      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+        const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
+        config.infrastructureLogging = {
+          level: 'none',
+        };
+        config.stats = 'none';
+        await new Promise((resolve, reject) => {
+          const tab = logger.createTab(`${entryPoint.name} - Preload`);
+          const [onceResolve, onceReject] = once(resolve, reject);
+
+          this.watchers.push(
+            webpack(config).watch({}, (err, stats) => {
+              if (stats) {
+                tab.log(
+                  stats.toString({
+                    colors: true,
+                  })
+                );
+              }
+
+              if (err) return onceReject(err);
+              return onceResolve(undefined);
+            })
+          );
+        });
       }
-
-      for (const entryConfig of config) {
-        if (!entryConfig.plugins) entryConfig.plugins = [];
-        entryConfig.plugins.push(pluginLogs);
-      }
-
-      const compiler = webpack(config);
-      const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
-      await webpackDevServer.start();
-      this.servers.push(webpackDevServer.server!);
-    });
-
-    await asyncOra('Compiling Preload Scripts', async () => {
-      for (const entryPoint of this.config.renderer.entryPoints) {
-        if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-          const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
-          await new Promise((resolve, reject) => {
-            const tab = logger.createTab(`${entryPoint.name} - Preload`);
-            const [onceResolve, onceReject] = once(resolve, reject);
-
-            this.watchers.push(
-              webpack(config).watch({}, (err, stats) => {
-                if (stats) {
-                  tab.log(
-                    stats.toString({
-                      colors: true,
-                    })
-                  );
-                }
-
-                if (err) return onceReject(err);
-                return onceResolve(undefined);
-              })
-            );
-          });
-        }
-      }
-    });
+    }
   };
 
-  devServerOptions(): Record<string, unknown> {
+  devServerOptions(): WebpackDevServer.Configuration {
     const cspDirectives =
       this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
@@ -373,7 +371,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
   private alreadyStarted = false;
 
-  async startLogic(): Promise<false> {
+  async startLogic(): Promise<StartResult> {
     if (this.alreadyStarted) return false;
     this.alreadyStarted = true;
 
@@ -381,10 +379,33 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
-    await this.compileMain(true, logger);
-    await this.launchRendererDevServers(logger);
     await logger.start();
-    return false;
+
+    return {
+      tasks: [
+        {
+          title: 'Compiling main process code',
+          task: async () => {
+            await this.compileMain(true, logger);
+          },
+          options: {
+            showTimer: true,
+          },
+        },
+        {
+          title: 'Launching dev servers for renderer process code',
+          task: async (_, task) => {
+            await this.launchRendererDevServers(logger);
+            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+          },
+          options: {
+            persistentOutput: true,
+            showTimer: true,
+          },
+        },
+      ],
+      result: false,
+    };
   }
 }
 

@@ -1,4 +1,4 @@
-import { ElectronProcess, ForgeHookMap, IForgePlugin, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
+import { ForgeHookMap, IForgePlugin, ResolvedForgeConfig, StartOptions, StartResult } from '@electron-forge/shared-types';
 
 export { StartOptions };
 
@@ -29,7 +29,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
     return {};
   }
 
-  async startLogic(_startOpts: StartOptions): Promise<ElectronProcess | string | string[] | false> {
+  async startLogic(_startOpts: StartOptions): Promise<StartResult> {
     return false;
   }
 }

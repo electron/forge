@@ -1,13 +1,13 @@
 import path from 'path';
 import { promisify } from 'util';
 
-import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
-import { getElectronVersion } from '@electron-forge/core-utils';
+import { fakeOra, ora as realOra } from '@electron-forge/async-ora';
+import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { HookFunction } from 'electron-packager';
+import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
@@ -16,7 +16,6 @@ import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
 import getCurrentOutDir from '../util/out-dir';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
@@ -25,16 +24,17 @@ const d = debug('electron-forge:packager');
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
-function resolveHooks(hooks: (string | HookFunction)[] | undefined, dir: string) {
+function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<HookFunction>(dir, [hook]) as HookFunction) : hook));
+    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<F>(dir, [hook]) as F) : hook));
   }
 
   return [];
 }
 
-type DoneFunction = () => void;
+type DoneFunction = (err?: Error) => void;
 type PromisifiedHookFunction = (buildPath: string, electronVersion: string, platform: string, arch: string) => Promise<void>;
+type PromisifiedFinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void>;
 
 /**
  * Runs given hooks sequentially by mapping them to promises and iterating
@@ -44,11 +44,29 @@ function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
   return [
     async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
       for (const hook of hooks) {
-        await promisify(hook)(buildPath, electronVersion, platform, arch);
+        try {
+          await promisify(hook)(buildPath, electronVersion, platform, arch);
+        } catch (err) {
+          return done(err as Error);
+        }
       }
       done();
     },
   ] as PromisifiedHookFunction[];
+}
+function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHookFunction[]): PromisifiedFinalizePackageTargetsHookFunction[] {
+  return [
+    async (targets: TargetDefinition[], done: DoneFunction) => {
+      for (const hook of hooks) {
+        try {
+          await promisify(hook)(targets);
+        } catch (err) {
+          return done(err as Error);
+        }
+      }
+      done();
+    },
+  ] as PromisifiedFinalizePackageTargetsHookFunction[];
 }
 
 export interface PackageOptions {
@@ -83,8 +101,7 @@ export default async ({
 }: PackageOptions): Promise<void> => {
   const ora = interactive ? realOra : fakeOra;
 
-  let prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(arch === 'all' ? 'ia32' : arch)}`).start();
-  let prepareCounter = 0;
+  let spinner = ora(`Preparing to Package Application`).start();
 
   const resolvedDir = await resolveDir(dir);
   if (!resolvedDir) {
@@ -100,17 +117,27 @@ export default async ({
   }
 
   const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-  let packagerSpinner: OraImpl | undefined;
+
+  let pending: TargetDefinition[] = [];
+
+  function readableTargets(targets: TargetDefinition[]) {
+    return targets.map(({ platform, arch }) => `${platform}:${arch}`).join(', ');
+  }
+
+  const afterFinalizePackageTargetsHooks: FinalizePackageTargetsHookFunction[] = [
+    (matrix, done) => {
+      spinner.succeed();
+      spinner = ora(`Packaging for ${chalk.cyan(readableTargets(matrix))}`).start();
+      pending.push(...matrix);
+      done();
+    },
+    ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, dir),
+  ];
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
   const afterCopyHooks: HookFunction[] = [
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      if (packagerSpinner) {
-        packagerSpinner.succeed();
-        prepareCounter += 1;
-        prepareSpinner = ora(`Preparing to Package Application for arch: ${chalk.cyan(prepareCounter === 2 ? 'armv7l' : 'x64')}`).start();
-      }
       const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
       for (const bin of bins) {
         await fs.remove(bin);
@@ -118,27 +145,35 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      prepareSpinner.succeed();
       await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
-      packagerSpinner = ora('Packaging Application').start();
+      await packagerRebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
+      done();
+    },
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
+      if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
+        delete copiedPackageJSON.config.forge;
+      }
+      await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
+      done();
+    },
+    ...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir),
+    async (buildPath, electronVersion, pPlatform, pArch, done) => {
+      spinner.text = `Packaging for ${chalk.cyan(pArch)} complete`;
+      spinner.succeed();
+      pending = pending.filter(({ arch, platform }) => !(arch === pArch && platform === pPlatform));
+      if (pending.length > 0) {
+        spinner = ora(`Packaging for ${chalk.cyan(readableTargets(pending))}`).start();
+      } else {
+        spinner = ora(`Packaging complete`).start();
+      }
+
       done();
     },
   ];
-
-  afterCopyHooks.push(async (buildPath, electronVersion, pPlatform, pArch, done) => {
-    const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
-    if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
-      delete copiedPackageJSON.config.forge;
-    }
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
-    done();
-  });
-
-  afterCopyHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir));
 
   const afterPruneHooks = [];
 
@@ -168,6 +203,7 @@ export default async ({
     dir,
     arch: arch as PackagerArch,
     platform,
+    afterFinalizePackageTargets: sequentialFinalizePackageTargetsHooks(afterFinalizePackageTargetsHooks),
     afterCopy: sequentialHooks(afterCopyHooks),
     afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),
@@ -202,9 +238,8 @@ export default async ({
     arch,
     outputPaths,
     platform,
-    spinner: packagerSpinner,
+    spinner,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (packagerSpinner) packagerSpinner!.succeed();
+  if (spinner) spinner.succeed();
 };

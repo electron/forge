@@ -23,6 +23,7 @@ describe('start', () => {
       '../util/electron-executable': () => Promise.resolve('fake_electron_path'),
       '@electron-forge/core-utils': {
         getElectronVersion: () => Promise.resolve('1.0.0'),
+        listrCompatibleRebuildHook: () => Promise.resolve(),
       },
       '../util/forge-config': async () => ({
         pluginInterface: {
@@ -34,7 +35,6 @@ describe('start', () => {
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
       },
-      '../util/rebuild': () => Promise.resolve(),
       child_process: {
         spawn: spawnStub,
       },
