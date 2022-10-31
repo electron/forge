@@ -4,8 +4,8 @@ import path from 'path';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
-import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
-import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
+import { devDeps, exactDevDeps } from '../../../api/core/src/api/init-scripts/init-npm';
+import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../src/electron-version';
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {

@@ -22,5 +22,8 @@
   },
   "engines": {
     "node": ">= 14.17.5"
+  },
+  "devDependencies": {
+    "chai": "^4.3.3"
   }
 }
