@@ -2,7 +2,7 @@ import path from 'path';
 import { promisify } from 'util';
 
 import { fakeOra, OraImpl, ora as realOra } from '@electron-forge/async-ora';
-import { getElectronVersion } from '@electron-forge/core-utils';
+import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
@@ -16,7 +16,6 @@ import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
 import getCurrentOutDir from '../util/out-dir';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import rebuildHook from '../util/rebuild';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
@@ -123,7 +122,7 @@ export default async ({
       done();
     },
     async (buildPath, electronVersion, pPlatform, pArch, done) => {
-      await rebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
+      await packagerRebuildHook(buildPath, electronVersion, pPlatform, pArch, forgeConfig.rebuildConfig);
       packagerSpinner = ora('Packaging Application').start();
       done();
     },
