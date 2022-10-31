@@ -25,7 +25,7 @@ export class BaseTemplate implements ForgeTemplate {
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
-            version = currentForgeVersion;
+            version = `^${currentForgeVersion}`;
           }
           return `${packageName}@${version}`;
         });
