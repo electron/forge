@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import { ForgeArch, ForgeConfigMaker, ForgeMakeResult, ForgePlatform, IForgeResolvableMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
@@ -8,7 +9,6 @@ import chalk from 'chalk';
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
 
-import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook, runMutatingHook } from '../util/hook';
 import { info, warn } from '../util/messages';

@@ -2,7 +2,7 @@ import http from 'http';
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import { utils } from '@electron-forge/core';
+import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
 import { PluginBase } from '@electron-forge/plugin-base';
 import { ForgeHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
@@ -156,9 +156,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       prePackage: async (config, platform, arch) => {
         this.isProd = true;
         await fs.remove(this.baseDir);
-        await utils.rebuildHook(
+        await packagerRebuildHook(
           this.projectDir,
-          await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+          await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
           platform,
           arch,
           config.rebuildConfig

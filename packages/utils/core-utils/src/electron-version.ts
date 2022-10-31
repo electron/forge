@@ -5,7 +5,7 @@ import findUp from 'find-up';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import yarnOrNpm from './yarn-or-npm';
+import { safeYarnOrNpm } from './yarn-or-npm';
 
 const d = debug('electron-forge:electron-version');
 
@@ -44,7 +44,7 @@ async function determineNodeModulesPath(dir: string, packageName: string): Promi
 
 export class PackageNotFoundError extends Error {
   constructor(packageName: string, dir: string) {
-    super(`Cannot find the package "${packageName}". Perhaps you need to run "${yarnOrNpm()} install" in "${dir}"?`);
+    super(`Cannot find the package "${packageName}". Perhaps you need to run "${safeYarnOrNpm()} install" in "${dir}"?`);
   }
 }
 

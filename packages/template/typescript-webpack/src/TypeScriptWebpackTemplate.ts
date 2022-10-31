@@ -18,10 +18,10 @@ class TypeScriptWebpackTemplate extends BaseTemplate {
       const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
       // Copy Webpack files
-      await this.copyTemplateFile(directory, 'webpack.main.config.js');
-      await this.copyTemplateFile(directory, 'webpack.renderer.config.js');
-      await this.copyTemplateFile(directory, 'webpack.rules.js');
-      await this.copyTemplateFile(directory, 'webpack.plugins.js');
+      await this.copyTemplateFile(directory, 'webpack.main.config.ts');
+      await this.copyTemplateFile(directory, 'webpack.renderer.config.ts');
+      await this.copyTemplateFile(directory, 'webpack.rules.ts');
+      await this.copyTemplateFile(directory, 'webpack.plugins.ts');
 
       await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';

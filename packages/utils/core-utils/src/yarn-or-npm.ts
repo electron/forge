@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 import yarnOrNpm from 'yarn-or-npm';
 
-const safeYarnOrNpm = (): string => {
+export const safeYarnOrNpm = () => {
   const system = yarnOrNpm();
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
@@ -16,8 +16,6 @@ const safeYarnOrNpm = (): string => {
       return system;
   }
 };
-
-export default safeYarnOrNpm;
 
 export const yarnOrNpmSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(safeYarnOrNpm(), args, opts);
 
