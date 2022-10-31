@@ -64,7 +64,7 @@ const publisher = new Listr([
                 let writtenNpmIgnore = false;
 
                 try {
-                  await fs.promises.writeFile(npmIgnorePath, ['*.ts', '!*.d.ts', '*.tsbuildinfo', 'tsconfig.json', '*.map', '/test'].join('\n'));
+                  await fs.promises.writeFile(npmIgnorePath, ['*.tsbuildinfo', '/test', '/src'].join('\n'));
                   writtenNpmIgnore = true;
 
                   await spawn('npm', ['publish', '--access=public', ...(isBeta ? ['--tag=beta'] : []), `--otp=${ctx.otp}`], {
