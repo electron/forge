@@ -42,7 +42,9 @@ export class BaseTemplate implements ForgeTemplate {
           d('creating directory:', path.resolve(directory, 'src'));
           await fs.mkdirs(path.resolve(directory, 'src'));
           const rootFiles = ['_gitignore', 'forge.config.js'];
-          if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
+          if (copyCIFiles) {
+            d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
+          }
           const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
           for (const file of rootFiles) {

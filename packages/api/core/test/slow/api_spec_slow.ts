@@ -90,7 +90,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       after(() => fs.remove(dir));
     });
 
-    describe('init with CI files enabled', () => {
+    describe.skip('init with CI files enabled', () => {
       beforeInitTest({ copyCIFiles: true });
 
       it('should copy over the CI config files correctly', async () => {
