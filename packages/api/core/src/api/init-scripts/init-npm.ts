@@ -1,11 +1,11 @@
 import path from 'path';
 
+import { safeYarnOrNpm } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
 import installDepList, { DepType, DepVersionRestriction } from '../../util/install-dependencies';
-import safeYarnOrNpm from '../../util/yarn-or-npm';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));

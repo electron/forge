@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { safeYarnOrNpm } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 import { Listr } from 'listr2';
@@ -7,7 +8,6 @@ import semver from 'semver';
 
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
-import safeYarnOrNpm from '../util/yarn-or-npm';
 
 import { findTemplate } from './init-scripts/find-template';
 import { initDirectory } from './init-scripts/init-directory';
