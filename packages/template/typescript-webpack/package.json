@@ -28,6 +28,7 @@
     "@electron-forge/test-utils": "6.0.0-beta.70",
     "chai": "^4.3.3",
     "fast-glob": "^3.2.7",
-    "fork-ts-checker-webpack-plugin": "^7.2.13"
+    "fork-ts-checker-webpack-plugin": "^7.2.13",
+    "listr2": "^5.0.3"
   }
 }

@@ -60,6 +60,7 @@
     "fs-extra": "^10.0.0",
     "got": "^11.8.5",
     "interpret": "^3.1.1",
+    "listr2": "^5.0.3",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "node-fetch": "^2.6.7",

@@ -5,7 +5,7 @@ import path from 'path';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
-import initGit from '../../src/api/init-scripts/init-git';
+import { initGit } from '../../src/api/init-scripts/init-git';
 
 let dir: string;
 let dirID = Date.now();

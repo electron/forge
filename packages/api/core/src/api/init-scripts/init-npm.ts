@@ -1,6 +1,7 @@
 import path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
+import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
@@ -17,17 +18,19 @@ export const deps = ['electron-squirrel-startup'];
 export const devDeps = [siblingDep('cli'), siblingDep('maker-squirrel'), siblingDep('maker-zip'), siblingDep('maker-deb'), siblingDep('maker-rpm')];
 export const exactDevDeps = ['electron'];
 
-export default async (dir: string): Promise<void> => {
-  await asyncOra('Installing NPM Dependencies', async () => {
-    d('installing dependencies');
-    await installDepList(dir, deps);
+export const initNPM = async (dir: string, task: ForgeListrTask<any>): Promise<void> => {
+  d('installing dependencies');
+  const packageManager = safeYarnOrNpm();
+  task.output = `${packageManager} install ${deps.join(' ')}`;
+  await installDepList(dir, deps);
 
-    d('installing devDependencies');
-    await installDepList(dir, devDeps, DepType.DEV);
+  d('installing devDependencies');
+  task.output = `${packageManager} install --dev ${deps.join(' ')}`;
+  await installDepList(dir, devDeps, DepType.DEV);
 
-    d('installing exact devDependencies');
-    for (const packageName of exactDevDeps) {
-      await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
-    }
-  });
+  d('installing exact devDependencies');
+  for (const packageName of exactDevDeps) {
+    task.output = `${packageManager} install --dev --exact ${packageName}`;
+    await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
+  }
 };

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // This file requires a shebang above. If it is missing, this is an error.
 
-import { asyncOra } from '@electron-forge/async-ora';
 import chalk from 'chalk';
 import program from 'commander';
+import { Listr } from 'listr2';
 
 import './util/terminate';
 
-import checkSystem from './util/check-system';
+import { checkSystem } from './util/check-system';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const metadata = require('../package.json');
@@ -50,14 +50,26 @@ program
   });
 
 (async () => {
-  let goodSystem;
-  await asyncOra('Checking your system', async (ora) => {
-    goodSystem = await checkSystem(ora);
-  });
+  const runner = new Listr<never>(
+    [
+      {
+        title: 'Checking your system',
+        task: async (_, task) => {
+          return await checkSystem(task);
+        },
+      },
+    ],
+    {
+      concurrent: false,
+      exitOnError: false,
+    }
+  );
 
-  if (!goodSystem) {
+  await runner.run();
+
+  if (runner.err.length) {
     console.error(
-      chalk.red(`It looks like you are missing some dependencies you need to get Electron running.
+      chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
 Make sure you have git installed and Node.js version ${metadata.engines.node}`)
     );
     process.exit(1);
