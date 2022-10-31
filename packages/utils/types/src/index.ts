@@ -1,8 +1,8 @@
 import { ChildProcess } from 'child_process';
 
 import { OraImpl } from '@electron-forge/async-ora';
+import { RebuildOptions } from '@electron/rebuild';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
-import { RebuildOptions } from 'electron-rebuild';
 
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 

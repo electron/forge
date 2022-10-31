@@ -20,7 +20,7 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.packagerConfig).to.deep.equal(expected);
   });
 
-  it('converts electron-rebuild config', () => {
+  it('converts @electron/rebuild config', () => {
     const rebuildConfig = { types: ['prod'] };
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 

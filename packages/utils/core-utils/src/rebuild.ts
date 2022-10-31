@@ -1,6 +1,6 @@
 import { asyncOra } from '@electron-forge/async-ora';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-import { rebuild, RebuildOptions } from 'electron-rebuild';
+import { rebuild, RebuildOptions } from '@electron/rebuild';
 
 export const packagerRebuildHook = async (
   buildPath: string,
