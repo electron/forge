@@ -39,6 +39,11 @@ export default async (dir: string): Promise<string | null> => {
         return mDir;
       }
 
+      if (packageJSON.devDependencies?.['@electron-forge/cli']) {
+        d('package.json with forge dependency found in', testPath);
+        return mDir;
+      }
+
       bestGuessDir = mDir;
     }
     mDir = path.dirname(mDir);
