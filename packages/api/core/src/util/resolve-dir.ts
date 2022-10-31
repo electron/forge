@@ -1,9 +1,9 @@
 import path from 'path';
 
+import { getElectronVersion } from '@electron-forge/core-utils';
 import debug from 'debug';
 import fs from 'fs-extra';
 
-import { getElectronVersion } from './electron-version';
 import { readRawPackageJson } from './read-package-json';
 
 const d = debug('electron-forge:project-resolver');
@@ -36,6 +36,11 @@ export default async (dir: string): Promise<string | null> => {
 
       if (packageJSON.config && packageJSON.config.forge) {
         d('electron-forge compatible package.json found in', testPath);
+        return mDir;
+      }
+
+      if (packageJSON.devDependencies?.['@electron-forge/cli']) {
+        d('package.json with forge dependency found in', testPath);
         return mDir;
       }
 

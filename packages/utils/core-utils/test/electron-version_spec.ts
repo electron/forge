@@ -4,8 +4,10 @@ import path from 'path';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
-import { devDeps, exactDevDeps } from '../../src/api/init-scripts/init-npm';
-import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../../src/util/electron-version';
+import { devDeps, exactDevDeps } from '../../../api/core/src/api/init-scripts/init-npm';
+import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../src/electron-version';
+
+const fixturePath = path.resolve(__dirname, '..', '..', '..', 'api', 'core', 'test', 'fixture');
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
@@ -14,6 +16,7 @@ describe('updateElectronDependency', () => {
     expect(dev).to.deep.equal(devDeps);
     expect(exact).to.deep.equal(exactDevDeps);
   });
+
   it('does not add an Electron dep if one already exists', () => {
     const packageJSON = {
       dependencies: {},
@@ -23,6 +26,7 @@ describe('updateElectronDependency', () => {
     expect(dev).to.deep.equal(devDeps);
     expect(exact).to.deep.equal([]);
   });
+
   it('moves an Electron dependency from dependencies to devDependencies', () => {
     const packageJSON = {
       dependencies: { electron: '0.37.0' },
@@ -41,12 +45,12 @@ describe('getElectronVersion', () => {
     expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   it('fails with a non-exact version and no electron installed', () => {
-    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
+    const fixtureDir = path.resolve(fixturePath, 'dummy_app');
     return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
   });
 
   it('works with a non-exact version with electron installed', () => {
-    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'non-exact');
+    const fixtureDir = path.resolve(fixturePath, 'non-exact');
     return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal('4.0.9');
   });
 
@@ -84,7 +88,7 @@ describe('getElectronVersion', () => {
     });
 
     it('works with a non-exact version', async () => {
-      const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace', 'packages', 'subpackage');
+      const fixtureDir = path.resolve(fixturePath, 'yarn-workspace', 'packages', 'subpackage');
       const packageJSON = {
         devDependencies: { electron: '^4.0.4' },
       };
@@ -111,7 +115,7 @@ describe('getElectronModulePath', () => {
     });
 
     it('throws an error saying it cannot find electron', async () => {
-      const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'dummy_app');
+      const fixtureDir = path.resolve(fixturePath, 'dummy_app');
       await fs.copy(fixtureDir, tempDir);
       return expect(getElectronModulePath(tempDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
     });
@@ -122,7 +126,7 @@ describe('getElectronModulePath', () => {
   });
 
   it('works with electron', () => {
-    const fixtureDir = path.resolve(__dirname, '..', 'fixture', 'non-exact');
+    const fixtureDir = path.resolve(fixturePath, 'non-exact');
     return expect(getElectronModulePath(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(
       path.join(fixtureDir, 'node_modules', 'electron')
     );
@@ -134,7 +138,7 @@ describe('getElectronModulePath', () => {
     });
 
     it('finds the top-level electron module', async () => {
-      const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'npm-workspace');
+      const workspaceDir = path.resolve(fixturePath, 'npm-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
       const packageJSON = {
         devDependencies: { electron: '^4.0.4' },
@@ -154,7 +158,7 @@ describe('getElectronModulePath', () => {
     });
 
     it('finds the top-level electron module', async () => {
-      const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+      const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
       const packageJSON = {
         devDependencies: { electron: '^4.0.4' },
@@ -164,7 +168,7 @@ describe('getElectronModulePath', () => {
     });
 
     it('finds the top-level electron module despite the additional node_modules folder inside the package', async () => {
-      const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+      const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'with-node-modules');
       const packageJSON = {
         devDependencies: { electron: '^4.0.4' },
@@ -174,7 +178,7 @@ describe('getElectronModulePath', () => {
     });
 
     it('finds the correct electron module in nohoist mode', async () => {
-      const workspaceDir = path.resolve(__dirname, '..', 'fixture', 'yarn-workspace');
+      const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'electron-folder-in-node-modules');
       const packageJSON = {
         devDependencies: { electron: '^13.0.0' },

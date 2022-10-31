@@ -21,7 +21,7 @@ describe('start', () => {
 
     start = proxyquire.noCallThru().load('../../src/api/start', {
       '../util/electron-executable': () => Promise.resolve('fake_electron_path'),
-      '../util/electron-version': {
+      '@electron-forge/core-utils': {
         getElectronVersion: () => Promise.resolve('1.0.0'),
       },
       '../util/forge-config': async () => ({

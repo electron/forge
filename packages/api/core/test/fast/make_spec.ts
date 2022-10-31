@@ -32,7 +32,7 @@ describe('make', () => {
     before(() => {
       const electronPath = path.resolve(__dirname, 'node_modules/electron');
       stubbedMake = proxyquire.noCallThru().load('../../src/api/make', {
-        '../util/electron-version': {
+        '@electron-forge/core-utils': {
           getElectronModulePath: () => Promise.resolve(electronPath),
           getElectronVersion: () => Promise.resolve('1.0.0'),
         },

@@ -127,10 +127,10 @@ export interface IForgePlugin {
 }
 
 export interface IForgeResolvableMaker {
-  enabled: boolean;
   name: string;
-  platforms: ForgePlatform[] | null;
   config: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  enabled?: boolean;
+  platforms?: ForgePlatform[] | null;
 }
 
 export interface IForgeMaker {

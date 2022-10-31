@@ -4,8 +4,8 @@ import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
-import { Listr } from 'listr2';
 
+import { api } from '../../../api/core';
 import template from '../src/TypeScriptWebpackTemplate';
 
 describe('TypeScriptWebpackTemplate', () => {
@@ -16,20 +16,22 @@ describe('TypeScriptWebpackTemplate', () => {
   });
 
   it('should succeed in initializing the typescript template', async () => {
-    const tasks = await template.initializeTemplate(dir, {});
-    const runner = new Listr(tasks, { concurrent: false, exitOnError: false });
-    await runner.run();
-    expect(runner.err).to.have.lengthOf(0);
+    await api.init({
+      dir,
+      template: path.resolve(__dirname, '..', 'src', 'TypeScriptWebpackTemplate'),
+      interactive: false,
+    });
   });
 
   context('template files are copied to project', () => {
     const expectedFiles = [
       'tsconfig.json',
       '.eslintrc.json',
-      'webpack.main.config.js',
-      'webpack.renderer.config.js',
-      'webpack.rules.js',
-      'webpack.plugins.js',
+      'forge.config.ts',
+      'webpack.main.config.ts',
+      'webpack.renderer.config.ts',
+      'webpack.rules.ts',
+      'webpack.plugins.ts',
       path.join('src', 'index.ts'),
       path.join('src', 'renderer.ts'),
       path.join('src', 'preload.ts'),
@@ -48,10 +50,13 @@ describe('TypeScriptWebpackTemplate', () => {
 
   describe('lint', () => {
     before(async () => {
+      delete process.env.TS_NODE_PROJECT;
       await testUtils.ensureModulesInstalled(
         dir,
         ['electron', 'electron-squirrel-startup'],
-        template.devDependencies.filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript'))
+        template.devDependencies
+          .filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript'))
+          .concat(['@electron-forge/plugin-webpack'])
       );
     });
 

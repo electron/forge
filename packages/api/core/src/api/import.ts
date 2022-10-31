@@ -1,13 +1,13 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
+import { updateElectronDependency } from '@electron-forge/core-utils';
 import baseTemplate from '@electron-forge/template-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { merge } from 'lodash';
 
-import { updateElectronDependency } from '../util/electron-version';
 import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { info, warn } from '../util/messages';
 import { readRawPackageJson } from '../util/read-package-json';
