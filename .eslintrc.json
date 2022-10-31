@@ -36,7 +36,8 @@
         "allowSeparatedGroups": true,
         "ignoreCase": true
       }
-    ]
+    ],
+    "import/no-named-as-default": "error"
   },
   "overrides": [
     {
@@ -55,7 +56,7 @@
       }
     },
     {
-      "files": ["packages/*/*/test/**/*_spec*.ts"],
+      "files": ["packages/*/*/test/**/*_spec*.ts", "packages/*/*/test/fixture/**/*.ts"],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",

@@ -1,12 +1,12 @@
 import * as path from 'path';
 
-import PluginBase, { StartOptions } from '@electron-forge/plugin-base';
-import { ForgeHookFn } from '@electron-forge/shared-types';
+import { PluginBase, StartOptions } from '@electron-forge/plugin-base';
+import { ForgeHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 
 import { CompilePluginConfig } from './Config';
 import { createCompileHook } from './lib/compile-hook';
 
-export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig> {
+export default class CompileElectronPlugin extends PluginBase<CompilePluginConfig> {
   name = 'electron-compile';
 
   private dir!: string;
@@ -15,19 +15,19 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
     super(c);
 
     this.init = this.init.bind(this);
-    this.getHook = this.getHook.bind(this);
+    this.getHooks = this.getHooks.bind(this);
     this.startLogic = this.startLogic.bind(this);
   }
 
-  init(dir: string): void {
+  init(dir: string, config: ResolvedForgeConfig): void {
+    super.init(dir, config);
     this.dir = dir;
   }
 
-  getHook(hookName: string): ForgeHookFn | null {
-    if (hookName === 'packageAfterCopy') {
-      return createCompileHook(this.dir);
-    }
-    return null;
+  getHooks(): ForgeHookMap {
+    return {
+      packageAfterCopy: createCompileHook(this.dir),
+    };
   }
 
   async startLogic(_opts: StartOptions): Promise<string[]> {
@@ -35,4 +35,4 @@ export default class LocalElectronPlugin extends PluginBase<CompilePluginConfig>
   }
 }
 
-export { CompilePluginConfig };
+export { CompileElectronPlugin, CompilePluginConfig };

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import MakerBase, { EmptyConfig } from '../src/Maker';
+import { EmptyConfig, MakerBase } from '../src/Maker';
 
 class MakerImpl extends MakerBase<EmptyConfig> {
   name = 'test';

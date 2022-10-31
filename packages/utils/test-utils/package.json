@@ -1,8 +1,8 @@
 {
   "name": "@electron-forge/test-utils",
-  "version": "6.0.0-beta.68",
+  "version": "6.0.0-beta.70",
   "description": "Helper utilities for the Electron Forge testsuite",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Mark Lee",
   "license": "MIT",
   "main": "dist/index.js",

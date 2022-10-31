@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { execSync } from 'child_process';
 import path from 'path';
 
@@ -76,6 +77,10 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
+      });
+
+      it('should create a forge.config.js', async () => {
+        await expectProjectPathExists(dir, 'forge.config.js', 'file');
       });
 
       describe('lint', () => {
@@ -203,20 +208,8 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
         await forge.import({ dir });
 
-        const {
-          config: {
-            forge: {
-              makers: [
-                {
-                  config: { name: winstallerName },
-                },
-              ],
-            },
-          },
-          customProp,
-        } = await readRawPackageJson(dir);
+        const { customProp } = await readRawPackageJson(dir);
 
-        expect(winstallerName).to.equal('Name');
         expect(customProp).to.equal('propVal');
       });
 
@@ -241,12 +234,21 @@ describe('Electron Forge API', () => {
         packageJSON.name = 'testapp';
         packageJSON.version = '1.0.0-beta.1';
         packageJSON.productName = 'Test-App';
-        packageJSON.config.forge.packagerConfig.asar = false;
+        packageJSON.config = packageJSON.config || {};
+        packageJSON.config.forge = {
+          ...packageJSON.config.forge,
+          packagerConfig: {
+            asar: false,
+          },
+        };
         if (process.platform === 'win32') {
           await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
           devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
         } else if (process.platform === 'linux') {
-          packageJSON.config.forge.packagerConfig.executableName = 'testapp';
+          packageJSON.config.forge.packagerConfig = {
+            ...packageJSON.config.forge.packagerConfig,
+            executableName: 'testapp',
+          };
         }
         packageJSON.homepage = 'http://www.example.com/';
         packageJSON.author = 'Test Author';
@@ -255,10 +257,12 @@ describe('Electron Forge API', () => {
 
     it('throws an error when all is set', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.all = true;
       });
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         delete packageJSON.config.forge.packagerConfig.all;
       });
     });
@@ -288,7 +292,7 @@ describe('Electron Forge API', () => {
 
     // FIXME(erickzhao): This test hangs on the electron-rebuild step
     // with Electron 19. It was tested to work on Electron 18.
-    // see https://github.com/electron-userland/electron-forge/pull/2869
+    // see https://github.com/electron/forge/pull/2869
     describe.skip('with prebuilt native module deps installed', () => {
       before(async () => {
         await installDeps(dir, ['ref-napi']);
@@ -308,6 +312,7 @@ describe('Electron Forge API', () => {
 
     it('can package without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 

@@ -11,32 +11,7 @@ class WebpackTemplate extends BaseTemplate {
   public async initializeTemplate(directory: string, options: InitTemplateOptions) {
     await super.initializeTemplate(directory, options);
     await asyncOra('Setting up Forge configuration', async () => {
-      const pjPath = path.resolve(directory, 'package.json');
-      const currentPJ = await fs.readJson(pjPath);
-      currentPJ.main = '.webpack/main';
-      currentPJ.config.forge.plugins = currentPJ.config.forge.plugins || [];
-      currentPJ.config.forge.plugins.push({
-        name: '@electron-forge/plugin-webpack',
-        config: {
-          mainConfig: './webpack.main.config.js',
-          renderer: {
-            config: './webpack.renderer.config.js',
-            entryPoints: [
-              {
-                html: './src/index.html',
-                js: './src/renderer.js',
-                name: 'main_window',
-                preload: {
-                  js: './src/preload.js',
-                },
-              },
-            ],
-          },
-        },
-      });
-      await fs.writeJson(pjPath, currentPJ, {
-        spaces: 2,
-      });
+      await this.copyTemplateFile(directory, 'forge.config.js');
     });
     await asyncOra('Setting up webpack configuration', async () => {
       await this.copyTemplateFile(directory, 'webpack.main.config.js');
@@ -58,6 +33,14 @@ class WebpackTemplate extends BaseTemplate {
       await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
         if (line.includes('link rel="stylesheet"')) return '';
         return line;
+      });
+
+      // update package.json entry point
+      const pjPath = path.resolve(directory, 'package.json');
+      const currentPJ = await fs.readJson(pjPath);
+      currentPJ.main = '.webpack/main';
+      await fs.writeJson(pjPath, currentPJ, {
+        spaces: 2,
       });
     });
   }

@@ -41,7 +41,7 @@ function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
     hideGenerator: true,
     includeVersion: true,
     name: 'Electron Forge',
-    plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports', './tools/doc-plugin/dist/index.js'],
+    plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports', './tools/doc-plugin/dist/index.js', '@knodes/typedoc-plugin-monorepo-readmes'],
     theme: 'forge-theme',
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore (overloaded param `internalModule` lets us rename "<internal>"

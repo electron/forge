@@ -1,3 +1,30 @@
+#### [6.0.0-beta.70](https://github.com/electron/forge/releases/tag/v6.0.0-beta.70) (2022-10-28)
+
+##### Bug Fixes
+
+- **template-typescript-webpack:**
+  - install ts-node (#3016) ([ab160d5d](https://github.com/electron/forge/commit/ab160d5d))
+  - webpack entrypoint extensions (#3014) ([378e2009](https://github.com/electron/forge/commit/378e2009))
+  - clean up forge config code (#3009) ([c3a8db44](https://github.com/electron/forge/commit/c3a8db44))
+
+#### [6.0.0-beta.69](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.69) (2022-10-27)
+
+##### New Features
+
+- **publisher-s3:** Add sessionToken and change default fallback (#2984) ([72b80a7f](https://github.com/electron-userland/electron-forge/commit/72b80a7f))
+- add support for forge.config.ts et. al (#2993) ([e404bf10](https://github.com/electron-userland/electron-forge/commit/e404bf10))
+- **plugin-webpack:** support standalone preload entry points (#2950) ([93b31c7d](https://github.com/electron-userland/electron-forge/commit/93b31c7d))
+
+##### Bug Fixes
+
+- **plugin-webpack:** keep `devDependencies`, `dependencies`, `optionalDependencies` and `peerDependencies` in the distributed package.json (#3007) ([0f75ce08](https://github.com/electron-userland/electron-forge/commit/0f75ce08))
+- **template-webpack:** use new plugin syntax (#2990) ([14721498](https://github.com/electron-userland/electron-forge/commit/14721498))
+- **template-typescript-webpack:** use new plugin syntax (#2989) ([4f222f48](https://github.com/electron-userland/electron-forge/commit/4f222f48))
+
+##### Other Changes
+
+- prefer forge.config.js over package.json config (#2991) ([777197e5](https://github.com/electron-userland/electron-forge/commit/777197e5))
+
 #### [6.0.0-beta.68](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.68) (2022-10-24)
 
 ##### Bug Fixes

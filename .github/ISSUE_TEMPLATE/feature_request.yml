@@ -8,7 +8,7 @@ body:
     attributes:
       label: Pre-flight checklist
       options:
-        - label: I have read the [contribution documentation](https://github.com/electron-userland/electron-forge/blob/main/CONTRIBUTING.md) for this project.
+        - label: I have read the [contribution documentation](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) for this project.
           required: true
         - label: I agree to follow the [code of conduct](https://github.com/electron/electron/blob/main/CODE_OF_CONDUCT.md) that this project uses.
           required: true

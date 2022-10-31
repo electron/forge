@@ -2,9 +2,9 @@ import http from 'http';
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import { utils } from '@electron-forge/core';
-import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
+import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
+import { PluginBase } from '@electron-forge/plugin-base';
+import { ForgeHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -64,7 +64,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
 
     this.startLogic = this.startLogic.bind(this);
-    this.getHook = this.getHook.bind(this);
+    this.getHooks = this.getHooks.bind(this);
   }
 
   private isValidPort = (port: number) => {
@@ -151,44 +151,38 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private loggedOutputUrl = false;
 
-  getHook(name: string): ForgeHookFn | null {
-    switch (name) {
-      case 'prePackage':
+  getHooks(): ForgeHookMap {
+    return {
+      prePackage: async (config, platform, arch) => {
         this.isProd = true;
-        return async (config: ForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
-          await fs.remove(this.baseDir);
-          await utils.rebuildHook(
-            this.projectDir,
-            await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-            platform,
-            arch,
-            config.rebuildConfig
-          );
-          await this.compileMain();
-          await this.compileRenderers();
-        };
-      case 'postStart':
-        return async (_config: ForgeConfig, child: ElectronProcess) => {
-          if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
-            this.loggedOutputUrl = true;
-          }
-          d('hooking electron process exit');
-          child.on('exit', () => {
-            if (child.restarted) return;
-            this.exitHandler({ cleanup: true, exit: true });
-          });
-        };
-      case 'resolveForgeConfig':
-        return this.resolveForgeConfig;
-      case 'packageAfterCopy':
-        return this.packageAfterCopy;
-      default:
-        return null;
-    }
+        await fs.remove(this.baseDir);
+        await packagerRebuildHook(
+          this.projectDir,
+          await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+          platform,
+          arch,
+          config.rebuildConfig
+        );
+        await this.compileMain();
+        await this.compileRenderers();
+      },
+      postStart: async (_config, child) => {
+        if (!this.loggedOutputUrl) {
+          console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
+          this.loggedOutputUrl = true;
+        }
+        d('hooking electron process exit');
+        child.on('exit', () => {
+          if (child.restarted) return;
+          this.exitHandler({ cleanup: true, exit: true });
+        });
+      },
+      resolveForgeConfig: this.resolveForgeConfig,
+      packageAfterCopy: this.packageAfterCopy,
+    };
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -222,7 +216,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   };
 
-  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {
@@ -234,10 +228,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (pj.config) {
       delete pj.config.forge;
     }
-    pj.devDependencies = {};
-    pj.dependencies = {};
-    pj.optionalDependencies = {};
-    pj.peerDependencies = {};
 
     await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
       spaces: 2,
@@ -398,4 +388,4 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   }
 }
 
-export { WebpackPluginConfig };
+export { WebpackPlugin, WebpackPluginConfig };

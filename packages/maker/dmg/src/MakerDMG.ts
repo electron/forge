@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
@@ -40,4 +40,4 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   }
 }
 
-export { MakerDMGConfig };
+export { MakerDMG, MakerDMGConfig };

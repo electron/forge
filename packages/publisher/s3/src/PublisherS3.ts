@@ -5,7 +5,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { Credentials } from '@aws-sdk/types';
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 
 import { PublisherS3Config } from './Config';
@@ -90,15 +90,16 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   }
 
   generateCredentials(): Credentials | undefined {
-    const accessKeyId = this.config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = this.config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+    const accessKeyId = this.config.accessKeyId;
+    const secretAccessKey = this.config.secretAccessKey;
+    const sessionToken = this.config.sessionToken;
 
     if (accessKeyId && secretAccessKey) {
-      return { accessKeyId, secretAccessKey };
+      return { accessKeyId, secretAccessKey, sessionToken };
     }
 
     return undefined;
   }
 }
 
-export { PublisherS3Config };
+export { PublisherS3, PublisherS3Config };

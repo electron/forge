@@ -1,12 +1,12 @@
 import { spawn, SpawnOptions } from 'child_process';
 
 import { asyncOra } from '@electron-forge/async-ora';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { ElectronProcess, ForgeArch, ForgePlatform, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 
 import locateElectronExecutable from '../util/electron-executable';
-import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';
@@ -31,7 +31,7 @@ export default async ({
   // Since the `start` command is meant to be long-living (i.e. run forever,
   // until interrupted) we should enable this to keep stdin flowing after ora
   // completes. For more context:
-  // https://github.com/electron-userland/electron-forge/issues/2319
+  // https://github.com/electron/forge/issues/2319
   asyncOra.keepStdinFlowing = true;
 
   await asyncOra('Locating Application', async () => {

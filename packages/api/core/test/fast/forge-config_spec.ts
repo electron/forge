@@ -1,14 +1,9 @@
 import path from 'path';
 
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 
-import findConfig, {
-  forgeConfigIsValidFilePath,
-  PackageJSONForInitialForgeConfig,
-  renderConfigTemplate,
-  setInitialForgeConfig,
-} from '../../src/util/forge-config';
+import findConfig, { forgeConfigIsValidFilePath, renderConfigTemplate } from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
@@ -106,21 +101,27 @@ describe('forge-config', () => {
   });
 
   it('should resolve the JS file exports in config.forge points to a JS file and maintain functions', async () => {
-    type MagicFunctionConfig = ForgeConfig & { magicFn: () => string };
+    type MagicFunctionConfig = ResolvedForgeConfig & { magicFn: () => string };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as MagicFunctionConfig;
     expect(conf.magicFn).to.be.a('function');
     expect(conf.magicFn()).to.be.equal('magic result');
   });
 
-  it('should resolve the JS file exports of forge.config.js if config.forge does not exist points', async () => {
-    type DefaultResolvedConfig = ForgeConfig & { defaultResolved: boolean };
+  it('should resolve the JS file exports of forge.config.js if config.forge does not exist ', async () => {
+    type DefaultResolvedConfig = ResolvedForgeConfig & { defaultResolved: boolean };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_default_js_conf'))) as DefaultResolvedConfig;
     expect(conf.buildIdentifier).to.equal('default');
     expect(conf.defaultResolved).to.equal(true);
   });
 
+  it('should resolve the TS file exports of forge.config.ts if config.forge does not exist and the TS config exists', async () => {
+    type DefaultResolvedConfig = ResolvedForgeConfig;
+    const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_default_ts_conf'))) as DefaultResolvedConfig;
+    expect(conf.buildIdentifier).to.equal('typescript');
+  });
+
   it('should magically map properties to environment variables', async () => {
-    type MappedConfig = ForgeConfig & {
+    type MappedConfig = ResolvedForgeConfig & {
       s3: {
         secretAccessKey?: string;
       };
@@ -140,7 +141,7 @@ describe('forge-config', () => {
   });
 
   it('should resolve values fromBuildIdentifier', async () => {
-    type ResolveBIConfig = ForgeConfig & {
+    type ResolveBIConfig = ResolvedForgeConfig & {
       topLevelProp: string;
       sub: {
         prop: {
@@ -164,13 +165,13 @@ describe('forge-config', () => {
   });
 
   it('should resolve undefined from fromBuildIdentifier if no value is provided', async () => {
-    type ResolveUndefConfig = ForgeConfig & { topLevelUndef?: string };
+    type ResolveUndefConfig = ResolvedForgeConfig & { topLevelUndef?: string };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as ResolveUndefConfig;
     expect(conf.topLevelUndef).to.equal(undefined);
   });
 
   it('should leave arrays intact', async () => {
-    type NestedConfig = ForgeConfig & {
+    type NestedConfig = ResolvedForgeConfig & {
       sub: {
         prop: {
           inArray: string[];
@@ -182,7 +183,7 @@ describe('forge-config', () => {
   });
 
   it('should leave regexps intact', async () => {
-    type RegExpConfig = ForgeConfig & { regexp: RegExp };
+    type RegExpConfig = ResolvedForgeConfig & { regexp: RegExp };
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_js_conf'))) as RegExpConfig;
     expect(conf.regexp).to.be.instanceOf(RegExp);
     expect(conf.regexp.test('foo')).to.equal(true, 'regexp should match foo');
@@ -211,47 +212,6 @@ describe('forge-config', () => {
           baz: 'quux',
         },
       });
-    });
-  });
-
-  describe('setInitialForgeConfig', () => {
-    it('should normalize hyphens in maker names to underscores', () => {
-      const packageJSON: PackageJSONForInitialForgeConfig = {
-        name: 'foo-bar',
-        config: {
-          forge: {
-            makers: [
-              {
-                name: '@electron-forge/maker-test',
-                config: {
-                  name: 'will be overwritten',
-                },
-              },
-            ],
-          },
-        },
-      };
-      setInitialForgeConfig(packageJSON);
-      expect(packageJSON.config.forge.makers[0].config.name).to.equal('foo_bar');
-    });
-
-    it('should handle when package.json name is not set', () => {
-      const packageJSON = {
-        config: {
-          forge: {
-            makers: [
-              {
-                name: '@electron-forge/maker-test',
-                config: {
-                  name: 'will be overwritten',
-                },
-              },
-            ],
-          },
-        },
-      };
-      setInitialForgeConfig(packageJSON);
-      expect(packageJSON.config.forge.makers[0].config.name).to.equal('');
     });
   });
 });

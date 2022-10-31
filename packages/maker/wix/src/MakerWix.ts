@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
@@ -52,4 +52,4 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
   }
 }
 
-export { MakerWixConfig };
+export { MakerWix, MakerWixConfig, MSICreatorOptions };

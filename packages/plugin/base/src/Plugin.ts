@@ -1,4 +1,4 @@
-import { ElectronProcess, ForgeConfig, ForgeHookFn, IForgePlugin, StartOptions } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeHookMap, IForgePlugin, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 
 export { StartOptions };
 
@@ -7,6 +7,8 @@ export default abstract class Plugin<C> implements IForgePlugin {
 
   /** @internal */
   __isElectronForgePlugin!: true;
+  /** @internal */
+  _resolvedHooks: ForgeHookMap = {};
 
   constructor(public config: C) {
     Object.defineProperty(this, '__isElectronForgePlugin', {
@@ -16,15 +18,20 @@ export default abstract class Plugin<C> implements IForgePlugin {
     });
   }
 
-  init(_dir: string, _config: ForgeConfig): void {
-    // By default, do nothing. This can be overridden.
+  init(_dir: string, _config: ResolvedForgeConfig): void {
+    // This logic ensures that we only call getHooks once regardless of how many
+    // times we trip hook logic in the PluginInterface.
+    this._resolvedHooks = this.getHooks();
+    this.getHooks = () => this._resolvedHooks;
   }
 
-  getHook(_hookName: string): ForgeHookFn | null {
-    return null;
+  getHooks(): ForgeHookMap {
+    return {};
   }
 
   async startLogic(_startOpts: StartOptions): Promise<ElectronProcess | string | string[] | false> {
     return false;
   }
 }
+
+export { Plugin as PluginBase };

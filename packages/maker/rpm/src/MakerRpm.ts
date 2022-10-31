@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerRpmConfig } from './Config';
@@ -49,4 +49,4 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   }
 }
 
-export { MakerRpmConfig };
+export { MakerRpm, MakerRpmConfig };

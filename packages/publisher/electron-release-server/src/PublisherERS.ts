@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { asyncOra } from '@electron-forge/async-ora';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import FormData from 'form-data';
@@ -156,4 +156,4 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
   }
 }
 
-export { PublisherERSConfig };
+export { PublisherERS, PublisherERSConfig };

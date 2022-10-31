@@ -2,15 +2,15 @@ import path from 'path';
 import { promisify } from 'util';
 
 import { fakeOra, ora as realOra } from '@electron-forge/async-ora';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { FinalizeTargetMatrixHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
+import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
-import { getElectronVersion } from '../util/electron-version';
 import getForgeConfig from '../util/forge-config';
 import { runHook } from '../util/hook';
 import { warn } from '../util/messages';
@@ -25,16 +25,17 @@ const d = debug('electron-forge:packager');
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
-function resolveHooks(hooks: (string | HookFunction)[] | undefined, dir: string) {
+function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<HookFunction>(dir, [hook]) as HookFunction) : hook));
+    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<F>(dir, [hook]) as F) : hook));
   }
 
   return [];
 }
 
-type DoneFunction = () => void;
+type DoneFunction = (err?: Error) => void;
 type PromisifiedHookFunction = (buildPath: string, electronVersion: string, platform: string, arch: string) => Promise<void>;
+type PromisifiedFinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void>;
 
 /**
  * Runs given hooks sequentially by mapping them to promises and iterating
@@ -44,11 +45,29 @@ function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
   return [
     async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
       for (const hook of hooks) {
-        await promisify(hook)(buildPath, electronVersion, platform, arch);
+        try {
+          await promisify(hook)(buildPath, electronVersion, platform, arch);
+        } catch (err) {
+          return done(err as Error);
+        }
       }
       done();
     },
   ] as PromisifiedHookFunction[];
+}
+function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHookFunction[]): PromisifiedFinalizePackageTargetsHookFunction[] {
+  return [
+    async (targets: TargetDefinition[], done: DoneFunction) => {
+      for (const hook of hooks) {
+        try {
+          await promisify(hook)(targets);
+        } catch (err) {
+          return done(err as Error);
+        }
+      }
+      done();
+    },
+  ] as PromisifiedFinalizePackageTargetsHookFunction[];
 }
 
 export interface PackageOptions {
@@ -106,12 +125,15 @@ export default async ({
     return targets.map(({ platform, arch }) => `${platform}:${arch}`).join(', ');
   }
 
-  function afterFinalizeTargetMatrixHooks(matrix: TargetDefinition[], done: Parameters<FinalizeTargetMatrixHookFunction>[1]) {
-    spinner.succeed();
-    spinner = ora(`Packaging for ${chalk.cyan(readableTargets(matrix))}`).start();
-    pending.push(...matrix);
-    done();
-  }
+  const afterFinalizePackageTargetsHooks: FinalizePackageTargetsHookFunction[] = [
+    (matrix, done) => {
+      spinner.succeed();
+      spinner = ora(`Packaging for ${chalk.cyan(readableTargets(matrix))}`).start();
+      pending.push(...matrix);
+      done();
+    },
+    ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, dir),
+  ];
 
   const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
@@ -182,7 +204,7 @@ export default async ({
     dir,
     arch: arch as PackagerArch,
     platform,
-    afterFinalizeTargetMatrix: [afterFinalizeTargetMatrixHooks],
+    afterFinalizePackageTargets: sequentialFinalizePackageTargetsHooks(afterFinalizePackageTargetsHooks),
     afterCopy: sequentialHooks(afterCopyHooks),
     afterExtract: sequentialHooks(afterExtractHooks),
     afterPrune: sequentialHooks(afterPruneHooks),

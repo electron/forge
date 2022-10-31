@@ -1,5 +1,6 @@
 import { ChildProcess } from 'child_process';
 
+import { OraImpl } from '@electron-forge/async-ora';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { RebuildOptions } from 'electron-rebuild';
 
@@ -7,22 +8,66 @@ export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
 export type ForgeArch = ArchOption;
-// Why: hooks have any number/kind of args/return values
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
+
+export interface ForgeSimpleHookSignatures {
+  generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  postStart: [appProcess: ElectronProcess];
+  prePackage: [platform: ForgePlatform, version: ForgeArch];
+  packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterPrune: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterExtract: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  postPackage: [
+    packageResult: {
+      platform: ForgePlatform;
+      arch: ForgeArch;
+      outputPaths: string[];
+      spinner?: OraImpl;
+    }
+  ];
+  preMake: [];
+}
+
+export interface ForgeMutatingHookSignatures {
+  postMake: [makeResults: ForgeMakeResult[]];
+  resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readPackageJson: [packageJson: Record<string, any>];
+}
+
+export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHookSignatures);
+export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeSimpleHookSignatures[Hook]
+) => Promise<void>;
+export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeMutatingHookSignatures[Hook]
+) => Promise<ForgeMutatingHookSignatures[Hook][0] | undefined>;
+export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
+  ? ForgeSimpleHookFn<Hook>
+  : Hook extends keyof ForgeMutatingHookSignatures
+  ? ForgeMutatingHookFn<Hook>
+  : never;
+export type ForgeHookMap = {
+  [S in ForgeHookName]?: ForgeHookFn<S>;
+};
+
 export interface IForgePluginInterface {
-  triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
-  triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
+  triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
+  triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
+    hookName: Hook,
+    item: ForgeMutatingHookSignatures[Hook][0]
+  ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
 export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
-export interface ForgeConfig {
+export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
    * to the out dir to generate a nested directory.  E.g. out/current-timestamp
@@ -30,9 +75,7 @@ export interface ForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
-  hooks?: {
-    [hookName: string]: ForgeHookFn;
-  };
+  hooks?: ForgeHookMap;
   /**
    * @internal
    */
@@ -46,6 +89,7 @@ export interface ForgeConfig {
   makers: ForgeConfigMaker[];
   publishers: ForgeConfigPublisher[];
 }
+export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
 export interface ForgeMakeResult {
   /**
    * An array of paths to artifacts generated for this make run
@@ -75,16 +119,16 @@ export interface IForgePlugin {
   __isElectronForgePlugin: boolean;
   name: string;
 
-  init(dir: string, forgeConfig: ForgeConfig): void;
-  getHook?(hookName: string): ForgeHookFn | null;
+  init(dir: string, forgeConfig: ResolvedForgeConfig): void;
+  getHooks?(): ForgeHookMap;
   startLogic?(opts: StartOptions): Promise<StartResult>;
 }
 
 export interface IForgeResolvableMaker {
-  enabled: boolean;
   name: string;
-  platforms: ForgePlatform[] | null;
   config: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  enabled?: boolean;
+  platforms?: ForgePlatform[] | null;
 }
 
 export interface IForgeMaker {

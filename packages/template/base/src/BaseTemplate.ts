@@ -25,7 +25,7 @@ export class BaseTemplate implements ForgeTemplate {
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
-            version = currentForgeVersion;
+            version = `^${currentForgeVersion}`;
           }
           return `${packageName}@${version}`;
         });
@@ -39,7 +39,7 @@ export class BaseTemplate implements ForgeTemplate {
     await asyncOra('Copying Starter Files', async () => {
       d('creating directory:', path.resolve(directory, 'src'));
       await fs.mkdirs(path.resolve(directory, 'src'));
-      const rootFiles = ['_gitignore'];
+      const rootFiles = ['_gitignore', 'forge.config.js'];
       if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
       const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 

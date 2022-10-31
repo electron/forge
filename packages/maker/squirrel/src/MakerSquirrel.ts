@@ -1,6 +1,6 @@
 import path from 'path';
 
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { convertVersion, createWindowsInstaller, Options as ElectronWinstallerOptions } from 'electron-winstaller';
 import fs from 'fs-extra';
@@ -21,7 +21,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     await this.ensureDirectory(outPath);
 
     const winstallerConfig: ElectronWinstallerOptions = {
-      name: packageJSON.name,
+      name: typeof packageJSON.name === 'string' ? packageJSON.name.replace(/-/g, '_') : undefined, // squirrel hates hyphens
       title: appName,
       noMsi: true,
       exe: `${forgeConfig.packagerConfig.executableName || appName}.exe`,
@@ -51,3 +51,5 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     return artifacts;
   }
 }
+
+export { MakerSquirrel };

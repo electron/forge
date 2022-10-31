@@ -1,11 +1,11 @@
 import os from 'os';
 import path from 'path';
 
-import { ForgeConfig } from '@electron-forge/shared-types';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
-import LocalElectronPlugin from '../src/LocalElectronPlugin';
+import { LocalElectronPlugin } from '../src/LocalElectronPlugin';
 
 describe('LocalElectronPlugin', () => {
   describe('start logic', () => {
@@ -52,11 +52,8 @@ describe('LocalElectronPlugin', () => {
 
     beforeEach(() => {
       p = new LocalElectronPlugin({ electronPath: 'test/foo' });
-    });
-
-    it('should return for all other hooks', () => {
-      expect(p.getHook('prePackage')).to.equal(null);
-      expect(p.getHook('postMake')).to.equal(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      p.init('', {} as any);
     });
 
     describe('with afterExtract hook', () => {
@@ -70,15 +67,15 @@ describe('LocalElectronPlugin', () => {
       afterEach(() => fs.remove(tmpDir));
 
       it('should return a function for packageAfterExtract', () => {
-        expect(p.getHook('packageAfterExtract')).to.be.a('function');
+        expect(p.getHooks().packageAfterExtract).to.be.a('function');
       });
 
       it('should do nothing when disabled', async () => {
         p.config.enabled = false;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const fn = p.getHook('packageAfterExtract')!;
+        const fn = p.getHooks().packageAfterExtract!;
 
-        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
+        await fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, process.arch);
 
         expect(await fs.pathExists(tmpDir)).to.equal(true);
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(true);
@@ -86,18 +83,18 @@ describe('LocalElectronPlugin', () => {
 
       it("should throw an error if the platform doesn't match", async () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const fn = p.getHook('packageAfterExtract')!;
+        const fn = p.getHooks().packageAfterExtract!;
 
-        await expect(fn({} as ForgeConfig, tmpDir, null, 'bad', process.arch)).to.eventually.be.rejectedWith(
+        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', 'bad', process.arch)).to.eventually.be.rejectedWith(
           `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`
         );
       });
 
       it("should throw an error if the arch doesn't match", async () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const fn = p.getHook('packageAfterExtract')!;
+        const fn = p.getHooks().packageAfterExtract!;
 
-        await expect(fn({} as ForgeConfig, tmpDir, null, process.platform, 'bad')).to.eventually.be.rejectedWith(
+        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, 'bad')).to.eventually.be.rejectedWith(
           `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`
         );
       });
@@ -107,9 +104,9 @@ describe('LocalElectronPlugin', () => {
         await fs.writeFile(path.resolve(electronDir, 'electron'), 'hi i am electron I swear');
         p.config.electronPath = electronDir;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const fn = p.getHook('packageAfterExtract')!;
+        const fn = p.getHooks().packageAfterExtract!;
 
-        await fn({} as ForgeConfig, tmpDir, null, process.platform, process.arch);
+        await fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, process.arch);
 
         expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(false);
         expect(await fs.pathExists(path.resolve(tmpDir, 'electron'))).to.equal(true);

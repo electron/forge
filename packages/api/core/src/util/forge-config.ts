@@ -1,8 +1,10 @@
 import path from 'path';
 
-import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
+import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
+import * as interpret from 'interpret';
 import { template } from 'lodash';
+import * as rechoir from 'rechoir';
 
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
@@ -13,15 +15,6 @@ const underscoreCase = (str: string) =>
     .replace(/(.)([A-Z][a-z]+)/g, '$1_$2')
     .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
     .toUpperCase();
-
-export type PackageJSONForInitialForgeConfig = {
-  name?: string;
-  config: {
-    forge: {
-      makers: Pick<IForgeResolvableMaker, 'name' | 'config'>[];
-    };
-  };
-};
 
 // Why: needs access to Object methods and also needs to be able to match any interface.
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -79,15 +72,6 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-/**
- * Sets sensible defaults for the `config.forge` object.
- */
-export function setInitialForgeConfig(packageJSON: PackageJSONForInitialForgeConfig): void {
-  const { name = '' } = packageJSON;
-
-  ((packageJSON.config.forge as ForgeConfig).makers as IForgeResolvableMaker[])[0].config.name = name.replace(/-/g, '_');
-}
-
 export type BuildIdentifierMap<T> = Record<string, T | undefined>;
 export type BuildIdentifierConfig<T> = {
   map: BuildIdentifierMap<T>;
@@ -119,22 +103,29 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
   }
 }
 
-export default async (dir: string): Promise<ForgeConfig> => {
+type MaybeESM<T> = T | { default: T };
+
+export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
   let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
 
   if (!forgeConfig) {
-    if (await fs.pathExists(path.resolve(dir, 'forge.config.js'))) {
-      forgeConfig = 'forge.config.js';
-    } else {
-      forgeConfig = {} as ForgeConfig;
+    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+      const pathToConfig = path.resolve(dir, `forge.config${extension}`);
+      if (await fs.pathExists(pathToConfig)) {
+        rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        forgeConfig = `forge.config${extension}`;
+        break;
+      }
     }
   }
+  forgeConfig = forgeConfig || ({} as ForgeConfig);
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      forgeConfig = require(path.resolve(dir, forgeConfig as string)) as ForgeConfig;
+      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig>;
+      forgeConfig = 'default' in loaded ? loaded.default : loaded;
     } catch (err) {
       console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
@@ -149,17 +140,19 @@ export default async (dir: string): Promise<ForgeConfig> => {
     publishers: [],
     plugins: [],
   };
-  forgeConfig = {
+  let resolvedForgeConfig: ResolvedForgeConfig = {
     ...defaultForgeConfig,
     ...forgeConfig,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pluginInterface: null as any,
   };
 
   const templateObj = { ...packageJSON, year: new Date().getFullYear() };
-  renderConfigTemplate(dir, templateObj, forgeConfig);
+  renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
-  forgeConfig.pluginInterface = new PluginInterface(dir, forgeConfig);
+  resolvedForgeConfig.pluginInterface = new PluginInterface(dir, resolvedForgeConfig);
 
-  forgeConfig = await runMutatingHook(forgeConfig, 'resolveForgeConfig', forgeConfig);
+  resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
 
-  return proxify<ForgeConfig>(forgeConfig.buildIdentifier || '', forgeConfig, 'ELECTRON_FORGE');
+  return proxify<ResolvedForgeConfig>(resolvedForgeConfig.buildIdentifier || '', resolvedForgeConfig, 'ELECTRON_FORGE');
 };
