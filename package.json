@@ -9,6 +9,7 @@
   "bolt": {
     "workspaces": [
       "packages/api/*",
+      "packages/external/*",
       "packages/maker/*",
       "packages/publisher/*",
       "packages/utils/*",
@@ -31,6 +32,7 @@
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
+    "preinstall": "node ./tools/maybe-shim-windows.js",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install"
   },
