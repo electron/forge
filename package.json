@@ -32,7 +32,8 @@
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts && mkdirp packages/api/cli/dist && touch packages/api/cli/dist/electron-forge.js",
+    "preinstall": "npx mkdirp packages/api/cli/dist && npx mkdirp packages/external/create-electron-app/dist && touch packages/api/cli/dist/electron-forge.js && touch packages/external/create-electron-app/dist/index.js",
+    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install"
   },
   "dependencies": {
