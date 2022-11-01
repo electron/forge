@@ -55,6 +55,12 @@ jobs:
             *) BOLT_VERSION=latest ;;
           esac
           npm install -g bolt@$BOLT_VERSION
+      - name: Fix linking 'create-electron-app' on Windows
+        shell: bash
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd packages/api/cli
+          yarn install
       - name: Install
         run: bolt
       - name: Lint
