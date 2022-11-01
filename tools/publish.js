@@ -54,9 +54,7 @@ const publisher = new Listr([
         await Promise.all(
           ctx.dirsToPublish.map(async (dir) => {
             const { name, version } = await fs.readJson(path.resolve(dir, 'package.json'));
-            // TODO: Re-enable this once V6 stable is released
-            // const isBeta = version.includes('beta');
-            const isBeta = false;
+            const isBeta = version.includes('beta');
             return {
               title: `Publishing: ${chalk.cyan(`${name}@${version}`)} (beta=${isBeta ? chalk.green('true') : chalk.red('false')})`,
               task: async () => {
