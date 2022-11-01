@@ -53,7 +53,7 @@
     "cross-spawn": "^7.0.3",
     "cross-zip": "^4.0.0",
     "debug": "^4.3.1",
-    "electron-packager": "^17.1.0",
+    "electron-packager": "^17.1.1",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",

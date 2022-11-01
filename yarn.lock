@@ -3927,10 +3927,10 @@ electron-installer-snap@^5.1.0:
     which "^2.0.1"
     yargs "^15.0.1"
 
-electron-packager@^17.1.0:
-  version "17.1.0"
-  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-17.1.0.tgz#e9653aa57dc523cdb3e0de7ec1a8e0112a1befec"
-  integrity sha512-60TBoutfZuAcfJJL1IVWXDZnZ+Yn88HX3UhOLhHbdB/DKA8RAfwXUhSmsWWozh118gbqYRG/WEk9aDL1xVSMKQ==
+electron-packager@^17.1.1:
+  version "17.1.1"
+  resolved "https://registry.yarnpkg.com/electron-packager/-/electron-packager-17.1.1.tgz#f156fc63d3a66f4e902e4b42992550a172982d59"
+  integrity sha512-r1NDtlajsq7gf2EXgjRfblCVPquvD2yeg+6XGErOKblvxOpDi0iulZLVhgYDP4AEF1P5/HgbX/vwjlkEv7PEIQ==
   dependencies:
     "@electron/asar" "^3.2.1"
     "@electron/get" "^2.0.0"
