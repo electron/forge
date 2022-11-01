@@ -32,7 +32,7 @@
     "lint:fix": "prettier --write .",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
+    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts && mkdirp packages/api/cli/dist && touch packages/api/cli/dist/electron-forge.js",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -70,6 +70,7 @@
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
+    "mkdirp": "^1.0.4",
     "node-fetch": "^2.6.7",
     "ora": "^5.0.0",
     "parse-author": "^2.0.0",
@@ -148,6 +149,7 @@
     "rimraf": "^3.0.1",
     "sinon": "^13.0.1",
     "sinon-chai": "^3.6.0",
+    "touch": "^3.1.0",
     "ts-node": "^10.0.0",
     "typedoc": "^0.22.15",
     "typedoc-plugin-missing-exports": "^1.0.0",
