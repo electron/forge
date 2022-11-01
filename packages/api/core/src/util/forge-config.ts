@@ -28,7 +28,7 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
   }
 
   for (const [key, val] of Object.entries(proxifiedObject)) {
-    if (typeof val === 'object' && key !== 'pluginInterface' && !(val instanceof RegExp)) {
+    if (typeof val === 'object' && (val.constructor === Object || val.constructor === Array) && key !== 'pluginInterface' && !(val instanceof RegExp)) {
       (newObject as any)[key] = proxify(buildIdentifier, (proxifiedObject as any)[key], `${envPrefix}_${underscoreCase(key)}`);
     } else {
       (newObject as any)[key] = (proxifiedObject as any)[key];
