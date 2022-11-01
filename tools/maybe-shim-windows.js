@@ -6,17 +6,17 @@ const path = require('path');
  * Should run on Windows only.
  * More details: https://github.com/boltpkg/bolt/issues/207
  */
-function createShim(dir, shimPath) {
-  const cwd = process.cwd();
-  fs.mkdirSync(path.resolve(cwd, dir), { recursive: true });
-  fs.writeFileSync(path.resolve(cwd, shimPath), '');
+function createShim(shimPath) {
+  fs.mkdirSync(path.dirname(shimPath), { recursive: true });
+  fs.writeFileSync(shimPath, '');
 }
 
 async function main() {
-  const cli = path.resolve('packages', 'api', 'cli', 'dist');
-  const cea = path.resolve('packages', 'external', 'create-electron-app', 'dist');
-  createShim(cli, path.resolve(cli, 'electron-forge.js'));
-  createShim(cea, path.resolve(cea, 'index.js'));
+  const srcRoot = path.resolve(__dirname, '..');
+  const cli = path.resolve(srcRoot, 'packages', 'api', 'cli', 'dist', 'electron-forge.js');
+  const cea = path.resolve(srcRoot, 'packages', 'external', 'create-electron-app', 'dist', 'index.js');
+  createShim(cli);
+  createShim(cea);
 }
 
 if (process.platform === 'win32') {
