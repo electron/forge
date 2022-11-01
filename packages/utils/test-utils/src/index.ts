@@ -9,7 +9,7 @@ async function runNPM(dir: string, ...args: string[]) {
   await spawn('npm', args, { cwd: dir });
 }
 
-async function runNPMInstall(dir: string, ...args: string[]) {
+export async function runNPMInstall(dir: string, ...args: string[]) {
   await runNPM(dir, 'install', ...args);
 }
 
