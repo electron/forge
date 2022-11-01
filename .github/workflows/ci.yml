@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           case "$(uname -s)" in
-            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.24.10 ;;
             *) BOLT_VERSION=latest ;;
           esac
           npm install -g bolt@$BOLT_VERSION
@@ -109,7 +109,7 @@ jobs:
         shell: bash
         run: |
           case "$(uname -s)" in
-            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.21.2 ;;
+            Windows*|CYGWIN*|MINGW*|MSYS*) BOLT_VERSION=0.24.10 ;;
             *) BOLT_VERSION=latest ;;
           esac
           npm install -g bolt@$BOLT_VERSION
