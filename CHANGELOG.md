@@ -1,3 +1,9 @@
+#### [6.0.0-beta.75](https://github.com/electron/forge/releases/tag/v6.0.0-beta.75) (2022-11-01)
+
+##### New Features
+
+- move create-electron-app into forge (#2988) ([a2eadbcb](https://github.com/electron/forge/commit/a2eadbcb))
+
 #### [6.0.0-beta.74](https://github.com/electron/forge/releases/tag/v6.0.0-beta.74) (2022-11-01)
 
 ##### Bug Fixes
