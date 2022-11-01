@@ -1,3 +1,13 @@
+#### [6.0.0-beta.74](https://github.com/electron/forge/releases/tag/v6.0.0-beta.74) (2022-11-01)
+
+##### Bug Fixes
+
+- do not proxify class instances in forge config (#3039) ([a89ed7d3](https://github.com/electron/forge/commit/a89ed7d3))
+
+##### Other Changes
+
+- add proper package test for webpack ts template (#3040) ([6e9cca35](https://github.com/electron/forge/commit/6e9cca35))
+
 #### [6.0.0-beta.73](https://github.com/electron/forge/releases/tag/v6.0.0-beta.73) (2022-11-01)
 
 ##### Bug Fixes
