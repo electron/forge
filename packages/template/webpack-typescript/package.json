@@ -20,6 +20,7 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
+    "@electron-forge/core-utils": "^6.0.0-beta.73",
     "@electron-forge/maker-deb": "6.0.0-beta.73",
     "@electron-forge/maker-rpm": "6.0.0-beta.73",
     "@electron-forge/maker-squirrel": "6.0.0-beta.73",

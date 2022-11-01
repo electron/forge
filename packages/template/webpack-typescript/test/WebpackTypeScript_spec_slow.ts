@@ -1,12 +1,12 @@
 import path from 'path';
 
+import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
-import template from '../src/WebpackTypeScriptTemplate';
 
 describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
@@ -49,19 +49,42 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   describe('lint', () => {
+    it('should initially pass the linting process', async () => {
+      delete process.env.TS_NODE_PROJECT;
+      await testUtils.expectLintToPass(dir);
+    });
+  });
+
+  describe('package', () => {
+    let cwd: string;
+
     before(async () => {
       delete process.env.TS_NODE_PROJECT;
-      await testUtils.ensureModulesInstalled(
-        dir,
-        ['electron', 'electron-squirrel-startup'],
-        template.devDependencies
-          .filter((moduleName) => moduleName.includes('eslint') || moduleName.includes('typescript'))
-          .concat(['@electron-forge/plugin-webpack'])
-      );
+      // Webpack resolves plugins via cwd
+      cwd = process.cwd();
+      process.chdir(dir);
+      // We need the version of webpack to match exactly during development due to a quirk in
+      // typescript type-resolution.  In prod no one has to worry about things like this
+      const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+      pj.resolutions = {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        webpack: `${require('../../../plugin/webpack/node_modules/webpack/package.json').version}`,
+      };
+      await fs.writeJson(path.resolve(dir, 'package.json'), pj);
+      await yarnOrNpmSpawn(['install'], {
+        cwd: dir,
+      });
     });
 
-    it('should initially pass the linting process', async () => {
-      await testUtils.expectLintToPass(dir);
+    after(() => {
+      process.chdir(cwd);
+    });
+
+    it('should pass', async () => {
+      await api.package({
+        dir,
+        interactive: false,
+      });
     });
   });
 
