@@ -1,4 +1,13 @@
-import { ForgeHookMap, IForgePlugin, ResolvedForgeConfig, StartOptions, StartResult } from '@electron-forge/shared-types';
+import {
+  ForgeHookFn,
+  ForgeHookName,
+  ForgeListrTask,
+  ForgeMultiHookMap,
+  IForgePlugin,
+  ResolvedForgeConfig,
+  StartOptions,
+  StartResult,
+} from '@electron-forge/shared-types';
 
 export { StartOptions };
 
@@ -8,7 +17,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
   /** @internal */
   __isElectronForgePlugin!: true;
   /** @internal */
-  _resolvedHooks: ForgeHookMap = {};
+  _resolvedHooks: ForgeMultiHookMap = {};
 
   constructor(public config: C) {
     Object.defineProperty(this, '__isElectronForgePlugin', {
@@ -25,7 +34,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
     this.getHooks = () => this._resolvedHooks;
   }
 
-  getHooks(): ForgeHookMap {
+  getHooks(): ForgeMultiHookMap {
     return {};
   }
 
@@ -33,5 +42,26 @@ export default abstract class Plugin<C> implements IForgePlugin {
     return false;
   }
 }
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// This is a filthy hack around typescript to allow internal hooks in our
+// internal plugins to have some level of access to the "Task" that listr runs.
+// Specifically the ability to set a custom task name and receive the task
+// instance as a parameter
+//
+// This method is not type safe internally, but is type safe for consumers
+// @internal
+export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
+  hookFn: (task: ForgeListrTask<never> | null, ...args: Parameters<ForgeHookFn<Hook>>) => ReturnType<ForgeHookFn<Hook>>,
+  name: string
+): ForgeHookFn<Hook> => {
+  function namedHookWithTaskInner(this: ForgeListrTask<any> | null, ...args: any[]) {
+    return (hookFn as any)(this, ...args);
+  }
+  const fn = namedHookWithTaskInner as any;
+  fn.__hookName = name;
+  return fn;
+};
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export { Plugin as PluginBase };

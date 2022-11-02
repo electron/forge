@@ -1,7 +1,7 @@
 import { spawn, SpawnOptions } from 'child_process';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
-import { ElectronProcess, ForgeArch, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeArch, ForgeListrTask, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
@@ -69,7 +69,7 @@ export default async ({
         },
       },
       {
-        title: 'Rebuilding native modules',
+        title: 'Preparing native dependencies',
         task: async ({ dir, forgeConfig, packageJSON }, task) => {
           await listrCompatibleRebuildHook(
             dir,
@@ -77,7 +77,7 @@ export default async ({
             platform as ForgePlatform,
             arch as ForgeArch,
             forgeConfig.rebuildConfig,
-            task
+            task as ForgeListrTask<never>
           );
         },
         options: {
@@ -116,7 +116,7 @@ export default async ({
       inspectBrk,
     });
     if (typeof spawnedPluginChild === 'object' && 'tasks' in spawnedPluginChild) {
-      const innerRunner = new Listr([], listrOptions);
+      const innerRunner = new Listr<never>([], listrOptions);
       for (const task of spawnedPluginChild.tasks) {
         innerRunner.add(task);
       }

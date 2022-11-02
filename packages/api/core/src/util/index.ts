@@ -1,4 +1,4 @@
-import { getElectronVersion, hasYarn, packagerRebuildHook, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { getElectronVersion, hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 
 import { BuildIdentifierConfig, BuildIdentifierMap, fromBuildIdentifier } from './forge-config';
 
@@ -17,8 +17,6 @@ export default class ForgeUtils {
   getElectronVersion = getElectronVersion;
 
   hasYarn = hasYarn;
-
-  rebuildHook = packagerRebuildHook;
 
   yarnOrNpmSpawn = yarnOrNpmSpawn;
 }

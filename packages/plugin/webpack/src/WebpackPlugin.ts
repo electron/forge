@@ -1,10 +1,9 @@
 import http from 'http';
 import path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
-import { getElectronVersion, packagerRebuildHook } from '@electron-forge/core-utils';
-import { PluginBase } from '@electron-forge/plugin-base';
-import { ForgeHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -149,21 +148,31 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return this._configGenerator;
   }
 
-  getHooks(): ForgeHookMap {
+  getHooks(): ForgeMultiHookMap {
     return {
-      prePackage: async (config, platform, arch) => {
-        this.isProd = true;
-        await fs.remove(this.baseDir);
-        await packagerRebuildHook(
-          this.projectDir,
-          await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-          platform,
-          arch,
-          config.rebuildConfig
-        );
-        await this.compileMain();
-        await this.compileRenderers();
-      },
+      prePackage: [
+        namedHookWithTaskFn<'prePackage'>(async (task, config, platform, arch) => {
+          if (!task) {
+            throw new Error('Incompatible usage of webpack-plugin prePackage hook');
+          }
+
+          this.isProd = true;
+          await fs.remove(this.baseDir);
+          await listrCompatibleRebuildHook(
+            this.projectDir,
+            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+            platform,
+            arch,
+            config.rebuildConfig,
+            task,
+            chalk.cyan('[plugin-webpack] ')
+          );
+        }, 'Preparing native dependencies'),
+        namedHookWithTaskFn<'prePackage'>(async () => {
+          await this.compileMain();
+          await this.compileRenderers();
+        }, 'Building webpack bundles'),
+      ],
       postStart: async (_config, child) => {
         d('hooking electron process exit');
         child.on('exit', () => {
@@ -268,25 +277,21 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   compileRenderers = async (watch = false): Promise<void> => {
-    await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
-      if (!watch && stats?.hasErrors()) {
-        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
-      }
-    });
+    const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
+    if (!watch && stats?.hasErrors()) {
+      throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+    }
 
     for (const entryPoint of this.config.renderer.entryPoints) {
       if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-        await asyncOra(`Compiling Renderer Preload: ${chalk.cyan(entryPoint.name)}`, async () => {
-          const stats = await this.runWebpack(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
-          );
+        const stats = await this.runWebpack(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
+        );
 
-          if (stats?.hasErrors()) {
-            throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
-          }
-        });
+        if (stats?.hasErrors()) {
+          throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
+        }
       }
     }
   };

@@ -23,3 +23,4 @@ packages/**/.swc
 .webpack
 packages/api/core/test/fixture/app-with-scoped-name/out/make
 packages/plugin/webpack/test/fixtures/apps/native-modules/package-lock.json
+.links

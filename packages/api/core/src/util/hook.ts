@@ -1,10 +1,12 @@
 import {
+  ForgeListrTaskDefinition,
   ForgeMutatingHookFn,
   ForgeMutatingHookSignatures,
   ForgeSimpleHookFn,
   ForgeSimpleHookSignatures,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
 
 const d = debug('electron-forge:hook');
@@ -24,6 +26,29 @@ export const runHook = async <Hook extends keyof ForgeSimpleHookSignatures>(
     }
   }
   await forgeConfig.pluginInterface.triggerHook(hookName, hookArgs);
+};
+
+export const getHookListrTasks = async <Hook extends keyof ForgeSimpleHookSignatures>(
+  forgeConfig: ResolvedForgeConfig,
+  hookName: Hook,
+  ...hookArgs: ForgeSimpleHookSignatures[Hook]
+): Promise<ForgeListrTaskDefinition[]> => {
+  const { hooks } = forgeConfig;
+  const tasks: ForgeListrTaskDefinition[] = [];
+  if (hooks) {
+    d(`hook triggered: ${hookName}`);
+    if (typeof hooks[hookName] === 'function') {
+      d('calling hook:', hookName, 'with args:', hookArgs);
+      tasks.push({
+        title: `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
+        task: async () => {
+          await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(forgeConfig, ...hookArgs);
+        },
+      });
+    }
+  }
+  tasks.push(...(await forgeConfig.pluginInterface.getHookListrTasks(hookName, hookArgs)));
+  return tasks;
 };
 
 export async function runMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(

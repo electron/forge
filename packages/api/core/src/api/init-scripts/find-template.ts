@@ -35,6 +35,8 @@ export const findTemplate = async (dir: string, template: string): Promise<Forge
     throw new Error(`Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge/template-${template}\``);
   }
 
+  d(`found template module at: ${templateModulePath}`);
+
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
