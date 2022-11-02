@@ -65,14 +65,6 @@ jobs:
         run: bolt build
       - name: Run tests
         run: bolt coverage:fast
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
-        with:
-          file: ./coverage.lcov
-          env_vars: CI_OS,TEST_TYPE
-        env:
-          CI_OS: ${{ matrix.os }}
-          TEST_TYPE: fast
 
   slow-tests:
     runs-on: ${{ matrix.os }}
@@ -121,11 +113,3 @@ jobs:
         run: bolt coverage:slow
         env:
           DEBUG: electron-installer-snap:snapcraft
-      - name: Upload code coverage to Codecov
-        uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 #v3.1.1
-        with:
-          file: ./coverage.lcov
-          env_vars: CI_OS,TEST_TYPE
-        env:
-          CI_OS: ${{ matrix.os }}
-          TEST_TYPE: slow
