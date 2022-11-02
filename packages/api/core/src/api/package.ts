@@ -71,6 +71,7 @@ function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHook
 }
 
 type PackageContext = {
+  dir: string;
   forgeConfig: ResolvedForgeConfig;
   packageJSON: any;
   calculatedOutDir: string;
@@ -109,32 +110,32 @@ export interface PackageOptions {
   outDir?: string;
 }
 
-export default async ({
-  dir = process.cwd(),
+export const listrPackage = ({
+  dir: providedDir = process.cwd(),
   interactive = false,
   arch = getHostArch() as ForgeArch,
   platform = process.platform as ForgePlatform,
   outDir,
-}: PackageOptions): Promise<PackageResult[]> => {
+}: PackageOptions) => {
   const runner = new Listr<PackageContext>(
     [
       {
         title: 'Preparing to package application',
         task: async (ctx) => {
-          const resolvedDir = await resolveDir(dir);
+          const resolvedDir = await resolveDir(providedDir);
           if (!resolvedDir) {
             throw new Error('Failed to locate compilable Electron application');
           }
-          dir = resolvedDir;
+          ctx.dir = resolvedDir;
 
-          ctx.forgeConfig = await getForgeConfig(dir);
-          ctx.packageJSON = await readMutatedPackageJson(dir, ctx.forgeConfig);
+          ctx.forgeConfig = await getForgeConfig(resolvedDir);
+          ctx.packageJSON = await readMutatedPackageJson(resolvedDir, ctx.forgeConfig);
 
           if (!ctx.packageJSON.main) {
             throw new Error('packageJSON.main must be set to a valid entry point for your Electron app');
           }
 
-          ctx.calculatedOutDir = outDir || getCurrentOutDir(dir, ctx.forgeConfig);
+          ctx.calculatedOutDir = outDir || getCurrentOutDir(resolvedDir, ctx.forgeConfig);
         },
       },
       {
@@ -193,7 +194,7 @@ export default async ({
               provideTargets(targets);
               done();
             },
-            ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, dir),
+            ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, ctx.dir),
           ];
 
           const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
@@ -236,7 +237,7 @@ export default async ({
               await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
               done();
             },
-            ...resolveHooks(forgeConfig.packagerConfig.afterCopy, dir),
+            ...resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir),
           ];
 
           const afterCompleteHooks: HookFunction[] = [
@@ -249,7 +250,7 @@ export default async ({
           const afterPruneHooks = [];
 
           if (pruneEnabled) {
-            afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, dir));
+            afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir));
           }
 
           afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
@@ -263,7 +264,7 @@ export default async ({
               done();
             }) as HookFunction,
           ];
-          afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, dir));
+          afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, ctx.dir));
 
           type PackagerArch = Exclude<ForgeArch, 'arm'>;
 
@@ -273,7 +274,7 @@ export default async ({
             ignore: [/^\/out\//g],
             ...forgeConfig.packagerConfig,
             quiet: true,
-            dir,
+            dir: ctx.dir,
             arch: arch as PackagerArch,
             platform,
             afterFinalizePackageTargets: sequentialFinalizePackageTargetsHooks(afterFinalizePackageTargetsHooks),
@@ -282,7 +283,7 @@ export default async ({
             afterExtract: sequentialHooks(afterExtractHooks),
             afterPrune: sequentialHooks(afterPruneHooks),
             out: calculatedOutDir,
-            electronVersion: await getElectronVersion(dir, packageJSON),
+            electronVersion: await getElectronVersion(ctx.dir, packageJSON),
           };
           packageOpts.quiet = true;
 
@@ -363,6 +364,9 @@ export default async ({
                       task: async () => {
                         await addSignalAndWait(signalPackageDone, target);
                       },
+                      options: {
+                        showTimer: true,
+                      },
                     }
                   : {
                       title: `Packaging for ${chalk.cyan(target.arch)} on ${chalk.cyan(target.platform)}${
@@ -431,8 +435,15 @@ export default async ({
         collapse: false,
         collapseErrors: false,
       },
+      ctx: {} as PackageContext,
     }
   );
+
+  return runner;
+};
+
+export default async (opts: PackageOptions): Promise<PackageResult[]> => {
+  const runner = listrPackage(opts);
 
   await runner.run();
 
