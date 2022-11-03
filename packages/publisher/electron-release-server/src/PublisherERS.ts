@@ -1,6 +1,5 @@
 import path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
@@ -43,7 +42,7 @@ export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch): string =>
 export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
   name = 'electron-release-server';
 
-  async publish({ makeResults }: PublisherOptions): Promise<void> {
+  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     if (!(config.baseUrl && config.username && config.password)) {
@@ -110,48 +109,43 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       }
 
       let uploaded = 0;
-      const getText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
+      const updateStatusLine = () => setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length})`);
+      updateStatusLine();
 
-      await asyncOra(getText(), async (uploadSpinner) => {
-        const updateSpinner = () => {
-          uploadSpinner.text = getText();
-        };
+      await Promise.all(
+        artifacts.map(async (artifactPath) => {
+          if (existingVersion) {
+            const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath));
 
-        await Promise.all(
-          artifacts.map(async (artifactPath) => {
-            if (existingVersion) {
-              const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath));
-
-              if (existingAsset) {
-                d('asset at path:', artifactPath, 'already exists on server');
-                uploaded += 1;
-                updateSpinner();
-                return;
-              }
+            if (existingAsset) {
+              d('asset at path:', artifactPath, 'already exists on server');
+              uploaded += 1;
+              updateStatusLine();
+              return;
             }
-            d('attempting to upload asset:', artifactPath);
-            const artifactForm = new FormData();
-            artifactForm.append('token', token);
-            artifactForm.append('version', packageJSON.version);
-            artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
+          }
+          d('attempting to upload asset:', artifactPath);
+          const artifactForm = new FormData();
+          artifactForm.append('token', token);
+          artifactForm.append('version', packageJSON.version);
+          artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
 
-            // see https://github.com/form-data/form-data/issues/426
-            const fileOptions = {
-              knownLength: fs.statSync(artifactPath).size,
-            };
-            artifactForm.append('file', fs.createReadStream(artifactPath), fileOptions);
+          // see https://github.com/form-data/form-data/issues/426
+          const fileOptions = {
+            knownLength: fs.statSync(artifactPath).size,
+          };
+          artifactForm.append('file', fs.createReadStream(artifactPath), fileOptions);
 
-            await authFetch('api/asset', {
-              method: 'POST',
-              body: artifactForm,
-              headers: artifactForm.getHeaders(),
-            });
-            d('upload successful for asset:', artifactPath);
-            uploaded += 1;
-            updateSpinner();
-          })
-        );
-      });
+          await authFetch('api/asset', {
+            method: 'POST',
+            body: artifactForm,
+            headers: artifactForm.getHeaders(),
+          });
+          d('upload successful for asset:', artifactPath);
+          uploaded += 1;
+          updateStatusLine();
+        })
+      );
     }
   }
 }

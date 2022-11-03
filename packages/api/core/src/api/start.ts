@@ -8,7 +8,7 @@ import { Listr } from 'listr2';
 
 import locateElectronExecutable from '../util/electron-executable';
 import getForgeConfig from '../util/forge-config';
-import { runHook } from '../util/hook';
+import { getHookListrTasks, runHook } from '../util/hook';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 
@@ -87,9 +87,9 @@ export default async ({
         },
       },
       {
-        title: 'Generating assets',
-        task: async ({ forgeConfig }) => {
-          await runHook(forgeConfig, 'generateAssets', platform, arch);
+        title: `Running ${chalk.yellow('generateAssets')} hook`,
+        task: async ({ forgeConfig }, task) => {
+          return task.newListr(await getHookListrTasks(forgeConfig, 'generateAssets', platform, arch));
         },
       },
     ],

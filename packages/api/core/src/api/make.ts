@@ -88,18 +88,22 @@ export interface MakeOptions {
   outDir?: string;
 }
 
-export default async ({
-  dir: providedDir = process.cwd(),
-  interactive = false,
-  skipPackage = false,
-  arch = getHostArch() as ForgeArch,
-  platform = process.platform as ForgePlatform,
-  overrideTargets,
-  outDir,
-}: MakeOptions): Promise<ForgeMakeResult[]> => {
+export const listrMake = (
+  {
+    dir: providedDir = process.cwd(),
+    interactive = false,
+    skipPackage = false,
+    arch = getHostArch() as ForgeArch,
+    platform = process.platform as ForgePlatform,
+    overrideTargets,
+    outDir,
+  }: MakeOptions,
+  receiveMakeResults?: (results: ForgeMakeResult[]) => void
+) => {
   const listrOptions = {
     concurrent: false,
     rendererOptions: {
+      collapse: false,
       collapseErrors: false,
     },
     rendererSilent: !interactive,
@@ -109,24 +113,19 @@ export default async ({
   const runner = new Listr<MakeContext>(
     [
       {
-        title: 'Locating application',
+        title: 'Loading configuration',
         task: async (ctx) => {
           const resolvedDir = await resolveDir(providedDir);
           if (!resolvedDir) {
             throw new Error('Failed to locate startable Electron application');
           }
+
           ctx.dir = resolvedDir;
+          ctx.forgeConfig = await getForgeConfig(resolvedDir);
         },
       },
       {
-        title: 'Loading configuration',
-        task: async (ctx) => {
-          const { dir } = ctx;
-          ctx.forgeConfig = await getForgeConfig(dir);
-        },
-      },
-      {
-        title: 'Resolve make targets',
+        title: 'Resolving make targets',
         task: async (ctx, task) => {
           const { dir, forgeConfig } = ctx;
           ctx.actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
@@ -315,6 +314,7 @@ export default async ({
           // If the postMake hooks modifies the locations / names of the outputs it must return
           // the new locations so that the publish step knows where to look
           ctx.outputs = await runMutatingHook(ctx.forgeConfig, 'postMake', ctx.outputs);
+          receiveMakeResults?.(ctx.outputs);
 
           task.output = `Artifacts available at: ${chalk.green(path.resolve(ctx.actualOutDir, 'make'))}`;
         },
@@ -323,10 +323,21 @@ export default async ({
         },
       },
     ],
-    listrOptions
+    {
+      ...listrOptions,
+      ctx: {} as MakeContext,
+    }
   );
+
+  return runner;
+};
+
+const make = async (opts: MakeOptions): Promise<ForgeMakeResult[]> => {
+  const runner = listrMake(opts);
 
   await runner.run();
 
   return runner.ctx.outputs;
 };
+
+export default make;

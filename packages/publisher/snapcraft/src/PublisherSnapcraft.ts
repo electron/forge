@@ -1,6 +1,5 @@
 import path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import fs from 'fs-extra';
 
@@ -13,7 +12,7 @@ const Snapcraft = require('electron-installer-snap/src/snapcraft');
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {
   name = 'snapcraft';
 
-  async publish({ dir, makeResults }: PublisherOptions): Promise<void> {
+  async publish({ dir, makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const artifacts = makeResults.reduce((flat, makeResult) => {
       flat.push(...makeResult.artifacts);
       return flat;
@@ -34,10 +33,9 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
       );
     }
 
-    await asyncOra('Pushing snap to the snap store', async () => {
-      const snapcraft = new Snapcraft();
-      await snapcraft.run(dir, 'push', this.config, snapArtifacts);
-    });
+    setStatusLine('Pushing snap to the snap store');
+    const snapcraft = new Snapcraft();
+    await snapcraft.run(dir, 'push', this.config, snapArtifacts);
   }
 }
 
