@@ -52,7 +52,6 @@ type MakeContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
   actualOutDir: string;
-  actualTargetPlatform: string;
   makers: MakerBase<unknown>[];
   outputs: ForgeMakeResult[];
 };
@@ -130,12 +129,9 @@ export const listrMake = (
           const { dir, forgeConfig } = ctx;
           ctx.actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
 
-          const actualTargetPlatform = platform;
-          platform = platform === 'mas' ? 'darwin' : platform;
-          if (!['darwin', 'win32', 'linux', 'mas'].includes(actualTargetPlatform)) {
-            throw new Error(`'${actualTargetPlatform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'.`);
+          if (!['darwin', 'win32', 'linux', 'mas'].includes(platform)) {
+            throw new Error(`'${platform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'.`);
           }
-          ctx.actualTargetPlatform = actualTargetPlatform;
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const makers: MakerBase<any>[] = [];
@@ -147,7 +143,7 @@ export const listrMake = (
             let maker: MakerBase<any>;
             if (isElectronForgeMaker(possibleMaker)) {
               maker = possibleMaker;
-              if (!maker.platforms.includes(actualTargetPlatform)) continue;
+              if (!maker.platforms.includes(platform)) continue;
             } else {
               const resolvableTarget = possibleMaker as IForgeResolvableMaker;
               // non-false falsy values should be 'true'
@@ -167,7 +163,7 @@ export const listrMake = (
               }
 
               maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
-              if (!maker.platforms.includes(actualTargetPlatform)) continue;
+              if (!maker.platforms.includes(platform)) continue;
             }
 
             if (!maker.isSupportedOnCurrentPlatform) {
@@ -190,7 +186,7 @@ export const listrMake = (
           }
 
           if (makers.length === 0) {
-            throw new Error(`Could not find any make targets configured for the "${actualTargetPlatform}" platform.`);
+            throw new Error(`Could not find any make targets configured for the "${platform}" platform.`);
           }
 
           ctx.makers = makers;
@@ -230,7 +226,7 @@ export const listrMake = (
       {
         title: 'Making distributables',
         task: async (ctx, task) => {
-          const { actualOutDir, actualTargetPlatform, dir, forgeConfig, makers } = ctx;
+          const { actualOutDir, dir, forgeConfig, makers } = ctx;
           const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
           const appName = filenamify(forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name, { replacement: '-' });
           const outputs: ForgeMakeResult[] = [];
@@ -245,14 +241,14 @@ export const listrMake = (
           });
 
           for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
-            const packageDir = path.resolve(actualOutDir, `${appName}-${actualTargetPlatform}-${targetArch}`);
+            const packageDir = path.resolve(actualOutDir, `${appName}-${platform}-${targetArch}`);
             if (!(await fs.pathExists(packageDir))) {
               throw new Error(`Couldn't find packaged app at: ${packageDir}`);
             }
 
             for (const maker of makers) {
               subRunner.add({
-                title: `Making a ${chalk.magenta(maker.name)} distributable for ${chalk.cyan(`${actualTargetPlatform}/${targetArch}`)}`,
+                title: `Making a ${chalk.magenta(maker.name)} distributable for ${chalk.cyan(`${platform}/${targetArch}`)}`,
                 task: async () => {
                   try {
                     /**
@@ -276,13 +272,13 @@ export const listrMake = (
                       targetArch,
                       dir: packageDir,
                       makeDir: path.resolve(actualOutDir, 'make'),
-                      targetPlatform: actualTargetPlatform,
+                      targetPlatform: platform,
                     });
 
                     outputs.push({
                       artifacts,
                       packageJSON,
-                      platform: actualTargetPlatform,
+                      platform,
                       arch: targetArch,
                     });
                   } catch (err) {
