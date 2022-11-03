@@ -1,6 +1,5 @@
 import { ChildProcess } from 'child_process';
 
-import { OraImpl } from '@electron-forge/async-ora';
 import { RebuildOptions } from '@electron/rebuild';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
@@ -26,7 +25,6 @@ export interface ForgeSimpleHookSignatures {
       platform: ForgePlatform;
       arch: ForgeArch;
       outputPaths: string[];
-      spinner?: OraImpl;
     }
   ];
   preMake: [];
@@ -56,9 +54,16 @@ export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSi
 export type ForgeHookMap = {
   [S in ForgeHookName]?: ForgeHookFn<S>;
 };
+export type ForgeMultiHookMap = {
+  [S in ForgeHookName]?: ForgeHookFn<S> | ForgeHookFn<S>[];
+};
 
 export interface IForgePluginInterface {
   triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
+  getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    hookName: Hook,
+    hookArgs: ForgeSimpleHookSignatures[Hook]
+  ): Promise<ForgeListrTaskDefinition[]>;
   triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
     hookName: Hook,
     item: ForgeMutatingHookSignatures[Hook][0]
@@ -122,7 +127,7 @@ export interface IForgePlugin {
   name: string;
 
   init(dir: string, forgeConfig: ResolvedForgeConfig): void;
-  getHooks?(): ForgeHookMap;
+  getHooks?(): ForgeMultiHookMap;
   startLogic?(opts: StartOptions): Promise<StartResult>;
 }
 
@@ -194,7 +199,8 @@ export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
 
-export type ForgeListrTaskDefinition = ListrTask<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ForgeListrTaskDefinition = ListrTask<never>;
 
 export interface ForgeTemplate {
   requiredForgeVersion?: string;

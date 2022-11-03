@@ -10,17 +10,17 @@ const options: RebuildOptions = JSON.parse(process.argv[2]);
 
 const rebuilder = rebuild(options);
 
-rebuilder.lifecycle.on('module-found', () => process.send!({ msg: 'module-found' }));
-rebuilder.lifecycle.on('module-done', () => process.send!({ msg: 'module-done' }));
+rebuilder.lifecycle.on('module-found', () => process.send?.({ msg: 'module-found' }));
+rebuilder.lifecycle.on('module-done', () => process.send?.({ msg: 'module-done' }));
 
 rebuilder
   .then(() => {
-    process.send!({ msg: 'rebuild-done' });
+    process.send?.({ msg: 'rebuild-done' });
     // eslint-disable-next-line no-process-exit
     return process.exit(0);
   })
   .catch((err) => {
-    process.send!({
+    process.send?.({
       msg: 'rebuild-error',
       err: {
         message: err.message,

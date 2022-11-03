@@ -29,6 +29,7 @@ describe('start', () => {
         pluginInterface: {
           overrideStartLogic: async () => shouldOverride,
           triggerHook: async () => false,
+          getHookListrTasks: () => Promise.resolve([]),
         },
       }),
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),

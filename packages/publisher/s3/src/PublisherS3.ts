@@ -4,7 +4,6 @@ import path from 'path';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { Credentials } from '@aws-sdk/types';
-import { asyncOra } from '@electron-forge/async-ora';
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 
@@ -22,7 +21,7 @@ type S3Artifact = {
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
 
-  async publish({ makeResults }: PublisherOptions): Promise<void> {
+  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
 
     if (!this.config.bucket) {
@@ -50,35 +49,34 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     d('creating s3 client with options:', this.config);
 
     let uploaded = 0;
-    const spinnerText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
+    const updateStatusLine = () => setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length})`);
 
-    await asyncOra(spinnerText(), async (uploadSpinner) => {
-      await Promise.all(
-        artifacts.map(async (artifact) => {
-          d('uploading:', artifact.path);
-          const uploader = new Upload({
-            client: s3Client,
-            params: {
-              Body: fs.createReadStream(artifact.path),
-              Bucket: this.config.bucket,
-              Key: this.keyForArtifact(artifact),
-              ACL: this.config.public ? 'public-read' : 'private',
-            },
-          });
+    updateStatusLine();
+    await Promise.all(
+      artifacts.map(async (artifact) => {
+        d('uploading:', artifact.path);
+        const uploader = new Upload({
+          client: s3Client,
+          params: {
+            Body: fs.createReadStream(artifact.path),
+            Bucket: this.config.bucket,
+            Key: this.keyForArtifact(artifact),
+            ACL: this.config.public ? 'public-read' : 'private',
+          },
+        });
 
-          uploader.on('httpUploadProgress', (progress: Progress) => {
-            if (progress.total) {
-              const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
-              d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
-            }
-          });
+        uploader.on('httpUploadProgress', (progress: Progress) => {
+          if (progress.total) {
+            const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
+            d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
+          }
+        });
 
-          await uploader.done();
-          uploaded += 1;
-          uploadSpinner.text = spinnerText();
-        })
-      );
-    });
+        await uploader.done();
+        uploaded += 1;
+        updateStatusLine();
+      })
+    );
   }
 
   keyForArtifact(artifact: S3Artifact): string {

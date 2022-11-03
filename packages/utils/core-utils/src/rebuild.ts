@@ -1,9 +1,8 @@
 import * as cp from 'child_process';
 import * as path from 'path';
 
-import { asyncOra } from '@electron-forge/async-ora';
 import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
-import { rebuild, RebuildOptions } from '@electron/rebuild';
+import { RebuildOptions } from '@electron/rebuild';
 
 export const listrCompatibleRebuildHook = async (
   buildPath: string,
@@ -11,9 +10,10 @@ export const listrCompatibleRebuildHook = async (
   platform: ForgePlatform,
   arch: ForgeArch,
   config: Partial<RebuildOptions> = {},
-  task: ForgeListrTask<any>
+  task: ForgeListrTask<never>,
+  taskTitlePrefix = ''
 ): Promise<void> => {
-  task.title = 'Preparing native dependencies';
+  task.title = `${taskTitlePrefix}Preparing native dependencies`;
 
   const options: RebuildOptions = {
     ...config,
@@ -26,12 +26,12 @@ export const listrCompatibleRebuildHook = async (
     stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
   });
 
-  let pendingError: unknown;
+  let pendingError: Error;
   let found = 0;
   let done = 0;
 
   const redraw = () => {
-    task.title = `Preparing native dependencies: ${done} / ${found}`;
+    task.title = `${taskTitlePrefix}Preparing native dependencies: ${done} / ${found}`;
   };
 
   child.stdout?.on('data', (chunk) => {
@@ -41,7 +41,7 @@ export const listrCompatibleRebuildHook = async (
     task.output = chunk.toString();
   });
 
-  child.on('message', (message: any) => {
+  child.on('message', (message: { msg: string; err: { message: string; stack: string } }) => {
     switch (message.msg) {
       case 'module-found': {
         found += 1;
@@ -55,7 +55,7 @@ export const listrCompatibleRebuildHook = async (
       }
       case 'rebuild-error': {
         pendingError = new Error(message.err.message);
-        (pendingError as any).stack = message.err.stack;
+        pendingError.stack = message.err.stack;
         break;
       }
       case 'rebuild-done': {
@@ -73,41 +73,5 @@ export const listrCompatibleRebuildHook = async (
         reject(pendingError || new Error(`Rebuilder failed with exit code: ${code}`));
       }
     });
-  });
-};
-
-export const packagerRebuildHook = async (
-  buildPath: string,
-  electronVersion: string,
-  _platform: ForgePlatform,
-  arch: ForgeArch,
-  config: Partial<RebuildOptions> = {}
-): Promise<void> => {
-  await asyncOra('Preparing native dependencies', async (rebuildSpinner) => {
-    const rebuilder = rebuild({
-      ...config,
-      buildPath,
-      electronVersion,
-      arch,
-    });
-    const { lifecycle } = rebuilder;
-
-    let found = 0;
-    let done = 0;
-
-    const redraw = () => {
-      rebuildSpinner.text = `Preparing native dependencies: ${done} / ${found}`;
-    };
-
-    lifecycle.on('module-found', () => {
-      found += 1;
-      redraw();
-    });
-    lifecycle.on('module-done', () => {
-      done += 1;
-      redraw();
-    });
-
-    await rebuilder;
   });
 };

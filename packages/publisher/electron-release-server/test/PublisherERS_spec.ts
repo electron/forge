@@ -4,10 +4,14 @@ import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
 
+import type { PublisherERS as PublisherERSType } from '../src/PublisherERS';
+
+const noop = () => void 0;
+
 describe('PublisherERS', () => {
   let fetch: typeof fetchMock;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let PublisherERS: any;
+  let PublisherERS: typeof PublisherERSType;
 
   beforeEach(() => {
     fetch = fetchMock.sandbox();
@@ -55,7 +59,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
@@ -102,7 +106,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
@@ -139,7 +143,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
       expect(calls).to.have.length(2);
@@ -178,7 +182,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
@@ -196,9 +200,10 @@ describe('PublisherERS', () => {
   });
 
   it('fails if username and password are not provided', () => {
+    // @ts-expect-error testing invalid options
     const publisher = new PublisherERS({});
 
-    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig })).to.eventually.be.rejectedWith(
+    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop })).to.eventually.be.rejectedWith(
       'In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info'
     );
   });
@@ -211,7 +216,7 @@ describe('PublisherERS', () => {
       username: 'test',
       password: 'test',
     });
-    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig })).to.eventually.be.rejectedWith(
+    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop })).to.eventually.be.rejectedWith(
       'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
     );
   });

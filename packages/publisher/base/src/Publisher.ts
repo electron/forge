@@ -1,4 +1,4 @@
-import { ForgeMakeResult, ForgePlatform, IForgePublisher, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, ForgeMakeResult, ForgePlatform, IForgePublisher, ResolvedForgeConfig } from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**
@@ -15,6 +15,12 @@ export interface PublisherOptions {
    * You probably shouldn't use this
    */
   forgeConfig: ResolvedForgeConfig;
+  /**
+   * A method that allows the publisher to provide status / progress updates
+   * to the user. This method currently maps to setting the "output" line
+   * in the publisher listr task.
+   */
+  setStatusLine: (statusLine: string) => void;
 }
 
 export default abstract class Publisher<C> implements IForgePublisher {
@@ -56,7 +62,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * be appending files to the existing version.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async publish(opts: PublisherOptions): Promise<void> {
+  async publish(opts: PublisherOptions): Promise<ForgeListrTaskDefinition[] | void> {
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }

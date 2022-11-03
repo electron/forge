@@ -30,6 +30,7 @@ describe('read-package-json', () => {
             triggerMutatingHook: (_hookName: string, pj: any) => Promise.resolve(pj),
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
+            getHookListrTasks: () => Promise.resolve([]),
           },
         } as ResolvedForgeConfig)
       ).to.deep.equal(require('../../package.json'));
@@ -43,6 +44,7 @@ describe('read-package-json', () => {
             triggerMutatingHook: () => Promise.resolve('test_mut'),
             triggerHook: () => Promise.resolve(),
             overrideStartLogic: () => Promise.resolve(false),
+            getHookListrTasks: () => Promise.resolve([]),
           },
         } as ResolvedForgeConfig)
       ).to.deep.equal('test_mut');

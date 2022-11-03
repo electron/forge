@@ -1,5 +1,6 @@
 import { PluginBase } from '@electron-forge/plugin-base';
 import {
+  ForgeListrTaskDefinition,
   ForgeMutatingHookFn,
   ForgeMutatingHookSignatures,
   ForgeSimpleHookFn,
@@ -69,10 +70,47 @@ export default class PluginInterface implements IForgePluginInterface {
   async triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void> {
     for (const plugin of this.plugins) {
       if (typeof plugin.getHooks === 'function') {
-        const hook = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>;
-        if (hook) await hook(this.config, ...hookArgs);
+        let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            await hook(this.config, ...hookArgs);
+          }
+        }
       }
     }
+  }
+
+  async getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    hookName: Hook,
+    hookArgs: ForgeSimpleHookSignatures[Hook]
+  ): Promise<ForgeListrTaskDefinition[]> {
+    const tasks: ForgeListrTaskDefinition[] = [];
+
+    for (const plugin of this.plugins) {
+      if (typeof plugin.getHooks === 'function') {
+        let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            tasks.push({
+              title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
+              task: async (_, task) => {
+                if ((hook as any).__hookName) {
+                  // Also give it the task
+                  await (hook as any).call(task, ...(hookArgs as any[]));
+                } else {
+                  await hook(this.config, ...hookArgs);
+                }
+              },
+              options: {},
+            });
+          }
+        }
+      }
+    }
+
+    return tasks;
   }
 
   async triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
@@ -82,9 +120,12 @@ export default class PluginInterface implements IForgePluginInterface {
     let result: ForgeMutatingHookSignatures[Hook][0] = item[0];
     for (const plugin of this.plugins) {
       if (typeof plugin.getHooks === 'function') {
-        const hook = plugin.getHooks()[hookName] as ForgeMutatingHookFn<Hook>;
-        if (hook) {
-          result = (await hook(this.config, ...item)) || result;
+        let hooks = plugin.getHooks()[hookName] as ForgeMutatingHookFn<Hook>[] | ForgeMutatingHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            result = (await hook(this.config, ...item)) || result;
+          }
         }
       }
     }

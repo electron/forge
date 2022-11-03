@@ -19,7 +19,8 @@
   },
   "scripts": {
     "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt build:fast",
+    "build:fast": "bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
     "build:full": "bolt ws exec -- tsc -b",
     "postbuild": "ts-node tools/test-dist",
     "coverage:fast": "xvfb-maybe cross-env INTEGRATION_TESTS=0 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 nyc mocha './tools/test-globber.ts' && nyc report --reporter=text-lcov > coverage.lcov",
@@ -30,6 +31,7 @@
     "docs:deploy:build": "bolt docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
+    "link:prepare": "bolt ws exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "preinstall": "node ./tools/maybe-shim-windows.js",

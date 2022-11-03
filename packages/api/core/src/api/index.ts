@@ -37,8 +37,8 @@ export class ForgeAPI {
   /**
    * Resolves hooks if they are a path to a file (instead of a `Function`)
    */
-  package(opts: PackageOptions): Promise<void> {
-    return _package(opts);
+  async package(opts: PackageOptions): Promise<void> {
+    await _package(opts);
   }
 
   /**
