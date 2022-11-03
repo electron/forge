@@ -149,11 +149,8 @@ const publish = async ({
         task: async (ctx: PublishContext, task: ForgeListrTask<PublishContext>) => {
           const { dir, forgeConfig } = ctx;
 
-          // const testPlatform = makeOptions.platform || process.platform as ForgePlatform;
           if (!publishTargets) {
             publishTargets = forgeConfig.publishers || [];
-            // .filter(publisher => (typeof publisher !== 'string' && publisher.platforms)
-            //   ? publisher.platforms.includes(testPlatform) : true);
           }
           publishTargets = (publishTargets as ForgeConfigPublisher[]).map((target) => {
             if (typeof target === 'string') {
