@@ -76,7 +76,7 @@ export default async ({
         task: async () => {
           d(`Attempting to import project in: ${dir}`);
           if (!(await fs.pathExists(dir)) || !(await fs.pathExists(path.resolve(dir, 'package.json')))) {
-            throw new Error(`We couldn't find a project in: ${dir}`);
+            throw new Error(`We couldn't find a project with a package.json file in: ${dir}`);
           }
 
           if (typeof confirmImport === 'function') {
