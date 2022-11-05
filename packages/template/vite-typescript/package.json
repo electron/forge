@@ -1,0 +1,27 @@
+{
+  "name": "@electron-forge/template-vite-typescript",
+  "version": "6.0.0",
+  "description": "Vite TypeScript template for Electron Forge, gets you started with Vite really quickly",
+  "repository": "https://github.com/electron/forge",
+  "author": "Alex Wei",
+  "license": "MIT",
+  "main": "dist/ViteTypeScriptTemplate.js",
+  "typings": "dist/ViteTypeScriptTemplate.d.ts",
+  "scripts": {
+    "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
+  },
+  "engines": {
+    "node": ">= 14.17.5"
+  },
+  "dependencies": {
+    "@electron-forge/shared-types": "6.0.0",
+    "@electron-forge/template-base": "6.0.0",
+    "fs-extra": "^10.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/test-utils": "6.0.0",
+    "chai": "^4.3.3",
+    "fast-glob": "^3.2.7",
+    "listr2": "^5.0.3"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "electron-vite": "^1.0.12",
+    "eslint": "^8.26.0",
+    "typescript": "^4.8.4",
+    "vite": "^3.2.2"
+  }
+}
