@@ -89,10 +89,10 @@ export default class WebpackConfigGenerator {
     return `${entryPoint.name.toUpperCase().replace(/ /g, '_')}${suffix}`;
   }
 
-  getPreloadDefine(entryPoint: WebpackPluginEntryPoint): string {
+  getPreloadDefine(entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean): string {
     if (!isNoWindow(entryPoint)) {
       if (this.isProd) {
-        return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+        return `require('path').resolve(__dirname, '..', '${inRendererDir ? 'renderer' : '.'}', '${entryPoint.name}', 'preload.js')`;
       }
       return `'${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
     } else {
@@ -117,7 +117,7 @@ export default class WebpackConfigGenerator {
       defines[`process.env.${entryKey}`] = defines[entryKey];
 
       const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
-      defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
+      defines[preloadDefineKey] = this.getPreloadDefine(entryPoint, inRendererDir);
       defines[`process.env.${preloadDefineKey}`] = defines[preloadDefineKey];
     }
 

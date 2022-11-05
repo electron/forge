@@ -175,7 +175,13 @@ describe('WebpackConfigGenerator', () => {
       it('should assign an expression to resolve the preload script in production', () => {
         const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
         const defines = generator.getDefines();
-        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
+        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '..', 'renderer', 'window', 'preload.js')");
+      });
+
+      it('should assign an expression to resolve the preload script in production renderer scripts', () => {
+        const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+        const defines = generator.getDefines(false);
+        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).to.equal("require('path').resolve(__dirname, '..', '.', 'window', 'preload.js')");
       });
     });
   });
