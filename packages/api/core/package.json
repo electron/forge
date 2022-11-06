@@ -39,7 +39,6 @@
     "sinon-chai": "^3.6.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0",
     "@electron-forge/core-utils": "6.0.0",
     "@electron-forge/maker-base": "6.0.0",
     "@electron-forge/plugin-base": "6.0.0",
