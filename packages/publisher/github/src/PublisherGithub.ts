@@ -100,7 +100,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === artifactName);
             if (asset !== undefined) {
-              if (config.override === true) {
+              if (config.force === true) {
                 await github.getGitHub().repos.deleteReleaseAsset({
                   owner: config.repository.owner,
                   repo: config.repository.name,

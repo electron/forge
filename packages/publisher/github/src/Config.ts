@@ -46,5 +46,5 @@ export interface PublisherGitHubConfig {
   /**
    * Re-upload the new asset if you upload an asset with the same filename as existing asset
    */
-  override?: boolean;
+  force?: boolean;
 }
