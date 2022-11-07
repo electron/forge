@@ -105,16 +105,19 @@ describe('GitHub', () => {
       }).to.throw('Please set GITHUB_TOKEN in your environment to access these features');
     });
 
-    it('should synthesize name without leading or trailing periods', () => {
-      expect(GitHub.sanitizeName('path/to/.foo.'), 'foo');
+  });
+
+  describe('sanitizeName', () => {
+    it('should remove leading and trailing periods from the basename', () => {
+      expect(GitHub.sanitizeName('path/to/.foo.')).to.equal('foo');
     });
 
-    it('should synthesize name without multiple periods', () => {
-      expect(GitHub.sanitizeName('path/to/foo..bar'), 'foobar');
+    it('should remove multiple periods in a row', () => {
+      expect(GitHub.sanitizeName('path/to/foo..bar')).to.equal('foobar');
     });
 
-    it('should synthesize name without non-alphanumeric characters', () => {
-      expect(GitHub.sanitizeName('path/to/foo%bar baz.'), 'foo-bar-baz');
+    it('should replace non-alphanumeric, non-hyphen characters with hyphens', () => {
+      expect(GitHub.sanitizeName('path/to/foo%bar baz.')).to.equal('foo-bar-baz');
     });
   });
 });
