@@ -104,7 +104,6 @@ describe('GitHub', () => {
         gh.getGitHub();
       }).to.throw('Please set GITHUB_TOKEN in your environment to access these features');
     });
-
   });
 
   describe('sanitizeName', () => {
