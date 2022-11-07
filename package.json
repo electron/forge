@@ -59,7 +59,6 @@
     "interpret": "^3.1.1",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
-    "macos-alias": "^0.2.11",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.7",
     "parse-author": "^2.0.0",
@@ -151,7 +150,8 @@
     "electron-installer-snap": "^5.1.0",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
-    "electron-wix-msi": "^5.0.0"
+    "electron-wix-msi": "^5.0.0",
+    "macos-alias": "^0.2.11"
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
