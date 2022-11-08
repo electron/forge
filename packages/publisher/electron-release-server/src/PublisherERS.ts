@@ -100,7 +100,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       return makeResult;
     });
 
-    for (const makeResult of makeResults) {
+    for (const makeResult of makeResultsFileTypesFiltered) {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
