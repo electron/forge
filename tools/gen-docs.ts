@@ -14,9 +14,11 @@ function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
   const keys = ['maker', 'plugin', 'publisher', 'template', 'util'];
   const groups = [maker, plugin, publisher, template, util];
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   for (const child of projReflection.groups![0].children) {
     const key = keys.find((k) => child.name.includes(k));
     if (key && !child.name.includes('maker-base')) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const group = groups.find((t) => t.title.toLowerCase().includes(key))!;
       group.children.push(child);
     } else {

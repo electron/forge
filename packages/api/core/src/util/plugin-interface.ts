@@ -94,10 +94,13 @@ export default class PluginInterface implements IForgePluginInterface {
           if (typeof hooks === 'function') hooks = [hooks];
           for (const hook of hooks) {
             tasks.push({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
               task: async (_, task) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 if ((hook as any).__hookName) {
                   // Also give it the task
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   await (hook as any).call(task, ...(hookArgs as any[]));
                 } else {
                   await hook(this.config, ...hookArgs);

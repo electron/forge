@@ -178,6 +178,7 @@
   "workspaces": {
     "packages": [
       "packages/api/*",
+      "packages/external/*",
       "packages/plugin/*",
       "packages/maker/*",
       "packages/publisher/*",
