@@ -37,8 +37,8 @@ export interface PublisherERSConfig {
    */
   flavor?: string;
   fileExtensions?: {
-    darwin?: DarwinFileExtension[],
-    win32?: WindowsFileExtension[],
-    linux?: LinuxFileExtension[],
-  }
+    darwin?: DarwinFileExtension[];
+    win32?: WindowsFileExtension[];
+    linux?: LinuxFileExtension[];
+  };
 }
