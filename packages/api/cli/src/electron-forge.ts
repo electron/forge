@@ -1,12 +1,15 @@
 #!/usr/bin/env node
-import 'colors';
-import { asyncOra } from '@electron-forge/async-ora';
+// This file requires a shebang above. If it is missing, this is an error.
+
+import chalk from 'chalk';
 import program from 'commander';
+import { Listr } from 'listr2';
 
 import './util/terminate';
 
-import checkSystem from './util/check-system';
+import { checkSystem } from './util/check-system';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const metadata = require('../package.json');
 
 const originalSC = program.executeSubCommand.bind(program);
@@ -38,24 +41,37 @@ program
   .command('publish', 'Publish the current Electron application to GitHub')
   .command('install', 'Install an Electron application from GitHub')
   .on('command:*', (commands) => {
-    // eslint-disable-next-line no-underscore-dangle
     if (!program._execs.has(commands[0])) {
       console.error();
-      console.error(`Unknown command "${program.args.join(' ')}".`.red);
+      console.error(chalk.red(`Unknown command "${program.args.join(' ')}".`));
       console.error('See --help for a list of available commands.');
       process.exit(1);
     }
   });
 
 (async () => {
-  let goodSystem;
-  await asyncOra('Checking your system', async (ora) => {
-    goodSystem = await checkSystem(ora);
-  });
+  const runner = new Listr<never>(
+    [
+      {
+        title: 'Checking your system',
+        task: async (_, task) => {
+          return await checkSystem(task);
+        },
+      },
+    ],
+    {
+      concurrent: false,
+      exitOnError: false,
+    }
+  );
 
-  if (!goodSystem) {
-    console.error((`It looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version ${metadata.engines.node}`).red);
+  await runner.run();
+
+  if (runner.err.length) {
+    console.error(
+      chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
+Make sure you have git installed and Node.js version ${metadata.engines.node}`)
+    );
     process.exit(1);
   }
 

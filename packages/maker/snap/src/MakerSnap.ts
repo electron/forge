@@ -1,6 +1,7 @@
-import { ForgePlatform } from '@electron-forge/shared-types';
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerSnapConfig } from './Config';
 
@@ -11,16 +12,11 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
 
   requiredExternalBinaries: string[] = ['snapcraft'];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return process.platform === 'linux';
   }
 
-  async make({
-    dir,
-    makeDir,
-    targetArch,
-  }: MakerOptions) {
-    // eslint-disable-next-line global-require
+  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     const installer = require('electron-installer-snap');
 
     const outPath = path.resolve(makeDir, 'snap', targetArch);
@@ -37,3 +33,5 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
     return [await installer(snapConfig)];
   }
 }
+
+export { MakerSnap, MakerSnapConfig };

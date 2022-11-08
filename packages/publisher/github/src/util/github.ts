@@ -1,21 +1,32 @@
-import { Octokit } from '@octokit/rest';
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
-import { merge } from 'lodash';
+import { retry } from '@octokit/plugin-retry';
+import { Octokit } from '@octokit/rest';
+import debug from 'debug';
+
+const logInfo = debug('electron-forge:publisher:github:info');
+const logDebug = debug('electron-forge:publisher:github:debug');
 
 export default class GitHub {
   private options: OctokitOptions;
 
   token?: string;
 
-  constructor(
-    authToken: string | undefined = undefined,
-    requireAuth: boolean = false,
-    options: OctokitOptions = {},
-  ) {
-    this.options = merge(
-      options,
-      { headers: { 'user-agent': 'Electron Forge' } },
-    );
+  constructor(authToken: string | undefined = undefined, requireAuth = false, options: OctokitOptions = {}) {
+    const noOp = () => {
+      /* Intentionally does nothing */
+    };
+
+    this.options = {
+      ...options,
+      log: {
+        debug: logDebug.enabled ? logDebug : noOp,
+        error: console.error,
+        info: logInfo.enabled ? logInfo : noOp,
+        warn: console.warn,
+      },
+      userAgent: 'Electron Forge',
+    };
+
     if (authToken) {
       this.token = authToken;
     } else if (process.env.GITHUB_TOKEN) {
@@ -30,7 +41,8 @@ export default class GitHub {
     if (this.token) {
       options.auth = this.token;
     }
-    const github = new Octokit(options);
+    const RetryableOctokit = Octokit.plugin(retry);
+    const github = new RetryableOctokit(options);
     return github;
   }
 }

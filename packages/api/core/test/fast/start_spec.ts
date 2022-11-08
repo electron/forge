@@ -1,48 +1,46 @@
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import path from 'path';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { StartOptions } from '../../src/api';
 
 describe('start', () => {
   let start: (opts: StartOptions) => Promise<ElectronProcess>;
-  let packageJSON: any;
+  let packageJSON: Record<string, string>;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
-  let shouldOverride: any;
+  let shouldOverride: false | { on: () => void };
   let processOn: SinonStub<['timeout', () => void]>;
 
   beforeEach(() => {
-    resolveStub = sinon.stub();
-    spawnStub = sinon.stub();
+    resolveStub = stub();
+    spawnStub = stub();
     shouldOverride = false;
     packageJSON = require('../fixture/dummy_app/package.json');
-    const electronPath = path.resolve(__dirname, 'node_modules/electron');
 
     start = proxyquire.noCallThru().load('../../src/api/start', {
-      '../util/electron-version': {
-        getElectronModulePath: () => Promise.resolve(electronPath),
+      '../util/electron-executable': () => Promise.resolve('fake_electron_path'),
+      '@electron-forge/core-utils': {
         getElectronVersion: () => Promise.resolve('1.0.0'),
+        listrCompatibleRebuildHook: () => Promise.resolve(),
       },
       '../util/forge-config': async () => ({
         pluginInterface: {
           overrideStartLogic: async () => shouldOverride,
           triggerHook: async () => false,
+          getHookListrTasks: () => Promise.resolve([]),
         },
       }),
-      [electronPath]: 'fake_electron_path',
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
       },
-      '../util/rebuild': () => Promise.resolve(),
       child_process: {
         spawn: spawnStub,
       },
     }).default;
-    processOn = sinon.stub(process.stdin, 'on');
+    processOn = stub(process.stdin, 'on');
   });
 
   afterEach(() => {
@@ -63,7 +61,11 @@ describe('start', () => {
 
   it('should not spawn if a plugin overrides the start command', async () => {
     resolveStub.returnsArg(0);
-    shouldOverride = { on: () => {} };
+    shouldOverride = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
     await start({
       dir: __dirname,
       interactive: false,
@@ -71,7 +73,7 @@ describe('start', () => {
     expect(spawnStub.callCount).to.equal(0);
   });
 
-  it('should pass electron \'.\' as the app path if not specified', async () => {
+  it("should pass electron '.' as the app path if not specified", async () => {
     resolveStub.returnsArg(0);
     await start({
       dir: __dirname,
@@ -129,21 +131,19 @@ describe('start', () => {
   it('should throw if no dir could be found', async () => {
     resolveStub.returns(null);
 
-    await expect(start({})).to.eventually.be.rejectedWith(
-      'Failed to locate startable Electron application',
-    );
+    await expect(start({})).to.eventually.be.rejectedWith('Failed to locate startable Electron application');
   });
 
   it('should throw if no version is in package.json', async () => {
     resolveStub.returnsArg(0);
     packageJSON = { ...packageJSON };
     delete packageJSON.version;
-    await expect(start({
-      dir: __dirname,
-      interactive: false,
-    })).to.eventually.be.rejectedWith(
-      `Please set your application's 'version' in '${__dirname}/package.json'.`,
-    );
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+      })
+    ).to.eventually.be.rejectedWith(`Please set your application's 'version' in '${__dirname}/package.json'.`);
   });
 
   it('should pass all args through to the spawned Electron instance', async () => {
@@ -175,15 +175,36 @@ describe('start', () => {
     expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(['--inspect'].concat(args));
   });
 
-  it('should resolve with a handle to the spawned instance', async () => {
+  it('should pass --inspect-brk at the start of the args if inspectBrk is set', async () => {
+    const args = ['magic'];
     resolveStub.returnsArg(0);
-    const fakeChild = { on: () => {} };
-    spawnStub.returns(fakeChild);
-
-    await expect(start({
+    spawnStub.returns(0);
+    await start({
+      args,
       dir: __dirname,
       interactive: false,
-      enableLogging: true,
-    })).to.eventually.equal(fakeChild);
+      inspectBrk: true,
+    });
+    expect(spawnStub.callCount).to.equal(1);
+    expect(spawnStub.firstCall.args[0]).to.equal('fake_electron_path');
+    expect(spawnStub.firstCall.args[1].slice(1)).to.deep.equal(['--inspect-brk'].concat(args));
+  });
+
+  it('should resolve with a handle to the spawned instance', async () => {
+    resolveStub.returnsArg(0);
+    const fakeChild = {
+      on: () => {
+        /* fake emitter */
+      },
+    };
+    spawnStub.returns(fakeChild);
+
+    await expect(
+      start({
+        dir: __dirname,
+        interactive: false,
+        enableLogging: true,
+      })
+    ).to.eventually.equal(fakeChild);
   });
 });

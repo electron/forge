@@ -1,23 +1,26 @@
 {
   "name": "@electron-forge/maker-zip",
-  "version": "6.0.0-beta.54",
+  "version": "6.0.1",
   "description": "ZIP maker for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
   "devDependencies": {
     "chai": "^4.3.3",
-    "mocha": "^8.1.3"
+    "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.54",
-    "@electron-forge/shared-types": "6.0.0-beta.54",
-    "cross-zip": "^3.0.0",
-    "fs-extra": "^9.0.1"
+    "@electron-forge/maker-base": "6.0.1",
+    "@electron-forge/shared-types": "6.0.1",
+    "cross-zip": "^4.0.0",
+    "fs-extra": "^10.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

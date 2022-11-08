@@ -2,7 +2,7 @@
 
 If you have questions about usage, we encourage you to browse the [website](https://www.electronforge.io/),
 and visit one of the several [community-driven sites](https://github.com/electron/electron#community),
-including the [official Electron Discord server](https://discord.gg/electron), where there is a
+including the [official Electron Discord server](https://discord.gg/invite/APGC3k5yaH), where there is a
 dedicated channel for Electron Forge.
 
 ## Troubleshooting
@@ -12,20 +12,20 @@ running `electron-forge`. This will print debug information from the specified m
 value of the environment variable is a comma-separated list of modules which support this logging
 feature. Known modules include:
 
-* `@electron/get:*`
-* `electron-forge:*` (always use this one before filing an issue)
-* `electron-installer-debian`
-* `electron-installer-dmg`
-* `electron-installer-flatpak`
-* `electron-installer-redhat`
-* `electron-installer-snap:*`
-* `electron-osx-sign`
-* `electron-packager`
-* `electron-rebuild`
-* `electron-windows-installer:main`
-* `electron-windows-store`
-* `extract-zip`
-* `get-package-info`
+- `@electron/get:*`
+- `@electron/osx-sign`
+- `electron-forge:*` (always use this one before filing an issue)
+- `electron-installer-debian`
+- `electron-installer-dmg`
+- `electron-installer-flatpak`
+- `electron-installer-redhat`
+- `electron-installer-snap:*`
+- `electron-packager`
+- `electron-rebuild`
+- `electron-windows-installer:main`
+- `electron-windows-store`
+- `extract-zip`
+- `get-package-info`
 
 We use the [`debug`](https://www.npmjs.com/package/debug#usage) module for this functionality. It
 has examples on how to set environment variables if you don't know how.

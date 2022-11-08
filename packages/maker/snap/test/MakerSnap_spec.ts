@@ -1,16 +1,19 @@
-import MakerBase from '@electron-forge/maker-base';
-
-import { expect } from 'chai';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerSnapConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerSnapConfig> {
- name = 'test';
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
- defaultPlatforms = [];
+class MakerImpl extends MakerBase<MakerSnapConfig> {
+  name = 'test';
+
+  defaultPlatforms = [];
 }
 
 describe('MakerSnap', () => {
@@ -38,14 +41,18 @@ describe('MakerSnap', () => {
     createMaker = () => {
       maker = new MakerSnapModule(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -59,11 +66,15 @@ describe('MakerSnap', () => {
     Object.assign(config, {
       arch: 'overridden',
       description: 'Snap description',
-    } as any);
+    } as Record<string, string>);
     createMaker();
 
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eisStub.firstCall.args[0];
     expect(opts).to.deep.equal({

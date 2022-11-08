@@ -11,11 +11,11 @@ parts:
   electron-deps:
     plugin: nil
     after:
-    - desktop-gtk3
+      - desktop-gtk3
     stage-packages:
-    - libnotify4
-    - libnss3
-    - libpcre3
-    - libuuid1
-    - libxss1
-    - libxtst6
+      - libnotify4
+      - libnss3
+      - libpcre3
+      - libuuid1
+      - libxss1
+      - libxtst6

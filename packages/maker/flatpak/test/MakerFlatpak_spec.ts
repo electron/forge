@@ -1,14 +1,16 @@
-import MakerBase from '@electron-forge/maker-base';
+import path from 'path';
 
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import 'chai-as-promised';
-import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
-import { ForgeArch } from '@electron-forge/shared-types';
-import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
+import { flatpakArch } from '../src/MakerFlatpak';
+
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerFlatpakConfig> {
   name = 'test';
@@ -35,21 +37,28 @@ describe('MakerFlatpak', () => {
     eifStub = stub().resolves();
     config = {};
 
-    MakerFlatpak = proxyquire.noPreserveCache().noCallThru().load('../src/MakerFlatpak', {
-      'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
-      '@malept/electron-installer-flatpak': eifStub,
-    }).default;
+    MakerFlatpak = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerFlatpak', {
+        'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
+        '@malept/electron-installer-flatpak': eifStub,
+      }).default;
     createMaker = () => {
       maker = new MakerFlatpak(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
     const expectedArch = flatpakArch(process.arch as ForgeArch);
@@ -66,11 +75,15 @@ describe('MakerFlatpak', () => {
       options: {
         productName: 'Flatpak',
       },
-    } as any;
+    } as Record<string, unknown>;
     createMaker();
 
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eifStub.firstCall.args[0];
     const expectedArch = flatpakArch(process.arch as ForgeArch);

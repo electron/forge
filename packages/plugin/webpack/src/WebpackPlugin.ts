@@ -1,37 +1,44 @@
-/* eslint "no-console": "off" */
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ElectronProcess, ForgeConfig } from '@electron-forge/shared-types';
-import express from 'express';
-import fs from 'fs-extra';
 import http from 'http';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import path from 'path';
-import PluginBase from '@electron-forge/plugin-base';
-import webpack, { Configuration } from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
 
-import once from './util/once';
+import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
+import chalk from 'chalk';
+import debug from 'debug';
+import fs from 'fs-extra';
+import webpack, { Configuration, Watching } from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
+
 import { WebpackPluginConfig } from './Config';
+import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
+import once from './util/once';
+import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
 import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
 const DEFAULT_LOGGER_PORT = 9000;
 
+type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
+type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
+
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
 
   private isProd = false;
 
+  // The root of the Electron app
   private projectDir!: string;
 
+  // Where the Webpack output is generated. Usually `$projectDir/.webpack`
   private baseDir!: string;
 
   private _configGenerator!: WebpackConfigGenerator;
 
-  private watchers: webpack.Compiler.Watching[] = [];
+  private watchers: Watching[] = [];
 
   private servers: http.Server[] = [];
 
@@ -56,7 +63,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
 
     this.startLogic = this.startLogic.bind(this);
-    this.getHook = this.getHook.bind(this);
+    this.getHooks = this.getHooks.bind(this);
   }
 
   private isValidPort = (port: number) => {
@@ -67,14 +74,16 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     } else {
       return true;
     }
-  }
+  };
 
-  private exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error) => {
+  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
         d('cleaning webpack watcher');
-        watcher.close(() => {});
+        watcher.close(() => {
+          /* Do nothing when the watcher closes */
+        });
       }
       this.watchers = [];
       for (const server of this.servers) {
@@ -89,103 +98,105 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       this.loggers = [];
     }
     if (err) console.error(err.stack);
+    // Why: This is literally what the option says to do.
+    // eslint-disable-next-line no-process-exit
     if (options.exit) process.exit();
-  }
+  };
 
-  async writeJSONStats(
-    type: string,
-    stats: webpack.Stats,
-    statsOptions?: webpack.Stats.ToStringOptions,
-  ): Promise<void> {
+  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions, suffix: string): Promise<void> {
+    if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
-    const jsonStats = stats.toJson(statsOptions as webpack.Stats.ToJsonOptions);
-    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    const jsonStats = stats.toJson(statsOptions);
+    const jsonStatsFilename = path.resolve(this.baseDir, type, `stats-${suffix}.json`);
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats> => new Promise((resolve, reject) => {
-    webpack(options)
-      .run(async (err, stats) => {
+  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
+    new Promise((resolve, reject) => {
+      webpack(options).run(async (err, stats) => {
         if (isRenderer && this.config.renderer.jsonStats) {
-          await this.writeJSONStats('renderer', stats, options.stats);
+          for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
+            const name = this.config.renderer.entryPoints[index].name;
+            await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
+          }
         }
         if (err) {
           return reject(err);
         }
         return resolve(stats);
       });
-  });
+    });
 
-  init = (dir: string) => {
+  init = (dir: string): void => {
     this.setDirectories(dir);
 
     d('hooking process events');
     process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
-  }
+  };
 
-  setDirectories = (dir: string) => {
+  setDirectories = (dir: string): void => {
     this.projectDir = dir;
     this.baseDir = path.resolve(dir, '.webpack');
-  }
+  };
 
-  get configGenerator() {
-    // eslint-disable-next-line no-underscore-dangle
+  get configGenerator(): WebpackConfigGenerator {
     if (!this._configGenerator) {
-    // eslint-disable-next-line no-underscore-dangle
-      this._configGenerator = new WebpackConfigGenerator(
-        this.config,
-        this.projectDir,
-        this.isProd,
-        this.port,
-      );
+      this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     return this._configGenerator;
   }
 
-  private loggedOutputUrl = false;
+  getHooks(): ForgeMultiHookMap {
+    return {
+      prePackage: [
+        namedHookWithTaskFn<'prePackage'>(async (task, config, platform, arch) => {
+          if (!task) {
+            throw new Error('Incompatible usage of webpack-plugin prePackage hook');
+          }
 
-  getHook(name: string) {
-    switch (name) {
-      case 'prePackage':
-        this.isProd = true;
-        return async () => {
+          this.isProd = true;
           await fs.remove(this.baseDir);
+          await listrCompatibleRebuildHook(
+            this.projectDir,
+            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+            platform,
+            arch,
+            config.rebuildConfig,
+            task,
+            chalk.cyan('[plugin-webpack] ')
+          );
+        }, 'Preparing native dependencies'),
+        namedHookWithTaskFn<'prePackage'>(async () => {
           await this.compileMain();
           await this.compileRenderers();
-        };
-      case 'postStart':
-        return async (_: any, child: ElectronProcess) => {
-          if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${(`http://localhost:${this.loggerPort}`).cyan}\n`);
-            this.loggedOutputUrl = true;
-          }
-          d('hooking electron process exit');
-          child.on('exit', () => {
-            if (child.restarted) return;
-            this.exitHandler({ cleanup: true, exit: true });
-          });
-        };
-      case 'resolveForgeConfig':
-        return this.resolveForgeConfig;
-      case 'packageAfterCopy':
-        return this.packageAfterCopy;
-      default:
-        return null;
-    }
+        }, 'Building webpack bundles'),
+      ],
+      postStart: async (_config, child) => {
+        d('hooking electron process exit');
+        child.on('exit', () => {
+          if (child.restarted) return;
+          this.exitHandler({ cleanup: true, exit: true });
+        });
+      },
+      resolveForgeConfig: this.resolveForgeConfig,
+      packageAfterCopy: this.packageAfterCopy,
+    };
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig) => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
     if (forgeConfig.packagerConfig.ignore) {
-      console.error(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
+      if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
+        console.error(
+          chalk.red(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`.red);
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`)
+        );
+      }
       return forgeConfig;
     }
     forgeConfig.packagerConfig.ignore = (file: string) => {
@@ -199,145 +210,174 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
+      if (!this.config.packageSourceMaps && /[^/\\]+\.js\.map$/.test(file)) {
+        return true;
+      }
+
       return !/^[/\\]\.webpack($|[/\\]).*$/.test(file);
     };
     return forgeConfig;
-  }
+  };
 
-  packageAfterCopy = async (_: any, buildPath: string) => {
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+
+    if (!pj.main?.endsWith('.webpack/main')) {
+      throw new Error(`Electron Forge is configured to use the Webpack plugin. The plugin expects the
+"main" entry point in "package.json" to be ".webpack/main" (where the plugin outputs
+the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
+    }
+
     if (pj.config) {
       delete pj.config.forge;
     }
-    pj.devDependencies = {};
-    pj.dependencies = {};
-    pj.optionalDependencies = {};
-    pj.peerDependencies = {};
 
-    await fs.writeJson(
-      path.resolve(buildPath, 'package.json'),
-      pj,
-      {
-        spaces: 2,
-      },
-    );
+    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+      spaces: 2,
+    });
 
     await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
-  }
+  };
 
-  compileMain = async (watch = false, logger?: Logger) => {
+  compileMain = async (watch = false, logger?: Logger): Promise<void> => {
     let tab: Tab;
     if (logger) {
       tab = logger.createTab('Main Process');
     }
-    await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = await this.configGenerator.getMainConfig();
-      await new Promise((resolve, reject) => {
-        const compiler = webpack(mainConfig);
-        const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: webpack.ICompiler.Handler = async (err, stats: webpack.Stats) => {
-          if (tab && stats) {
-            tab.log(stats.toString({
+
+    const mainConfig = await this.configGenerator.getMainConfig();
+    await new Promise((resolve, reject) => {
+      const compiler = webpack(mainConfig);
+      const [onceResolve, onceReject] = once(resolve, reject);
+      const cb: WebpackWatchHandler = async (err, stats) => {
+        if (tab && stats) {
+          tab.log(
+            stats.toString({
               colors: true,
-            }));
-          }
-          if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats);
-          }
-
-          if (err) return onceReject(err);
-          if (!watch && stats.hasErrors()) {
-            return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
-          }
-
-          return onceResolve();
-        };
-        if (watch) {
-          this.watchers.push(compiler.watch({}, cb));
-        } else {
-          compiler.run(cb);
+            })
+          );
         }
-      });
-    });
-  }
+        if (this.config.jsonStats) {
+          await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
+        }
 
-  compileRenderers = async (watch = false) => { // eslint-disable-line @typescript-eslint/no-unused-vars, max-len
-    await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(
-        await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints),
-        true,
-      );
-      if (!watch && stats.hasErrors()) {
-        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+        if (err) return onceReject(err);
+        if (!watch && stats?.hasErrors()) {
+          return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+        }
+
+        return onceResolve(undefined);
+      };
+      if (watch) {
+        this.watchers.push(compiler.watch({}, cb));
+      } else {
+        compiler.run(cb);
       }
     });
+  };
+
+  compileRenderers = async (watch = false): Promise<void> => {
+    const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
+    if (!watch && stats?.hasErrors()) {
+      throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+    }
 
     for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.preload) {
-        await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          await this.runWebpack(
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!),
+      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+        const stats = await this.runWebpack(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
+        );
+
+        if (stats?.hasErrors()) {
+          throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
+        }
+      }
+    }
+  };
+
+  launchRendererDevServers = async (logger: Logger): Promise<void> => {
+    const tab = logger.createTab('Renderers');
+    const pluginLogs = new ElectronForgeLoggingPlugin(tab);
+
+    const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+
+    if (config.length === 0) {
+      return;
+    }
+
+    for (const entryConfig of config) {
+      if (!entryConfig.plugins) entryConfig.plugins = [];
+      entryConfig.plugins.push(pluginLogs);
+
+      entryConfig.infrastructureLogging = {
+        level: 'none',
+      };
+      entryConfig.stats = 'none';
+    }
+
+    const compiler = webpack(config);
+    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+    await webpackDevServer.start();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.servers.push(webpackDevServer.server!);
+
+    for (const entryPoint of this.config.renderer.entryPoints) {
+      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+        const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
+        config.infrastructureLogging = {
+          level: 'none',
+        };
+        config.stats = 'none';
+        await new Promise((resolve, reject) => {
+          const tab = logger.createTab(`${entryPoint.name} - Preload`);
+          const [onceResolve, onceReject] = once(resolve, reject);
+
+          this.watchers.push(
+            webpack(config).watch({}, (err, stats) => {
+              if (stats) {
+                tab.log(
+                  stats.toString({
+                    colors: true,
+                  })
+                );
+              }
+
+              if (err) return onceReject(err);
+              return onceResolve(undefined);
+            })
           );
         });
       }
     }
-  }
+  };
 
-  launchDevServers = async (logger: Logger) => {
-    await asyncOra('Launch Dev Servers', async () => {
-      const tab = logger.createTab('Renderers');
+  devServerOptions(): WebpackDevServer.Configuration {
+    const cspDirectives =
+      this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
-      const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      const compiler = webpack(config);
-      const server = webpackDevMiddleware(compiler, {
-        logger: {
-          debug: tab.log.bind(tab),
-          log: tab.log.bind(tab),
-          info: tab.log.bind(tab),
-          error: tab.log.bind(tab),
-          warn: tab.log.bind(tab),
-        },
-        publicPath: '/',
-        hot: true,
-        historyApiFallback: true,
+    const defaults: Partial<WebpackDevServer.Configuration> = {
+      hot: true,
+      devMiddleware: {
         writeToDisk: true,
-      } as any);
-      const app = express();
-      app.use(server);
-      app.use(webpackHotMiddleware(compiler));
-      this.servers.push(app.listen(this.port));
-    });
+      },
+      historyApiFallback: true,
+    };
+    const overrides: Partial<WebpackDevServer.Configuration> = {
+      port: this.port,
+      setupExitSignals: true,
+      static: path.resolve(this.baseDir, 'renderer'),
+      headers: {
+        'Content-Security-Policy': cspDirectives,
+      },
+    };
 
-    await asyncOra('Compiling Preload Scripts', async () => {
-      for (const entryPoint of this.config.renderer.entryPoints) {
-        if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(
-            entryPoint,
-            entryPoint.preload!,
-          );
-          await new Promise((resolve, reject) => {
-            const tab = logger.createTab(`${entryPoint.name} - Preload`);
-            const [onceResolve, onceReject] = once(resolve, reject);
-
-            this.watchers.push(webpack(config).watch({}, (err, stats) => {
-              if (stats) {
-                tab.log(stats.toString({
-                  colors: true,
-                }));
-              }
-
-              if (err) return onceReject(err);
-              return onceResolve();
-            }));
-          });
-        }
-      }
-    });
+    return merge(defaults, this.config.devServer ?? {}, overrides);
   }
 
   private alreadyStarted = false;
 
-  async startLogic(): Promise<false> {
+  async startLogic(): Promise<StartResult> {
     if (this.alreadyStarted) return false;
     this.alreadyStarted = true;
 
@@ -345,9 +385,34 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
-    await this.compileMain(true, logger);
-    await this.launchDevServers(logger);
     await logger.start();
-    return false;
+
+    return {
+      tasks: [
+        {
+          title: 'Compiling main process code',
+          task: async () => {
+            await this.compileMain(true, logger);
+          },
+          options: {
+            showTimer: true,
+          },
+        },
+        {
+          title: 'Launching dev servers for renderer process code',
+          task: async (_, task) => {
+            await this.launchRendererDevServers(logger);
+            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+          },
+          options: {
+            persistentOutput: true,
+            showTimer: true,
+          },
+        },
+      ],
+      result: false,
+    };
   }
 }
+
+export { WebpackPlugin, WebpackPluginConfig };

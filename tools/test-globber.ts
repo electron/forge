@@ -1,15 +1,11 @@
-/* eslint "global-require": "off", "import/no-dynamic-require": "off" */
-import globby from 'globby';
-import minimist from 'minimist';
 import * as path from 'path';
+
+import glob from 'fast-glob';
+import minimist from 'minimist';
 
 import { getPackageInfoSync } from './utils';
 
-const argv = minimist(
-  process.argv.slice(
-    process.argv.findIndex((arg) => arg === 'mocha.opts'),
-  ),
-);
+const argv = minimist(process.argv.slice(process.argv.findIndex((arg) => arg === 'mocha.opts')));
 
 const isFast = argv.fast || process.env.TEST_FAST_ONLY;
 
@@ -36,7 +32,7 @@ for (const p of packages) {
   if (argv.integration === false || process.env.INTEGRATION_TESTS === '0') {
     specGlob.push(`!${apiSpec}`);
   }
-  testFiles.push(...globby.sync(specGlob));
+  testFiles.push(...glob.sync(specGlob));
 }
 
 for (const f of testFiles) {

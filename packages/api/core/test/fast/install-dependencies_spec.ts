@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import installDependencies, { DepType, DepVersionRestriction } from '../../src/util/install-dependencies';
 
@@ -13,15 +13,15 @@ describe('Install dependencies', () => {
   let spawnPromiseReject: () => void;
 
   beforeEach(() => {
-    spawnSpy = sinon.stub();
+    spawnSpy = stub();
     spawnPromise = new Promise((resolve, reject) => {
       spawnPromiseResolve = resolve;
       spawnPromiseReject = reject;
     });
     spawnSpy.returns(spawnPromise);
-    hasYarnSpy = sinon.stub();
+    hasYarnSpy = stub();
     install = proxyquire.noCallThru().load('../../src/util/install-dependencies', {
-      './yarn-or-npm': {
+      '@electron-forge/core-utils': {
         yarnOrNpmSpawn: spawnSpy,
         hasYarn: hasYarnSpy,
       },
@@ -33,18 +33,16 @@ describe('Install dependencies', () => {
     expect(spawnSpy.callCount).to.equal(0);
   });
 
-  it('should reject if reject the promise if exit code is not 0', (done) => {
-    const p = install('void', ['electron']);
-    p.then(() => done(new Error('expected install to be rejected')))
-      .catch(() => done());
+  it('should reject if reject the promise if exit code is not 0', async () => {
+    const expectPromise = expect(install('void', ['electron'])).to.eventually.be.rejected;
     spawnPromiseReject();
+    await expectPromise;
   });
 
-  it('should resolve if reject the promise if exit code is 0', (done) => {
-    const p = install('void', ['electron']);
-    p.then(() => done())
-      .catch(() => done(new Error('expected install to be resolved')));
+  it('should resolve if reject the promise if exit code is 0', async () => {
+    const expectPromise = expect(install('void', ['electron'])).to.eventually.be.fulfilled;
     spawnPromiseResolve();
+    await expectPromise;
   });
 
   describe('with yarn', () => {

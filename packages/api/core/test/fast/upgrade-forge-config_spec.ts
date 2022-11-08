@@ -1,4 +1,6 @@
-import { IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import assert from 'assert';
+
+import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { merge } from 'lodash';
 
@@ -18,17 +20,17 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.packagerConfig).to.deep.equal(expected);
   });
 
-  it('converts electron-rebuild config', () => {
+  it('converts @electron/rebuild config', () => {
     const rebuildConfig = { types: ['prod'] };
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.electronRebuildConfig).to.deep.equal(rebuildConfig);
+    expect(newConfig.rebuildConfig).to.deep.equal(rebuildConfig);
   });
 
   it('converts maker config', () => {
     const oldConfig = {
-      makeTargets: {
+      make_targets: {
         linux: ['deb'],
       },
       electronInstallerDebian: {
@@ -49,9 +51,9 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.makers).to.deep.equal(expected);
   });
 
-  it('adds the zip maker when specified in makeTargets', () => {
+  it('adds the zip maker when specified in make_targets', () => {
     const oldConfig = {
-      makeTargets: {
+      make_targets: {
         darwin: ['zip'],
         linux: ['zip'],
       },
@@ -104,6 +106,7 @@ describe('upgradeForgeConfig', () => {
     };
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.publishers).to.have.lengthOf(1);
+    assert(newConfig.publishers);
     const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
     expect(publisherConfig.repository).to.deep.equal(repo);
     expect(publisherConfig.octokitOptions).to.deep.equal(octokitOptions);
@@ -115,9 +118,17 @@ describe('updateUpgradedForgeDevDeps', () => {
   const skeletonPackageJSON = {
     config: {
       forge: {
-        makers: [] as IForgeResolvableMaker[],
-        publishers: [] as IForgeResolvablePublisher[],
-      },
+        packagerConfig: {},
+        rebuildConfig: {},
+        makers: [],
+        publishers: [],
+        plugins: [],
+        pluginInterface: {
+          overrideStartLogic: () => Promise.resolve(false),
+          triggerHook: () => Promise.resolve(),
+          triggerMutatingHook: () => Promise.resolve(),
+        },
+      } as ForgeConfig,
     },
     devDependencies: {},
   };
@@ -150,10 +161,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('adds publishers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
-    packageJSON.config.forge.publishers = [
-      { name: '@electron-forge/publisher-github' },
-      { name: '@electron-forge/publisher-snapcraft' },
-    ];
+    packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);

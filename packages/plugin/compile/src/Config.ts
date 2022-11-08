@@ -1,3 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
-export interface CompilePluginConfig {
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CompilePluginConfig {}

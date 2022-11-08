@@ -1,18 +1,21 @@
 {
   "name": "@electron-forge/test-utils",
-  "version": "6.0.0-beta.54",
+  "version": "6.0.1",
   "description": "Helper utilities for the Electron Forge testsuite",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Mark Lee",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@malept/cross-spawn-promise": "^1.1.1",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "chai": "^4.3.3",
-    "fs-extra": "^9.0.1"
+    "fs-extra": "^10.0.0"
   },
   "engines": {
-    "node": ">= 10.0.0"
+    "node": ">= 14.17.5"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

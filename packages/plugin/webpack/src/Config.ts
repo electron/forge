@@ -1,17 +1,9 @@
-import { Configuration as WebpackConfiguration } from 'webpack';
+import { Configuration as RawWebpackConfiguration } from 'webpack';
+import WebpackDevServer from 'webpack-dev-server';
 
-export interface WebpackPluginEntryPoint {
-  /**
-   * Relative or absolute path to the HTML template file for this entry point
-   *
-   * If this is a window, you MUST provide this.  Only leave it unset for things
-   * like WebWorker scripts.
-   */
-  html?: string;
-  /**
-   * Relative or absolute path to the main JS file for this entry point
-   */
-  js: string;
+import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
+
+export interface WebpackPluginEntryPointBase {
   /**
    * Human friendly name of your entry point
    */
@@ -23,20 +15,61 @@ export interface WebpackPluginEntryPoint {
    */
   prefixedEntries?: string[];
   /**
-   * Additional chunks to include in the outputted HTML file, use this if you
-   * set up some custom chunking.  E.g. CommonChunksPlugin
+   * Additional chunks to include in the outputted HTML file. Use this if you
+   * set up some custom chunking (e.g. using SplitChunksPlugin).
    */
   additionalChunks?: string[];
   /**
-   * Information about the preload script for this entry point, if you don't use
-   * preload scripts you don't need to set this.
+   * Override the webpack config for this renderer based on whether `nodeIntegration` for
+   * the `BrowserWindow` is enabled. For webpack's `target` option:
+   *
+   * * When `nodeIntegration` is true, the `target` is `electron-renderer`.
+   * * When `nodeIntegration` is false, the `target` is `web`.
+   *
+   * Unfortunately, we cannot derive the value from the main process code as it can be
+   * dynamically generated at run-time, and webpack processes at build-time.
+   *
+   * Defaults to `false` (as it is disabled by default in Electron \>= 5) or the value set
+   * for all entries.
+   */
+  nodeIntegration?: boolean;
+}
+
+export interface WebpackPluginEntryPointLocalWindow extends WebpackPluginEntryPointBase {
+  /**
+   * Relative or absolute path to the HTML template file for this entry point.
+   */
+  html: string;
+  /**
+   * Relative or absolute path to the main JS file for this entry point.
+   */
+  js: string;
+  /**
+   * Information about the preload script for this entry point. If you don't use
+   * preload scripts, you don't need to set this.
    */
   preload?: WebpackPreloadEntryPoint;
 }
 
+export interface WebpackPluginEntryPointPreloadOnly extends WebpackPluginEntryPointBase {
+  /**
+   * Information about the preload script for this entry point.
+   */
+  preload: WebpackPreloadEntryPoint;
+}
+
+export interface WebpackPluginEntryPointNoWindow extends WebpackPluginEntryPointBase {
+  /**
+   * Relative or absolute path to the main JS file for this entry point.
+   */
+  js: string;
+}
+
+export type WebpackPluginEntryPoint = WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPointNoWindow | WebpackPluginEntryPointPreloadOnly;
+
 export interface WebpackPreloadEntryPoint {
   /**
-   * Relative or absolute path to the preload JS file
+   * Relative or absolute path to the preload JS file.
    */
   js: string;
   /**
@@ -45,6 +78,15 @@ export interface WebpackPreloadEntryPoint {
    * entry files into your application.
    */
   prefixedEntries?: string[];
+  /**
+   * The optional webpack config for your preload process.
+   * Defaults to the renderer webpack config if blank.
+   */
+  config?: WebpackConfiguration | string;
+}
+
+export interface StandaloneWebpackPreloadEntryPoint extends WebpackPreloadEntryPoint {
+  name: string;
 }
 
 export interface WebpackPluginRendererConfig {
@@ -59,6 +101,19 @@ export interface WebpackPluginRendererConfig {
    * actually packaged with your app.
    */
   jsonStats?: boolean;
+  /**
+   * Override the webpack config for this renderer based on whether `nodeIntegration` for
+   * the `BrowserWindow` is enabled. For webpack's `target` option:
+   *
+   * * When `nodeIntegration` is true, the `target` is `electron-renderer`.
+   * * When `nodeIntegration` is false, the `target` is `web`.
+   *
+   * Unfortunately, we cannot derive the value from the main process code as it can be
+   * dynamically generated at run-time, and webpack processes at build-time.
+   *
+   * Defaults to `false` (as it is disabled by default in Electron \>= 5).
+   */
+  nodeIntegration?: boolean;
   /**
    * Array of entry points, these should map to the windows your app needs to
    * open.  Each window requires it's own entry point
@@ -89,4 +144,36 @@ export interface WebpackPluginConfig {
    * The TCP port for web-multi-logger. Defaults to 9000.
    */
   loggerPort?: number;
+  /**
+   * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
+   * which results in `.map` files being generated), this option will cause the source map files be
+   * packaged with your app. By default they are not included.
+   */
+  packageSourceMaps?: boolean;
+  /**
+   * Sets the [`Content-Security-Policy` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy)
+   * for the Webpack development server.
+   *
+   * Normally you would want to only specify this as a `<meta>` tag. However, in development mode,
+   * the Webpack plugin uses the `devtool: eval-source-map` source map setting for efficiency
+   * purposes. This requires the `'unsafe-eval'` source for the `script-src` directive that wouldn't
+   * normally be recommended to use. If this value is set, make sure that you keep this
+   * directive-source pair intact if you want to use source maps.
+   *
+   * Default: `default-src 'self' 'unsafe-inline' data:;`
+   * `script-src 'self' 'unsafe-eval' 'unsafe-inline' data:`
+   */
+  devContentSecurityPolicy?: string;
+  /**
+   * Overrides for [`webpack-dev-server`](https://webpack.js.org/configuration/dev-server/) options.
+   *
+   * The following options cannot be overridden here:
+   * * `port` (use the `port` config option)
+   * * `static`
+   * * `setupExitSignals`
+   * * `headers.Content-Security-Policy` (use the `devContentSecurityPolicy` config option)
+   */
+  devServer?: Omit<WebpackDevServer.Configuration, 'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'>;
 }
+
+export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;

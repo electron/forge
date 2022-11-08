@@ -1,0 +1,19 @@
+{
+  "name": "test",
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "enabled": false,
+          "platforms": [
+            "linux"
+          ]
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^1000.0.0"
+  }
+}

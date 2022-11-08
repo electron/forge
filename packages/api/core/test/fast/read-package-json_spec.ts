@@ -1,7 +1,17 @@
 import path from 'path';
+
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 
-import { readRawPackageJson, readMutatedPackageJson } from '../../src/util/read-package-json';
+import { readMutatedPackageJson, readRawPackageJson } from '../../src/util/read-package-json';
+
+const emptyForgeConfig: Partial<ResolvedForgeConfig> = {
+  packagerConfig: {},
+  rebuildConfig: {},
+  makers: [],
+  publishers: [],
+  plugins: [],
+};
 
 describe('read-package-json', () => {
   describe('readRawPackageJson', () => {
@@ -12,23 +22,32 @@ describe('read-package-json', () => {
 
   describe('readMutatedPackageJson', () => {
     it('should find a package.json file from the given directory', async () => {
-      expect(await readMutatedPackageJson(
-        path.resolve(__dirname, '../..'), {
+      expect(
+        await readMutatedPackageJson(path.resolve(__dirname, '../..'), {
+          ...emptyForgeConfig,
           pluginInterface: {
-            triggerMutatingHook: (_: any, pj: any) => Promise.resolve(pj),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            triggerMutatingHook: (_hookName: string, pj: any) => Promise.resolve(pj),
+            triggerHook: () => Promise.resolve(),
+            overrideStartLogic: () => Promise.resolve(false),
+            getHookListrTasks: () => Promise.resolve([]),
           },
-        } as any,
-      )).to.deep.equal(require('../../package.json'));
+        } as ResolvedForgeConfig)
+      ).to.deep.equal(require('../../package.json'));
     });
 
     it('should allow mutations from hooks', async () => {
-      expect(await readMutatedPackageJson(
-        path.resolve(__dirname, '../..'), {
+      expect(
+        await readMutatedPackageJson(path.resolve(__dirname, '../..'), {
+          ...emptyForgeConfig,
           pluginInterface: {
             triggerMutatingHook: () => Promise.resolve('test_mut'),
+            triggerHook: () => Promise.resolve(),
+            overrideStartLogic: () => Promise.resolve(false),
+            getHookListrTasks: () => Promise.resolve([]),
           },
-        } as any,
-      )).to.deep.equal('test_mut');
+        } as ResolvedForgeConfig)
+      ).to.deep.equal('test_mut');
     });
   });
 });

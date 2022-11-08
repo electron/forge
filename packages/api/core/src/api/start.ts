@@ -1,63 +1,112 @@
-import 'colors';
-import { asyncOra } from '@electron-forge/async-ora';
-import {
-  ElectronProcess, ForgeArch, ForgePlatform, StartOptions,
-} from '@electron-forge/shared-types';
-import path from 'path';
 import { spawn, SpawnOptions } from 'child_process';
 
-import { readMutatedPackageJson } from '../util/read-package-json';
-import rebuild from '../util/rebuild';
-import resolveDir from '../util/resolve-dir';
+import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { ElectronProcess, ForgeArch, ForgeListrTask, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
+import chalk from 'chalk';
+import debug from 'debug';
+import { Listr } from 'listr2';
+
+import locateElectronExecutable from '../util/electron-executable';
 import getForgeConfig from '../util/forge-config';
-import { runHook } from '../util/hook';
-import { getElectronModulePath, getElectronVersion } from '../util/electron-version';
+import { getHookListrTasks, runHook } from '../util/hook';
+import { readMutatedPackageJson } from '../util/read-package-json';
+import resolveDir from '../util/resolve-dir';
+
+const d = debug('electron-forge:start');
 
 export { StartOptions };
 
+type StartContext = {
+  dir: string;
+  forgeConfig: ResolvedForgeConfig;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  packageJSON: any;
+  spawned: ElectronProcess;
+};
+
 export default async ({
-  dir = process.cwd(),
+  dir: providedDir = process.cwd(),
   appPath = '.',
   interactive = false,
   enableLogging = false,
   args = [],
   runAsNode = false,
   inspect = false,
-}: StartOptions) => {
-  asyncOra.interactive = interactive;
+  inspectBrk = false,
+}: StartOptions): Promise<ElectronProcess> => {
+  const platform = process.env.npm_config_platform || process.platform;
+  const arch = process.env.npm_config_arch || process.arch;
+  const listrOptions = {
+    concurrent: false,
+    rendererOptions: {
+      collapseErrors: false,
+    },
+    rendererSilent: !interactive,
+    rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+  };
 
-  await asyncOra('Locating Application', async () => {
-    const resolvedDir = await resolveDir(dir);
-    if (!resolvedDir) {
-      throw new Error('Failed to locate startable Electron application');
-    }
-    dir = resolvedDir;
-  });
+  const runner = new Listr<StartContext>(
+    [
+      {
+        title: 'Locating application',
+        task: async (ctx) => {
+          const resolvedDir = await resolveDir(providedDir);
+          if (!resolvedDir) {
+            throw new Error('Failed to locate startable Electron application');
+          }
+          ctx.dir = resolvedDir;
+        },
+      },
+      {
+        title: 'Loading configuration',
+        task: async (ctx) => {
+          const { dir } = ctx;
+          ctx.forgeConfig = await getForgeConfig(dir);
+          ctx.packageJSON = await readMutatedPackageJson(dir, ctx.forgeConfig);
 
-  const forgeConfig = await getForgeConfig(dir);
-  const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-
-  if (!packageJSON.version) {
-    throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
-  }
-
-  await rebuild(
-    dir,
-    await getElectronVersion(dir, packageJSON),
-    process.platform as ForgePlatform,
-    process.arch as ForgeArch,
-    forgeConfig.electronRebuildConfig,
+          if (!ctx.packageJSON.version) {
+            throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
+          }
+        },
+      },
+      {
+        title: 'Preparing native dependencies',
+        task: async ({ dir, forgeConfig, packageJSON }, task) => {
+          await listrCompatibleRebuildHook(
+            dir,
+            await getElectronVersion(dir, packageJSON),
+            platform as ForgePlatform,
+            arch as ForgeArch,
+            forgeConfig.rebuildConfig,
+            task as ForgeListrTask<never>
+          );
+        },
+        options: {
+          persistentOutput: true,
+          bottomBar: Infinity,
+          showTimer: true,
+        },
+      },
+      {
+        title: `Running ${chalk.yellow('generateAssets')} hook`,
+        task: async ({ forgeConfig }, task) => {
+          return task.newListr(await getHookListrTasks(forgeConfig, 'generateAssets', platform, arch));
+        },
+      },
+    ],
+    listrOptions
   );
 
-  await runHook(forgeConfig, 'generateAssets');
+  await runner.run();
 
+  const { dir, forgeConfig, packageJSON } = runner.ctx;
   let lastSpawned: ElectronProcess | null = null;
 
   const forgeSpawn = async () => {
     let electronExecPath: string | null = null;
 
     // If a plugin has taken over the start command let's stop here
-    const spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
+    let spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
       dir,
       appPath,
       interactive,
@@ -65,7 +114,16 @@ export default async ({
       args,
       runAsNode,
       inspect,
+      inspectBrk,
     });
+    if (typeof spawnedPluginChild === 'object' && 'tasks' in spawnedPluginChild) {
+      const innerRunner = new Listr<never>([], listrOptions);
+      for (const task of spawnedPluginChild.tasks) {
+        innerRunner.add(task);
+      }
+      await innerRunner.run();
+      spawnedPluginChild = spawnedPluginChild.result;
+    }
     let prefixArgs: string[] = [];
     if (typeof spawnedPluginChild === 'string') {
       electronExecPath = spawnedPluginChild;
@@ -77,20 +135,23 @@ export default async ({
     }
 
     if (!electronExecPath) {
-      // eslint-disable-next-line import/no-dynamic-require, global-require
-      electronExecPath = require((await getElectronModulePath(dir, packageJSON)) || path.resolve(dir, 'node_modules/electron'));
+      electronExecPath = await locateElectronExecutable(dir, packageJSON);
     }
+
+    d('Electron binary path:', electronExecPath);
 
     const spawnOpts = {
       cwd: dir,
       stdio: 'inherit',
-      env: ({
+      env: {
         ...process.env,
-        ...(enableLogging ? {
-          ELECTRON_ENABLE_LOGGING: 'true',
-          ELECTRON_ENABLE_STACK_DUMPING: 'true',
-        } : {}),
-      }) as NodeJS.ProcessEnv,
+        ...(enableLogging
+          ? {
+              ELECTRON_ENABLE_LOGGING: 'true',
+              ELECTRON_ENABLE_STACK_DUMPING: 'true',
+            }
+          : {}),
+      } as NodeJS.ProcessEnv,
     };
 
     if (runAsNode) {
@@ -100,18 +161,17 @@ export default async ({
     }
 
     if (inspect) {
-      args = ['--inspect' as (string|number)].concat(args);
+      args = ['--inspect' as string | number].concat(args);
+    }
+    if (inspectBrk) {
+      args = ['--inspect-brk' as string | number].concat(args);
     }
 
-    let spawned!: ElectronProcess;
-
-    await asyncOra('Launching Application', async () => {
-      spawned = spawn(
-        electronExecPath!,
-        prefixArgs.concat([appPath]).concat(args as string[]),
-        spawnOpts as SpawnOptions,
-      ) as ElectronProcess;
-    });
+    const spawned = spawn(
+      electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      prefixArgs.concat([appPath]).concat(args as string[]),
+      spawnOpts as SpawnOptions
+    ) as ElectronProcess;
 
     await runHook(forgeConfig, 'postStart', spawned);
     return spawned;
@@ -125,9 +185,13 @@ export default async ({
         process.stdin.resume();
       }
       spawned.on('exit', () => {
-        if (spawned.restarted) return;
+        if (spawned.restarted) {
+          return;
+        }
 
-        if (!process.stdin.isPaused()) process.stdin.pause();
+        if (interactive && !process.stdin.isPaused()) {
+          process.stdin.pause();
+        }
       });
     } else if (interactive && !process.stdin.isPaused()) {
       process.stdin.pause();
@@ -140,14 +204,18 @@ export default async ({
   if (interactive) {
     process.stdin.on('data', async (data) => {
       if (data.toString().trim() === 'rs' && lastSpawned) {
-        // eslint-disable-next-line no-console
-        console.info('\nRestarting App\n'.cyan);
+        console.info(chalk.cyan('\nRestarting App\n'));
         lastSpawned.restarted = true;
         lastSpawned.kill('SIGTERM');
         lastSpawned.emit('restarted', await forgeSpawnWrapper());
       }
     });
+    process.stdin.resume();
   }
 
-  return forgeSpawnWrapper();
+  const spawned = await forgeSpawnWrapper();
+
+  if (interactive) console.log('');
+
+  return spawned;
 };

@@ -47,7 +47,66 @@ export interface MakerDebConfigOptions {
    * }).sort().join(' | ')
    * ```
    */
-  section?: 'admin' | 'cli-mono' | 'comm' | 'database' | 'debian-installer' | 'debug' | 'devel' | 'doc' | 'editors' | 'education' | 'electronics' | 'embedded' | 'fonts' | 'games' | 'gnome' | 'gnu-r' | 'gnustep' | 'graphics' | 'hamradio' | 'haskell' | 'httpd' | 'interpreters' | 'introspection' | 'java' | 'javascript' | 'kde' | 'kernel' | 'libdevel' | 'libs' | 'lisp' | 'localization' | 'mail' | 'math' | 'metapackages' | 'misc' | 'net' | 'news' | 'ocaml' | 'oldlibs' | 'otherosfs' | 'perl' | 'php' | 'python' | 'ruby' | 'rust' | 'science' | 'shells' | 'sound' | 'tasks' | 'tex' | 'text' | 'utils' | 'vcs' | 'video' | 'virtual' | 'web' | 'x11' | 'xfce' | 'zope';
+  section?:
+    | 'admin'
+    | 'cli-mono'
+    | 'comm'
+    | 'database'
+    | 'debian-installer'
+    | 'debug'
+    | 'devel'
+    | 'doc'
+    | 'editors'
+    | 'education'
+    | 'electronics'
+    | 'embedded'
+    | 'fonts'
+    | 'games'
+    | 'gnome'
+    | 'gnu-r'
+    | 'gnustep'
+    | 'graphics'
+    | 'hamradio'
+    | 'haskell'
+    | 'httpd'
+    | 'interpreters'
+    | 'introspection'
+    | 'java'
+    | 'javascript'
+    | 'kde'
+    | 'kernel'
+    | 'libdevel'
+    | 'libs'
+    | 'lisp'
+    | 'localization'
+    | 'mail'
+    | 'math'
+    | 'metapackages'
+    | 'misc'
+    | 'net'
+    | 'news'
+    | 'ocaml'
+    | 'oldlibs'
+    | 'otherosfs'
+    | 'perl'
+    | 'php'
+    | 'python'
+    | 'ruby'
+    | 'rust'
+    | 'science'
+    | 'shells'
+    | 'sound'
+    | 'tasks'
+    | 'tex'
+    | 'text'
+    | 'utils'
+    | 'vcs'
+    | 'video'
+    | 'virtual'
+    | 'web'
+    | 'x11'
+    | 'xfce'
+    | 'zope';
   /**
    * How important is it to have the package installed.
    *
@@ -104,9 +163,23 @@ export interface MakerDebConfigOptions {
    *
    * Generated on https://specifications.freedesktop.org/menu-spec/latest/apa.html with:
    *
-   * `(${$$('.informaltable tr td:first-child').map(td => `'${td.innerText}'`).join(' | ')})[]`
+   * `(${$$('.informaltable tr td:first-child').map(td => `'$\{td.innerText\}'`).join(' | ')})[]`
    */
-  categories?: ('AudioVideo' | 'Audio' | 'Video' | 'Development' | 'Education' | 'Game' | 'Graphics' | 'Network' | 'Office' | 'Science' | 'Settings' | 'System' | 'Utility')[];
+  categories?: (
+    | 'AudioVideo'
+    | 'Audio'
+    | 'Video'
+    | 'Development'
+    | 'Education'
+    | 'Game'
+    | 'Graphics'
+    | 'Network'
+    | 'Office'
+    | 'Science'
+    | 'Settings'
+    | 'System'
+    | 'Utility'
+  )[];
   /**
    * MIME types the application is able to open, used in the MimeType field of the desktop
    * specification.

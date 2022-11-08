@@ -1,0 +1,16 @@
+{
+  "name": "native-app",
+  "version": "1.0.0",
+  "main": "./.webpack/main/index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "@vercel/webpack-asset-relocator-loader": "1.7.0",
+    "electron": "^13.1.2"
+  },
+  "dependencies": {
+    "native-hello-world": "^2.0.0"
+  }
+}

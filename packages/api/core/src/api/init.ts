@@ -1,15 +1,18 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import fs from 'fs-extra';
 import path from 'path';
 
-import findTemplate from './init-scripts/find-template';
-import initDirectory from './init-scripts/init-directory';
-import initGit from './init-scripts/init-git';
-import initNPM from './init-scripts/init-npm';
-import installDepList, { DepType } from '../util/install-dependencies';
+import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { ForgeTemplate } from '@electron-forge/shared-types';
+import debug from 'debug';
+import { Listr } from 'listr2';
+import semver from 'semver';
+
+import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
-import { setInitialForgeConfig } from '../util/forge-config';
+
+import { findTemplate } from './init-scripts/find-template';
+import { initDirectory } from './init-scripts/init-directory';
+import { initGit } from './init-scripts/init-git';
+import { initNPM } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:init');
 
@@ -23,7 +26,7 @@ export interface InitOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to copy Travis and AppVeyor CI files
+   * Whether to copy template CI files
    */
   copyCIFiles?: boolean;
   /**
@@ -36,34 +39,107 @@ export interface InitOptions {
   template?: string;
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-  copyCIFiles = false,
-  force = false,
-  template = 'base',
-}: InitOptions) => {
-  asyncOra.interactive = interactive;
-
-  d(`Initializing in: ${dir}`);
-
-  await initDirectory(dir, force);
-  await initGit(dir);
-  const templateModule = await findTemplate(dir, template);
-
-  if (typeof templateModule.initializeTemplate === 'function') {
-    await templateModule.initializeTemplate(dir, { copyCIFiles });
-    const packageJSON = await readRawPackageJson(dir);
-    setInitialForgeConfig(packageJSON);
-    await fs.writeJson(path.join(dir, 'package.json'), packageJSON, { spaces: 2 });
+async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
+  if (!templateModule.requiredForgeVersion) {
+    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
   }
 
-  await asyncOra('Installing Template Dependencies', async () => {
-    d('installing dependencies');
-    await installDepList(dir, templateModule.dependencies || []);
-    d('installing devDependencies');
-    await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
-  });
+  const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
+  if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
+    throw new Error(
+      `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`
+    );
+  }
+}
 
-  await initNPM(dir);
+export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
+  d(`Initializing in: ${dir}`);
+
+  const packageManager = safeYarnOrNpm();
+
+  const runner = new Listr<{
+    templateModule: ForgeTemplate;
+  }>(
+    [
+      {
+        title: `Locating custom template: "${template}"`,
+        task: async (ctx) => {
+          ctx.templateModule = await findTemplate(dir, template);
+        },
+      },
+      {
+        title: 'Initializing directory',
+        task: async (_, task) => {
+          await initDirectory(dir, task, force);
+          await initGit(dir);
+        },
+        options: {
+          persistentOutput: true,
+        },
+      },
+      {
+        title: 'Preparing template',
+        task: async ({ templateModule }) => {
+          await validateTemplate(template, templateModule);
+        },
+      },
+      {
+        title: 'Initializing template',
+        task: async ({ templateModule }, task) => {
+          if (typeof templateModule.initializeTemplate === 'function') {
+            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles });
+            if (tasks) {
+              return task.newListr(tasks, { concurrent: false });
+            }
+          }
+        },
+      },
+      {
+        title: 'Installing template dependencies',
+        task: async ({ templateModule }, task) => {
+          return task.newListr(
+            [
+              {
+                title: 'Installing production dependencies',
+                task: async (_, task) => {
+                  d('installing dependencies');
+                  if (templateModule.dependencies?.length) {
+                    task.output = `${packageManager} install ${templateModule.dependencies.join(' ')}`;
+                  }
+                  return await installDepList(dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
+                },
+              },
+              {
+                title: 'Installing development dependencies',
+                task: async (_, task) => {
+                  d('installing devDependencies');
+                  if (templateModule.devDependencies?.length) {
+                    task.output = `${packageManager} install --dev ${templateModule.devDependencies.join(' ')}`;
+                  }
+                  await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
+                },
+              },
+              {
+                title: 'Finalizing dependencies',
+                task: async (_, task) => {
+                  await initNPM(dir, task);
+                },
+              },
+            ],
+            {
+              concurrent: false,
+              exitOnError: false,
+            }
+          );
+        },
+      },
+    ],
+    {
+      concurrent: false,
+      rendererSilent: !interactive,
+      rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+    }
+  );
+
+  await runner.run();
 };

@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest an idea for Electron Forge
+labels: 'Enhancement'
+
+body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I have read the [contribution documentation](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) for this project.
+          required: true
+        - label: I agree to follow the [code of conduct](https://github.com/electron/electron/blob/main/CODE_OF_CONDUCT.md) that this project uses.
+          required: true
+        - label: I have searched the issue tracker for a feature request that matches the one I want to file, without success.
+          required: true
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem description
+      description: Is your feature request related to a problem? Please add a clear and concise description of what the problem is.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+      description: Describe the solution you'd like in a clear and concise manner.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional information
+      description: Please add any other context about the problem. This may include the use case for the feature.

@@ -1,16 +1,13 @@
-import 'colors';
-import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
+
+import ForgeUtils from '../util';
 
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
-import install, { InstallOptions, Asset as InstallAsset } from './install';
-import lint, { LintOptions } from './lint';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
-
-import ForgeUtils from '../util';
 
 export class ForgeAPI {
   /**
@@ -19,54 +16,35 @@ export class ForgeAPI {
    * * Sets up `git` and the correct NPM dependencies
    * * Adds a template forge config to `package.json`
    */
-  import(opts: ImportOptions) {
+  import(opts: ImportOptions): Promise<void> {
     return _import(opts);
   }
 
   /**
    * Initialize a new Electron Forge template project in the given directory.
    */
-  init(opts: InitOptions) {
+  init(opts: InitOptions): Promise<void> {
     return init(opts);
-  }
-
-  /**
-   * Install an Electron application from GitHub.
-   *
-   * Works on all three platforms for all major distributable types.
-   */
-  install(opts: InstallOptions) {
-    return install(opts);
-  }
-
-  /**
-   * Lint a local Electron application.
-   *
-   * The promise will be rejected with the stdout+stderr of the linting process
-   * if linting fails or will be resolved if it succeeds.
-   */
-  lint(opts: LintOptions) {
-    return lint(opts);
   }
 
   /**
    * Make distributables for an Electron application
    */
-  make(opts: MakeOptions) {
+  make(opts: MakeOptions): Promise<ForgeMakeResult[]> {
     return make(opts);
   }
 
   /**
    * Resolves hooks if they are a path to a file (instead of a `Function`)
    */
-  package(opts: PackageOptions) {
-    return _package(opts);
+  async package(opts: PackageOptions): Promise<void> {
+    await _package(opts);
   }
 
   /**
    * Publish an Electron application into the given target service
    */
-  publish(opts: PublishOptions) {
+  publish(opts: PublishOptions): Promise<void> {
     return publish(opts);
   }
 
@@ -75,7 +53,7 @@ export class ForgeAPI {
    *
    * Handles things like native module rebuilding for you on the fly
    */
-  start(opts: StartOptions) {
+  start(opts: StartOptions): Promise<ElectronProcess> {
     return start(opts);
   }
 }
@@ -83,17 +61,4 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export {
-  ForgeMakeResult,
-  ImportOptions,
-  InitOptions,
-  InstallAsset,
-  InstallOptions,
-  LintOptions,
-  MakeOptions,
-  PackageOptions,
-  PublishOptions,
-  StartOptions,
-  api,
-  utils,
-};
+export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };

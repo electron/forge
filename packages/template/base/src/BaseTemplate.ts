@@ -1,11 +1,12 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import debug from 'debug';
+import fs from 'fs-extra';
 
 import determineAuthor from './determine-author';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const currentForgeVersion = require('../package.json').version;
 
 const d = debug('electron-forge:template:base');
@@ -14,6 +15,8 @@ const tmplDir = path.resolve(__dirname, '../tmpl');
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
 
+  public requiredForgeVersion = currentForgeVersion;
+
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
     if (fs.pathExistsSync(packageJSONPath)) {
@@ -21,7 +24,7 @@ export class BaseTemplate implements ForgeTemplate {
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
-            version = currentForgeVersion;
+            version = `^${currentForgeVersion}`;
           }
           return `${packageName}@${version}`;
         });
@@ -31,53 +34,58 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions) {
-    await asyncOra('Copying Starter Files', async () => {
-      d('creating directory:', path.resolve(directory, 'src'));
-      await fs.mkdirs(path.resolve(directory, 'src'));
-      const rootFiles = ['_gitignore'];
-      if (copyCIFiles) rootFiles.push(...['_travis.yml', '_appveyor.yml']);
-      const srcFiles = ['index.css', 'index.js', 'index.html'];
+  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+    return [
+      {
+        title: 'Copying starter files',
+        task: async () => {
+          d('creating directory:', path.resolve(directory, 'src'));
+          await fs.mkdirs(path.resolve(directory, 'src'));
+          const rootFiles = ['_gitignore', 'forge.config.js'];
+          if (copyCIFiles) {
+            d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
+          }
+          const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
-      for (const file of rootFiles) {
-        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
-      }
-      for (const file of srcFiles) {
-        await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
-      }
-    });
-
-    await this.initializePackageJSON(directory);
+          for (const file of rootFiles) {
+            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+          }
+          for (const file of srcFiles) {
+            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+          }
+        },
+      },
+      {
+        title: 'Initializing package.json',
+        task: async () => {
+          await this.initializePackageJSON(directory);
+        },
+      },
+    ];
   }
 
-  async copy(source: string, target: string) {
+  async copy(source: string, target: string): Promise<void> {
     d(`copying "${source}" --> "${target}"`);
     await fs.copy(source, target);
   }
 
-  async copyTemplateFile(destDir: string, basename: string) {
+  async copyTemplateFile(destDir: string, basename: string): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
   }
 
-  async initializePackageJSON(directory: string) {
-    await asyncOra('Initializing NPM Module', async () => {
-      const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-      // eslint-disable-next-line no-multi-assign
-      packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
-      packageJSON.author = await determineAuthor(directory);
+  async initializePackageJSON(directory: string): Promise<void> {
+    const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
+    packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
+    packageJSON.author = await determineAuthor(directory);
 
-      packageJSON.scripts.lint = 'echo "No linting configured"';
+    packageJSON.scripts.lint = 'echo "No linting configured"';
 
-      d('writing package.json to:', directory);
-      await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
-    });
+    d('writing package.json to:', directory);
+    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
   }
 
-  async updateFileByLine(
-    inputPath: string,
-    lineHandler: (line: string) => string,
-    outputPath?: string | undefined,
-  ) {
+  async updateFileByLine(inputPath: string, lineHandler: (line: string) => string, outputPath?: string | undefined): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {

@@ -1,7 +1,10 @@
 declare module 'parse-author' {
-  type AuthorType = string | {
-    name: string;
-  } | undefined;
+  type AuthorType =
+    | string
+    | {
+        name: string;
+      }
+    | undefined;
   interface ParseAuthor {
     (author: AuthorType): AuthorType;
   }

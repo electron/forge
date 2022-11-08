@@ -1,0 +1,28 @@
+{
+  "name": "@scope/package",
+  "productName": "",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "linux"
+          ]
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "1000.100.10"
+  }
+}

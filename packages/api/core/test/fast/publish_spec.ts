@@ -1,11 +1,18 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+
+import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
-import sinon, { SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { PublishOptions } from '../../src/api';
+
+async function loadFixtureConfig() {
+  // eslint-disable-next-line node/no-missing-require
+  return require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+}
 
 describe('publish', () => {
   let publish: (opts: PublishOptions) => Promise<void>;
@@ -14,36 +21,42 @@ describe('publish', () => {
   let publisherSpy: SinonStub;
   let voidStub: SinonStub;
   let nowhereStub: SinonStub;
-  let publishers: any[];
-  let fooPublisher: { name: string, providedConfig: any };
+  let publishers: (SinonStub | ForgeConfigPublisher)[];
+  let fooPublisher: { name: string; providedConfig: Record<string, unknown> };
 
   beforeEach(() => {
-    resolveStub = sinon.stub();
-    makeStub = sinon.stub();
-    publisherSpy = sinon.stub();
-    voidStub = sinon.stub();
-    nowhereStub = sinon.stub();
-    publishers = ['@electron-forge/publisher-test'];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const fakePublisher = (stub: SinonStub, name: string = 'default') => class _FakePublisher {
-      private publish: SinonStub;
+    resolveStub = stub();
+    makeStub = stub();
+    publisherSpy = stub();
+    voidStub = stub();
+    nowhereStub = stub();
+    publishers = [{ name: '@electron-forge/publisher-test' }];
+    const fakePublisher = (stub: SinonStub, name = 'default') =>
+      class _FakePublisher {
+        private publish: SinonStub;
 
-      public name = name;
+        public name = name;
 
-      constructor(public providedConfig: any) {
-        fooPublisher = this;
-        this.publish = stub;
-      }
-    };
+        constructor(public providedConfig: Record<string, unknown>) {
+          fooPublisher = this;
+          this.publish = stub;
+        }
+      };
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
-      './make': async (...args: any[]) => makeStub(...args),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      './make': {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        listrMake: async (...args: any[]) => {
+          makeStub(...args);
+        },
+      },
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(require('../fixture/dummy_app/package.json')),
       },
       '../util/forge-config': async () => {
-        const config = await (require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app')));
+        const config = await loadFixtureConfig();
 
         config.publishers = publishers;
         return config;
@@ -67,10 +80,9 @@ describe('publish', () => {
 
     publisherSpy.returns(Promise.resolve());
     resolveStub.returns(path.resolve(__dirname, '../fixture/dummy_app'));
-    makeStub.returns([]);
   });
 
-  it('should should call make with makeOptions', async () => {
+  it('should should call make', async () => {
     await publish({
       dir: __dirname,
       interactive: false,
@@ -79,13 +91,16 @@ describe('publish', () => {
   });
 
   it('should resolve publishers from the forge config if provided', async () => {
-    publishers = [{
-      name: 'bad',
-      config: 'foo',
-    }, {
-      name: '@electron-forge/publisher-foo',
-      config: 'resolved',
-    }];
+    publishers = [
+      {
+        name: 'bad',
+        config: 'foo',
+      },
+      {
+        name: '@electron-forge/publisher-foo',
+        config: 'resolved',
+      },
+    ];
     await publish({
       dir: __dirname,
       interactive: false,
@@ -98,7 +113,7 @@ describe('publish', () => {
   });
 
   it('should call the resolved publisher with the appropriate args', async () => {
-    makeStub.returns([{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(1, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -106,43 +121,51 @@ describe('publish', () => {
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
-    const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+    delete publisherSpy.firstCall.args[0].setStatusLine;
+    const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
 
     delete testConfig.pluginInterface;
-    expect(publisherSpy.firstCall.args).to.deep.equal([{
-      dir: resolveStub(),
-      makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      forgeConfig: testConfig,
-    }]);
+    expect(publisherSpy.firstCall.args).to.deep.equal([
+      {
+        dir: resolveStub(),
+        makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
+        forgeConfig: testConfig,
+      },
+    ]);
   });
 
   it('should call the provided publisher with the appropriate args', async () => {
-    makeStub.returns([{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(1, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
       // Fake instance of a publisher
-      publishTargets: [{
-        __isElectronForgePublisher: true,
-        publish: publisherSpy,
-        platforms: null,
-      } as any],
+      publishTargets: [
+        {
+          __isElectronForgePublisher: true,
+          publish: publisherSpy,
+          platforms: undefined,
+        } as IForgePublisher,
+      ],
     });
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
-    const testConfig = await require('../../src/util/forge-config').default(path.resolve(__dirname, '../fixture/dummy_app'));
+    delete publisherSpy.firstCall.args[0].setStatusLine;
+    const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
 
     delete testConfig.pluginInterface;
-    expect(publisherSpy.firstCall.args).to.deep.equal([{
-      dir: resolveStub(),
-      makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
-      forgeConfig: testConfig,
-    }]);
+    expect(publisherSpy.firstCall.args).to.deep.equal([
+      {
+        dir: resolveStub(),
+        makeResults: [{ artifacts: ['artifact1', 'artifact2'] }],
+        forgeConfig: testConfig,
+      },
+    ]);
   });
 
   it('should default to publishing nothing', async () => {
@@ -182,19 +205,13 @@ describe('publish', () => {
     const fakeMake = (platform: string) => {
       const ret = [
         {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact1-${platform}`),
-            path.resolve(dir, `out/make/artifact2-${platform}`),
-          ],
-        }, {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact3-${platform}`),
-          ],
+          artifacts: [path.resolve(dir, `out/make/artifact1-${platform}`), path.resolve(dir, `out/make/artifact2-${platform}`)],
         },
         {
-          artifacts: [
-            path.resolve(dir, `out/make/artifact4-${platform}`),
-          ],
+          artifacts: [path.resolve(dir, `out/make/artifact3-${platform}`)],
+        },
+        {
+          artifacts: [path.resolve(dir, `out/make/artifact4-${platform}`)],
         },
       ];
       const state = {
@@ -212,9 +229,15 @@ describe('publish', () => {
       dir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'electron-forge-test-'));
     });
 
+    beforeEach(() => {
+      resolveStub.returns(dir);
+    });
+
     describe('when creating a dry run', () => {
       beforeEach(async () => {
-        makeStub.returns(fakeMake('darwin'));
+        makeStub.onCall(0).callsArgWith(1, fakeMake('darwin'));
+        makeStub.onCall(1).callsArgWith(1, fakeMake('win32'));
+
         const dryPath = path.resolve(dir, 'out', 'publish-dry-run');
         await fs.mkdirs(dryPath);
         await fs.writeFile(path.resolve(dryPath, 'hash.json'), 'test');
@@ -226,7 +249,6 @@ describe('publish', () => {
         expect(await fs.pathExists(path.resolve(dryPath, 'hash.json'))).to.equal(false, 'previous hashes should be erased');
         const backupDir = path.resolve(dir, 'out', 'backup');
         await fs.move(dryPath, backupDir);
-        makeStub.returns(fakeMake('win32'));
         await publish({
           dir,
           interactive: false,
@@ -284,20 +306,24 @@ describe('publish', () => {
         const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.includes('darwin')) ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
-        const darwinArtifacts = [];
+        const darwinArtifacts: unknown[] = [];
         for (const result of darwinArgs.makeResults) {
           darwinArtifacts.push(...result.artifacts);
         }
         expect(darwinArtifacts.sort()).to.deep.equal(
-          fakeMake('darwin').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
+          fakeMake('darwin')
+            .reduce((accum, val) => accum.concat(val.artifacts), [] as string[])
+            .sort()
         );
         const win32Args = publisherSpy.getCall(win32Index).args[0];
-        const win32Artifacts = [];
+        const win32Artifacts: unknown[] = [];
         for (const result of win32Args.makeResults) {
           win32Artifacts.push(...result.artifacts);
         }
         expect(win32Artifacts.sort()).to.deep.equal(
-          fakeMake('win32').reduce((accum, val) => accum.concat(val.artifacts), [] as string[]).sort(),
+          fakeMake('win32')
+            .reduce((accum, val) => accum.concat(val.artifacts), [] as string[])
+            .sort()
         );
       });
     });

@@ -1,13 +1,15 @@
-import MakerBase from '@electron-forge/maker-base';
-
-import { expect } from 'chai';
 import path from 'path';
-import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
 
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import { SinonStub, stub } from 'sinon';
+
 import { MakerRpmConfig } from '../src/Config';
 import { rpmArch } from '../src/MakerRpm';
+
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 class MakerImpl extends MakerBase<MakerRpmConfig> {
   name = 'test';
@@ -40,14 +42,18 @@ describe('MakerRpm', () => {
     createMaker = () => {
       maker = new MakerRpm(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -64,11 +70,15 @@ describe('MakerRpm', () => {
       options: {
         productName: 'Redhat',
       },
-    } as any;
+    } as MakerRpmConfig;
     createMaker();
 
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
     expect(opts).to.deep.equal({

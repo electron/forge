@@ -2,7 +2,7 @@ export default class Maker {
   // Just so the maker isn't excluded
   platforms = [process.platform];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return false;
   }
 }

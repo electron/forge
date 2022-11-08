@@ -1,15 +1,17 @@
+import path from 'path';
+
+import { getElectronVersion } from '@electron-forge/core-utils';
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
+
 import { readRawPackageJson } from './read-package-json';
-import { getElectronVersion } from './electron-version';
 
 const d = debug('electron-forge:project-resolver');
 
 // FIXME: If we want getElectronVersion to be overridable by plugins
 //        and / or forge config then we need to be able to resolve
 //        the dir without calling getElectronVersion
-export default async (dir: string) => {
+export default async (dir: string): Promise<string | null> => {
   let mDir = dir;
   let bestGuessDir: string | null = null;
   let lastError: string | null = null;
@@ -27,11 +29,18 @@ export default async (dir: string) => {
       try {
         await getElectronVersion(mDir, packageJSON);
       } catch (err) {
-        lastError = err.message;
+        if (err instanceof Error) {
+          lastError = err.message;
+        }
       }
 
       if (packageJSON.config && packageJSON.config.forge) {
         d('electron-forge compatible package.json found in', testPath);
+        return mDir;
+      }
+
+      if (packageJSON.devDependencies?.['@electron-forge/cli']) {
+        d('package.json with forge dependency found in', testPath);
         return mDir;
       }
 

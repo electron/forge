@@ -4,7 +4,6 @@ type WindowsFileExtension = '.exe' | '.msi' | '.nupkg';
 
 type LinuxFileExtension = '.deb' | '.gz' | '.rpm' | '.AppImage';
 
-// eslint-disable-next-line import/prefer-default-export
 export interface PublisherERSConfig {
   /**
    * The base URL of your instance of ERS.
@@ -30,6 +29,13 @@ export interface PublisherERSConfig {
    * Default: stable
    */
   channel?: string;
+  /**
+   * The "flavor" of the binary that you want to release to.
+   * This is useful if you want to provide multiple versions
+   * of the same application version (e.g. full and lite)
+   * to end users.
+   */
+  flavor?: string;
   fileExtensions?: {
     darwin?: DarwinFileExtension[],
     win32?: WindowsFileExtension[],

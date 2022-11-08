@@ -1,6 +1,7 @@
-import 'colors';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+
+import chalk from 'chalk';
+import * as fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -18,12 +19,12 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
   for (const dir of dirsToCheck) {
     const pj = await fs.readJson(path.resolve(dir, 'package.json'));
     if (pj.name === '@electron-forge/cli') continue;
-    if (!await fs.pathExists(path.resolve(dir, pj.main))) {
-      console.error(`${`[${pj.name}]`.cyan}:`, `Main entry not found (${pj.main})`.red);
+    if (!(await fs.pathExists(path.resolve(dir, pj.main)))) {
+      console.error(`${chalk.cyan(`[${pj.name}]`)}:`, chalk.red(`Main entry not found (${pj.main})`));
       bad = true;
     }
-    if (!pj.typings || !await fs.pathExists(path.resolve(dir, pj.typings))) {
-      console.error(`${`[${pj.name}]`.cyan}:`, `Typings entry not found (${pj.typings})`.red);
+    if (!pj.typings || !(await fs.pathExists(path.resolve(dir, pj.typings)))) {
+      console.error(`${chalk.cyan(`[${pj.name}]`)}:`, chalk.red(`Typings entry not found (${pj.typings})`));
       bad = true;
     }
   }

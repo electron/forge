@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import MakerBase from '../src/Maker';
+import { EmptyConfig, MakerBase } from '../src/Maker';
 
-class MakerImpl extends MakerBase<{}> {
+class MakerImpl extends MakerBase<EmptyConfig> {
   name = 'test';
 
   defaultPlatforms = [];

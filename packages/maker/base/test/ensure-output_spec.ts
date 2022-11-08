@@ -1,11 +1,12 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import MakerBase from '../src/Maker';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 
-class MakerImpl extends MakerBase<{}> {
+import { EmptyConfig, MakerBase } from '../src/Maker';
+
+class MakerImpl extends MakerBase<EmptyConfig> {
   name = 'test';
 
   defaultPlatforms = [];

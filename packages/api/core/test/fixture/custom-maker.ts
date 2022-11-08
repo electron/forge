@@ -1,5 +1,5 @@
+import { MakerBase } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import MakerBase from '@electron-forge/maker-base';
 
 interface Config {
   artifactPath: string;
@@ -10,11 +10,11 @@ export default class Maker extends MakerBase<Config> {
 
   defaultPlatforms = ['linux'] as ForgePlatform[];
 
-  isSupportedOnCurrentPlatform() {
+  isSupportedOnCurrentPlatform(): boolean {
     return true;
   }
 
-  async make() {
+  async make(): Promise<string[]> {
     return Promise.resolve([this.config.artifactPath || 'default']);
   }
 }

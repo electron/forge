@@ -1,7 +1,8 @@
+import path from 'path';
+
+import { spawn } from '@malept/cross-spawn-promise';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import path from 'path';
-import { spawn } from '@malept/cross-spawn-promise';
 
 chai.use(chaiAsPromised);
 
@@ -11,10 +12,7 @@ function tsNodePath() {
 }
 
 function runForgeCLI(...extraArgs: string[]): Promise<string> {
-  const args = [
-    path.resolve(__dirname, '../src/electron-forge.ts'),
-    ...extraArgs,
-  ];
+  const args = [path.resolve(__dirname, '../src/electron-forge.ts'), ...extraArgs];
   return spawn(tsNodePath(), args);
 }
 

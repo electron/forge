@@ -1,11 +1,10 @@
-/* eslint "no-console": "off" */
-export function info(interactive: boolean, message: string) {
+export function info(interactive: boolean, message: string): void {
   if (interactive) {
     console.info(message);
   }
 }
 
-export function warn(interactive: boolean, message: string) {
+export function warn(interactive: boolean, message: string): void {
   if (interactive) {
     console.warn(message);
   }

@@ -1,16 +1,19 @@
-import MakerBase from '@electron-forge/maker-base';
-
-import { expect } from 'chai';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerDMGConfig } from '../src/Config';
 
-class MakerImpl extends MakerBase<MakerDMGConfig> {
- name = 'test';
+type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
- defaultPlatforms = [];
+class MakerImpl extends MakerBase<MakerDMGConfig> {
+  name = 'test';
+
+  defaultPlatforms = [];
 }
 
 describe('MakerDMG', () => {
@@ -34,24 +37,31 @@ describe('MakerDMG', () => {
     renameStub = stub().returns(Promise.resolve());
     config = {};
 
-    MakerDMG = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDMG', {
-      '../../util/ensure-output': { ensureFile: ensureFileStub },
-      'electron-installer-dmg': eidStub,
-      'fs-extra': {
-        rename: renameStub,
-      },
-    }).default;
+    MakerDMG = proxyquire
+      .noPreserveCache()
+      .noCallThru()
+      .load('../src/MakerDMG', {
+        '../../util/ensure-output': { ensureFile: ensureFileStub },
+        'electron-installer-dmg': eidStub,
+        'fs-extra': {
+          rename: renameStub,
+        },
+      }).default;
     createMaker = () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
-      maker.prepareConfig(targetArch as any);
+      maker.prepareConfig(targetArch as ForgeArch);
     };
     createMaker();
   });
 
   it('should pass through correct defaults', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
@@ -63,25 +73,37 @@ describe('MakerDMG', () => {
   });
 
   it('should attempt to rename the DMG file if no custom name is set', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     expect(renameStub.callCount).to.equal(1);
-    expect(renameStub.firstCall.args[1]).to.include('1.2.3');
+    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
 
   it('should rename the DMG file to include the version if no custom name is set', async () => {
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
-    expect(renameStub.firstCall.args[1]).to.include('1.2.3');
+    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {
     config.name = 'foobar';
     createMaker();
-    await (maker.make as any)({
-      dir, makeDir, appName, targetArch, packageJSON,
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
     });
     expect(renameStub.callCount).to.equal(0);
   });
