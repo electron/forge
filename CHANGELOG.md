@@ -1,3 +1,5 @@
+#### [6.0.1](https://github.com/electron/forge/releases/tag/v6.0.1) (2022-11-08)
+
 #### [6.0.0](https://github.com/electron/forge/releases/tag/v6.0.0) (2022-11-02)
 
 #### [6.0.0-beta.75](https://github.com/electron/forge/releases/tag/v6.0.0-beta.75) (2022-11-01)
