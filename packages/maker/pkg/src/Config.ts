@@ -1,8 +1,6 @@
 export interface MakerPKGConfig {
   /**
-   * The name to the output the flattened package.
-   *
-   * Default: `${appName}-${packageJSON.version}.pkg`
+   * The application name
    */
   name?: string;
   /**
