@@ -30,12 +30,14 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
 
     for (const makeResult of makeResults) {
       artifacts.push(
-        ...makeResult.artifacts.map((artifact) => ({
-          path: artifact,
-          keyPrefix: this.config.folder || makeResult.packageJSON.version,
-          platform: makeResult.platform,
-          arch: makeResult.arch,
-        }))
+        ...makeResult.artifacts
+          .filter((artifact) => fs.existsSync(artifact))
+          .map((artifact) => ({
+            path: artifact,
+            keyPrefix: this.config.folder || makeResult.packageJSON.version,
+            platform: makeResult.platform,
+            arch: makeResult.arch,
+          }))
       );
     }
 
