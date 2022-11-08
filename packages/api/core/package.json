@@ -84,8 +84,5 @@
       "type": "tidelift",
       "url": "https://tidelift.com/subscription/pkg/npm-.electron-forge-core?utm_medium=referral&utm_source=npm_fund"
     }
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+  ]
 }

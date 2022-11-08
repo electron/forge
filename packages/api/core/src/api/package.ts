@@ -73,7 +73,6 @@ function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHook
 type PackageContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   packageJSON: any;
   calculatedOutDir: string;
   packagerPromise: Promise<string[]>;
@@ -175,7 +174,6 @@ export const listrPackage = ({
           const signalCopyDone: StepDoneSignalMap = new Map();
           const signalRebuildDone: StepDoneSignalMap = new Map();
           const signalPackageDone: StepDoneSignalMap = new Map();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const rejects: ((err: any) => void)[] = [];
           const signalDone = (map: StepDoneSignalMap, target: TargetDefinition) => {
             map.get(getTargetKey(target))?.pop()?.();

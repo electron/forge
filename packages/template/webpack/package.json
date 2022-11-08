@@ -22,8 +22,5 @@
     "@electron-forge/test-utils": "6.0.1",
     "chai": "^4.3.3",
     "listr2": "^5.0.3"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

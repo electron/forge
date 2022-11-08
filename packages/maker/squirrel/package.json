@@ -21,8 +21,5 @@
   },
   "optionalDependencies": {
     "electron-winstaller": "^5.0.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

@@ -127,7 +127,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
       after(async () => {
         await fs.remove(dir);
-        execSync('npm unlink -g', {
+        execSync('npm unlink', {
           cwd: path.resolve(__dirname, '../fixture/custom_init'),
         });
       });

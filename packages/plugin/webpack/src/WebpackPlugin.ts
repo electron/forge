@@ -319,7 +319,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const compiler = webpack(config);
     const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
     await webpackDevServer.start();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.servers.push(webpackDevServer.server!);
 
     for (const entryPoint of this.config.renderer.entryPoints) {

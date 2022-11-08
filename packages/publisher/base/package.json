@@ -20,8 +20,5 @@
   },
   "engines": {
     "node": ">= 14.17.5"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
