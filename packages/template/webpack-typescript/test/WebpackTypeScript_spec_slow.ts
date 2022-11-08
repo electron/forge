@@ -68,7 +68,7 @@ describe('WebpackTypeScriptTemplate', () => {
       const pj = await fs.readJson(path.resolve(dir, 'package.json'));
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        webpack: `${require('../../../plugin/webpack/node_modules/webpack/package.json').version}`,
+        webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
       };
       await fs.writeJson(path.resolve(dir, 'package.json'), pj);
       await yarnOrNpmSpawn(['install'], {

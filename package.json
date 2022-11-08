@@ -20,10 +20,9 @@
     "docs:deploy:build": "yarn docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
-    "link:prepare": "bolt ws exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
+    "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "preinstall": "node ./tools/maybe-shim-windows.js",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install"
   },
@@ -169,6 +168,7 @@
   "workspaces": {
     "packages": [
       "packages/api/*",
+      "packages/external/*",
       "packages/plugin/*",
       "packages/maker/*",
       "packages/publisher/*",
