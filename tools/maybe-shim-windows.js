@@ -17,6 +17,7 @@ async function main() {
   const cea = path.resolve(srcRoot, 'packages', 'external', 'create-electron-app', 'dist', 'index.js');
   createShim(cli);
   createShim(cea);
+  console.log('blahblahblah');
 }
 
 if (process.platform === 'win32') {
