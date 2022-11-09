@@ -1,6 +1,8 @@
 export interface MakerPKGConfig {
   /**
-   * The application name
+   * The application name.
+   *
+   * Default: `${appName}-${packageJSON.version}-${targetArch}`.
    */
   name?: string;
   /**
