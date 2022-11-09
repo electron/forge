@@ -1,6 +1,6 @@
 module.exports = [
   {
-    test: /\.(m?js|node)$/,
+    test: /\/node_modules\/.*\.(m?js|node)$/,
     parser: { amd: false },
     use: {
       loader: '@vercel/webpack-asset-relocator-loader',
