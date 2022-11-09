@@ -15,12 +15,12 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
     return process.platform === 'darwin';
   }
 
-  async make({ dir, makeDir, appName, packageJSON, targetPlatform }: MakerOptions): Promise<string[]> {
+  async make({ dir, makeDir, appName, packageJSON, targetPlatform, targetArch }: MakerOptions): Promise<string[]> {
     if (!this.isValidTargetPlatform(targetPlatform)) {
       throw new Error(`The pkg maker only supports targeting "mas" and "darwin" builds. You provided "${targetPlatform}".`);
     }
 
-    const outPath = path.resolve(makeDir, `${appName}-${packageJSON.version}.pkg`);
+    const outPath = path.resolve(makeDir, `${appName}-${packageJSON.version}-${targetArch}.pkg`);
 
     await this.ensureFile(outPath);
 

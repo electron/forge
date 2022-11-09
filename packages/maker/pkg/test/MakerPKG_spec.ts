@@ -69,7 +69,7 @@ describe('MakerPKG', () => {
     const opts = osxSignStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       app: path.resolve(`${dir}/My Test App.app`),
-      pkg: path.resolve(`${dir.substr(0, dir.length - 4)}/make/My Test App-1.2.3.pkg`),
+      pkg: path.resolve(`${dir.substr(0, dir.length - 4)}/make/My Test App-1.2.3-${targetArch}.pkg`),
       platform: 'mas',
     });
   });
