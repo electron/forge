@@ -72,6 +72,7 @@ Please ensure that all changes are committed using [semantic commit messages](ht
 
 The Electron Forge repository has a lot of tests, some of which take a decent
 amount of time to run when uncached. The repository will automatically cache test results for future runs.
+Adding `skip-nx-cache` will skip the cache.
 
 ```bash
 lerna run test
@@ -110,15 +111,13 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 - Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
 - Ensure that you are logged into npm via command line (`npm login`)
 - `lerna publish --force-publish`
-
-  - running this command without the `--force-publish` flag will only publish packages that have changes since
-    last release.
+  - **running this command without the `--force-publish` flag will only publish packages that have changes since
+    last release**.
   - for beta releases, select `custom prerelease` when prompted, and enter `y` to increment the beta version.
   - version numbers should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
   - The script will then ask you for your `npm` OTP password.
   - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
     committed.
-
 - The command will have published your packages to `npm`, and pushed an appropriate tag to github.
 - After running the command, you should have a commit which:
   - Updates the version field in the package.json file
