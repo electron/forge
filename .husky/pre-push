@@ -1,0 +1,17 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+PROTECTED_BRANCH="main"
+
+exec < /dev/tty
+
+if [ "$BRANCH" = $PROTECTED_BRANCH ]; then
+    echo $BRANCH
+    read -p "[pre-push hook] Warning: this is a protected branch. Continue? (Y/n) " yn
+    case $yn in
+        [Yy]* ) exit 0;;
+        [Nn]* ) exit 1;;
+        * ) echo "Please answer y or n for yes or no."; exit 1;;
+    esac
+fi
