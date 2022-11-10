@@ -1,10 +1,12 @@
 #!/bin/sh
+case `uname` in
+    *CYGWIN*|*MINGW*|*MSYS*) exit 0;;
+esac
 . "$(dirname "$0")/_/husky.sh"
+exec < /dev/tty
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
 PROTECTED_BRANCH="main"
-
-exec < /dev/tty
 
 if [ "$BRANCH" = $PROTECTED_BRANCH ]; then
     echo $BRANCH
