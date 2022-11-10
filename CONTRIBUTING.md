@@ -58,7 +58,7 @@ Getting the code base running locally requires the `bolt` command installed glob
 ```bash
 npm i -g bolt
 git clone https://github.com/electron/forge
-cd electron-forge
+cd forge
 # Installs all dependencies, don't run "yarn" or "npm install" yourself
 bolt
 # Builds all the TS code
