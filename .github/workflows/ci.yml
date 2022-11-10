@@ -64,7 +64,7 @@ jobs:
       - name: Build
         run: bolt build
       - name: Run tests
-        run: bolt coverage:fast
+        run: bolt test:fast
 
   slow-tests:
     runs-on: ${{ matrix.os }}
@@ -110,6 +110,6 @@ jobs:
       - name: Build
         run: bolt build
       - name: Test
-        run: bolt coverage:slow
+        run: bolt test
         env:
           DEBUG: electron-installer-snap:snapcraft
