@@ -1,3 +1,9 @@
+type DarwinFileExtension = '.dmg' | '.pkg' | '.mas' | '.zip';
+
+type WindowsFileExtension = '.exe' | '.msi' | '.nupkg';
+
+type LinuxFileExtension = '.deb' | '.gz' | '.rpm' | '.AppImage';
+
 export interface PublisherERSConfig {
   /**
    * The base URL of your instance of ERS.
@@ -23,7 +29,6 @@ export interface PublisherERSConfig {
    * Default: stable
    */
   channel?: string;
-
   /**
    * The "flavor" of the binary that you want to release to.
    * This is useful if you want to provide multiple versions
@@ -31,4 +36,9 @@ export interface PublisherERSConfig {
    * to end users.
    */
   flavor?: string;
+  fileExtensions?: {
+    darwin?: DarwinFileExtension[];
+    win32?: WindowsFileExtension[];
+    linux?: LinuxFileExtension[];
+  };
 }

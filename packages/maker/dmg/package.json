@@ -28,5 +28,8 @@
   },
   "optionalDependencies": {
     "electron-installer-dmg": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

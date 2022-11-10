@@ -28,5 +28,8 @@
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

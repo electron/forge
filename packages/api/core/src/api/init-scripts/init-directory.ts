@@ -5,6 +5,7 @@ import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:init:directory');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initDirectory = async (dir: string, task: ForgeListrTask<any>, force = false): Promise<void> => {
   d('creating directory:', dir);
   await fs.mkdirs(dir);

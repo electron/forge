@@ -107,6 +107,7 @@ const publish = async ({
               };
               await publisher.publish({
                 dir,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 makeResults: makeResults!,
                 forgeConfig,
                 setStatusLine,
@@ -272,6 +273,7 @@ const publish = async ({
                 const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
 
                 await fs.remove(dryRunDir);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 await PublishState.saveToDirectory(dryRunDir, makeResults!, dir);
               },
             },

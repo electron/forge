@@ -18,5 +18,8 @@
   "devDependencies": {
     "chai": "^4.3.3",
     "mocha": "^9.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
