@@ -17,20 +17,12 @@ for (const p of packages) {
 
   // normalize for Windows
   const packagePath = p.path.replace(/\\/g, '/');
-
-  const apiSpec = path.posix.join(packagePath, 'test', 'slow', 'api_spec_slow.ts');
   const specGlob: string[] = [];
 
-  if (argv.integration) {
-    specGlob.push(apiSpec);
-  } else if (argv.glob) {
+  if (argv.glob) {
     specGlob.push(path.posix.join(packagePath, argv.glob));
   } else {
     specGlob.push(path.posix.join(packagePath, 'test', '**', `*_spec${isFast ? '' : '*'}.ts`));
-  }
-
-  if (argv.integration === false || process.env.INTEGRATION_TESTS === '0') {
-    specGlob.push(`!${apiSpec}`);
   }
   testFiles.push(...glob.sync(specGlob));
 }
