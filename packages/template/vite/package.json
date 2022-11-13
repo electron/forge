@@ -1,0 +1,26 @@
+{
+  "name": "@electron-forge/template-vite",
+  "version": "6.0.4",
+  "description": "Vite template for Electron Forge, gets you started with Vite really quickly",
+  "repository": "https://github.com/electron/forge",
+  "author": "caoxiemeihao",
+  "license": "MIT",
+  "main": "dist/ViteTemplate.js",
+  "typings": "dist/ViteTemplate.d.ts",
+  "scripts": {
+    "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "dependencies": {
+    "@electron-forge/shared-types": "6.0.4",
+    "@electron-forge/template-base": "6.0.4",
+    "fs-extra": "^10.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/test-utils": "6.0.4",
+    "chai": "^4.3.3",
+    "listr2": "^5.0.3"
+  }
+}
