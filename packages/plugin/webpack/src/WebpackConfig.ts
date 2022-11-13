@@ -192,7 +192,6 @@ export default class WebpackConfigGenerator {
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration[]> {
     const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
-    const defines = this.getDefines(false);
 
     return entryPoints.map((entryPoint) => {
       const baseConfig: webpack.Configuration = {
@@ -209,7 +208,7 @@ export default class WebpackConfigGenerator {
           __dirname: false,
           __filename: false,
         },
-        plugins: [new webpack.DefinePlugin(defines), new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)],
+        plugins: [new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)],
       };
 
       if (isLocalWindow(entryPoint)) {
