@@ -109,8 +109,8 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
   let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
 
-  if (!forgeConfig) {
-    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+  if (!forgeConfig || typeof forgeConfig === 'string') {
+    for (const extension of ['.js', ...Object.keys(interpret.extensions), forgeConfig].filter(Boolean)) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
         rechoir.prepare(interpret.extensions, pathToConfig, dir);
