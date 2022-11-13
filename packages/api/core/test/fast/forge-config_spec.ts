@@ -114,6 +114,13 @@ describe('forge-config', () => {
     expect(conf.defaultResolved).to.equal(true);
   });
 
+  // @TODO make sure this test passes
+  it(`should resolve the yml config from forge.config.yml if it's specified in config.forge`, async () => {
+    type DefaultResolvedConfig = ResolvedForgeConfig;
+    const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_ts_conf'))) as DefaultResolvedConfig;
+    expect(conf.buildIdentifier).to.equal('yml');
+  });
+
   it('should resolve the TS file exports of forge.config.ts if config.forge does not exist and the TS config exists', async () => {
     type DefaultResolvedConfig = ResolvedForgeConfig;
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_default_ts_conf'))) as DefaultResolvedConfig;
