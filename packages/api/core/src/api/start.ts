@@ -19,7 +19,6 @@ export { StartOptions };
 type StartContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   packageJSON: any;
   spawned: ElectronProcess;
 };

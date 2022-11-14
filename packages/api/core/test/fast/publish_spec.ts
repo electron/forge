@@ -46,7 +46,6 @@ describe('publish', () => {
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       './make': {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listrMake: async (...args: any[]) => {
           makeStub(...args);
         },

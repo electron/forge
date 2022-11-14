@@ -19,7 +19,6 @@ export const deps = ['electron-squirrel-startup'];
 export const devDeps = [siblingDep('cli'), siblingDep('maker-squirrel'), siblingDep('maker-zip'), siblingDep('maker-deb'), siblingDep('maker-rpm')];
 export const exactDevDeps = ['electron'];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const initNPM = async (dir: string, task: ForgeListrTask<any>): Promise<void> => {
   d('installing dependencies');
   const packageManager = safeYarnOrNpm();
