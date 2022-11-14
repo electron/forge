@@ -1,13 +1,12 @@
 {
   "name": "@electron-forge/web-multi-logger",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Display multiple streams of logs in one window",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/Logger.js",
   "typings": "dist/Logger.d.ts",
-  "devDependencies": {},
   "dependencies": {
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
