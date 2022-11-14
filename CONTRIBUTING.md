@@ -10,7 +10,7 @@ contributions. They include, but are not limited to:
 - Feature requests
 - [Pull requests](#filing-pull-requests)
 
-We strongly suggest that before filing an issue, you search through the existing issues to see
+We strongly suggest that before filing an issue, you search through existing issues to see
 if it has already been filed by someone else.
 
 This project is a part of the Electron ecosystem. As such, all contributions to this project follow
