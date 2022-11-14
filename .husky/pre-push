@@ -1,19 +1,9 @@
 #!/bin/sh
-case `uname` in
-    *CYGWIN*|*MINGW*|*MSYS*) exit 0;;
-esac
 . "$(dirname "$0")/_/husky.sh"
-exec < /dev/tty
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
 PROTECTED_BRANCH="main"
 
 if [ "$BRANCH" = $PROTECTED_BRANCH ]; then
-    echo $BRANCH
-    read -p "[pre-push hook] Warning: this is a protected branch. Continue? (Y/n) " yn
-    case $yn in
-        [Yy]* ) exit 0;;
-        [Nn]* ) exit 1;;
-        * ) echo "Please answer y or n for yes or no."; exit 1;;
-    esac
+    node .husky/pre-push.js < /dev/tty
 fi
