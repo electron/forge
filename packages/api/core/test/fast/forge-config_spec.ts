@@ -114,7 +114,6 @@ describe('forge-config', () => {
     expect(conf.defaultResolved).to.equal(true);
   });
 
-  // @TODO make sure this test passes
   it(`should resolve the yml config from forge.config.yml if it's specified in config.forge`, async () => {
     type DefaultResolvedConfig = ResolvedForgeConfig;
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_ts_conf'))) as DefaultResolvedConfig;
