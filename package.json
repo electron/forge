@@ -6,33 +6,21 @@
   "engines": {
     "node": ">= 14.17.5"
   },
-  "bolt": {
-    "workspaces": [
-      "packages/api/*",
-      "packages/external/*",
-      "packages/maker/*",
-      "packages/publisher/*",
-      "packages/utils/*",
-      "packages/plugin/*",
-      "packages/template/*"
-    ]
-  },
   "scripts": {
-    "clean": "rimraf dist && bolt ws exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "bolt ws exec -- tsc --emitDeclarationOnly && bolt build:fast",
-    "build:fast": "bolt ws exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
-    "build:full": "bolt ws exec -- tsc -b",
+    "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
+    "build": "lerna exec -- tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "lerna exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "lerna exec -- tsc -b",
     "postbuild": "ts-node tools/test-dist",
-    "docs": "bolt build:full && bolt docs:generate",
-    "docs:generate": "bolt docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
+    "docs": "yarn build:full && yarn docs:generate",
+    "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
-    "docs:deploy:build": "bolt docs",
+    "docs:deploy:build": "yarn docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
-    "link:prepare": "bolt ws exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
+    "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
     "test": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "preinstall": "node ./tools/maybe-shim-windows.js",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install"
   },
@@ -133,9 +121,10 @@
     "fetch-mock": "^9.10.7",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "generate-changelog": "^1.8.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
-    "listr2": "^5.0.3",
+    "husky": "^7.0.1",
+    "lerna": "^6.0.1",
+    "lint-staged": "^12.1.7",
+    "listr2": "^4.0.4",
     "minimist": "^1.2.6",
     "mocha": "^9.0.1",
     "prettier": "^2.4.0",
@@ -158,7 +147,8 @@
     "electron-installer-snap": "^5.1.0",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
-    "electron-wix-msi": "^5.0.0"
+    "electron-wix-msi": "^5.0.0",
+    "macos-alias": "^0.2.11"
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
@@ -172,5 +162,16 @@
   },
   "volta": {
     "node": "14.17.5"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/api/*",
+      "packages/external/*",
+      "packages/plugin/*",
+      "packages/maker/*",
+      "packages/publisher/*",
+      "packages/template/*",
+      "packages/utils/*"
+    ]
   }
 }
