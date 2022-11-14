@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run tests
-        run: yarn coverage:fast
+        run: yarn test:fast
 
   slow-tests:
     runs-on: ${{ matrix.os }}
@@ -74,6 +74,6 @@ jobs:
       - name: Build
         run: yarn build
       - name: Test
-        run: yarn coverage:slow
+        run: yarn test
         env:
           DEBUG: electron-installer-snap:snapcraft
