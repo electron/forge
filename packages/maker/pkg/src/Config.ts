@@ -1,5 +1,11 @@
 export interface MakerPKGConfig {
   /**
+   * The application name.
+   *
+   * Default: `${appName}-${packageJSON.version}-${targetArch}`.
+   */
+  name?: string;
+  /**
    * Name of certificate to use when signing.
    *
    * Default to be selected with respect to platform from keychain or keychain
