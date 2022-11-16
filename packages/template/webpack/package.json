@@ -8,6 +8,9 @@
   "main": "dist/WebpackTemplate.js",
   "typings": "dist/WebpackTemplate.d.ts",
   "scripts": {
+    "build": "tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "tsc -b",
     "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },
   "engines": {

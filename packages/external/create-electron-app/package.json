@@ -11,5 +11,10 @@
   },
   "bin": {
     "create-electron-app": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "tsc -b"
   }
 }

@@ -8,9 +8,9 @@
   },
   "scripts": {
     "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "lerna exec -- tsc --emitDeclarationOnly && yarn build:fast",
-    "build:fast": "lerna exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
-    "build:full": "lerna exec -- tsc -b",
+    "build": "lerna run build",
+    "build:fast": "lerna run build:fast",
+    "build:full": "lerna run build:full",
     "postbuild": "ts-node tools/test-dist",
     "docs": "yarn build:full && yarn docs:generate",
     "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",

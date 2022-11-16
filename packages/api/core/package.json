@@ -8,6 +8,9 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "scripts": {
+    "build": "tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "tsc -b",
     "coverage:base": "nyc yarn test:base",
     "test": "yarn test:base test/**/*_spec.ts test/**/*_spec_slow.ts",
     "test:base": "cross-env TS_NODE_FILES=1 mocha --config ../../../.mocharc.js",

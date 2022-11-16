@@ -8,6 +8,9 @@
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "scripts": {
+    "build": "tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "tsc -b",
     "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },
   "devDependencies": {
