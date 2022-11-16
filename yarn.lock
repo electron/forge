@@ -7493,7 +7493,7 @@ js-yaml@4.1.0, js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
-js-yaml@^3.10.0, js-yaml@^3.13.1:
+js-yaml@^3.10.0, js-yaml@^3.12.2, js-yaml@^3.13.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.1.tgz#dae812fdb3825fa306609a8717383c50c36a0537"
   integrity sha512-okMH7OXXJ7YrN9Ok3/SXrnu4iX9yOk+25nqX4imS2npuvTYDmo/QEZoqwZkYaIDk3jVvBOTOIEgEhaLOynBS9g==
@@ -11554,6 +11554,14 @@ yallist@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
+
+yaml-hook@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/yaml-hook/-/yaml-hook-1.0.0.tgz#14d682e949a9cf6f041e2af8278a4d349ccb52b7"
+  integrity sha512-iqSS5Mk1F3yBtrfx94hWzmEk0Wxs5QoBRvngAe39t0XA2JJ3jhQN6Snwv/shH1VoZr+ntdhf4EDLmW0WUWBjdQ==
+  dependencies:
+    js-yaml "^3.12.2"
+    pirates "^4.0.1"
 
 yaml@^1.10.0, yaml@^1.10.2:
   version "1.10.2"
