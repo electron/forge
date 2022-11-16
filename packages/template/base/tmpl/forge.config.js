@@ -1,5 +1,7 @@
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    asar: true,
+  },
   rebuildConfig: {},
   makers: [
     {
@@ -17,6 +19,11 @@ module.exports = {
     {
       name: '@electron-forge/maker-rpm',
       config: {},
+    },
+  ],
+  plugins: [
+    {
+      name: '@electron-forge/plugin-auto-unpack-natives',
     },
   ],
 };

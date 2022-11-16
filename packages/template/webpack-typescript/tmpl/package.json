@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "@electron-forge/plugin-auto-unpack-natives": "ELECTRON_FORGE/VERSION",
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
