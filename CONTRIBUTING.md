@@ -110,11 +110,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 - Make sure the tests pass with `lerna run test`
 - Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
 - Ensure that you are logged into npm via command line (`npm login`)
-- `lerna publish --force-publish`
-  - **running this command without the `--force-publish` flag will only publish packages that have changes since
-    last release**.
-  - for beta releases, select `custom prerelease` when prompted, and enter `y` to increment the beta version.
-  - version numbers should be an un-prefixed [semantic version](https://semver.org/) number (e.g. `6.0.0-beta.67)
+- Run `yarn send`, which will run the `lerna publish` command with a necessary set of flags.
   - The script will then ask you for your `npm` OTP password.
   - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
     committed.
