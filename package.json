@@ -1,16 +1,17 @@
 {
   "name": "electron-forge",
-  "version": "6.0.3",
+  "//": "See lerna.json for version number",
+  "version": "0.0.0-development",
   "private": true,
   "license": "MIT",
   "engines": {
     "node": ">= 14.17.5"
   },
   "scripts": {
-    "clean": "rimraf dist && lerna exec --no-private -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "lerna exec --no-private -- tsc --emitDeclarationOnly && yarn build:fast",
-    "build:fast": "lerna exec --no-private -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
-    "build:full": "lerna exec --no-private -- tsc -b",
+    "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
+    "build": "lerna exec -- tsc --emitDeclarationOnly && yarn build:fast",
+    "build:fast": "lerna exec -- swc src --out-dir dist --quiet --extensions \".ts\" --config-file ../../../.swcrc",
+    "build:full": "lerna exec -- tsc -b",
     "postbuild": "ts-node tools/test-dist",
     "docs": "yarn build:full && yarn docs:generate",
     "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
@@ -18,7 +19,7 @@
     "docs:deploy:build": "yarn docs",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
-    "link:prepare": "lerna exec --no-private -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
+    "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
     "test": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
@@ -168,7 +169,6 @@
   },
   "workspaces": {
     "packages": [
-      ".",
       "packages/api/*",
       "packages/external/*",
       "packages/plugin/*",
