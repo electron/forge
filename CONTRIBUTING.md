@@ -71,17 +71,10 @@ Please ensure that all changes are committed using [semantic commit messages](ht
 ### Running the Tests
 
 The Electron Forge repository has a lot of tests, some of which take a decent
-amount of time to run when uncached. The repository will automatically cache test results for future runs.
-Adding `skip-nx-cache` will skip the cache.
+amount of time to run.
 
 ```bash
-lerna run test
-```
-
-Tests can also run within a specific scope.
-
-```bash
-lerna run test --scope @electron-forge/core
+yarn test
 ```
 
 ## Filing Pull Requests
@@ -107,7 +100,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
-- Make sure the tests pass with `lerna run test`
+- Make sure the tests pass with `yarn test`
 - Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
 - Ensure that you are logged into npm via command line (`npm login`)
 - `lerna publish --force-publish`
