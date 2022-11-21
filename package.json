@@ -1,6 +1,5 @@
 {
   "name": "electron-forge",
-  "//": "See lerna.json for version number",
   "version": "0.0.0-development",
   "private": true,
   "license": "MIT",
