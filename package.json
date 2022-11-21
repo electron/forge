@@ -1,6 +1,6 @@
 {
   "name": "electron-forge",
-  "version": "6.0.1",
+  "version": "0.0.0-development",
   "private": true,
   "license": "MIT",
   "engines": {
@@ -16,6 +16,7 @@
     "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
     "docs:deploy:build": "yarn docs",
+    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
