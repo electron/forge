@@ -285,7 +285,7 @@ export const listrMake = (
                     if (err) {
                       throw err;
                     } else {
-                      throw new Error(`An unknown error occured while making for target: ${maker.name}`);
+                      throw new Error(`An unknown error occurred while making for target: ${maker.name}`);
                     }
                   }
                 },

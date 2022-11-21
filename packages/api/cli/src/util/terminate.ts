@@ -7,7 +7,6 @@ function redConsoleError(msg: string) {
 process.on('unhandledRejection', (reason: string, promise: Promise<unknown>) => {
   redConsoleError('\nAn unhandled rejection has occurred inside Forge:');
   redConsoleError(reason.toString().trim());
-  redConsoleError('\nElectron Forge was terminated. Location:');
   promise.catch((err: Error) => {
     if ('stack' in err) {
       const usefulStack = err.stack;
