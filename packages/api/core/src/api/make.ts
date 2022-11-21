@@ -282,12 +282,7 @@ export const listrMake = (
                       arch: targetArch,
                     });
                   } catch (err) {
-                    if (err instanceof Error) {
-                      throw {
-                        message: `An error occured while making for target: ${maker.name}`,
-                        stack: `${err.message}\n${err.stack}`,
-                      };
-                    } else if (err) {
+                    if (err) {
                       throw err;
                     } else {
                       throw new Error(`An unknown error occured while making for target: ${maker.name}`);
