@@ -123,6 +123,7 @@
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "generate-changelog": "^1.8.0",
     "husky": "^7.0.1",
+    "inquirer": "^8.0.0",
     "lerna": "^6.0.1",
     "lint-staged": "^12.1.7",
     "listr2": "^4.0.4",

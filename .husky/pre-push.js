@@ -9,6 +9,6 @@ const question = [
 ];
 
 inquirer.prompt(question).then((answer) => {
-  if (answer.continuePush == false) process.exit(1);
+  if (!answer.continuePush) process.exit(1);
   process.exit(0);
 });
