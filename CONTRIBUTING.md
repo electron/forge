@@ -36,6 +36,33 @@ in the issue tracker to denote fairly-well-scoped-out bugs or feature requests t
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
 
+## Running Forge locally
+
+The easiest way to test changes to Forge during development is by symlinking your local packages
+to a sample Forge project.
+
+To create symlinks your local Forge packages, use the `yarn link:prepare` command after
+building Forge.
+
+```sh
+yarn build
+yarn link:prepare
+```
+
+Then, you want to initialize a new project with the `electron-forge init` command (which is the
+underlying CLI command for `create-electron-app`). To use the symlinks you created in the last step,
+pass in the `LINK_FORGE_DEPENDENCIES_ON_INIT` environment variable.
+
+You can choose to run this command via your local build as shown below or run the production init
+for versions 6.0.1 and up.
+
+```sh
+LINK_FORGE_DEPENDENCIES_ON_INIT=1 node path/to/forge/packages/api/cli/dist/electron-forge-init.js my-app
+```
+
+Forge commands executed in your `my-app` sample project should reflect any changes in your local
+Forge build. (Make sure to run `yarn build:fast` or `yarn build` between code changes.)
+
 ## Documentation changes
 
 When changing the API documentation, here are some rules to keep in mind.
