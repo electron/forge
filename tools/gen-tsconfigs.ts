@@ -11,7 +11,7 @@ function filterDupes<T>(arr: readonly T[]): T[] {
 }
 
 (async () => {
-  const BASE_TS_CONFIG = JSON.parse(await fs.readFile(path.resolve('./tsconfig.base.json'), 'utf-8'));
+  const BASE_TS_CONFIG = JSON.parse(await fs.readFile(path.resolve(__dirname, '../tsconfig.base.json'), 'utf-8'));
   const packages = await getPackageInfo();
 
   // Do each package in parallel
