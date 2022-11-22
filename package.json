@@ -83,7 +83,6 @@
     "@malept/eslint-config": "^2.0.0",
     "@swc/cli": "^0.1.49",
     "@swc/core": "^1.2.87",
-    "@swc/register": "^0.1.7",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
     "@types/cross-spawn": "^6.0.1",
