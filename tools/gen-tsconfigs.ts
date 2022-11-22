@@ -1,8 +1,6 @@
 import { promises as fs } from 'fs';
 import * as path from 'path';
 
-import BASE_TS_CONFIG from '../tsconfig.base.json';
-
 import { getPackageInfo } from './utils';
 
 /**
@@ -13,6 +11,7 @@ function filterDupes<T>(arr: readonly T[]): T[] {
 }
 
 (async () => {
+  const BASE_TS_CONFIG = JSON.parse(await fs.readFile(path.resolve('./tsconfig.base.json'), 'utf-8'));
   const packages = await getPackageInfo();
 
   // Do each package in parallel

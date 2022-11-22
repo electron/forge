@@ -11,8 +11,7 @@
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
-    "declarationMap": true,
-    "resolveJsonModule": true
+    "declarationMap": true
   },
   "exclude": ["node_modules", "dist", "test", "index.ts", "tmpl"]
 }
