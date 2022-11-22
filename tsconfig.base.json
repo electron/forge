@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2019",
+    "outDir": "dist",
+    "lib": ["dom", "es2019"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "experimentalDecorators": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "composite": true,
+    "declarationMap": true,
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules", "dist", "test", "index.ts", "tmpl"]
+}

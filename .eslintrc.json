@@ -43,7 +43,12 @@
     {
       "files": ["**/*.ts"],
       "extends": ["@malept/eslint-config/src/typescript"],
+      "parserOptions": {
+        "project": ["./tsconfig.base.json"]
+      },
       "rules": {
+        "no-throw-literal": "off",
+        "@typescript-eslint/no-throw-literal": "error",
         "@typescript-eslint/no-unused-vars": [
           "error",
           {

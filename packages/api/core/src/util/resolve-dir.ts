@@ -53,7 +53,7 @@ export default async (dir: string): Promise<string | null> => {
     return bestGuessDir;
   }
   if (lastError) {
-    throw lastError;
+    throw new Error(lastError);
   }
   return null;
 };
