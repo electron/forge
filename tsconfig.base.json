@@ -4,7 +4,7 @@
     "target": "es2019",
     "outDir": "dist",
     "lib": ["dom", "es2019"],
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "rootDir": "src",
     "experimentalDecorators": true,
     "strict": true,
