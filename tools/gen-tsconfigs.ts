@@ -14,6 +14,13 @@ function filterDupes<T>(arr: readonly T[]): T[] {
   const BASE_TS_CONFIG = JSON.parse(await fs.readFile(path.resolve(__dirname, '../tsconfig.base.json'), 'utf-8'));
   const packages = await getPackageInfo();
 
+  const rootPackagesConfig = {
+    files: [],
+    references: packages.map((p) => ({ path: p.path.split('/packages/')[1] })),
+  };
+
+  fs.writeFile(path.resolve(__dirname, '../packages/tsconfig.json'), JSON.stringify(rootPackagesConfig, null, 2));
+
   // Do each package in parallel
   await Promise.all(
     packages.map((pkg) => {
