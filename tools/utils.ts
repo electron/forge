@@ -38,14 +38,18 @@ export const getPackageInfoSync = (): Package[] => {
   const packages: Package[] = [];
 
   for (const subDir of fs.readdirSync(PACKAGES_DIR)) {
-    for (const packageDir of fs.readdirSync(path.resolve(PACKAGES_DIR, subDir))) {
-      const packagePath = path.resolve(PACKAGES_DIR, subDir, packageDir);
-      const pkg = fs.readJsonSync(path.resolve(packagePath, 'package.json'));
-      packages.push({
-        path: packagePath,
-        name: pkg.name,
-        manifest: pkg,
-      });
+    const subDirPath = path.resolve(PACKAGES_DIR, subDir);
+    const stat = fs.lstatSync(subDirPath);
+    if (stat.isDirectory()) {
+      for (const packageDir of fs.readdirSync(subDirPath)) {
+        const packagePath = path.resolve(subDirPath, packageDir);
+        const pkg = fs.readJsonSync(path.resolve(packagePath, 'package.json'));
+        packages.push({
+          path: packagePath,
+          name: pkg.name,
+          manifest: pkg,
+        });
+      }
     }
   }
 
