@@ -1,6 +1,7 @@
 .nyc_output
 dist/
 docs/
+packages/tsconfig.json
 packages/*/*/dist
 packages/*/*/doc
 packages/*/*/index.d.ts
