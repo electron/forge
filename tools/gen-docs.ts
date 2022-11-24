@@ -39,7 +39,6 @@ function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
     excludeProtected: true,
     externalPattern: ['**/node_modules/@types/node/**', '**/node_modules/typescript/**'],
     hideGenerator: true,
-    includeVersion: true,
     name: 'Electron Forge',
     plugin: ['typedoc-plugin-rename-defaults', 'typedoc-plugin-missing-exports', './tools/doc-plugin/dist/index.js', '@knodes/typedoc-plugin-monorepo-readmes'],
     theme: 'forge-theme',
