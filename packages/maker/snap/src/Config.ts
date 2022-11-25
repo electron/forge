@@ -1,3 +1,5 @@
-import { Options, SnapcraftConfig } from 'electron-installer-snap';
+import { Options as InstallerSnapOptions, SnapcraftConfig } from 'electron-installer-snap';
 
-export type MakerSnapConfig = Omit<Options, 'arch' | 'dest' | 'src'> & SnapcraftConfig;
+export { SnapcraftConfig, InstallerSnapOptions };
+
+export type MakerSnapConfig = Omit<InstallerSnapOptions, 'arch' | 'dest' | 'src'> & SnapcraftConfig;

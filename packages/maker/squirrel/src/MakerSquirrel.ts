@@ -5,6 +5,7 @@ import { ForgePlatform } from '@electron-forge/shared-types';
 import { convertVersion, createWindowsInstaller, Options as ElectronWinstallerOptions } from 'electron-winstaller';
 import fs from 'fs-extra';
 
+export { ElectronWinstallerOptions };
 export type MakerSquirrelConfig = Omit<ElectronWinstallerOptions, 'appDirectory' | 'outputDirectory'>;
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {

@@ -2,7 +2,7 @@ export interface MakerPKGConfig {
   /**
    * The application name.
    *
-   * Default: `${appName}-${packageJSON.version}-${targetArch}`.
+   * Default: `${appName}-op${packageJSON.version}-${targetArch}`.
    */
   name?: string;
   /**

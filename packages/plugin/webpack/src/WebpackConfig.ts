@@ -10,8 +10,8 @@ import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';
 import { isLocalWindow, isNoWindow, isPreloadOnly } from './util/rendererTypeUtils';
 
-type EntryType = string | string[] | Record<string, string | string[]>;
-type WebpackMode = 'production' | 'development';
+export type EntryType = string | string[] | Record<string, string | string[]>;
+export type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 

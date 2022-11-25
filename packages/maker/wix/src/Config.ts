@@ -1,4 +1,6 @@
-import { Features, MSICreator } from 'electron-wix-msi/lib/creator';
+import { MSICreator as WixMSICreator, Features as WixMSIFeatures } from 'electron-wix-msi/lib/creator';
+
+export { WixMSIFeatures, WixMSICreator };
 
 export interface MakerWixConfig {
   /**
@@ -78,11 +80,11 @@ export interface MakerWixConfig {
    * Enables configuration of the autoUpdate and autoLaunch features.
    * By default, they are disabled.
    */
-  features?: Features | false;
+  features?: WixMSIFeatures | false;
   /**
    * Allows for the modification of the MSICreator before create is called.
    */
-  beforeCreate?: (creator: MSICreator) => Promise<void> | void;
+  beforeCreate?: (creator: WixMSICreator) => Promise<void> | void;
 }
 export interface UIOptions {
   /**
