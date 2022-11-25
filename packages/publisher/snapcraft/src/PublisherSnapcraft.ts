@@ -39,4 +39,5 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
   }
 }
 
-export { PublisherSnapcraft, PublisherSnapcraftConfig };
+export { PublisherSnapcraft };
+export * from './Config';

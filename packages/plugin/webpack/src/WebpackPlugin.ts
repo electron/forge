@@ -414,4 +414,5 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   }
 }
 
-export { WebpackPlugin, WebpackPluginConfig };
+export { WebpackPlugin };
+export * from './Config';

@@ -35,4 +35,5 @@ export default class CompileElectronPlugin extends PluginBase<CompilePluginConfi
   }
 }
 
-export { CompileElectronPlugin, CompilePluginConfig };
+export { CompileElectronPlugin };
+export * from './Config';

@@ -49,4 +49,5 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   }
 }
 
-export { MakerRpm, MakerRpmConfig };
+export { MakerRpm };
+export * from './Config';

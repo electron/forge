@@ -128,4 +128,5 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
   }
 }
 
-export { PublisherGithub, PublisherGitHubConfig };
+export { PublisherGithub };
+export * from './Config';

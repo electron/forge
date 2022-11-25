@@ -40,4 +40,5 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   }
 }
 
-export { MakerDMG, MakerDMGConfig };
+export { MakerDMG };
+export * from './Config';

@@ -33,4 +33,5 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
   };
 }
 
-export { AutoUnpackNativesPlugin, AutoUnpackNativesConfig };
+export { AutoUnpackNativesPlugin };
+export * from './Config';

@@ -52,4 +52,5 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
   }
 }
 
-export { MakerWix, MakerWixConfig, MSICreatorOptions };
+export { MakerWix };
+export * from './Config';

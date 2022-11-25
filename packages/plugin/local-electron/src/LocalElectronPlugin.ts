@@ -61,4 +61,5 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   };
 }
 
-export { LocalElectronPlugin, LocalElectronPluginConfig };
+export { LocalElectronPlugin };
+export * from './Config';

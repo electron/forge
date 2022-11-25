@@ -34,4 +34,5 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   }
 }
 
-export { MakerSnap, MakerSnapConfig };
+export { MakerSnap };
+export * from './Config';

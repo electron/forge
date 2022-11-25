@@ -52,4 +52,5 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   }
 }
 
-export { MakerFlatpak, MakerFlatpakConfig };
+export { MakerFlatpak };
+export * from './Config';

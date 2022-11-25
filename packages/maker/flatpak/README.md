@@ -4,7 +4,7 @@
 
 You can only build the Flatpak target if you have `flatpak`, `flatpak-builder`, and `eu-strip` _\(usually part of the `elfutils` package\)_ installed on your system.
 
-Configuration options are documented in [`MakerFlatpakOptionsConfig`](https://js.electronforge.io/interfaces/_electron_forge_maker_flatpak.InternalOptions.MakerFlatpakOptionsConfig.html).
+Configuration options are documented in [`MakerFlatpakOptionsConfig`](https://js.electronforge.io/interfaces/_electron_forge_maker_flatpak.MakerFlatpakOptionsConfig.html).
 
 ```javascript
 {

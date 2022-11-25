@@ -51,4 +51,5 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
   }
 }
 
-export { MakerDeb, MakerDebConfig };
+export { MakerDeb };
+export * from './Config';

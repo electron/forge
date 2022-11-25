@@ -41,4 +41,5 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
   }
 }
 
-export { MakerPKG, MakerPKGConfig };
+export { MakerPKG };
+export * from './Config';

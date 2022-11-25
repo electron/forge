@@ -130,4 +130,5 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   }
 }
 
-export { MakerAppX, MakerAppXConfig };
+export { MakerAppX };
+export * from './Config';
