@@ -1,16 +1,17 @@
 import { ChildProcess } from 'child_process';
 
-import { RebuildOptions } from '@electron/rebuild';
-import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
-export { ElectronPackagerOptions, RebuildOptions };
+import type * as RebuildTypes from '@electron/rebuild';
+import type * as PackagerTypes from 'electron-packager';
+
+export { PackagerTypes, RebuildTypes };
 
 export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
-export type ForgePlatform = TargetPlatform;
-export type ForgeArch = ArchOption;
+export type ForgePlatform = PackagerTypes.TargetPlatform;
+export type ForgeArch = PackagerTypes.ArchOption;
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
@@ -74,8 +75,8 @@ export interface IForgePluginInterface {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
-export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
+export type ForgeRebuildOptions = Omit<RebuildTypes.RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
+export type ForgePackagerOptions = Omit<PackagerTypes.Options, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
 export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
