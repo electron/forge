@@ -176,4 +176,5 @@ export interface WebpackPluginConfig {
   devServer?: Omit<WebpackDevServer.Configuration, 'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'>;
 }
 
+export { WebpackConfigurationFactory };
 export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;
