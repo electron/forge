@@ -77,7 +77,7 @@
     "yarn-or-npm": "^3.0.1"
   },
   "devDependencies": {
-    "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
+    "@knodes/typedoc-plugin-monorepo-readmes": "^0.23.1",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
