@@ -40,13 +40,7 @@ function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
     excludeProtected: true,
     hideGenerator: true,
     name: 'Electron Forge',
-    plugin: [
-      'typedoc-plugin-missing-exports',
-      'typedoc-plugin-resolve-crossmodule-references',
-      'typedoc-plugin-rename-defaults',
-      './tools/doc-plugin/dist/index.js',
-      '@knodes/typedoc-plugin-monorepo-readmes',
-    ],
+    plugin: ['typedoc-plugin-missing-exports', 'typedoc-plugin-rename-defaults', './tools/doc-plugin/dist/index.js', '@knodes/typedoc-plugin-monorepo-readmes'],
     theme: 'forge-theme',
   });
 

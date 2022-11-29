@@ -10874,11 +10874,6 @@ typedoc-plugin-rename-defaults@^0.6.4:
   resolved "https://registry.yarnpkg.com/typedoc-plugin-rename-defaults/-/typedoc-plugin-rename-defaults-0.6.4.tgz#8019bbfdbb4616682a0af8ecf1e8f42d053d4a40"
   integrity sha512-0rAeNttAfu6ixbi1yu6d+DqNZN8SfRivj2QbnZ4zVa+5HcCPcmQrlR6WHjNzdDfpkGytiiqPTtRD6pAfW/yACg==
 
-typedoc-plugin-resolve-crossmodule-references@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/typedoc-plugin-resolve-crossmodule-references/-/typedoc-plugin-resolve-crossmodule-references-0.3.2.tgz#d4c9ce2609c60ad5cea2426e9fab95bbf5884adc"
-  integrity sha512-28NJzaA+OxEkHLyaOnTAOW6GC6A30f00LSgFZ7x+haFb2Lhlpno4Aiocbf5RRUQ1uht/O4c47KbYm837HsO/nw==
-
 typedoc@^0.23.21:
   version "0.23.21"
   resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.23.21.tgz#2a6b0e155f91ffa9689086706ad7e3e4bc11d241"
