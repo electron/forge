@@ -33,13 +33,15 @@ function generatedSidebarGroups(projReflection: typedoc.ProjectReflection) {
   typedocApp.bootstrap({
     entryPointStrategy: 'packages',
     entryPoints: packages.filter((pkg) => !!pkg.manifest.main).map((pkg) => pkg.path),
-    excludeExternals: false,
+    excludeExternals: true,
+    externalPattern: ['**/node_modules/!(@electron|electron-packager)/**'],
     excludeInternal: true,
     excludePrivate: true,
     excludeProtected: true,
     hideGenerator: true,
     name: 'Electron Forge',
     plugin: [
+      'typedoc-plugin-missing-exports',
       'typedoc-plugin-resolve-crossmodule-references',
       'typedoc-plugin-rename-defaults',
       './tools/doc-plugin/dist/index.js',
