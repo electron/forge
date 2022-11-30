@@ -301,7 +301,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const pluginLogs = new ElectronForgeLoggingPlugin(tab);
 
     const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-
+    console.log('renderer config: ', config);
     if (config.length === 0) {
       return;
     }
