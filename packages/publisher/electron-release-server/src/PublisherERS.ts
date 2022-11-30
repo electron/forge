@@ -85,6 +85,8 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       let channel = 'stable';
       if (config.channel) {
         channel = config.channel;
+      } else if (packageJSON.version.includes('rc')) {
+        channel = 'rc';
       } else if (packageJSON.version.includes('beta')) {
         channel = 'beta';
       } else if (packageJSON.version.includes('alpha')) {
@@ -127,7 +129,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           d('attempting to upload asset:', artifactPath);
           const artifactForm = new FormData();
           artifactForm.append('token', token);
-          artifactForm.append('version', packageJSON.version);
+          artifactForm.append('version', `${packageJSON.version}_${flavor}`);
           artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
 
           // see https://github.com/form-data/form-data/issues/426
