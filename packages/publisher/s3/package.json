@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-s3",
-  "version": "6.0.3",
+  "version": "6.0.4",
   "description": "S3 publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -19,8 +19,8 @@
     "@aws-sdk/client-s3": "^3.28.0",
     "@aws-sdk/lib-storage": "^3.28.0",
     "@aws-sdk/types": "^3.25.0",
-    "@electron-forge/publisher-base": "^6.0.3",
-    "@electron-forge/shared-types": "^6.0.3",
+    "@electron-forge/publisher-base": "^6.0.4",
+    "@electron-forge/shared-types": "^6.0.4",
     "debug": "^4.3.1"
   },
   "publishConfig": {
