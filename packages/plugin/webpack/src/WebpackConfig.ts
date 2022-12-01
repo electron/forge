@@ -195,7 +195,7 @@ export default class WebpackConfigGenerator {
         } else {
           entryPointsForTarget.electronRenderer.push(entry);
           if (isLocalWindow(entry) && entry.preload) {
-            entryPointsForTarget.electronPreload.push(entry);
+            entryPointsForTarget.electronPreload.push({ ...entry, preload: entry.preload });
           }
         }
       } else {
@@ -204,7 +204,7 @@ export default class WebpackConfigGenerator {
         } else {
           entryPointsForTarget.web.push(entry);
           if (isLocalWindow(entry) && entry.preload) {
-            entryPointsForTarget.sandboxedPreload.push(entry);
+            entryPointsForTarget.sandboxedPreload.push({ ...entry, preload: entry.preload });
           }
         }
       }
