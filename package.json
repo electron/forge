@@ -79,6 +79,7 @@
   "devDependencies": {
     "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "@malept/eslint-config": "^2.0.0",
+    "@nrwl/nx-cloud": "^15.0.2",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
     "@types/cross-spawn": "^6.0.1",
