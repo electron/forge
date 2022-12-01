@@ -21,10 +21,24 @@ export type ConfigurationFactory = (
 ) => Configuration | Promise<Configuration>;
 
 enum RendererTarget {
-  Web = 'web',
-  ElectronRenderer = 'electron-renderer',
-  ElectronPreload = 'electron-preload',
-  SandboxedPreload = 'web',
+  Web,
+  ElectronRenderer,
+  ElectronPreload,
+  SandboxedPreload,
+}
+
+function rendererTargetToWebpackTarget(target: RendererTarget): string {
+  switch (target) {
+    case RendererTarget.Web:
+    case RendererTarget.SandboxedPreload:
+      return 'web';
+    case RendererTarget.ElectronPreload:
+      return 'electron-preload';
+    case RendererTarget.ElectronRenderer:
+      return 'electron-renderer';
+    default:
+      return '';
+  }
 }
 
 export default class WebpackConfigGenerator {
@@ -74,10 +88,6 @@ export default class WebpackConfigGenerator {
 
   get rendererSourceMapOption(): string {
     return this.isProd ? 'source-map' : 'eval-source-map';
-  }
-
-  rendererTarget(entryPoint: WebpackPluginEntryPoint): string {
-    return entryPoint.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration ? RendererTarget.ElectronRenderer : RendererTarget.Web;
   }
 
   rendererEntryPoint(entryPoint: WebpackPluginEntryPoint, inRendererDir: boolean, basename: string): string {
@@ -170,117 +180,6 @@ export default class WebpackConfigGenerator {
     );
   }
 
-  async getPreloadConfigForEntryPoint(entryPoint: WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPointPreloadOnly): Promise<Configuration> {
-    if (!entryPoint.preload) {
-      return {};
-    }
-
-    const rendererConfig = await this.resolveConfig(entryPoint.preload.config || this.pluginConfig.renderer.config);
-    const prefixedEntries = entryPoint.prefixedEntries || [];
-
-    return webpackMerge(
-      {
-        devtool: this.rendererSourceMapOption,
-        mode: this.mode,
-        entry: prefixedEntries.concat([entryPoint.preload.js]),
-        output: {
-          path: path.resolve(this.webpackDir, 'renderer', entryPoint.name),
-          filename: 'preload.j s',
-        },
-        node: {
-          __dirname: false,
-          __filename: false,
-        },
-      },
-      rendererConfig || {},
-      { target: 'electron-preload' }
-    );
-  }
-
-  async getRendererConfig2(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration[]> {
-    const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
-
-    return entryPoints.map((entryPoint) => {
-      const baseConfig: webpack.Configuration = {
-        target: this.rendererTarget(entryPoint),
-        devtool: this.rendererSourceMapOption,
-        mode: this.mode,
-        output: {
-          path: path.resolve(this.webpackDir, 'renderer'),
-          filename: '[name]/index.js',
-          globalObject: 'self',
-          ...(this.isProd ? {} : { publicPath: '/' }),
-        },
-        node: {
-          __dirname: false,
-          __filename: false,
-        },
-        plugins: [new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)],
-      };
-
-      if (isLocalWindow(entryPoint)) {
-        return webpackMerge(
-          baseConfig,
-          {
-            entry: {
-              [entryPoint.name]: (entryPoint.prefixedEntries || []).concat([entryPoint.js]),
-            },
-            output: {
-              path: path.resolve(this.webpackDir, 'renderer'),
-              filename: '[name]/index.js',
-              globalObject: 'self',
-              ...(this.isProd ? {} : { publicPath: '/' }),
-            },
-            plugins: [
-              new HtmlWebpackPlugin({
-                title: entryPoint.name,
-                template: entryPoint.html,
-                filename: `${entryPoint.name}/index.html`,
-                chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-              }) as WebpackPluginInstance,
-            ],
-          },
-          rendererConfig || {}
-        );
-      } else if (isNoWindow(entryPoint)) {
-        return webpackMerge(
-          baseConfig,
-          {
-            entry: {
-              [entryPoint.name]: (entryPoint.prefixedEntries || []).concat([entryPoint.js]),
-            },
-            output: {
-              path: path.resolve(this.webpackDir, 'renderer'),
-              filename: '[name]/index.js',
-              globalObject: 'self',
-              ...(this.isProd ? {} : { publicPath: '/' }),
-            },
-          },
-          rendererConfig || {}
-        );
-      } else if (isPreloadOnly(entryPoint)) {
-        return webpackMerge(
-          baseConfig,
-          {
-            target: 'electron-preload',
-            entry: {
-              [entryPoint.name]: (entryPoint.prefixedEntries || []).concat([entryPoint.preload.js]),
-            },
-            output: {
-              path: path.resolve(this.webpackDir, 'renderer'),
-              filename: 'preload.js',
-              globalObject: 'self',
-              ...(this.isProd ? {} : { publicPath: '/' }),
-            },
-          },
-          rendererConfig || {}
-        );
-      } else {
-        throw new Error('Invalid renderer entry point detected.');
-      }
-    });
-  }
-
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration[]> {
     const targets = {
       web: [] as (WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPoint)[],
@@ -290,7 +189,6 @@ export default class WebpackConfigGenerator {
     };
     for (const entry of entryPoints) {
       if (entry.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration) {
-        // Has node
         if (isPreloadOnly(entry)) {
           targets.electronPreload.push(entry);
         } else {
@@ -300,7 +198,6 @@ export default class WebpackConfigGenerator {
           }
         }
       } else {
-        // No node
         if (isPreloadOnly(entry)) {
           targets.sandboxedPreload.push(entry);
         } else {
@@ -311,7 +208,7 @@ export default class WebpackConfigGenerator {
         }
       }
     }
-    console.log('targets', targets);
+
     return [
       await this.buildRendererConfig(targets.web, RendererTarget.Web),
       await this.buildRendererConfig(targets.electronRenderer, RendererTarget.ElectronRenderer),
@@ -324,7 +221,7 @@ export default class WebpackConfigGenerator {
 
   buildRendererBaseConfig(target: RendererTarget): webpack.Configuration {
     return {
-      target,
+      target: rendererTargetToWebpackTarget(target),
       devtool: this.rendererSourceMapOption,
       mode: this.mode,
       output: {
@@ -379,7 +276,7 @@ export default class WebpackConfigGenerator {
         entry[entryPoint.name] = (entryPoint.prefixedEntries || []).concat([isPreloadOnly(entryPoint) ? entryPoint.preload.js : entryPoint.js]);
       }
       const config: Configuration = {
-        target,
+        target: rendererTargetToWebpackTarget(target),
         entry,
         output: {
           path: path.resolve(this.webpackDir, 'renderer'),

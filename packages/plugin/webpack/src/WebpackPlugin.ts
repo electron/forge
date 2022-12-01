@@ -15,7 +15,6 @@ import { merge } from 'webpack-merge';
 import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import once from './util/once';
-import { isLocalWindow, isPreloadOnly } from './util/rendererTypeUtils';
 import WebpackConfigGenerator from './WebpackConfig';
 
 const d = debug('electron-forge:plugin:webpack');
@@ -282,24 +281,21 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
     }
 
-    for (const entryPoint of this.config.renderer.entryPoints) {
-      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-        const stats = await this.runWebpack(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
-        );
+    // for (const entryPoint of this.config.renderer.entryPoints) {
+    //   if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+    //     const stats = await this.runWebpack(
+    //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    //       [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
+    //     );
 
-        if (stats?.hasErrors()) {
-          throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
-        }
-      }
-    }
+    //     if (stats?.hasErrors()) {
+    //       throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
+    //     }
+    //   }
+    // }
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const tab = logger.createTab('Renderers');
-    const pluginLogs = new ElectronForgeLoggingPlugin(tab);
-
     const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
     console.log('renderer config: ', config);
     if (config.length === 0) {
@@ -308,7 +304,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     for (const entryConfig of config) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
-      entryConfig.plugins.push(pluginLogs);
+      entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
 
       entryConfig.infrastructureLogging = {
         level: 'none',
@@ -321,34 +317,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     await webpackDevServer.start();
     this.servers.push(webpackDevServer.server!);
 
-    for (const entryPoint of this.config.renderer.entryPoints) {
-      if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-        const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
-        config.infrastructureLogging = {
-          level: 'none',
-        };
-        config.stats = 'none';
-        await new Promise((resolve, reject) => {
-          const tab = logger.createTab(`${entryPoint.name} - Preload`);
-          const [onceResolve, onceReject] = once(resolve, reject);
+    // for (const entryPoint of this.config.renderer.entryPoints) {
+    //   if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
+    //     const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
+    //     config.infrastructureLogging = {
+    //       level: 'none',
+    //     };
+    //     config.stats = 'none';
+    //     await new Promise((resolve, reject) => {
+    //       const tab = logger.createTab(`${entryPoint.name} - Preload`);
+    //       const [onceResolve, onceReject] = once(resolve, reject);
 
-          this.watchers.push(
-            webpack(config).watch({}, (err, stats) => {
-              if (stats) {
-                tab.log(
-                  stats.toString({
-                    colors: true,
-                  })
-                );
-              }
+    //       this.watchers.push(
+    //         webpack(config).watch({}, (err, stats) => {
+    //           if (stats) {
+    //             tab.log(
+    //               stats.toString({
+    //                 colors: true,
+    //               })
+    //             );
+    //           }
 
-              if (err) return onceReject(err);
-              return onceResolve(undefined);
-            })
-          );
-        });
-      }
-    }
+    //           if (err) return onceReject(err);
+    //           return onceResolve(undefined);
+    //         })
+    //       );
+    //     });
+    //   }
+    // }
   };
 
   devServerOptions(): WebpackDevServer.Configuration {
