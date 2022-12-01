@@ -3,14 +3,11 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["coverage:base", "test", "test:base", "test:fast", "test:slow"]
+        "cacheableOperations": ["test", "test:base", "test:fast", "test:slow"]
       }
     }
   },
   "targetDefaults": {
-    "coverage:base": {
-      "dependsOn": ["^coverage:base"]
-    },
     "test": {
       "dependsOn": ["^test"]
     },
