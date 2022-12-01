@@ -181,7 +181,7 @@ export default class WebpackConfigGenerator {
   }
 
   async getRendererConfig(entryPoints: WebpackPluginEntryPoint[]): Promise<Configuration[]> {
-    const targets = {
+    const entryPointsForTarget = {
       web: [] as (WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPoint)[],
       electronRenderer: [] as (WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPoint)[],
       electronPreload: [] as (WebpackPluginEntryPointPreloadOnly | WebpackPluginEntryPointLocalWindow)[],
@@ -190,33 +190,37 @@ export default class WebpackConfigGenerator {
     for (const entry of entryPoints) {
       if (entry.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration) {
         if (isPreloadOnly(entry)) {
-          targets.electronPreload.push(entry);
+          entryPointsForTarget.electronPreload.push(entry);
         } else {
-          targets.electronRenderer.push(entry);
+          entryPointsForTarget.electronRenderer.push(entry);
           if (isLocalWindow(entry) && entry.preload) {
-            targets.electronPreload.push(entry);
+            entryPointsForTarget.electronPreload.push(entry);
           }
         }
       } else {
         if (isPreloadOnly(entry)) {
-          targets.sandboxedPreload.push(entry);
+          entryPointsForTarget.sandboxedPreload.push(entry);
         } else {
-          targets.web.push(entry);
+          entryPointsForTarget.web.push(entry);
           if (isLocalWindow(entry) && entry.preload) {
-            targets.sandboxedPreload.push(entry);
+            entryPointsForTarget.sandboxedPreload.push(entry);
           }
         }
       }
     }
+    const rendererConfigPromises = [
+      this.buildRendererConfig(entryPointsForTarget.web, RendererTarget.Web),
+      this.buildRendererConfig(entryPointsForTarget.electronRenderer, RendererTarget.ElectronRenderer),
+      this.buildRendererConfig(entryPointsForTarget.electronPreload, RendererTarget.ElectronPreload),
+      this.buildRendererConfig(entryPointsForTarget.sandboxedPreload, RendererTarget.SandboxedPreload),
+    ];
 
-    return [
-      await this.buildRendererConfig(targets.web, RendererTarget.Web),
-      await this.buildRendererConfig(targets.electronRenderer, RendererTarget.ElectronRenderer),
-      await this.buildRendererConfig(targets.electronPreload, RendererTarget.ElectronPreload),
-      await this.buildRendererConfig(targets.sandboxedPreload, RendererTarget.SandboxedPreload),
-    ].filter(function isNotNull<T>(item: T | null): item is T {
-      return !!item;
+    const rendererConfig = await Promise.all(rendererConfigPromises).then((res) => {
+      return res.filter(function isNotNull<T>(item: T | null): item is T {
+        return !!item;
+      });
     });
+    return rendererConfig;
   }
 
   buildRendererBaseConfig(target: RendererTarget): webpack.Configuration {
