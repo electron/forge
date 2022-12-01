@@ -36,6 +36,41 @@ in the issue tracker to denote fairly-well-scoped-out bugs or feature requests t
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
 
+## Contributing a new maker/publisher/plugin
+
+The Electron Forge team takes adding new packages to the monorepo very deliberately. Each new
+package means an added amount of maintenance work for the team overall.
+
+Before proposing that a Forge module be added to the monorepo, consider creating a separate
+repository first. Please note that this tool is designed to work seamlessly with third party
+plugins, in addition to the first party plugins that live in this repository.
+
+The team uses the following criteria as a guideline for determining whether to add a new package
+as a first party plugin:
+
+- Will the plugin impact a significant number of Electron app developers?
+- Can the Electron Forge team test the plugin reliably in CI?
+- Can the Electron Forge team reliably debug the plugin when issues are reported?
+
+## Adding/updating dependencies
+
+While we appreciate that users care about making sure that dependencies are up-to-date, we cannot
+accept pull requests that change the project's lockfile. The reason for this is because [updating
+the lockfile is a security concern](https://snyk.io/blog/why-npm-lockfiles-can-be-a-security-blindspot-for-injecting-malicious-modules/).
+We have a dependency updater, Dependabot, which upgrades versions for both security vulnerabilities
+and major version bumps.
+
+If you submit a pull request which requires changes to dependencies, please:
+
+- note it in the PR summary
+- do not submit any changes to the lockfile
+- wait for one of the maintainers to commit the lockfile changes
+
+For the time being, we are not upgrading certain dependencies which have transitioned from CommonJS
+(CJS) support to ES Module (ESM)-only support, as we are waiting for a stable version of TypeScript
+which can support both modes reasonably.
+
+
 ## Running Forge locally
 
 The easiest way to test changes to Forge during development is by symlinking your local packages
