@@ -280,24 +280,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (!watch && stats?.hasErrors()) {
       throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
     }
-
-    // for (const entryPoint of this.config.renderer.entryPoints) {
-    //   if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-    //     const stats = await this.runWebpack(
-    //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    //       [await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint)]
-    //     );
-
-    //     if (stats?.hasErrors()) {
-    //       throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
-    //     }
-    //   }
-    // }
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
     const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-    console.log('renderer config: ', config);
     if (config.length === 0) {
       return;
     }
@@ -316,35 +302,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
     await webpackDevServer.start();
     this.servers.push(webpackDevServer.server!);
-
-    // for (const entryPoint of this.config.renderer.entryPoints) {
-    //   if ((isLocalWindow(entryPoint) && !!entryPoint.preload) || isPreloadOnly(entryPoint)) {
-    //     const config = await this.configGenerator.getPreloadConfigForEntryPoint(entryPoint);
-    //     config.infrastructureLogging = {
-    //       level: 'none',
-    //     };
-    //     config.stats = 'none';
-    //     await new Promise((resolve, reject) => {
-    //       const tab = logger.createTab(`${entryPoint.name} - Preload`);
-    //       const [onceResolve, onceReject] = once(resolve, reject);
-
-    //       this.watchers.push(
-    //         webpack(config).watch({}, (err, stats) => {
-    //           if (stats) {
-    //             tab.log(
-    //               stats.toString({
-    //                 colors: true,
-    //               })
-    //             );
-    //           }
-
-    //           if (err) return onceReject(err);
-    //           return onceResolve(undefined);
-    //         })
-    //       );
-    //     });
-    //   }
-    // }
   };
 
   devServerOptions(): WebpackDevServer.Configuration {

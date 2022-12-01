@@ -15,3 +15,30 @@ export const isPreloadOnly = (entry: WebpackPluginEntryPoint): entry is WebpackP
 export const isNoWindow = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointNoWindow => {
   return !(entry as any).html && !!(entry as any).js;
 };
+
+export const isLocalWindowEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointLocalWindow[] => {
+  for (const entry of entries) {
+    if (!isLocalWindow(entry)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const isNoWindowEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointNoWindow[] => {
+  for (const entry of entries) {
+    if (!isNoWindow(entry)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+export const isPreloadOnlyEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointPreloadOnly[] => {
+  for (const entry of entries) {
+    if (!isPreloadOnly(entry)) {
+      return false;
+    }
+  }
+  return true;
+};
