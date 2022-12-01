@@ -30,6 +30,7 @@ export const initNPM = async (dir: string, task: ForgeListrTask<any>): Promise<v
   await installDepList(dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
+
   for (const packageName of exactDevDeps) {
     task.output = `${packageManager} install --dev --exact ${packageName}`;
     await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
@@ -40,13 +41,15 @@ export const initNPM = async (dir: string, task: ForgeListrTask<any>): Promise<v
   if (process.env.LINK_FORGE_DEPENDENCIES_ON_INIT) {
     const packageJson = await readRawPackageJson(dir);
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
-    for (const packageName of Object.keys(packageJson.devDependencies)) {
-      if (packageName.startsWith('@electron-forge/')) {
-        task.output = `${packageManager} link --link-folder ${linkFolder} ${packageName}`;
-        await yarnOrNpmSpawn(['link', '--link-folder', linkFolder, packageName], {
-          cwd: dir,
-        });
-      }
-    }
+    await Promise.all(
+      Object.keys(packageJson.devDependencies).map(async (packageName) => {
+        if (packageName.startsWith('@electron-forge/')) {
+          task.output = `${packageManager} link --link-folder ${linkFolder} ${packageName}`;
+          await yarnOrNpmSpawn(['link', '--link-folder', linkFolder, packageName], {
+            cwd: dir,
+          });
+        }
+      })
+    );
   }
 };

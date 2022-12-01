@@ -148,7 +148,7 @@ export default async ({
             'electron-winstaller': 'already uses this module as a transitive dependency',
           };
 
-          for (const key of keys) {
+          const removeBuildToolDependencies = async (key: string) => {
             if (buildToolPackages[key]) {
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const explanation = buildToolPackages[key]!;
@@ -162,7 +162,9 @@ export default async ({
                 delete packageJSON.devDependencies[key];
               }
             }
-          }
+          };
+
+          await Promise.all(keys.map((key) => removeBuildToolDependencies(key)));
 
           packageJSON.scripts = packageJSON.scripts || {};
           d('reading current scripts object:', packageJSON.scripts);

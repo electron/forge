@@ -15,25 +15,33 @@ import { getPackageInfo } from './utils';
     ...baseJson.optionalDependencies,
   };
 
-  for (const p of packages) {
-    const json = await fs.readJson(path.resolve(p.path, 'package.json'));
+  const result = await Promise.allSettled(
+    packages.map(async (p) => {
+      const json = await fs.readJson(path.resolve(p.path, 'package.json'));
 
-    for (const key of ['dependencies', 'devDependencies', 'optionalDependencies']) {
-      const deps = json[key];
-      if (!deps) continue;
+      for (const key of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+        const deps = json[key];
+        if (!deps) continue;
 
-      for (const depKey in deps) {
-        if (depKey.startsWith('@electron-forge/')) continue;
+        for (const depKey in deps) {
+          if (depKey.startsWith('@electron-forge/')) continue;
 
-        if (deps[depKey] !== allDeps[depKey]) {
-          console.error(p.name, depKey, deps[depKey], '-->', allDeps[depKey]);
-          deps[depKey] = allDeps[depKey];
+          if (deps[depKey] !== allDeps[depKey]) {
+            console.error(p.name, depKey, deps[depKey], '-->', allDeps[depKey]);
+            deps[depKey] = allDeps[depKey];
+          }
         }
       }
-    }
 
-    await fs.writeJson(path.resolve(p.path, 'package.json'), json, {
-      spaces: 2,
-    });
-  }
-})().catch(console.error);
+      await fs.writeJson(path.resolve(p.path, 'package.json'), json, {
+        spaces: 2,
+      });
+    })
+  );
+
+  result.map((promise) => {
+    if (promise.status === 'rejected') {
+      console.error(promise);
+    }
+  });
+})();

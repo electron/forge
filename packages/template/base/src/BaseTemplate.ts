@@ -47,12 +47,17 @@ export class BaseTemplate implements ForgeTemplate {
           }
           const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
-          for (const file of rootFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
-          }
-          for (const file of srcFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
-          }
+          await Promise.all(
+            rootFiles.map(async (file) => {
+              this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+            })
+          );
+
+          await Promise.all(
+            srcFiles.map(async (file) => {
+              this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+            })
+          );
         },
       },
       {
