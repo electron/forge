@@ -8,5 +8,6 @@ Please check off all of the steps as they are completed by replacing [ ] with [x
 - [ ] The changes are appropriately documented (if applicable).
 - [ ] The changes have sufficient test coverage (if applicable).
 - [ ] The testsuite passes successfully on my local machine (if applicable).
+- [ ] I have added or changed one or more dependencies (if applicable)
 
 **Summarize your changes:**
