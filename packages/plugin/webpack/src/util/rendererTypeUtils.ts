@@ -20,18 +20,11 @@ export const hasPreloadScript = (entry: WebpackPluginEntryPoint): entry is Webpa
   return !!(entry as any).preload;
 };
 
-export const isLocalWindowEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointLocalWindow[] => {
+export const isLocalOrNoWindowEntries = (
+  entries: WebpackPluginEntryPoint[]
+): entries is (WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPointNoWindow)[] => {
   for (const entry of entries) {
-    if (!isLocalWindow(entry)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-export const isNoWindowEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointNoWindow[] => {
-  for (const entry of entries) {
-    if (!isNoWindow(entry)) {
+    if (!isLocalWindow(entry) && !isNoWindow(entry)) {
       return false;
     }
   }

@@ -8,7 +8,7 @@ import { merge as webpackMerge } from 'webpack-merge';
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPluginEntryPointLocalWindow, WebpackPluginEntryPointPreloadOnly } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';
-import { isLocalWindow, isLocalWindowEntries, isNoWindow, isNoWindowEntries, isPreloadOnly, isPreloadOnlyEntries } from './util/rendererTypeUtils';
+import { isLocalOrNoWindowEntries, isLocalWindow, isNoWindow, isPreloadOnly, isPreloadOnlyEntries } from './util/rendererTypeUtils';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
@@ -240,7 +240,7 @@ export default class WebpackConfigGenerator {
     const rendererConfig = await this.resolveConfig(this.pluginConfig.renderer.config);
 
     if (target === RendererTarget.Web || target === RendererTarget.ElectronRenderer) {
-      if (!isLocalWindowEntries(entryPoints) && !isNoWindowEntries(entryPoints)) {
+      if (!isLocalOrNoWindowEntries(entryPoints)) {
         throw new Error('Invalid renderer entry point detected.');
       }
       for (const entryPoint of entryPoints) {
