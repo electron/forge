@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@electron-forge/shared-types": "^6.0.4",
+    "@electron-forge/shared-types": "6.0.4",
     "@electron/rebuild": "^3.2.10",
     "@malept/cross-spawn-promise": "^2.0.0",
     "chalk": "^4.0.0",

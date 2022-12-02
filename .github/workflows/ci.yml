@@ -34,6 +34,8 @@ jobs:
         run: yarn install
       - name: Lint
         run: yarn lint
+      - name: Ensure packages in sync
+        run: yarn syncpack
       - name: Build
         run: yarn build
       - name: Run tests
