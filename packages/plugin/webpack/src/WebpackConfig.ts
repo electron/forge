@@ -188,24 +188,17 @@ export default class WebpackConfigGenerator {
       electronPreload: [] as WebpackPluginEntryPointPreloadOnly[],
       sandboxedPreload: [] as WebpackPluginEntryPointPreloadOnly[],
     };
+
     for (const entry of entryPoints) {
-      if (entry.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration) {
-        if (isPreloadOnly(entry)) {
-          entryPointsForTarget.electronPreload.push(entry);
-        } else {
-          entryPointsForTarget.electronRenderer.push(entry);
-          if (isLocalWindow(entry) && entry.preload) {
-            entryPointsForTarget.electronPreload.push({ ...entry, preload: entry.preload });
-          }
-        }
+      const target = entry.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration ? 'electronRenderer' : 'web';
+      const preloadTarget = entry.nodeIntegration ?? this.pluginConfig.renderer.nodeIntegration ? 'electronPreload' : 'sandboxedPreload';
+
+      if (isPreloadOnly(entry)) {
+        entryPointsForTarget[preloadTarget].push(entry);
       } else {
-        if (isPreloadOnly(entry)) {
-          entryPointsForTarget.sandboxedPreload.push(entry);
-        } else {
-          entryPointsForTarget.web.push(entry);
-          if (isLocalWindow(entry) && entry.preload) {
-            entryPointsForTarget.sandboxedPreload.push({ ...entry, preload: entry.preload });
-          }
+        entryPointsForTarget[target].push(entry);
+        if (isLocalWindow(entry) && entry.preload) {
+          entryPointsForTarget[preloadTarget].push({ ...entry, preload: entry.preload });
         }
       }
     }
@@ -285,7 +278,7 @@ export default class WebpackConfigGenerator {
         entry,
         output: {
           path: path.resolve(this.webpackDir, 'renderer'),
-          filename: '[name]/preload.js',
+          filename: 'preload.js',
           globalObject: 'self',
           ...(this.isProd ? {} : { publicPath: '/' }),
         },
@@ -294,7 +287,7 @@ export default class WebpackConfigGenerator {
             ? []
             : [new webpack.ExternalsPlugin('commonjs2', ['electron', 'electron/renderer', 'electron/common', 'events', 'timers', 'url'])],
       };
-      return webpackMerge(baseConfig, config, rendererConfig);
+      return webpackMerge(baseConfig, config, rendererConfig || {});
     } else {
       throw new Error('Invalid renderer entry point detected.');
     }

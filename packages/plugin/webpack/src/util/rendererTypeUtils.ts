@@ -16,6 +16,10 @@ export const isNoWindow = (entry: WebpackPluginEntryPoint): entry is WebpackPlug
   return !(entry as any).html && !!(entry as any).js;
 };
 
+export const hasPreloadScript = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointPreloadOnly => {
+  return !!(entry as any).preload;
+};
+
 export const isLocalWindowEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointLocalWindow[] => {
   for (const entry of entries) {
     if (!isLocalWindow(entry)) {
@@ -36,7 +40,7 @@ export const isNoWindowEntries = (entries: WebpackPluginEntryPoint[]): entries i
 
 export const isPreloadOnlyEntries = (entries: WebpackPluginEntryPoint[]): entries is WebpackPluginEntryPointPreloadOnly[] => {
   for (const entry of entries) {
-    if (!isPreloadOnly(entry)) {
+    if (!hasPreloadScript(entry)) {
       return false;
     }
   }
