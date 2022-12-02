@@ -278,7 +278,7 @@ export default class WebpackConfigGenerator {
         entry,
         output: {
           path: path.resolve(this.webpackDir, 'renderer'),
-          filename: 'preload.js',
+          filename: '[name]/preload.js',
           globalObject: 'self',
           ...(this.isProd ? {} : { publicPath: '/' }),
         },
