@@ -336,7 +336,7 @@ describe('WebpackConfigGenerator', () => {
         main: ['rendererScript.js'],
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).to.equal(1);
+      expect(webpackConfig[0].plugins!.length).to.equal(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
     });
 
@@ -390,11 +390,11 @@ describe('WebpackConfigGenerator', () => {
       });
       expect(webpackConfig[0].output).to.deep.equal({
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
-        filename: 'preload.js',
+        filename: '[name]/preload.js',
         globalObject: 'self',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).to.equal(1);
+      expect(webpackConfig[0].plugins!.length).to.equal(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
     });
 
