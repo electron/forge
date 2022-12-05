@@ -11,8 +11,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/plugin-base": "^6.0.4",
-    "@electron-forge/shared-types": "^6.0.4",
+    "@electron-forge/plugin-base": "6.0.4",
+    "@electron-forge/shared-types": "6.0.4",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {

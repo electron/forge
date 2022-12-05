@@ -18,8 +18,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "^6.0.4",
-    "@electron-forge/shared-types": "^6.0.4"
+    "@electron-forge/maker-base": "6.0.4",
+    "@electron-forge/shared-types": "6.0.4"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^3.0.0"

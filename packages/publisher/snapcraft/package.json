@@ -15,7 +15,7 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "^6.0.4",
+    "@electron-forge/publisher-base": "6.0.4",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {

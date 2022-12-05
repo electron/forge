@@ -7,7 +7,7 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "dependencies": {
-    "@electron-forge/cli": "^6.0.4"
+    "@electron-forge/cli": "6.0.4"
   },
   "bin": {
     "create-electron-app": "dist/index.js"
