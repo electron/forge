@@ -265,7 +265,7 @@ export default class WebpackConfigGenerator {
           );
         }
       }
-      return webpackMerge(baseConfig, { entry, output, plugins }, rendererConfig || {});
+      return webpackMerge(baseConfig, rendererConfig || {}, { entry, output, plugins });
     } else if (target === RendererTarget.ElectronPreload || target === RendererTarget.SandboxedPreload) {
       if (!isPreloadOnlyEntries(entryPoints)) {
         throw new Error('Invalid renderer entry point detected.');
@@ -287,7 +287,7 @@ export default class WebpackConfigGenerator {
             ? []
             : [new webpack.ExternalsPlugin('commonjs2', ['electron', 'electron/renderer', 'electron/common', 'events', 'timers', 'url'])],
       };
-      return webpackMerge(baseConfig, config, rendererConfig || {});
+      return webpackMerge(baseConfig, rendererConfig || {}, config);
     } else {
       throw new Error('Invalid renderer entry point detected.');
     }

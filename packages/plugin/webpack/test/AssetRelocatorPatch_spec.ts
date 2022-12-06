@@ -146,7 +146,7 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds preload', async () => {
       const preloadConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(preloadConfig[0]);
+      await asyncWebpack(preloadConfig[1]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: path.join(rendererOut, 'main_window'),
@@ -199,12 +199,12 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
       const preloadConfig = await generator.getRendererConfig([entryPoint]);
-      await asyncWebpack(preloadConfig[0]);
+      await asyncWebpack(preloadConfig[1]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: path.join(rendererOut, 'main_window'),
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
-        nativeModulesString: '.ab=__dirname+"/native_modules/"',
+        nativeModulesString: 't.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
