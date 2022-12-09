@@ -7,8 +7,7 @@ export interface MakerZIPConfig {
    *
    * For instance if your URL is "https://update.example.com/my-app/darwin/x64/RELEASES.json"
    * you should provide "https://update.example.com/my-app/darwin/x64".  This logic assumes
-   * that you published your files using a forge publisher compatible with the auto updater.
-   * E.g. S3
+   * that you published your files using a forge publisher compatible with the auto updater (e.g. S3).
    *
    * Publishing this RELEASES.json will result in clients downloading this version
    * as an update.
