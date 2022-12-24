@@ -246,6 +246,7 @@ export const listrPackage = ({
               signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
               done();
             },
+            ...resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir),
           ];
 
           const afterPruneHooks = [];
