@@ -65,7 +65,7 @@ describe('PublisherERS', () => {
 
       // creates a new version with the correct flavor, name, and channel
       expect(calls[2][0]).to.equal(`${baseUrl}/api/version`);
-      expect(calls[2][1]?.body).to.equal(`{"channel":{"name":"stable"},"flavor":"${flavor}","name":"${version}","notes":""}`);
+      expect(calls[2][1]?.body).to.equal(`{"channel":"stable","flavor":"${flavor}","name":"${version}","notes":"","id":"${version}_stable"}`);
 
       // uploads asset successfully
       expect(calls[3][0]).to.equal(`${baseUrl}/api/asset`);
@@ -188,7 +188,7 @@ describe('PublisherERS', () => {
 
       // creates a new version with the correct flavor, name, and channel
       expect(calls[2][0]).to.equal(`${baseUrl}/api/version`);
-      expect(calls[2][1]?.body).to.equal(`{"channel":{"name":"stable"},"flavor":"${flavor}","name":"${version}","notes":""}`);
+      expect(calls[2][1]?.body).to.equal(`{"channel":"stable","flavor":"${flavor}","name":"${version}","notes":"","id":"${version}_stable"}`);
 
       // uploads asset successfully
       expect(calls[3][0]).to.equal(`${baseUrl}/api/asset`);

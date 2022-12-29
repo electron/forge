@@ -97,12 +97,11 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
         await authFetch('api/version', {
           method: 'POST',
           body: JSON.stringify({
-            channel: {
-              name: channel,
-            },
+            channel: channel,
             flavor: config.flavor,
             name: packageJSON.version,
             notes: '',
+            id: packageJSON.version + '_' + channel,
           }),
           headers: {
             'Content-Type': 'application/json',
