@@ -35,7 +35,7 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: { name: 'default' } }], status: 200 });
       // mock creating a new version
       fetch.postOnce('path:/api/version', { status: 200 });
       // mock asset upload
@@ -83,7 +83,7 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: 'lite' }], status: 200 });
+      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: { name: 'lite' } }], status: 200 });
       // mock asset upload
       fetch.post('path:/api/asset', { status: 200 });
 
@@ -123,7 +123,10 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/api/version', {
+        body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact', platform: 'linux_64' }], flavor: { name: 'default' } }],
+        status: 200,
+      });
 
       const publisher = new PublisherERS({
         baseUrl,
@@ -158,7 +161,7 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: { name: 'default' } }], status: 200 });
       // mock creating a new version
       fetch.postOnce('path:/api/version', { status: 200 });
       // mock asset upload

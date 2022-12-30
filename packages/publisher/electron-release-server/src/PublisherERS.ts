@@ -13,8 +13,11 @@ const d = debug('electron-forge:publish:ers');
 
 interface ERSVersion {
   name: string;
-  assets: { name: string }[];
-  flavor?: string;
+  assets: {
+    name: string;
+    platform: string;
+  }[];
+  flavor: { name: string };
 }
 
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
@@ -69,17 +72,20 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     ).json();
 
     const authFetch = (apiPath: string, options?: RequestInit) =>
-      fetchAndCheckStatus(api(apiPath), { ...(options || {}), headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
+      fetchAndCheckStatus(api(apiPath), {
+        ...(options || {}),
+        headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` },
+      });
 
-    const versions: ERSVersion[] = await (await authFetch('api/version')).json();
     const flavor = config.flavor || 'default';
 
     for (const makeResult of makeResults) {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
+      const versions: ERSVersion[] = await (await authFetch('api/version')).json();
       const existingVersion = versions.find((version) => {
-        return version.name === packageJSON.version && (!version.flavor || version.flavor === flavor);
+        return version.name === packageJSON.version && version.flavor.name === flavor;
       });
 
       let channel = 'stable';
@@ -98,7 +104,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           method: 'POST',
           body: JSON.stringify({
             channel: channel,
-            flavor: config.flavor,
+            flavor: flavor,
             name: packageJSON.version,
             notes: '',
             id: packageJSON.version + '_' + channel,
@@ -114,9 +120,10 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       updateStatusLine();
 
       await Promise.all(
-        artifacts.map(async (artifactPath) => {
+        artifacts.map(async (artifactPath: string) => {
+          const platform = ersPlatform(makeResult.platform, makeResult.arch);
           if (existingVersion) {
-            const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath));
+            const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath) && asset.platform === platform);
 
             if (existingAsset) {
               d('asset at path:', artifactPath, 'already exists on server');
@@ -129,7 +136,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           const artifactForm = new FormData();
           artifactForm.append('token', token);
           artifactForm.append('version', `${packageJSON.version}_${flavor}`);
-          artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
+          artifactForm.append('platform', platform);
 
           // see https://github.com/form-data/form-data/issues/426
           const fileOptions = {
