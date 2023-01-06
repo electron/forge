@@ -2,6 +2,9 @@ import path from 'path';
 
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { ForgeConfig } from '@electron-forge/shared-types';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved,node/no-missing-import
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import fsExtra from 'fs-extra';
 
