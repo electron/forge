@@ -150,6 +150,9 @@
     "electron-wix-msi": "^5.0.0",
     "macos-alias": "^0.2.11"
   },
+  "peerDependencies": {
+    "@electron/fuses": ">=1.0.0"
+  },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
     "*.{js,ts}": [
