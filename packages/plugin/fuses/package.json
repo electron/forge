@@ -6,6 +6,11 @@
   "author": "Erik Moura <erikian@erikian.dev>",
   "license": "MIT",
   "main": "dist/FusesPlugin.js",
+  "files": [
+    "dist",
+    "index.ts",
+    "package.json"
+  ],
   "typings": "dist/FusesPlugin.d.ts",
   "scripts": {
     "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec*.ts"
