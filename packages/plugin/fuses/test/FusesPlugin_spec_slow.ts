@@ -15,10 +15,18 @@ describe('FusesPlugin', () => {
     shell: true,
   };
 
+  const packageJSON = JSON.parse(
+    fs.readFileSync(path.join(appPath, 'package.json'), {
+      encoding: 'utf-8',
+    })
+  );
+
+  const { name: appName } = packageJSON;
+
   // @TODO get rid of this once https://github.com/electron/forge/pull/3123 lands
   const platformArchSuffix = `${process.platform}-x64`;
 
-  const outDir = path.join(appPath, 'out', `fuses-test-app-${platformArchSuffix}`);
+  const outDir = path.join(appPath, 'out', `${appName}-${platformArchSuffix}`);
 
   before(async () => {
     delete process.env.TS_NODE_PROJECT;
@@ -35,15 +43,9 @@ describe('FusesPlugin', () => {
   it('should flip Fuses', async () => {
     await spawn('yarn', ['package'], spawnOptions);
 
-    const packageJSON = JSON.parse(
-      await fs.promises.readFile(path.join(appPath, 'package.json'), {
-        encoding: 'utf-8',
-      })
-    );
-
     const electronExecutablePath = getElectronExecutablePath({
-      appName: packageJSON.name,
-      basePath: path.join(outDir, ...(process.platform === 'darwin' ? [`fuses-test-app.app`, 'Contents'] : [])),
+      appName,
+      basePath: path.join(outDir, ...(process.platform === 'darwin' ? [`${appName}.app`, 'Contents'] : [])),
       platform: process.platform,
     });
 
