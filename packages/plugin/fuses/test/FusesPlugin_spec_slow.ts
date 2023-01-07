@@ -43,7 +43,7 @@ describe('FusesPlugin', () => {
 
     const electronExecutablePath = getElectronExecutablePath({
       appName: packageJSON.name,
-      basePath: path.join(outDir, ...(['darwin', 'mas'].includes(process.platform) ? [`fuses-test-app.app`, 'Contents'] : [])),
+      basePath: path.join(outDir, ...(process.platform === 'darwin' ? [`fuses-test-app.app`, 'Contents'] : [])),
       platform: process.platform,
     });
 
