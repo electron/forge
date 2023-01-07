@@ -21,10 +21,16 @@ describe('FusesPlugin', () => {
   const outDir = path.join(appPath, 'out', `fuses-test-app-${platformArchSuffix}`);
 
   before(async () => {
+    delete process.env.TS_NODE_PROJECT;
     await spawn('yarn', ['install'], spawnOptions);
   });
 
-  after(async () => await fsExtra.remove(outDir));
+  after(async () => {
+    await fsExtra.remove(path.resolve(outDir, '../'));
+
+    // @TODO this can be removed once the mock app installs a published version of @electron-forge/plugin-fuses instead of a local package
+    await fsExtra.remove(path.join(__dirname, './fixtures/app/node_modules'));
+  });
 
   it('should flip Fuses', async () => {
     await spawn('yarn', ['package'], spawnOptions);
