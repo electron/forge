@@ -66,7 +66,7 @@ export default async ({
       collapseErrors: false,
     },
     rendererSilent: !interactive,
-    rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+    rendererFallback: Boolean(process.env.DEBUG),
   };
 
   const runner = new Listr(

@@ -430,7 +430,7 @@ export const listrPackage = ({
     {
       concurrent: false,
       rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+      rendererFallback: Boolean(process.env.DEBUG),
       rendererOptions: {
         collapse: false,
         collapseErrors: false,
