@@ -23,7 +23,7 @@ export default class FusesPlugin extends PluginBase<FuseConfig> {
 
   getHooks(): ForgeMultiHookMap {
     return {
-      packageAfterCopy: namedHookWithTaskFn<'packageAfterCopy'>(async (listrTask, resolvedForgeConfig, resourcesPath, electronVersion, platform) => {
+      packageAfterCopy: namedHookWithTaskFn<'packageAfterCopy'>(async (listrTask, resolvedForgeConfig, resourcesPath, electronVersion, platform, arch) => {
         const { fusesConfig } = this;
 
         if (Object.keys(fusesConfig).length) {
@@ -33,7 +33,13 @@ export default class FusesPlugin extends PluginBase<FuseConfig> {
             platform,
           });
 
-          await flipFuses(pathToElectronExecutable, this.fusesConfig);
+          const osxSignConfig = resolvedForgeConfig.packagerConfig.osxSign;
+          const hasOSXSignConfig = (typeof osxSignConfig === 'object' && Boolean(Object.keys(osxSignConfig).length)) || Boolean(osxSignConfig);
+
+          await flipFuses(pathToElectronExecutable, {
+            resetAdHocDarwinSignature: !hasOSXSignConfig && platform === 'darwin' && arch === 'arm64',
+            ...this.fusesConfig,
+          });
         }
       }, 'Flipping Fuses'),
     };
