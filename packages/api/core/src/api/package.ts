@@ -165,11 +165,6 @@ export const listrPackage = ({
 
           task.output = 'Determining targets...';
 
-          let provideTargets: (targets: TargetDefinition[]) => void;
-          const targetsPromise = new Promise<InternalTargetDefinition[]>((resolve) => {
-            provideTargets = resolve;
-          });
-
           type StepDoneSignalMap = Map<string, (() => void)[]>;
           const signalCopyDone: StepDoneSignalMap = new Map();
           const signalRebuildDone: StepDoneSignalMap = new Map();
@@ -185,6 +180,12 @@ export const listrPackage = ({
               map.set(targetKey, (map.get(targetKey) || []).concat([resolve]));
             });
           };
+
+          let provideTargets: (targets: TargetDefinition[]) => void;
+          const targetsPromise = new Promise<InternalTargetDefinition[]>((resolve, reject) => {
+            provideTargets = resolve;
+            rejects.push(reject);
+          });
 
           const rebuildTasks = new Map<string, Promise<ForgeListrTask<never>>[]>();
           const signalRebuildStart = new Map<string, ((task: ForgeListrTask<never>) => void)[]>();
@@ -309,7 +310,9 @@ export const listrPackage = ({
           // rejects is populated by the reject handlers for every
           // signal based promise in every subtask
           ctx.packagerPromise.catch((err) => {
-            for (const reject of rejects) reject(err);
+            for (const reject of rejects) {
+              reject(err);
+            }
           });
 
           const targets = await targetsPromise;
