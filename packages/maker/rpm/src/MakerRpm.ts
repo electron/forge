@@ -5,12 +5,18 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerRpmConfig } from './Config';
 
+function renameRpm(dest: string, _src: string): string {
+  return path.join(dest, '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.rpm');
+}
+
 export function rpmArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
       return 'i386';
     case 'x64':
       return 'x86_64';
+    case 'arm64':
+      return 'aarch64';
     case 'armv7l':
       return 'armv7hl';
     case 'arm':
@@ -43,7 +49,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
       arch: rpmArch(targetArch),
       src: dir,
       dest: outDir,
-      rename: undefined,
+      rename: renameRpm,
     });
     return packagePaths;
   }
