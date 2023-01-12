@@ -1,11 +1,9 @@
 import path from 'path';
 
 import { getElectronModulePath } from '@electron-forge/core-utils';
+import { PackageJSON } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
-
-type PackageJSON = Record<string, unknown>;
-type Dependencies = Record<string, string>;
 
 export function pluginCompileExists(packageJSON: PackageJSON): boolean {
   if (!packageJSON.devDependencies) {
@@ -15,11 +13,11 @@ export function pluginCompileExists(packageJSON: PackageJSON): boolean {
   const pluginCompileName = '@electron-forge/plugin-compile';
   const findPluginCompile = (packageName: string): boolean => packageName === pluginCompileName;
 
-  if (Object.keys(packageJSON.devDependencies as Dependencies).find(findPluginCompile)) {
+  if (Object.keys(packageJSON.devDependencies).find(findPluginCompile)) {
     return true;
   }
 
-  if (Object.keys((packageJSON.dependencies as Dependencies) || {}).find(findPluginCompile)) {
+  if (Object.keys(packageJSON.dependencies || {}).find(findPluginCompile)) {
     console.warn(logSymbols.warning, chalk.yellow(`${pluginCompileName} was detected in dependencies, it should be in devDependencies`));
     return true;
   }

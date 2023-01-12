@@ -1,7 +1,7 @@
 import { spawn, SpawnOptions } from 'child_process';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
-import { ElectronProcess, ForgeArch, ForgeListrTask, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
+import { ElectronProcess, ForgeArch, ForgeListrTask, ForgePlatform, PackageJSON, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
@@ -19,7 +19,7 @@ export { StartOptions };
 type StartContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
-  packageJSON: any;
+  packageJSON: PackageJSON;
   spawned: ElectronProcess;
 };
 

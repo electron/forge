@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import * as interpret from 'interpret';
 import { template } from 'lodash';
@@ -106,8 +106,8 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
 type MaybeESM<T> = T | { default: T };
 
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
-  const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
+  const packageJSON = (await readRawPackageJson(dir)) as ForgeAppPackageJSON;
+  let forgeConfig: ForgeConfig | string | null = packageJSON.config?.forge ?? null;
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
     for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {

@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 
 import { utils as forgeUtils } from '@electron-forge/core';
-import { ForgeListrTask } from '@electron-forge/shared-types';
+import { ElectronForgePackageJSON, ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 import semver from 'semver';
@@ -17,11 +17,12 @@ async function getGitVersion(): Promise<string | null> {
 }
 
 async function checkNodeVersion() {
-  const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
-  const versionSatisfied = semver.satisfies(process.versions.node, engines.node);
+  const packageJSON: ElectronForgePackageJSON = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
+
+  const versionSatisfied = semver.satisfies(process.versions.node, packageJSON.engines.node);
 
   if (!versionSatisfied) {
-    throw new Error(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
+    throw new Error(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${packageJSON.engines.node}.`);
   }
 
   return process.versions.node;

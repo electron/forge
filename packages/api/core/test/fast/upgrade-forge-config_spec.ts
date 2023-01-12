@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { merge } from 'lodash';
 
@@ -115,7 +115,9 @@ describe('upgradeForgeConfig', () => {
 });
 
 describe('updateUpgradedForgeDevDeps', () => {
-  const skeletonPackageJSON = {
+  const skeletonPackageJSON: ForgeAppPackageJSON = {
+    name: 'foo',
+    version: '0.0.0-development',
     config: {
       forge: {
         packagerConfig: {},
@@ -141,6 +143,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('adds makers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
+    assert(packageJSON.config?.forge);
     packageJSON.config.forge.makers = [
       {
         name: '@electron-forge/maker-zip',
@@ -161,6 +164,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('adds publishers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
+    assert(packageJSON.config?.forge);
     packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);

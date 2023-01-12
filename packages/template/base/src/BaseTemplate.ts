@@ -1,13 +1,12 @@
 import path from 'path';
 
-import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions, PackageJSON } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
 import determineAuthor from './determine-author';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const currentForgeVersion = require('../package.json').version;
+const currentForgeVersion = (fs.readJsonSync(path.join(__dirname, '../package.json')) as PackageJSON).version;
 
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(__dirname, '../tmpl');
@@ -20,7 +19,7 @@ export class BaseTemplate implements ForgeTemplate {
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
     if (fs.pathExistsSync(packageJSONPath)) {
-      const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
+      const packageDevDeps = (fs.readJsonSync(packageJSONPath) as PackageJSON).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
@@ -75,10 +74,11 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
+    const packageJSON: PackageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
     packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
     packageJSON.author = await determineAuthor(directory);
 
+    packageJSON.scripts = packageJSON.scripts ?? {};
     packageJSON.scripts.lint = 'echo "No linting configured"';
 
     d('writing package.json to:', directory);

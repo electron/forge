@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { PackageJSON } from '@electron-forge/shared-types';
 import debug from 'debug';
 import findUp from 'find-up';
 import fs from 'fs-extra';
@@ -11,9 +12,8 @@ const d = debug('electron-forge:electron-version');
 
 const electronPackageNames = ['electron-prebuilt-compile', 'electron-prebuilt', 'electron-nightly', 'electron'];
 
-type PackageJSONWithDeps = {
-  devDependencies?: Record<string, string>;
-  dependencies?: Record<string, string>;
+type ElectronPackageJSON = PackageJSON & {
+  version: string;
 };
 
 function findElectronDep(dep: string): boolean {
@@ -48,14 +48,12 @@ export class PackageNotFoundError extends Error {
   }
 }
 
-function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
+function getElectronModuleName(packageJSON: PackageJSON): string {
   if (!packageJSON.devDependencies) {
     throw new Error('package.json for app does not have any devDependencies');
   }
 
-  // Why: checked above
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const packageName = electronPackageNames.find((pkg) => packageJSON.devDependencies![pkg]);
+  const packageName = electronPackageNames.find((pkg) => packageJSON.devDependencies?.[pkg]);
   if (packageName === undefined) {
     throw new Error('Could not find any Electron packages in devDependencies');
   }
@@ -77,7 +75,7 @@ async function getElectronPackageJSONPath(dir: string, packageName: string): Pro
   return undefined;
 }
 
-export async function getElectronModulePath(dir: string, packageJSON: PackageJSONWithDeps): Promise<string | undefined> {
+export async function getElectronModulePath(dir: string, packageJSON: PackageJSON): Promise<string | undefined> {
   const moduleName = getElectronModuleName(packageJSON);
   const packageJSONPath = await getElectronPackageJSONPath(dir, moduleName);
   if (packageJSONPath) {
@@ -87,17 +85,16 @@ export async function getElectronModulePath(dir: string, packageJSON: PackageJSO
   return undefined;
 }
 
-export async function getElectronVersion(dir: string, packageJSON: PackageJSONWithDeps): Promise<string> {
+export async function getElectronVersion(dir: string, packageJSON: PackageJSON): Promise<string> {
   const packageName = getElectronModuleName(packageJSON);
 
   // Why: checked in getElectronModuleName
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  let version = packageJSON.devDependencies![packageName];
+  let version = (packageJSON.devDependencies as Record<string, string>)[packageName];
   if (!semver.valid(version)) {
     // It's not an exact version, find it in the actual module
     const electronPackageJSONPath = await getElectronPackageJSONPath(dir, packageName);
     if (electronPackageJSONPath) {
-      const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
+      const electronPackageJSON: ElectronPackageJSON = await fs.readJson(electronPackageJSONPath);
       version = electronPackageJSON.version;
     } else {
       throw new PackageNotFoundError(packageName, dir);
@@ -107,12 +104,10 @@ export async function getElectronVersion(dir: string, packageJSON: PackageJSONWi
   return version;
 }
 
-export function updateElectronDependency(packageJSON: PackageJSONWithDeps, dev: string[], exact: string[]): [string[], string[]] {
+export function updateElectronDependency(packageJSON: PackageJSON, dev: string[], exact: string[]): [string[], string[]] {
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
-  // Why: checked in getElectronModuleName
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if (Object.keys(packageJSON.devDependencies!).find(findElectronDep)) {
+  if (Object.keys(packageJSON.devDependencies ?? {}).find(findElectronDep)) {
     alteredExact = alteredExact.filter((dep) => dep !== 'electron');
   } else if (packageJSON.dependencies) {
     const electronKey = Object.keys(packageJSON.dependencies).find(findElectronDep);

@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
+import { ForgeAppPackageJSON } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -103,11 +104,11 @@ export default async ({
           let importDevDeps = ([] as string[]).concat(devDeps);
           let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
 
-          let packageJSON = await readRawPackageJson(dir);
+          let packageJSON = (await readRawPackageJson(dir)) as ForgeAppPackageJSON;
           if (!packageJSON.version) {
             task.output = chalk.yellow(`Please set the ${chalk.green('"version"')} in your application's package.json`);
           }
-          if (packageJSON.config && packageJSON.config.forge) {
+          if (packageJSON.config?.forge) {
             if (packageJSON.config.forge.makers) {
               task.output = chalk.green('Existing Electron Forge configuration detected');
               if (typeof shouldContinueOnExisting === 'function') {
@@ -123,7 +124,7 @@ export default async ({
               );
             } else {
               d('Upgrading an Electron Forge < 6 project');
-              packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge);
+              packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge as Record<string, unknown>);
               importDevDeps = updateUpgradedForgeDevDeps(packageJSON, importDevDeps);
             }
           }
@@ -168,12 +169,13 @@ export default async ({
           d('reading current scripts object:', packageJSON.scripts);
 
           const updatePackageScript = async (scriptName: string, newValue: string) => {
-            if (packageJSON.scripts[scriptName] !== newValue) {
+            if (packageJSON.scripts?.[scriptName] !== newValue) {
               let update = true;
               if (typeof shouldUpdateScript === 'function') {
                 update = await shouldUpdateScript(scriptName, newValue);
               }
               if (update) {
+                packageJSON.scripts = packageJSON.scripts ?? {};
                 packageJSON.scripts[scriptName] = newValue;
               }
             }
@@ -224,8 +226,8 @@ export default async ({
                     d('detected existing Forge config in package.json, merging with base template Forge config');
                     // eslint-disable-next-line @typescript-eslint/no-var-requires
                     const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
-                    packageJSON = await readRawPackageJson(dir);
-                    merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+                    packageJSON = (await readRawPackageJson(dir)) as ForgeAppPackageJSON;
+                    merge(templateConfig, packageJSON.config?.forge); // mutates the templateConfig object
                     await writeChanges();
                     // otherwise, write to forge.config.js
                   } else {
@@ -258,7 +260,7 @@ export default async ({
         },
         task: (_, task) => {
           task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
-          
+
           Thanks for using ${chalk.green('Electron Forge')}!`;
         },
       },

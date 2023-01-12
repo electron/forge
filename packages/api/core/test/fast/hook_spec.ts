@@ -1,4 +1,4 @@
-import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeHookFn, PackageJSON, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { SinonStub, stub } from 'sinon';
 
@@ -31,10 +31,12 @@ describe('hooks', () => {
 
   describe('runMutatingHook', () => {
     it('should return the input when running non existent hooks', async () => {
-      const info = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
+        version: '0.0.0-development',
         foo: 'bar',
       };
-      expect(await runMutatingHook({ ...fakeConfig }, 'readPackageJson', info)).to.equal(info);
+      expect(await runMutatingHook({ ...fakeConfig }, 'readPackageJson', packageJSON)).to.equal(packageJSON);
     });
 
     it('should return the mutated input when returned from a hook', async () => {
@@ -45,10 +47,12 @@ describe('hooks', () => {
           mutated: 'foo',
         })
       );
-      const info = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
+        version: '0.0.0-development',
         foo: 'bar',
       };
-      const output = await runMutatingHook({ hooks: { readPackageJson: myStub }, ...fakeConfig }, 'readPackageJson', info);
+      const output = await runMutatingHook({ hooks: { readPackageJson: myStub }, ...fakeConfig }, 'readPackageJson', packageJSON);
       expect(output).to.deep.equal({
         mutated: 'foo',
       });
