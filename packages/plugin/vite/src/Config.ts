@@ -1,4 +1,4 @@
-import type { BuildOptions, InlineConfig, LibraryOptions, ServerOptions } from 'vite';
+import type { LibraryOptions } from 'vite';
 
 export interface VitePluginBuildConfig {
   /**
@@ -11,41 +11,24 @@ export interface VitePluginBuildConfig {
   config?: string;
 }
 
-/**
- * @see https://github.com/vitejs/vite/blob/v4.0.4/packages/vite/src/node/cli.ts#L93-L100
- */
-export interface VitePluginRendererGlobalConfig extends Pick<InlineConfig, 'base' | 'logLevel' | 'clearScreen' | 'mode'> {
+export interface VitePluginRendererConfig {
   /**
-   * use specified config file
+   * Human friendly name of your entry point
    */
-  config?: string;
+  name: string;
   /**
-   * show debug logs
+   * Vite config file path.
    */
-  debug?: boolean | string;
-  /**
-   * filter debug logs
-   */
-  filter?: string;
-  /**
-   * force the optimizer to ignore the cache and re-bundle
-   */
-  force?: boolean;
+  config: string;
 }
-export type VitePluginRendererServeConfig = Pick<ServerOptions, 'host' | 'port' | 'https' | 'open' | 'cors' | 'strictPort'>;
-export type VitePluginRendererBuildConfig = Pick<
-  BuildOptions,
-  'target' | 'outDir' | 'assetsDir' | 'assetsInlineLimit' | 'sourcemap' | 'minify' | 'manifest' | 'emptyOutDir' | 'watch'
->;
-/**
- * @see https://vitejs.dev/guide/cli.html#options
- */
-export type VitePluginRendererConfig = VitePluginRendererGlobalConfig & VitePluginRendererServeConfig & VitePluginRendererBuildConfig;
 
 export interface VitePluginConfig {
   /**
    * Build anything such as Main process, Preload scripts and Worker process, etc.
    */
   build: VitePluginBuildConfig[];
-  CLIOptions?: VitePluginRendererConfig;
+  /**
+   * Renderer process, the first item will be used as the main entry.
+   */
+  renderer: VitePluginRendererConfig[];
 }

@@ -23,7 +23,7 @@ describe('ViteTemplate', () => {
 
   context('template files are copied to project', () => {
     const expectedFiles = [
-      'vite.config.mjs',
+      'vite.renderer.config.mjs',
       'vite.main.config.mjs',
       'vite.preload.config.mjs',
       path.join('src', 'renderer.js'),
@@ -40,8 +40,8 @@ describe('ViteTemplate', () => {
     await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
     await testUtils.expectProjectPathExists(dir, path.join('src', 'main.js'), 'file');
     const mainFile = (await fs.readFile(path.join(dir, 'src', 'main.js'))).toString();
-    expect(mainFile).to.match(/VITE_DEV_SERVER_URL/);
-    expect(mainFile).to.match(/\.\.\/renderer\/index\.html/);
+    expect(mainFile).to.match(/MAIN_WINDOW_VITE_SERVER_URL/);
+    expect(mainFile).to.match(/\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/);
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {

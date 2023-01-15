@@ -23,13 +23,13 @@ module.exports = {
             config: 'vite.preload.config.mjs',
           },
         ],
-        // The Renderer process is configured just like a normal Vite project.
-        // This is the same as the Vite project command line options. - https://vitejs.dev/guide/cli.html
-        // e.g. `vite build --config vite.config.mjs --watch`
-        CLIOptions: {
-          // config: 'vite.config.mjs',
-          // watch: true,
-        },
+        renderer: [
+          // The first item will be used as the main entry.
+          {
+            name: 'main_window',
+            config: 'vite.renderer.config.mjs',
+          },
+        ],
       },
     },
   ],

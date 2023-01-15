@@ -7,7 +7,7 @@ import { ForgeMultiHookMap, StartResult } from '@electron-forge/shared-types';
 import debug from 'debug';
 // eslint-disable-next-line node/no-extraneous-import
 import { RollupWatcher } from 'rollup';
-import { loadConfigFromFile, default as vite } from 'vite';
+import { default as vite } from 'vite';
 
 import { VitePluginConfig } from './Config';
 import ViteConfigGenerator from './ViteConfig';
@@ -25,7 +25,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   // Where the Vite output is generated. Usually `${projectDir}/.vite`
   private baseDir!: string;
 
-  private _configGenerator!: Promise<ViteConfigGenerator>;
+  private _configGenerator!: ViteConfigGenerator;
 
   private watchers: RollupWatcher[] = [];
 
@@ -44,17 +44,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     this.baseDir = path.join(dir, '.vite');
   };
 
-  get configGenerator(): Promise<ViteConfigGenerator> {
-    if (!this._configGenerator) {
-      // TODO: alias(mode: m, config: c)
-      const { mode = 'development', config: configFile } = this.config.CLIOptions ?? {};
-      const command = this.isProd ? 'build' : 'serve';
-      this._configGenerator = loadConfigFromFile({ command, mode }, configFile).then(
-        (result) => new ViteConfigGenerator(this.config, this.projectDir, this.isProd, result)
-      );
-    }
-
-    return this._configGenerator;
+  get configGenerator(): ViteConfigGenerator {
+    return (this._configGenerator ??= new ViteConfigGenerator(this.config, this.projectDir, this.isProd));
   }
 
   getHooks = (): ForgeMultiHookMap => {
@@ -106,8 +97,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (watch = false): Promise<void> => {
-    const configs = (await this.configGenerator).getBuildConfig(watch);
-    for (const userConfig of configs) {
+    for (const userConfig of this.configGenerator.getBuildConfig(watch)) {
       const buildResult = await vite.build({
         // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
         configFile: false,
@@ -122,23 +112,27 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Renderer process
   buildRenderer = async (): Promise<void> => {
-    await vite.build({
-      configFile: false,
-      ...(await this.configGenerator).getRendererConfig(),
-    });
+    for (const userConfig of this.configGenerator.getRendererConfig()) {
+      await vite.build({
+        configFile: false,
+        ...(await userConfig),
+      });
+    }
   };
 
   launchRendererDevServers = async (): Promise<void> => {
-    const viteDevServer = await vite.createServer({
-      configFile: false,
-      ...(await this.configGenerator).getRendererConfig(),
-    });
+    for (const userConfig of this.configGenerator.getRendererConfig()) {
+      const viteDevServer = await vite.createServer({
+        configFile: false,
+        ...(await userConfig),
+      });
 
-    await viteDevServer.listen();
-    viteDevServer.printUrls();
+      await viteDevServer.listen();
+      viteDevServer.printUrls();
 
-    if (viteDevServer.httpServer) {
-      this.servers.push(viteDevServer.httpServer);
+      if (viteDevServer.httpServer) {
+        this.servers.push(viteDevServer.httpServer);
+      }
     }
   };
 
