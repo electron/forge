@@ -1,3 +1,5 @@
+import { PredefinedAcl } from '@google-cloud/storage';
+
 export interface PublisherGCSConfig {
   /**
    * The path to the file that is either:
@@ -37,11 +39,19 @@ export interface PublisherGCSConfig {
    */
   folder?: string;
   /**
+   * Apply a predefined set of access controls to this object.
+   */
+  predefinedAcl?: PredefinedAcl;
+  /**
    * Whether to make uploaded artifacts public to the internet.
-   *
-   * Defaults to `false`.
+   * Alias for config.predefinedAcl = 'publicRead'.
    */
   public?: boolean;
+  /**
+   * Whether to make uploaded artifacts private.
+   * Alias for config.predefinedAcl = 'private'.
+   */
+  private?: boolean;
   /**
    * Custom function to provide the key to upload a given file to
    */

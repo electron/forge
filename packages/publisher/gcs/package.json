@@ -18,7 +18,8 @@
     "@electron-forge/publisher-base": "6.4.2",
     "@electron-forge/shared-types": "6.4.2",
     "@google-cloud/storage": "^7.1.0",
-    "debug": "^4.3.1"
+    "debug": "^4.3.1",
+    "google-auth-library": "^9.0.0"
   },
   "publishConfig": {
     "access": "public"
