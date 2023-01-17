@@ -28,7 +28,7 @@ export interface VitePluginConfig {
    */
   build: VitePluginBuildConfig[];
   /**
-   * Renderer process, the first item will be used as the main entry.
+   * Renderer process.
    */
   renderer: VitePluginRendererConfig[];
 }

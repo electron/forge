@@ -34,9 +34,9 @@ export default class ViteConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  async resolveConfig(config: string, configEnv: Partial<ConfigEnv> = {}) {
+  resolveConfig(config: string, configEnv: Partial<ConfigEnv> = {}) {
     // `command` is to be passed as an arguments when the user export a function in `vite.config.js`.
-    // see - https://vitejs.dev/config/#conditional-config
+    // @see - https://vitejs.dev/config/#conditional-config
     configEnv.command ??= this.isProd ? 'build' : 'serve';
     // `mode` affects `.env.[mode]` file loading.
     configEnv.mode ??= this.mode;
@@ -52,13 +52,14 @@ export default class ViteConfigGenerator {
 
   async getDefines(): Promise<Record<string, string>> {
     const defines: Record<string, any> = {};
-    for (const [index, userConfig] of (await Promise.all(this.getRendererConfig())).entries()) {
+    const rendererConfigs = await Promise.all(this.getRendererConfig());
+    for (const [index, userConfig] of rendererConfigs.entries()) {
       const name = this.pluginConfig.renderer[index].name;
       if (!name) {
         continue;
       }
       const NAME = name.toUpperCase().replace(/ /g, '_');
-      // There is no guarantee that `prot` will always be available, because it may auto increment.
+      // There is no guarantee that `port` will always be available, because it may auto increment.
       // https://github.com/vitejs/vite/blob/v4.0.4/packages/vite/src/node/http.ts#L170
       defines[`${NAME}_VITE_SERVER_URL`] = this.isProd ? undefined : userConfig?.server?.port && `'http://localhost:${userConfig.server.port}'`;
       defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
