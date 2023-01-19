@@ -23,6 +23,9 @@
     "mocha": "^9.0.1",
     "xvfb-maybe": "^0.2.1"
   },
+  "peerDependencies": {
+    "@electron/fuses": ">=1.0.0"
+  },
   "engines": {
     "node": ">= 14.17.5"
   },
