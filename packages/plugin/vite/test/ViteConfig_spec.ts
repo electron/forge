@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { expect } from 'chai';
 import { UserConfig } from 'vite';
 
@@ -34,7 +36,7 @@ describe('ViteConfigGenerator', () => {
           fileName: (buildConfig.build?.lib as any)?.fileName,
         },
         emptyOutDir: false,
-        outDir: '.vite/build',
+        outDir: path.join('.vite', 'build'),
         watch: undefined,
       },
       clearScreen: false,
@@ -55,7 +57,7 @@ describe('ViteConfigGenerator', () => {
         mode: 'development',
         base: './',
         build: {
-          outDir: `.vite/renderer/${config.renderer[index].name}`,
+          outDir: path.join('.vite', 'renderer', config.renderer[index].name),
         },
         clearScreen: false,
         server: {
