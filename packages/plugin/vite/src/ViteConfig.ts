@@ -61,7 +61,7 @@ export default class ViteConfigGenerator {
       const NAME = name.toUpperCase().replace(/ /g, '_');
       // There is no guarantee that `port` will always be available, because it may auto increment.
       // https://github.com/vitejs/vite/blob/v4.0.4/packages/vite/src/node/http.ts#L170
-      defines[`${NAME}_VITE_SERVER_URL`] = this.isProd ? undefined : userConfig?.server?.port && `'http://localhost:${userConfig.server.port}'`;
+      defines[`${NAME}_VITE_SERVER_URL`] = this.isProd ? undefined : userConfig?.server?.port && JSON.stringify(`http://localhost:${userConfig.server.port}`);
       defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
     }
     return defines;

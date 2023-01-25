@@ -11,9 +11,9 @@ describe('ViteConfigGenerator', () => {
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
     const define = await generator.getDefines();
-    expect(define.FOO_WINDOW_VITE_SERVER_URL).equal("'http://localhost:5173'");
+    expect(define.FOO_WINDOW_VITE_SERVER_URL).equal('"http://localhost:5173"');
     expect(define.FOO_WINDOW_VITE_NAME).equal('"foo_window"');
-    expect(define.BAR_WINDOW_VITE_SERVER_URL).equal("'http://localhost:5174'");
+    expect(define.BAR_WINDOW_VITE_SERVER_URL).equal('"http://localhost:5174"');
     expect(define.BAR_WINDOW_VITE_NAME).equal('"bar_window"');
   });
 
