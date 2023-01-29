@@ -55,8 +55,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           this.isProd = true;
           fs.rmSync(this.baseDir, { recursive: true, force: true });
 
-          await this.build();
-          await this.buildRenderer();
+          await Promise.all([this.build(), this.buildRenderer()]);
         }, 'Building vite bundles'),
       ],
     };
