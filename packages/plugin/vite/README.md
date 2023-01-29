@@ -14,7 +14,7 @@ module.exports = {
         // If you are familiar with Vite configuration, it will look really familiar.
         build: [
           {
-            // `entry` is just an alias for `build.lib.entry` in the `config` counterpart file.
+            // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
             entry: 'src/main.js',
             config: 'vite.main.config.mjs',
           },
@@ -24,7 +24,6 @@ module.exports = {
           },
         ],
         renderer: [
-          // The first item will be used as the main entry.
           {
             name: 'main_window',
             config: 'vite.renderer.config.mjs',

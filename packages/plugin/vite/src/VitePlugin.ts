@@ -97,11 +97,11 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (watch = false): Promise<void> => {
-    for (const userConfig of this.configGenerator.getBuildConfig(watch)) {
+    for (const userConfig of await this.configGenerator.getBuildConfig(watch)) {
       const buildResult = await vite.build({
         // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
         configFile: false,
-        ...(await userConfig),
+        ...userConfig,
       });
 
       if (Object.keys(buildResult).includes('close')) {
@@ -112,19 +112,19 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Renderer process
   buildRenderer = async (): Promise<void> => {
-    for (const userConfig of this.configGenerator.getRendererConfig()) {
+    for (const userConfig of await this.configGenerator.getRendererConfig()) {
       await vite.build({
         configFile: false,
-        ...(await userConfig),
+        ...userConfig,
       });
     }
   };
 
   launchRendererDevServers = async (): Promise<void> => {
-    for (const userConfig of this.configGenerator.getRendererConfig()) {
+    for (const userConfig of await this.configGenerator.getRendererConfig()) {
       const viteDevServer = await vite.createServer({
         configFile: false,
-        ...(await userConfig),
+        ...userConfig,
       });
 
       await viteDevServer.listen();

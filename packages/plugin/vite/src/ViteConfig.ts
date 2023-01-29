@@ -15,16 +15,11 @@ const d = debug('electron-forge:plugin:vite:viteconfig');
 export type LoadResult = Awaited<ReturnType<typeof loadConfigFromFile>>;
 
 export default class ViteConfigGenerator {
-```suggestion
   private readonly baseDir: string;
 
-  private _rendererConfig!: Promise<UserConfig>[];
+  private rendererConfigCache!: Promise<UserConfig>[];
 
-  constructor(
-    private readonly pluginConfig: VitePluginConfig,
-    private readonly projectDir: string,
-    private readonly isProd: boolean,
-  ) {
+  constructor(private readonly pluginConfig: VitePluginConfig, private readonly projectDir: string, private readonly isProd: boolean) {
     this.baseDir = path.join(projectDir, '.vite');
     d('Config mode:', this.mode);
   }
@@ -47,7 +42,7 @@ export default class ViteConfigGenerator {
 
   async getDefines(): Promise<Record<string, string>> {
     const defines: Record<string, any> = {};
-    const rendererConfigs = await Promise.all(this.getRendererConfig());
+    const rendererConfigs = await this.getRendererConfig();
     for (const [index, userConfig] of rendererConfigs.entries()) {
       const name = this.pluginConfig.renderer[index].name;
       if (!name) {
@@ -56,23 +51,24 @@ export default class ViteConfigGenerator {
       const NAME = name.toUpperCase().replace(/ /g, '_');
       // There is no guarantee that `port` will always be available, because it may auto increment.
       // https://github.com/vitejs/vite/blob/v4.0.4/packages/vite/src/node/http.ts#L170
-      defines[`${NAME}_VITE_SERVER_URL`] = this.isProd ? undefined : userConfig?.server?.port && JSON.stringify(`http://localhost:${userConfig.server.port}`);
+      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd
+        ? undefined
+        : userConfig?.server?.port && JSON.stringify(`http://localhost:${userConfig.server.port}`);
       defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
     }
     return defines;
   }
 
-  getBuildConfig(watch = false): Promise<UserConfig>[] {
+  async getBuildConfig(watch = false): Promise<UserConfig[]> {
     if (!Array.isArray(this.pluginConfig.build)) {
       throw new Error('"config.build" must be an Array');
     }
-    
-    const defines = await this.getDefines();
-    cosnt plugins = [externalBuiltins()];
 
-    return this.pluginConfig.build
+    const define = await this.getDefines();
+    const plugins = [externalBuiltins()];
+    const configs = this.pluginConfig.build
       .filter(({ entry, config }) => entry || config)
-      .map(async ({ entry, config }) => {
+      .map<Promise<UserConfig>>(async ({ entry, config }) => {
         const defaultConfig: UserConfig = {
           // Ensure that each build config loads the .env file correctly.
           mode: this.mode,
@@ -101,16 +97,17 @@ export default class ViteConfigGenerator {
         }
         return defaultConfig;
       });
+
+    return await Promise.all(configs);
   }
 
-  getRendererConfig(): Promise<UserConfig>[] {
+  async getRendererConfig(): Promise<UserConfig[]> {
     if (!Array.isArray(this.pluginConfig.renderer)) {
       throw new Error('"config.renderer" must be an Array');
     }
 
     let port = 5173;
-
-    return (this._rendererConfig ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
+    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
       const defaultConfig: UserConfig = {
         // Ensure that each build config loads the .env file correctly.
         mode: this.mode,
@@ -126,5 +123,7 @@ export default class ViteConfigGenerator {
       loadResult.config.server.port ??= port++;
       return mergeConfig(defaultConfig, loadResult.config);
     }));
+
+    return await Promise.all(configs);
   }
 }

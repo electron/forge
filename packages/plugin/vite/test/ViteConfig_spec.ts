@@ -13,9 +13,9 @@ describe('ViteConfigGenerator', () => {
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
     const define = await generator.getDefines();
-    expect(define.FOO_WINDOW_VITE_SERVER_URL).equal('"http://localhost:5173"');
+    expect(define.FOO_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5173"');
     expect(define.FOO_WINDOW_VITE_NAME).equal('"foo_window"');
-    expect(define.BAR_WINDOW_VITE_SERVER_URL).equal('"http://localhost:5174"');
+    expect(define.BAR_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5174"');
     expect(define.BAR_WINDOW_VITE_NAME).equal('"bar_window"');
   });
 
@@ -25,7 +25,7 @@ describe('ViteConfigGenerator', () => {
       renderer: [],
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', true);
-    const buildConfig = await generator.getBuildConfig()[0];
+    const buildConfig = (await generator.getBuildConfig())[0];
     expect(buildConfig).deep.equal({
       mode: 'production',
       build: {
@@ -52,8 +52,9 @@ describe('ViteConfigGenerator', () => {
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
     let port = 5173;
-    for (const [index, rendererConfig] of generator.getRendererConfig().entries()) {
-      expect(await rendererConfig).deep.equal({
+    const configs = await generator.getRendererConfig();
+    for (const [index, rendererConfig] of configs.entries()) {
+      expect(rendererConfig).deep.equal({
         mode: 'development',
         base: './',
         build: {

@@ -40,7 +40,7 @@ describe('ViteTemplate', () => {
     await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
     await testUtils.expectProjectPathExists(dir, path.join('src', 'main.js'), 'file');
     const mainFile = (await fs.readFile(path.join(dir, 'src', 'main.js'))).toString();
-    expect(mainFile).to.match(/MAIN_WINDOW_VITE_SERVER_URL/);
+    expect(mainFile).to.match(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
     expect(mainFile).to.match(/\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/);
   });
 
