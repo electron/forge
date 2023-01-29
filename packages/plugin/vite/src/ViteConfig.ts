@@ -66,6 +66,9 @@ export default class ViteConfigGenerator {
     if (!Array.isArray(this.pluginConfig.build)) {
       throw new Error('"config.build" must be an Array');
     }
+    
+    const defines = await this.getDefines();
+    cosnt plugins = [externalBuiltins()];
 
     return this.pluginConfig.build
       .filter(({ entry, config }) => entry || config)
@@ -89,8 +92,8 @@ export default class ViteConfigGenerator {
             watch: watch ? {} : undefined,
           },
           clearScreen: false,
-          define: await this.getDefines(),
-          plugins: [externalBuiltins()],
+          define,
+          plugins,
         };
         if (config) {
           const loadResult = await this.resolveConfig(config);
