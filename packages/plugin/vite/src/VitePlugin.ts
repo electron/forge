@@ -39,7 +39,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
   };
 
-  setDirectories = (dir: string): void => {
+  private setDirectories(dir: string): void {
     this.projectDir = dir;
     this.baseDir = path.join(dir, '.vite');
   };
