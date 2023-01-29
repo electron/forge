@@ -15,22 +15,17 @@ const d = debug('electron-forge:plugin:vite:viteconfig');
 export type LoadResult = Awaited<ReturnType<typeof loadConfigFromFile>>;
 
 export default class ViteConfigGenerator {
-  private isProd: boolean;
-
-  private pluginConfig: VitePluginConfig;
-
-  private projectDir!: string;
-
-  private baseDir!: string;
+```suggestion
+  private readonly baseDir: string;
 
   private _rendererConfig!: Promise<UserConfig>[];
 
-  constructor(pluginConfig: VitePluginConfig, projectDir: string, isProd: boolean) {
-    this.pluginConfig = pluginConfig;
-    this.projectDir = projectDir;
+  constructor(
+    private readonly pluginConfig: VitePluginConfig,
+    private readonly projectDir: string,
+    private readonly isProd: boolean,
+  ) {
     this.baseDir = path.join(projectDir, '.vite');
-    this.isProd = isProd;
-
     d('Config mode:', this.mode);
   }
 
