@@ -25,7 +25,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   // Where the Vite output is generated. Usually `${projectDir}/.vite`
   private baseDir!: string;
 
-  private _configGenerator!: ViteConfigGenerator;
+  private configGeneratorCache!: ViteConfigGenerator;
 
   private watchers: RollupWatcher[] = [];
 
