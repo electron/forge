@@ -2,7 +2,7 @@
 
 This plugin makes it easy to set up standard vite tooling to compile both your main process code and your renderer process code, with built-in support for Hot Module Replacement (HMR) in the renderer process and support for multiple renderers.
 
-```
+```javascript
 // forge.config.js
 
 module.exports = {
