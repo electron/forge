@@ -44,7 +44,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     this.baseDir = path.join(dir, '.vite');
   };
 
-  get configGenerator(): ViteConfigGenerator {
+  private get configGenerator(): ViteConfigGenerator {
     return (this._configGenerator ??= new ViteConfigGenerator(this.config, this.projectDir, this.isProd));
   }
 
