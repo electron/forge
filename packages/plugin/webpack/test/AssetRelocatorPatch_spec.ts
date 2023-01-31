@@ -149,7 +149,7 @@ describe('AssetRelocatorPatch', () => {
       await asyncWebpack(preloadConfig[1]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
-        outDir: path.join(rendererOut, 'main_window'),
+        outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
         nativeModulesString: `__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`,
         nativePathString: `require(__webpack_require__.ab + \\"${nativePathSuffix}\\")`,
@@ -202,7 +202,7 @@ describe('AssetRelocatorPatch', () => {
       await asyncWebpack(preloadConfig[1]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
-        outDir: path.join(rendererOut, 'main_window'),
+        outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
         nativeModulesString: '.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
