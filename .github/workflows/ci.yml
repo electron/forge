@@ -76,6 +76,6 @@ jobs:
       - name: Build
         run: yarn build
       - name: Test
-        run: yarn test
+        run: yarn test:slow
         env:
           DEBUG: electron-installer-snap:snapcraft
