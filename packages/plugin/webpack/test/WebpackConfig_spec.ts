@@ -417,6 +417,33 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].target).to.equal('web');
     });
 
+    it('allows you to specify a preload webpack config', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+                config: {
+                  name: 'preload',
+                  target: 'electron-preload',
+                  entry: 'preload',
+                },
+              },
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('web');
+      expect(webpackConfig[0].name).to.equal('preload');
+    });
+
     it('generates a config from function', async () => {
       const generateWebpackConfig = (webpackConfig: WebpackConfiguration) => {
         const config = {
