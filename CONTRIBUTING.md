@@ -128,6 +128,7 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 ## Release process
 
 This guide is for maintainers who have:
+
 - Push access to the `electron/forge` repository.
 - Collaborator access to the `@electron-forge` packages on npm.
 
