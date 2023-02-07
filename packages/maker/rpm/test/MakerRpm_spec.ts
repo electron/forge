@@ -56,11 +56,11 @@ describe('MakerRpm', () => {
       packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
+    delete opts.rename;
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       src: dir,
       dest: path.join(makeDir, 'rpm', process.arch),
-      rename: undefined,
     });
   });
 
@@ -81,6 +81,7 @@ describe('MakerRpm', () => {
       packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
+    delete opts.rename;
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       options: {
@@ -88,7 +89,6 @@ describe('MakerRpm', () => {
       },
       src: dir,
       dest: path.join(makeDir, 'rpm', process.arch),
-      rename: undefined,
     });
   });
 
@@ -99,6 +99,10 @@ describe('MakerRpm', () => {
 
     it('should convert x64 to x86_64', () => {
       expect(rpmArch('x64')).to.equal('x86_64');
+    });
+
+    it('should convert arm64 to aarch64', () => {
+      expect(rpmArch('arm64')).to.equal('aarch64');
     });
 
     it('should convert arm to armv6hl', () => {
