@@ -5,6 +5,7 @@ dist
 docs
 doc
 node_modules
+lerna-debug.log
 yarn-error.log
 packages/**/.npmignore
 packages/**/tsconfig.json
