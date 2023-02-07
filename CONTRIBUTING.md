@@ -127,11 +127,13 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ### Release process
 
-- Make sure the tests pass with `yarn test`
+- Make sure you are on the tip of the `main` branch of the Forge repo (`git checkout main && git fetch && git pull`).
+- Make sure the tests pass with `yarn test`.
 - Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
-- Ensure that you are logged into npm via command line (`npm login`)
+- Install dependencies with `yarn install`.
+- Ensure that you are logged into npm via command line (`npm login`).
 - Run `yarn lerna:publish`, which will run the `lerna publish` command with a necessary set of flags.
-  - The script will then ask you for your `npm` OTP password.
+  - The script will then ask you for your npm OTP password.
   - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
     committed.
 - The command will have published your packages to `npm`, and pushed an appropriate tag to github.
