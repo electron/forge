@@ -14,7 +14,7 @@
     "docs": "yarn build && yarn docs:generate",
     "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
-    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog",
+    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
