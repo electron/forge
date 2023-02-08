@@ -1,8 +1,12 @@
 {
   "name": "@electron-forge/template-vite",
-  "version": "6.0.4",
+  "version": "6.1.0",
   "description": "Vite template for Electron Forge, gets you started with Vite really quickly",
-  "repository": "https://github.com/electron/forge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electron/forge",
+    "directory": "packages/template/vite"
+  },
   "author": "caoxiemeihao",
   "license": "MIT",
   "main": "dist/ViteTemplate.js",
