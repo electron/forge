@@ -146,7 +146,7 @@ describe('AssetRelocatorPatch', () => {
 
     it('builds preload', async () => {
       const preloadConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(preloadConfig[1]);
+      await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -199,7 +199,7 @@ describe('AssetRelocatorPatch', () => {
     it('builds preload', async () => {
       const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
       const preloadConfig = await generator.getRendererConfig([entryPoint]);
-      await asyncWebpack(preloadConfig[1]);
+      await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,

@@ -26,19 +26,26 @@ enum RendererTarget {
   ElectronPreload,
   SandboxedPreload,
 }
-function isNotNull<T>(item: T | null): item is T {
-  return !!item;
+
+enum WebpackTarget {
+  Web = 'web',
+  ElectronPreload = 'electron-preload',
+  ElectronRenderer = 'electron-renderer',
 }
 
-function rendererTargetToWebpackTarget(target: RendererTarget): string {
+function isNotNull<T>(item: T | null): item is T {
+  return item !== null;
+}
+
+function rendererTargetToWebpackTarget(target: RendererTarget): WebpackTarget {
   switch (target) {
     case RendererTarget.Web:
     case RendererTarget.SandboxedPreload:
-      return 'web';
+      return WebpackTarget.Web;
     case RendererTarget.ElectronPreload:
-      return 'electron-preload';
+      return WebpackTarget.ElectronPreload;
     case RendererTarget.ElectronRenderer:
-      return 'electron-renderer';
+      return WebpackTarget.ElectronRenderer;
   }
 }
 
@@ -202,14 +209,14 @@ export default class WebpackConfigGenerator {
         }
       }
     }
+
     const rendererConfigs = await Promise.all(
-      (
-        await this.buildRendererConfigs(entryPointsForTarget.web, RendererTarget.Web)
-      ).concat(
+      [
+        await this.buildRendererConfigs(entryPointsForTarget.web, RendererTarget.Web),
         await this.buildRendererConfigs(entryPointsForTarget.electronRenderer, RendererTarget.ElectronRenderer),
         await this.buildRendererConfigs(entryPointsForTarget.electronPreload, RendererTarget.ElectronPreload),
-        await this.buildRendererConfigs(entryPointsForTarget.sandboxedPreload, RendererTarget.SandboxedPreload)
-      )
+        await this.buildRendererConfigs(entryPointsForTarget.sandboxedPreload, RendererTarget.SandboxedPreload),
+      ].reduce((configs, allConfigs) => allConfigs.concat(configs))
     );
 
     return rendererConfigs.filter(isNotNull);
@@ -278,6 +285,9 @@ export default class WebpackConfigGenerator {
     if (entryPoints.length === 0) {
       return null;
     }
+
+    const externals = ['electron', 'electron/renderer', 'electron/common', 'events', 'timers', 'url'];
+
     const entry: webpack.Entry = {};
     const baseConfig: webpack.Configuration = this.buildRendererBaseConfig(target);
     const rendererConfig = await this.resolveConfig(entryPoints[0].preload?.config || this.pluginConfig.renderer.config);
@@ -294,10 +304,7 @@ export default class WebpackConfigGenerator {
         globalObject: 'self',
         ...(this.isProd ? {} : { publicPath: '/' }),
       },
-      plugins:
-        target === RendererTarget.ElectronPreload
-          ? []
-          : [new webpack.ExternalsPlugin('commonjs2', ['electron', 'electron/renderer', 'electron/common', 'events', 'timers', 'url'])],
+      plugins: target === RendererTarget.ElectronPreload ? [] : [new webpack.ExternalsPlugin('commonjs2', externals)],
     };
     return webpackMerge(baseConfig, rendererConfig || {}, config);
   }

@@ -17,7 +17,7 @@ export const isNoWindow = (entry: WebpackPluginEntryPoint): entry is WebpackPlug
 };
 
 export const hasPreloadScript = (entry: WebpackPluginEntryPoint): entry is WebpackPluginEntryPointPreloadOnly => {
-  return !!(entry as any).preload;
+  return 'preload' in entry;
 };
 
 export const isLocalOrNoWindowEntries = (
