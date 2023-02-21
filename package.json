@@ -78,6 +78,7 @@
     "yarn-or-npm": "^3.0.1"
   },
   "devDependencies": {
+    "@electron/fuses": ">=1.0.0",
     "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
@@ -150,6 +151,9 @@
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^5.0.0",
     "macos-alias": "^0.2.11"
+  },
+  "peerDependencies": {
+    "@electron/fuses": ">=1.0.0"
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
