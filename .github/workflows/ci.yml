@@ -73,7 +73,7 @@ jobs:
           node-version: 14.x
           cache: yarn
       - name: Install
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn build
       - name: Test
