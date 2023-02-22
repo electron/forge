@@ -23,13 +23,10 @@ jobs:
         with:
           node-version: 14.x
           cache: yarn
-      - name: Install latest NPM on Windows
+      - name: Install npm 8 on Windows
         if: matrix.os == 'windows-latest'
-        # See https://github.com/actions/virtual-environments/issues/4856#issuecomment-1043256330
-        # and https://github.com/actions/setup-node/issues/411#issuecomment-1051084491
         run: |
-          npm install -g npm@8.3.1
-          npm install -g npm@latest
+          npm install -g npm@8
       - name: Install
         run: yarn install
       - name: Lint
