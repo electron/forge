@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
       - name: Windows specific setup
         if: matrix.os == 'windows-latest'
-        shell: cmd
+        shell: bash
         run: |
           npm install -g npm@8
           echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
