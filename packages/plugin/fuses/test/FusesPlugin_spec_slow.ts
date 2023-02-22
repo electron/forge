@@ -8,7 +8,7 @@ import fsExtra from 'fs-extra';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
-  const appPath = path.join(__dirname, 'fixtures', 'app');
+  const appPath = path.join(__dirname, 'fixture', 'app');
 
   const spawnOptions: CrossSpawnOptions = {
     cwd: appPath,
@@ -37,7 +37,7 @@ describe('FusesPlugin', () => {
     await fsExtra.remove(path.resolve(outDir, '../'));
 
     // @TODO this can be removed once the mock app installs a published version of @electron-forge/plugin-fuses instead of a local package
-    await fsExtra.remove(path.join(__dirname, './fixtures/app/node_modules'));
+    await fsExtra.remove(path.join(__dirname, './fixture/app/node_modules'));
   });
 
   it('should flip Fuses', async () => {
