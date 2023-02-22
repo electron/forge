@@ -54,9 +54,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: cmd
         run: |
+          npm install -g npm@8
           echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
-          cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
-          npm install node-gyp@latest
+          npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
       - name: Linux specific setup
         if: matrix.os == 'ubuntu-latest'
         run: |
