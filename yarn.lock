@@ -1137,6 +1137,15 @@
   optionalDependencies:
     "@types/glob" "^7.1.1"
 
+"@electron/fuses@>=1.0.0":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@electron/fuses/-/fuses-1.6.1.tgz#c639e018202a59e3cd8911fa943e22c63dd3e6fc"
+  integrity sha512-J7kRMlc0vP03uzUuhHNEqffqZMZ6FRe0YGMOJO4kJObmYkOg38mMTvbbktEj+oteH5nfyhbQUkHIYnMSh7T/CQ==
+  dependencies:
+    chalk "^4.1.1"
+    fs-extra "^9.0.1"
+    minimist "^1.2.5"
+
 "@electron/get@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-2.0.0.tgz#d991e68dc089fc66b521ec3ca4021515482bef91"
