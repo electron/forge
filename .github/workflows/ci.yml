@@ -55,6 +55,7 @@ jobs:
         shell: bash
         run: |
           echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
+          echo where node
           cd `where node`
           cd node_modules\npm\node_modules\@npmcli\run-script
           npm install node-gyp@latest
