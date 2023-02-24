@@ -137,7 +137,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
     {
       concurrent: false,
       rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+      rendererFallback: Boolean(process.env.DEBUG),
     }
   );
 

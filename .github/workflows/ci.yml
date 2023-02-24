@@ -7,6 +7,7 @@ on:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+*
   pull_request:
+  merge_group:
 
 jobs:
   fast-tests:
@@ -23,13 +24,10 @@ jobs:
         with:
           node-version: 14.x
           cache: yarn
-      - name: Install latest NPM on Windows
+      - name: Install npm 8 on Windows
         if: matrix.os == 'windows-latest'
-        # See https://github.com/actions/virtual-environments/issues/4856#issuecomment-1043256330
-        # and https://github.com/actions/setup-node/issues/411#issuecomment-1051084491
         run: |
-          npm install -g npm@8.3.1
-          npm install -g npm@latest
+          npm install -g npm@8
       - name: Install
         run: yarn install
       - name: Lint
@@ -54,6 +52,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
+          npm install -g npm@8
           echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
           npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
       - name: Linux specific setup
@@ -72,10 +71,10 @@ jobs:
           node-version: 14.x
           cache: yarn
       - name: Install
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Build
         run: yarn build
       - name: Test
-        run: yarn test
+        run: yarn test:slow
         env:
           DEBUG: electron-installer-snap:snapcraft
