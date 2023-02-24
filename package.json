@@ -14,12 +14,13 @@
     "docs": "yarn build && yarn docs:generate",
     "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
-    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog",
+    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --link-folder ../../../.links --silent --no-bin-links",
     "test": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
+    "test:slow": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_SLOW_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install",
     "preversion": "yarn build"
@@ -78,6 +79,7 @@
     "yarn-or-npm": "^3.0.1"
   },
   "devDependencies": {
+    "@electron/fuses": ">=1.0.0",
     "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
@@ -150,6 +152,9 @@
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^5.0.0",
     "macos-alias": "^0.2.11"
+  },
+  "peerDependencies": {
+    "@electron/fuses": ">=1.0.0"
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
