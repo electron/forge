@@ -27,6 +27,55 @@ const sampleWebpackConfig = {
 };
 
 describe('WebpackConfigGenerator', () => {
+  describe('rendererTarget', () => {
+    it('is web if undefined', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{ name: 'foo', js: 'foo/index.js' }],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('web');
+    });
+
+    it('is web if false', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{ name: 'foo', js: 'foo/index.js' }],
+          nodeIntegration: false,
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('web');
+    });
+
+    it('is electron-renderer if true', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{ name: 'foo', js: 'foo/index.js' }],
+          nodeIntegration: true,
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('electron-renderer');
+    });
+
+    it('is web if entry nodeIntegration is false', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [{ name: 'foo', js: 'foo/index.js', nodeIntegration: false }],
+          nodeIntegration: true,
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('web');
+    });
+  });
+
   describe('getDefines', () => {
     it('throws an error if renderer.entryPoints does not exist', () => {
       const config = {
@@ -332,8 +381,15 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
       const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
       expect(webpackConfig[0].target).to.equal('web');
+      expect(webpackConfig[0].mode).to.equal('development');
       expect(webpackConfig[0].entry).to.deep.equal({
         main: ['rendererScript.js'],
+      });
+      expect(webpackConfig[0].output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer'),
+        filename: '[name]/preload.js',
+        globalObject: 'self',
+        publicPath: '/',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).to.equal(2);
@@ -365,6 +421,34 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).to.equal(1);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
+    });
+
+    it('generates a production config with entryPoint preload', async () => {
+      const config = {
+        renderer: {
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+              },
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('web');
+      expect(webpackConfig[0].mode).to.equal('production');
+      expect(webpackConfig[0].entry).to.deep.equal({ main: ['preload.js'] });
+      expect(webpackConfig[0].output).to.deep.equal({
+        path: path.join(mockProjectDir, '.webpack', 'renderer'),
+        filename: '[name]/preload.js',
+        globalObject: 'self',
+      });
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      expect(webpackConfig[0].plugins!.length).to.equal(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).to.equal(true);
     });
 
@@ -417,11 +501,35 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].target).to.equal('web');
     });
 
+    it('prevents the preload target from being overridden', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [
+            {
+              name: 'main',
+              preload: {
+                js: 'preload.js',
+              },
+              nodeIntegration: true,
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig[0].target).to.equal('electron-preload');
+    });
+
     it('allows you to specify a preload webpack config', async () => {
       const config = {
         renderer: {
           config: {
             target: 'web',
+            name: 'renderer',
+            entry: 'renderer',
           },
           entryPoints: [
             {
