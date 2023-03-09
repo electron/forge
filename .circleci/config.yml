@@ -1,0 +1,128 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+  win: circleci/windows@5.0.0
+
+executors:
+  linux:
+    docker:
+      - image: cimg/base:stable
+  macos:
+    macos:
+      xcode: '13.4.0'
+    resource_class: macos.x86.medium.gen2
+  windows:
+    machine:
+      image: windows-server-2022-vs2022:stable
+      resource_class: windows.medium
+      shell: bash
+
+commands:
+  install:
+    parameters:
+      os:
+        type: executor
+    steps:
+      - run: git config --global core.autocrlf input
+      - when:
+          condition:
+            equal: [<< parameters.os >>, 'windows']
+          steps:
+            - node/install:
+                node-version: '8.19.4'
+            - run: nvm use 9.19.4
+      - when:
+          condition:
+            or:
+              - equal: [<< parameters.os >>, 'macos']
+              - equal: [<< parameters.os >>, 'linux']
+          steps:
+            - node/install:
+                node-version: '14.17.2'
+            - run: nvm use 14.17.2
+      - checkout
+      - restore_cache:
+          name: Restore Cached Dependencies
+          keys:
+            - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v1-dependencies{{ arch }}
+      - run: npm install --global yarn
+      - run: yarn install --frozen-lockfile
+      - save_cache:
+          name: Cache Installed Dependencies
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+
+jobs:
+  fast-tests:
+    parameters:
+      os:
+        type: executor
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.os >>
+    steps:
+      - install:
+          os: '<< parameters.os >>'
+      - run: yarn lint
+      - run: yarn syncpack
+      - run: yarn build
+      - run: yarn test:fast
+  slow-tests:
+    parameters:
+      os:
+        type: executor
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.os >>
+    steps:
+      - install:
+          os: '<< parameters.os >>'
+      - run: yarn lint
+      - when:
+          condition:
+            equal: ['windows', << parameters.os >>]
+          steps:
+            - run: echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
+            - run: npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
+      - when:
+          condition:
+            equal: ['linux', << parameters.os >>]
+          steps:
+            - run: sudo add-apt-repository -y ppa:alexlarsson/flatpak
+            - run: sudo rm /etc/apt/sources.list.d/bazel.list
+            - run: sudo rm /etc/apt/sources.list.d/mongo*.list
+            - run: grep -l opensuse /etc/apt/sources.list.d/* | xargs sudo rm
+            - run: sudo apt-get update
+            - run: sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
+            - run: ci/install_runtimes.sh
+      - run: yarn build
+      - run: yarn test:slow
+
+workflows:
+  tests:
+    jobs:
+      - fast-tests:
+          matrix:
+            parameters:
+              os: [windows, linux, macos]
+              arch: [x64, arm64]
+            exclude:
+              - os: windows
+                arch: arm64
+              - os: linux
+                arch: arm64
+      - slow-tests:
+          matrix:
+            parameters:
+              os: [windows, linux, macos]
+              arch: [x64, arm64]
+            exclude:
+              - os: windows
+                arch: arm64
+              - os: linux
+                arch: arm64
