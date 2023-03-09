@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap } from '@electron-forge/shared-types';
+import { ForgeMultiHookMap, ForgePlatform } from '@electron-forge/shared-types';
 import { flipFuses, FuseConfig } from '@electron/fuses';
 
 import { getElectronExecutablePath } from './util/getElectronExecutablePath';
@@ -22,9 +22,11 @@ export default class FusesPlugin extends PluginBase<FuseConfig> {
       packageAfterCopy: namedHookWithTaskFn<'packageAfterCopy'>(async (listrTask, resolvedForgeConfig, resourcesPath, electronVersion, platform, arch) => {
         const { fusesConfig } = this;
 
+        const applePlatforms: ForgePlatform[] = ['darwin', 'mas'];
+
         if (Object.keys(fusesConfig).length) {
           const pathToElectronExecutable = getElectronExecutablePath({
-            appName: ['darwin', 'mas'].includes(platform) ? 'Electron' : 'electron',
+            appName: applePlatforms.includes(platform) ? 'Electron' : 'electron',
             basePath: path.resolve(resourcesPath, '../..'),
             platform,
           });
@@ -33,7 +35,7 @@ export default class FusesPlugin extends PluginBase<FuseConfig> {
           const hasOSXSignConfig = (typeof osxSignConfig === 'object' && Boolean(Object.keys(osxSignConfig).length)) || Boolean(osxSignConfig);
 
           await flipFuses(pathToElectronExecutable, {
-            resetAdHocDarwinSignature: !hasOSXSignConfig && platform === 'darwin' && arch === 'arm64',
+            resetAdHocDarwinSignature: !hasOSXSignConfig && applePlatforms.includes(platform) && arch === 'arm64',
             ...this.fusesConfig,
           });
         }
