@@ -55,7 +55,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async () => {
           this.isProd = true;
-          await fs.rmdir(this.baseDir, { recursive: true });
+          await fs.rm(this.baseDir, { recursive: true, force: true });
 
           await Promise.all([this.build(), this.buildRenderer()]);
         }, 'Building vite bundles'),
@@ -67,12 +67,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     if (VitePlugin.alreadyStarted) return false;
     VitePlugin.alreadyStarted = true;
 
-    try {
-      // Node.js v16+ must check in advance if the directory exists, while v14 works fine
-      await fs.access(this.baseDir);
-      await fs.rmdir(this.baseDir, { recursive: true });
-      // eslint-disable-next-line no-empty
-    } catch {}
+    await fs.rm(this.baseDir, { recursive: true, force: true });
 
     return {
       tasks: [
