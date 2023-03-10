@@ -5,7 +5,7 @@ This plugin allows flipping [Electron Fuses](https://github.com/electron/fuses) 
 
 ## Usage
 
-Install `@electron-forge/plugin-fuses` and `@electron/fuses` as dev dependencies and add this plugin to the `plugins` array in your Forge configuration::
+Install `@electron-forge/plugin-fuses` and `@electron/fuses` as dev dependencies and add this plugin to the `plugins` array in your Forge configuration:
 ```shell
 # Yarn
 yarn add --dev @electron-forge/plugin-fuses @electron/fuses
