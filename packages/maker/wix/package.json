@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-wix",
-  "version": "6.0.5",
+  "version": "6.1.0",
   "description": "Wix maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.5",
-    "@electron-forge/shared-types": "6.0.5",
+    "@electron-forge/maker-base": "6.1.0",
+    "@electron-forge/shared-types": "6.1.0",
     "chalk": "^4.0.0",
     "electron-wix-msi": "^5.0.0",
     "log-symbols": "^4.0.0",
