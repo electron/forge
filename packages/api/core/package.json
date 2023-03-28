@@ -48,6 +48,7 @@
     "@electron-forge/template-base": "6.1.0",
     "@electron-forge/template-webpack": "6.1.0",
     "@electron-forge/template-webpack-typescript": "6.1.0",
+    "@electron-forge/template-vite": "6.1.0",
     "@electron/get": "^2.0.0",
     "@electron/rebuild": "^3.2.10",
     "@malept/cross-spawn-promise": "^2.0.0",
