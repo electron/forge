@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import http from 'node:http';
+import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
@@ -72,21 +73,22 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     return {
       tasks: [
         {
-          title: 'Compiling main process code',
-          task: async () => {
-            await this.build(true);
-          },
-          options: {
-            showTimer: true,
-          },
-        },
-        {
           title: 'Launching dev servers for renderer process code',
           task: async () => {
             await this.launchRendererDevServers();
           },
           options: {
             persistentOutput: true,
+            showTimer: true,
+          },
+        },
+        // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
+        {
+          title: 'Compiling main process code',
+          task: async () => {
+            await this.build(true);
+          },
+          options: {
             showTimer: true,
           },
         },
@@ -132,6 +134,15 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
       if (viteDevServer.httpServer) {
         this.servers.push(viteDevServer.httpServer);
+
+        // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
+        const addressInfo = viteDevServer.httpServer.address();
+        const isAddressInfo = (x: any): x is AddressInfo => x?.address;
+
+        if (isAddressInfo(addressInfo)) {
+          userConfig.server ??= {};
+          userConfig.server.port = addressInfo.port;
+        }
       }
     }
   };

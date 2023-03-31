@@ -1,18 +1,43 @@
+import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
 import { expect } from 'chai';
-import { UserConfig } from 'vite';
+import { UserConfig, default as vite, ViteDevServer } from 'vite';
 
 import { VitePluginConfig } from '../src/Config';
 import ViteConfigGenerator from '../src/ViteConfig';
 
 describe('ViteConfigGenerator', () => {
-  it('getDefines', async () => {
+  it('is `getDefines` will be gets auto-updated `server.port`', async () => {
     const config = {
       renderer: [{ name: 'foo_window' }, { name: 'bar_window' }],
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
+    const servers: ViteDevServer[] = [];
+
+    for (const userConfig of await generator.getRendererConfig()) {
+      const viteDevServer = await vite.createServer({
+        configFile: false,
+        ...userConfig,
+      });
+
+      await viteDevServer.listen();
+      viteDevServer.printUrls();
+      servers.push(viteDevServer);
+
+      // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
+      const addressInfo = viteDevServer.httpServer!.address() as AddressInfo;
+      userConfig.server ??= {};
+      userConfig.server.port = addressInfo.port;
+    }
+
     const define = await generator.getDefines();
+
+    for (const server of servers) {
+      server.close();
+    }
+    servers.length = 0;
+
     expect(define.FOO_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5173"');
     expect(define.FOO_WINDOW_VITE_NAME).equal('"foo_window"');
     expect(define.BAR_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5174"');
@@ -51,7 +76,6 @@ describe('ViteConfigGenerator', () => {
       renderer: [{ name: 'foo_window' }, { name: 'bar_window' }],
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
-    let port = 5173;
     const configs = await generator.getRendererConfig();
     for (const [index, rendererConfig] of configs.entries()) {
       expect(rendererConfig).deep.equal({
@@ -61,9 +85,6 @@ describe('ViteConfigGenerator', () => {
           outDir: path.join('.vite', 'renderer', config.renderer[index].name),
         },
         clearScreen: false,
-        server: {
-          port: port++,
-        },
       } as UserConfig);
     }
   });
