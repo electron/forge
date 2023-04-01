@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import http from 'node:http';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
@@ -31,7 +30,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private watchers: RollupWatcher[] = [];
 
-  private servers: http.Server[] = [];
+  private servers: vite.ViteDevServer[] = [];
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -131,7 +130,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       viteDevServer.printUrls();
 
       if (viteDevServer.httpServer) {
-        this.servers.push(viteDevServer.httpServer);
+        this.servers.push(viteDevServer);
       }
     }
   };
