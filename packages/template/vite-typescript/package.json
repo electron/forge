@@ -18,13 +18,13 @@
     "node": "^14.18.0 || >=16.0.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "6.0.5",
-    "@electron-forge/template-base": "6.0.5",
+    "@electron-forge/shared-types": "6.1.0",
+    "@electron-forge/template-base": "6.1.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/core-utils": "6.0.5",
-    "@electron-forge/test-utils": "6.0.5",
+    "@electron-forge/core-utils": "6.1.0",
+    "@electron-forge/test-utils": "6.1.0",
     "chai": "^4.3.3",
     "fast-glob": "^3.2.7"
   }

@@ -1,8 +1,8 @@
 {
   "devDependencies": {
+    "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "electron-forge-plugin-vite": "latest",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
     "ts-node": "^10.0.0",
