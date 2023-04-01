@@ -15,20 +15,23 @@ describe('ViteConfigGenerator', () => {
     const generator = new ViteConfigGenerator(config, '', false);
     const servers: ViteDevServer[] = [];
 
-    for (const userConfig of await generator.getRendererConfig()) {
+    for (const { vite: viteConfig } of await generator.getRendererConfig()) {
       const viteDevServer = await vite.createServer({
         configFile: false,
-        ...userConfig,
+        optimizeDeps: {
+          disabled: true,
+        },
+        ...viteConfig,
       });
 
       await viteDevServer.listen();
-      viteDevServer.printUrls();
+      // viteDevServer.printUrls();
       servers.push(viteDevServer);
 
       // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
       const addressInfo = viteDevServer.httpServer!.address() as AddressInfo;
-      userConfig.server ??= {};
-      userConfig.server.port = addressInfo.port;
+      viteConfig.server ??= {};
+      viteConfig.server.port = addressInfo.port;
     }
 
     const define = await generator.getDefines();
@@ -50,15 +53,15 @@ describe('ViteConfigGenerator', () => {
       renderer: [],
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', true);
-    const buildConfig = (await generator.getBuildConfig())[0];
-    expect(buildConfig).deep.equal({
+    const { vite: viteConfig } = (await generator.getBuildConfig())[0];
+    expect(viteConfig).deep.equal({
       mode: 'production',
       build: {
         lib: {
           entry: 'foo.js',
           formats: ['cjs'],
           // shims
-          fileName: (buildConfig.build?.lib as any)?.fileName,
+          fileName: (viteConfig.build?.lib as any)?.fileName,
         },
         emptyOutDir: false,
         outDir: path.join('.vite', 'build'),
@@ -67,7 +70,7 @@ describe('ViteConfigGenerator', () => {
       clearScreen: false,
       define: {},
       // shims
-      plugins: [buildConfig.plugins?.[0]],
+      plugins: viteConfig.plugins,
     } as UserConfig);
   });
 
@@ -77,8 +80,8 @@ describe('ViteConfigGenerator', () => {
     } as VitePluginConfig;
     const generator = new ViteConfigGenerator(config, '', false);
     const configs = await generator.getRendererConfig();
-    for (const [index, rendererConfig] of configs.entries()) {
-      expect(rendererConfig).deep.equal({
+    for (const [index, { vite: viteConfig }] of configs.entries()) {
+      expect(viteConfig).deep.equal({
         mode: 'development',
         base: './',
         build: {

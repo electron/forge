@@ -3,7 +3,7 @@ import path from 'node:path';
 import debug from 'debug';
 import { ConfigEnv, loadConfigFromFile, mergeConfig, UserConfig } from 'vite';
 
-import { VitePluginConfig } from './Config';
+import { VitePluginBuildConfig, VitePluginConfig, VitePluginRendererConfig } from './Config';
 import { externalBuiltins } from './util/plugins';
 
 const d = debug('electron-forge:plugin:vite:viteconfig');
@@ -14,10 +14,20 @@ const d = debug('electron-forge:plugin:vite:viteconfig');
  */
 export type LoadResult = Awaited<ReturnType<typeof loadConfigFromFile>>;
 
+export interface BuildConfig {
+  config: VitePluginBuildConfig;
+  vite: UserConfig;
+}
+
+export interface RendererConfig {
+  config: VitePluginRendererConfig;
+  vite: UserConfig;
+}
+
 export default class ViteConfigGenerator {
   private readonly baseDir: string;
 
-  private rendererConfigCache!: Promise<UserConfig>[];
+  private rendererConfigCache!: Promise<RendererConfig>[];
 
   constructor(private readonly pluginConfig: VitePluginConfig, private readonly projectDir: string, private readonly isProd: boolean) {
     this.baseDir = path.join(projectDir, '.vite');
@@ -43,20 +53,21 @@ export default class ViteConfigGenerator {
   async getDefines(): Promise<Record<string, string>> {
     const defines: Record<string, any> = {};
     const rendererConfigs = await this.getRendererConfig();
-    for (const [index, userConfig] of rendererConfigs.entries()) {
+    for (const [index, { vite: viteConfig }] of rendererConfigs.entries()) {
       const name = this.pluginConfig.renderer[index].name;
       if (!name) {
         continue;
       }
       const NAME = name.toUpperCase().replace(/ /g, '_');
+      // 🎯-①:
       // `server.port` is set in `launchRendererDevServers` in `VitePlugin.ts`.
-      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd ? undefined : JSON.stringify(`http://localhost:${userConfig?.server?.port}`);
+      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd ? undefined : JSON.stringify(`http://localhost:${viteConfig?.server?.port}`);
       defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
     }
     return defines;
   }
 
-  async getBuildConfig(watch = false): Promise<UserConfig[]> {
+  async getBuildConfig(watch = false): Promise<BuildConfig[]> {
     if (!Array.isArray(this.pluginConfig.build)) {
       throw new Error('"config.build" must be an Array');
     }
@@ -65,8 +76,9 @@ export default class ViteConfigGenerator {
     const plugins = [externalBuiltins()];
     const configs = this.pluginConfig.build
       .filter(({ entry, config }) => entry || config)
-      .map<Promise<UserConfig>>(async ({ entry, config }) => {
-        const defaultConfig: UserConfig = {
+      .map<Promise<BuildConfig>>(async (buildConfig) => {
+        const { entry, config } = buildConfig;
+        let viteConfig: UserConfig = {
           // Ensure that each build config loads the .env file correctly.
           mode: this.mode,
           build: {
@@ -90,21 +102,25 @@ export default class ViteConfigGenerator {
         };
         if (config) {
           const loadResult = await this.resolveConfig(config);
-          return mergeConfig(defaultConfig, loadResult?.config ?? {});
+          viteConfig = mergeConfig(viteConfig, loadResult?.config ?? {});
         }
-        return defaultConfig;
+        return {
+          config: buildConfig,
+          vite: viteConfig,
+        };
       });
 
     return await Promise.all(configs);
   }
 
-  async getRendererConfig(): Promise<UserConfig[]> {
+  async getRendererConfig(): Promise<RendererConfig[]> {
     if (!Array.isArray(this.pluginConfig.renderer)) {
       throw new Error('"config.renderer" must be an Array');
     }
 
-    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
-      const defaultConfig: UserConfig = {
+    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async (rendererConfig) => {
+      const { name, config } = rendererConfig;
+      let viteConfig: UserConfig = {
         // Ensure that each build config loads the .env file correctly.
         mode: this.mode,
         // Make sure that Electron can be loaded into the local file using `loadFile` after packaging.
@@ -115,7 +131,12 @@ export default class ViteConfigGenerator {
         clearScreen: false,
       };
       const loadResult = (await this.resolveConfig(config)) ?? { path: '', config: {}, dependencies: [] };
-      return mergeConfig(defaultConfig, loadResult.config);
+      viteConfig = mergeConfig(viteConfig, loadResult.config);
+
+      return {
+        config: rendererConfig,
+        vite: viteConfig,
+      };
     }));
 
     return await Promise.all(configs);

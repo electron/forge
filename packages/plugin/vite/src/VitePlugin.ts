@@ -9,10 +9,19 @@ import debug from 'debug';
 import { RollupWatcher } from 'rollup';
 import { default as vite } from 'vite';
 
-import { VitePluginConfig } from './Config';
+import { VitePluginConfig, VitePluginRendererConfig } from './Config';
+import { hotRestart } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 const d = debug('electron-forge:plugin:vite');
+
+// 🎯-②:
+// Make sure the `server` is bound to the `renderer` in forge.config.ts,
+// It's used to refresh the Renderer process, which one can be determined according to `config`.
+export interface RendererConfigWithServer {
+  config: VitePluginRendererConfig;
+  server: vite.ViteDevServer;
+}
 
 export default class VitePlugin extends PluginBase<VitePluginConfig> {
   private static alreadyStarted = false;
@@ -31,7 +40,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private watchers: RollupWatcher[] = [];
 
-  private servers: vite.ViteDevServer[] = [];
+  public renderers: RendererConfigWithServer[] = [];
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -105,26 +114,27 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (watch = false): Promise<void> => {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
     await Promise.all(
       (
         await this.configGenerator.getBuildConfig(watch)
-      ).map((userConfig) => {
+      ).map(({ config, vite: viteConfig }) => {
         return new Promise<void>((resolve, reject) => {
           vite
             .build({
               // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
               configFile: false,
-              ...userConfig,
+              ...viteConfig,
               plugins: [
                 {
                   name: '@electron-forge/plugin-vite:start',
                   closeBundle() {
                     resolve();
-
-                    // TODO: implement hot-restart here
                   },
                 },
-                ...(userConfig.plugins ?? []),
+                ...(this.isProd ? [hotRestart(config, that)] : []),
+                ...(viteConfig.plugins ?? []),
               ],
             })
             .then((result) => {
@@ -144,34 +154,38 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Renderer process
   buildRenderer = async (): Promise<void> => {
-    for (const userConfig of await this.configGenerator.getRendererConfig()) {
+    for (const { vite: viteConfig } of await this.configGenerator.getRendererConfig()) {
       await vite.build({
         configFile: false,
-        ...userConfig,
+        ...viteConfig,
       });
     }
   };
 
   launchRendererDevServers = async (): Promise<void> => {
-    for (const userConfig of await this.configGenerator.getRendererConfig()) {
+    for (const { config, vite: viteConfig } of await this.configGenerator.getRendererConfig()) {
       const viteDevServer = await vite.createServer({
         configFile: false,
-        ...userConfig,
+        ...viteConfig,
       });
 
       await viteDevServer.listen();
       viteDevServer.printUrls();
 
-      this.servers.push(viteDevServer);
+      this.renderers.push({
+        config,
+        server: viteDevServer,
+      });
 
       if (viteDevServer.httpServer) {
+        // 🎯-①:
         // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
         const addressInfo = viteDevServer.httpServer.address();
         const isAddressInfo = (x: any): x is AddressInfo => x?.address;
 
         if (isAddressInfo(addressInfo)) {
-          userConfig.server ??= {};
-          userConfig.server.port = addressInfo.port;
+          viteConfig.server ??= {};
+          viteConfig.server.port = addressInfo.port;
         }
       }
     }
@@ -186,11 +200,11 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       }
       this.watchers = [];
 
-      for (const server of this.servers) {
+      for (const renderer of this.renderers) {
         d('cleaning http server');
-        server.close();
+        renderer.server.close();
       }
-      this.servers = [];
+      this.renderers = [];
     }
     if (err) console.error(err.stack);
     // Why: This is literally what the option says to do.
