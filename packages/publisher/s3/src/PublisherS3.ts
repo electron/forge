@@ -57,6 +57,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         d('uploading:', artifact.path);
         const uploader = new Upload({
           client: s3Client,
+          leavePartsOnError: true,
           params: {
             Body: fs.createReadStream(artifact.path),
             Bucket: this.config.bucket,
