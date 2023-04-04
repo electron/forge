@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import http from 'node:http';
 import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
@@ -32,7 +31,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private watchers: RollupWatcher[] = [];
 
-  private servers: http.Server[] = [];
+  private servers: vite.ViteDevServer[] = [];
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -132,9 +131,9 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       await viteDevServer.listen();
       viteDevServer.printUrls();
 
-      if (viteDevServer.httpServer) {
-        this.servers.push(viteDevServer.httpServer);
+      this.servers.push(viteDevServer);
 
+      if (viteDevServer.httpServer) {
         // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
         const addressInfo = viteDevServer.httpServer.address();
         const isAddressInfo = (x: any): x is AddressInfo => x?.address;
