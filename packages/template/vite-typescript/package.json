@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-vite-typescript",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Vite-TypeScript template for Electron Forge, gets you started with Vite really quickly",
   "repository": {
     "type": "git",
@@ -18,13 +18,13 @@
     "node": "^14.18.0 || >=16.0.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "6.1.0",
-    "@electron-forge/template-base": "6.1.0",
+    "@electron-forge/shared-types": "6.1.1",
+    "@electron-forge/template-base": "6.1.1",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/core-utils": "6.1.0",
-    "@electron-forge/test-utils": "6.1.0",
+    "@electron-forge/core-utils": "6.1.1",
+    "@electron-forge/test-utils": "6.1.1",
     "chai": "^4.3.3",
     "fast-glob": "^3.2.7"
   }
