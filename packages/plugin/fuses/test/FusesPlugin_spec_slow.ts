@@ -16,7 +16,7 @@ describe('FusesPlugin', () => {
   };
 
   const packageJSON = JSON.parse(
-    fs.readFileSync(path.join(appPath, 'package.json'), {
+    fs.readFileSync(path.join(appPath, 'package.json.tmpl'), {
       encoding: 'utf-8',
     })
   );
@@ -30,6 +30,7 @@ describe('FusesPlugin', () => {
 
   before(async () => {
     delete process.env.TS_NODE_PROJECT;
+    await fs.promises.copyFile(path.join(appPath, 'package.json.tmpl'), path.join(appPath, 'package.json'));
     await spawn('yarn', ['install'], spawnOptions);
   });
 
