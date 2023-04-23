@@ -20,7 +20,7 @@ const d = debug('electron-forge:init:link');
 export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
   const shouldLink = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
   if (shouldLink) {
-    d('linking forge dependencies');
+    d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
     const packageManager = safeYarnOrNpm();
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
@@ -33,6 +33,6 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
       }
     }
   } else {
-    d('process.env.LINK_FORGE_DEPENDENCIES_ON_INIT is falsy. Skipping.');
+    d('LINK_FORGE_DEPENDENCIES_ON_INIT is falsy. Skipping.');
   }
 }

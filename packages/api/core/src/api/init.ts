@@ -134,7 +134,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
                       exitOnError: false,
                     },
                     {
-                      title: 'Maybe linking forge dependencies',
+                      title: process.env.LINK_FORGE_DEPENDENCIES_ON_INIT ? 'Linking forge dependencies' : 'Skip linking forge dependencies',
                       task: async (_, task) => {
                         await initLink(dir, task);
                       },
