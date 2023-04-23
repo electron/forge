@@ -18,6 +18,7 @@
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- yarn link --silent --no-bin-links --link-folder ../../../.links",
+    "link:remove": "lerna exec -- yarn unlink --silent --no-bin-links --link-folder ../../../.links",
     "test": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:fast": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "test:slow": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_SLOW_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
