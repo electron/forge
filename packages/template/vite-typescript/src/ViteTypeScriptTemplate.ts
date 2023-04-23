@@ -19,8 +19,10 @@ class ViteTypeScriptTemplate extends BaseTemplate {
         },
       },
       {
-        title: 'Setting up Vite configuration',
+        title: 'Preparing TypeScript files and configuration',
         task: async () => {
+          const filePath = (fileName: string) => path.join(directory, 'src', fileName);
+
           // Copy Vite files
           await this.copyTemplateFile(directory, 'vite.main.config.ts');
           await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
@@ -32,31 +34,33 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           // Copy eslint config with recommended settings
           await this.copyTemplateFile(directory, '.eslintrc.json');
 
-          // Remove index.js and replace with index.ts
-          await fs.remove(path.join(directory, 'src', 'index.js'));
+          // Remove index.js and replace with main.ts
+          await fs.remove(filePath('index.js'));
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
 
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
           await this.copyTemplateFile(path.join(directory, 'src'), 'types.d.ts');
 
           // Remove preload.js and replace with preload.ts
-          await fs.remove(path.join(directory, 'src', 'preload.js'));
+          await fs.remove(filePath('preload.js'));
           await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          fs.moveSync(path.join(directory, 'src', 'index.html'), path.join(directory, 'index.html'));
+          fs.moveSync(filePath('index.html'), path.join(directory, 'index.html'));
           await this.updateFileByLine(path.join(directory, 'index.html'), (line) => {
             if (line.includes('link rel="stylesheet"')) return '';
             if (line.includes('</body>')) return '    <script type="module" src="/src/renderer.ts"></script>\n  </body>';
             return line;
           });
 
-          // update package.json entry point
-          const pjPath = path.resolve(directory, 'package.json');
-          const currentPJ = await fs.readJson(pjPath);
-          currentPJ.main = '.vite/build/main.js';
-          await fs.writeJson(pjPath, currentPJ, {
+          // update package.json
+          const packageJSONPath = path.resolve(directory, 'package.json');
+          const packageJSON = await fs.readJson(packageJSONPath);
+          packageJSON.main = '.vite/build/main.js';
+          // Configure scripts for TS template
+          packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
+          await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });
         },
