@@ -51,7 +51,7 @@ yarn link:prepare
 
 Then, you want to initialize a new project with the `electron-forge init` command (which is the
 underlying CLI command for `create-electron-app`). To use the symlinks you created in the last step,
-pass in the `LINK_FORGE_DEPENDENCIES_ON_INIT` environment variable.
+pass in the `LINK_FORGE_DEPENDENCIES_ON_INIT=1` environment variable.
 
 You can choose to run this command via your local build as shown below or run the production init
 for versions 6.0.1 and up.
