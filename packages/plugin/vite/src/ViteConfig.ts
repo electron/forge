@@ -49,11 +49,8 @@ export default class ViteConfigGenerator {
         continue;
       }
       const NAME = name.toUpperCase().replace(/ /g, '_');
-      // There is no guarantee that `port` will always be available, because it may auto increment.
-      // https://github.com/vitejs/vite/blob/v4.0.4/packages/vite/src/node/http.ts#L170
-      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd
-        ? undefined
-        : userConfig?.server?.port && JSON.stringify(`http://localhost:${userConfig.server.port}`);
+      // `server.port` is set in `launchRendererDevServers` in `VitePlugin.ts`.
+      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd ? undefined : JSON.stringify(`http://localhost:${userConfig?.server?.port}`);
       defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
     }
     return defines;
@@ -106,7 +103,6 @@ export default class ViteConfigGenerator {
       throw new Error('"config.renderer" must be an Array');
     }
 
-    let port = 5173;
     const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
       const defaultConfig: UserConfig = {
         // Ensure that each build config loads the .env file correctly.
@@ -119,8 +115,6 @@ export default class ViteConfigGenerator {
         clearScreen: false,
       };
       const loadResult = (await this.resolveConfig(config)) ?? { path: '', config: {}, dependencies: [] };
-      loadResult.config.server ??= {};
-      loadResult.config.server.port ??= port++;
       return mergeConfig(defaultConfig, loadResult.config);
     }));
 
