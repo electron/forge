@@ -7,11 +7,13 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
+import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
 describe('ViteTypeScriptTemplate', () => {
   let dir: string;
 
   before(async () => {
+    await yarnOrNpmSpawn(['link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -74,6 +76,11 @@ describe('ViteTypeScriptTemplate', () => {
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
+
+      // Installing deps removes symlinks that were added at the start of this
+      // spec via `api.init`. So we should re-link local forge dependencies
+      // again.
+      await initLink(dir);
     });
 
     after(() => {
@@ -89,6 +96,9 @@ describe('ViteTypeScriptTemplate', () => {
   });
 
   after(async () => {
-    await fs.remove(dir);
+    await yarnOrNpmSpawn(['link:remove']);
+    // TODO: use `await fs.remove(dir);`
+    // Error: EBUSY: resource busy or locked, rmdir 'C:\Users\RUNNER~1\AppData\Local\Temp\electron-forge-test-1682230899228'
+    fs.rmSync(dir, { recursive: true }); // fix CI with sync-api, Windows like it? 🤔
   });
 });
