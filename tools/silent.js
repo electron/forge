@@ -4,7 +4,7 @@
  * It does not silence errors.
  */
 
-import { spawn } from '@malept/cross-spawn-promise';
+const { spawn } = require('@malept/cross-spawn-promise');
 
 const [cmd, ...args] = process.argv.slice(2);
 
