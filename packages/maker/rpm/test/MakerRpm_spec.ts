@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, ForgeArch } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
@@ -29,7 +29,7 @@ describe('MakerRpm', () => {
   const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
   const targetArch = process.arch;
-  const packageJSON = { version: '1.2.3' };
+  const packageJSON: ForgeAppPackageJSON = { name: 'foo', version: '1.2.3' };
 
   beforeEach(() => {
     ensureDirectoryStub = stub().returns(Promise.resolve());

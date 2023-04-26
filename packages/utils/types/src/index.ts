@@ -33,8 +33,7 @@ export interface ForgeSimpleHookSignatures {
 export interface ForgeMutatingHookSignatures {
   postMake: [makeResults: ForgeMakeResult[]];
   resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readPackageJson: [packageJson: Record<string, any>];
+  readPackageJson: [packageJson: PackageJSON];
 }
 
 export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHookSignatures);
@@ -105,7 +104,7 @@ export interface ForgeMakeResult {
   /**
    * The state of the package.json file when the make happened
    */
-  packageJSON: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  packageJSON: ForgeAppPackageJSON;
   /**
    * The platform this make run was for
    */
@@ -217,3 +216,30 @@ export type PackagePerson =
       email?: string;
       url?: string;
     };
+
+export type PackageJSON = Record<string, unknown> & {
+  author?: PackagePerson;
+  name: string;
+  description?: string;
+  version?: string;
+  main?: string;
+  engines?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  dependencies?: Record<string, string>;
+  scripts?: Record<string, string>;
+  productName?: string;
+};
+
+export type ForgeAppPackageJSON = PackageJSON & {
+  version: string;
+  config?: {
+    forge?: ForgeConfig;
+  };
+};
+
+export type ElectronForgePackageJSON = PackageJSON & {
+  version: string;
+  engines: {
+    node: string;
+  };
+};

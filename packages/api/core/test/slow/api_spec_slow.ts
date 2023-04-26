@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import path from 'path';
 
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
-import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import { readMetadata } from 'electron-installer-common';
@@ -21,15 +21,9 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
 }).api;
 
 type BeforeInitFunction = () => void;
-type PackageJSON = Record<string, unknown> & {
-  config: {
-    forge: ForgeConfig;
-  };
-  dependencies: Record<string, string>;
-};
 
-async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>) {
-  const packageJSON = await readRawPackageJson(dir);
+async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: ForgeAppPackageJSON) => Promise<void>) {
+  const packageJSON = (await readRawPackageJson(dir)) as ForgeAppPackageJSON;
   await packageJSONUpdater(packageJSON);
   await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 }
@@ -257,12 +251,12 @@ describe('Electron Forge API', () => {
 
     it('throws an error when all is set', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
-        assert(packageJSON.config.forge.packagerConfig);
+        assert(packageJSON.config?.forge?.packagerConfig);
         packageJSON.config.forge.packagerConfig.all = true;
       });
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
       await updatePackageJSON(dir, async (packageJSON) => {
-        assert(packageJSON.config.forge.packagerConfig);
+        assert(packageJSON.config?.forge?.packagerConfig);
         delete packageJSON.config.forge.packagerConfig.all;
       });
     });
@@ -279,6 +273,7 @@ describe('Electron Forge API', () => {
 
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config?.forge);
         // eslint-disable-next-line node/no-missing-require
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
@@ -305,14 +300,14 @@ describe('Electron Forge API', () => {
       after(async () => {
         await fs.remove(path.resolve(dir, 'node_modules/ref-napi'));
         await updatePackageJSON(dir, async (packageJSON) => {
-          delete packageJSON.dependencies['ref-napi'];
+          delete packageJSON.dependencies?.['ref-napi'];
         });
       });
     });
 
     it('can package without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
-        assert(packageJSON.config.forge.packagerConfig);
+        assert(packageJSON.config?.forge?.packagerConfig);
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 
@@ -385,6 +380,7 @@ describe('Electron Forge API', () => {
         describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
           before(async () => {
             await updatePackageJSON(dir, async (packageJSON) => {
+              assert(packageJSON.config?.forge);
               packageJSON.config.forge.makers = [target() as IForgeResolvableMaker];
             });
           });

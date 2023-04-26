@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { getElectronVersion } from '@electron-forge/core-utils';
+import { ForgeAppPackageJSON } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
@@ -22,7 +23,7 @@ export default async (dir: string): Promise<string | null> => {
     const testPath = path.resolve(mDir, 'package.json');
     d('searching for project in:', mDir);
     if (await fs.pathExists(testPath)) {
-      const packageJSON = await readRawPackageJson(mDir);
+      const packageJSON = (await readRawPackageJson(mDir)) as ForgeAppPackageJSON;
 
       // TODO: Move this check to inside the forge config resolver and use
       //       mutatedPackageJson reader
@@ -34,7 +35,7 @@ export default async (dir: string): Promise<string | null> => {
         }
       }
 
-      if (packageJSON.config && packageJSON.config.forge) {
+      if (packageJSON.config?.forge) {
         d('electron-forge compatible package.json found in', testPath);
         return mDir;
       }

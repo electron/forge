@@ -52,6 +52,7 @@ describe('PublisherERS', () => {
         {
           artifacts: ['/path/to/artifact'],
           packageJSON: {
+            name: 'foo',
             version,
           },
           platform: 'linux',
@@ -99,6 +100,7 @@ describe('PublisherERS', () => {
         {
           artifacts: ['/path/to/artifact'],
           packageJSON: {
+            name: 'foo',
             version,
           },
           platform: 'linux',
@@ -139,6 +141,7 @@ describe('PublisherERS', () => {
         {
           artifacts: ['/path/to/existing-artifact'],
           packageJSON: {
+            name: 'foo',
             version,
           },
           platform: 'linux',
@@ -178,6 +181,7 @@ describe('PublisherERS', () => {
         {
           artifacts: ['/path/to/artifact'],
           packageJSON: {
+            name: 'foo',
             version,
           },
           platform: 'linux',

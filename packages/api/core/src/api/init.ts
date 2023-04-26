@@ -45,7 +45,7 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
   }
 
   const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
-  if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
+  if (!forgeVersion || !semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
     throw new Error(
       `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`
     );

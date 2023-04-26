@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { PackageJSON } from '@electron-forge/shared-types';
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
@@ -67,8 +68,7 @@ describe('WebpackTypeScriptTemplate', () => {
       // typescript type-resolution.  In prod no one has to worry about things like this
       const pj = await fs.readJson(path.resolve(dir, 'package.json'));
       pj.resolutions = {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
+        webpack: `${(fs.readJsonSync(path.join(__dirname, '../../../../node_modules/webpack/package.json')) as PackageJSON).version}`,
       };
       await fs.writeJson(path.resolve(dir, 'package.json'), pj);
       await yarnOrNpmSpawn(['install'], {

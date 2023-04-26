@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 
 import { siblingDep } from '../api/init-scripts/init-npm';
 
@@ -32,13 +32,6 @@ type Forge5Config = {
 };
 
 type Forge5ConfigKey = keyof Forge5Config;
-
-type ForgePackageJSON = Record<string, unknown> & {
-  config: {
-    forge: ForgeConfig;
-  };
-  devDependencies: Record<string, string>;
-};
 
 function mapMakeTargets(forge5Config: Forge5Config): Map<string, ForgePlatform[]> {
   const makeTargets = new Map<string, ForgePlatform[]>();
@@ -160,15 +153,15 @@ export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeCon
   return forgeConfig;
 }
 
-export function updateUpgradedForgeDevDeps(packageJSON: ForgePackageJSON, devDeps: string[]): string[] {
-  const forgeConfig = packageJSON.config.forge;
+export function updateUpgradedForgeDevDeps(packageJSON: ForgeAppPackageJSON, devDeps: string[]): string[] {
+  const forgeConfig = packageJSON.config?.forge;
   devDeps = devDeps.filter((dep) => !dep.startsWith('@electron-forge/maker-'));
-  devDeps = devDeps.concat((forgeConfig.makers as IForgeResolvableMaker[]).map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
+  devDeps = devDeps.concat((forgeConfig?.makers as IForgeResolvableMaker[]).map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
   devDeps = devDeps.concat(
-    (forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
+    (forgeConfig?.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
   );
 
-  if (Object.keys(packageJSON.devDependencies).find((dep: string) => dep === 'electron-prebuilt-compile')) {
+  if (Object.keys(packageJSON.devDependencies ?? {}).find((dep: string) => dep === 'electron-prebuilt-compile')) {
     devDeps = devDeps.concat(siblingDep('plugin-compile'));
   }
 

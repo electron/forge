@@ -1,7 +1,8 @@
 import path from 'path';
 
-import { ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { PackageJSON, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
+import fs from 'fs-extra';
 
 import { readMutatedPackageJson, readRawPackageJson } from '../../src/util/read-package-json';
 
@@ -16,7 +17,9 @@ const emptyForgeConfig: Partial<ResolvedForgeConfig> = {
 describe('read-package-json', () => {
   describe('readRawPackageJson', () => {
     it('should find a package.json file from the given directory', async () => {
-      expect(await readRawPackageJson(path.resolve(__dirname, '../..'))).to.deep.equal(require('../../package.json'));
+      expect(await readRawPackageJson(path.resolve(__dirname, '../..'))).to.deep.equal(
+        fs.readJsonSync(path.join(__dirname, '../../package.json')) as PackageJSON
+      );
     });
   });
 
@@ -33,7 +36,7 @@ describe('read-package-json', () => {
             getHookListrTasks: () => Promise.resolve([]),
           },
         } as ResolvedForgeConfig)
-      ).to.deep.equal(require('../../package.json'));
+      ).to.deep.equal(fs.readJsonSync(path.join(__dirname, '../../package.json')) as PackageJSON);
     });
 
     it('should allow mutations from hooks', async () => {

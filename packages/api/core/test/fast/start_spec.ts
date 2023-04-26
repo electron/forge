@@ -1,5 +1,8 @@
-import { ElectronProcess } from '@electron-forge/shared-types';
+import path from 'path';
+
+import { ElectronProcess, PackageJSON } from '@electron-forge/shared-types';
 import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
 
@@ -7,7 +10,7 @@ import { StartOptions } from '../../src/api';
 
 describe('start', () => {
   let start: (opts: StartOptions) => Promise<ElectronProcess>;
-  let packageJSON: Record<string, string>;
+  let packageJSON: PackageJSON;
   let resolveStub: SinonStub;
   let spawnStub: SinonStub;
   let shouldOverride: false | { on: () => void };
@@ -17,7 +20,7 @@ describe('start', () => {
     resolveStub = stub();
     spawnStub = stub();
     shouldOverride = false;
-    packageJSON = require('../fixture/dummy_app/package.json');
+    packageJSON = fs.readJsonSync(path.join(__dirname, '../fixture/dummy_app/package.json'));
 
     start = proxyquire.noCallThru().load('../../src/api/start', {
       '../util/electron-executable': () => Promise.resolve('fake_electron_path'),

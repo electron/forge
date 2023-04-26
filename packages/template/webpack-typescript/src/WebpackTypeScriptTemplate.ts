@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, InitTemplateOptions, PackageJSON } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
@@ -52,9 +52,10 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
 
           // update package.json
           const packageJSONPath = path.resolve(directory, 'package.json');
-          const packageJSON = await fs.readJson(packageJSONPath);
+          const packageJSON: PackageJSON = await fs.readJson(packageJSONPath);
           packageJSON.main = '.webpack/main';
           // Configure scripts for TS template
+          packageJSON.scripts = packageJSON.scripts ?? {};
           packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
           await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,

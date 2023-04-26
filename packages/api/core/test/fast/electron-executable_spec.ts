@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { PackageJSON } from '@electron-forge/shared-types';
 import chai, { expect } from 'chai';
 import { createSandbox } from 'sinon';
 import sinonChai from 'sinon-chai';
@@ -23,7 +24,9 @@ describe('locateElectronExecutable', () => {
 
   it('returns the correct path to electron', async () => {
     const appFixture = path.join(fixtureDir, 'electron_app');
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       devDependencies: { electron: '^100.0.0' },
     };
 
@@ -33,7 +36,9 @@ describe('locateElectronExecutable', () => {
 
   it('warns and returns a hardcoded path to electron if another electron module does not export a string', async () => {
     const appFixture = path.join(fixtureDir, 'bad-export');
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       devDependencies: {
         '@electron-forge/plugin-compile': '^6.0.0-beta.1',
         'electron-prebuilt-compile': '^1.4.0',
@@ -45,7 +50,9 @@ describe('locateElectronExecutable', () => {
   });
 
   it('warns if prebuilt-compile exists without the corresponding plugin', async () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       devDependencies: { 'electron-prebuilt-compile': '1.0.0' },
     };
     const compileFixture = path.join(fixtureDir, 'prebuilt-compile');
@@ -55,7 +62,9 @@ describe('locateElectronExecutable', () => {
   });
 
   it('does not warn if prebuilt-compile exists with the corresponding plugin', async () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       devDependencies: {
         '@electron-forge/plugin-compile': '^6.0.0-beta.1',
         'electron-prebuilt-compile': '1.0.0',
@@ -80,15 +89,26 @@ describe('pluginCompileExists', () => {
   });
 
   it('returns false if there is no devDependencies', () => {
-    expect(pluginCompileExists({})).to.equal(false);
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
+    };
+    expect(pluginCompileExists(packageJSON)).to.equal(false);
   });
 
   it('returns false if the plugin is not found in devDependencies', () => {
-    expect(pluginCompileExists({ devDependencies: {} })).to.equal(false);
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
+      devDependencies: {},
+    };
+    expect(pluginCompileExists(packageJSON)).to.equal(false);
   });
 
   it('returns true if the plugin is found in devDependencies', () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       devDependencies: { '@electron-forge/plugin-compile': '^6.0.0-beta.1' },
     };
 
@@ -97,7 +117,9 @@ describe('pluginCompileExists', () => {
   });
 
   it('warns and returns true if the plugin is found in dependencies', () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
+      version: '0.0.0-development',
       dependencies: { '@electron-forge/plugin-compile': '^6.0.0-beta.1' },
       devDependencies: {},
     };

@@ -1,6 +1,7 @@
 import os from 'os';
 import path from 'path';
 
+import { PackageJSON } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 
@@ -11,14 +12,15 @@ const fixturePath = path.resolve(__dirname, '..', '..', '..', 'api', 'core', 'te
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
-    const packageJSON = { dependencies: {}, devDependencies: {} };
+    const packageJSON: PackageJSON = { name: 'foo', dependencies: {}, devDependencies: {} };
     const [dev, exact] = updateElectronDependency(packageJSON, devDeps, exactDevDeps);
     expect(dev).to.deep.equal(devDeps);
     expect(exact).to.deep.equal(exactDevDeps);
   });
 
   it('does not add an Electron dep if one already exists', () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       dependencies: {},
       devDependencies: { electron: '0.37.0' },
     };
@@ -28,7 +30,8 @@ describe('updateElectronDependency', () => {
   });
 
   it('moves an Electron dependency from dependencies to devDependencies', () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       dependencies: { electron: '0.37.0' },
       devDependencies: {},
     };
@@ -39,44 +42,50 @@ describe('updateElectronDependency', () => {
 });
 
 describe('getElectronVersion', () => {
-  it('fails without devDependencies', () => expect(getElectronVersion('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
+  it('fails without devDependencies', () => expect(getElectronVersion('', { name: 'foo' })).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
   it('fails without electron devDependencies', () =>
-    expect(getElectronVersion('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
+    expect(getElectronVersion('', { name: 'foo', devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   it('fails with a non-exact version and no electron installed', () => {
     const fixtureDir = path.resolve(fixturePath, 'dummy_app');
-    return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
+    return expect(getElectronVersion(fixtureDir, { name: 'foo', devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith(
+      'Cannot find the package'
+    );
   });
 
   it('works with a non-exact version with electron installed', () => {
     const fixtureDir = path.resolve(fixturePath, 'non-exact');
-    return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal('4.0.9');
+    return expect(getElectronVersion(fixtureDir, { name: 'foo', devDependencies: { electron: '^4.0.2' } })).to.eventually.equal('4.0.9');
   });
 
   it('works with electron-prebuilt-compile', () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       devDependencies: { 'electron-prebuilt-compile': '1.0.0' },
     };
     return expect(getElectronVersion('', packageJSON)).to.eventually.equal('1.0.0');
   });
 
   it('works with electron-prebuilt', async () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       devDependencies: { 'electron-prebuilt': '1.0.0' },
     };
     return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
   });
 
   it('works with electron-nightly', async () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       devDependencies: { 'electron-nightly': '5.0.0-nightly.20190107' },
     };
     return expect(await getElectronVersion('', packageJSON)).to.be.equal('5.0.0-nightly.20190107');
   });
 
   it('works with electron', async () => {
-    const packageJSON = {
+    const packageJSON: PackageJSON = {
+      name: 'foo',
       devDependencies: { electron: '1.0.0' },
     };
     return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
@@ -89,7 +98,8 @@ describe('getElectronVersion', () => {
 
     it('works with a non-exact version', async () => {
       const fixtureDir = path.resolve(fixturePath, 'yarn-workspace', 'packages', 'subpackage');
-      const packageJSON = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
         devDependencies: { electron: '^4.0.4' },
       };
 
@@ -103,10 +113,11 @@ describe('getElectronVersion', () => {
 });
 
 describe('getElectronModulePath', () => {
-  it('fails without devDependencies', () => expect(getElectronModulePath('', {})).to.eventually.be.rejectedWith('does not have any devDependencies'));
+  it('fails without devDependencies', () =>
+    expect(getElectronModulePath('', { name: 'foo' })).to.eventually.be.rejectedWith('does not have any devDependencies'));
 
   it('fails without electron devDependencies', () =>
-    expect(getElectronModulePath('', { devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
+    expect(getElectronModulePath('', { name: 'foo', devDependencies: {} })).to.eventually.be.rejectedWith('Electron packages in devDependencies'));
 
   describe('with no electron installed', () => {
     let tempDir: string;
@@ -117,7 +128,9 @@ describe('getElectronModulePath', () => {
     it('throws an error saying it cannot find electron', async () => {
       const fixtureDir = path.resolve(fixturePath, 'dummy_app');
       await fs.copy(fixtureDir, tempDir);
-      return expect(getElectronModulePath(tempDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith('Cannot find the package');
+      return expect(getElectronModulePath(tempDir, { name: 'foo', devDependencies: { electron: '^4.0.2' } })).to.eventually.be.rejectedWith(
+        'Cannot find the package'
+      );
     });
 
     after(async () => {
@@ -127,7 +140,7 @@ describe('getElectronModulePath', () => {
 
   it('works with electron', () => {
     const fixtureDir = path.resolve(fixturePath, 'non-exact');
-    return expect(getElectronModulePath(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(
+    return expect(getElectronModulePath(fixtureDir, { name: 'foo', devDependencies: { electron: '^4.0.2' } })).to.eventually.equal(
       path.join(fixtureDir, 'node_modules', 'electron')
     );
   });
@@ -140,7 +153,8 @@ describe('getElectronModulePath', () => {
     it('finds the top-level electron module', async () => {
       const workspaceDir = path.resolve(fixturePath, 'npm-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
-      const packageJSON = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
         devDependencies: { electron: '^4.0.4' },
       };
 
@@ -160,7 +174,8 @@ describe('getElectronModulePath', () => {
     it('finds the top-level electron module', async () => {
       const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
-      const packageJSON = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
         devDependencies: { electron: '^4.0.4' },
       };
 
@@ -170,7 +185,8 @@ describe('getElectronModulePath', () => {
     it('finds the top-level electron module despite the additional node_modules folder inside the package', async () => {
       const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'with-node-modules');
-      const packageJSON = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
         devDependencies: { electron: '^4.0.4' },
       };
 
@@ -180,7 +196,8 @@ describe('getElectronModulePath', () => {
     it('finds the correct electron module in nohoist mode', async () => {
       const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'electron-folder-in-node-modules');
-      const packageJSON = {
+      const packageJSON: PackageJSON = {
+        name: 'foo',
         devDependencies: { electron: '^13.0.0' },
       };
 

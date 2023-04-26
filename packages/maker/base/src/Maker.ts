@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeAppPackageJSON, ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import which from 'which';
 
@@ -35,7 +35,7 @@ export interface MakerOptions {
   /**
    * The application's package.json file
    */
-  packageJSON: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  packageJSON: ForgeAppPackageJSON;
 }
 
 export default abstract class Maker<C> implements IForgeMaker {

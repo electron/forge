@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ForgeHookFn } from '@electron-forge/shared-types';
+import { ForgeHookFn, PackageJSON } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
 export const createCompileHook =
@@ -25,7 +25,7 @@ export const createCompileHook =
         }
       }
 
-      const packageJSON = await fs.readJson(path.resolve(appDir, 'package.json'));
+      const packageJSON: PackageJSON = await fs.readJson(path.resolve(appDir, 'package.json'));
 
       const index = packageJSON.main || 'index.js';
       packageJSON.originalMain = index;

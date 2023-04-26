@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 // This file requires a shebang above. If it is missing, this is an error.
 
+import path from 'path';
+
+import { ElectronForgePackageJSON } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import program from 'commander';
+import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import './util/terminate';
 
 import { checkSystem } from './util/check-system';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const metadata = require('../package.json');
+const metadata: ElectronForgePackageJSON = fs.readJsonSync(path.join(__dirname, '../package.json'));
 
 const originalSC = program.executeSubCommand.bind(program);
 program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) => {

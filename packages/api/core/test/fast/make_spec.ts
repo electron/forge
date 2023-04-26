@@ -1,7 +1,8 @@
 import * as path from 'path';
 
-import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { ForgeMakeResult, PackageJSON } from '@electron-forge/shared-types';
 import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 
 import { MakeOptions } from '../../src/api';
@@ -13,7 +14,7 @@ describe('make', () => {
   it('works with scoped package names', async () => {
     const stubbedMake: (opts: MakeOptions) => Promise<ForgeMakeResult[]> = proxyquire.noCallThru().load('../../src/api/make', {
       '../util/read-package-json': {
-        readMutatedPackageJson: () => Promise.resolve(require('../fixture/app-with-scoped-name/package.json')),
+        readMutatedPackageJson: () => Promise.resolve<PackageJSON>(fs.readJsonSync(path.join(__dirname, '../fixture/app-with-scoped-name/package.json'))),
       },
     }).default;
     await stubbedMake({
@@ -81,7 +82,7 @@ describe('make', () => {
   it('can skip makers via config', async () => {
     const stubbedMake = proxyquire.noCallThru().load('../../src/api/make', {
       '../util/read-package-json': {
-        readMutatedPackageJson: () => Promise.resolve(require('../fixture/app-with-maker-disable/package.json')),
+        readMutatedPackageJson: () => Promise.resolve<PackageJSON>(fs.readJsonSync(path.join(__dirname, '../fixture/app-with-maker-disable/package.json'))),
       },
     }).default;
     await expect(

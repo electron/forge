@@ -2,7 +2,7 @@ import path from 'path';
 import { promisify } from 'util';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
-import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgePlatform, PackageJSON, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -73,7 +73,7 @@ function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHook
 type PackageContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
-  packageJSON: any;
+  packageJSON: PackageJSON;
   calculatedOutDir: string;
   packagerPromise: Promise<string[]>;
   targets: InternalTargetDefinition[];
