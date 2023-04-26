@@ -2,6 +2,7 @@ import assert from 'assert';
 import { execSync } from 'child_process';
 import path from 'path';
 
+import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
@@ -38,6 +39,10 @@ for (const nodeInstaller of ['npm', 'yarn']) {
   process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;
+
+    before(async () => {
+      await yarnOrNpmSpawn(['link:prepare']);
+    });
 
     const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
       before(async () => {
@@ -217,11 +222,19 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         await fs.remove(dir);
       });
     });
+
+    after(async () => {
+      await yarnOrNpmSpawn(['link:remove']);
+    });
   });
 }
 
 describe('Electron Forge API', () => {
   let dir: string;
+
+  before(async () => {
+    await yarnOrNpmSpawn(['link:prepare']);
+  });
 
   describe('after init', () => {
     let devCert: string;
@@ -483,5 +496,9 @@ describe('Electron Forge API', () => {
     });
 
     after(() => fs.remove(dir));
+  });
+
+  after(async () => {
+    await yarnOrNpmSpawn(['link:remove']);
   });
 });

@@ -1,12 +1,13 @@
-const cp = require('child_process');
+/**
+ * Silences warnings and other stdio logs produced from commands
+ *
+ * It does not silence errors.
+ */
+
+const { spawn } = require('@malept/cross-spawn-promise');
 
 const [cmd, ...args] = process.argv.slice(2);
 
-const child = cp.spawn(cmd, args, {
+spawn(cmd, args, {
   stdio: 'pipe',
-});
-
-child.on('exit', (code, signal) => {
-  if (signal) process.exit(1);
-  else process.exit(code);
 });
