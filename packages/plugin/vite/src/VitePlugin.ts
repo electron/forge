@@ -98,17 +98,41 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (watch = false): Promise<void> => {
-    for (const userConfig of await this.configGenerator.getBuildConfig(watch)) {
-      const buildResult = await vite.build({
-        // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
-        configFile: false,
-        ...userConfig,
-      });
+    await Promise.all(
+      (
+        await this.configGenerator.getBuildConfig(watch)
+      ).map((userConfig) => {
+        return new Promise<void>((resolve, reject) => {
+          vite
+            .build({
+              // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
+              configFile: false,
+              ...userConfig,
+              plugins: [
+                {
+                  name: '@electron-forge/plugin-vite:start',
+                  closeBundle() {
+                    resolve();
 
-      if (Object.keys(buildResult).includes('close')) {
-        this.watchers.push(buildResult as RollupWatcher);
-      }
-    }
+                    // TODO: implement hot-restart here
+                  },
+                },
+                ...(userConfig.plugins ?? []),
+              ],
+            })
+            .then((result) => {
+              const isWatcher = (x: any): x is RollupWatcher => typeof x?.close === 'function';
+
+              if (isWatcher(result)) {
+                this.watchers.push(result);
+              }
+
+              return result;
+            })
+            .catch(reject);
+        });
+      })
+    );
   };
 
   // Renderer process
