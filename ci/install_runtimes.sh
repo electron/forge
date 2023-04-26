@@ -23,6 +23,7 @@ install_flatpak() {
 
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
+
 install_runtime x86_64 org.freedesktop.Sdk 19.08
 install_runtime x86_64 org.freedesktop.Platform 19.08
 install_app x86_64 org.electronjs.Electron2.BaseApp stable

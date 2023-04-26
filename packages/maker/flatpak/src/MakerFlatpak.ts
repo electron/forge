@@ -34,7 +34,6 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line node/no-missing-require
     const installer = require('@malept/electron-installer-flatpak');
-
     const arch = flatpakArch(targetArch);
     const outDir = path.resolve(makeDir, 'flatpak', arch);
 
@@ -45,7 +44,11 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
       src: dir,
       dest: outDir,
     };
-
+    console.log('THIS.CONFIG = ', this.config);
+    flatpakConfig.options = {
+      files: [],
+    };
+    flatpakConfig.options.extraFlatpakBuilderArgs = ['--disable-rofiles-fuse'];
     await installer(flatpakConfig);
 
     return (await fs.readdir(outDir)).filter((basename) => basename.endsWith('.flatpak')).map((basename) => path.join(outDir, basename));

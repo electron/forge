@@ -143,11 +143,11 @@
     "yaml-hook": "^1.0.0"
   },
   "optionalDependencies": {
-    "@malept/electron-installer-flatpak": "^0.11.2",
+    "@malept/electron-installer-flatpak": "^0.11.4",
     "electron-installer-debian": "^3.0.0",
     "electron-installer-dmg": "^4.0.0",
     "electron-installer-redhat": "^3.2.0",
-    "electron-installer-snap": "^5.1.0",
+    "electron-installer-snap": "^5.2.0",
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^5.0.0",

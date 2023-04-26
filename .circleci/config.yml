@@ -25,26 +25,16 @@ commands:
         type: string
     steps:
       - run: git config --global core.autocrlf input
-      - checkout
       - node/install:
-          install-yarn: true
-          node-version: '18.4.0'
-      - run: nvm use 18.4.0
-      - run: echo "THIS IS THE OS- << parameters.platform >>"
-      - when:
-          condition:
-            equal: ['windows', << parameters.platform >>]
-          steps:
-            - run:
-                name: Install npm 8 on Windows
-                command: |
-                  npm install -g npm@8
+          node-version: '14.18.0'
+      - run: nvm use 14.18.0
+      - checkout
       - restore_cache:
           name: Restore Cached Dependencies
           keys:
             - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
             - v1-dependencies{{ arch }}
-      - run: yarn install --frozen-lockfile
+      - run: npm install --global yarn
       - save_cache:
           name: Cache Installed Dependencies
           paths:
@@ -61,12 +51,83 @@ jobs:
         enum: ['x64', 'arm64']
     executor: << parameters.platform >>
     steps:
-      - install:
-          platform: '<< parameters.platform >>'
-      - run: yarn lint
-      - run: yarn syncpack
-      - run: yarn build
-      - run: yarn test:fast
+      - when:
+          condition:
+            or:
+              - equal: ['windows', << parameters.platform >>]
+              - equal: ['macos', << parameters.platform >>]
+          steps:
+            - install:
+                platform: '<< parameters.platform >>'
+      - when:
+          condition:
+            equal: ['windows', << parameters.platform >>]
+          steps:
+            run:
+              name: setup Windows and run fast tests
+              shell: powershell.exe -ExecutionPolicy Bypass
+              command: |
+                git config --global core.autocrlf input
+                Write-Output "Installing WiX Toolset"
+                choco install --no-progress -y wixtoolset
+                Write-Output "Reloading PATH"
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                echo $env:Path
+                [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                echo $env:Path
+                echo $env:CIRCLE_WORKING_DIRECTORY
+                npm config set node-gyp "$env:CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+
+                yarn install
+                yarn lint
+                yarn syncpack
+                yarn build
+                yarn test:fast
+      - when:
+          condition:
+            equal: ['linux', << parameters.platform >>]
+          steps:
+            - run:
+                name: Linux specific setup
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y --no-install-recommends git flatpak-builder elfutils software-properties-common curl ca-certificates xvfb libnss3 libasound2 fakeroot zip
+                  sudo add-apt-repository -y ppa:alexlarsson/flatpak
+                  sudo apt-get -y update
+            - install:
+                platform: '<< parameters.platform >>'
+            - run: git config --global core.autocrlf input
+            - run:
+                name: setup snapcraft wrapper
+                command: |
+                  cp ./.circleci/snapcraft-wrapper /snap/bin/snapcraft
+                  echo 'export PATH=/snap/bin:"$PATH"' >> "$BASH_ENV"
+                  source "$BASH_ENV"
+            - run:
+                name: install runtimes
+                command: |
+                  sudo ci/install_runtimes.sh
+            - run:
+                name: run fast tests
+                command: |
+                  yarn install
+                  yarn lint
+                  yarn syncpack
+                  yarn build
+                  yarn test:fast
+      - when:
+          condition:
+            equal: ['macos', << parameters.platform >>]
+          steps:
+            - run:
+                command: |
+                  git config --global core.autocrlf input
+                  yarn install
+                  yarn lint
+                  yarn syncpack
+                  yarn build
+                  yarn test:fast
   slow-tests:
     parameters:
       platform:
@@ -76,34 +137,92 @@ jobs:
         enum: ['x64', 'arm64']
     executor: << parameters.platform >>
     steps:
-      - install:
-          platform: '<< parameters.platform >>'
-      - run: yarn lint
+      - when:
+          condition:
+            or:
+              - equal: ['windows', << parameters.platform >>]
+              - equal: ['macos', << parameters.platform >>]
+          steps:
+            - install:
+                platform: '<< parameters.platform >>'
       - when:
           condition:
             equal: ['windows', << parameters.platform >>]
           steps:
-            - run:
-                name: Windows specific setup
-                command: |
-                  echo 'C:\Program Files (x86)\WiX Toolset v3.11\bin' >> $GITHUB_PATH
-                  npm config set node-gyp "$GITHUB_WORKSPACE\node_modules\node-gyp\bin\node-gyp.js"
+            run:
+              name: setup Windows
+              shell: powershell.exe -ExecutionPolicy Bypass
+              command: |
+                Write-Output "Installing WiX Toolset"
+                choco install --no-progress -y wixtoolset
+                Write-Output "Reloading PATH"
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                echo $env:Path
+                [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
+                refreshenv
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                echo $env:Path
+                npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+
+                git config --global core.autocrlf input
+                yarn install
+                yarn build
+                yarn test:slow
       - when:
           condition:
             equal: ['linux', << parameters.platform >>]
           steps:
+            # - run:
+            #     name: Linux specific setup
+            #     command: |
+            #       sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 536F8F1DE80F6A35
+            #       sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4EB27DB2A3B88B8B
+            #       sudo apt-get update
+            #       sudo apt-get install -y --no-install-recommends git flatpak-builder elfutils software-properties-common curl ca-certificates libnss3 xvfb libnss3 libasound2 fakeroot zip
+            #       sudo add-apt-repository -y ppa:alexlarsson/flatpak
+            #       sudo apt-get update
             - run:
-                name: Linux Specific setup
+                name: Linux specific setup
                 command: |
-                  sudo add-apt-repository -y ppa:alexlarsson/flatpak
-                  sudo rm /etc/apt/sources.list.d/bazel.list
-                  sudo rm /etc/apt/sources.list.d/mongo*.list
-                  grep -l opensuse /etc/apt/sources.list.d/* | xargs sudo rm
                   sudo apt-get update
-                  sudo apt-get install -y --no-install-recommends snapcraft flatpak-builder elfutils
-                  ci/install_runtimes.sh
-      - run: yarn build
-      - run: yarn test:slow
+                  sudo apt-get install -y --no-install-recommends xvfb zip libnss3 libasound2
+            - install:
+                platform: '<< parameters.platform >>'
+            - run:
+                name: setup git config
+                command: |
+                  git config --global core.autocrlf input
+                  git config --global protocol.file.allow always
+            # - run:
+            #     name: setup snapcraft wrapper
+            #     command: |
+            #       cp ./.circleci/snapcraft-wrapper /snap/bin/snapcraft
+            #       echo 'export PATH=/snap/bin:"$PATH"' >> "$BASH_ENV"
+            #       source "$BASH_ENV"
+            # - run:
+            #     name: install runtimes
+            #     command: |
+            #       sudo ci/install_runtimes.sh
+            - run:
+                name: run slow tests
+                command: |
+                  yarn install
+                  yarn lint
+                  yarn build
+                  yarn test:slow
+                environment:
+                  DEBUG: '@malept/flatpak-bundler'
+      - when:
+          condition:
+            equal: ['macos', << parameters.platform >>]
+          steps:
+            - run:
+                command: |
+                  git config --global core.autocrlf input
+                  yarn install
+                  yarn lint
+                  yarn build
+                  yarn test:slow
 
 workflows:
   tests:
