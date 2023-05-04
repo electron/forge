@@ -103,12 +103,13 @@ export default class ViteConfigGenerator {
       throw new Error('"config.renderer" must be an Array');
     }
 
-    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
+    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, root, config }) => {
       const defaultConfig: UserConfig = {
         // Ensure that each build config loads the .env file correctly.
         mode: this.mode,
         // Make sure that Electron can be loaded into the local file using `loadFile` after packaging.
         base: './',
+        root,
         build: {
           outDir: path.join(this.baseDir, 'renderer', name),
         },

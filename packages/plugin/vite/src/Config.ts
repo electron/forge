@@ -17,6 +17,11 @@ export interface VitePluginRendererConfig {
    */
   name: string;
   /**
+   * Root directory (where index.html is located). Can be an absolute path, or a path relative to the current working directory.
+   * More info: https://vitejs.dev/config/shared-options.html#root
+   */
+  root?: string;
+  /**
    * Vite config file path.
    */
   config: string;

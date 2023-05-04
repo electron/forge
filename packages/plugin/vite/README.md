@@ -26,6 +26,8 @@ module.exports = {
         renderer: [
           {
             name: 'main_window',
+            // Root directory for this renderer (where the `index.html` is located).
+            root: 'src/main_window/',
             config: 'vite.renderer.config.mjs',
           },
         ],

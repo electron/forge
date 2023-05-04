@@ -81,6 +81,29 @@ describe('ViteConfigGenerator', () => {
       expect(rendererConfig).deep.equal({
         mode: 'development',
         base: './',
+        root: undefined,
+        build: {
+          outDir: path.join('.vite', 'renderer', config.renderer[index].name),
+        },
+        clearScreen: false,
+      } as UserConfig);
+    }
+  });
+
+  it('getRendererConfig supports multiple root directories', async () => {
+    const config = {
+      renderer: [
+        { name: 'foo_window', root: './foo' },
+        { name: 'bar_window', root: './bar' },
+      ],
+    } as VitePluginConfig;
+    const generator = new ViteConfigGenerator(config, '', false);
+    const configs = await generator.getRendererConfig();
+    for (const [index, rendererConfig] of configs.entries()) {
+      expect(rendererConfig).deep.equal({
+        mode: 'development',
+        base: './',
+        root: config.renderer[index].root,
         build: {
           outDir: path.join('.vite', 'renderer', config.renderer[index].name),
         },
