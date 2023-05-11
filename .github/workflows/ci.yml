@@ -77,4 +77,4 @@ jobs:
       - name: Test
         run: yarn test:slow
         env:
-          DEBUG: electron-installer-snap:snapcraft
+          DEBUG: '@malept/flatpak-bundler'
