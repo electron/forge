@@ -119,11 +119,6 @@ export interface MakerFlatpakOptionsConfig {
    * specification.
    */
   mimeType?: string[];
-
-  /**
-   * Arguments to use when calling flatpak-builder
-   */
-  extraFlatpakBuilderArgs?: string[];
 }
 
 export interface MakerFlatpakConfig {

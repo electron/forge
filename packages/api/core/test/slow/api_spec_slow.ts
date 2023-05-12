@@ -393,13 +393,6 @@ describe('Electron Forge API', () => {
             if (shouldPass) {
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 console.log('LINE 395 OPTIONS: ', JSON.stringify(options));
-                if (target.name === '@electron-forge/maker-flatpak') {
-                  // flatpak-builder requires the --disable-rofiles-fuse option to work inside a container, see flatpak/flatpak#647
-                  // https://github.com/bilelmoussaoui/flatpak-vscode/issues/186
-                  optionsFetcher.config.extraFlatpakBuilderArgs = ['--disable-rofiles-fuse'];
-                  console.log('Running flatpak-builder with --disable-rofiles-fuse');
-                  console.log(optionsFetcher.config);
-                }
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {
