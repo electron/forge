@@ -392,7 +392,6 @@ describe('Electron Forge API', () => {
           for (const optionsFetcher of options) {
             if (shouldPass) {
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-                console.log('LINE 395 OPTIONS: ', JSON.stringify(options));
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {

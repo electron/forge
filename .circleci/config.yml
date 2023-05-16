@@ -20,9 +20,6 @@ executors:
 
 commands:
   install:
-    parameters:
-      platform:
-        type: string
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
@@ -40,6 +37,23 @@ commands:
           paths:
             - node_modules
           key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+  run-fast-tests:
+    steps:
+      - run:
+          command: |
+            yarn install
+            yarn lint
+            yarn syncpack
+            yarn build
+            yarn test:fast
+  run-slow-tests:
+    steps:
+      - run:
+          command: |
+            yarn install
+            yarn lint
+            yarn build
+            yarn test:slow
 
 jobs:
   fast-tests:
@@ -51,36 +65,7 @@ jobs:
         enum: ['x64', 'arm64']
     executor: << parameters.platform >>
     steps:
-      - when:
-          condition:
-            or:
-              - equal: ['windows', << parameters.platform >>]
-              - equal: ['macos', << parameters.platform >>]
-          steps:
-            - install:
-                platform: '<< parameters.platform >>'
-      - when:
-          condition:
-            equal: ['windows', << parameters.platform >>]
-          steps:
-            run:
-              name: setup Windows and run fast tests
-              shell: powershell.exe -ExecutionPolicy Bypass
-              command: |
-                git config --global core.autocrlf input
-                Write-Output "Installing WiX Toolset"
-                choco install --no-progress -y wixtoolset
-                Write-Output "Reloading PATH"
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                npm config set node-gyp "$env:CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
-
-                yarn install
-                yarn lint
-                yarn syncpack
-                yarn build
-                yarn test:fast
+      - install
       - when:
           condition:
             equal: ['linux', << parameters.platform >>]
@@ -100,29 +85,7 @@ jobs:
                     libgtk-3-0 \
                     libgbm1
                   sudo add-apt-repository -y ppa:alexlarsson/flatpak
-            - install:
-                platform: '<< parameters.platform >>'
-            - run: git config --global core.autocrlf input
-            - run:
-                name: run fast tests
-                command: |
-                  yarn install
-                  yarn lint
-                  yarn syncpack
-                  yarn build
-                  yarn test:fast
-      - when:
-          condition:
-            equal: ['macos', << parameters.platform >>]
-          steps:
-            - run:
-                command: |
-                  git config --global core.autocrlf input
-                  yarn install
-                  yarn lint
-                  yarn syncpack
-                  yarn build
-                  yarn test:fast
+      - run-fast-tests
   slow-tests:
     parameters:
       platform:
@@ -132,20 +95,13 @@ jobs:
         enum: ['x64', 'arm64']
     executor: << parameters.platform >>
     steps:
-      - when:
-          condition:
-            or:
-              - equal: ['windows', << parameters.platform >>]
-              - equal: ['macos', << parameters.platform >>]
-          steps:
-            - install:
-                platform: '<< parameters.platform >>'
+      - install
       - when:
           condition:
             equal: ['windows', << parameters.platform >>]
           steps:
             run:
-              name: setup Windows
+              name: setup Windows and run slow tests
               shell: powershell.exe -ExecutionPolicy Bypass
               command: |
                 Write-Output "Installing WiX Toolset"
@@ -156,8 +112,8 @@ jobs:
                 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
                 npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
 
-                git config --global core.autocrlf input
                 yarn install
+                yarn lint
                 yarn build
                 yarn test:slow
       - when:
@@ -178,30 +134,13 @@ jobs:
                     libgdk-pixbuf2.0-dev \
                     libgtk-3-0 \
                     libgbm1
-            - install:
-                platform: '<< parameters.platform >>'
-            - run:
-                name: setup git config
-                command: |
-                  git config --global core.autocrlf input
-            - run:
-                name: run slow tests
-                command: |
-                  yarn install
-                  yarn lint
-                  yarn build
-                  yarn test:slow
       - when:
           condition:
-            equal: ['macos', << parameters.platform >>]
+            or:
+              - equal: ['macos', << parameters.platform >>]
+              - equal: ['linux', << parameters.platform >>]
           steps:
-            - run:
-                command: |
-                  git config --global core.autocrlf input
-                  yarn install
-                  yarn lint
-                  yarn build
-                  yarn test:slow
+            - run-slow-tests
 
 workflows:
   tests:
