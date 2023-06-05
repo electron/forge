@@ -5045,7 +5045,7 @@ ejs@^3.1.7:
   dependencies:
     jake "^10.8.5"
 
-electron-installer-common@^0.10.0, electron-installer-common@^0.10.1, electron-installer-common@^0.10.2:
+electron-installer-common@^0.10.0, electron-installer-common@^0.10.2:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/electron-installer-common/-/electron-installer-common-0.10.3.tgz#40f9db644ca60eb28673d545b67ee0113aef4444"
   integrity sha512-mYbP+6i+nHMIm0WZHXgGdmmXMe+KXncl6jZYQNcCF9C1WsNA9C5SZ2VP4TLQMSIoFO+X4ugkMEA5uld1bmyEvA==
@@ -5099,21 +5099,21 @@ electron-installer-redhat@^3.2.0:
     word-wrap "^1.2.3"
     yargs "^16.0.2"
 
-electron-installer-snap@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-5.1.0.tgz#30334cd9b59bb8efa70f2fe45b54a6b10545b134"
-  integrity sha512-lZ/EQ8SFbmEplhxbGdDRKGJUVZqXzoK+CbZtL3SoCwWz1MWKfOZzlx0VhNlLDuaAo6DKFN2Hxh+3yPikzqfbew==
+electron-installer-snap@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-snap/-/electron-installer-snap-5.2.0.tgz#8dd637dc94d4279d790d728b7bdb23fe9415377d"
+  integrity sha512-SRm7pCpNHMXV545JjScV8fLC9NhFli5r8L8Ju4EHdXwRh76+mwrJoUEDLItixBudZ5Mcgz1SJcDPJfWpEQWX7Q==
   dependencies:
     "@malept/cross-spawn-promise" "^1.0.0"
-    debug "^4.1.1"
-    electron-installer-common "^0.10.1"
+    debug "^4.3.4"
+    electron-installer-common "^0.10.2"
     fs-extra "^9.0.0"
     js-yaml "^3.10.0"
     lodash "^4.17.15"
     semver "^7.1.1"
-    tmp-promise "^2.0.1"
+    tmp-promise "^3.0.2"
     which "^2.0.1"
-    yargs "^15.0.1"
+    yargs "^16.0.2"
 
 electron-packager@^17.1.1:
   version "17.1.1"
@@ -10650,13 +10650,6 @@ tmp-promise@^1.0.5:
   integrity sha512-8+Ah9aB1IRXCnIOxXZ0uFozV1nMU5xiu7hhFVUSxZ3bYu+psD4TzagCzVbexUCgNNGJnsmNDQlS4nG3mTyoNkw==
   dependencies:
     bluebird "^3.5.0"
-    tmp "0.1.0"
-
-tmp-promise@^2.0.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/tmp-promise/-/tmp-promise-2.1.1.tgz#eb97c038995af74efbfe8156f5e07fdd0c935539"
-  integrity sha512-Z048AOz/w9b6lCbJUpevIJpRpUztENl8zdv1bmAKVHimfqRFl92ROkmT9rp7TVBnrEw2gtMTol/2Cp2S2kJa4Q==
-  dependencies:
     tmp "0.1.0"
 
 tmp-promise@^3.0.2:

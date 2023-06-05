@@ -1,0 +1,167 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+  win: circleci/windows@5.0.0
+
+executors:
+  linux:
+    docker:
+      - image: cimg/base:stable
+  macos:
+    macos:
+      xcode: '13.4.0'
+    resource_class: macos.x86.medium.gen2
+  windows:
+    machine:
+      image: windows-server-2019-vs2019:stable
+      resource_class: windows.medium
+      shell: bash
+
+commands:
+  install:
+    steps:
+      - run: git config --global core.autocrlf input
+      - node/install:
+          node-version: '14.18.0'
+      - run: nvm use 14.18.0
+      - checkout
+      - restore_cache:
+          name: Restore Cached Dependencies
+          keys:
+            - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ arch }}
+      - run: npm install --global yarn
+      - save_cache:
+          name: Cache Installed Dependencies
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
+  run-fast-tests:
+    steps:
+      - run:
+          command: |
+            yarn install
+            yarn lint
+            yarn syncpack
+            yarn build
+            yarn test:fast
+  run-slow-tests:
+    steps:
+      - run:
+          command: |
+            yarn install
+            yarn lint
+            yarn build
+            yarn test:slow
+
+jobs:
+  fast-tests:
+    parameters:
+      platform:
+        type: string
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.platform >>
+    steps:
+      - install
+      - when:
+          condition:
+            equal: ['linux', << parameters.platform >>]
+          steps:
+            - run:
+                name: Linux specific setup
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    --no-install-recommends \
+                    xvfb \
+                    libnss3 \
+                    libasound2 \
+                    libatk1.0-0 \
+                    libatk-bridge2.0-0 \
+                    libgdk-pixbuf2.0-dev \
+                    libgtk-3-0 \
+                    libgbm1
+                  sudo add-apt-repository -y ppa:alexlarsson/flatpak
+      - run-fast-tests
+  slow-tests:
+    parameters:
+      platform:
+        type: string
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.platform >>
+    steps:
+      - install
+      - when:
+          condition:
+            equal: ['windows', << parameters.platform >>]
+          steps:
+            run:
+              name: setup Windows and run slow tests
+              shell: powershell.exe -ExecutionPolicy Bypass
+              command: |
+                Write-Output "Installing WiX Toolset"
+                choco install --no-progress -y wixtoolset
+                Write-Output "Reloading PATH"
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+
+                yarn install
+                yarn lint
+                yarn build
+                yarn test:slow
+      - when:
+          condition:
+            equal: ['linux', << parameters.platform >>]
+          steps:
+            - run:
+                name: Linux specific setup
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    --no-install-recommends \
+                    xvfb \
+                    libnss3 \
+                    libasound2 \
+                    libatk1.0-0 \
+                    libatk-bridge2.0-0 \
+                    libgdk-pixbuf2.0-dev \
+                    libgtk-3-0 \
+                    libgbm1
+      - when:
+          condition:
+            or:
+              - equal: ['macos', << parameters.platform >>]
+              - equal: ['linux', << parameters.platform >>]
+          steps:
+            - run-slow-tests
+
+workflows:
+  tests:
+    jobs:
+      - fast-tests:
+          matrix:
+            parameters:
+              platform: [windows, linux, macos]
+              arch: [x64, arm64]
+            exclude:
+              - platform: windows
+                arch: arm64
+              - platform: linux
+                arch: arm64
+      - slow-tests:
+          matrix:
+            parameters:
+              platform: [windows, linux, macos]
+              arch: [x64, arm64]
+            exclude:
+              - platform: windows
+                arch: arm64
+              - platform: linux
+                arch: arm64
