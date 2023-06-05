@@ -30,7 +30,7 @@ commands:
           name: Restore Cached Dependencies
           keys:
             - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v1-dependencies{{ arch }}
+            - v1-dependencies-{{ arch }}
       - run: npm install --global yarn
       - save_cache:
           name: Cache Installed Dependencies
