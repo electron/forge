@@ -9,7 +9,7 @@ as well.
 
 ## Usage
 
-```js
+```javascript
 import Logger from '@electron-forge/web-multi-logger';
 
 const logger = new Logger();

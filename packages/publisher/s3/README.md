@@ -8,7 +8,6 @@ ${config.folder || appVersion}/${artifactName}
 
 Configuration options are documented in [PublisherS3Config](https://js.electronforge.io/interfaces/_electron_forge_publisher_s3.PublisherS3Config.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...

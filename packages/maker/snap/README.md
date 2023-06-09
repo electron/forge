@@ -4,7 +4,7 @@
 
 You can only build the Snapcraft target on Linux systems with the `snapcraft` package installed.
 
-```
+```javascript
 {
   name: '@electron-forge/maker-snap',
   config: {
