@@ -264,7 +264,7 @@ export const listrMake = (
                      *   * Change the entire API of maker from a single constructor to
                      *     providing a MakerFactory
                      */
-                    await maker.prepareConfig(targetArch);
+                    await Promise.resolve(maker.prepareConfig(targetArch));
                     const artifacts = await maker.make({
                       appName,
                       forgeConfig,
