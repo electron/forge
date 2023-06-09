@@ -69,9 +69,9 @@ export default abstract class Maker<C> implements IForgeMaker {
 
   // TODO: Remove this, it is an eye-sore and is a nasty hack to provide forge
   //       v5 style functionality in the new API
-  prepareConfig(targetArch: ForgeArch): void {
+  async prepareConfig(targetArch: ForgeArch): Promise<void> {
     if (typeof this.configOrConfigFetcher === 'function') {
-      this.config = (this.configOrConfigFetcher as unknown as (arch: ForgeArch) => C)(targetArch);
+      this.config = await Promise.resolve((this.configOrConfigFetcher as (arch: ForgeArch) => C)(targetArch));
     } else {
       this.config = this.configOrConfigFetcher as C;
     }
