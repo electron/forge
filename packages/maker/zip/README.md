@@ -4,7 +4,7 @@
 
 Note: There are no configuration options for this target.
 
-```
+```javascript
 {
   name: '@electron-forge/maker-zip'
 }
