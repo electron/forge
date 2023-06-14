@@ -21,7 +21,7 @@ module.exports = {
       }
     }
   ]
-}
+};
 ```
 
 We recommend you set the `token`option using an environment variable, don't hard code into in your config.

@@ -20,10 +20,10 @@ module.exports = {
             preload: {
               js: './src/preload.js'
             }
-          }],
+          }]
         }
       }
     }
   ]
-}
+};
 ```

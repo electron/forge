@@ -20,7 +20,7 @@ module.exports = {
       }
     }
   ]
-}
+};
 ```
 
 If you run publish twice with the same version on the same platform, it is possible for your old artifacts to get overwritten in S3. It is your responsibility to ensure that you don't overwrite your own releases.
