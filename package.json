@@ -84,7 +84,7 @@
   },
   "devDependencies": {
     "@electron/fuses": ">=1.0.0",
-    "@electron/lint-roller": "^1.5.0",
+    "@electron/lint-roller": "^1.6.0",
     "@knodes/typedoc-plugin-monorepo-readmes": "0.22.5",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
