@@ -24,10 +24,10 @@ const forgeConfig = {
   plugins: [
     new FusesPlugin({
       version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
+      [FuseV1Options.RunAsNode]: false
       // ...any other options supported by @electron/fuses
-    }),
-  ],
+    })
+  ]
 };
 
 module.exports = forgeConfig;

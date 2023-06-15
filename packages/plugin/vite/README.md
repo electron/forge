@@ -16,21 +16,21 @@ module.exports = {
           {
             // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
             entry: 'src/main.js',
-            config: 'vite.main.config.mjs',
+            config: 'vite.main.config.mjs'
           },
           {
             entry: 'src/preload.js',
-            config: 'vite.preload.config.mjs',
-          },
+            config: 'vite.preload.config.mjs'
+          }
         ],
         renderer: [
           {
             name: 'main_window',
-            config: 'vite.renderer.config.mjs',
-          },
-        ],
-      },
-    },
-  ],
+            config: 'vite.renderer.config.mjs'
+          }
+        ]
+      }
+    }
+  ]
 };
 ```

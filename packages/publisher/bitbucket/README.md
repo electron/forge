@@ -21,9 +21,10 @@ module.exports = {
           username: 'myusername',
           appPassword: 'mysecretapppassword'
         }
+      }
     }
   ]
-}
+};
 ```
 
 Alternatively you can (and should) use environment variables for the authentication

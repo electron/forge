@@ -8,7 +8,7 @@ You can only build the Snapcraft target on Linux systems with the `snapcraft` pa
 {
   name: '@electron-forge/maker-snap',
   config: {
-    version: "1.1.0",
+    version: '1.1.0',
     features: {
       audio: true,
       mpris: 'com.example.mpris',

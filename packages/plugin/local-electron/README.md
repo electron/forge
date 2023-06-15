@@ -7,10 +7,14 @@ _Note: This plugin should only be used by people who are building Electron local
 ```javascript
 // forge.config.js
 
-{
-    name: '@electron-forge/plugin-local-electron',
-    config: {
-    electronPath: '/Users/me/projects/electron/out/Testing',
-    },
-},
+module.exports = {
+  plugins: [
+    {
+      name: '@electron-forge/plugin-local-electron',
+      config: {
+        electronPath: '/Users/me/projects/electron/out/Testing'
+      }
+    }
+  ]
+};
 ```

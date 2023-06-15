@@ -1173,10 +1173,10 @@
     global-agent "^3.0.0"
     global-tunnel-ng "^2.7.1"
 
-"@electron/lint-roller@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@electron/lint-roller/-/lint-roller-1.5.0.tgz#9b743979e1b03327e475fa696bb781eb2ea05ef2"
-  integrity sha512-205UxwJEx8zv5wLwPq4wMA0OYrJ7d1GuqOhPav0Uy2HWe4K+DZbSP50safCvZCSpI6Op3DMo79tp5i8VppuPWA==
+"@electron/lint-roller@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@electron/lint-roller/-/lint-roller-1.6.0.tgz#ff92da35379b25bce5cf99310ac541ce6a1500d5"
+  integrity sha512-R3x25b6OK/PQTONfs24FZaYyArS53e/fFB8IDpHFObVMXjkwU+1ePRwysk2jF23ifiQ1bY27llxzLOD+3UugBQ==
   dependencies:
     "@dsanders11/vscode-markdown-languageservice" "^0.3.0"
     glob "^8.1.0"
