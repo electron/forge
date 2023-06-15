@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-snapcraft",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "Snapcraft publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -15,7 +15,7 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "6.2.0",
+    "@electron-forge/publisher-base": "6.2.1",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {
