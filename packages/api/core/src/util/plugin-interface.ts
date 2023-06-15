@@ -47,7 +47,7 @@ export default class PluginInterface implements IForgePluginInterface {
         return new Plugin(opts);
       }
 
-      throw new Error(`Expected plugin to either be a plugin instance or a { name, config } object but found ${plugin}`);
+      throw new Error(`Expected plugin to either be a plugin instance or a { name, config } object but found ${JSON.stringify(plugin)}`);
     });
     // TODO: fix hack
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
