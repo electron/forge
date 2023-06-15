@@ -1,7 +1,6 @@
 import os from 'os';
 import path from 'path';
 
-import { ForgeArch } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import fs from 'fs-extra';
 import got from 'got';
@@ -14,7 +13,7 @@ describe('MakerZip', () => {
   let ensureDirectoryStub: SinonStub;
   let config: MakerZIPConfig;
   let maker: MakerZIP;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = path.resolve(__dirname, 'fixture', 'fake-app');
   const darwinDir = path.resolve(__dirname, 'fixture', 'fake-darwin-app');
@@ -25,16 +24,16 @@ describe('MakerZip', () => {
   let getStub: SinonStub;
   let isoString: SinonStub;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
     config = {};
 
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerZIP(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
     getStub = stub(got, 'get');
     isoString = stub(Date.prototype, 'toISOString');
   });

@@ -1,7 +1,6 @@
 import path from 'path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
@@ -23,7 +22,7 @@ describe('MakerPKG', () => {
   let renameStub: SinonStub;
   let config: MakerPKGConfig;
   let maker: MakerImpl;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = '/my/test/dir/out';
   const makeDir = '/my/test/dir/make';
@@ -31,7 +30,7 @@ describe('MakerPKG', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureFileStub = stub().returns(Promise.resolve());
     osxSignStub = stub();
     renameStub = stub().returns(Promise.resolve());
@@ -49,12 +48,12 @@ describe('MakerPKG', () => {
           rename: renameStub,
         },
       }).default;
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerDMG(config);
       maker.ensureFile = ensureFileStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
   });
 
   it('should pass through correct defaults', async () => {
