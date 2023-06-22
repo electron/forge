@@ -11,7 +11,11 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     super(c);
 
     this.getHooks = this.getHooks.bind(this);
-    this.startLogic = this.startLogic.bind(this);
+
+    if (this.enabled) {
+      this.checkPlatform(process.platform);
+      process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
+    }
   }
 
   get enabled(): boolean {
@@ -19,14 +23,6 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
       return true;
     }
     return this.config.enabled;
-  }
-
-  async startLogic(): Promise<false> {
-    if (this.enabled) {
-      this.checkPlatform(process.platform);
-      process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
-    }
-    return false;
   }
 
   getHooks(): ForgeHookMap {

@@ -28,6 +28,12 @@ export function pluginCompileExists(packageJSON: PackageJSON): boolean {
 }
 
 export default async function locateElectronExecutable(dir: string, packageJSON: PackageJSON): Promise<string> {
+  const overrideDist = process.env.ELECTRON_OVERRIDE_DIST_PATH;
+  if (overrideDist) {
+    console.info('Using electron dist from ELECTRON_OVERRIDE_DIST_PATH: ' + overrideDist);
+    return overrideDist;
+  }
+
   let electronModulePath: string | undefined = await getElectronModulePath(dir, packageJSON);
   if (electronModulePath?.endsWith('electron-prebuilt-compile') && !pluginCompileExists(packageJSON)) {
     console.warn(
