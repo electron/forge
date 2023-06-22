@@ -46,6 +46,10 @@ describe('LocalElectronPlugin', () => {
       p.init();
     });
 
+    after(() => {
+      delete process.env.ELECTRON_OVERRIDE_DIST_PATH;
+    });
+
     describe('with afterExtract hook', () => {
       let tmpDir: string;
 
