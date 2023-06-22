@@ -33,9 +33,7 @@ describe('LocalElectronPlugin', () => {
 
     it("should throw an error if platforms don't match", async () => {
       const p = new LocalElectronPlugin({ electronPath: 'test/bar', electronPlatform: 'wut' });
-      await expect(p.init()).to.eventually.be.rejectedWith(
-        `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`
-      );
+      expect(p.init).to.throw(`Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`);
     });
   });
 
