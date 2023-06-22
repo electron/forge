@@ -11,12 +11,14 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     super(c);
 
     this.getHooks = this.getHooks.bind(this);
+  }
 
+  init = (): void => {
     if (this.enabled) {
       this.checkPlatform(process.platform);
       process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
     }
-  }
+  };
 
   get enabled(): boolean {
     if (typeof this.config.enabled === 'undefined') {
