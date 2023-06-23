@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-deb",
-  "version": "6.1.1",
+  "version": "6.2.1",
   "description": "Deb maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -18,8 +18,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.1.1",
-    "@electron-forge/shared-types": "6.1.1"
+    "@electron-forge/maker-base": "6.2.1",
+    "@electron-forge/shared-types": "6.2.1"
   },
   "optionalDependencies": {
     "electron-installer-debian": "^3.0.0"

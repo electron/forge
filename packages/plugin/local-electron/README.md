@@ -4,13 +4,17 @@ This plugin allows you to both run and build your app using a local build of Ele
 
 _Note: This plugin should only be used by people who are building Electron locally themselves. If you want to set up a local build of Electron, you should check out [Electron Build Tools](https://github.com/electron/build-tools)._
 
-```
+```javascript
 // forge.config.js
 
-{
-    name: '@electron-forge/plugin-local-electron',
-    config: {
-    electronPath: '/Users/me/projects/electron/out/Testing',
-    },
-},
+module.exports = {
+  plugins: [
+    {
+      name: '@electron-forge/plugin-local-electron',
+      config: {
+        electronPath: '/Users/me/projects/electron/out/Testing'
+      }
+    }
+  ]
+};
 ```

@@ -50,13 +50,14 @@ describe('FusesPlugin', () => {
       platform: process.platform,
     });
 
+    const args: string[] = process.platform === 'linux' ? ['-v', '--no-sandbox'] : ['-v'];
     /**
      * If the `RunAsNode` fuse had not been flipped,
      * this would return the Node.js version (e.g. `v14.16.0`)
      * instead of the `console.log` from `main.js`.
      */
     const output = (
-      await spawn(electronExecutablePath, ['-v'], {
+      await spawn(electronExecutablePath, args, {
         env: {
           ELECTRON_RUN_AS_NODE: '1',
         },

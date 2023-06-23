@@ -1,5 +1,7 @@
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    asar: true,
+  },
   rebuildConfig: {},
   makers: [
     {
@@ -20,6 +22,10 @@ module.exports = {
     },
   ],
   plugins: [
+    {
+      name: '@electron-forge/plugin-auto-unpack-natives',
+      config: {},
+    },
     {
       name: '@electron-forge/plugin-webpack',
       config: {

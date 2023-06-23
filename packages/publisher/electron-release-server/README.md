@@ -6,7 +6,6 @@ Please note that Electron Release Server is a community powered project and is n
 
 Configuration options are documented in [`PublisherERSConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_electron_release_server.PublisherERSConfig.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...
@@ -20,5 +19,5 @@ module.exports = {
       }
     }
   ]
-}
+};
 ```

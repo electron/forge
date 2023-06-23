@@ -60,6 +60,13 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           await Promise.all([this.build(), this.buildRenderer()]);
         }, 'Building vite bundles'),
       ],
+      postStart: async (_config, child) => {
+        d('hooking electron process exit');
+        child.on('exit', () => {
+          if (child.restarted) return;
+          this.exitHandler({ cleanup: true, exit: true });
+        });
+      },
     };
   };
 

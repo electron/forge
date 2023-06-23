@@ -7,7 +7,6 @@ Check out the README at [`atlassian/nucleus`](https://github.com/atlassian/nucle
 Configuration options are documented in [`Publisher
 NucleusConfig](https://js.electronforge.io/interfaces/_electron_forge_publisher_nucleus.PublisherNucleusConfig.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...
@@ -22,7 +21,7 @@ module.exports = {
       }
     }
   ]
-}
+};
 ```
 
 We recommend you set the `token`option using an environment variable, don't hard code into in your config.

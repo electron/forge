@@ -23,7 +23,7 @@ describe('MakerDeb', () => {
   let ensureDirectoryStub: SinonStub;
   let config: MakerDebConfig;
   let maker: MakerImpl;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/foo/bar/make');
@@ -31,7 +31,7 @@ describe('MakerDeb', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
     eidStub = stub().returns({ packagePaths: ['/foo/bar.deb'] });
     config = {};
@@ -39,12 +39,12 @@ describe('MakerDeb', () => {
     MakerDeb = proxyquire.noPreserveCache().noCallThru().load('../src/MakerDeb', {
       'electron-installer-debian': eidStub,
     }).default;
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerDeb(config, []);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
   });
 
   it('should pass through correct defaults', async () => {
@@ -74,7 +74,7 @@ describe('MakerDeb', () => {
       },
     } as Record<string, unknown>;
 
-    createMaker();
+    await createMaker();
 
     await (maker.make as MakeFunction)({
       dir,
