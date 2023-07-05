@@ -10,7 +10,7 @@ executors:
       - image: cimg/base:stable
   macos:
     macos:
-      xcode: '14.0.0'
+      xcode: '14.3.0'
     resource_class: macos.x86.medium.gen2
   windows:
     machine:
