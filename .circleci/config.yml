@@ -23,8 +23,8 @@ commands:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '14.18.0'
-      - run: nvm use 14.18.0
+          node-version: '16.20.1'
+      - run: nvm use 16.20.1
       - checkout
       - restore_cache:
           name: Restore Cached Dependencies
