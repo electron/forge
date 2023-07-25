@@ -10,11 +10,11 @@ executors:
       - image: cimg/base:stable
   macos:
     macos:
-      xcode: '13.4.0'
+      xcode: '14.3.0'
     resource_class: macos.x86.medium.gen2
   windows:
     machine:
-      image: windows-server-2019-vs2019:stable
+      image: windows-server-2022-gui:stable
       resource_class: windows.medium
       shell: bash
 
@@ -23,8 +23,8 @@ commands:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '14.18.0'
-      - run: nvm use 14.18.0
+          node-version: '18.15.0'
+      - run: nvm use 18.15.0
       - checkout
       - restore_cache:
           name: Restore Cached Dependencies
