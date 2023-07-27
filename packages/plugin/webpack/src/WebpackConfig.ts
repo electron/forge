@@ -184,6 +184,7 @@ export default class WebpackConfigGenerator {
           __dirname: false,
           __filename: false,
         },
+        plugins: [new AssetRelocatorPatch(this.isProd, !!this.pluginConfig.renderer.nodeIntegration)],
       },
       rendererConfig || {},
       { target: 'electron-preload' }
