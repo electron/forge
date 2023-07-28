@@ -38,7 +38,7 @@ const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promis
 export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch): string => {
   switch (platform) {
     case 'darwin':
-      return 'osx_64';
+      return arch === 'arm64' ? 'osx_arm64' : 'osx_64';
     case 'linux':
       return arch === 'ia32' ? 'linux_32' : 'linux_64';
     case 'win32':
