@@ -6,3 +6,6 @@ ci
 docs
 tsconfig.json
 tsconfig.tsbuildinfo
+
+.eslintrc.json
+.eslintignore
