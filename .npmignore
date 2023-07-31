@@ -1,8 +1,8 @@
 *-error.log
-src
 doc
 README.md
 test
 ci
 docs
-/index.ts
+tsconfig.json
+tsconfig.tsbuildinfo
