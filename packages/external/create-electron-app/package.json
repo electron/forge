@@ -11,5 +11,8 @@
   },
   "bin": {
     "create-electron-app": "dist/index.js"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
