@@ -13,6 +13,7 @@
     "create-electron-app": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

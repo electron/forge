@@ -8,6 +8,7 @@
   "main": "dist/FusesPlugin.js",
   "files": [
     "dist",
+    "src",
     "package.json",
     "README.md"
   ],
@@ -35,8 +36,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

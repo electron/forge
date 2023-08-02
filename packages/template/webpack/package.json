@@ -28,6 +28,7 @@
   },
   "files": [
     "dist",
+    "src",
     "tmpl"
   ]
 }

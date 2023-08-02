@@ -26,6 +26,7 @@
     "chai": "^4.3.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

@@ -33,6 +33,7 @@
   },
   "files": [
     "dist",
+    "src",
     "tmpl"
   ]
 }
