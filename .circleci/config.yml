@@ -32,7 +32,7 @@ jobs:
   fast-tests:
     parameters:
       executor:
-        type: executor
+        type: string
       arch:
         type: enum
         enum: ['x64', 'arm64']
@@ -62,7 +62,7 @@ jobs:
   slow-tests:
     parameters:
       executor:
-        type: executor
+        type: string
       arch:
         type: enum
         enum: ['x64', 'arm64']
