@@ -103,8 +103,6 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
   }
 }
 
-type MaybeESM<T> = T | { default: T };
-
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
   let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
@@ -124,8 +122,11 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig>;
-      forgeConfig = 'default' in loaded ? loaded.default : loaded;
+      let loaded = require(path.resolve(dir, forgeConfig as string));
+      if (typeof loaded === 'function') {
+        loaded = await loaded();
+      }
+      forgeConfig = ('default' in loaded ? loaded.default : loaded) as ForgeConfig;
     } catch (err) {
       console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
