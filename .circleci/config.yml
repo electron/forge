@@ -62,7 +62,7 @@ jobs:
   slow-tests:
     parameters:
       executor:
-        type: string
+        type: executor
       arch:
         type: enum
         enum: ['x64', 'arm64']
