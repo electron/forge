@@ -1,22 +1,7 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@5.1.0
-  win: circleci/windows@5.0.0
-
-executors:
-  linux:
-    docker:
-      - image: cimg/base:stable
-  macos:
-    macos:
-      xcode: '14.3.0'
-    resource_class: macos.x86.medium.gen2
-  windows:
-    machine:
-      image: windows-server-2022-gui:stable
-      resource_class: windows.medium
-      shell: bash
+  node: electronjs/node@1.1.0
 
 commands:
   install:
@@ -24,33 +9,21 @@ commands:
       - run: git config --global core.autocrlf input
       - node/install:
           node-version: '18.15.0'
-      - run: nvm use 18.15.0
       - checkout
-      - restore_cache:
-          name: Restore Cached Dependencies
-          keys:
-            - v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
-            - v1-dependencies-{{ arch }}
-      - run: npm install --global yarn
-      - save_cache:
-          name: Cache Installed Dependencies
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ arch }}-{{ checksum "yarn.lock" }}
   run-fast-tests:
     steps:
+      - node/install-packages
       - run:
           command: |
-            yarn install
             yarn lint
             yarn syncpack
             yarn build
             yarn test:fast
   run-slow-tests:
     steps:
+      - node/install-packages
       - run:
           command: |
-            yarn install
             yarn lint
             yarn build
             yarn test:slow
@@ -58,17 +31,17 @@ commands:
 jobs:
   fast-tests:
     parameters:
-      platform:
-        type: string
+      executor:
+        type: executor
       arch:
         type: enum
         enum: ['x64', 'arm64']
-    executor: << parameters.platform >>
+    executor: << parameters.executor >>
     steps:
       - install
       - when:
           condition:
-            equal: ['linux', << parameters.platform >>]
+            equal: [node/linux, << parameters.executor >>]
           steps:
             - run:
                 name: Linux specific setup
@@ -88,37 +61,37 @@ jobs:
       - run-fast-tests
   slow-tests:
     parameters:
-      platform:
+      executor:
         type: string
       arch:
         type: enum
         enum: ['x64', 'arm64']
-    executor: << parameters.platform >>
+    executor: << parameters.executor >>
     steps:
       - install
       - when:
           condition:
-            equal: ['windows', << parameters.platform >>]
+            equal: [node/windows, << parameters.executor >>]
           steps:
-            run:
-              name: setup Windows and run slow tests
-              shell: powershell.exe -ExecutionPolicy Bypass
-              command: |
-                Write-Output "Installing WiX Toolset"
-                choco install --no-progress -y wixtoolset
-                Write-Output "Reloading PATH"
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+            - node/install-packages
+            - run:
+                name: setup Windows and run slow tests
+                shell: powershell.exe -ExecutionPolicy Bypass
+                command: |
+                  Write-Output "Installing WiX Toolset"
+                  choco install --no-progress -y wixtoolset
+                  Write-Output "Reloading PATH"
+                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                  [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
+                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                  npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
 
-                yarn install
-                yarn lint
-                yarn build
-                yarn test:slow
+                  yarn lint
+                  yarn build
+                  yarn test:slow
       - when:
           condition:
-            equal: ['linux', << parameters.platform >>]
+            equal: [node/linux, << parameters.executor >>]
           steps:
             - run:
                 name: Linux specific setup
@@ -137,8 +110,8 @@ jobs:
       - when:
           condition:
             or:
-              - equal: ['macos', << parameters.platform >>]
-              - equal: ['linux', << parameters.platform >>]
+              - equal: [node/macos, << parameters.executor >>]
+              - equal: [node/linux, << parameters.executor >>]
           steps:
             - run-slow-tests
 
@@ -148,20 +121,20 @@ workflows:
       - fast-tests:
           matrix:
             parameters:
-              platform: [windows, linux, macos]
+              executor: [node/windows, node/linux, node/macos]
               arch: [x64, arm64]
             exclude:
-              - platform: windows
+              - executor: node/windows
                 arch: arm64
-              - platform: linux
+              - executor: node/linux
                 arch: arm64
       - slow-tests:
           matrix:
             parameters:
-              platform: [windows, linux, macos]
+              executor: [node/windows, node/linux, node/macos]
               arch: [x64, arm64]
             exclude:
-              - platform: windows
+              - executor: node/windows
                 arch: arm64
-              - platform: linux
+              - executor: node/linux
                 arch: arm64
