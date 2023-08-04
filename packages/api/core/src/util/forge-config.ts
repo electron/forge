@@ -126,11 +126,9 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      let loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig> | AsyncFn;
-      if (typeof loaded === 'function') {
-        loaded = await loaded();
-      }
-      forgeConfig = 'default' in loaded ? loaded.default : loaded;
+      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig> | AsyncFn;
+      const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
+      forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
       console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
       throw err;
