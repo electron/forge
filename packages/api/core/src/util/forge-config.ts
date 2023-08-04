@@ -104,7 +104,7 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
 }
 
 type MaybeESM<T> = T | { default: T };
-type AsyncFn = () => Promise<ForgeConfig>;
+type AsyncForgeConfigGenerator = () => Promise<ForgeConfig>;
 
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const packageJSON = await readRawPackageJson(dir);
@@ -126,7 +126,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig> | AsyncFn;
+      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
