@@ -6,7 +6,6 @@ This publish target is for Bitbucket Cloud only and will not work with self host
 
 Configuration options are documented in [`PublisherBitbucketConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_bitbucket.PublisherBitbucketConfig.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...
@@ -22,19 +21,20 @@ module.exports = {
           username: 'myusername',
           appPassword: 'mysecretapppassword'
         }
+      }
     }
   ]
-}
+};
 ```
 
 Alternatively you can (and should) use environment variables for the authentication
 
-```
-//env.sh
+```sh
+# env.sh
 BITBUCKET_USERNAME="myusername"
 BITBUCKET_APP_PASSWORD="mysecretapppassword"
 ```
 
-```
+```sh
 source env.sh
 ```

@@ -1,0 +1,140 @@
+version: 2.1
+
+orbs:
+  node: electronjs/node@1.1.0
+
+commands:
+  install:
+    steps:
+      - run: git config --global core.autocrlf input
+      - node/install:
+          node-version: '18.15.0'
+      - checkout
+  run-fast-tests:
+    steps:
+      - node/install-packages
+      - run:
+          command: |
+            yarn lint
+            yarn syncpack
+            yarn build
+            yarn test:fast
+  run-slow-tests:
+    steps:
+      - node/install-packages
+      - run:
+          command: |
+            yarn lint
+            yarn build
+            yarn test:slow
+
+jobs:
+  fast-tests:
+    parameters:
+      executor:
+        type: string
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.executor >>
+    steps:
+      - install
+      - when:
+          condition:
+            equal: [node/linux, << parameters.executor >>]
+          steps:
+            - run:
+                name: Linux specific setup
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    --no-install-recommends \
+                    xvfb \
+                    libnss3 \
+                    libasound2 \
+                    libatk1.0-0 \
+                    libatk-bridge2.0-0 \
+                    libgdk-pixbuf2.0-dev \
+                    libgtk-3-0 \
+                    libgbm1
+                  sudo add-apt-repository -y ppa:alexlarsson/flatpak
+      - run-fast-tests
+  slow-tests:
+    parameters:
+      executor:
+        type: string
+      arch:
+        type: enum
+        enum: ['x64', 'arm64']
+    executor: << parameters.executor >>
+    steps:
+      - install
+      - when:
+          condition:
+            equal: [node/windows, << parameters.executor >>]
+          steps:
+            - node/install-packages
+            - run:
+                name: setup Windows and run slow tests
+                shell: powershell.exe -ExecutionPolicy Bypass
+                command: |
+                  Write-Output "Installing WiX Toolset"
+                  choco install --no-progress -y wixtoolset
+                  Write-Output "Reloading PATH"
+                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                  [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
+                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                  npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+
+                  yarn lint
+                  yarn build
+                  yarn test:slow
+      - when:
+          condition:
+            equal: [node/linux, << parameters.executor >>]
+          steps:
+            - run:
+                name: Linux specific setup
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    --no-install-recommends \
+                    xvfb \
+                    libnss3 \
+                    libasound2 \
+                    libatk1.0-0 \
+                    libatk-bridge2.0-0 \
+                    libgdk-pixbuf2.0-dev \
+                    libgtk-3-0 \
+                    libgbm1
+      - when:
+          condition:
+            or:
+              - equal: [node/macos, << parameters.executor >>]
+              - equal: [node/linux, << parameters.executor >>]
+          steps:
+            - run-slow-tests
+
+workflows:
+  tests:
+    jobs:
+      - fast-tests:
+          matrix:
+            parameters:
+              executor: [node/windows, node/linux, node/macos]
+              arch: [x64, arm64]
+            exclude:
+              - executor: node/windows
+                arch: arm64
+              - executor: node/linux
+                arch: arm64
+      - slow-tests:
+          matrix:
+            parameters:
+              executor: [node/windows, node/linux, node/macos]
+              arch: [x64, arm64]
+            exclude:
+              - executor: node/windows
+                arch: arm64
+              - executor: node/linux
+                arch: arm64

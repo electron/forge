@@ -106,7 +106,7 @@ export const listrMake = (
       collapseErrors: false,
     },
     rendererSilent: !interactive,
-    rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+    rendererFallback: Boolean(process.env.DEBUG),
   };
 
   const runner = new Listr<MakeContext>(
@@ -264,7 +264,7 @@ export const listrMake = (
                      *   * Change the entire API of maker from a single constructor to
                      *     providing a MakerFactory
                      */
-                    maker.prepareConfig(targetArch);
+                    await Promise.resolve(maker.prepareConfig(targetArch));
                     const artifacts = await maker.make({
                       appName,
                       forgeConfig,

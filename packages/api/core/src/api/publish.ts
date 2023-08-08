@@ -85,7 +85,7 @@ const publish = async ({
       collapseErrors: false,
     },
     rendererSilent: !interactive,
-    rendererFallback: Boolean(process.env.DEBUG && process.env.DEBUG.includes('electron-forge')),
+    rendererFallback: Boolean(process.env.DEBUG),
   };
 
   const publishDistributablesTasks = [
@@ -217,11 +217,16 @@ const publish = async ({
                     d('restoring publish settings from dry run');
 
                     for (const makeResult of restoredMakeResults) {
-                      for (const makePath of makeResult.artifacts) {
-                        if (!(await fs.pathExists(makePath))) {
-                          throw new Error(`Attempted to resume a dry run but an artifact (${makePath}) could not be found`);
-                        }
-                      }
+                      makeResult.artifacts = await Promise.all(
+                        makeResult.artifacts.map(async (makePath: string) => {
+                          // standardize the path to artifacts across platforms
+                          const normalizedPath = makePath.split(/\/|\\/).join(path.sep);
+                          if (!(await fs.pathExists(normalizedPath))) {
+                            throw new Error(`Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`);
+                          }
+                          return normalizedPath;
+                        })
+                      );
                     }
 
                     d('publishing for given state set');

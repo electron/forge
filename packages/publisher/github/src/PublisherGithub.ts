@@ -90,39 +90,36 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
       };
       updateUploadStatus();
 
-      const flatArtifacts: string[] = [];
-      for (const artifact of artifacts) {
-        flatArtifacts.push(...artifact.artifacts);
-      }
-
       await Promise.all(
-        flatArtifacts.map(async (artifactPath) => {
-          const done = () => {
-            uploaded += 1;
-            updateUploadStatus();
-          };
-          const artifactName = path.basename(artifactPath);
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
+        artifacts
+          .flatMap((artifact) => artifact.artifacts)
+          .map(async (artifactPath) => {
+            const done = () => {
+              uploaded += 1;
+              updateUploadStatus();
+            };
+            const artifactName = path.basename(artifactPath);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
+              return done();
+            }
+            await github.getGitHub().repos.uploadReleaseAsset({
+              owner: config.repository.owner,
+              repo: config.repository.name,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              release_id: release!.id,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              url: release!.upload_url,
+              // https://github.com/octokit/rest.js/issues/1645
+              data: (await fs.readFile(artifactPath)) as unknown as string,
+              headers: {
+                'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
+                'content-length': (await fs.stat(artifactPath)).size,
+              },
+              name: path.basename(artifactPath),
+            });
             return done();
-          }
-          await github.getGitHub().repos.uploadReleaseAsset({
-            owner: config.repository.owner,
-            repo: config.repository.name,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            release_id: release!.id,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            url: release!.upload_url,
-            // https://github.com/octokit/rest.js/issues/1645
-            data: (await fs.readFile(artifactPath)) as unknown as string,
-            headers: {
-              'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
-              'content-length': (await fs.stat(artifactPath)).size,
-            },
-            name: path.basename(artifactPath),
-          });
-          return done();
-        })
+          })
       );
     }
   }

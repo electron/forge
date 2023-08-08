@@ -18,7 +18,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
-const pmCmd = process.platform === 'win32' ? which.sync('npm.cmd') : 'npm';
+const pmCmd = process.platform === 'win32' ? `"${which.sync('npm.cmd')}"` : 'npm';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {

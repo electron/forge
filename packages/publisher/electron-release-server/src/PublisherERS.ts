@@ -11,10 +11,19 @@ import { PublisherERSConfig } from './Config';
 
 const d = debug('electron-forge:publish:ers');
 
+interface ERSAsset {
+  name: string;
+  platform: string;
+}
+
+interface ERSFlavor {
+  name: string;
+}
+
 interface ERSVersion {
   name: string;
-  assets: { name: string }[];
-  flavor?: string;
+  assets: ERSAsset[];
+  flavor: ERSFlavor;
 }
 
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
@@ -29,7 +38,7 @@ const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promis
 export const ersPlatform = (platform: ForgePlatform, arch: ForgeArch): string => {
   switch (platform) {
     case 'darwin':
-      return 'osx_64';
+      return arch === 'arm64' ? 'osx_arm64' : 'osx_64';
     case 'linux':
       return arch === 'ia32' ? 'linux_32' : 'linux_64';
     case 'win32':
@@ -71,20 +80,21 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
     const authFetch = (apiPath: string, options?: RequestInit) =>
       fetchAndCheckStatus(api(apiPath), { ...(options || {}), headers: { ...(options || {}).headers, Authorization: `Bearer ${token}` } });
 
-    const versions: ERSVersion[] = await (await authFetch('api/version')).json();
     const flavor = config.flavor || 'default';
 
     for (const makeResult of makeResults) {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
-      const existingVersion = versions.find((version) => {
-        return version.name === packageJSON.version && (!version.flavor || version.flavor === flavor);
-      });
+      const versions: ERSVersion[] = await (await authFetch('api/version')).json();
+      // Find the version with the same name and flavor
+      const existingVersion = versions.find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
 
       let channel = 'stable';
       if (config.channel) {
         channel = config.channel;
+      } else if (packageJSON.version.includes('rc')) {
+        channel = 'rc';
       } else if (packageJSON.version.includes('beta')) {
         channel = 'beta';
       } else if (packageJSON.version.includes('alpha')) {
@@ -95,12 +105,11 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
         await authFetch('api/version', {
           method: 'POST',
           body: JSON.stringify({
-            channel: {
-              name: channel,
-            },
-            flavor: config.flavor,
+            channel: channel,
+            flavor: flavor,
             name: packageJSON.version,
             notes: '',
+            id: packageJSON.version + '_' + channel,
           }),
           headers: {
             'Content-Type': 'application/json',
@@ -113,10 +122,10 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       updateStatusLine();
 
       await Promise.all(
-        artifacts.map(async (artifactPath) => {
+        artifacts.map(async (artifactPath: string) => {
+          const platform = ersPlatform(makeResult.platform, makeResult.arch);
           if (existingVersion) {
-            const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath));
-
+            const existingAsset = existingVersion.assets.find((asset) => asset.name === path.basename(artifactPath) && asset.platform === platform);
             if (existingAsset) {
               d('asset at path:', artifactPath, 'already exists on server');
               uploaded += 1;
@@ -127,9 +136,8 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           d('attempting to upload asset:', artifactPath);
           const artifactForm = new FormData();
           artifactForm.append('token', token);
-          artifactForm.append('version', packageJSON.version);
-          artifactForm.append('platform', ersPlatform(makeResult.platform, makeResult.arch));
-
+          artifactForm.append('version', `${packageJSON.version}_${flavor}`);
+          artifactForm.append('platform', platform);
           // see https://github.com/form-data/form-data/issues/426
           const fileOptions = {
             knownLength: fs.statSync(artifactPath).size,

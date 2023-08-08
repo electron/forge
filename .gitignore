@@ -5,6 +5,7 @@ dist
 docs
 doc
 node_modules
+lerna-debug.log
 yarn-error.log
 packages/**/.npmignore
 packages/**/tsconfig.json
@@ -22,4 +23,5 @@ packages/**/.swc
 .webpack
 packages/api/core/test/fixture/app-with-scoped-name/out/make
 packages/plugin/webpack/test/fixtures/apps/native-modules/package-lock.json
+packages/plugin/fuses/test/fixture/app
 .links

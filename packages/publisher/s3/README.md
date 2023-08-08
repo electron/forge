@@ -8,7 +8,6 @@ ${config.folder || appVersion}/${artifactName}
 
 Configuration options are documented in [PublisherS3Config](https://js.electronforge.io/interfaces/_electron_forge_publisher_s3.PublisherS3Config.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...
@@ -21,7 +20,7 @@ module.exports = {
       }
     }
   ]
-}
+};
 ```
 
 If you run publish twice with the same version on the same platform, it is possible for your old artifacts to get overwritten in S3. It is your responsibility to ensure that you don't overwrite your own releases.

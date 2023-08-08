@@ -4,7 +4,6 @@
 
 Configuration options are documented in [`PublisherGithubConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_github.PublisherGitHubConfig.html).
 
-
 ```javascript title=forge.config.js
 module.exports = {
   // ...
@@ -20,6 +19,5 @@ module.exports = {
       }
     }
   ]
-}
-```
+};
 ```

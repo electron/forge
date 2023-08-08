@@ -36,6 +36,33 @@ in the issue tracker to denote fairly-well-scoped-out bugs or feature requests t
 can pick up and work on. If any of those labeled issues do not have enough information, please feel
 free to ask constructive questions. (This applies to any open issue.)
 
+## Running Forge locally
+
+The easiest way to test changes to Forge during development is by symlinking your local packages
+to a sample Forge project.
+
+To create symlinks your local Forge packages, use the `yarn link:prepare` command after
+building Forge.
+
+```sh
+yarn build
+yarn link:prepare
+```
+
+Then, you want to initialize a new project with the `electron-forge init` command (which is the
+underlying CLI command for `create-electron-app`). To use the symlinks you created in the last step,
+pass in the `LINK_FORGE_DEPENDENCIES_ON_INIT=1` environment variable.
+
+You can choose to run this command via your local build as shown below or run the production init
+for versions 6.0.1 and up.
+
+```sh
+LINK_FORGE_DEPENDENCIES_ON_INIT=1 node path/to/forge/packages/api/cli/dist/electron-forge-init.js my-app
+```
+
+Forge commands executed in your `my-app` sample project should reflect any changes in your local
+Forge build. (Make sure to run `yarn build:fast` or `yarn build` between code changes.)
+
 ## Documentation changes
 
 When changing the API documentation, here are some rules to keep in mind.
@@ -98,23 +125,38 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 - If you are continuing the work of another person's PR and need to rebase/squash, please retain the
   attribution of the original author(s) and continue the work in subsequent commits.
 
-### Release process
+## Release process
 
-- Make sure the tests pass with `yarn test`
-- Run `git clean -fdx` - this will ensure unneeded build files (and potentially sensitive files) are not included in the npm package.
-- Ensure that you are logged into npm via command line (`npm login`)
-- Run `yarn lerna:publish`, which will run the `lerna publish` command with a necessary set of flags.
-  - The script will then ask you for your `npm` OTP password.
-  - The script will commit the changes automatically. Run `git log` to confirm that the changes have been
-    committed.
-- The command will have published your packages to `npm`, and pushed an appropriate tag to github.
-- After running the command, you should have a commit which:
-  - Updates the version field in the package.json file
-  - Updates the version fields in each of the submodule package.json files
-- Push your commit upstream to the main/default branch.
-- Create a new github release
-  - Go to releases tab
-  - Draft a new release and choose the appropriate tag
-  - Target default branch
-  - Generate release notes by copying in CHANGELOG.md contents into the release description or use
-    GitHub's [automatically generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)
+This guide is for maintainers who have:
+
+- Push access to the `electron/forge` repository.
+- Collaborator access to the `@electron-forge` packages on npm.
+
+### 1. Prepare your local code checkout
+
+- Switch to the tip of the `main` branch with `git switch main && git pull`.
+- Run tests locally with `yarn test`.
+- Check that the latest CI run passed on `main` on [GitHub](https://github.com/electron/forge/actions?query=workflow:CI).
+- Remove all untracked files and directories from your checkout with `git clean -fdx`.
+- Install dependencies with `yarn install`.
+
+### 2. Publish all npm packages
+
+- Log into npm with `npm login`.
+- Run the `yarn lerna:publish` command.
+- Enter your npm account's time-based one-time password (TOTP).
+
+The `lerna:publish` script will automatically increment the next package version based on the
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard. From there, it does two things:
+
+1. It creates a tagged commit that bumps the version number in `package.json` at the root and package levels
+   and pushes the commit and tag to GitHub.
+1. It publishes every `@electron-forge/` package to npm.
+
+### 3. Publish release to GitHub
+
+- Go to the repo's [New Release](https://github.com/electron/forge/releases/new) page.
+- Select tag you just published.
+- Target the `main` branch.
+- [Automatically generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)
+  against the previous Forge release.

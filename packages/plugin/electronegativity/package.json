@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-electronegativity",
-  "version": "6.0.3",
+  "version": "6.2.1",
   "description": "Integrate Electronegativity into the Electron Forge workflow",
   "repository": {
     "type": "git",
@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@doyensec/electronegativity": "^1.9.1",
-    "@electron-forge/plugin-base": "^6.0.3",
-    "@electron-forge/shared-types": "^6.0.3"
+    "@electron-forge/plugin-base": "6.2.1",
+    "@electron-forge/shared-types": "6.2.1"
   },
   "publishConfig": {
     "access": "public"

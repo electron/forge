@@ -1,0 +1,41 @@
+{
+  "name": "@electron-forge/plugin-vite",
+  "version": "6.2.1",
+  "description": "Vite plugin for Electron Forge, lets you use Vite directly in your tooling",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electron/forge",
+    "directory": "packages/plugin/vite"
+  },
+  "author": "caoxiemeihao",
+  "license": "MIT",
+  "main": "dist/VitePlugin.js",
+  "typings": "dist/VitePlugin.d.ts",
+  "scripts": {
+    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts"
+  },
+  "devDependencies": {
+    "@malept/cross-spawn-promise": "^2.0.0",
+    "@types/node": "^18.0.3",
+    "chai": "^4.3.3",
+    "fs-extra": "^10.0.0",
+    "mocha": "^9.0.1",
+    "which": "^2.0.2",
+    "xvfb-maybe": "^0.2.1"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "dependencies": {
+    "@electron-forge/core-utils": "6.2.1",
+    "@electron-forge/plugin-base": "6.2.1",
+    "@electron-forge/shared-types": "6.2.1",
+    "@electron-forge/web-multi-logger": "6.2.1",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.1",
+    "vite": "^4.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

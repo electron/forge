@@ -21,6 +21,10 @@ type S3Artifact = {
 export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
   name = 's3';
 
+  private s3KeySafe = (key: string) => {
+    return key.replace(/@/g, '_').replace(/\//g, '_');
+  };
+
   async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
 
@@ -32,7 +36,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       artifacts.push(
         ...makeResult.artifacts.map((artifact) => ({
           path: artifact,
-          keyPrefix: this.config.folder || makeResult.packageJSON.version,
+          keyPrefix: this.config.folder || this.s3KeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
         }))
@@ -57,6 +61,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         d('uploading:', artifact.path);
         const uploader = new Upload({
           client: s3Client,
+          leavePartsOnError: true,
           params: {
             Body: fs.createReadStream(artifact.path),
             Bucket: this.config.bucket,
@@ -84,7 +89,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
     }
 
-    return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
+    return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;
   }
 
   generateCredentials(): Credentials | undefined {

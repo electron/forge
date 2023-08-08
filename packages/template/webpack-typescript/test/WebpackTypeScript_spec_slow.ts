@@ -7,11 +7,13 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
+import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
 describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
 
   before(async () => {
+    await yarnOrNpmSpawn(['link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -74,6 +76,11 @@ describe('WebpackTypeScriptTemplate', () => {
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
+
+      // Installing deps removes symlinks that were added at the start of this
+      // spec via `api.init`. So we should re-link local forge dependencies
+      // again.
+      await initLink(dir);
     });
 
     after(() => {
@@ -89,6 +96,7 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   after(async () => {
+    await yarnOrNpmSpawn(['link:remove']);
     await fs.remove(dir);
   });
 });
