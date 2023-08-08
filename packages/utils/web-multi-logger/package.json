@@ -19,5 +19,10 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    "static"
+  ]
 }

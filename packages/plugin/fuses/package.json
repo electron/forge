@@ -8,6 +8,7 @@
   "main": "dist/FusesPlugin.js",
   "files": [
     "dist",
+    "src",
     "package.json",
     "README.md"
   ],
