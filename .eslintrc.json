@@ -61,10 +61,17 @@
       }
     },
     {
+      "files": ["ci/**/*.js"],
+      "rules": {
+        "node/no-unpublished-require": "off"
+      }
+    },
+    {
       "files": ["packages/*/*/test/**/*_spec*.ts", "packages/*/*/test/fixture/**/*.ts"],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",
+        "node/no-extraneous-import": "off",
         "node/no-unpublished-import": "off",
         "node/no-unpublished-require": "off"
       }
