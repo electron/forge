@@ -1,10 +1,11 @@
-import fs from 'fs';
+import cp from 'child_process';
 import path from 'path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
+import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
@@ -19,9 +20,8 @@ describe('ViteTypeScriptTemplate', () => {
 
   after(async () => {
     await yarnOrNpmSpawn(['link:remove']);
-    // When we use Promise API of fs, will got some errors: ---- `await fs.remove(dir);`
-    // Error: EBUSY: resource busy or locked, rmdir '\\?\C:\Users\CIRCLE~1.PAC\AppData\Local\Temp\electron-forge-test-1691139919604'
-    fs.rmSync(dir, { recursive: true, force: true });
+    await killWindowsEsbuildExe();
+    await fs.remove(dir);
   });
 
   describe('template files are copied to project', () => {
@@ -74,12 +74,12 @@ describe('ViteTypeScriptTemplate', () => {
       process.chdir(dir);
       // We need the version of vite to match exactly during development due to a quirk in
       // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = JSON.parse(fs.readFileSync(path.resolve(dir, 'package.json'), 'utf8'));
+      const pj = await fs.readJson(path.resolve(dir, 'package.json'));
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
-      fs.writeFileSync(path.resolve(dir, 'package.json'), JSON.stringify(pj, null, 2));
+      await fs.writeJson(path.resolve(dir, 'package.json'), pj);
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
@@ -102,3 +102,43 @@ describe('ViteTypeScriptTemplate', () => {
     });
   });
 });
+
+/**
+ * TODO: resolve `esbuild` can not exit normally on the Windows platform.
+ * @deprecated
+ */
+async function killWindowsEsbuildExe() {
+  if (process.platform !== 'win32') {
+    return Promise.resolve(null);
+  }
+
+  return new Promise((resolve, reject) => {
+    cp.exec('tasklist', (error, stdout) => {
+      if (error) {
+        reject(null);
+        return;
+      }
+
+      const esbuild = stdout
+        .toString()
+        .split('\n')
+        .map((line) => line.split(/\s+/))
+        .find((line) => line.includes('esbuild.exe'));
+
+      if (!esbuild) {
+        resolve(null);
+        return;
+      }
+
+      // ['esbuild.exe', '4564', 'Console', '1', '14,400', 'K', '']
+      const [, pid] = esbuild;
+      const result = process.kill(+pid, 'SIGINT');
+
+      if (result) {
+        resolve(true);
+      } else {
+        reject(null);
+      }
+    });
+  });
+}
