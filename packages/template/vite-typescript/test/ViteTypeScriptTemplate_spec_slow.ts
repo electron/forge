@@ -1,10 +1,10 @@
+import fs from 'fs';
 import path from 'path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
-import fs from 'fs-extra';
 
 import { api } from '../../../api/core';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
@@ -17,15 +17,22 @@ describe('ViteTypeScriptTemplate', () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
-  it('should succeed in initializing the typescript template', async () => {
-    await api.init({
-      dir,
-      template: path.resolve(__dirname, '..', 'src', 'ViteTypeScriptTemplate'),
-      interactive: false,
-    });
+  after(async () => {
+    await yarnOrNpmSpawn(['link:remove']);
+    // When we use Promise API of fs, will got some errors: ---- `await fs.remove(dir);`
+    // Error: EBUSY: resource busy or locked, rmdir '\\?\C:\Users\CIRCLE~1.PAC\AppData\Local\Temp\electron-forge-test-1691139919604'
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 
-  context('template files are copied to project', () => {
+  describe('template files are copied to project', () => {
+    it('should succeed in initializing the typescript template', async () => {
+      await api.init({
+        dir,
+        template: path.resolve(__dirname, '..', 'src', 'ViteTypeScriptTemplate'),
+        interactive: false,
+      });
+    });
+
     const expectedFiles = [
       'tsconfig.json',
       '.eslintrc.json',
@@ -43,11 +50,11 @@ describe('ViteTypeScriptTemplate', () => {
         await testUtils.expectProjectPathExists(dir, filename, 'file');
       });
     }
-  });
 
-  it('should ensure js source files from base template are removed', async () => {
-    const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
-    expect(jsFiles.length).to.equal(0, `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`);
+    it('should ensure js source files from base template are removed', async () => {
+      const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+      expect(jsFiles.length).to.equal(0, `The following unexpected js files were found in the src/ folder: ${JSON.stringify(jsFiles)}`);
+    });
   });
 
   describe('lint', () => {
@@ -67,12 +74,12 @@ describe('ViteTypeScriptTemplate', () => {
       process.chdir(dir);
       // We need the version of vite to match exactly during development due to a quirk in
       // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+      const pj = JSON.parse(fs.readFileSync(path.resolve(dir, 'package.json'), 'utf8'));
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
-      await fs.writeJson(path.resolve(dir, 'package.json'), pj);
+      fs.writeFileSync(path.resolve(dir, 'package.json'), JSON.stringify(pj, null, 2));
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
@@ -93,12 +100,5 @@ describe('ViteTypeScriptTemplate', () => {
         interactive: false,
       });
     });
-  });
-
-  after(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
-    // TODO: use `await fs.remove(dir);`
-    // Error: EBUSY: resource busy or locked, rmdir 'C:\Users\RUNNER~1\AppData\Local\Temp\electron-forge-test-1682230899228'
-    fs.rmSync(dir, { recursive: true }); // fix CI with sync-api, Windows like it? 🤔
   });
 });
