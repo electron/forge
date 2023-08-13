@@ -47,7 +47,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          fs.moveSync(filePath('index.html'), path.join(directory, 'index.html'));
+          await fs.move(filePath('index.html'), path.join(directory, 'index.html'));
           await this.updateFileByLine(path.join(directory, 'index.html'), (line) => {
             if (line.includes('link rel="stylesheet"')) return '';
             if (line.includes('</body>')) return '    <script type="module" src="/src/renderer.ts"></script>\n  </body>';
