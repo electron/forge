@@ -135,7 +135,7 @@ async function killWindowsEsbuildExe() {
       const result = process.kill(+pid, 'SIGINT');
 
       if (result) {
-        resolve(true);
+        resolve();
       } else {
         reject(null);
       }
