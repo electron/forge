@@ -109,7 +109,7 @@ describe('ViteTypeScriptTemplate', () => {
  */
 async function killWindowsEsbuildExe() {
   if (process.platform !== 'win32') {
-    return Promise.resolve(null);
+    return Promise.resolve();
   }
 
   return new Promise<void>((resolve, reject) => {
@@ -137,7 +137,7 @@ async function killWindowsEsbuildExe() {
       if (result) {
         resolve();
       } else {
-        reject(new Error("kill esbuild process failed"));
+        reject(new Error('kill esbuild process failed'));
       }
     });
   });
