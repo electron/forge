@@ -137,7 +137,7 @@ async function killWindowsEsbuildExe() {
       if (result) {
         resolve();
       } else {
-        reject(null);
+        reject(new Error("kill esbuild process failed"));
       }
     });
   });
