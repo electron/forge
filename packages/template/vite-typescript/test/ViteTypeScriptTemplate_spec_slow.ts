@@ -126,7 +126,7 @@ async function killWindowsEsbuildExe() {
         .find((line) => line.includes('esbuild.exe'));
 
       if (!esbuild) {
-        resolve(null);
+        resolve();
         return;
       }
 
