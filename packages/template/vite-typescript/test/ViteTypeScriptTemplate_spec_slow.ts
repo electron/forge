@@ -112,7 +112,7 @@ async function killWindowsEsbuildExe() {
     return Promise.resolve(null);
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     cp.exec('tasklist', (error, stdout) => {
       if (error) {
         reject(error);
