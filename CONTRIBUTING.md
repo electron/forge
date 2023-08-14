@@ -60,6 +60,13 @@ for versions 6.0.1 and up.
 LINK_FORGE_DEPENDENCIES_ON_INIT=1 node path/to/forge/packages/api/cli/dist/electron-forge-init.js my-app
 ```
 
+To link an existing project to your local Forge packages, use the `yarn link:prepare` command as listed
+above, and then run the following command in your project:
+
+```sh
+yarn link @electron-forge/core --link-folder=path/to/forge/.links
+```
+
 Forge commands executed in your `my-app` sample project should reflect any changes in your local
 Forge build. (Make sure to run `yarn build:fast` or `yarn build` between code changes.)
 

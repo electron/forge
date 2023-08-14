@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -17,5 +17,9 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }
