@@ -27,5 +27,10 @@
     "@electron-forge/test-utils": "6.3.0",
     "chai": "^4.3.3",
     "fast-glob": "^3.2.7"
-  }
+  },
+  "files": [
+    "dist",
+    "src",
+    "tmpl"
+  ]
 }
