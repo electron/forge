@@ -5253,6 +5253,20 @@ electron-installer-debian@^3.0.0:
     word-wrap "^1.2.3"
     yargs "^15.0.1"
 
+electron-installer-debian@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-debian/-/electron-installer-debian-3.2.0.tgz#2a9c8220f50a57807de8f93619a0d61ec41271e0"
+  integrity sha512-58ZrlJ1HQY80VucsEIG9tQ//HrTlG6sfofA3nRGr6TmkX661uJyu4cMPPh6kXW+aHdq/7+q25KyQhDrXvRL7jw==
+  dependencies:
+    "@malept/cross-spawn-promise" "^1.0.0"
+    debug "^4.1.1"
+    electron-installer-common "^0.10.2"
+    fs-extra "^9.0.0"
+    get-folder-size "^2.0.1"
+    lodash "^4.17.4"
+    word-wrap "^1.2.3"
+    yargs "^16.0.2"
+
 electron-installer-dmg@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-4.0.0.tgz#0520bcc8a928e559b3f16fc5cbc12b182a66ea1c"
