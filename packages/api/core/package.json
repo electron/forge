@@ -47,6 +47,7 @@
     "@electron-forge/shared-types": "6.4.0",
     "@electron-forge/template-base": "6.4.0",
     "@electron-forge/template-vite": "6.4.0",
+    "@electron-forge/template-vite-typescript": "6.4.0",
     "@electron-forge/template-webpack": "6.4.0",
     "@electron-forge/template-webpack-typescript": "6.4.0",
     "@electron/get": "^2.0.0",
