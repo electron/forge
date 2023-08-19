@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-compile",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "description": "Electron Compile plugin for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -15,8 +15,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/plugin-base": "6.3.0",
-    "@electron-forge/shared-types": "6.3.0",
+    "@electron-forge/plugin-base": "6.4.0",
+    "@electron-forge/shared-types": "6.4.0",
     "fs-extra": "^10.0.0"
   },
   "publishConfig": {
