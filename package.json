@@ -173,9 +173,6 @@
   "prettier": {
     "singleQuote": true
   },
-  "volta": {
-    "node": "14.17.5"
-  },
   "workspaces": {
     "packages": [
       "packages/api/*",
