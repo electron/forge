@@ -50,15 +50,6 @@ cd my-new-app
 npm start
 ```
 
-Alternatively (less recommended):
-
-```bash
-npm install -g @electron-forge/cli
-electron-forge init my-new-app
-cd my-new-app
-npm start
-```
-
 For more information on creating a new project from a template, [see our CLI documentation](https://www.electronforge.io/cli).
 
 # Docs and Usage
