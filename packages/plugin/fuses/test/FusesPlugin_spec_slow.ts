@@ -23,10 +23,7 @@ describe('FusesPlugin', () => {
 
   const { name: appName } = packageJSON;
 
-  // @TODO get rid of this once https://github.com/electron/forge/pull/3123 lands
-  const platformArchSuffix = `${process.platform}-x64`;
-
-  const outDir = path.join(appPath, 'out', `${appName}-${platformArchSuffix}`);
+  const outDir = path.join(appPath, 'out', 'fuses-test-app');
 
   before(async () => {
     delete process.env.TS_NODE_PROJECT;
@@ -36,9 +33,6 @@ describe('FusesPlugin', () => {
 
   after(async () => {
     await fsExtra.remove(path.resolve(outDir, '../'));
-
-    // @TODO this can be removed once the mock app installs a published version of @electron-forge/plugin-fuses instead of a local package
-    await fsExtra.remove(path.join(__dirname, './fixture/app/node_modules'));
   });
 
   it('should flip Fuses', async () => {
@@ -51,6 +45,7 @@ describe('FusesPlugin', () => {
     });
 
     const args: string[] = process.platform === 'linux' ? ['-v', '--no-sandbox'] : ['-v'];
+
     /**
      * If the `RunAsNode` fuse had not been flipped,
      * this would return the Node.js version (e.g. `v14.16.0`)

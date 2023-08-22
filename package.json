@@ -23,9 +23,9 @@
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
     "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
-    "test": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "test:fast": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
-    "test:slow": "xvfb-maybe cross-env LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_SLOW_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
+    "test": "xvfb-maybe cross-env NODE_ENV=test LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
+    "test:fast": "xvfb-maybe cross-env NODE_ENV=test LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_FAST_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
+    "test:slow": "xvfb-maybe cross-env NODE_ENV=test LINK_FORGE_DEPENDENCIES_ON_INIT=1 TS_NODE_PROJECT='./tsconfig.test.json' TEST_SLOW_ONLY=1 TS_NODE_FILES=1 mocha './tools/test-globber.ts'",
     "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install",
     "preversion": "yarn build"
@@ -37,7 +37,7 @@
     "@aws-sdk/types": "^3.25.0",
     "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^2.0.0",
-    "@electron/osx-sign": "^1.0.1",
+    "@electron/osx-sign": "^1.0.5",
     "@electron/rebuild": "^3.2.10",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@octokit/core": "^3.2.4",
@@ -49,7 +49,7 @@
     "cross-spawn": "^7.0.3",
     "cross-zip": "^4.0.0",
     "debug": "^4.3.1",
-    "electron-packager": "^17.1.1",
+    "electron-packager": "^17.1.2",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",
@@ -58,7 +58,7 @@
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
     "got": "^11.8.5",
-    "html-webpack-plugin": "^5.3.1",
+    "html-webpack-plugin": "^5.5.3",
     "interpret": "^3.1.1",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
@@ -150,7 +150,7 @@
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.4",
-    "electron-installer-debian": "^3.0.0",
+    "electron-installer-debian": "^3.2.0",
     "electron-installer-dmg": "^4.0.0",
     "electron-installer-redhat": "^3.2.0",
     "electron-installer-snap": "^5.2.0",
@@ -172,9 +172,6 @@
   },
   "prettier": {
     "singleQuote": true
-  },
-  "volta": {
-    "node": "14.17.5"
   },
   "workspaces": {
     "packages": [
