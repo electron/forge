@@ -59,6 +59,8 @@ jobs:
                     libgbm1
                   sudo add-apt-repository -y ppa:alexlarsson/flatpak
       - run-fast-tests
+      - store_test_results:
+          path: ./reports/
   slow-tests:
     parameters:
       executor:
@@ -114,6 +116,8 @@ jobs:
               - equal: [node/linux, << parameters.executor >>]
           steps:
             - run-slow-tests
+            - store_test_results:
+                path: ./reports/
 
 workflows:
   tests:
