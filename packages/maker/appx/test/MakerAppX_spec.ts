@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 
 import { createDefaultCertificate } from '../src/MakerAppX';
 
-describe('MakerApPX', () => {
+describe('MakerAppX', () => {
   describe('createDefaultCertificate', () => {
     const tmpDir = join(tmpdir(), `electron-forge-maker-appx-test-${Date.now()}`);
 

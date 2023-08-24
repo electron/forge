@@ -18,7 +18,7 @@ const d = debug('electron-forge:init:link');
  * linked.
  */
 export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
-  const shouldLink = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
+  const shouldLink = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT || process.env.NODE_ENV === 'test';
   if (shouldLink) {
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
