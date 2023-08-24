@@ -37,7 +37,7 @@ commands:
           name: 'Run slow tests'
           command: |
             echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | yarn test
+            circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | xargs yarn test
 
 jobs:
   fast-tests:
@@ -80,7 +80,7 @@ jobs:
         type: enum
         enum: ['x64', 'arm64']
     executor: << parameters.executor >>
-    parallelism: 3
+    parallelism: 2
     steps:
       - install
       - when:
@@ -90,19 +90,20 @@ jobs:
             - node/install-packages
             - run:
                 name: setup Windows and run slow tests
-                shell: powershell.exe -ExecutionPolicy Bypass
+                shell: bash
                 command: |
-                  Write-Output "Installing WiX Toolset"
+                  echo "Installing WiX Toolset"
                   choco install --no-progress -y wixtoolset
-                  Write-Output "Reloading PATH"
-                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                  [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
-                  $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+                  echo "Reloading PATH"
+                  export PATH="$PATH;C:\Program Files (x86)\WiX Toolset v3.11\bin"
                   npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
-
                   yarn lint
+                  yarn syncpack
                   yarn build
-                  yarn test:slow
+                  echo $(circleci tests glob "packages/**/*_spec_slow.ts")
+                  circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | xargs yarn test
+            - store_test_results:
+                path: ./reports/
       - when:
           condition:
             equal: [node/linux, << parameters.executor >>]
