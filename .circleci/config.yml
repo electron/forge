@@ -101,7 +101,8 @@ jobs:
                   yarn syncpack
                   yarn build
                   echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-                  circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | xargs yarn test
+                  TESTS=circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings
+                  yarn test $TESTS
             - store_test_results:
                 path: ./reports/
       - when:
