@@ -14,19 +14,30 @@ commands:
     steps:
       - node/install-packages
       - run:
+          name: 'Lint and build Forge'
           command: |
             yarn lint
             yarn syncpack
             yarn build
+      - run:
+          name: 'Run fast tests'
+          command: |
             yarn test:fast
+
   run-slow-tests:
     steps:
       - node/install-packages
       - run:
+          name: 'Lint and build Forge'
           command: |
             yarn lint
+            yarn syncpack
             yarn build
-            yarn test:slow
+      - run:
+          name: 'Run slow tests'
+          command: |
+            echo $(circleci tests glob "packages/**/*_spec_slow.ts")
+            circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | yarn test
 
 jobs:
   fast-tests:
