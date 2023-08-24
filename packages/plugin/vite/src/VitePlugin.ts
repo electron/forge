@@ -133,7 +133,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                     resolve();
                   },
                 },
-                ...(this.isProd ? [hotRestart(config, that)] : []),
+                ...(this.isProd ? [] : [hotRestart(config, that)]),
                 ...(viteConfig.plugins ?? []),
               ],
             })
