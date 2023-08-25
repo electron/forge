@@ -193,22 +193,22 @@ workflows:
             - lint-and-build
           matrix:
             parameters:
-              executor: [node/linux]
-              arch: [x64]
-            # exclude:
-            #   - executor: node/windows
-            #     arch: arm64
-            #   - executor: node/linux
-            #     arch: arm64
+              executor: [node/windows, node/linux, node/macos]
+              arch: [x64, arm64]
+            exclude:
+              - executor: node/windows
+                arch: arm64
+              - executor: node/linux
+                arch: arm64
       - slow-tests:
           requires:
             - lint-and-build
           matrix:
             parameters:
-              executor: [node/linux]
-              arch: [x64]
-            # exclude:
-            #   - executor: node/windows
-            #     arch: arm64
-            #   - executor: node/linux
-            #     arch: arm64
+              executor: [node/windows, node/linux, node/macos]
+              arch: [x64, arm64]
+            exclude:
+              - executor: node/windows
+                arch: arm64
+              - executor: node/linux
+                arch: arm64
