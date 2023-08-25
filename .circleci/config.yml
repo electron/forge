@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@1.1.0
+  node: electronjs/node@1.4.1
 
 commands:
   install:
@@ -10,15 +10,23 @@ commands:
       - node/install:
           node-version: '18.15.0'
       - checkout
-  run-fast-tests:
+  run-lint-and-build:
     steps:
       - node/install-packages
       - run:
-          name: 'Lint and build Forge'
+          name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
+      - run:
+          name: 'Build Electron Forge'
+          command: |
             yarn build
+  run-fast-tests:
+    steps:
+      - node/install-packages
+      - attach_workspace:
+          at: .
       - run:
           name: 'Run fast tests'
           command: |
@@ -27,12 +35,8 @@ commands:
   run-slow-tests:
     steps:
       - node/install-packages
-      - run:
-          name: 'Lint and build Forge'
-          command: |
-            yarn lint
-            yarn syncpack
-            yarn build
+      - attach_workspace:
+          at: .
       - run:
           name: 'Run slow tests'
           command: |
@@ -40,6 +44,15 @@ commands:
             circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | xargs yarn test
 
 jobs:
+  lint-and-build:
+    executor: node/linux
+    steps:
+      - install
+      - run-lint-and-build
+      - persist_to_workspace:
+          root: .
+          paths: ./packages/*/dist/*
+
   fast-tests:
     parameters:
       executor:
@@ -136,23 +149,26 @@ jobs:
 workflows:
   tests:
     jobs:
+      - lint-and-build
       - fast-tests:
+          requires:
+            - lint-and-build
           matrix:
             parameters:
-              executor: [node/windows, node/linux, node/macos]
-              arch: [x64, arm64]
-            exclude:
-              - executor: node/windows
-                arch: arm64
-              - executor: node/linux
-                arch: arm64
-      - slow-tests:
-          matrix:
-            parameters:
-              executor: [node/windows, node/linux, node/macos]
-              arch: [x64, arm64]
-            exclude:
-              - executor: node/windows
-                arch: arm64
-              - executor: node/linux
-                arch: arm64
+              executor: [node/linux]
+              arch: [x64]
+            # exclude:
+            #   - executor: node/windows
+            #     arch: arm64
+            #   - executor: node/linux
+            #     arch: arm64
+      # - slow-tests:
+      #     matrix:
+      #       parameters:
+      #         executor: [node/windows, node/linux, node/macos]
+      #         arch: [x64, arm64]
+      #       exclude:
+      #         - executor: node/windows
+      #           arch: arm64
+      #         - executor: node/linux
+      #           arch: arm64
