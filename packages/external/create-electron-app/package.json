@@ -7,7 +7,12 @@
   "author": "Samuel Attard",
   "license": "MIT",
   "dependencies": {
-    "@electron-forge/cli": "6.4.1"
+    "@electron-forge/cli": "6.4.1",
+    "@electron-forge/template-base": "6.4.1",
+    "@electron-forge/template-vite": "6.4.1",
+    "@electron-forge/template-vite-typescript": "6.4.1",
+    "@electron-forge/template-webpack": "6.4.1",
+    "@electron-forge/template-webpack-typescript": "6.4.1"
   },
   "bin": {
     "create-electron-app": "dist/index.js"
