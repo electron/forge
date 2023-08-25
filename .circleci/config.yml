@@ -51,7 +51,8 @@ jobs:
       - run-lint-and-build
       - persist_to_workspace:
           root: .
-          paths: ./packages/*/dist/*
+          paths:
+            - packages/api/cli/dist
 
   fast-tests:
     parameters:
