@@ -145,7 +145,7 @@ jobs:
                 command: |
                   choco install --no-progress -y wixtoolset
                   export PATH="$PATH;C:\Program Files (x86)\WiX Toolset v3.11\bin"
-                  npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
+                  npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest
             - store_test_results:
                 path: ./reports/
       - when:
