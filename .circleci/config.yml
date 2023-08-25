@@ -140,20 +140,12 @@ jobs:
           steps:
             - node/install-packages
             - run:
-                name: setup Windows and run slow tests
+                name: Windows specific setup
                 shell: bash
                 command: |
-                  echo "Installing WiX Toolset"
                   choco install --no-progress -y wixtoolset
-                  echo "Reloading PATH"
                   export PATH="$PATH;C:\Program Files (x86)\WiX Toolset v3.11\bin"
                   npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
-                  yarn lint
-                  yarn syncpack
-                  yarn build
-                  echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-                  TESTS=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
-                  yarn test $TESTS
             - store_test_results:
                 path: ./reports/
       - when:
@@ -174,15 +166,9 @@ jobs:
                     libgdk-pixbuf2.0-dev \
                     libgtk-3-0 \
                     libgbm1
-      - when:
-          condition:
-            or:
-              - equal: [node/macos, << parameters.executor >>]
-              - equal: [node/linux, << parameters.executor >>]
-          steps:
-            - run-slow-tests
-            - store_test_results:
-                path: ./reports/
+      - run-slow-tests
+      - store_test_results:
+          path: ./reports/
 
 workflows:
   tests:
