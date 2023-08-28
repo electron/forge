@@ -52,44 +52,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - packages/publisher/s3/dist
-            - packages/publisher/github/dist
-            - packages/publisher/bitbucket/dist
-            - packages/publisher/snapcraft/dist
-            - packages/publisher/base/dist
-            - packages/publisher/electron-release-server/dist
-            - packages/publisher/nucleus/dist
-            - packages/plugin/local-electron/dist
-            - packages/plugin/auto-unpack-natives/dist
-            - packages/plugin/webpack/dist
-            - packages/plugin/vite/dist
-            - packages/plugin/compile/dist
-            - packages/plugin/fuses/dist
-            - packages/plugin/base/dist
-            - packages/plugin/electronegativity/dist
-            - packages/template/vite-typescript/dist
-            - packages/template/webpack/dist
-            - packages/template/vite/dist
-            - packages/template/webpack-typescript/dist
-            - packages/template/base/dist
-            - packages/utils/test-utils/dist
-            - packages/utils/types/dist
-            - packages/utils/core-utils/dist
-            - packages/utils/web-multi-logger/dist
-            - packages/maker/flatpak/dist
-            - packages/maker/appx/dist
-            - packages/maker/zip/dist
-            - packages/maker/deb/dist
-            - packages/maker/snap/dist
-            - packages/maker/wix/dist
-            - packages/maker/dmg/dist
-            - packages/maker/rpm/dist
-            - packages/maker/squirrel/dist
-            - packages/maker/base/dist
-            - packages/maker/pkg/dist
-            - packages/api/core/dist
-            - packages/api/cli/dist
-            - packages/external/create-electron-app/dist
+            - packages/*/*/dist/*
 
   fast-tests:
     parameters:
