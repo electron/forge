@@ -112,8 +112,8 @@ jobs:
                   $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
                   [Environment]::SetEnvironmentVariable("PATH", $env:Path + "C:\Program Files (x86)\WiX Toolset v3.11\bin;", "Machine")
                   $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-                  npm config set node-gyp "$CIRCLE_WORKING_DIRECTORY\node_modules\node-gyp\bin\node-gyp.js"
-
+                  cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
+                  npm install node-gyp@latest
       - when:
           condition:
             equal: [node/linux, << parameters.executor >>]
