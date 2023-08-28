@@ -552,6 +552,54 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].name).to.equal('preload');
     });
 
+    it('generates up to 4 rendererConfigs instead of 1 per entrypoint', async () => {
+      const config = {
+        renderer: {
+          config: {
+            target: 'web',
+          },
+          entryPoints: [
+            {
+              name: '1',
+              preload: {
+                js: 'preload.js',
+              },
+            },
+            {
+              name: '2',
+              preload: {
+                js: 'preload.js',
+              },
+              nodeIntegration: true,
+            },
+            {
+              html: './src/mediaPlayer/index.html',
+              js: './src/mediaPlayer/index.tsx',
+              name: '3',
+            },
+            {
+              html: './src/mediaPlayer/index.html',
+              js: './src/mediaPlayer/index.tsx',
+              name: '4',
+              nodeIntegration: true,
+            },
+            {
+              js: './src/background/background.ts',
+              name: '5',
+            },
+            {
+              js: './src/background/background.ts',
+              name: '6',
+              nodeIntegration: true,
+            },
+          ],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      expect(webpackConfig.length).to.equal(4);
+    });
+
     it('generates a config from function', async () => {
       const generateWebpackConfig = (webpackConfig: WebpackConfiguration) => {
         const config = {
