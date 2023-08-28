@@ -41,7 +41,8 @@ commands:
           name: 'Run slow tests'
           command: |
             echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings | xargs yarn test
+            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
+            yarn test $TEST_GLOB
 
 jobs:
   lint-and-build:
