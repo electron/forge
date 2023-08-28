@@ -107,7 +107,7 @@ jobs:
                 shell: bash
                 command: |
                   choco install --no-progress -y wixtoolset
-                  echo 'export PATH="C:\Program Files (x86)\WiX Toolset v3.11\bin"' >> "$BASH_ENV"
+                  echo 'export PATH=$PATH:"/C/Program Files (x86)/WiX Toolset v3.11/bin"' >> "$BASH_ENV"
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
                   npm install node-gyp@latest
       - when:
