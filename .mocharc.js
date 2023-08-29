@@ -6,6 +6,8 @@ const {
   ...flags
 } = minimist(process.argv);
 
+process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = true;
+
 let testGlob;
 
 /**
