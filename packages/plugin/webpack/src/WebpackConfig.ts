@@ -275,7 +275,7 @@ export default class WebpackConfigGenerator {
         );
       }
     }
-    return webpackMerge({ entry, output, plugins }, rendererConfig || {}, baseConfig);
+    return webpackMerge(baseConfig, rendererConfig || {}, { entry, output, plugins });
   }
 
   async buildRendererConfigForPreloadOrSandboxedPreloadTarget(
@@ -306,7 +306,7 @@ export default class WebpackConfigGenerator {
       },
       plugins: target === RendererTarget.ElectronPreload ? [] : [new webpack.ExternalsPlugin('commonjs2', externals)],
     };
-    return webpackMerge(config, rendererConfig || {}, baseConfig);
+    return webpackMerge(baseConfig, rendererConfig || {}, config);
   }
 
   async buildRendererConfigs(entryPoints: WebpackPluginEntryPoint[], target: RendererTarget): Promise<Promise<webpack.Configuration | null>[]> {
