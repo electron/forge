@@ -1,5 +1,6 @@
 import { builtinModules } from 'node:module';
 
+import type { VitePluginBuildConfig } from '../Config';
 import type { Plugin } from 'vite';
 
 /**
@@ -30,6 +31,37 @@ export function externalBuiltins() {
         external = builtins;
       }
       config.build.rollupOptions.external = external;
+    },
+  };
+}
+
+/**
+ * Hot restart App during development for better DX.
+ */
+export function hotRestart(config: VitePluginBuildConfig) {
+  const restart = () => {
+    // https://github.com/electron/forge/blob/v6.1.1/packages/api/core/src/api/start.ts#L204-L211
+    process.stdin.emit('data', 'rs');
+  };
+  // Avoid first start, it's stated by forge.
+  let isFirstStart: undefined | true;
+
+  return <Plugin>{
+    name: '@electron-forge/plugin-vite:hot-restart',
+    closeBundle() {
+      if (isFirstStart == null) {
+        isFirstStart = true;
+        return;
+      }
+      if (config.restart === false) {
+        return;
+      }
+      if (typeof config.restart === 'function') {
+        // Leave it to the user to decide whether to restart.
+        config.restart(restart);
+      } else {
+        restart();
+      }
     },
   };
 }

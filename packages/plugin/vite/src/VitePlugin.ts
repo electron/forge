@@ -10,6 +10,7 @@ import { RollupWatcher } from 'rollup';
 import { default as vite } from 'vite';
 
 import { VitePluginConfig } from './Config';
+import { hotRestart } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 const d = debug('electron-forge:plugin:vite');
@@ -108,7 +109,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     await Promise.all(
       (
         await this.configGenerator.getBuildConfig(watch)
-      ).map((userConfig) => {
+      ).map((userConfig, index) => {
         return new Promise<void>((resolve, reject) => {
           vite
             .build({
@@ -124,6 +125,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                     // TODO: implement hot-restart here
                   },
                 },
+                ...(this.isProd ? [] : [hotRestart(this.config.build[index])]),
                 ...(userConfig.plugins ?? []),
               ],
             })
