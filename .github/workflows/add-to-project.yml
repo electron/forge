@@ -1,0 +1,36 @@
+name: Add to Ecosystem WG Project
+
+on:
+  issues:
+    types:
+      - opened
+  pull_request:
+    types:
+      - opened
+
+permissions: {}
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        uses: electron/github-app-auth-action@cc6751b3b5e4edc5b9a4ad0a021ac455653b6dc8 # v1.0.0
+        id: generate-token
+        with:
+          creds: ${{ secrets.APP_CREDS }}
+          org: electron
+      - name: Add to Project
+        uses: actions/add-to-project@31b3f3ccdc584546fc445612dec3f38ff5edb41c # v0.5.0
+        with:
+          project-url: https://github.com/orgs/electron/projects/89
+          github-token: ${{ steps.generate-token.outputs.token }}
+      - name: Set Opened Field
+        uses: dsanders11/update-project-action@6a5f3732ca6206a788b57e106b86a5caa7d55062
+        with:
+          github_token: ${{ steps.generate-token.outputs.token }}
+          organization: electron
+          project_number: 89
+          content_id: ${{ github.event.pull_request.node_id || github.event.issue.node_id }}
+          field: Opened
+          value: ${{ github.event.pull_request.created_at || github.event.issue.created_at }}
