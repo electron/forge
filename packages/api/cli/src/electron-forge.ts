@@ -32,7 +32,7 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
 program
   .version(metadata.version)
   .option('--verbose', 'Enables verbose mode')
-  .command('init', 'Initialize a new Electron Forge application')
+  .command('init', 'Initialize a new Electron application')
   .command('import', 'Attempts to navigate you through the process of importing an existing project to "electron-forge"')
   .command('start', 'Start the current Electron application in development mode')
   .command('package', 'Package the current Electron application')
