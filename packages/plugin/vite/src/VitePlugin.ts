@@ -1,16 +1,21 @@
-import fs from 'node:fs/promises';
 import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, StartResult } from '@electron-forge/shared-types';
+import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
+import fs from 'fs-extra';
 // eslint-disable-next-line node/no-extraneous-import
 import { RollupWatcher } from 'rollup';
 import { default as vite } from 'vite';
 
 import { VitePluginConfig } from './Config';
+import { getFlatDependencies } from './util/package';
 import ViteConfigGenerator from './ViteConfig';
+
+// Convenient for user customization.
+export { resolveDependencies } from './util/package';
 
 const d = debug('electron-forge:plugin:vite');
 
@@ -41,7 +46,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
   };
 
-  private setDirectories(dir: string): void {
+  public setDirectories(dir: string): void {
     this.projectDir = dir;
     this.baseDir = path.join(dir, '.vite');
   }
@@ -55,7 +60,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async () => {
           this.isProd = true;
-          await fs.rm(this.baseDir, { recursive: true, force: true });
+          await fs.remove(this.baseDir);
 
           await Promise.all([this.build(), this.buildRenderer()]);
         }, 'Building vite bundles'),
@@ -67,14 +72,62 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           this.exitHandler({ cleanup: true, exit: true });
         });
       },
+      resolveForgeConfig: this.resolveForgeConfig,
+      packageAfterCopy: this.packageAfterCopy,
     };
+  };
+
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
+    forgeConfig.packagerConfig ??= {};
+
+    if (forgeConfig.packagerConfig.ignore) {
+      if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
+        console.error(
+          chalk.red(`You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
+
+Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`)
+        );
+      }
+      return forgeConfig;
+    }
+
+    forgeConfig.packagerConfig.ignore = (file: string) => {
+      if (!file) return false;
+
+      return !/^[/\\]\.vite($|[/\\]).*$/.test(file);
+    };
+    return forgeConfig;
+  };
+
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
+    const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+    const flatDependencies = await getFlatDependencies(this.projectDir);
+
+    if (!/^(.\/)?.vite\//.test(pj.main)) {
+      throw new Error(`Electron Forge is configured to use the Vite plugin. The plugin expects the
+"main" entry point in "package.json" to be ".vite/*" (where the plugin outputs
+the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
+    }
+
+    if (pj.config) {
+      delete pj.config.forge;
+    }
+
+    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+      spaces: 2,
+    });
+
+    // Copy the dependencies in package.json
+    for (const dep of flatDependencies) {
+      await fs.copy(path.resolve(dep.src), path.resolve(buildPath, dep.dest));
+    }
   };
 
   startLogic = async (): Promise<StartResult> => {
     if (VitePlugin.alreadyStarted) return false;
     VitePlugin.alreadyStarted = true;
 
-    await fs.rm(this.baseDir, { recursive: true, force: true });
+    await fs.remove(this.baseDir);
 
     return {
       tasks: [
