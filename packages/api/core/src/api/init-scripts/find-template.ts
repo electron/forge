@@ -32,7 +32,7 @@ export const findTemplate = async (dir: string, template: string): Promise<Forge
     }
   }
   if (!foundTemplate) {
-    throw new Error(`Failed to locate custom template: "${template}"\n\nTry \`npm install -g @electron-forge/template-${template}\``);
+    throw new Error(`Failed to locate custom template: "${template}".`);
   }
 
   d(`found template module at: ${templateModulePath}`);
