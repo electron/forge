@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-snap",
-  "version": "6.4.1",
+  "version": "6.4.2",
   "description": "Snap maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
@@ -21,8 +21,8 @@
     "node": ">= 14.17.5"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.4.1",
-    "@electron-forge/shared-types": "6.4.1"
+    "@electron-forge/maker-base": "6.4.2",
+    "@electron-forge/shared-types": "6.4.2"
   },
   "optionalDependencies": {
     "electron-installer-snap": "^5.2.0"
