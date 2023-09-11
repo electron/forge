@@ -4,7 +4,14 @@ import { RebuildOptions } from '@electron/rebuild';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
-export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
+export type StartContext = {
+  dir: string;
+  forgeConfig: ResolvedForgeConfig;
+  packageJSON: any;
+  spawned: ElectronProcess;
+};
+
+export type ForgeListrTask<T = StartContext> = ListrTaskWrapper<T, ListrDefaultRenderer>;
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
