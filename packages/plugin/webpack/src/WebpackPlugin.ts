@@ -290,13 +290,17 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     }
 
     const preloadPlugins: string[] = [];
+    let preloadEntriesWithConfig = 0;
     for (const entryConfig of configs) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
       entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
 
       const filename = entryConfig.output?.filename as string;
       if (filename.endsWith('preload.js')) {
-        const name = `entry-point-preload-${entryConfig.target}`;
+        let name = `entry-point-preload-${entryConfig.target}`;
+        if (preloadPlugins.includes(name)) {
+          name = `${name}-${++preloadEntriesWithConfig}`;
+        }
         entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
         preloadPlugins.push(name);
       }
