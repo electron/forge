@@ -7,6 +7,7 @@ import { merge as webpackMerge } from 'webpack-merge';
 
 import { WebpackPluginConfig, WebpackPluginEntryPoint, WebpackPluginEntryPointLocalWindow, WebpackPluginEntryPointPreloadOnly } from './Config';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
+import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import processConfig from './util/processConfig';
 import { isLocalOrNoWindowEntries, isLocalWindow, isNoWindow, isPreloadOnly, isPreloadOnlyEntries } from './util/rendererTypeUtils';
 
@@ -304,7 +305,10 @@ export default class WebpackConfigGenerator {
         globalObject: 'self',
         ...(this.isProd ? {} : { publicPath: '/' }),
       },
-      plugins: target === RendererTarget.ElectronPreload ? [] : [new webpack.ExternalsPlugin('commonjs2', externals)],
+      plugins: [
+        new EntryPointPreloadPlugin({ name: `entry-point-preload-${target}` }),
+        ...(target !== RendererTarget.ElectronPreload ? [] : [new webpack.ExternalsPlugin('commonjs2', externals)]),
+      ],
     };
     return webpackMerge(baseConfig, rendererConfig || {}, config);
   }
