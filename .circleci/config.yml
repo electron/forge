@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   node: electronjs/node@1.4.1
+  bun: ksylvest/bun@1.0.1
 
 commands:
   install:
@@ -9,6 +10,12 @@ commands:
       - run: git config --global core.autocrlf input
       - node/install:
           node-version: '18.15.0'
+      - run:
+          name: Install pnpm package manager
+          command: |
+            corepack enable
+            corepack prepare pnpm@latest-8 --activate
+      - bun/install
       - checkout
   run-lint-and-build:
     steps:
