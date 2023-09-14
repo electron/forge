@@ -16,8 +16,7 @@
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
     "log-symbols": "^4.0.0",
-    "semver": "^7.2.1",
-    "yarn-or-npm": "^3.0.1"
+    "semver": "^7.2.1"
   },
   "engines": {
     "node": ">= 14.17.5"

@@ -1,4 +1,4 @@
-import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { isNpm, isPnpm, packageManagerSpawn } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
@@ -14,25 +14,38 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
+/**
+ *  To install the specified packages as devDependencies
+ * `npm add` and `pnpm add` commands use `--save-dev` option
+ * `yarn add` and `bun add` commands use `--dev` option
+ */
+export const getInstallDevDepsOption = (): string => (isNpm() || isPnpm() ? '--save-dev' : '--dev');
+
+/**
+ * To install the specified packages with exact version number instead of version range
+ * `npm add` and `pnpm add` commands use `--save-exact` option
+ * `yarn add` and `bun add` commands use `--exact` option
+ */
+export const getInstallExactDepsOption = (): string => (isNpm() || isPnpm() ? '--save-exact' : '--exact');
+
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
+  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction}}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
   }
-  let cmd = ['install'].concat(deps);
-  if (hasYarn()) {
-    cmd = ['add'].concat(deps);
-    if (depType === DepType.DEV) cmd.push('--dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
-  } else {
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
-    if (depType === DepType.DEV) cmd.push('--save-dev');
-    if (depType === DepType.PROD) cmd.push('--save');
-  }
+  /**
+   * To install the specified packages as dependencies
+   * yarn, pnpm and bun use `add` command
+   * npm use `add` as an alias command of `install`
+   * for consistency, we use `add` command here
+   */
+  const cmd = ['add'].concat(deps);
+  if (depType === DepType.DEV) cmd.push(getInstallDevDepsOption());
+  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push(getInstallExactDepsOption());
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
-    await yarnOrNpmSpawn(cmd, {
+    await packageManagerSpawn(cmd, {
       cwd: dir,
       stdio: 'pipe',
     });

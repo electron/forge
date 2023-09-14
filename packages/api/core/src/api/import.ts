@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
+import { getPackageManager, updateElectronDependency } from '@electron-forge/core-utils';
 import baseTemplate from '@electron-forge/template-base';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash';
 
-import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction, getInstallDevDepsOption, getInstallExactDepsOption } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
 
@@ -194,7 +194,7 @@ export default async ({
               {
                 title: 'Installing dependencies',
                 task: async (_, task) => {
-                  const packageManager = safeYarnOrNpm();
+                  const packageManager = getPackageManager();
                   await writeChanges();
 
                   d('deleting old dependencies forcefully');
@@ -202,15 +202,15 @@ export default async ({
                   await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
 
                   d('installing dependencies');
-                  task.output = `${packageManager} install ${importDeps.join(' ')}`;
+                  task.output = `${packageManager} add ${importDeps.join(' ')}`;
                   await installDepList(dir, importDeps);
 
                   d('installing devDependencies');
-                  task.output = `${packageManager} install --dev ${importDevDeps.join(' ')}`;
+                  task.output = `${packageManager} add ${getInstallDevDepsOption()} ${importDevDeps.join(' ')}`;
                   await installDepList(dir, importDevDeps, DepType.DEV);
 
                   d('installing exactDevDependencies');
-                  task.output = `${packageManager} install --dev --exact ${importExactDevDeps.join(' ')}`;
+                  task.output = `${packageManager} add ${getInstallDevDepsOption()} ${getInstallExactDepsOption()} ${importExactDevDeps.join(' ')}`;
                   await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                 },
               },
@@ -258,7 +258,7 @@ export default async ({
         },
         task: (_, task) => {
           task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
-          
+
           Thanks for using ${chalk.green('Electron Forge')}!`;
         },
       },
