@@ -10,7 +10,6 @@ describe('Install dependencies', () => {
   let isNpmSpy: SinonStub;
   let isYarnSpy: SinonStub;
   let isPnpmSpy: SinonStub;
-  let isBunSpy: SinonStub;
   let spawnPromise: Promise<void>;
   let spawnPromiseResolve: () => void;
   let spawnPromiseReject: () => void;
@@ -25,7 +24,6 @@ describe('Install dependencies', () => {
     isNpmSpy = stub();
     isYarnSpy = stub();
     isPnpmSpy = stub();
-    isBunSpy = stub();
 
     install = proxyquire.noCallThru().load('../../src/util/install-dependencies', {
       '@electron-forge/core-utils': {
@@ -33,7 +31,6 @@ describe('Install dependencies', () => {
         isNpm: isNpmSpy,
         isYarn: isYarnSpy,
         isPnpm: isPnpmSpy,
-        isBun: isBunSpy,
       },
     }).default;
   });
@@ -130,32 +127,6 @@ describe('Install dependencies', () => {
     it('should install exact dev deps', () => {
       install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--save-dev', '--save-exact']);
-    });
-  });
-
-  describe('with bun', () => {
-    beforeEach(() => {
-      isBunSpy.returns(true);
-    });
-
-    it('should install prod deps', () => {
-      install('mydir', ['react']);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react']);
-    });
-
-    it('should install dev deps', () => {
-      install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--dev']);
-    });
-
-    it('should install exact deps', () => {
-      install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--exact']);
-    });
-
-    it('should install exact dev deps', () => {
-      install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--dev', '--exact']);
     });
   });
 });

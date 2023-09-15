@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   node: electronjs/node@1.4.1
-  bun: ksylvest/bun@1.0.1
 
 commands:
   install:
@@ -15,7 +14,6 @@ commands:
           command: |
             corepack enable
             corepack prepare pnpm@latest-8 --activate
-      - bun/install
       - checkout
   run-lint-and-build:
     steps:

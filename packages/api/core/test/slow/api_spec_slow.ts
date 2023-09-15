@@ -35,7 +35,7 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 }
 
-for (const nodeInstaller of ['npm', 'yarn', 'pnpm', 'bun']) {
+for (const nodeInstaller of ['npm', 'yarn', 'pnpm']) {
   process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;

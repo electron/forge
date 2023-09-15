@@ -17,14 +17,14 @@ export enum DepVersionRestriction {
 /**
  *  To install the specified packages as devDependencies
  * `npm add` and `pnpm add` commands use `--save-dev` option
- * `yarn add` and `bun add` commands use `--dev` option
+ * `yarn add` command use `--dev` option
  */
 export const getInstallDevDepsOption = (): string => (isNpm() || isPnpm() ? '--save-dev' : '--dev');
 
 /**
  * To install the specified packages with exact version number instead of version range
  * `npm add` and `pnpm add` commands use `--save-exact` option
- * `yarn add` and `bun add` commands use `--exact` option
+ * `yarn add` command use `--exact` option
  */
 export const getInstallExactDepsOption = (): string => (isNpm() || isPnpm() ? '--save-exact' : '--exact');
 
@@ -36,7 +36,7 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
   }
   /**
    * To install the specified packages as dependencies
-   * yarn, pnpm and bun use `add` command
+   * yarn and pnpm use `add` command
    * npm use `add` as an alias command of `install`
    * for consistency, we use `add` command here
    */

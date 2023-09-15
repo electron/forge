@@ -32,9 +32,4 @@ describe('get-package-manager', () => {
     process.env.npm_config_user_agent = 'pnpm';
     expect(getPackageManager()).to.be.equal('pnpm');
   });
-
-  it('should return bun if npm_config_user_agent=bun', () => {
-    process.env.npm_config_user_agent = 'bun';
-    expect(getPackageManager()).to.be.equal('bun');
-  });
 });
