@@ -296,7 +296,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
 
       const filename = entryConfig.output?.filename as string;
-      if (filename.endsWith('preload.js')) {
+      if (filename?.endsWith('preload.js')) {
         let name = `entry-point-preload-${entryConfig.target}`;
         if (preloadPlugins.includes(name)) {
           name = `${name}-${++preloadEntriesWithConfig}`;
@@ -313,20 +313,17 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const compiler = webpack(configs);
 
-    const promises = [];
-    for (const preloadPlugin of preloadPlugins) {
-      promises.push(
-        new Promise((resolve, reject) => {
-          compiler.hooks.done.tap(preloadPlugin, (stats) => {
-            if (stats.hasErrors()) {
-              // TODO(georgexu99): add a way to identify preload entries with the same target name ex) preload config entries
-              return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
-            }
-            return resolve(undefined);
-          });
-        })
-      );
-    }
+    const promises = preloadPlugins.map((preloadPlugin) => {
+      return new Promise((resolve, reject) => {
+        compiler.hooks.done.tap(preloadPlugin, (stats) => {
+          if (stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+          }
+          return resolve(undefined);
+        });
+      });
+    });
+
     const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
     await webpackDevServer.start();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
