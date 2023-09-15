@@ -157,6 +157,7 @@
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^5.0.0",
+    "exe-icon-extractor": "npm:@bitdisaster/exe-icon-extractor",
     "macos-alias": "^0.2.11"
   },
   "peerDependencies": {

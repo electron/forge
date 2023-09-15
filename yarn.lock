@@ -1053,7 +1053,7 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@bitdisaster/exe-icon-extractor@^1.0.10":
+"@bitdisaster/exe-icon-extractor@^1.0.10", "exe-icon-extractor@npm:@bitdisaster/exe-icon-extractor":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@bitdisaster/exe-icon-extractor/-/exe-icon-extractor-1.0.10.tgz#3f5107864254c351db1db5c5922452d9d4154e8f"
   integrity sha512-iTZ8cVGZ5dglNRyFdSj8U60mHIrC8XNIuOHN/NkM5/dQP4nsmpyqeQTAADLLQgoFCNJD+DiwQCv8dR2cCeWP4g==
