@@ -130,6 +130,13 @@ describe('forge-config', () => {
     expect(conf.defaultResolved).to.equal(true);
   });
 
+  it('should resolve the ESM JS file exports of forge.config.js if config.forge does not exist ', async () => {
+    type DefaultResolvedConfig = ResolvedForgeConfig & { defaultResolved: boolean };
+    const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_default_esm_conf'))) as DefaultResolvedConfig;
+    expect(conf.buildIdentifier).to.equal('esm');
+    expect(conf.defaultResolved).to.equal(true);
+  });
+
   it(`should resolve the yml config from forge.config.yml if it's specified in config.forge`, async () => {
     type DefaultResolvedConfig = ResolvedForgeConfig;
     const conf = (await findConfig(path.resolve(__dirname, '../fixture/dummy_ts_conf'))) as DefaultResolvedConfig;
