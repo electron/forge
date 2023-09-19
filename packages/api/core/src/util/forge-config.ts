@@ -6,6 +6,8 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
+import { dynamicImport } from '../../helper/dynamic-import.js';
+
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
 import { readRawPackageJson } from './read-package-json';
@@ -127,7 +129,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       let loaded;
       try {
-        loaded = (await eval(`import('${path.resolve(dir, forgeConfig as string)}')`)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+        loaded = (await dynamicImport(path.resolve(dir, forgeConfig as string))) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
