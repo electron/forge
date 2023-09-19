@@ -290,7 +290,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     }
 
     const preloadPlugins: string[] = [];
-    let preloadEntriesWithConfig = 0;
+    let numPreloadEntriesWithConfig = 0;
     for (const entryConfig of configs) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
       entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
@@ -299,7 +299,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       if (filename?.endsWith('preload.js')) {
         let name = `entry-point-preload-${entryConfig.target}`;
         if (preloadPlugins.includes(name)) {
-          name = `${name}-${++preloadEntriesWithConfig}`;
+          name = `${name}-${++numPreloadEntriesWithConfig}`;
         }
         entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
         preloadPlugins.push(name);
