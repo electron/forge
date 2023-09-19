@@ -121,6 +121,10 @@ export interface WebpackPluginRendererConfig {
   entryPoints: WebpackPluginEntryPoint[];
 }
 
+export interface EntryPointPluginConfig {
+  name: string;
+}
+
 export interface WebpackPluginConfig {
   /**
    * The webpack config for your main process

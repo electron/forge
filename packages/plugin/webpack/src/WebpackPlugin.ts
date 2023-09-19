@@ -14,6 +14,7 @@ import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
+import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';
 import WebpackConfigGenerator from './WebpackConfig';
 
@@ -283,14 +284,26 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-    if (config.length === 0) {
+    const configs = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+    if (configs.length === 0) {
       return;
     }
 
-    for (const entryConfig of config) {
+    const preloadPlugins: string[] = [];
+    let numPreloadEntriesWithConfig = 0;
+    for (const entryConfig of configs) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
       entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
+
+      const filename = entryConfig.output?.filename as string;
+      if (filename?.endsWith('preload.js')) {
+        let name = `entry-point-preload-${entryConfig.target}`;
+        if (preloadPlugins.includes(name)) {
+          name = `${name}-${++numPreloadEntriesWithConfig}`;
+        }
+        entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
+        preloadPlugins.push(name);
+      }
 
       entryConfig.infrastructureLogging = {
         level: 'none',
@@ -298,10 +311,23 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       entryConfig.stats = 'none';
     }
 
-    const compiler = webpack(config);
+    const compiler = webpack(configs);
+
+    const promises = preloadPlugins.map((preloadPlugin) => {
+      return new Promise((resolve, reject) => {
+        compiler.hooks.done.tap(preloadPlugin, (stats) => {
+          if (stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+          }
+          return resolve(undefined);
+        });
+      });
+    });
+
     const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
     await webpackDevServer.start();
     this.servers.push(webpackDevServer.server!);
+    await Promise.all(promises);
   };
 
   devServerOptions(): WebpackDevServer.Configuration {
