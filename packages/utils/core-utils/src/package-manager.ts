@@ -1,5 +1,3 @@
-import { env } from 'node:process';
-
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
@@ -9,7 +7,6 @@ export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
 export const getPackageManager = (): PackageManager => {
   const system = yarnOrNpm();
-  console.log(env.NODE_INSTALLER, 'test env NODE_INSTALLER');
 
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
