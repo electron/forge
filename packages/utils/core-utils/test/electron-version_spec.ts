@@ -100,6 +100,25 @@ describe('getElectronVersion', () => {
       delete process.env.NODE_INSTALLER;
     });
   });
+
+  describe('with pnpm workspaces', () => {
+    before(() => {
+      process.env.NODE_INSTALLER = 'pnpm';
+    });
+
+    it('works with a non-exact version', async () => {
+      const fixtureDir = path.resolve(fixturePath, 'pnpm-workspace', 'packages', 'subpackage');
+      const packageJSON = {
+        devDependencies: { electron: '^4.0.4' },
+      };
+
+      expect(await getElectronVersion(fixtureDir, packageJSON)).to.be.equal('4.0.9');
+    });
+
+    after(() => {
+      delete process.env.NODE_INSTALLER;
+    });
+  });
 });
 
 describe('getElectronModulePath', () => {
@@ -179,6 +198,47 @@ describe('getElectronModulePath', () => {
 
     it('finds the correct electron module in nohoist mode', async () => {
       const workspaceDir = path.resolve(fixturePath, 'yarn-workspace');
+      const fixtureDir = path.join(workspaceDir, 'packages', 'electron-folder-in-node-modules');
+      const packageJSON = {
+        devDependencies: { electron: '^13.0.0' },
+      };
+
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).not.to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    });
+
+    after(() => {
+      delete process.env.NODE_INSTALLER;
+    });
+  });
+
+  describe('with pnpm workspaces', () => {
+    before(() => {
+      process.env.NODE_INSTALLER = 'pnpm';
+    });
+
+    it('finds the top-level electron module', async () => {
+      const workspaceDir = path.resolve(fixturePath, 'pnpm-workspace');
+      const fixtureDir = path.join(workspaceDir, 'packages', 'subpackage');
+      const packageJSON = {
+        devDependencies: { electron: '^4.0.4' },
+      };
+
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    });
+
+    it('finds the top-level electron module despite the additional node_modules folder inside the package', async () => {
+      const workspaceDir = path.resolve(fixturePath, 'pnpm-workspace');
+      const fixtureDir = path.join(workspaceDir, 'packages', 'with-node-modules');
+      const packageJSON = {
+        devDependencies: { electron: '^4.0.4' },
+      };
+
+      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+    });
+
+    it('finds the correct electron module in nohoist mode', async () => {
+      const workspaceDir = path.resolve(fixturePath, 'pnpm-workspace');
       const fixtureDir = path.join(workspaceDir, 'packages', 'electron-folder-in-node-modules');
       const packageJSON = {
         devDependencies: { electron: '^13.0.0' },
