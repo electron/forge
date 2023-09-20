@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash';
 
-import installDepList, { DepType, DepVersionRestriction, getInstallDevDepsOption, getInstallExactDepsOption } from '../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../util/upgrade-forge-config';
 
@@ -206,11 +206,11 @@ export default async ({
                   await installDepList(dir, importDeps);
 
                   d('installing devDependencies');
-                  task.output = `${packageManager} add ${getInstallDevDepsOption()} ${importDevDeps.join(' ')}`;
+                  task.output = `${packageManager} add -D ${importDevDeps.join(' ')}`;
                   await installDepList(dir, importDevDeps, DepType.DEV);
 
                   d('installing exactDevDependencies');
-                  task.output = `${packageManager} add ${getInstallDevDepsOption()} ${getInstallExactDepsOption()} ${importExactDevDeps.join(' ')}`;
+                  task.output = `${packageManager} add -D -E ${importExactDevDeps.join(' ')}`;
                   await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                 },
               },

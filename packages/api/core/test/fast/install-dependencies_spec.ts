@@ -64,17 +64,17 @@ describe('Install dependencies', () => {
 
     it('should install dev deps', () => {
       install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--dev']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
     });
 
     it('should install exact deps', () => {
       install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
     });
 
     it('should install exact dev deps', () => {
       install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--dev', '--exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
     });
   });
 
@@ -90,17 +90,17 @@ describe('Install dependencies', () => {
 
     it('should install dev deps', () => {
       install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--save-dev']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
     });
 
     it('should install exact deps', () => {
       install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--save-exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
     });
 
     it('should install exact dev deps', () => {
       install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--save-dev', '--save-exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
     });
   });
 
@@ -116,17 +116,17 @@ describe('Install dependencies', () => {
 
     it('should install dev deps', () => {
       install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--save-dev']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
     });
 
     it('should install exact deps', () => {
       install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--save-exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
     });
 
     it('should install exact dev deps', () => {
       install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--save-dev', '--save-exact']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
     });
   });
 });

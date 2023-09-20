@@ -15,7 +15,7 @@ export async function runNPMInstall(dir: string, ...args: string[]) {
 
 export async function ensureModulesInstalled(dir: string, deps: string[], devDeps: string[]): Promise<void> {
   await runNPMInstall(dir, ...deps);
-  await runNPMInstall(dir, '--save-dev', ...devDeps);
+  await runNPMInstall(dir, '-D', ...devDeps);
 }
 
 let dirID = Date.now();

@@ -1,19 +1,27 @@
+import { env } from 'node:process';
+
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
+import chalk from 'chalk';
+import logSymbols from 'log-symbols';
+import yarnOrNpm from 'yarn-or-npm';
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
 export const getPackageManager = (): PackageManager => {
-  const userAgent = process.env.npm_config_user_agent || '';
+  const system = yarnOrNpm();
+  console.log(env.NODE_INSTALLER, 'test env NODE_INSTALLER');
 
-  if (userAgent.startsWith('yarn')) {
-    return 'yarn';
+  switch (process.env.NODE_INSTALLER) {
+    case 'yarn':
+    case 'npm':
+    case 'pnpm':
+      return process.env.NODE_INSTALLER;
+    default:
+      if (process.env.NODE_INSTALLER) {
+        console.warn(logSymbols.warning, chalk.yellow(`Unknown NODE_INSTALLER, using detected installer ${system}`));
+      }
+      return system;
   }
-
-  if (userAgent.startsWith('pnpm')) {
-    return 'pnpm';
-  }
-
-  return 'npm';
 };
 
 export const packageManagerSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(getPackageManager(), args, opts);

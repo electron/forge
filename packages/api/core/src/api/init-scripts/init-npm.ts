@@ -5,7 +5,7 @@ import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
-import installDepList, { DepType, DepVersionRestriction, getInstallDevDepsOption, getInstallExactDepsOption } from '../../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../../util/install-dependencies';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(path.resolve(__dirname, '../../../package.json'));
@@ -32,12 +32,12 @@ export const initNPM = async <T>(dir: string, task: ForgeListrTask<T>): Promise<
   await installDepList(dir, deps);
 
   d('installing devDependencies');
-  task.output = `${packageManager} add ${getInstallDevDepsOption()} ${deps.join(' ')}`;
+  task.output = `${packageManager} add -D ${deps.join(' ')}`;
   await installDepList(dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
   for (const packageName of exactDevDeps) {
-    task.output = `${packageManager} add ${getInstallDevDepsOption()} ${getInstallExactDepsOption()} ${packageName}`;
+    task.output = `${packageManager} add -D -E ${packageName}`;
     await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
   }
 };

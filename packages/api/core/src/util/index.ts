@@ -1,4 +1,4 @@
-import { getElectronVersion, isNpm, isPnpm, isYarn, packageManagerSpawn } from '@electron-forge/core-utils';
+import { getElectronVersion, getPackageManager, isNpm, isPnpm, isYarn, packageManagerSpawn } from '@electron-forge/core-utils';
 
 import { BuildIdentifierConfig, BuildIdentifierMap, fromBuildIdentifier } from './forge-config';
 
@@ -15,6 +15,8 @@ export default class ForgeUtils {
   }
 
   getElectronVersion = getElectronVersion;
+
+  getPackageManager = getPackageManager;
 
   packageManagerSpawn = packageManagerSpawn;
 

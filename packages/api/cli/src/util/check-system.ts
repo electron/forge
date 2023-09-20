@@ -3,8 +3,6 @@ import os from 'os';
 import path from 'path';
 
 import { utils as forgeUtils } from '@electron-forge/core';
-// eslint-disable-next-line node/no-extraneous-import
-import { getPackageManager, isNpm } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -64,12 +62,12 @@ async function checkPackageManagerVersion() {
   if (forgeUtils.isYarn()) {
     warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
     return `yarn@${versionString}`;
-  } else if (isNpm()) {
+  } else if (forgeUtils.isNpm()) {
     warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_ALLOWLISTED_VERSIONS);
     return `npm@${versionString}`;
   } else {
-    // I think we don't need to check version of pnpm or bun since 2023
-    return `${getPackageManager()}@${versionString}`;
+    // I think we don't need to check version of pnpm since 2023
+    return `${forgeUtils.getPackageManager()}@${versionString}`;
   }
 }
 

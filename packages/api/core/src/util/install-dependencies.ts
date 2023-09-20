@@ -1,4 +1,4 @@
-import { isNpm, isPnpm, packageManagerSpawn } from '@electron-forge/core-utils';
+import { isNpm, isPnpm, isYarn, packageManagerSpawn } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
@@ -14,22 +14,14 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-/**
- *  To install the specified packages as devDependencies
- * `npm add` and `pnpm add` commands use `--save-dev` option
- * `yarn add` command use `--dev` option
- */
-export const getInstallDevDepsOption = (): string => (isNpm() || isPnpm() ? '--save-dev' : '--dev');
-
-/**
- * To install the specified packages with exact version number instead of version range
- * `npm add` and `pnpm add` commands use `--save-exact` option
- * `yarn add` command use `--exact` option
- */
-export const getInstallExactDepsOption = (): string => (isNpm() || isPnpm() ? '--save-exact' : '--exact');
-
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction}}`);
+  d(
+    'installing',
+    JSON.stringify(deps),
+    'in:',
+    dir,
+    `depType=${depType},versionRestriction=${versionRestriction}},withYarn=${isYarn()},withNpm=${isNpm()},withPnpm=${isPnpm()}`
+  );
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
@@ -41,8 +33,8 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
    * for consistency, we use `add` command here
    */
   const cmd = ['add'].concat(deps);
-  if (depType === DepType.DEV) cmd.push(getInstallDevDepsOption());
-  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push(getInstallExactDepsOption());
+  if (depType === DepType.DEV) cmd.push('-D');
+  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('-E');
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
     await packageManagerSpawn(cmd, {

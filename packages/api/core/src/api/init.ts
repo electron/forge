@@ -6,7 +6,7 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import installDepList, { DepType, DepVersionRestriction, getInstallDevDepsOption } from '../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
 import { findTemplate } from './init-scripts/find-template';
@@ -116,7 +116,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
                 task: async (_, task) => {
                   d('installing devDependencies');
                   if (templateModule.devDependencies?.length) {
-                    task.output = `${packageManager} add ${getInstallDevDepsOption()} ${templateModule.devDependencies.join(' ')}`;
+                    task.output = `${packageManager} add -D ${templateModule.devDependencies.join(' ')}`;
                   }
                   await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
                 },
