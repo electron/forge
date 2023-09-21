@@ -6,8 +6,22 @@ import yarnOrNpm from 'yarn-or-npm';
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
 export const getPackageManager = (): PackageManager => {
+  const userAgent = process.env.npm_config_user_agent || '';
   const system = yarnOrNpm();
 
+  if (userAgent.startsWith('yarn')) {
+    return 'yarn';
+  }
+
+  if (userAgent.startsWith('npm')) {
+    return 'npm';
+  }
+
+  if (userAgent.startsWith('pnpm')) {
+    return 'pnpm';
+  }
+
+  // use NODE_INSTALLER as an override of npm_config_user_agent
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
     case 'npm':
