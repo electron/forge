@@ -48,15 +48,14 @@ export default class GitHub {
     return github;
   }
 
-  // Based on https://developer.github.com/v3/repos/releases/#upload-a-release-asset and
+  // Based on https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-asset and
   // https://stackoverflow.com/questions/59081778/rules-for-special-characters-in-github-repository-name
   static sanitizeName(name: string): string {
     return path
       .basename(name)
-      .replace(/\s/g, '.')
       .replace(/\.+/g, '.')
       .replace(/^\./g, '')
       .replace(/\.$/g, '')
-      .replace(/[^\w.-]/g, '-');
+      .replace(/[^\w.-]+/g, '-');
   }
 }

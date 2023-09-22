@@ -112,11 +112,11 @@ describe('GitHub', () => {
     });
 
     it('should remove multiple periods in a row', () => {
-      expect(GitHub.sanitizeName('path/to/foo..bar')).to.equal('foobar');
+      expect(GitHub.sanitizeName('path/to/foo..bar')).to.equal('foo.bar');
     });
 
     it('should replace non-alphanumeric, non-hyphen characters with hyphens', () => {
-      expect(GitHub.sanitizeName('path/to/foo%bar baz.')).to.equal('foo-bar-baz');
+      expect(GitHub.sanitizeName('path/to/foo%$bar   baz.')).to.equal('foo-bar-baz');
     });
   });
 });
