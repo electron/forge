@@ -52,7 +52,7 @@ type MakeContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
   actualOutDir: string;
-  makers: MakerBase<unknown>[];
+  makers: Array<() => MakerBase<unknown>>;
   outputs: ForgeMakeResult[];
 };
 
@@ -134,7 +134,7 @@ export const listrMake = (
           }
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const makers: MakerBase<any>[] = [];
+          const makers: Array<() => MakerBase<any>> = [];
 
           const possibleMakers = generateTargets(forgeConfig, overrideTargets);
 
@@ -182,7 +182,7 @@ export const listrMake = (
 
             maker.ensureExternalBinariesExist();
 
-            makers.push(maker);
+            makers.push(() => maker.clone());
           }
 
           if (makers.length === 0) {
@@ -234,6 +234,7 @@ export const listrMake = (
 
           const subRunner = task.newListr([], {
             ...listrOptions,
+            concurrent: true,
             rendererOptions: {
               collapse: false,
               collapseErrors: false,
@@ -247,25 +248,13 @@ export const listrMake = (
             }
 
             for (const maker of makers) {
+              const uniqMaker = maker();
               subRunner.add({
-                title: `Making a ${chalk.magenta(maker.name)} distributable for ${chalk.cyan(`${platform}/${targetArch}`)}`,
+                title: `Making a ${chalk.magenta(uniqMaker.name)} distributable for ${chalk.cyan(`${platform}/${targetArch}`)}`,
                 task: async () => {
                   try {
-                    /**
-                     * WARNING: DO NOT ATTEMPT TO PARALLELIZE MAKERS
-                     *
-                     * Currently it is assumed we have 1 maker per make call but that is
-                     * not enforced.  It is technically possible to have 1 maker be called
-                     * multiple times.  The "prepareConfig" method however implicitly
-                     * requires a lock that is not enforced.  There are two options:
-                     *
-                     *   * Provide makers a getConfig() method
-                     *   * Remove support for config being provided as a method
-                     *   * Change the entire API of maker from a single constructor to
-                     *     providing a MakerFactory
-                     */
-                    await Promise.resolve(maker.prepareConfig(targetArch));
-                    const artifacts = await maker.make({
+                    await Promise.resolve(uniqMaker.prepareConfig(targetArch));
+                    const artifacts = await uniqMaker.make({
                       appName,
                       forgeConfig,
                       packageJSON,
@@ -285,7 +274,7 @@ export const listrMake = (
                     if (err) {
                       throw err;
                     } else {
-                      throw new Error(`An unknown error occurred while making for target: ${maker.name}`);
+                      throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);
                     }
                   }
                 },
