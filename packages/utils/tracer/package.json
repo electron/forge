@@ -1,17 +1,14 @@
 {
-  "name": "@electron-forge/shared-types",
+  "name": "@electron-forge/tracer",
   "version": "6.4.2",
-  "description": "Shared types across Electron Forge",
+  "description": "Tracing helpers for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@electron-forge/tracer": "6.4.2",
-    "@electron/rebuild": "^3.2.10",
-    "electron-packager": "^17.1.2",
-    "listr2": "^5.0.3"
+    "chrome-trace-event": "^1.0.3"
   },
   "engines": {
     "node": ">= 14.17.5"

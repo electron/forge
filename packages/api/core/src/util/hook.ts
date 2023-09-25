@@ -6,6 +6,7 @@ import {
   ForgeSimpleHookSignatures,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
+import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
 
@@ -29,6 +30,7 @@ export const runHook = async <Hook extends keyof ForgeSimpleHookSignatures>(
 };
 
 export const getHookListrTasks = async <Hook extends keyof ForgeSimpleHookSignatures>(
+  childTrace: typeof autoTrace,
   forgeConfig: ResolvedForgeConfig,
   hookName: Hook,
   ...hookArgs: ForgeSimpleHookSignatures[Hook]
@@ -41,13 +43,13 @@ export const getHookListrTasks = async <Hook extends keyof ForgeSimpleHookSignat
       d('calling hook:', hookName, 'with args:', hookArgs);
       tasks.push({
         title: `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
-        task: async () => {
+        task: childTrace({ name: 'forge-config-hook', category: '@electron-forge/hooks', extraDetails: { hook: hookName } }, async () => {
           await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(forgeConfig, ...hookArgs);
-        },
+        }),
       });
     }
   }
-  tasks.push(...(await forgeConfig.pluginInterface.getHookListrTasks(hookName, hookArgs)));
+  tasks.push(...(await forgeConfig.pluginInterface.getHookListrTasks(childTrace, hookName, hookArgs)));
   return tasks;
 };
 
