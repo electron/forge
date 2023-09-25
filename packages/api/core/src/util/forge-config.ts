@@ -125,19 +125,20 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   forgeConfig = forgeConfig || ({} as ForgeConfig);
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
+    const forgeConfigPath = path.resolve(dir, forgeConfig as string);
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       let loaded;
       try {
-        loaded = (await dynamicImport(path.resolve(dir, forgeConfig as string))) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+        loaded = (await dynamicImport(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       } catch (err) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+        loaded = require(forgeConfigPath) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       }
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
-      console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
+      console.error(`Failed to load: ${forgeConfigPath}`);
       throw err;
     }
   } else if (typeof forgeConfig !== 'object') {
