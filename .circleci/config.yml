@@ -29,7 +29,8 @@ commands:
             yarn build
   run-fast-tests:
     steps:
-      - node/install-packages
+      - node/install-packages:
+          with-cache: false
       - attach_workspace:
           at: .
       - run:
@@ -39,7 +40,8 @@ commands:
 
   run-slow-tests:
     steps:
-      - node/install-packages
+      - node/install-packages:
+          with-cache: false
       - attach_workspace:
           at: .
       - run:

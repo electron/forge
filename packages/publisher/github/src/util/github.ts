@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 import { retry } from '@octokit/plugin-retry';
 import { Octokit } from '@octokit/rest';
@@ -44,5 +46,16 @@ export default class GitHub {
     const RetryableOctokit = Octokit.plugin(retry);
     const github = new RetryableOctokit(options);
     return github;
+  }
+
+  // Based on https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-asset and
+  // https://stackoverflow.com/questions/59081778/rules-for-special-characters-in-github-repository-name
+  static sanitizeName(name: string): string {
+    return path
+      .basename(name)
+      .replace(/\.+/g, '.')
+      .replace(/^\./g, '')
+      .replace(/\.$/g, '')
+      .replace(/[^\w.-]+/g, '-');
   }
 }
