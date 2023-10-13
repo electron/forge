@@ -213,14 +213,21 @@ export default autoTrace(
     };
 
     if (interactive) {
-      process.stdin.on('data', async (data) => {
-        if (data.toString().trim() === 'rs' && lastSpawned) {
-          console.info(chalk.cyan('\nRestarting App\n'));
-          lastSpawned.restarted = true;
-          lastSpawned.kill('SIGTERM');
-          lastSpawned.emit('restarted', await forgeSpawnWrapper());
-        }
-      });
+      process.on('FORGE_RESTART_APP', async () => {
+        if (lastSpawned) {
+        console.info(chalk.cyan('\nRestarting App\n'));
+        lastSpawned.restarted = true;
+        lastSpawned.kill('SIGTERM');
+        lastSpawned.emit('restarted', await forgeSpawnWrapper());
+      }
+    });
+
+    process.stdin.on('data', async (data) => {
+      if (data.toString().trim() === 'rs') {
+        process.emit('FORGE_RESTART_APP');
+      }
+    });
+
       process.stdin.resume();
     }
 
