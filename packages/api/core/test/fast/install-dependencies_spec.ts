@@ -13,6 +13,12 @@ describe('Install dependencies', () => {
   let spawnPromise: Promise<void>;
   let spawnPromiseResolve: () => void;
   let spawnPromiseReject: () => void;
+  let isNpmPromise: Promise<boolean>;
+  let isNpmPromiseResolve: (v: boolean) => void;
+  let isYarnPromise: Promise<boolean>;
+  let isYarnPromiseResolve: (v: boolean) => void;
+  let isPnpmPromise: Promise<boolean>;
+  let isPnpmPromiseResolve: (v: boolean) => void;
 
   beforeEach(() => {
     spawnSpy = stub();
@@ -24,6 +30,18 @@ describe('Install dependencies', () => {
     isNpmSpy = stub();
     isYarnSpy = stub();
     isPnpmSpy = stub();
+    isNpmPromise = new Promise<boolean>((resolve) => {
+      isNpmPromiseResolve = resolve;
+    });
+    isYarnPromise = new Promise<boolean>((resolve) => {
+      isYarnPromiseResolve = resolve;
+    });
+    isPnpmPromise = new Promise<boolean>((resolve) => {
+      isPnpmPromiseResolve = resolve;
+    });
+    isNpmSpy.returns(isNpmPromise);
+    isYarnSpy.returns(isYarnPromise);
+    isPnpmSpy.returns(isPnpmPromise);
 
     install = proxyquire.noCallThru().load('../../src/util/install-dependencies', {
       '@electron-forge/core-utils': {
@@ -52,9 +70,11 @@ describe('Install dependencies', () => {
     await expectPromise;
   });
 
-  describe('with yarn', () => {
+  describe('with npm', () => {
     beforeEach(() => {
-      isYarnSpy.returns(true);
+      isNpmPromiseResolve(true);
+      isYarnPromiseResolve(false);
+      isPnpmPromiseResolve(false);
     });
 
     it('should install prod deps', () => {
@@ -78,9 +98,11 @@ describe('Install dependencies', () => {
     });
   });
 
-  describe('with npm', () => {
+  describe('with yarn', () => {
     beforeEach(() => {
-      isNpmSpy.returns(true);
+      isNpmPromiseResolve(false);
+      isYarnPromiseResolve(true);
+      isPnpmPromiseResolve(false);
     });
 
     it('should install prod deps', () => {
@@ -106,7 +128,9 @@ describe('Install dependencies', () => {
 
   describe('with pnpm', () => {
     beforeEach(() => {
-      isPnpmSpy.returns(true);
+      isNpmPromiseResolve(false);
+      isYarnPromiseResolve(false);
+      isPnpmPromiseResolve(true);
     });
 
     it('should install prod deps', () => {

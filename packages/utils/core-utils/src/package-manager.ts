@@ -1,44 +1,46 @@
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
+import { detect } from 'detect-package-manager';
 import logSymbols from 'log-symbols';
-import yarnOrNpm from 'yarn-or-npm';
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm';
 
-export const getPackageManager = (): PackageManager => {
-  const userAgent = process.env.npm_config_user_agent || '';
-  const system = yarnOrNpm();
-
-  if (userAgent.startsWith('yarn')) {
-    return 'yarn';
+export const getPackageManager = async (): Promise<PackageManager> => {
+  const detectedPackageManager = await detect();
+  const installer = process.env.NODE_INSTALLER || detectedPackageManager;
+  if (!process.env.NODE_INSTALLER) {
+    console.warn(logSymbols.warning, chalk.yellow(`Unknown NODE_INSTALLER env, using detected installer ${installer}`));
   }
-
-  if (userAgent.startsWith('npm')) {
-    return 'npm';
-  }
-
-  if (userAgent.startsWith('pnpm')) {
-    return 'pnpm';
-  }
-
-  // use NODE_INSTALLER as an override of npm_config_user_agent
-  switch (process.env.NODE_INSTALLER) {
-    case 'yarn':
-    case 'npm':
-    case 'pnpm':
-      return process.env.NODE_INSTALLER;
-    default:
-      if (process.env.NODE_INSTALLER) {
-        console.warn(logSymbols.warning, chalk.yellow(`Unknown NODE_INSTALLER, using detected installer ${system}`));
-      }
-      return system;
-  }
+  return installer as PackageManager;
 };
 
-export const packageManagerSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(getPackageManager(), args, opts);
+export const packageManagerSpawn = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => {
+  const pm = await getPackageManager();
+  return spawn(pm, args, opts);
+};
 
-export const isNpm = (): boolean => getPackageManager() === 'npm';
+const cacheWrap = (fn: () => Promise<PackageManager>) => {
+  const cache = new Map();
+  return async (key: string): Promise<boolean> => {
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const pm = await fn();
+    cache.set(key, pm === key);
+    return pm === key;
+  };
+};
 
-export const isYarn = (): boolean => getPackageManager() === 'yarn';
+const _pm = cacheWrap(getPackageManager);
 
-export const isPnpm = (): boolean => getPackageManager() === 'pnpm';
+export const isNpm = async () => {
+  return await _pm('npm');
+};
+
+export const isYarn = async () => {
+  return await _pm('yarn');
+};
+
+export const isPnpm = async () => {
+  return await _pm('pnpm');
+};

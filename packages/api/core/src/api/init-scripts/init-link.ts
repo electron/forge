@@ -27,7 +27,8 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
         if (task) {
-          if (isPnpm()) {
+          const _isPnpm = await isPnpm();
+          if (_isPnpm) {
             task.output = `${packageManager} link ${linkFolder}/${packageName}`;
             await packageManagerSpawn(['link', `${linkFolder}/${packageName}`], {
               cwd: dir,

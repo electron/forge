@@ -80,8 +80,7 @@
     "which": "^2.0.2",
     "xterm": "^4.9.0",
     "xterm-addon-fit": "^0.5.0",
-    "xterm-addon-search": "^0.8.0",
-    "yarn-or-npm": "^3.0.1"
+    "xterm-addon-search": "^0.8.0"
   },
   "devDependencies": {
     "@electron/fuses": ">=1.0.0",
@@ -158,7 +157,6 @@
     "electron-windows-store": "^2.1.0",
     "electron-winstaller": "^5.0.0",
     "electron-wix-msi": "^5.0.0",
-    "exe-icon-extractor": "npm:@bitdisaster/exe-icon-extractor",
     "macos-alias": "^0.2.11"
   },
   "peerDependencies": {

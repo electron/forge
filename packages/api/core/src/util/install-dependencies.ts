@@ -15,12 +15,15 @@ export enum DepVersionRestriction {
 }
 
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
+  const _isNpm = await isNpm();
+  const _isYarn = await isYarn();
+  const _isPnpm = await isPnpm();
   d(
     'installing',
     JSON.stringify(deps),
     'in:',
     dir,
-    `depType=${depType},versionRestriction=${versionRestriction}},withYarn=${isYarn()},withNpm=${isNpm()},withPnpm=${isPnpm()}`
+    `depType=${depType},versionRestriction=${versionRestriction}},withNpm=${_isNpm},withYarn=${_isYarn},withPnpm=${_isPnpm}`
   );
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
