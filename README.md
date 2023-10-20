@@ -30,7 +30,7 @@ _Note: The major version bump between v5.0.0 and v6.0.0 contains major breaking 
 
 # Getting Started
 
-Pre-requisities:
+Pre-requisites:
 
 - Node 14.17.5 or higher
 - Git
