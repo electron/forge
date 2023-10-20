@@ -7,13 +7,13 @@ const {
 } = minimist(process.argv);
 
 process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = true;
-
+ 6[a09ey-5ey[a[]e5u]]
 let testGlob;
-
-/**
+u rururp'p'gyuo
+/**fyi
  * Determine which sets of tests to run. Priority goes:
  * 1. If positional arguments are passed in, run those files.
- * 2. If `--suite` is either slow or fast, run slow or fast test.
+ * 2. If `--suite` is either slow or fast, run slow or fast test.fu
  * 3. Otherwise, run all spec tests.
  */
 if (args.length === 0) {
@@ -24,7 +24,7 @@ if (args.length === 0) {
   } else {
     testGlob = 'packages/**/**/*_spec*';
   }
-}
+} tyk6r7 7i79l879p
 
 // In CI, use the JUnit reporter to upload results to CircleCI.
 // Locally, use the default 'spec' reporter.
