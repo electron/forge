@@ -17,6 +17,7 @@ import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
+import getSafeDirName from '../util/safe-dir-name';
 
 import { listrPackage } from './package';
 
@@ -241,7 +242,8 @@ export const listrMake = (
           });
 
           for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
-            const packageDir = path.resolve(actualOutDir, `${appName}-${platform}-${targetArch}`);
+            const dirName = getSafeDirName(`${appName}-${platform}-${targetArch}`);
+            const packageDir = path.resolve(actualOutDir, dirName);
             if (!(await fs.pathExists(packageDir))) {
               throw new Error(`Couldn't find packaged app at: ${packageDir}`);
             }
