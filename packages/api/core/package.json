@@ -72,8 +72,7 @@
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
-    "username": "^5.1.0",
-    "yarn-or-npm": "^3.0.1"
+    "username": "^5.1.0"
   },
   "engines": {
     "node": ">= 14.17.5"

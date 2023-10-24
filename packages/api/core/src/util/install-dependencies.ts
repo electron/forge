@@ -1,4 +1,4 @@
-import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { isNpm, isPnpm, isYarn, packageManagerSpawn } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
@@ -15,24 +15,32 @@ export enum DepVersionRestriction {
 }
 
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${hasYarn()}`);
+  const _isNpm = await isNpm();
+  const _isYarn = await isYarn();
+  const _isPnpm = await isPnpm();
+  d(
+    'installing',
+    JSON.stringify(deps),
+    'in:',
+    dir,
+    `depType=${depType},versionRestriction=${versionRestriction}},withNpm=${_isNpm},withYarn=${_isYarn},withPnpm=${_isPnpm}`
+  );
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
   }
-  let cmd = ['install'].concat(deps);
-  if (hasYarn()) {
-    cmd = ['add'].concat(deps);
-    if (depType === DepType.DEV) cmd.push('--dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
-  } else {
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
-    if (depType === DepType.DEV) cmd.push('--save-dev');
-    if (depType === DepType.PROD) cmd.push('--save');
-  }
+  /**
+   * To install the specified packages as dependencies
+   * yarn and pnpm use `add` command
+   * npm use `add` as an alias command of `install`
+   * for consistency, we use `add` command here
+   */
+  const cmd = ['add'].concat(deps);
+  if (depType === DepType.DEV) cmd.push('-D');
+  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('-E');
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
-    await yarnOrNpmSpawn(cmd, {
+    await packageManagerSpawn(cmd, {
       cwd: dir,
       stdio: 'pipe',
     });

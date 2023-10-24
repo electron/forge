@@ -2,7 +2,7 @@ import assert from 'assert';
 import { execSync } from 'child_process';
 import path from 'path';
 
-import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { packageManagerSpawn } from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
@@ -35,13 +35,13 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON);
 }
 
-for (const nodeInstaller of ['npm', 'yarn']) {
+for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
   process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;
 
     before(async () => {
-      await yarnOrNpmSpawn(['link:prepare']);
+      await packageManagerSpawn(['link:prepare']);
     });
 
     const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
@@ -199,7 +199,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       before(async () => {
         dir = await ensureTestDirIsNonexistent();
         await fs.mkdir(dir);
-        execSync(`${nodeInstaller} init -y`, {
+        execSync(nodeInstaller === 'pnpm' ? `${nodeInstaller} init` : `${nodeInstaller} init -y`, {
           cwd: dir,
         });
       });
@@ -224,7 +224,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
     });
 
     after(async () => {
-      await yarnOrNpmSpawn(['link:remove']);
+      await packageManagerSpawn(['link:remove']);
     });
   });
 }
@@ -233,7 +233,7 @@ describe('Electron Forge API', () => {
   let dir: string;
 
   before(async () => {
-    await yarnOrNpmSpawn(['link:prepare']);
+    await packageManagerSpawn(['link:prepare']);
   });
 
   describe('after init', () => {
@@ -499,6 +499,6 @@ describe('Electron Forge API', () => {
   });
 
   after(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
+    await packageManagerSpawn(['link:remove']);
   });
 });

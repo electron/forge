@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { getPackageManager } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 import { Listr } from 'listr2';
@@ -56,7 +56,7 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
 export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
-  const packageManager = safeYarnOrNpm();
+  const packageManager = getPackageManager();
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;
@@ -105,7 +105,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
                 task: async (_, task) => {
                   d('installing dependencies');
                   if (templateModule.dependencies?.length) {
-                    task.output = `${packageManager} install ${templateModule.dependencies.join(' ')}`;
+                    task.output = `${packageManager} add ${templateModule.dependencies.join(' ')}`;
                   }
                   return await installDepList(dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
                 },
@@ -116,7 +116,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
                 task: async (_, task) => {
                   d('installing devDependencies');
                   if (templateModule.devDependencies?.length) {
-                    task.output = `${packageManager} install --dev ${templateModule.devDependencies.join(' ')}`;
+                    task.output = `${packageManager} add -D ${templateModule.devDependencies.join(' ')}`;
                   }
                   await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
                 },

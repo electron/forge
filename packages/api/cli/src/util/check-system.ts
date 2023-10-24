@@ -57,14 +57,20 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
 }
 
 async function checkPackageManagerVersion() {
-  const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
+  const version = await forgeUtils.packageManagerSpawn(['--version']);
   const versionString = version.toString().trim();
-  if (forgeUtils.hasYarn()) {
+  const _isNpm = await forgeUtils.isNpm();
+  const _isYarn = await forgeUtils.isYarn();
+  if (_isYarn) {
     warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
     return `yarn@${versionString}`;
-  } else {
+  } else if (_isNpm) {
     warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_ALLOWLISTED_VERSIONS);
     return `npm@${versionString}`;
+  } else {
+    // I think we don't need to check version of pnpm since 2023
+    const pm = await forgeUtils.getPackageManager();
+    return `${pm}@${versionString}`;
   }
 }
 

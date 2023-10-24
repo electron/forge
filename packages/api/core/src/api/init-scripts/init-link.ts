@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { safeYarnOrNpm, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { getPackageManager, isPnpm, packageManagerSpawn } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 
@@ -22,14 +22,24 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
   if (shouldLink) {
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
-    const packageManager = safeYarnOrNpm();
+    const packageManager = getPackageManager();
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
-        if (task) task.output = `${packageManager} link --link-folder ${linkFolder} ${packageName}`;
-        await yarnOrNpmSpawn(['link', '--link-folder', linkFolder, packageName], {
-          cwd: dir,
-        });
+        if (task) {
+          const _isPnpm = await isPnpm();
+          if (_isPnpm) {
+            task.output = `${packageManager} link ${linkFolder}/${packageName}`;
+            await packageManagerSpawn(['link', `${linkFolder}/${packageName}`], {
+              cwd: dir,
+            });
+          } else {
+            task.output = `${packageManager} link --link-folder ${linkFolder} ${packageName}`;
+            await packageManagerSpawn(['link', '--link-folder', linkFolder, packageName], {
+              cwd: dir,
+            });
+          }
+        }
       }
     }
   } else {

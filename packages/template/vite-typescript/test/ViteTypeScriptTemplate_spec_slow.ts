@@ -1,7 +1,7 @@
 import cp from 'child_process';
 import path from 'path';
 
-import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { packageManagerSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import glob from 'fast-glob';
@@ -14,12 +14,12 @@ describe('ViteTypeScriptTemplate', () => {
   let dir: string;
 
   before(async () => {
-    await yarnOrNpmSpawn(['link:prepare']);
+    await packageManagerSpawn(['link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
   after(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
+    await packageManagerSpawn(['link:remove']);
     await killWindowsEsbuildExe();
     await fs.remove(dir);
   });
@@ -80,7 +80,7 @@ describe('ViteTypeScriptTemplate', () => {
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
       await fs.writeJson(path.resolve(dir, 'package.json'), pj);
-      await yarnOrNpmSpawn(['install'], {
+      await packageManagerSpawn(['install'], {
         cwd: dir,
       });
 

@@ -7,7 +7,9 @@ import installDependencies, { DepType, DepVersionRestriction } from '../../src/u
 describe('Install dependencies', () => {
   let install: typeof installDependencies;
   let spawnSpy: SinonStub;
-  let hasYarnSpy: SinonStub;
+  let isNpmSpy: SinonStub;
+  let isYarnSpy: SinonStub;
+  let isPnpmSpy: SinonStub;
   let spawnPromise: Promise<void>;
   let spawnPromiseResolve: () => void;
   let spawnPromiseReject: () => void;
@@ -19,11 +21,16 @@ describe('Install dependencies', () => {
       spawnPromiseReject = reject;
     });
     spawnSpy.returns(spawnPromise);
-    hasYarnSpy = stub();
+    isNpmSpy = stub();
+    isYarnSpy = stub();
+    isPnpmSpy = stub();
+
     install = proxyquire.noCallThru().load('../../src/util/install-dependencies', {
       '@electron-forge/core-utils': {
-        yarnOrNpmSpawn: spawnSpy,
-        hasYarn: hasYarnSpy,
+        packageManagerSpawn: spawnSpy,
+        isNpm: isNpmSpy,
+        isYarn: isYarnSpy,
+        isPnpm: isPnpmSpy,
       },
     }).default;
   });
@@ -45,55 +52,90 @@ describe('Install dependencies', () => {
     await expectPromise;
   });
 
-  describe('with yarn', () => {
+  describe('with npm', () => {
     beforeEach(() => {
-      hasYarnSpy.returns(true);
+      spawnPromiseResolve();
+      isNpmSpy.resolves(true);
+      isYarnSpy.resolves(false);
+      isPnpmSpy.resolves(false);
     });
 
-    it('should install prod deps', () => {
-      install('mydir', ['react']);
+    it('should install prod deps', async () => {
+      await install('mydir', ['react']);
       expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react']);
     });
 
-    it('should install dev deps', () => {
-      install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '--dev']);
+    it('should install dev deps', async () => {
+      await install('mydir', ['eslint'], DepType.DEV);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
     });
 
-    it('should install exact deps', () => {
-      install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '--exact']);
+    it('should install exact deps', async () => {
+      await install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
     });
 
-    it('should install exact dev deps', () => {
-      install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '--dev', '--exact']);
+    it('should install exact dev deps', async () => {
+      await install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
     });
   });
 
-  describe('with npm', () => {
+  describe('with yarn', () => {
     beforeEach(() => {
-      hasYarnSpy.returns(false);
+      spawnPromiseResolve();
+      isNpmSpy.resolves(false);
+      isYarnSpy.resolves(true);
+      isPnpmSpy.resolves(false);
     });
 
-    it('should install prod deps', () => {
-      install('mydir', ['react']);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react', '--save']);
+    it('should install prod deps', async () => {
+      await install('mydir', ['react']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react']);
     });
 
-    it('should install dev deps', () => {
-      install('mydir', ['eslint'], DepType.DEV);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'eslint', '--save-dev']);
+    it('should install dev deps', async () => {
+      await install('mydir', ['eslint'], DepType.DEV);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
     });
 
-    it('should install exact deps', () => {
-      install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react-dom', '--save-exact', '--save']);
+    it('should install exact deps', async () => {
+      await install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
     });
 
-    it('should install exact dev deps', () => {
-      install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'mocha', '--save-exact', '--save-dev']);
+    it('should install exact dev deps', async () => {
+      await install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
+    });
+  });
+
+  describe('with pnpm', () => {
+    beforeEach(() => {
+      spawnPromiseResolve();
+      isNpmSpy.resolves(false);
+      isYarnSpy.resolves(false);
+      isPnpmSpy.resolves(true);
+    });
+
+    it('should install prod deps', async () => {
+      await install('mydir', ['react']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react']);
+    });
+
+    it('should install dev deps', async () => {
+      await install('mydir', ['eslint'], DepType.DEV);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'eslint', '-D']);
+    });
+
+    it('should install exact deps', async () => {
+      await install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'react-dom', '-E']);
+    });
+
+    it('should install exact dev deps', async () => {
+      await install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['add', 'mocha', '-D', '-E']);
     });
   });
 });

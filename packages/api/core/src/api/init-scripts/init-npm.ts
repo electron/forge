@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { getPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -27,17 +27,17 @@ export const exactDevDeps = ['electron'];
 
 export const initNPM = async <T>(dir: string, task: ForgeListrTask<T>): Promise<void> => {
   d('installing dependencies');
-  const packageManager = safeYarnOrNpm();
-  task.output = `${packageManager} install ${deps.join(' ')}`;
+  const packageManager = getPackageManager();
+  task.output = `${packageManager} add ${deps.join(' ')}`;
   await installDepList(dir, deps);
 
   d('installing devDependencies');
-  task.output = `${packageManager} install --dev ${deps.join(' ')}`;
+  task.output = `${packageManager} add -D ${deps.join(' ')}`;
   await installDepList(dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
   for (const packageName of exactDevDeps) {
-    task.output = `${packageManager} install --dev --exact ${packageName}`;
+    task.output = `${packageManager} add -D -E ${packageName}`;
     await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
   }
 };
