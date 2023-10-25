@@ -8,7 +8,7 @@ export interface DMGContents {
   y: number;
   type: 'link' | 'file' | 'position';
   path: string;
-  name: string;
+  name?: string;
 }
 
 export interface WindowPositionOptions {
