@@ -36,7 +36,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     if (!(config.repository && typeof config.repository === 'object' && config.repository.owner && config.repository.name)) {
       throw new Error(
-        'In order to publish to Github, you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
+        'In order to publish to GitHub, you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
       );
     }
 
