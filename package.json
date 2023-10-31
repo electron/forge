@@ -174,6 +174,7 @@
   "prettier": {
     "singleQuote": true
   },
+  "packageManager": "yarn@1.22.18+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
   "workspaces": {
     "packages": [
       "packages/api/*",
