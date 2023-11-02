@@ -93,6 +93,7 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "helper"
   ]
 }
