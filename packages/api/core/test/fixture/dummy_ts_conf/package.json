@@ -15,6 +15,6 @@
   },
   "devDependencies": {
     "@electron-forge/shared-types": "*",
-    "electron-prebuilt": "9.9.9"
+    "electron": "99.99.99"
   }
 }
