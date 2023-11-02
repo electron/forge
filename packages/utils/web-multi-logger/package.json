@@ -15,7 +15,7 @@
     "xterm-addon-search": "^0.8.0"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "publishConfig": {
     "access": "public"

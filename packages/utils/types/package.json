@@ -13,7 +13,7 @@
     "listr2": "^5.0.3"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "publishConfig": {
     "access": "public"

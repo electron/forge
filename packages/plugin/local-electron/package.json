@@ -8,7 +8,7 @@
   "main": "dist/LocalElectronPlugin.js",
   "typings": "dist/LocalElectronPlugin.d.ts",
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "dependencies": {
     "@electron-forge/plugin-base": "6.4.2",

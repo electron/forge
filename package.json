@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "scripts": {
     "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
