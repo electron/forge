@@ -1,33 +1,11 @@
-import { PredefinedAcl } from '@google-cloud/storage';
+import { PredefinedAcl, StorageOptions } from '@google-cloud/storage';
 
 export interface PublisherGCSConfig {
   /**
-   * The path to the file that is either:
-   * - the JSON file that contains your Google service account credentials, or
-   * - the PEM/PKCS #12-formatted file that contains the private key.
-   *
-   * Defaults to the value in the `GOOGLE_APPLICATION_CREDENTIALS` environment variable.
+   * Options passed into the `Storage` client constructor.
+   * See https://cloud.google.com/nodejs/docs/reference/storage/latest/storage/storage for full reference.
    */
-  keyFilename?: string;
-  /**
-   * The Google Cloud project ID.
-   *
-   * Defaults to the value in the `GOOGLE_CLOUD_PROJECT` environment variable.
-   * */
-  projectId?: string;
-  /**
-   * The email for your Google service account, *required* when using a PEM/PKCS #12-formatted
-   * file in the [[keyFilename]] option.
-   *
-   * Defaults to the value in the `GOOGLE_CLOUD_CLIENT_EMAIL` environment variable.
-   */
-  clientEmail?: string;
-  /**
-   * The private key for your Google service account.
-   *
-   * Defaults to the value in the `GOOGLE_CLOUD_PRIVATE_KEY` environment variable.
-   */
-  privateKey?: string;
+  storageOptions: StorageOptions;
   /**
    * The name of the Google Cloud Storage bucket where artifacts are uploaded.
    */

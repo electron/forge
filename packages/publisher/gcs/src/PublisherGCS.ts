@@ -3,7 +3,6 @@ import path from 'path';
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
-import { CredentialBody } from 'google-auth-library';
 
 import { PublisherGCSConfig } from './Config';
 
@@ -41,11 +40,7 @@ export default class PublisherGCS extends PublisherBase<PublisherGCSConfig> {
       );
     }
 
-    const storage = new Storage({
-      keyFilename: this.config.keyFilename,
-      credentials: this.generateCredentials(),
-      projectId: this.config.projectId,
-    });
+    const storage = new Storage(this.config.storageOptions);
 
     const bucket = storage.bucket(this.config.bucket);
 
@@ -79,19 +74,6 @@ export default class PublisherGCS extends PublisherBase<PublisherGCSConfig> {
     }
 
     return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;
-  }
-
-  generateCredentials(): CredentialBody | undefined {
-    const clientEmail = this.config.clientEmail;
-    const privateKey = this.config.privateKey;
-
-    if (clientEmail && privateKey) {
-      return {
-        client_email: clientEmail,
-        private_key: privateKey,
-      };
-    }
-    return undefined;
   }
 }
 
