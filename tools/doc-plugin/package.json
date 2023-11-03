@@ -9,7 +9,7 @@
     "custom-sidebar"
   ],
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 16.4.0"
   },
   "devDependencies": {
     "typescript": "^4.6.3"

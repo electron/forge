@@ -32,7 +32,7 @@ _Note: The major version bump between v5.0.0 and v6.0.0 contains major breaking 
 
 Pre-requisites:
 
-- Node 16.0.0 or higher
+- Node 16.4.0 or higher
 - Git
 
 If you have a more recent version of `npm` or `yarn`, you can use

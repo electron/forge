@@ -13,7 +13,7 @@
     "sinon": "^13.0.1"
   },
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "6.4.2",
