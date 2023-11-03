@@ -99,7 +99,7 @@ export default class PluginInterface implements IForgePluginInterface {
               title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
               task: childTrace(
                 { name: 'forge-plugin-hook', category: '@electron-forge/hooks', extraDetails: { plugin: plugin.name, hook: hookName } },
-                async (_, task) => {
+                async (_, __, task) => {
                   if ((hook as any).__hookName) {
                     // Also give it the task
                     await (hook as any).call(task, this.config, ...(hookArgs as any[]));
