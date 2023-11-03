@@ -14,6 +14,8 @@ const forgeTracer: {
 
 if (process.env.ELECTRON_FORGE_TRACE_FILE) {
   store._forgeTracer.pipe(fs.createWriteStream(process.env.ELECTRON_FORGE_TRACE_FILE));
+} else {
+  store._forgeTracer = null;
 }
 
 const nextRoot = () => `forge-auto-trace-root-${forgeTracer.traceIdCounter++}`;
@@ -26,7 +28,7 @@ type TraceOptions = {
 };
 
 function _autoTrace<Args extends any[], R = void>(
-  tracer: Tracer,
+  tracer: Tracer | null,
   autoTraceId: string,
   opts: TraceOptions,
   fn: (childTrace: typeof autoTrace, ...args: Args) => R
@@ -39,12 +41,12 @@ function _autoTrace<Args extends any[], R = void>(
       args: opts.extraDetails,
       tid: autoTraceId.split('-')[autoTraceId.split('-').length - 1],
     };
-    tracer.begin(traceArgs);
+    tracer?.begin(traceArgs);
     const childTrace = (opts: TraceOptions, fn: any) => {
-      return _autoTrace(tracer.child(traceArgs), opts.newRoot ? nextRoot() : autoTraceId, opts, fn);
+      return _autoTrace(tracer?.child(traceArgs) ?? null, opts.newRoot ? nextRoot() : autoTraceId, opts, fn);
     };
     (childTrace as any)._autoEnd = true;
-    (childTrace as any)._end = () => tracer.end(traceArgs);
+    (childTrace as any)._end = () => tracer?.end(traceArgs);
     try {
       return await Promise.resolve(fn(childTrace as any, ...args));
     } finally {
