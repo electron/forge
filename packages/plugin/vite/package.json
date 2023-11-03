@@ -24,7 +24,7 @@
     "xvfb-maybe": "^0.2.1"
   },
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "6.4.2",

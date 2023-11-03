@@ -28,7 +28,7 @@
     "@electron/fuses": ">=1.0.0"
   },
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
     "@electron-forge/plugin-base": "6.4.2",
