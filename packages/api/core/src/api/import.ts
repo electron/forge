@@ -1,7 +1,9 @@
 import path from 'path';
 
 import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
+import { ForgeListrTaskFn } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
+import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -50,221 +52,219 @@ export interface ImportOptions {
   outDir?: string;
 }
 
-export default async ({
-  dir = process.cwd(),
-  interactive = false,
-  confirmImport,
-  shouldContinueOnExisting,
-  shouldRemoveDependency,
-  shouldUpdateScript,
-  outDir,
-}: ImportOptions): Promise<void> => {
-  const listrOptions = {
-    concurrent: false,
-    rendererOptions: {
-      collapse: false,
-      collapseErrors: false,
-    },
-    rendererSilent: !interactive,
-    rendererFallback: Boolean(process.env.DEBUG),
-  };
-
-  const runner = new Listr(
-    [
-      {
-        title: 'Locating importable project',
-        task: async () => {
-          d(`Attempting to import project in: ${dir}`);
-          if (!(await fs.pathExists(dir)) || !(await fs.pathExists(path.resolve(dir, 'package.json')))) {
-            throw new Error(`We couldn't find a project with a package.json file in: ${dir}`);
-          }
-
-          if (typeof confirmImport === 'function') {
-            if (!(await confirmImport())) {
-              // TODO: figure out if we can just return early here
-              // eslint-disable-next-line no-process-exit
-              process.exit(0);
-            }
-          }
-
-          await initGit(dir);
-        },
+export default autoTrace(
+  { name: 'import()', category: '@electron-forge/core' },
+  async (
+    childTrace,
+    { dir = process.cwd(), interactive = false, confirmImport, shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript, outDir }: ImportOptions
+  ): Promise<void> => {
+    const listrOptions = {
+      concurrent: false,
+      rendererOptions: {
+        collapse: false,
+        collapseErrors: false,
       },
-      {
-        title: 'Processing configuration and dependencies',
-        options: {
-          persistentOutput: true,
-          bottomBar: Infinity,
+      rendererSilent: !interactive,
+      rendererFallback: Boolean(process.env.DEBUG),
+    };
+
+    const runner = new Listr(
+      [
+        {
+          title: 'Locating importable project',
+          task: childTrace({ name: 'locate-project', category: '@electron-forge/core' }, async () => {
+            d(`Attempting to import project in: ${dir}`);
+            if (!(await fs.pathExists(dir)) || !(await fs.pathExists(path.resolve(dir, 'package.json')))) {
+              throw new Error(`We couldn't find a project with a package.json file in: ${dir}`);
+            }
+
+            if (typeof confirmImport === 'function') {
+              if (!(await confirmImport())) {
+                // TODO: figure out if we can just return early here
+                // eslint-disable-next-line no-process-exit
+                process.exit(0);
+              }
+            }
+
+            await initGit(dir);
+          }),
         },
-        task: async (ctx, task) => {
-          const calculatedOutDir = outDir || 'out';
+        {
+          title: 'Processing configuration and dependencies',
+          options: {
+            persistentOutput: true,
+            bottomBar: Infinity,
+          },
+          task: childTrace<Parameters<ForgeListrTaskFn>>({ name: 'string', category: 'foo' }, async (_, ctx, task) => {
+            const calculatedOutDir = outDir || 'out';
 
-          const importDeps = ([] as string[]).concat(deps);
-          let importDevDeps = ([] as string[]).concat(devDeps);
-          let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
+            const importDeps = ([] as string[]).concat(deps);
+            let importDevDeps = ([] as string[]).concat(devDeps);
+            let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
 
-          let packageJSON = await readRawPackageJson(dir);
-          if (!packageJSON.version) {
-            task.output = chalk.yellow(`Please set the ${chalk.green('"version"')} in your application's package.json`);
-          }
-          if (packageJSON.config && packageJSON.config.forge) {
-            if (packageJSON.config.forge.makers) {
-              task.output = chalk.green('Existing Electron Forge configuration detected');
-              if (typeof shouldContinueOnExisting === 'function') {
-                if (!(await shouldContinueOnExisting())) {
-                  // TODO: figure out if we can just return early here
-                  // eslint-disable-next-line no-process-exit
-                  process.exit(0);
+            let packageJSON = await readRawPackageJson(dir);
+            if (!packageJSON.version) {
+              task.output = chalk.yellow(`Please set the ${chalk.green('"version"')} in your application's package.json`);
+            }
+            if (packageJSON.config && packageJSON.config.forge) {
+              if (packageJSON.config.forge.makers) {
+                task.output = chalk.green('Existing Electron Forge configuration detected');
+                if (typeof shouldContinueOnExisting === 'function') {
+                  if (!(await shouldContinueOnExisting())) {
+                    // TODO: figure out if we can just return early here
+                    // eslint-disable-next-line no-process-exit
+                    process.exit(0);
+                  }
+                }
+              } else if (!(typeof packageJSON.config.forge === 'object')) {
+                task.output = chalk.yellow(
+                  "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway"
+                );
+              } else {
+                d('Upgrading an Electron Forge < 6 project');
+                packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge);
+                importDevDeps = updateUpgradedForgeDevDeps(packageJSON, importDevDeps);
+              }
+            }
+
+            packageJSON.dependencies = packageJSON.dependencies || {};
+            packageJSON.devDependencies = packageJSON.devDependencies || {};
+
+            [importDevDeps, importExactDevDeps] = updateElectronDependency(packageJSON, importDevDeps, importExactDevDeps);
+
+            const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
+            const buildToolPackages: Record<string, string | undefined> = {
+              '@electron/get': 'already uses this module as a transitive dependency',
+              '@electron/osx-sign': 'already uses this module as a transitive dependency',
+              'electron-builder': 'provides mostly equivalent functionality',
+              'electron-download': 'already uses this module as a transitive dependency',
+              'electron-forge': 'replaced with @electron-forge/cli',
+              'electron-installer-debian': 'already uses this module as a transitive dependency',
+              'electron-installer-dmg': 'already uses this module as a transitive dependency',
+              'electron-installer-flatpak': 'already uses this module as a transitive dependency',
+              'electron-installer-redhat': 'already uses this module as a transitive dependency',
+              'electron-packager': 'already uses this module as a transitive dependency',
+              'electron-winstaller': 'already uses this module as a transitive dependency',
+            };
+
+            for (const key of keys) {
+              if (buildToolPackages[key]) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const explanation = buildToolPackages[key]!;
+                let remove = true;
+                if (typeof shouldRemoveDependency === 'function') {
+                  remove = await shouldRemoveDependency(key, explanation);
+                }
+
+                if (remove) {
+                  delete packageJSON.dependencies[key];
+                  delete packageJSON.devDependencies[key];
                 }
               }
-            } else if (!(typeof packageJSON.config.forge === 'object')) {
-              task.output = chalk.yellow(
-                "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway"
-              );
-            } else {
-              d('Upgrading an Electron Forge < 6 project');
-              packageJSON.config.forge = upgradeForgeConfig(packageJSON.config.forge);
-              importDevDeps = updateUpgradedForgeDevDeps(packageJSON, importDevDeps);
             }
-          }
 
-          packageJSON.dependencies = packageJSON.dependencies || {};
-          packageJSON.devDependencies = packageJSON.devDependencies || {};
+            packageJSON.scripts = packageJSON.scripts || {};
+            d('reading current scripts object:', packageJSON.scripts);
 
-          [importDevDeps, importExactDevDeps] = updateElectronDependency(packageJSON, importDevDeps, importExactDevDeps);
-
-          const keys = Object.keys(packageJSON.dependencies).concat(Object.keys(packageJSON.devDependencies));
-          const buildToolPackages: Record<string, string | undefined> = {
-            '@electron/get': 'already uses this module as a transitive dependency',
-            '@electron/osx-sign': 'already uses this module as a transitive dependency',
-            'electron-builder': 'provides mostly equivalent functionality',
-            'electron-download': 'already uses this module as a transitive dependency',
-            'electron-forge': 'replaced with @electron-forge/cli',
-            'electron-installer-debian': 'already uses this module as a transitive dependency',
-            'electron-installer-dmg': 'already uses this module as a transitive dependency',
-            'electron-installer-flatpak': 'already uses this module as a transitive dependency',
-            'electron-installer-redhat': 'already uses this module as a transitive dependency',
-            'electron-packager': 'already uses this module as a transitive dependency',
-            'electron-winstaller': 'already uses this module as a transitive dependency',
-          };
-
-          for (const key of keys) {
-            if (buildToolPackages[key]) {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const explanation = buildToolPackages[key]!;
-              let remove = true;
-              if (typeof shouldRemoveDependency === 'function') {
-                remove = await shouldRemoveDependency(key, explanation);
+            const updatePackageScript = async (scriptName: string, newValue: string) => {
+              if (packageJSON.scripts[scriptName] !== newValue) {
+                let update = true;
+                if (typeof shouldUpdateScript === 'function') {
+                  update = await shouldUpdateScript(scriptName, newValue);
+                }
+                if (update) {
+                  packageJSON.scripts[scriptName] = newValue;
+                }
               }
+            };
 
-              if (remove) {
-                delete packageJSON.dependencies[key];
-                delete packageJSON.devDependencies[key];
-              }
-            }
-          }
+            await updatePackageScript('start', 'electron-forge start');
+            await updatePackageScript('package', 'electron-forge package');
+            await updatePackageScript('make', 'electron-forge make');
 
-          packageJSON.scripts = packageJSON.scripts || {};
-          d('reading current scripts object:', packageJSON.scripts);
+            d('forgified scripts object:', packageJSON.scripts);
 
-          const updatePackageScript = async (scriptName: string, newValue: string) => {
-            if (packageJSON.scripts[scriptName] !== newValue) {
-              let update = true;
-              if (typeof shouldUpdateScript === 'function') {
-                update = await shouldUpdateScript(scriptName, newValue);
-              }
-              if (update) {
-                packageJSON.scripts[scriptName] = newValue;
-              }
-            }
-          };
+            const writeChanges = async () => {
+              await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
+            };
 
-          await updatePackageScript('start', 'electron-forge start');
-          await updatePackageScript('package', 'electron-forge package');
-          await updatePackageScript('make', 'electron-forge make');
-
-          d('forgified scripts object:', packageJSON.scripts);
-
-          const writeChanges = async () => {
-            await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
-          };
-
-          return task.newListr(
-            [
-              {
-                title: 'Installing dependencies',
-                task: async (_, task) => {
-                  const packageManager = safeYarnOrNpm();
-                  await writeChanges();
-
-                  d('deleting old dependencies forcefully');
-                  await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
-                  await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
-
-                  d('installing dependencies');
-                  task.output = `${packageManager} install ${importDeps.join(' ')}`;
-                  await installDepList(dir, importDeps);
-
-                  d('installing devDependencies');
-                  task.output = `${packageManager} install --dev ${importDevDeps.join(' ')}`;
-                  await installDepList(dir, importDevDeps, DepType.DEV);
-
-                  d('installing exactDevDependencies');
-                  task.output = `${packageManager} install --dev --exact ${importExactDevDeps.join(' ')}`;
-                  await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
-                },
-              },
-              {
-                title: 'Copying base template Forge configuration',
-                task: async () => {
-                  const pathToTemplateConfig = path.resolve(baseTemplate.templateDir, 'forge.config.js');
-
-                  // if there's an existing config.forge object in package.json
-                  if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
-                    d('detected existing Forge config in package.json, merging with base template Forge config');
-                    // eslint-disable-next-line @typescript-eslint/no-var-requires
-                    const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
-                    packageJSON = await readRawPackageJson(dir);
-                    merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+            return task.newListr(
+              [
+                {
+                  title: 'Installing dependencies',
+                  task: async (_, task) => {
+                    const packageManager = safeYarnOrNpm();
                     await writeChanges();
-                    // otherwise, write to forge.config.js
-                  } else {
-                    d('writing new forge.config.js');
-                    await fs.copyFile(pathToTemplateConfig, path.resolve(dir, 'forge.config.js'));
-                  }
+
+                    d('deleting old dependencies forcefully');
+                    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
+                    await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
+
+                    d('installing dependencies');
+                    task.output = `${packageManager} install ${importDeps.join(' ')}`;
+                    await installDepList(dir, importDeps);
+
+                    d('installing devDependencies');
+                    task.output = `${packageManager} install --dev ${importDevDeps.join(' ')}`;
+                    await installDepList(dir, importDevDeps, DepType.DEV);
+
+                    d('installing exactDevDependencies');
+                    task.output = `${packageManager} install --dev --exact ${importExactDevDeps.join(' ')}`;
+                    await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
+                  },
                 },
-              },
-              {
-                title: 'Fixing .gitignore',
-                task: async () => {
-                  if (await fs.pathExists(path.resolve(dir, '.gitignore'))) {
-                    const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
-                    if (!gitignore.includes(calculatedOutDir)) {
-                      await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\n${calculatedOutDir}/`);
+                {
+                  title: 'Copying base template Forge configuration',
+                  task: async () => {
+                    const pathToTemplateConfig = path.resolve(baseTemplate.templateDir, 'forge.config.js');
+
+                    // if there's an existing config.forge object in package.json
+                    if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
+                      d('detected existing Forge config in package.json, merging with base template Forge config');
+                      // eslint-disable-next-line @typescript-eslint/no-var-requires
+                      const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
+                      packageJSON = await readRawPackageJson(dir);
+                      merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+                      await writeChanges();
+                      // otherwise, write to forge.config.js
+                    } else {
+                      d('writing new forge.config.js');
+                      await fs.copyFile(pathToTemplateConfig, path.resolve(dir, 'forge.config.js'));
                     }
-                  }
+                  },
                 },
-              },
-            ],
-            listrOptions
-          );
+                {
+                  title: 'Fixing .gitignore',
+                  task: async () => {
+                    if (await fs.pathExists(path.resolve(dir, '.gitignore'))) {
+                      const gitignore = await fs.readFile(path.resolve(dir, '.gitignore'));
+                      if (!gitignore.includes(calculatedOutDir)) {
+                        await fs.writeFile(path.resolve(dir, '.gitignore'), `${gitignore}\n${calculatedOutDir}/`);
+                      }
+                    }
+                  },
+                },
+              ],
+              listrOptions
+            );
+          }),
         },
-      },
-      {
-        title: 'Finalizing import',
-        options: {
-          persistentOutput: true,
-          bottomBar: Infinity,
-        },
-        task: (_, task) => {
-          task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
+        {
+          title: 'Finalizing import',
+          options: {
+            persistentOutput: true,
+            bottomBar: Infinity,
+          },
+          task: childTrace<Parameters<ForgeListrTaskFn>>({ name: 'finalize-import', category: '@electron-forge/core' }, (_, __, task) => {
+            task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
           
           Thanks for using ${chalk.green('Electron Forge')}!`;
+          }),
         },
-      },
-    ],
-    listrOptions
-  );
+      ],
+      listrOptions
+    );
 
-  await runner.run();
-};
+    await runner.run();
+  }
+);

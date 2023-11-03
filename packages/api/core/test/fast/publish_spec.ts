@@ -112,7 +112,7 @@ describe('publish', () => {
   });
 
   it('should call the resolved publisher with the appropriate args', async () => {
-    makeStub.onCall(0).callsArgWith(1, [{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(2, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -136,7 +136,7 @@ describe('publish', () => {
   });
 
   it('should call the provided publisher with the appropriate args', async () => {
-    makeStub.onCall(0).callsArgWith(1, [{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(2, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -234,8 +234,8 @@ describe('publish', () => {
 
     describe('when creating a dry run', () => {
       beforeEach(async () => {
-        makeStub.onCall(0).callsArgWith(1, fakeMake('darwin'));
-        makeStub.onCall(1).callsArgWith(1, fakeMake('win32'));
+        makeStub.onCall(0).callsArgWith(2, fakeMake('darwin'));
+        makeStub.onCall(1).callsArgWith(2, fakeMake('win32'));
 
         const dryPath = path.resolve(dir, 'out', 'publish-dry-run');
         await fs.mkdirs(dryPath);
