@@ -12,7 +12,7 @@
     "mocha": "^9.0.1"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "6.4.2",

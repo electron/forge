@@ -20,7 +20,7 @@
     "yarn-or-npm": "^3.0.1"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.0.0"
   },
   "devDependencies": {
     "chai": "^4.3.3"
