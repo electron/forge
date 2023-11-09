@@ -48,7 +48,9 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     if (targetPlatform === 'darwin' && this.config.macUpdateManifestBaseUrl) {
       const parsed = new URL(this.config.macUpdateManifestBaseUrl);
       parsed.pathname += '/RELEASES.json';
-      const response = await got.get(parsed.toString());
+      const response = await got.get(parsed.toString(), {
+        throwHttpErrors: false,
+      });
       let currentValue: SquirrelMacReleases = {
         currentRelease: '',
         releases: [],
