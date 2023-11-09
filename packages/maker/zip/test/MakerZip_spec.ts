@@ -143,6 +143,30 @@ describe('MakerZip', () => {
         expect(foo.releases[0].updateTo).to.have.property('url');
       });
 
+      it('should generate a valid RELEASES.json manifest with no current file', async () => {
+        maker.config = {
+          macUpdateManifestBaseUrl: 'fake://test/foo',
+        };
+        getStub.returns(Promise.resolve({ statusCode: 404, body: 'GARBAGE' }));
+        const output = await maker.make({
+          dir: darwinDir,
+          makeDir,
+          appName,
+          targetArch,
+          targetPlatform: 'darwin',
+          packageJSON,
+          forgeConfig: null as any,
+        });
+
+        const foo = await fs.readJson(output[1]);
+        expect(foo).to.have.property('currentRelease', '1.2.3');
+        expect(foo).to.have.property('releases');
+        expect(foo.releases).to.be.an('array').with.lengthOf(1);
+        expect(foo.releases[0]).to.have.property('version');
+        expect(foo.releases[0]).to.have.property('updateTo');
+        expect(foo.releases[0].updateTo).to.have.property('url');
+      });
+
       it('should extend the current RELEASES.json manifest if it exists', async () => {
         maker.config = {
           macUpdateManifestBaseUrl: 'fake://test/foo',
