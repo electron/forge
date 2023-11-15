@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-fuses",
-  "version": "6.4.2",
+  "version": "7.0.0",
   "description": "A plugin for flipping Electron Fuses in Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Erik Moura <erikian@erikian.dev>",
@@ -31,8 +31,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/plugin-base": "6.4.2",
-    "@electron-forge/shared-types": "6.4.2"
+    "@electron-forge/plugin-base": "7.0.0",
+    "@electron-forge/shared-types": "7.0.0"
   },
   "publishConfig": {
     "access": "public"
