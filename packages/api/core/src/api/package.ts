@@ -5,9 +5,9 @@ import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/
 import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import { getHostArch } from '@electron/get';
+import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from '@electron/packager';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';

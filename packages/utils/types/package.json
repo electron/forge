@@ -9,8 +9,8 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/tracer": "6.4.2",
+    "@electron/packager": "18.0.0",
     "@electron/rebuild": "^3.2.10",
-    "electron-packager": "^17.1.2",
     "listr2": "^5.0.3"
   },
   "engines": {
