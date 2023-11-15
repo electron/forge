@@ -136,6 +136,7 @@ export default autoTrace(
             const buildToolPackages: Record<string, string | undefined> = {
               '@electron/get': 'already uses this module as a transitive dependency',
               '@electron/osx-sign': 'already uses this module as a transitive dependency',
+              '@electron/packager': 'already uses this module as a transitive dependency',
               'electron-builder': 'provides mostly equivalent functionality',
               'electron-download': 'already uses this module as a transitive dependency',
               'electron-forge': 'replaced with @electron-forge/cli',
@@ -143,7 +144,6 @@ export default autoTrace(
               'electron-installer-dmg': 'already uses this module as a transitive dependency',
               'electron-installer-flatpak': 'already uses this module as a transitive dependency',
               'electron-installer-redhat': 'already uses this module as a transitive dependency',
-              'electron-packager': 'already uses this module as a transitive dependency',
               'electron-winstaller': 'already uses this module as a transitive dependency',
             };
 

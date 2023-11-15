@@ -70,7 +70,7 @@ export interface MakerFlatpakOptionsConfig {
    * into the flatpak, and dest should be the path inside the app install
    * prefix (e.g. /share/applications/)
    *
-   * Application assets and code will be fully handled by electron-packager,
+   * Application assets and code will be fully handled by @electron/packager,
    * but this is a useful way to install things such as appstream metadata
    * for an app, or dbus configuration files.
    */

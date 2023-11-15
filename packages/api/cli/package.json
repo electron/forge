@@ -19,7 +19,7 @@
   "dependencies": {
     "@electron-forge/core": "6.4.2",
     "@electron-forge/shared-types": "6.4.2",
-    "@electron/get": "^2.0.0",
+    "@electron/get": "^3.0.0",
     "chalk": "^4.0.0",
     "commander": "^4.1.1",
     "debug": "^4.3.1",

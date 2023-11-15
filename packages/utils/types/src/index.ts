@@ -1,8 +1,8 @@
 import { ChildProcess } from 'child_process';
 
 import { autoTrace } from '@electron-forge/tracer';
+import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
-import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
 export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
