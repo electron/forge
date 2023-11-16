@@ -6,6 +6,8 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
+import { dynamicImport } from '../../helper/dynamic-import.js';
+
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
 import { readRawPackageJson } from './read-package-json';
@@ -123,14 +125,20 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   forgeConfig = forgeConfig || ({} as ForgeConfig);
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
+    const forgeConfigPath = path.resolve(dir, forgeConfig as string);
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const loaded = require(path.resolve(dir, forgeConfig as string)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+      let loaded;
+      try {
+        loaded = (await dynamicImport(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+      } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        loaded = require(forgeConfigPath) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+      }
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
-      console.error(`Failed to load: ${path.resolve(dir, forgeConfig as string)}`);
+      console.error(`Failed to load: ${forgeConfigPath}`);
       throw err;
     }
   } else if (typeof forgeConfig !== 'object') {

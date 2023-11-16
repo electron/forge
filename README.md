@@ -30,9 +30,9 @@ _Note: The major version bump between v5.0.0 and v6.0.0 contains major breaking 
 
 # Getting Started
 
-Pre-requisities:
+Pre-requisites:
 
-- Node 14.17.5 or higher
+- Node 16.4.0 or higher
 - Git
 
 If you have a more recent version of `npm` or `yarn`, you can use
@@ -72,7 +72,7 @@ With these goals in mind, under the hood this project uses, among others:
 - [`@electron/rebuild`](https://github.com/electron/rebuild):
   Automatically recompiles native Node.js modules against the correct
   Electron version.
-- [Electron Packager](https://github.com/electron/electron-packager):
+- [`@electron/packager`](https://github.com/electron/packager):
   Customizes and bundles your Electron app to get it ready for distribution.
 
 ## Contributing

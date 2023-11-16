@@ -1,19 +1,17 @@
 {
-  "name": "@electron-forge/test-utils",
+  "name": "@electron-forge/tracer",
   "version": "7.0.0",
-  "description": "Helper utilities for the Electron Forge testsuite",
+  "description": "Tracing helpers for Electron Forge",
   "repository": "https://github.com/electron/forge",
-  "author": "Mark Lee",
+  "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@malept/cross-spawn-promise": "^2.0.0",
-    "chai": "^4.3.3",
-    "fs-extra": "^10.0.0"
+    "chrome-trace-event": "^1.0.3"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 14.17.5"
   },
   "publishConfig": {
     "access": "public"

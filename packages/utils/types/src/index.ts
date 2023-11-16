@@ -1,10 +1,12 @@
 import { ChildProcess } from 'child_process';
 
+import { autoTrace } from '@electron-forge/tracer';
+import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
-import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
 import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
 
 export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
+export type ForgeListrTaskFn<Ctx = any> = ListrTask<Ctx, ListrDefaultRenderer>['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
@@ -61,6 +63,7 @@ export type ForgeMultiHookMap = {
 export interface IForgePluginInterface {
   triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
   getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    childTrace: typeof autoTrace,
     hookName: Hook,
     hookArgs: ForgeSimpleHookSignatures[Hook]
   ): Promise<ForgeListrTaskDefinition[]>;

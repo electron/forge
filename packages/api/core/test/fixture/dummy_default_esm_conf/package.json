@@ -4,16 +4,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "start": "electron-forge start"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "config": {
-    "forge": "./forge.different.config.js"
-  },
   "devDependencies": {
-    "electron": "99.99.99"
+    "electron-prebuilt": "9.9.9"
   }
 }

@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.4.0"
   },
   "scripts": {
     "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
@@ -36,8 +36,9 @@
     "@aws-sdk/lib-storage": "^3.28.0",
     "@aws-sdk/types": "^3.25.0",
     "@doyensec/electronegativity": "^1.9.1",
-    "@electron/get": "^2.0.0",
+    "@electron/get": "^3.0.0",
     "@electron/osx-sign": "^1.0.5",
+    "@electron/packager": "^18.0.0",
     "@electron/rebuild": "^3.2.10",
     "@google-cloud/storage": "^7.5.0",
     "@malept/cross-spawn-promise": "^2.0.0",
@@ -50,7 +51,6 @@
     "cross-spawn": "^7.0.3",
     "cross-zip": "^4.0.0",
     "debug": "^4.3.1",
-    "electron-packager": "^17.1.2",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "fast-glob": "^3.2.7",
@@ -175,6 +175,7 @@
   "prettier": {
     "singleQuote": true
   },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
   "workspaces": {
     "packages": [
       "packages/api/*",

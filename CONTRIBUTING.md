@@ -41,7 +41,7 @@ free to ask constructive questions. (This applies to any open issue.)
 The easiest way to test changes to Forge during development is by symlinking your local packages
 to a sample Forge project.
 
-To create symlinks your local Forge packages, use the `yarn link:prepare` command after
+To create symlinks for your local Forge packages, use the `yarn link:prepare` command after
 building Forge.
 
 ```sh

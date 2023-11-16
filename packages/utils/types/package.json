@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "6.4.2",
+  "version": "7.0.0",
   "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -8,12 +8,13 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "@electron-forge/tracer": "7.0.0",
+    "@electron/packager": "^18.0.0",
     "@electron/rebuild": "^3.2.10",
-    "electron-packager": "^17.1.2",
     "listr2": "^5.0.3"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.4.0"
   },
   "publishConfig": {
     "access": "public"

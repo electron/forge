@@ -1,5 +1,3 @@
-import path from 'path';
-
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
@@ -38,7 +36,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     if (!(config.repository && typeof config.repository === 'object' && config.repository.owner && config.repository.name)) {
       throw new Error(
-        'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your Forge config. See the docs for more info'
+        'In order to publish to GitHub, you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
       );
     }
 
@@ -98,10 +96,19 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               uploaded += 1;
               updateUploadStatus();
             };
-            const artifactName = path.basename(artifactPath);
+            const artifactName = GitHub.sanitizeName(artifactPath);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
-              return done();
+            const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === artifactName);
+            if (asset !== undefined) {
+              if (config.force === true) {
+                await github.getGitHub().repos.deleteReleaseAsset({
+                  owner: config.repository.owner,
+                  repo: config.repository.name,
+                  asset_id: asset.id,
+                });
+              } else {
+                return done();
+              }
             }
             await github.getGitHub().repos.uploadReleaseAsset({
               owner: config.repository.owner,
@@ -116,7 +123,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
                 'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
                 'content-length': (await fs.stat(artifactPath)).size,
               },
-              name: path.basename(artifactPath),
+              name: artifactName,
             });
             return done();
           })
