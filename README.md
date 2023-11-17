@@ -24,10 +24,6 @@ jump right in to Electron development.
 
 ---
 
-_Note: The major version bump between v5.0.0 and v6.0.0 contains major breaking API changes and improvements. If you are new to Forge, we highly recommend using the latest version. If using an older version of Forge, we recommend upgrading to v6.0.0 or later._
-
----
-
 # Getting Started
 
 Pre-requisites:
