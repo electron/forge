@@ -1,6 +1,7 @@
 name: API Documentation
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - v7.**
