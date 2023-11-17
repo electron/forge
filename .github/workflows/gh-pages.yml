@@ -3,7 +3,7 @@ name: API Documentation
 on:
   push:
     tags:
-      - v6.**
+      - v7.**
 
 jobs:
   deploy:
