@@ -33,7 +33,7 @@ const NPM_ALLOWLISTED_VERSIONS = {
   linux: '>= 5.4.0',
 };
 const YARN_ALLOWLISTED_VERSIONS = {
-  all: '>1.0.0',
+  all: '>= 1.0.0',
 };
 
 export function checkValidPackageManagerVersion(packageManager: string, version: string, allowlistedVersions: string) {
