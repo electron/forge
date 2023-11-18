@@ -1228,12 +1228,13 @@
   optionalDependencies:
     global-agent "^3.0.0"
 
-"@electron/lint-roller@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@electron/lint-roller/-/lint-roller-1.6.0.tgz#ff92da35379b25bce5cf99310ac541ce6a1500d5"
-  integrity sha512-R3x25b6OK/PQTONfs24FZaYyArS53e/fFB8IDpHFObVMXjkwU+1ePRwysk2jF23ifiQ1bY27llxzLOD+3UugBQ==
+"@electron/lint-roller@1.10.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@electron/lint-roller/-/lint-roller-1.10.1.tgz#1d506f8e098d4753bec16298b2ec708f894719d5"
+  integrity sha512-Ifn3WgcU4uoZHkoiDRKkmNAdQwFnzXpWSQZy5IftDaTKKfSc/8IfAEM0jKPgjBbUpykoEYJhCKuualUu1MT1+w==
   dependencies:
     "@dsanders11/vscode-markdown-languageservice" "^0.3.0"
+    balanced-match "^2.0.0"
     glob "^8.1.0"
     markdown-it "^13.0.1"
     markdownlint-cli "^0.33.0"
@@ -4101,6 +4102,11 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+
+balanced-match@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-2.0.0.tgz#dc70f920d78db8b858535795867bf48f820633d9"
+  integrity sha512-1ugUSr8BHXRnK23KfuYS+gVMC3LB8QGH9W1iGtDPsNWoQbgtXSExkBu2aDR4epiGWZOjZsj6lDl/N/AqqTC3UA==
 
 "base32-encode@^0.1.0 || ^1.0.0":
   version "1.2.0"

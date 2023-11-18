@@ -167,3 +167,20 @@ The `lerna:publish` script will automatically increment the next package version
 - Target the `main` branch.
 - [Automatically generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)
   against the previous Forge release.
+
+### Adding a new `@electron-forge` package
+
+Occasionally, we add new packages to the `@electron-forge` monorepo. Before publishing, ensure that all
+version numbers for both the package itself and its dependencies match the _current_ version of Electron
+Forge (e.g. if the current version is `v7.0.0` and you want to add the package in `v7.1.0`, please publish
+`v7.0.0` first).
+
+Then, manually publish the package to the current Forge version using `npm publish --access public`.
+Once this version is published, you can continue with the normal release process as usual.
+
+> [!NOTE]
+> To verify that the publish configuration is correct, first run `npm publish --dry-run`
+> before publishing.
+
+We do this manual publish step first to avoid errors with attempting to publish a non existent package
+with Lerna.
