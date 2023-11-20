@@ -1,6 +1,4 @@
-import path from 'path';
-
-import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherOptions, PublisherStatic } from '@electron-forge/publisher-static';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
@@ -15,7 +13,7 @@ type GCSArtifact = {
   arch: string;
 };
 
-export default class PublisherGCS extends PublisherBase<PublisherGCSConfig> {
+export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
   name = 'gcs';
 
   private GCSKeySafe = (key: string) => {
@@ -66,14 +64,6 @@ export default class PublisherGCS extends PublisherBase<PublisherGCSConfig> {
         updateStatusLine();
       })
     );
-  }
-
-  keyForArtifact(artifact: GCSArtifact): string {
-    if (this.config.keyResolver) {
-      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
-    }
-
-    return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;
   }
 }
 
