@@ -4,7 +4,7 @@ import path from 'path';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { Credentials } from '@aws-sdk/types';
-import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import { PublisherOptions, PublisherStatic } from '@electron-forge/publisher-static';
 import debug from 'debug';
 
 import { PublisherS3Config } from './Config';
@@ -18,7 +18,7 @@ type S3Artifact = {
   arch: string;
 };
 
-export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
+export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
   name = 's3';
 
   private s3KeySafe = (key: string) => {
@@ -82,14 +82,6 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
         updateStatusLine();
       })
     );
-  }
-
-  keyForArtifact(artifact: S3Artifact): string {
-    if (this.config.keyResolver) {
-      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
-    }
-
-    return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;
   }
 
   generateCredentials(): Credentials | undefined {

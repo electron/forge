@@ -15,7 +15,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.1.0",
+    "@electron-forge/publisher-static": "7.1.0",
     "@electron-forge/shared-types": "7.1.0",
     "@google-cloud/storage": "^7.5.0",
     "debug": "^4.3.1"
