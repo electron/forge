@@ -277,6 +277,19 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
     });
 
+    it('generates a config from a requirable transpiled module file', async () => {
+      const config = {
+        mainConfig: 'mainConfig.module.js',
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.entry).to.equal(path.resolve(baseDir, 'foo/main.js'));
+    });
+
     it('generates a config from function', async () => {
       const generateWebpackConfig = (webpackConfig: WebpackConfiguration) => {
         const config = {

@@ -71,11 +71,17 @@ export default class WebpackConfigGenerator {
   }
 
   async resolveConfig(config: Configuration | ConfigurationFactory | string): Promise<Configuration> {
-    const rawConfig =
+    type MaybeESM<T> = T | { default: T };
+
+    let rawConfig =
       typeof config === 'string'
         ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-          (require(path.resolve(this.projectDir, config)) as Configuration | ConfigurationFactory)
+          (require(path.resolve(this.projectDir, config)) as MaybeESM<Configuration | ConfigurationFactory>)
         : config;
+
+    if (rawConfig && typeof rawConfig === 'object' && 'default' in rawConfig) {
+      rawConfig = rawConfig.default;
+    }
 
     return processConfig(this.preprocessConfig, rawConfig);
   }
