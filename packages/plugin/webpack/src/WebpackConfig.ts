@@ -302,7 +302,7 @@ export default class WebpackConfigGenerator {
         path: path.resolve(this.webpackDir, 'renderer'),
         filename: '[name]/preload.js',
         globalObject: 'self',
-        ...(this.isProd ? {} : { publicPath: '/' }),
+        ...(this.isProd ? { publicPath: '' } : { publicPath: '/' }),
       },
       plugins: target === RendererTarget.ElectronPreload ? [] : [new webpack.ExternalsPlugin('commonjs2', externals)],
     };
