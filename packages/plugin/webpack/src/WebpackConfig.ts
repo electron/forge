@@ -79,7 +79,7 @@ export default class WebpackConfigGenerator {
           (require(path.resolve(this.projectDir, config)) as MaybeESM<Configuration | ConfigurationFactory>)
         : config;
 
-    if ('default' in rawConfig) {
+    if (rawConfig && typeof rawConfig === 'object' && 'default' in rawConfig) {
       rawConfig = rawConfig.default;
     }
 
