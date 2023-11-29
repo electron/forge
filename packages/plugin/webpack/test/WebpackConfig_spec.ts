@@ -459,6 +459,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
         filename: '[name]/preload.js',
         globalObject: 'self',
+        publicPath: '',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).to.equal(2);
@@ -489,6 +490,7 @@ describe('WebpackConfigGenerator', () => {
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
         filename: '[name]/preload.js',
         globalObject: 'self',
+        publicPath: '',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).to.equal(2);
