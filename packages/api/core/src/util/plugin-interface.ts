@@ -102,7 +102,7 @@ export default class PluginInterface implements IForgePluginInterface {
                 async (_, __, task) => {
                   if ((hook as any).__hookName) {
                     // Also give it the task
-                    await (hook as any).call(task, this.config, ...(hookArgs as any[]));
+                    return await (hook as any).call(task, this.config, ...(hookArgs as any[]));
                   } else {
                     await hook(this.config, ...hookArgs);
                   }
