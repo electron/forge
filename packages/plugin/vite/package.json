@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-vite",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "description": "Vite plugin for Electron Forge, lets you use Vite directly in your tooling",
   "repository": {
     "type": "git",
@@ -27,10 +27,10 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/core-utils": "7.1.0",
-    "@electron-forge/plugin-base": "7.1.0",
-    "@electron-forge/shared-types": "7.1.0",
-    "@electron-forge/web-multi-logger": "7.1.0",
+    "@electron-forge/core-utils": "7.2.0",
+    "@electron-forge/plugin-base": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0",
+    "@electron-forge/web-multi-logger": "7.2.0",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "vite": "^4.1.1"
