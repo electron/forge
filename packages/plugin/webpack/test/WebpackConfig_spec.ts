@@ -24,6 +24,11 @@ const sampleWebpackConfig = {
   },
 };
 
+const safeFirstRendererConfig = (renderer: WebpackPluginConfig['renderer']) => {
+  if (Array.isArray(renderer)) return renderer[0];
+  return renderer;
+};
+
 describe('WebpackConfigGenerator', () => {
   describe('rendererTarget', () => {
     it('is web if undefined', async () => {
@@ -33,7 +38,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
     });
 
@@ -45,7 +50,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
     });
 
@@ -57,7 +62,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('electron-renderer');
     });
 
@@ -69,7 +74,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
     });
   });
@@ -122,9 +127,9 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', true, 3000);
-      const defines = generator.getDefines(false);
+      const defines = generator.getDefines();
 
-      expect(defines.HELLO_WEBPACK_ENTRY).to.equal("`file://${require('path').resolve(__dirname, '..', '.', 'hello', 'index.js')}`");
+      expect(defines.HELLO_WEBPACK_ENTRY).to.equal("`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.js')}`");
     });
 
     it('sets the renderer entry point to an HTML file if both an HTML & JS file are specified', () => {
@@ -337,7 +342,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.deep.equal('electron-renderer');
       expect(webpackConfig[0].mode).to.equal('development');
       expect(webpackConfig[0].entry).to.deep.equal({
@@ -367,7 +372,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].entry).to.deep.equal({
         main: ['rendererScript.js'],
       });
@@ -390,7 +395,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
       expect(webpackConfig[0].mode).to.equal('development');
       expect(webpackConfig[0].entry).to.deep.equal({
@@ -419,7 +424,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.deep.equal('web');
       expect(webpackConfig[0].mode).to.equal('production');
       expect(webpackConfig[0].entry).to.deep.equal({
@@ -449,7 +454,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
       expect(webpackConfig[0].mode).to.equal('production');
       expect(webpackConfig[0].entry).to.deep.equal({ main: ['preload.js'] });
@@ -478,7 +483,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.deep.equal('web');
       expect(webpackConfig[0].mode).to.equal('production');
       expect(webpackConfig[0].entry).to.deep.equal({
@@ -510,7 +515,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
     });
 
@@ -532,7 +537,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('electron-preload');
     });
 
@@ -560,7 +565,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig[0].target).to.equal('web');
       expect(webpackConfig[0].name).to.equal('preload');
     });
@@ -609,7 +614,7 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       expect(webpackConfig.length).to.equal(4);
     });
 
@@ -627,7 +632,7 @@ describe('WebpackConfigGenerator', () => {
           },
         } as WebpackPluginConfig;
         const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-        return generator.getRendererConfig(config.renderer.entryPoints);
+        return generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       };
 
       const modelWebpackConfig = await generateWebpackConfig({
@@ -694,7 +699,7 @@ describe('WebpackConfigGenerator', () => {
         await generator.getMainConfig();
         expect(getInvokedCounter()).to.equal(1);
 
-        await generator.getRendererConfig(config.renderer.entryPoints);
+        await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
         expect(getInvokedCounter()).to.equal(2);
       });
 
@@ -724,7 +729,7 @@ describe('WebpackConfigGenerator', () => {
         await generator.getMainConfig();
         expect(getInvokedCounter()).to.equal(1);
 
-        await generator.getRendererConfig(config.renderer.entryPoints);
+        await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
         expect(getInvokedCounter()).to.equal(2);
       });
     });

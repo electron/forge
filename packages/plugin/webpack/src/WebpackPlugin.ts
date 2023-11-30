@@ -12,7 +12,7 @@ import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig } from './Config';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';
@@ -111,12 +111,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
+  private runWebpack = async (options: Configuration[], rendererOptions: WebpackPluginRendererConfig | null): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
-        if (isRenderer && this.config.renderer.jsonStats) {
+        if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
-            const name = this.config.renderer.entryPoints[index].name;
+            const name = rendererOptions.entryPoints[index].name;
             await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
           }
         }
@@ -263,7 +263,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
-      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (this.allRendererOptions.some((r) => r.jsonStats) && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
         return true;
       }
 
@@ -275,6 +275,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     };
     return forgeConfig;
   };
+
+  private get allRendererOptions() {
+    return Array.isArray(this.config.renderer) ? this.config.renderer : [this.config.renderer];
+  }
 
   packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
@@ -334,14 +338,28 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   compileRenderers = async (watch = false): Promise<void> => {
-    const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
-    if (!watch && stats?.hasErrors()) {
-      throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+    for (const rendererOptions of this.allRendererOptions) {
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(rendererOptions), rendererOptions);
+      if (!watch && stats?.hasErrors()) {
+        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+      }
     }
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const configs = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+    const configs: Configuration[] = [];
+    const rollingDependencies: string[] = [];
+    for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
+      const groupName = `group_${i}`;
+      configs.push(
+        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
+          ...config,
+          name: groupName,
+          dependencies: rollingDependencies,
+        }))
+      );
+    }
+
     if (configs.length === 0) {
       return;
     }

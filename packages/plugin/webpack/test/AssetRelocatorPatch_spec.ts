@@ -97,6 +97,11 @@ async function yarnStart(): Promise<string> {
   });
 }
 
+const safeFirstRendererConfig = (renderer: WebpackPluginConfig['renderer']) => {
+  if (Array.isArray(renderer)) return renderer[0];
+  return renderer;
+};
+
 describe('AssetRelocatorPatch', () => {
   const rendererOut = path.join(appPath, '.webpack/renderer');
   const mainOut = path.join(appPath, '.webpack/main');
@@ -145,7 +150,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const preloadConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const preloadConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -157,7 +162,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }
@@ -197,8 +202,11 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0] as WebpackPluginEntryPointLocalWindow;
-      const preloadConfig = await generator.getRendererConfig([entryPoint]);
+      const entryPoint = safeFirstRendererConfig(config.renderer).entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getRendererConfig({
+        ...safeFirstRendererConfig(config.renderer),
+        entryPoints: [entryPoint],
+      });
       await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -210,7 +218,7 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }
@@ -232,10 +240,10 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer with nodeIntegration = false', async () => {
-      config.renderer.nodeIntegration = false;
+      safeFirstRendererConfig(config.renderer).nodeIntegration = false;
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }

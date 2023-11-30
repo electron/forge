@@ -138,8 +138,14 @@ export interface WebpackPluginConfig {
   jsonStats?: boolean;
   /**
    * Electron Forge webpack configuration for your renderer process
+   *
+   * If this property is configured as an array each group of entryPoints is built sequentially
+   * such that later indexed renderer configurations can depend on the output of previous ones.
+   *
+   * If you want to build multiple targets in parallel please specify multiple entryPoints in a
+   * single renderer configuration. Most usecases should not set this to an array.
    */
-  renderer: WebpackPluginRendererConfig;
+  renderer: WebpackPluginRendererConfig | WebpackPluginRendererConfig[];
   /**
    * The TCP port for the dev servers. Defaults to 3000.
    */
