@@ -12,7 +12,7 @@ import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig } from './Config';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';
@@ -111,12 +111,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
+  private runWebpack = async (options: Configuration[], rendererOptions: WebpackPluginRendererConfig | null): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
-        if (isRenderer && this.config.renderer.jsonStats) {
+        if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
-            const name = this.config.renderer.entryPoints[index].name;
+            const name = rendererOptions.entryPoints[index].name;
             await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
           }
         }
@@ -263,7 +263,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
-      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (this.allRendererOptions.some((r) => r.jsonStats) && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
         return true;
       }
 
@@ -275,6 +275,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     };
     return forgeConfig;
   };
+
+  private get allRendererOptions() {
+    return Array.isArray(this.config.renderer) ? this.config.renderer : [this.config.renderer];
+  }
 
   packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
@@ -334,57 +338,61 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   compileRenderers = async (watch = false): Promise<void> => {
-    const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
-    if (!watch && stats?.hasErrors()) {
-      throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+    for (const rendererOptions of this.allRendererOptions) {
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(rendererOptions), rendererOptions);
+      if (!watch && stats?.hasErrors()) {
+        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+      }
     }
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const configs = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-    if (configs.length === 0) {
-      return;
-    }
-
-    const preloadPlugins: string[] = [];
-    let numPreloadEntriesWithConfig = 0;
-    for (const entryConfig of configs) {
-      if (!entryConfig.plugins) entryConfig.plugins = [];
-      entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
-
-      const filename = entryConfig.output?.filename as string;
-      if (filename?.endsWith('preload.js')) {
-        let name = `entry-point-preload-${entryConfig.target}`;
-        if (preloadPlugins.includes(name)) {
-          name = `${name}-${++numPreloadEntriesWithConfig}`;
-        }
-        entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
-        preloadPlugins.push(name);
+    for (const rendererOptions of this.allRendererOptions) {
+      const configs = await this.configGenerator.getRendererConfig(rendererOptions);
+      if (configs.length === 0) {
+        return;
       }
 
-      entryConfig.infrastructureLogging = {
-        level: 'none',
-      };
-      entryConfig.stats = 'none';
-    }
+      const preloadPlugins: string[] = [];
+      let numPreloadEntriesWithConfig = 0;
+      for (const entryConfig of configs) {
+        if (!entryConfig.plugins) entryConfig.plugins = [];
+        entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
 
-    const compiler = webpack(configs);
-
-    const promises = preloadPlugins.map((preloadPlugin) => {
-      return new Promise((resolve, reject) => {
-        compiler.hooks.done.tap(preloadPlugin, (stats) => {
-          if (stats.hasErrors()) {
-            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+        const filename = entryConfig.output?.filename as string;
+        if (filename?.endsWith('preload.js')) {
+          let name = `entry-point-preload-${entryConfig.target}`;
+          if (preloadPlugins.includes(name)) {
+            name = `${name}-${++numPreloadEntriesWithConfig}`;
           }
-          return resolve(undefined);
+          entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
+          preloadPlugins.push(name);
+        }
+
+        entryConfig.infrastructureLogging = {
+          level: 'none',
+        };
+        entryConfig.stats = 'none';
+      }
+
+      const compiler = webpack(configs);
+
+      const promises = preloadPlugins.map((preloadPlugin) => {
+        return new Promise((resolve, reject) => {
+          compiler.hooks.done.tap(preloadPlugin, (stats) => {
+            if (stats.hasErrors()) {
+              return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+            }
+            return resolve(undefined);
+          });
         });
       });
-    });
 
-    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
-    await webpackDevServer.start();
-    this.servers.push(webpackDevServer.server!);
-    await Promise.all(promises);
+      const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+      await webpackDevServer.start();
+      this.servers.push(webpackDevServer.server!);
+      await Promise.all(promises);
+    }
   };
 
   devServerOptions(): WebpackDevServer.Configuration {
