@@ -347,52 +347,62 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    for (const rendererOptions of this.allRendererOptions) {
-      const configs = await this.configGenerator.getRendererConfig(rendererOptions);
-      if (configs.length === 0) {
-        return;
-      }
+    const configs: Configuration[] = [];
+    const rollingDependencies: string[] = [];
+    for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
+      const groupName = `group_${i}`;
+      configs.push(
+        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
+          ...config,
+          name: groupName,
+          dependencies: rollingDependencies,
+        }))
+      );
+    }
 
-      const preloadPlugins: string[] = [];
-      let numPreloadEntriesWithConfig = 0;
-      for (const entryConfig of configs) {
-        if (!entryConfig.plugins) entryConfig.plugins = [];
-        entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
+    if (configs.length === 0) {
+      return;
+    }
 
-        const filename = entryConfig.output?.filename as string;
-        if (filename?.endsWith('preload.js')) {
-          let name = `entry-point-preload-${entryConfig.target}`;
-          if (preloadPlugins.includes(name)) {
-            name = `${name}-${++numPreloadEntriesWithConfig}`;
-          }
-          entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
-          preloadPlugins.push(name);
+    const preloadPlugins: string[] = [];
+    let numPreloadEntriesWithConfig = 0;
+    for (const entryConfig of configs) {
+      if (!entryConfig.plugins) entryConfig.plugins = [];
+      entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
+
+      const filename = entryConfig.output?.filename as string;
+      if (filename?.endsWith('preload.js')) {
+        let name = `entry-point-preload-${entryConfig.target}`;
+        if (preloadPlugins.includes(name)) {
+          name = `${name}-${++numPreloadEntriesWithConfig}`;
         }
-
-        entryConfig.infrastructureLogging = {
-          level: 'none',
-        };
-        entryConfig.stats = 'none';
+        entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
+        preloadPlugins.push(name);
       }
 
-      const compiler = webpack(configs);
+      entryConfig.infrastructureLogging = {
+        level: 'none',
+      };
+      entryConfig.stats = 'none';
+    }
 
-      const promises = preloadPlugins.map((preloadPlugin) => {
-        return new Promise((resolve, reject) => {
-          compiler.hooks.done.tap(preloadPlugin, (stats) => {
-            if (stats.hasErrors()) {
-              return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
-            }
-            return resolve(undefined);
-          });
+    const compiler = webpack(configs);
+
+    const promises = preloadPlugins.map((preloadPlugin) => {
+      return new Promise((resolve, reject) => {
+        compiler.hooks.done.tap(preloadPlugin, (stats) => {
+          if (stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+          }
+          return resolve(undefined);
         });
       });
+    });
 
-      const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
-      await webpackDevServer.start();
-      this.servers.push(webpackDevServer.server!);
-      await Promise.all(promises);
-    }
+    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+    await webpackDevServer.start();
+    this.servers.push(webpackDevServer.server!);
+    await Promise.all(promises);
   };
 
   devServerOptions(): WebpackDevServer.Configuration {
