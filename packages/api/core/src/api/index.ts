@@ -7,7 +7,7 @@ import init, { InitOptions } from './init';
 import make, { MakeOptions } from './make';
 import _package, { PackageOptions } from './package';
 import publish, { PublishOptions } from './publish';
-import start, { StartOptions } from './start';
+import start, { restartApp, StartOptions } from './start';
 
 export class ForgeAPI {
   /**
@@ -61,4 +61,17 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };
+export {
+  ElectronProcess,
+  ForgeMakeResult,
+  ForgeUtils,
+  ImportOptions,
+  InitOptions,
+  MakeOptions,
+  PackageOptions,
+  PublishOptions,
+  StartOptions,
+  api,
+  restartApp,
+  utils,
+};

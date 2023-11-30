@@ -1,4 +1,5 @@
 import { spawn, SpawnOptions } from 'child_process';
+import { EventEmitter } from 'events';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { ElectronProcess, ForgeArch, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
@@ -23,6 +24,8 @@ type StartContext = {
   packageJSON: any;
   spawned: ElectronProcess;
 };
+
+const restartAppEventEmitter = new EventEmitter();
 
 export default autoTrace(
   { name: 'start()', category: '@electron-forge/core' },
@@ -213,20 +216,20 @@ export default autoTrace(
     };
 
     if (interactive) {
-      process.on('FORGE_RESTART_APP', async () => {
+      restartAppEventEmitter.on('restart', async () => {
         if (lastSpawned) {
-        console.info(chalk.cyan('\nRestarting App\n'));
-        lastSpawned.restarted = true;
-        lastSpawned.kill('SIGTERM');
-        lastSpawned.emit('restarted', await forgeSpawnWrapper());
-      }
-    });
+          console.info(chalk.cyan('\nRestarting App\n'));
+          lastSpawned.restarted = true;
+          lastSpawned.kill('SIGTERM');
+          lastSpawned.emit('restarted', await forgeSpawnWrapper());
+        }
+      });
 
-    process.stdin.on('data', async (data) => {
-      if (data.toString().trim() === 'rs') {
-        process.emit('FORGE_RESTART_APP');
-      }
-    });
+      process.stdin.on('data', async (data) => {
+        if (data.toString().trim() === 'rs') {
+          restartApp();
+        }
+      });
 
       process.stdin.resume();
     }
@@ -238,3 +241,7 @@ export default autoTrace(
     return spawned;
   }
 );
+
+export function restartApp() {
+  restartAppEventEmitter.emit('restart');
+}
