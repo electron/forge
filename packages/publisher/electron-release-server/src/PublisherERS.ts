@@ -96,7 +96,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const versions: ERSVersionSorted = await (await authFetch('versions/sorted')).json();
       
       // Find the version with the same name and flavor
-      const existingVersion = versions.items.find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
+      const existingVersion = versions['items'].find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
 
       let channel = 'stable';
       if (config.channel) {
