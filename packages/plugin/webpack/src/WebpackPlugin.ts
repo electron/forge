@@ -3,7 +3,7 @@ import path from 'path';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -158,20 +158,67 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
           this.isProd = true;
           await fs.remove(this.baseDir);
-          await listrCompatibleRebuildHook(
-            this.projectDir,
-            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-            platform,
-            arch,
-            config.rebuildConfig,
-            task,
-            chalk.cyan('[plugin-webpack] ')
-          );
-        }, 'Preparing native dependencies'),
-        namedHookWithTaskFn<'prePackage'>(async () => {
-          await this.compileMain();
-          await this.compileRenderers();
-        }, 'Building webpack bundles'),
+
+          // TODO: Figure out how to get matrix from packager
+          let arches: string[] = [arch];
+          if (arch === 'universal') {
+            arches = ['arm64', 'x64'];
+          }
+
+          return task.newListr(
+            arches.map(
+              (pArch): ForgeListrTaskDefinition => ({
+                title: `Building webpack bundle for ${chalk.magenta(pArch)}`,
+                task: async (_, task) => {
+                  return task.newListr(
+                    [
+                      {
+                        title: 'Preparing native dependencies',
+                        task: async (_, innerTask) => {
+                          await listrCompatibleRebuildHook(
+                            this.projectDir,
+                            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                            platform,
+                            pArch,
+                            config.rebuildConfig,
+                            innerTask
+                          );
+                        },
+                        options: {
+                          persistentOutput: true,
+                          bottomBar: Infinity,
+                          showTimer: true,
+                        },
+                      },
+                      {
+                        title: 'Building webpack bundles',
+                        task: async () => {
+                          await this.compileMain();
+                          await this.compileRenderers();
+                          // Store it in a place that won't get messed with
+                          // We'll restore the right "arch" in the afterCopy hook further down
+                          const targetDir = path.resolve(this.baseDir, pArch);
+                          await fs.mkdirp(targetDir);
+                          for (const child of await fs.readdir(this.baseDir)) {
+                            if (!arches.includes(child)) {
+                              await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
+                            }
+                          }
+                        },
+                        options: {
+                          showTimer: true,
+                        },
+                      },
+                    ],
+                    { concurrent: false }
+                  );
+                },
+              })
+            ),
+            { concurrent: false }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ) as any;
+        }, 'Preparing webpack bundles'),
       ],
       postStart: async (_config, child) => {
         d('hooking electron process exit');
@@ -181,7 +228,17 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         });
       },
       resolveForgeConfig: this.resolveForgeConfig,
-      packageAfterCopy: this.packageAfterCopy,
+      packageAfterCopy: [
+        async (_forgeConfig: ResolvedForgeConfig, buildPath: string, _electronVersion: string, _platform: string, pArch: string): Promise<void> => {
+          // Restore the correct 'arch' build of webpack
+          // Steal the correct arch, wipe the folder, move it back to pretend to be ".webpack" root
+          const tmpWebpackDir = path.resolve(buildPath, '.webpack.tmp');
+          await fs.move(path.resolve(buildPath, '.webpack', pArch), tmpWebpackDir);
+          await fs.remove(path.resolve(buildPath, '.webpack'));
+          await fs.move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
+        },
+        this.packageAfterCopy,
+      ],
     };
   }
 
