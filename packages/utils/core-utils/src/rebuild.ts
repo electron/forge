@@ -4,13 +4,13 @@ import * as path from 'path';
 import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
 import { RebuildOptions } from '@electron/rebuild';
 
-export const listrCompatibleRebuildHook = async (
+export const listrCompatibleRebuildHook = async <Ctx = never>(
   buildPath: string,
   electronVersion: string,
   platform: ForgePlatform,
   arch: ForgeArch,
   config: Partial<RebuildOptions> = {},
-  task: ForgeListrTask<never>,
+  task: ForgeListrTask<Ctx>,
   taskTitlePrefix = ''
 ): Promise<void> => {
   task.title = `${taskTitlePrefix}Preparing native dependencies`;

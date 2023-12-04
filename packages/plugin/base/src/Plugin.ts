@@ -52,7 +52,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
 // This method is not type safe internally, but is type safe for consumers
 // @internal
 export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
-  hookFn: (task: ForgeListrTask<never> | null, ...args: Parameters<ForgeHookFn<Hook>>) => ReturnType<ForgeHookFn<Hook>>,
+  hookFn: <Ctx = never>(task: ForgeListrTask<Ctx> | null, ...args: Parameters<ForgeHookFn<Hook>>) => ReturnType<ForgeHookFn<Hook>>,
   name: string
 ): ForgeHookFn<Hook> => {
   function namedHookWithTaskInner(this: ForgeListrTask<any> | null, ...args: any[]) {
