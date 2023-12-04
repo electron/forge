@@ -167,10 +167,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await fs.remove(this.baseDir);
 
           // TODO: Figure out how to get matrix from packager
-          let arches: string[] = [arch];
-          if (arch === 'universal') {
-            arches = ['arm64', 'x64'];
-          }
+          const arches: string[] = Array.from(
+            new Set(arch.split(',').reduce<string[]>((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []))
+          );
 
           const firstArch = arches[0];
           const otherArches = arches.slice(1);
