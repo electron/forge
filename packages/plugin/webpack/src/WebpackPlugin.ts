@@ -1,12 +1,15 @@
+import crypto from 'crypto';
 import http from 'http';
 import path from 'path';
+import { pipeline } from 'stream/promises';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeListrTaskDefinition, ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
+import glob from 'fast-glob';
 import fs from 'fs-extra';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -24,6 +27,10 @@ const DEFAULT_LOGGER_PORT = 9000;
 
 type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
 type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
+
+type NativeDepsCtx = {
+  nativeDeps: Record<string, string[]>;
+};
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -160,61 +167,185 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           await fs.remove(this.baseDir);
 
           // TODO: Figure out how to get matrix from packager
-          let arches: string[] = [arch];
-          if (arch === 'universal') {
-            arches = ['arm64', 'x64'];
-          }
+          const arches: string[] = Array.from(
+            new Set(arch.split(',').reduce<string[]>((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []))
+          );
 
-          return task.newListr(
-            arches.map(
-              (pArch): ForgeListrTaskDefinition => ({
-                title: `Building webpack bundle for ${chalk.magenta(pArch)}`,
-                task: async (_, task) => {
-                  return task.newListr(
-                    [
-                      {
-                        title: 'Preparing native dependencies',
-                        task: async (_, innerTask) => {
-                          await listrCompatibleRebuildHook(
-                            this.projectDir,
-                            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-                            platform,
-                            pArch,
-                            config.rebuildConfig,
-                            innerTask
-                          );
-                        },
-                        options: {
-                          persistentOutput: true,
-                          bottomBar: Infinity,
-                          showTimer: true,
-                        },
-                      },
-                      {
-                        title: 'Building webpack bundles',
-                        task: async () => {
-                          await this.compileMain();
-                          await this.compileRenderers();
-                          // Store it in a place that won't get messed with
-                          // We'll restore the right "arch" in the afterCopy hook further down
-                          const targetDir = path.resolve(this.baseDir, pArch);
-                          await fs.mkdirp(targetDir);
-                          for (const child of await fs.readdir(this.baseDir)) {
-                            if (!arches.includes(child)) {
-                              await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
-                            }
-                          }
-                        },
-                        options: {
-                          showTimer: true,
-                        },
-                      },
-                    ],
-                    { concurrent: false }
+          const firstArch = arches[0];
+          const otherArches = arches.slice(1);
+
+          const multiArchTasks: ListrTask<NativeDepsCtx>[] =
+            otherArches.length === 0
+              ? []
+              : [
+                  {
+                    title: 'Mapping native dependencies',
+                    task: async (ctx: NativeDepsCtx) => {
+                      const firstArchDir = path.resolve(this.baseDir, firstArch);
+                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+                      const mapping: Record<string, string[]> = Object.create(null);
+
+                      const webpackNodeFiles = await glob('**/*.node', {
+                        cwd: firstArchDir,
+                      });
+                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                        cwd: nodeModulesDir,
+                      });
+                      const hashToNodeModules: Record<string, string[]> = Object.create(null);
+
+                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+                        const digest = hash.digest('hex');
+
+                        hashToNodeModules[digest] = hashToNodeModules[digest] || [];
+                        hashToNodeModules[digest].push(resolvedNodeFile);
+                      }
+
+                      for (const webpackNodeFile of webpackNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        await pipeline(fs.createReadStream(path.resolve(firstArchDir, webpackNodeFile)), hash);
+                        const matchedNodeModule = hashToNodeModules[hash.digest('hex')];
+                        if (!matchedNodeModule || !matchedNodeModule.length) {
+                          throw new Error(`Could not find originating native module for "${webpackNodeFile}"`);
+                        }
+
+                        mapping[webpackNodeFile] = matchedNodeModule;
+                      }
+
+                      ctx.nativeDeps = mapping;
+                    },
+                  },
+                  {
+                    title: `Generating multi-arch bundles`,
+                    task: async (_, task) => {
+                      return task.newListr(
+                        otherArches.map(
+                          (pArch): ListrTask<NativeDepsCtx> => ({
+                            title: `Generating ${chalk.magenta(pArch)} bundle`,
+                            task: async (_, innerTask) => {
+                              return innerTask.newListr(
+                                [
+                                  {
+                                    title: 'Preparing native dependencies',
+                                    task: async (_, innerTask) => {
+                                      await listrCompatibleRebuildHook(
+                                        this.projectDir,
+                                        await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                                        platform,
+                                        pArch,
+                                        config.rebuildConfig,
+                                        innerTask
+                                      );
+                                    },
+                                    options: {
+                                      persistentOutput: true,
+                                      bottomBar: Infinity,
+                                      showTimer: true,
+                                    },
+                                  },
+                                  {
+                                    title: 'Mapping native dependencies',
+                                    task: async (ctx) => {
+                                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+
+                                      // Duplicate the firstArch build
+                                      const firstDir = path.resolve(this.baseDir, firstArch);
+                                      const targetDir = path.resolve(this.baseDir, pArch);
+                                      await fs.mkdirp(targetDir);
+                                      for (const child of await fs.readdir(firstDir)) {
+                                        await fs.promises.cp(path.resolve(firstDir, child), path.resolve(targetDir, child), {
+                                          recursive: true,
+                                        });
+                                      }
+
+                                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                                        cwd: nodeModulesDir,
+                                      });
+                                      const nodeModuleToHash: Record<string, string> = Object.create(null);
+
+                                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                                        const hash = crypto.createHash('sha256');
+                                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+
+                                        nodeModuleToHash[resolvedNodeFile] = hash.digest('hex');
+                                      }
+
+                                      // Use the native module map to find the newly built native modules
+                                      for (const nativeDep of Object.keys(ctx.nativeDeps)) {
+                                        const archPath = path.resolve(targetDir, nativeDep);
+                                        await fs.remove(archPath);
+
+                                        const mappedPaths = ctx.nativeDeps[nativeDep];
+                                        if (!mappedPaths || !mappedPaths.length) {
+                                          throw new Error(`The "${nativeDep}" module could not be mapped to any native modules on disk`);
+                                        }
+
+                                        if (!mappedPaths.every((mappedPath) => nodeModuleToHash[mappedPath] === nodeModuleToHash[mappedPaths[0]])) {
+                                          throw new Error(
+                                            `The "${nativeDep}" mapped to multiple modules "${mappedPaths.join(
+                                              ', '
+                                            )}" but the same modules post rebuild did not map to the same native code`
+                                          );
+                                        }
+
+                                        await fs.promises.cp(mappedPaths[0], archPath);
+                                      }
+                                    },
+                                  },
+                                ],
+                                { concurrent: false }
+                              );
+                            },
+                          })
+                        )
+                      );
+                    },
+                  },
+                ];
+
+          return task.newListr<NativeDepsCtx>(
+            [
+              {
+                title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                task: async (_, innerTask) => {
+                  await listrCompatibleRebuildHook(
+                    this.projectDir,
+                    await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                    platform,
+                    firstArch,
+                    config.rebuildConfig,
+                    innerTask
                   );
                 },
-              })
-            ),
+                options: {
+                  persistentOutput: true,
+                  bottomBar: Infinity,
+                  showTimer: true,
+                },
+              },
+              {
+                title: 'Building webpack bundles',
+                task: async () => {
+                  await this.compileMain();
+                  await this.compileRenderers();
+                  // Store it in a place that won't get messed with
+                  // We'll restore the right "arch" in the afterCopy hook further down
+                  const preExistingChildren = await fs.readdir(this.baseDir);
+                  const targetDir = path.resolve(this.baseDir, firstArch);
+                  await fs.mkdirp(targetDir);
+                  for (const child of preExistingChildren) {
+                    await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
+                  }
+                },
+                options: {
+                  showTimer: true,
+                },
+              },
+              ...multiArchTasks,
+            ],
             { concurrent: false }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ) as any;

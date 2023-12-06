@@ -204,6 +204,7 @@ export interface InitTemplateOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ForgeListrTaskDefinition = ListrTask<never>;
+export { ListrTask };
 
 export interface ForgeTemplate {
   requiredForgeVersion?: string;
