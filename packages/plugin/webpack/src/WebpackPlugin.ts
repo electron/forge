@@ -355,9 +355,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
           ...config,
           name: groupName,
-          dependencies: rollingDependencies,
+          dependencies: [...rollingDependencies],
         }))
       );
+      rollingDependencies.push(groupName);
     }
 
     if (configs.length === 0) {
