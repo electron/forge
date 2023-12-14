@@ -66,6 +66,13 @@ function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
 async function getElectronPackageJSONPath(dir: string, packageName: string): Promise<string | undefined> {
   const nodeModulesPath = await determineNodeModulesPath(dir, packageName);
   if (!nodeModulesPath) {
+    try {
+      // Yarn PnP
+      // eslint-disable-next-line node/no-missing-require
+      return require.resolve('electron/package.json');
+    } catch (e) {
+      // Ignore
+    }
     throw new PackageNotFoundError(packageName, dir);
   }
 

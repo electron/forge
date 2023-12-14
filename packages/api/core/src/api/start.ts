@@ -165,6 +165,7 @@ export default autoTrace(
         } as NodeJS.ProcessEnv,
       };
 
+      spawnOpts.env.NODE_OPTIONS = removePnpLoaderArguments(spawnOpts.env.NODE_OPTIONS);
       if (runAsNode) {
         spawnOpts.env.ELECTRON_RUN_AS_NODE = 'true';
       } else {
@@ -231,3 +232,11 @@ export default autoTrace(
     return spawned;
   }
 );
+
+function removePnpLoaderArguments(input: string | undefined): string | undefined {
+  if (!input) return input;
+  return input.replace(
+    /((--require\s+[^"].+\.pnp\.cjs)|(--experimental-loader\s+[^"].+\.pnp\.loader\.mjs)|(--require\s+".+\.pnp\.cjs")|(--experimental-loader\s+".+\.pnp\.loader\.mjs")) ?/g,
+    ''
+  );
+}
