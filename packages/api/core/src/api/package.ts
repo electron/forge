@@ -5,7 +5,7 @@ import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/
 import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import { getHostArch } from '@electron/get';
-import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from '@electron/packager';
+import { FinalizePackageTargetsHookFunction, HookFunction, Options, packager, TargetDefinition } from '@electron/packager';
 import chalk from 'chalk';
 import debug from 'debug';
 import glob from 'fast-glob';
@@ -297,7 +297,7 @@ export const listrPackage = (
 
             type PackagerArch = Exclude<ForgeArch, 'arm'>;
 
-            const packageOpts: packager.Options = {
+            const packageOpts: Options = {
               asar: false,
               overwrite: true,
               ignore: [/^\/out\//g],
