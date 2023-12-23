@@ -1,0 +1,49 @@
+{
+  "name": "@electron-forge/plugin-rspack",
+  "version": "7.2.0",
+  "description": "Rspack plugin for Electron Forge, lets you use Rspack directly in your tooling",
+  "repository": "https://github.com/electron/forge",
+  "author": "noghartt",
+  "license": "MIT",
+  "main": "dist/RspackPlugin.js",
+  "typings": "dist/RspackPlugin.d.ts",
+  "scripts": {
+    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts test/*_spec.ts"
+  },
+  "engines": {
+    "node": ">= 16.4.0"
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.1.2",
+    "@malept/cross-spawn-promise": "^2.0.0",
+    "@types/node": "^18.0.3",
+    "chai": "^4.3.3",
+    "mocha": "^9.0.1",
+    "sinon": "^13.0.1",
+    "which": "^2.0.2",
+    "xvfb-maybe": "^0.2.1"
+  },
+  "dependencies": {
+    "@electron-forge/core-utils": "7.2.0",
+    "@electron-forge/plugin-base": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0",
+    "@electron-forge/web-multi-logger": "7.2.0",
+    "@rspack/cli": "0.4.4",
+    "@rspack/core": "0.4.4",
+    "@rspack/dev-server": "0.4.4",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.1",
+    "fast-glob": "^3.2.7",
+    "fs-extra": "^10.0.0",
+    "html-webpack-plugin": "^5.5.3",
+    "webpack": "^5.69.1",
+    "webpack-merge": "^5.7.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
