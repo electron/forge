@@ -1,4 +1,4 @@
-## plugin-webpack
+## plugin-rspack
 
 This plugin makes it easy to set up standard webpack tooling to compile both your main process code and your renderer process code, with built-in support for Hot Module Replacement (HMR) in the renderer process and support for multiple renderers.
 
@@ -8,11 +8,11 @@ This plugin makes it easy to set up standard webpack tooling to compile both you
 module.exports = {
   plugins: [
     {
-      name: '@electron-forge/plugin-webpack',
+      name: '@electron-forge/plugin-rspack',
       config: {
-        mainConfig: './webpack.main.config.js',
+        mainConfig: './rspack.main.config.js',
         renderer: {
-          config: './webpack.renderer.config.js',
+          config: './rspack.renderer.config.js',
           entryPoints: [{
             name: 'main_window',
             html: './src/renderer/index.html',
