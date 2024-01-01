@@ -1,0 +1,7 @@
+{
+  "name": "@electron-forge/plugin-vite-test-util-package",
+  "version": "0.1.0",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
+  }
+}

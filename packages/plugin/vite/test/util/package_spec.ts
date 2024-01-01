@@ -1,0 +1,78 @@
+import { exec } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { promisify } from 'node:util';
+
+import { expect } from 'chai';
+
+import { getFlatDependencies, lookupNodeModulesPaths, readPackageJson, resolveDependencies } from '../../src/util/package';
+
+const execPromise = promisify(exec);
+const packageRoot = path.join(__dirname, '../fixture/package');
+const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
+const depsTree = [
+  {
+    name: 'electron-squirrel-startup',
+    path: {
+      src: path.join(packageRoot, 'node_modules', 'electron-squirrel-startup'),
+      dest: path.join('node_modules', 'electron-squirrel-startup'),
+    },
+    dependencies: [
+      {
+        name: 'debug',
+        path: {
+          src: path.join(packageRoot, 'node_modules', 'debug'),
+          dest: path.join('node_modules', 'debug'),
+        },
+        dependencies: [
+          {
+            name: 'ms',
+            path: {
+              src: path.join(packageRoot, 'node_modules', 'ms'),
+              dest: path.join('node_modules', 'ms'),
+            },
+            dependencies: [],
+          },
+        ],
+      },
+    ],
+  },
+];
+const depsFlat = [
+  {
+    src: path.join(packageRoot, 'node_modules', 'electron-squirrel-startup'),
+    dest: path.join('node_modules', 'electron-squirrel-startup'),
+  },
+  {
+    src: path.join(packageRoot, 'node_modules', 'debug'),
+    dest: path.join('node_modules', 'debug'),
+  },
+  {
+    src: path.join(packageRoot, 'node_modules', 'ms'),
+    dest: path.join('node_modules', 'ms'),
+  },
+];
+
+describe('package', () => {
+  before(async () => {
+    await execPromise('npm install', { cwd: packageRoot });
+  });
+
+  it('package.json is loaded correct', async () => {
+    const packageJson2 = await readPackageJson(packageRoot);
+    expect(typeof packageJson2).equal('object');
+    expect(packageJson2).deep.equal(packageJson);
+  });
+
+  it('dependencies of package.json is resolved correct', async () => {
+    const depsT = await resolveDependencies(packageRoot);
+    const depsF = await getFlatDependencies(packageRoot);
+    expect(depsTree).deep.equal(depsT);
+    expect(depsFlat).deep.equal(depsF);
+  });
+
+  it('node_modules paths is lookup correct', async () => {
+    const paths = await lookupNodeModulesPaths(packageRoot);
+    expect(paths.length).gt(0);
+  });
+});
