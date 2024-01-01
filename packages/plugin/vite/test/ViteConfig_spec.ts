@@ -63,6 +63,7 @@ describe('ViteConfigGenerator', () => {
         emptyOutDir: false,
         outDir: path.join('.vite', 'build'),
         watch: undefined,
+        minify: true, // this.isProd === true
       },
       clearScreen: false,
       define: {},

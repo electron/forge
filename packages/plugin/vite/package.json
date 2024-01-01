@@ -15,6 +15,7 @@
     "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts test/*_spec.ts"
   },
   "devDependencies": {
+    "@electron/packager": "^18.1.2",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
     "chai": "^4.3.3",
