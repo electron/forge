@@ -16,7 +16,7 @@ export interface SourceAndDestination {
 
 function isRootDirectory(dir: string) {
   // Linux or Windows root path
-  return dir === '/' || /^[A-Z]:$/i.test(dir);
+  return dir === '/' || /^[A-Z]:\\$/i.test(dir);
 }
 
 export async function lookupNodeModulesPaths(root: string, paths: string[] = []): Promise<string[]> {
