@@ -39,7 +39,7 @@ export default async (dir: string): Promise<string | null> => {
         return mDir;
       }
 
-      if (packageJSON.devDependencies?.['@electron-forge/cli']) {
+      if (packageJSON.devDependencies?.['@electron-forge/cli'] || packageJSON.devDependencies?.['@electron-forge/core']) {
         d('package.json with forge dependency found in', testPath);
         return mDir;
       }
