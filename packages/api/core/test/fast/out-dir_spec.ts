@@ -30,3 +30,35 @@ describe('out-dir', () => {
     });
   });
 });
+
+describe('out-dir-dist', () => {
+  const DIR = __dirname;
+
+  describe('getCurrentOutDir', () => {
+    it('resolves to the dist directory when dist is declared', () => {
+      expect(
+        getCurrentOutDir(DIR, {
+          outDir: 'dist',
+        } as ResolvedForgeConfig)
+      ).to.equal(`${DIR}${path.sep}dist`);
+    });
+
+    it('resolves to the provided identifier', () => {
+      expect(
+        getCurrentOutDir(DIR, {
+          buildIdentifier: 'bar',
+          outDir: 'dist',
+        } as ResolvedForgeConfig)
+      ).to.equal(`${DIR}${path.sep}dist${path.sep}bar`);
+    });
+
+    it('resolves to the return value of provided identifier getter', () => {
+      expect(
+        getCurrentOutDir(DIR, {
+          buildIdentifier: () => 'thing',
+          outDir: 'dist',
+        } as ResolvedForgeConfig)
+      ).to.equal(`${DIR}${path.sep}dist${path.sep}thing`);
+    });
+  });
+});

@@ -85,6 +85,10 @@ export interface ResolvedForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
+  /**
+   * Output directory. Default is './out'.
+   */
+  outDir?: string;
   hooks?: ForgeHookMap;
   /**
    * @internal
