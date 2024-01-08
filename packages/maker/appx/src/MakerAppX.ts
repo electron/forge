@@ -110,7 +110,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       opts.devCert = await createDefaultCertificate(opts.publisher, { certFilePath: outPath, program: opts });
     }
 
-    if (opts.packageVersion.includes('-')) {
+    if (/[-+]/.test(opts.packageVersion)) {
       if (opts.makeVersionWinStoreCompatible) {
         opts.packageVersion = this.normalizeWindowsVersion(opts.packageVersion);
       } else {
