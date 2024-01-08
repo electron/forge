@@ -174,7 +174,7 @@ export default abstract class Maker<C> implements IForgeMaker {
    * prerelease information for use in Windows apps.
    */
   normalizeWindowsVersion(version: string): string {
-    const noPrerelease = version.replace(/-.*/, '');
+    const noPrerelease = version.replace(/[-+].*/, '');
     return `${noPrerelease}.0`;
   }
 }
