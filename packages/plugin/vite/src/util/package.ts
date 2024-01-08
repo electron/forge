@@ -14,7 +14,7 @@ export interface SourceAndDestination {
   dest: string;
 }
 
-function isRootDirectory(dir: string) {
+function isRootPath(dir: string) {
   // Linux or Windows root path
   return dir === '/' || /^[A-Z]:\\$/i.test(dir);
 }
@@ -30,7 +30,7 @@ export async function lookupNodeModulesPaths(root: string, paths: string[] = [])
   }
   root = path.join(root, '..');
 
-  return isRootDirectory(root) ? paths : await lookupNodeModulesPaths(root, paths);
+  return isRootPath(root) ? paths : await lookupNodeModulesPaths(root, paths);
 }
 
 export async function readPackageJson(root = process.cwd()): Promise<PackageJsonManifest> {
@@ -57,7 +57,7 @@ export async function resolveDependencies(root: string) {
         let curPath = prePath,
           depPath = null,
           packageJson = null;
-        while (!packageJson && !isRootDirectory(curPath)) {
+        while (!packageJson && !isRootPath(curPath)) {
           const allNodeModules = await lookupNodeModulesPaths(curPath);
 
           for (const nodeModules of allNodeModules) {
