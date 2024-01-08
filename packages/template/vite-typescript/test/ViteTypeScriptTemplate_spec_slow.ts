@@ -21,7 +21,7 @@ describe('ViteTypeScriptTemplate', () => {
   after(async () => {
     await yarnOrNpmSpawn(['link:remove']);
     await killWindowsEsbuildExe();
-    await fs.remove(dir);
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 
   describe('template files are copied to project', () => {
