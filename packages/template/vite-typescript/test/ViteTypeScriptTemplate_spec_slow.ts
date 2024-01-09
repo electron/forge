@@ -21,6 +21,7 @@ describe('ViteTypeScriptTemplate', () => {
   after(async () => {
     await yarnOrNpmSpawn(['link:remove']);
     await killWindowsEsbuildExe();
+    // TODO: use the async API
     fs.rmSync(dir, { recursive: true, force: true });
   });
 

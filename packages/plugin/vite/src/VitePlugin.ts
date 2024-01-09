@@ -103,7 +103,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
     const flatDependencies = await getFlatDependencies(this.projectDir);
 
-    if (!pj.main?.includes(".vite/")) {
+    if (!pj.main?.includes('.vite/')) {
       throw new Error(`Electron Forge is configured to use the Vite plugin. The plugin expects the
 "main" entry point in "package.json" to be ".vite/*" (where the plugin outputs
 the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
@@ -119,7 +119,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     // Copy the dependencies in package.json
     for (const dep of flatDependencies) {
-      await fs.copy(path.resolve(dep.src), path.resolve(buildPath, dep.dest));
+      await fs.copy(dep.src, path.resolve(buildPath, dep.dest));
     }
   };
 

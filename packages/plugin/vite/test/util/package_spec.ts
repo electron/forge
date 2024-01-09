@@ -5,7 +5,7 @@ import { promisify } from 'node:util';
 
 import { expect } from 'chai';
 
-import { getFlatDependencies, lookupNodeModulesPaths, readPackageJson, resolveDependencies } from '../../src/util/package';
+import { getFlatDependencies, isDirectory, lookupNodeModulesPaths, readPackageJson, resolveDependencies } from '../../src/util/package';
 
 const execPromise = promisify(exec);
 const packageRoot = path.join(__dirname, '../fixture/package');
@@ -69,6 +69,11 @@ describe('package', () => {
     const depsF = await getFlatDependencies(packageRoot);
     expect(depsTree).deep.equal(depsT);
     expect(depsFlat).deep.equal(depsF);
+  });
+
+  it('isDirectory check is correct', async () => {
+    expect(await isDirectory(packageRoot)).true;
+    expect(await isDirectory(path.join(packageRoot, 'package.json'))).false;
   });
 
   it('node_modules paths is lookup correct', async () => {

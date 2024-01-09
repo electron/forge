@@ -19,13 +19,22 @@ function isRootPath(dir: string) {
   return dir === '/' || /^[a-zA-Z]:\\$/i.test(dir);
 }
 
+export async function isDirectory(p: string): Promise<boolean> {
+  try {
+    const stat = await fs.promises.stat(p);
+    return stat.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 export async function lookupNodeModulesPaths(root: string, paths: string[] = []): Promise<string[]> {
   if (!root) return paths;
   if (!path.isAbsolute(root)) return paths;
 
   const p = path.join(root, 'node_modules');
 
-  if (fs.existsSync(p) && (await fs.promises.stat(p)).isDirectory()) {
+  if (await isDirectory(p)) {
     paths = paths.concat(p);
   }
   root = path.join(root, '..');
