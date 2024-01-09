@@ -83,7 +83,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
         console.error(
-          chalk.red(`You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
+          chalk.yellow(`You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
 
 Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`)
         );
