@@ -102,11 +102,10 @@ describe('VitePlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.vite', 'build', 'main.js'))).to.equal(false);
-        // TODO: check sourcemap files
-        // expect(ignore(path.join('/.vite', 'build', 'main.js.map'))).to.equal(true);
-        expect(ignore(path.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
-        // expect(ignore(path.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(true);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(false);
       });
 
       it('includes source map files when specified by config', async () => {
@@ -115,10 +114,10 @@ describe('VitePlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.vite', 'build', 'main.js'))).to.equal(false);
-        expect(ignore(path.join('/.vite', 'build', 'main.js.map'))).to.equal(false);
-        expect(ignore(path.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
-        expect(ignore(path.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(false);
       });
     });
   });

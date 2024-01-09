@@ -8,7 +8,7 @@ import { resolveConfig } from 'vite';
 
 import { externalBuiltins } from '../../src/util/plugins';
 
-describe('plugins', () => {
+describe('util/plugins', () => {
   it('externalBuiltins', async () => {
     const nativeModules = builtinModules.filter((e) => !e.startsWith('_'));
     const builtins: any[] = ['electron', ...nativeModules, ...nativeModules.map((m) => `node:${m}`)];

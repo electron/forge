@@ -53,7 +53,7 @@ const depsFlat = [
   },
 ];
 
-describe('package', () => {
+describe('util/package', () => {
   before(async () => {
     await execPromise('npm install', { cwd: packageRoot });
   });
