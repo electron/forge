@@ -37,14 +37,9 @@ export async function readPackageJson(root = process.cwd()): Promise<PackageJson
   const packageJsonPath = path.join(root, 'package.json');
   try {
     const packageJsonStr = await fs.promises.readFile(packageJsonPath, 'utf8');
-    try {
-      return JSON.parse(packageJsonStr);
-    } catch (error) {
-      console.error(`parse 'package.json': ${packageJsonPath}`);
-      throw error;
-    }
+    return JSON.parse(packageJsonStr);
   } catch (error) {
-    console.error(`'package.json' not found: ${packageJsonPath}`);
+    console.error(`parse ${packageJsonPath} failed: ${error}`);
     throw error;
   }
 }
