@@ -94,7 +94,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
-      return !/^[/\\]\.vite($|[/\\]).*$/.test(file);
+      // Always starts with `/`
+      // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
+      return !file.startsWith('/.vite');
     };
     return forgeConfig;
   };
