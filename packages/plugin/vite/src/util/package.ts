@@ -107,14 +107,14 @@ export async function resolveDependencies(root: string) {
 }
 
 export async function getFlatDependencies(root = process.cwd()) {
-  const dpesTree = await resolveDependencies(root);
+  const depsTree = await resolveDependencies(root);
   const depsFlat = new Map<string, SourceAndDestination>();
 
   const flatten = (dep: Dependency) => {
     depsFlat.set(dep.path.src, dep.path); // dedup
     dep.dependencies.forEach(flatten);
   };
-  dpesTree.forEach(flatten);
+  depsTree.forEach(flatten);
 
   return [...depsFlat.values()];
 }
