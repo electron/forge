@@ -14,9 +14,6 @@ import { VitePluginConfig } from './Config';
 import { getFlatDependencies } from './util/package';
 import ViteConfigGenerator from './ViteConfig';
 
-// Convenient for user customization.
-export { resolveDependencies } from './util/package';
-
 const d = debug('electron-forge:plugin:vite');
 
 export default class VitePlugin extends PluginBase<VitePluginConfig> {
