@@ -21,7 +21,10 @@ describe('ViteTypeScriptTemplate', () => {
   after(async () => {
     await yarnOrNpmSpawn(['link:remove']);
     await killWindowsEsbuildExe();
-    await fs.remove(dir);
+    // TODO: use the async API @caoxiemeihao
+    // In the vite@4 running test will occupy the `dist` folder, causing an error on the Windows PC when call `fs.remove()`.
+    // Currently, vite has released 5 version, and forge-vite-plugin will be upgrade soon vite@5 and I will try to fix issue in the next PR about vite@5.
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 
   describe('template files are copied to project', () => {
