@@ -1,7 +1,6 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
-import type { PackageJsonManifest } from './packageJson';
+import fs from 'fs-extra';
 
 export interface Dependency {
   name: string;
@@ -42,19 +41,8 @@ export async function lookupNodeModulesPaths(root: string, paths: string[] = [])
   return isRootPath(root) ? paths : await lookupNodeModulesPaths(root, paths);
 }
 
-export async function readPackageJson(root = process.cwd()): Promise<PackageJsonManifest> {
-  const packageJsonPath = path.join(root, 'package.json');
-  try {
-    const packageJsonStr = await fs.promises.readFile(packageJsonPath, 'utf8');
-    return JSON.parse(packageJsonStr);
-  } catch (error) {
-    console.error(`parse ${packageJsonPath} failed: ${error}`);
-    throw error;
-  }
-}
-
 export async function resolveDependencies(root: string) {
-  const rootDependencies = Object.keys((await readPackageJson(root)).dependencies || {});
+  const rootDependencies = Object.keys((await fs.readJson(path.join(root, 'package.json'))).dependencies || {});
   const resolve = async (prePath: string, dependencies: string[], collected: Map<string, Dependency> = new Map()) =>
     await Promise.all(
       dependencies.map(async (name) => {
@@ -66,12 +54,12 @@ export async function resolveDependencies(root: string) {
 
           for (const nodeModules of allNodeModules) {
             depPath = path.join(nodeModules, name);
-            if (fs.existsSync(depPath)) break;
+            if (await fs.pathExists(depPath)) break;
           }
 
           if (depPath) {
             try {
-              packageJson = await readPackageJson(depPath);
+              packageJson = await fs.readJson(path.join(depPath, 'package.json'));
             } catch (err) {
               // lookup node_modules
               curPath = path.join(curPath, '..');

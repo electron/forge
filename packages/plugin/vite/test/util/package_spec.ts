@@ -1,15 +1,13 @@
 import { exec } from 'node:child_process';
-import fs from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
 import { expect } from 'chai';
 
-import { getFlatDependencies, isDirectory, lookupNodeModulesPaths, readPackageJson, resolveDependencies } from '../../src/util/package';
+import { getFlatDependencies, isDirectory, lookupNodeModulesPaths, resolveDependencies } from '../../src/util/package';
 
 const execPromise = promisify(exec);
 const packageRoot = path.join(__dirname, '../fixture/package');
-const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
 const depsTree = [
   {
     name: 'electron-squirrel-startup',
@@ -56,12 +54,6 @@ const depsFlat = [
 describe('util/package', () => {
   before(async () => {
     await execPromise('npm install', { cwd: packageRoot });
-  });
-
-  it('package.json is loaded correct', async () => {
-    const packageJson2 = await readPackageJson(packageRoot);
-    expect(typeof packageJson2).equal('object');
-    expect(packageJson2).deep.equal(packageJson);
   });
 
   it('dependencies of package.json is resolved correct', async () => {
