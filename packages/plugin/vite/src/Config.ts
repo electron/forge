@@ -1,21 +1,11 @@
-import type { LibraryOptions } from 'vite';
-
 export interface VitePluginBuildConfig {
-  /**
-   * Alias of `build.lib.entry` in `config`.
-   */
-  entry?: LibraryOptions['entry'];
   /**
    * Vite config file path.
    */
-  config?: string;
+  config: string;
 }
 
 export interface VitePluginRendererConfig {
-  /**
-   * Human friendly name of your entry point
-   */
-  name: string;
   /**
    * Vite config file path.
    */

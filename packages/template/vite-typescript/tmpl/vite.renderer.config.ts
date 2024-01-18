@@ -1,4 +1,18 @@
-import { defineConfig } from 'vite';
+import { type UserConfig, defineConfig } from 'vite';
+import { pluginExposeDefineToEnv } from './vite.base.config';
+
+export const name = 'main_window';
 
 // https://vitejs.dev/config
-export default defineConfig({});
+export default defineConfig((env) => {
+  return {
+    root: (env as any).root,
+    mode: env.mode,
+    base: './',
+    build: {
+      outDir: `renderer/${name}`,
+    },
+    plugins: [pluginExposeDefineToEnv(name.toUpperCase())],
+    clearScreen: false,
+  } as UserConfig;
+});
