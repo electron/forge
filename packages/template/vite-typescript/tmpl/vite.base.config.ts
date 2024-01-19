@@ -32,16 +32,31 @@ export function getDefineKeys(name: string) {
   };
 }
 
-export function pluginExposeDefineToEnv(name: string): Plugin {
+export function pluginExposeRenderer(name: string): Plugin {
   const { VITE_DEV_SERVER_URL } = getDefineKeys(name);
 
   return {
-    name: '@electron-forge/plugin-vite:define-to-env',
+    name: '@electron-forge/plugin-vite:expose-renderer',
     configureServer(server) {
+      process.viteDevServer = server;
+
       server.httpServer?.once('listening', () => {
         const addressInfo = server.httpServer!.address() as AddressInfo;
         process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
       });
+    },
+  };
+}
+
+export function pluginHotRestart(type: 'restart' | 'reload'): Plugin {
+  return {
+    name: '@electron-forge/plugin-vite:hot-restart',
+    closeBundle() {
+      if (type === 'restart') {
+        process.stdin.emit('rs');
+      } else {
+        process.viteDevServer.ws.send({ type: 'full-reload' });
+      }
     },
   };
 }

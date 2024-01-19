@@ -1,5 +1,5 @@
 import { type UserConfig, defineConfig, mergeConfig } from 'vite';
-import { configFn, external } from './vite.base.config';
+import { configFn, external, pluginHotRestart } from './vite.base.config';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -19,6 +19,7 @@ export default defineConfig((env) => {
         },
       },
     },
+    plugins: [pluginHotRestart('reload')],
   };
 
   return mergeConfig(configFn(env as any), config);

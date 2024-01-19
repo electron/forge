@@ -37,12 +37,14 @@ export const getDefineKeys = (name) => {
 }
 
 /** @type {(name: string) => import('vite').Plugin} */
-export const pluginExposeDefineToEnv = (name) => {
+export const pluginExposeRenderer = (name) => {
   const { VITE_DEV_SERVER_URL } = getDefineKeys(name);
 
   return {
-    name: '@electron-forge/plugin-vite:define-to-env',
+    name: '@electron-forge/plugin-vite:expose-renderer',
     configureServer(server) {
+      process.viteDevServer = server;
+
       server.httpServer?.once('listening', () => {
 
         /** @type {import('node:net').AddressInfo} */
@@ -51,4 +53,18 @@ export const pluginExposeDefineToEnv = (name) => {
       });
     },
   }
+}
+
+/** @type {(type: 'restart' | 'reload') => import('vite').Plugin} */
+export const pluginHotRestart = (type) => {
+  return {
+    name: '@electron-forge/plugin-vite:hot-restart',
+    closeBundle() {
+      if (type === 'restart') {
+        process.stdin.emit('rs');
+      } else {
+        process.viteDevServer.ws.send({ type: 'full-reload' });
+      }
+    },
+  };
 }

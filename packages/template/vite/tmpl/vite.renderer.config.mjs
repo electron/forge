@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import { pluginExposeDefineToEnv } from './vite.base.config.mjs';
+import { pluginExposeRenderer } from './vite.base.config.mjs';
 
 export const name = 'main_window';
 
@@ -15,7 +15,7 @@ export default defineConfig((env) => {
       outDir: 'renderer/main_window',
     },
     plugins: [
-      pluginExposeDefineToEnv(name),
+      pluginExposeRenderer(name),
     ],
     clearScreen: false,
   };

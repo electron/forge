@@ -1,5 +1,5 @@
 import { type UserConfig, defineConfig, mergeConfig } from 'vite';
-import { configFn, external, getDefineKeys } from './vite.base.config';
+import { configFn, external, getDefineKeys, pluginHotRestart } from './vite.base.config';
 import { name as mainWindowName } from './vite.renderer.config';
 
 // https://vitejs.dev/config
@@ -16,6 +16,7 @@ export default defineConfig((env) => {
         external,
       },
     },
+    plugins: [pluginHotRestart('restart')],
     define: {
       [VITE_DEV_SERVER_URL]: env.command === 'serve' ? JSON.stringify(process.env[VITE_DEV_SERVER_URL]) : undefined,
       [VITE_NAME]: JSON.stringify(mainWindowName),
