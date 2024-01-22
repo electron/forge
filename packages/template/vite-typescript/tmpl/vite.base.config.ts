@@ -53,7 +53,8 @@ export function pluginHotRestart(type: 'restart' | 'reload'): Plugin {
     name: '@electron-forge/plugin-vite:hot-restart',
     closeBundle() {
       if (type === 'restart') {
-        process.stdin.emit('rs');
+        // https://github.com/electron/forge/blob/v7.2.0/packages/api/core/src/api/start.ts#L216-L223
+        process.stdin.emit('data', 'rs');
       } else {
         process.viteDevServer.ws.send({ type: 'full-reload' });
       }

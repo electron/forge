@@ -6,6 +6,7 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 declare namespace NodeJS {
   interface Process {
+    // Used for hot reload after preload scripts.
     viteDevServer: import('vite').ViteDevServer;
   }
 }
