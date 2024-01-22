@@ -1,13 +1,9 @@
-import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-// eslint-disable-next-line node/no-extraneous-import
-import { RollupWatcher } from 'rollup';
 // eslint-disable-next-line node/no-unpublished-import
 import { default as vite } from 'vite';
 
@@ -16,6 +12,10 @@ import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
+import type { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import type { AddressInfo } from 'node:net';
+// eslint-disable-next-line node/no-extraneous-import
+import type { RollupWatcher } from 'rollup';
 
 const d = debug('electron-forge:plugin:vite');
 

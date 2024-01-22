@@ -9,8 +9,6 @@ import type { ConfigEnv, UserConfig } from 'vite';
 const d = debug('@electron-forge/plugin-vite:ViteConfig');
 
 export default class ViteConfigGenerator {
-  private rendererConfigCache!: Promise<UserConfig>[];
-
   constructor(private readonly pluginConfig: VitePluginConfig, private readonly projectDir: string, private readonly isProd: boolean) {
     d('Config mode:', this.mode);
   }
@@ -21,7 +19,7 @@ export default class ViteConfigGenerator {
     // `mode` affects `.env.[mode]` file load.
     configEnv.mode ??= this.mode;
 
-    // Hack! Pass the runtime path to the vite config file in the template.
+    // Hack! Pass the runtime project path to the vite config file in the template.
     Object.assign(configEnv, { root: this.projectDir });
 
     // `configEnv` is to be passed as an arguments when the user export a function in `vite.config.js`.
@@ -41,6 +39,7 @@ export default class ViteConfigGenerator {
     }
 
     const configs = this.pluginConfig.build
+      // Prevent load the default `vite.config.js` file.
       .filter(({ config }) => config)
       .map<Promise<UserConfig>>(async ({ config }) => (await this.resolveConfig(config))?.config ?? {});
 
@@ -52,7 +51,9 @@ export default class ViteConfigGenerator {
       throw new Error('"config.renderer" must be an Array');
     }
 
-    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ config }) => (await this.resolveConfig(config))?.config ?? {}));
+    const configs = this.pluginConfig.renderer
+      .filter(({ config }) => config)
+      .map<Promise<UserConfig>>(async ({ config }) => (await this.resolveConfig(config))?.config ?? {});
 
     return await Promise.all(configs);
   }
