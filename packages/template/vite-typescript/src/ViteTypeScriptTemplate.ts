@@ -24,9 +24,10 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
           // Copy Vite files
+          await this.copyTemplateFile(directory, 'vite.base.config.ts');
           await this.copyTemplateFile(directory, 'vite.main.config.ts');
-          await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
           await this.copyTemplateFile(directory, 'vite.preload.config.ts');
+          await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
 
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');

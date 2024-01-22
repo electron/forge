@@ -37,12 +37,14 @@ describe('ViteTypeScriptTemplate', () => {
     });
 
     const expectedFiles = [
+      'package.json',
       'tsconfig.json',
       '.eslintrc.json',
       'forge.config.ts',
+      'vite.base.config.ts',
       'vite.main.config.ts',
-      'vite.renderer.config.ts',
       'vite.preload.config.ts',
+      'vite.renderer.config.ts',
       path.join('src', 'main.ts'),
       path.join('src', 'renderer.ts'),
       path.join('src', 'preload.ts'),
