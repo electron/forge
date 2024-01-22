@@ -12,7 +12,7 @@ export default defineConfig((env) => {
     mode: env.mode,
     base: './',
     build: {
-      outDir: 'renderer/main_window',
+      outDir: `.vite/renderer/${name}`,
     },
     plugins: [
       pluginExposeRenderer(name),

@@ -10,9 +10,11 @@ export default defineConfig((env) => {
     mode: env.mode,
     base: './',
     build: {
-      outDir: `renderer/${name}`,
+      outDir: `.vite/renderer/${name}`,
     },
-    plugins: [pluginExposeRenderer(name.toUpperCase())],
+    plugins: [
+      pluginExposeRenderer(name.toUpperCase()),
+    ],
     clearScreen: false,
   } as UserConfig;
 });

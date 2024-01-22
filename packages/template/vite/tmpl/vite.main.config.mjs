@@ -1,5 +1,5 @@
 import { defineConfig, mergeConfig } from 'vite';
-import { configFn, external, pluginHotRestart } from './vite.base.config.mjs';
+import { configFn, external, getDefineKeys, pluginHotRestart } from './vite.base.config.mjs';
 import { name as mainWindowName } from './vite.renderer.config.mjs';
 
 // https://vitejs.dev/config
