@@ -5,7 +5,6 @@ export const name = 'main_window';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-
   /** @type {import('vite').UserConfig} */
   return {
     root: env.root,
@@ -14,9 +13,7 @@ export default defineConfig((env) => {
     build: {
       outDir: `.vite/renderer/${name}`,
     },
-    plugins: [
-      pluginExposeRenderer(name),
-    ],
+    plugins: [pluginExposeRenderer(name)],
     clearScreen: false,
   };
 });

@@ -6,10 +6,7 @@ export const builtins = [
   ...builtinModules.map((m) => [m, `node:${m}`]).flat(),
 ];
 
-export const external = [
-  ...builtins,
-  ...Object.keys(pkg.dependencies || {}),
-];
+export const external = [...builtins, ...Object.keys(pkg.dependencies || {})];
 
 /** @type {(env: import('vite').ConfigEnv & { root: string; }) => import('vite').UserConfig} */
 export const configFn = (env) => ({
@@ -34,7 +31,7 @@ export const getDefineKeys = (name) => {
     VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
     VITE_NAME: `${NAME}_VITE_NAME`,
   };
-}
+};
 
 /** @type {(name: string) => import('vite').Plugin} */
 export const pluginExposeRenderer = (name) => {
@@ -46,14 +43,15 @@ export const pluginExposeRenderer = (name) => {
       process.viteDevServer = server;
 
       server.httpServer?.once('listening', () => {
-
         /** @type {import('node:net').AddressInfo} */
         const addressInfo = server.httpServer?.address();
-        process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
+        process.env[
+          VITE_DEV_SERVER_URL
+        ] = `http://localhost:${addressInfo?.port}`;
       });
     },
-  }
-}
+  };
+};
 
 /** @type {(type: 'restart' | 'reload') => import('vite').Plugin} */
 export const pluginHotRestart = (type) => {
@@ -68,4 +66,4 @@ export const pluginHotRestart = (type) => {
       }
     },
   };
-}
+};

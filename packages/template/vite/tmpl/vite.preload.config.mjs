@@ -20,9 +20,7 @@ export default defineConfig((env) => {
         },
       },
     },
-    plugins: [
-      pluginHotRestart('reload'),
-    ],
+    plugins: [pluginHotRestart('reload')],
   };
 
   return mergeConfig(configFn(env), config);
