@@ -1,4 +1,5 @@
 import cp from 'child_process';
+import os from 'os';
 import path from 'path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
@@ -15,7 +16,7 @@ describe('ViteTypeScriptTemplate', () => {
 
   before(async () => {
     await yarnOrNpmSpawn(['link:prepare']);
-    dir = await testUtils.ensureTestDirIsNonexistent();
+    dir = path.join(os.homedir(), 'Desktop/forge-test-vite'); // await testUtils.ensureTestDirIsNonexistent();
   });
 
   after(async () => {
