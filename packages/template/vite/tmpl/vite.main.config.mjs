@@ -23,6 +23,10 @@ export default defineConfig((env) => {
     },
     plugins: [pluginHotRestart('restart')],
     define,
+    resolve: {
+      // Load the Node.js entry.
+      mainFields: ['module', 'jsnext:main', 'jsnext'],
+    },
   };
 
   return mergeConfig(getBuildConfig(env), config);
