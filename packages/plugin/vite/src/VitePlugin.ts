@@ -14,7 +14,7 @@ import ViteConfigGenerator from './ViteConfig';
 import type { VitePluginConfig } from './Config';
 import type { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
-// eslint-disable-next-line node/no-unpublished-import
+// eslint-disable-next-line node/no-extraneous-import
 import type { RollupWatcher } from 'rollup';
 
 const d = debug('electron-forge:plugin:vite');

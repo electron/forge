@@ -70,7 +70,6 @@
     "progress": "^2.0.3",
     "rechoir": "^0.8.0",
     "resolve-package": "^1.0.1",
-    "rollup": "^4.9.6",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
