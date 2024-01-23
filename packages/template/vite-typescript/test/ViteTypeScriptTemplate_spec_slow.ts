@@ -40,6 +40,7 @@ describe('ViteTypeScriptTemplate', () => {
       'package.json',
       'tsconfig.json',
       '.eslintrc.json',
+      'forge.env.d.ts',
       'forge.config.ts',
       'vite.base.config.ts',
       'vite.main.config.ts',

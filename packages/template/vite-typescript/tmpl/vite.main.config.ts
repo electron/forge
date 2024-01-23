@@ -1,14 +1,15 @@
 import { type UserConfig, defineConfig, mergeConfig } from 'vite';
-import { configFn, external, getDefineKeys, pluginHotRestart } from './vite.base.config';
-import { name as mainWindowName } from './vite.renderer.config';
+import { getBuildConfig, getBuildDefine, external, pluginHotRestart } from './vite.base.config';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const { VITE_DEV_SERVER_URL, VITE_NAME } = getDefineKeys(mainWindowName);
+  const forgeConfigEnv = env as ForgeConfigEnv<'build'>;
+  const { forgeConfigSelf } = forgeConfigEnv;
+  const define = getBuildDefine(forgeConfigEnv);
   const config: UserConfig = {
     build: {
       lib: {
-        entry: 'src/main.ts',
+        entry: forgeConfigSelf.entry!,
         fileName: () => '[name].js',
         formats: ['cjs'],
       },
@@ -17,11 +18,8 @@ export default defineConfig((env) => {
       },
     },
     plugins: [pluginHotRestart('restart')],
-    define: {
-      [VITE_DEV_SERVER_URL]: env.command === 'serve' ? JSON.stringify(process.env[VITE_DEV_SERVER_URL]) : undefined,
-      [VITE_NAME]: JSON.stringify(mainWindowName),
-    },
+    define,
   };
 
-  return mergeConfig(configFn(env as any), config);
+  return mergeConfig(getBuildConfig(forgeConfigEnv), config);
 });

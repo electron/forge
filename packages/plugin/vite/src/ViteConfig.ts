@@ -2,7 +2,7 @@ import debug from 'debug';
 // eslint-disable-next-line node/no-unpublished-import
 import { loadConfigFromFile } from 'vite';
 
-import type { VitePluginConfig } from './Config';
+import type { VitePluginBuildConfig, VitePluginConfig, VitePluginRendererConfig } from './Config';
 // eslint-disable-next-line node/no-unpublished-import
 import type { ConfigEnv, UserConfig } from 'vite';
 
@@ -13,17 +13,21 @@ export default class ViteConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  resolveConfig(config: string, configEnv: Partial<ConfigEnv> = {}) {
+  resolveConfig(buildConfig: VitePluginBuildConfig | VitePluginRendererConfig, configEnv: Partial<ConfigEnv> = {}) {
     // @see - https://vitejs.dev/config/#conditional-config
     configEnv.command ??= this.isProd ? 'build' : 'serve';
     // `mode` affects `.env.[mode]` file load.
     configEnv.mode ??= this.mode;
 
-    // Hack! Pass the runtime project path to the vite config file in the template.
-    Object.assign(configEnv, { root: this.projectDir });
+    // Hack! Pass the forge runtime config to the vite config file in the template.
+    Object.assign(configEnv, {
+      root: this.projectDir,
+      forgeConfig: this.pluginConfig,
+      forgeConfigSelf: buildConfig,
+    });
 
     // `configEnv` is to be passed as an arguments when the user export a function in `vite.config.js`.
-    return loadConfigFromFile(configEnv as ConfigEnv, config);
+    return loadConfigFromFile(configEnv as ConfigEnv, buildConfig.config);
   }
 
   get mode(): string {
@@ -41,7 +45,7 @@ export default class ViteConfigGenerator {
     const configs = this.pluginConfig.build
       // Prevent load the default `vite.config.js` file.
       .filter(({ config }) => config)
-      .map<Promise<UserConfig>>(async ({ config }) => (await this.resolveConfig(config))?.config ?? {});
+      .map<Promise<UserConfig>>(async (buildConfig) => (await this.resolveConfig(buildConfig))?.config ?? {});
 
     return await Promise.all(configs);
   }
@@ -53,7 +57,7 @@ export default class ViteConfigGenerator {
 
     const configs = this.pluginConfig.renderer
       .filter(({ config }) => config)
-      .map<Promise<UserConfig>>(async ({ config }) => (await this.resolveConfig(config))?.config ?? {});
+      .map<Promise<UserConfig>>(async (buildConfig) => (await this.resolveConfig(buildConfig))?.config ?? {});
 
     return await Promise.all(configs);
   }

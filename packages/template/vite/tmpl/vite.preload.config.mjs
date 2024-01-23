@@ -1,15 +1,20 @@
 import { defineConfig, mergeConfig } from 'vite';
-import { configFn, external, pluginHotRestart } from './vite.base.config.mjs';
+import {
+  getBuildConfig,
+  external,
+  pluginHotRestart,
+} from './vite.base.config.mjs';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
+  const { forgeConfigSelf } = env;
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
       rollupOptions: {
         external,
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
-        input: 'src/preload.js',
+        input: forgeConfigSelf.entry,
         output: {
           format: 'cjs',
           // It should not be split chunks.
@@ -23,5 +28,5 @@ export default defineConfig((env) => {
     plugins: [pluginHotRestart('reload')],
   };
 
-  return mergeConfig(configFn(env), config);
+  return mergeConfig(getBuildConfig(env), config);
 });
