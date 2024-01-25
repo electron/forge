@@ -316,6 +316,10 @@ export const listrPackage = (
             };
             packageOpts.quiet = true;
 
+            if (packageOpts.tmpdir === false) {
+              packageOpts.tmpdir = undefined;
+            }
+
             if (packageOpts.all) {
               throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
             }
