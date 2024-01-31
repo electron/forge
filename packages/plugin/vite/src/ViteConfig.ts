@@ -83,6 +83,7 @@ export default class ViteConfigGenerator {
             // 🚧 Multiple builds may conflict.
             outDir: path.join(this.baseDir, 'build'),
             watch: watch ? {} : undefined,
+            minify: this.isProd,
           },
           clearScreen: false,
           define,
