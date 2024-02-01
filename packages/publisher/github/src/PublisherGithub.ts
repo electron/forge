@@ -74,6 +74,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               name: releaseName,
               draft: config.draft !== false,
               prerelease: config.prerelease === true,
+              generate_release_notes: config.generateReleaseNotes === true,
             })
           ).data;
         } else {
