@@ -53,9 +53,9 @@ export default class GitHub {
   static sanitizeName(name: string): string {
     return path
       .basename(name)
+      .replace(/[^\w.@+-]+/g, '.')
       .replace(/\.+/g, '.')
       .replace(/^\./g, '')
-      .replace(/\.$/g, '')
-      .replace(/[^\w.-]+/g, '-');
+      .replace(/\.$/g, '');
   }
 }

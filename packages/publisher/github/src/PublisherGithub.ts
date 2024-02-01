@@ -1,7 +1,12 @@
+import path from 'path';
+
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { RequestError } from '@octokit/request-error';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
+import chalk from 'chalk';
 import fs from 'fs-extra';
+import logSymbols from 'log-symbols';
 import mime from 'mime-types';
 
 import { PublisherGitHubConfig } from './Config';
@@ -97,9 +102,10 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               uploaded += 1;
               updateUploadStatus();
             };
-            const artifactName = GitHub.sanitizeName(artifactPath);
+            const artifactName = path.basename(artifactPath);
+            const sanitizedArtifactName = GitHub.sanitizeName(artifactName);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === artifactName);
+            const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === sanitizedArtifactName);
             if (asset !== undefined) {
               if (config.force === true) {
                 await github.getGitHub().repos.deleteReleaseAsset({
@@ -111,21 +117,36 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
                 return done();
               }
             }
-            await github.getGitHub().repos.uploadReleaseAsset({
-              owner: config.repository.owner,
-              repo: config.repository.name,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              release_id: release!.id,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              url: release!.upload_url,
-              // https://github.com/octokit/rest.js/issues/1645
-              data: (await fs.readFile(artifactPath)) as unknown as string,
-              headers: {
-                'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
-                'content-length': (await fs.stat(artifactPath)).size,
-              },
-              name: artifactName,
-            });
+            try {
+              const { data: uploadedAsset } = await github.getGitHub().repos.uploadReleaseAsset({
+                owner: config.repository.owner,
+                repo: config.repository.name,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                release_id: release!.id,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                url: release!.upload_url,
+                // https://github.com/octokit/rest.js/issues/1645
+                data: (await fs.readFile(artifactPath)) as unknown as string,
+                headers: {
+                  'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
+                  'content-length': (await fs.stat(artifactPath)).size,
+                },
+                name: artifactName,
+              });
+              if (uploadedAsset.name !== sanitizedArtifactName) {
+                // There's definitely a bug with GitHub.sanitizeName
+                console.warn(logSymbols.warning, chalk.yellow(`Expected artifact's name to be '${sanitizedArtifactName}' - got '${uploadedAsset.name}'`));
+              }
+            } catch (err) {
+              // If an asset with that name already exists, it's either a bug with GitHub.sanitizeName
+              // where it did not sanitize the artifact name in the same way as GitHub did, or there
+              // was simply a race condition with uploading artifacts with the same name
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              if (err instanceof RequestError && err.status === 422 && (err.response?.data as any)?.errors?.[0].code === 'already_exists') {
+                console.error(`Asset with name '${artifactName} already exists - there may be a bug with GitHub.sanitizeName`);
+              }
+              throw err;
+            }
             return done();
           })
       );
