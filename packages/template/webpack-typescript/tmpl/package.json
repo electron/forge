@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@electron/fuses": "^1.7.0",
+    "@electron-forge/plugin-fuses": "^7.2.0",
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
