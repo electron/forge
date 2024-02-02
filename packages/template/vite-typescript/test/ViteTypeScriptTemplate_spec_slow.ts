@@ -1,6 +1,5 @@
-import cp from 'child_process';
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
@@ -16,16 +15,15 @@ describe('ViteTypeScriptTemplate', () => {
 
   before(async () => {
     await yarnOrNpmSpawn(['link:prepare']);
-    dir = path.join(os.homedir(), 'Desktop/forge-test-vite'); // await testUtils.ensureTestDirIsNonexistent();
+    dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
   after(async () => {
     await yarnOrNpmSpawn(['link:remove']);
-    await killWindowsEsbuildExe();
-    // TODO: use the async API @caoxiemeihao
-    // In the vite@4 running test will occupy the `dist` folder, causing an error on the Windows PC when call `fs.remove()`.
-    // Currently, vite has released 5 version, and forge-vite-plugin will be upgrade soon vite@5 and I will try to fix issue in the next PR about vite@5.
-    fs.rmSync(dir, { recursive: true, force: true });
+    if (os.platform() !== 'win32') {
+      // Windows platform `fs.remove(dir)` logic useing npm `npm run test:clear`.
+      fs.remove(dir);
+    }
   });
 
   describe('template files are copied to project', () => {
@@ -109,43 +107,3 @@ describe('ViteTypeScriptTemplate', () => {
     });
   });
 });
-
-/**
- * TODO: resolve `esbuild` can not exit normally on the Windows platform.
- * @deprecated
- */
-async function killWindowsEsbuildExe() {
-  if (process.platform !== 'win32') {
-    return Promise.resolve();
-  }
-
-  return new Promise<void>((resolve, reject) => {
-    cp.exec('tasklist', (error, stdout) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      const esbuild = stdout
-        .toString()
-        .split('\n')
-        .map((line) => line.split(/\s+/))
-        .find((line) => line.includes('esbuild.exe'));
-
-      if (!esbuild) {
-        resolve();
-        return;
-      }
-
-      // ['esbuild.exe', '4564', 'Console', '1', '14,400', 'K', '']
-      const [, pid] = esbuild;
-      const result = process.kill(+pid, 'SIGINT');
-
-      if (result) {
-        resolve();
-      } else {
-        reject(new Error('kill esbuild process failed'));
-      }
-    });
-  });
-}
