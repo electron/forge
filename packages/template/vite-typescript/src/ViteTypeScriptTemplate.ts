@@ -41,7 +41,6 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
 
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
-          await this.copyTemplateFile(path.join(directory, 'src'), 'types.d.ts');
 
           // Remove preload.js and replace with preload.ts
           await fs.remove(filePath('preload.js'));
