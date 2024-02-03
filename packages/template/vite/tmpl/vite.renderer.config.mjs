@@ -15,6 +15,9 @@ export default defineConfig((env) => {
       outDir: `.vite/renderer/${name}`,
     },
     plugins: [pluginExposeRenderer(name)],
+    resolve: {
+      preserveSymlinks: true,
+    },
     clearScreen: false,
   };
 });

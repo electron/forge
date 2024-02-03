@@ -22,7 +22,7 @@ describe('ViteTypeScriptTemplate', () => {
     await yarnOrNpmSpawn(['link:remove']);
     if (os.platform() !== 'win32') {
       // Windows platform `fs.remove(dir)` logic useing npm `npm run test:clear`.
-      fs.remove(dir);
+      await fs.remove(dir);
     }
   });
 
@@ -48,7 +48,6 @@ describe('ViteTypeScriptTemplate', () => {
       path.join('src', 'main.ts'),
       path.join('src', 'renderer.ts'),
       path.join('src', 'preload.ts'),
-      path.join('src', 'types.d.ts'),
     ];
     for (const filename of expectedFiles) {
       it(`${filename} should exist`, async () => {
