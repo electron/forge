@@ -143,7 +143,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               // was simply a race condition with uploading artifacts with the same name
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               if (err instanceof RequestError && err.status === 422 && (err.response?.data as any)?.errors?.[0].code === 'already_exists') {
-                console.error(`Asset with name '${artifactName} already exists - there may be a bug with GitHub.sanitizeName`);
+                console.error(`Asset with name '${artifactName}' already exists - there may be a bug with Forge's GitHub.sanitizeName util`);
               }
               throw err;
             }
