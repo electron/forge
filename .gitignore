@@ -1,3 +1,4 @@
+.DS_Store
 .nyc_output
 *.lcov
 /coverage
