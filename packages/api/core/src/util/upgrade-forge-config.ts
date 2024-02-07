@@ -1,5 +1,7 @@
-import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import path from 'path';
+
+import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+
 import { siblingDep } from '../api/init-scripts/init-npm';
 
 type MakeTargets = { string: string[] };
@@ -150,7 +152,7 @@ export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeCon
     forgeConfig.packagerConfig = forge5Config.electronPackagerConfig;
   }
   if (forge5Config.electronRebuildConfig) {
-    forgeConfig.electronRebuildConfig = forge5Config.electronRebuildConfig;
+    forgeConfig.rebuildConfig = forge5Config.electronRebuildConfig;
   }
   forgeConfig.makers = generateForgeMakerConfig(forge5Config);
   forgeConfig.publishers = generateForgePublisherConfig(forge5Config);
@@ -161,16 +163,10 @@ export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeCon
 export function updateUpgradedForgeDevDeps(packageJSON: ForgePackageJSON, devDeps: string[]): string[] {
   const forgeConfig = packageJSON.config.forge;
   devDeps = devDeps.filter((dep) => !dep.startsWith('@electron-forge/maker-'));
-  // eslint-disable-next-line max-len
   devDeps = devDeps.concat((forgeConfig.makers as IForgeResolvableMaker[]).map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
-  // eslint-disable-next-line max-len
   devDeps = devDeps.concat(
     (forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
   );
-
-  if (Object.keys(packageJSON.devDependencies).find((dep: string) => dep === 'electron-prebuilt-compile')) {
-    devDeps = devDeps.concat(siblingDep('plugin-compile'));
-  }
 
   return devDeps;
 }

@@ -1,10 +1,9 @@
-import { ForgeArch } from '@electron-forge/shared-types';
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-
-import { expect } from 'chai';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerSnapConfig } from '../src/Config';
 
@@ -22,7 +21,7 @@ describe('MakerSnap', () => {
   let eisStub: SinonStub;
   let ensureDirectoryStub: SinonStub;
   let config: MakerSnapConfig;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = '/my/test/dir/out/foo-linux-x64';
   const makeDir = path.resolve('/make/dir');
@@ -30,7 +29,7 @@ describe('MakerSnap', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
     eisStub = stub().resolves('/my/test/dir/out/make/foo_0.0.1_amd64.snap');
     config = {};
@@ -38,12 +37,12 @@ describe('MakerSnap', () => {
     MakerSnapModule = proxyquire.noPreserveCache().noCallThru().load('../src/MakerSnap', {
       'electron-installer-snap': eisStub,
     }).default;
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerSnapModule(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
   });
 
   it('should pass through correct defaults', async () => {

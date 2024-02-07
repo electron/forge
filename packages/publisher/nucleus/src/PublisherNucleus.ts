@@ -1,10 +1,10 @@
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
+import fs from 'fs';
+import path from 'path';
+
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import debug from 'debug';
 import FormData from 'form-data';
-import fs from 'fs';
 import fetch from 'node-fetch';
-import path from 'path';
 
 import { PublisherNucleusConfig } from './Config';
 
@@ -28,42 +28,42 @@ export default class PublisherNucleus extends PublisherBase<PublisherNucleusConf
     return newMakeResults;
   };
 
-  async publish({ makeResults }: PublisherOptions): Promise<void> {
+  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     const collapsedResults = this.collapseMakeResults(makeResults);
 
     for (const [resultIdx, makeResult] of collapsedResults.entries()) {
-      const msg = `Uploading result (${resultIdx + 1}/${collapsedResults.length})`;
+      const msg = `Uploading distributable (${resultIdx + 1}/${collapsedResults.length})`;
       d(msg);
 
-      await asyncOra(msg, async () => {
-        const data = new FormData();
-        data.append('platform', makeResult.platform);
-        data.append('arch', makeResult.arch);
-        data.append('version', makeResult.packageJSON.version);
+      setStatusLine(msg);
+      const data = new FormData();
+      data.append('platform', makeResult.platform);
+      data.append('arch', makeResult.arch);
+      data.append('version', makeResult.packageJSON.version);
 
-        let artifactIdx = 0;
-        for (const artifactPath of makeResult.artifacts) {
-          // Skip the RELEASES file, it is automatically generated on the server
-          // eslint-disable-next-line no-continue
-          if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
-          data.append(`file${artifactIdx}`, fs.createReadStream(artifactPath));
-          artifactIdx += 1;
-        }
+      let artifactIdx = 0;
+      for (const artifactPath of makeResult.artifacts) {
+        // Skip the RELEASES file, it is automatically generated on the server
+        if (path.basename(artifactPath).toLowerCase() === 'releases') continue;
+        data.append(`file${artifactIdx}`, fs.createReadStream(artifactPath));
+        artifactIdx += 1;
+      }
 
-        const response = await fetch(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`, {
-          headers: {
-            Authorization: config.token,
-          },
-          method: 'POST',
-          body: data,
-        });
-
-        if (response.status !== 200) {
-          throw new Error(`Unexpected response code from Nucleus: ${response.status}\n\nBody:\n${await response.text()}`);
-        }
+      const response = await fetch(`${config.host}/rest/app/${config.appId}/channel/${config.channelId}/upload`, {
+        headers: {
+          Authorization: config.token,
+        },
+        method: 'POST',
+        body: data,
       });
+
+      if (response.status !== 200) {
+        throw new Error(`Unexpected response code from Nucleus: ${response.status}\n\nBody:\n${await response.text()}`);
+      }
     }
   }
 }
+
+export { PublisherNucleus, PublisherNucleusConfig };

@@ -1,3 +1,117 @@
+#### [6.0.2](https://github.com/electron/forge/releases/tag/v6.0.2) (2022-11-14)
+
+#### [6.0.1](https://github.com/electron/forge/releases/tag/v6.0.1) (2022-11-08)
+
+#### [6.0.0](https://github.com/electron/forge/releases/tag/v6.0.0) (2022-11-02)
+
+#### [6.0.0-beta.75](https://github.com/electron/forge/releases/tag/v6.0.0-beta.75) (2022-11-01)
+
+##### New Features
+
+- move create-electron-app into forge (#2988) ([a2eadbcb](https://github.com/electron/forge/commit/a2eadbcb))
+
+#### [6.0.0-beta.74](https://github.com/electron/forge/releases/tag/v6.0.0-beta.74) (2022-11-01)
+
+##### Bug Fixes
+
+- do not proxify class instances in forge config (#3039) ([a89ed7d3](https://github.com/electron/forge/commit/a89ed7d3))
+
+##### Other Changes
+
+- add proper package test for webpack ts template (#3040) ([6e9cca35](https://github.com/electron/forge/commit/6e9cca35))
+
+#### [6.0.0-beta.73](https://github.com/electron/forge/releases/tag/v6.0.0-beta.73) (2022-11-01)
+
+##### Bug Fixes
+
+- ensure webpack typescript template runs (#3038) ([e1d5db00](https://github.com/electron/forge/commit/e1d5db00))
+
+#### [6.0.0-beta.72](https://github.com/electron/forge/releases/tag/v6.0.0-beta.72) (2022-10-31)
+
+#### [6.0.0-beta.71](https://github.com/electron/forge/releases/tag/v6.0.0-beta.71) (2022-10-31)
+
+##### Bug Fixes
+
+- **packager:** "packaging application" log never stops when building for multiple architectures (#3006) ([247f52ab](https://github.com/electron/forge/commit/247f52ab))
+- **publish:** ignore unnecessary files when publishing to npm (#3024) ([ab8ea661](https://github.com/electron/forge/commit/ab8ea661))
+- **template-base:** use minimum instead of exact version when replacing `ELECTRON_FORGE/VERSION` in templates (#3030) ([7aaa7029](https://github.com/electron/forge/commit/7aaa7029))
+- use @electron-forge/cli hint for project resolution (#3023) ([b5d05874](https://github.com/electron/forge/commit/b5d05874))
+- restore isProd in the webpack plugin (#3021) ([531788ba](https://github.com/electron/forge/commit/531788ba))
+
+#### [6.0.0-beta.70](https://github.com/electron/forge/releases/tag/v6.0.0-beta.70) (2022-10-28)
+
+##### Bug Fixes
+
+- **template-typescript-webpack:**
+  - install ts-node (#3016) ([ab160d5d](https://github.com/electron/forge/commit/ab160d5d))
+  - webpack entrypoint extensions (#3014) ([378e2009](https://github.com/electron/forge/commit/378e2009))
+  - clean up forge config code (#3009) ([c3a8db44](https://github.com/electron/forge/commit/c3a8db44))
+
+#### [6.0.0-beta.69](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.69) (2022-10-27)
+
+##### New Features
+
+- **publisher-s3:** Add sessionToken and change default fallback (#2984) ([72b80a7f](https://github.com/electron-userland/electron-forge/commit/72b80a7f))
+- add support for forge.config.ts et. al (#2993) ([e404bf10](https://github.com/electron-userland/electron-forge/commit/e404bf10))
+- **plugin-webpack:** support standalone preload entry points (#2950) ([93b31c7d](https://github.com/electron-userland/electron-forge/commit/93b31c7d))
+
+##### Bug Fixes
+
+- **plugin-webpack:** keep `devDependencies`, `dependencies`, `optionalDependencies` and `peerDependencies` in the distributed package.json (#3007) ([0f75ce08](https://github.com/electron-userland/electron-forge/commit/0f75ce08))
+- **template-webpack:** use new plugin syntax (#2990) ([14721498](https://github.com/electron-userland/electron-forge/commit/14721498))
+- **template-typescript-webpack:** use new plugin syntax (#2989) ([4f222f48](https://github.com/electron-userland/electron-forge/commit/4f222f48))
+
+##### Other Changes
+
+- prefer forge.config.js over package.json config (#2991) ([777197e5](https://github.com/electron-userland/electron-forge/commit/777197e5))
+
+#### [6.0.0-beta.68](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.68) (2022-10-24)
+
+##### Bug Fixes
+
+- **docs:**
+  - only load modules if package has entry point (#2981) ([bb29cd51](https://github.com/electron-userland/electron-forge/commit/bb29cd51))
+  - only publish API docs on v6 tags (#2976) ([a8b9dfc5](https://github.com/electron-userland/electron-forge/commit/a8b9dfc5))
+- pin gh-actions to SHAs, update to remove deprecation warning (#2966) ([fbc92e46](https://github.com/electron-userland/electron-forge/commit/fbc92e46))
+- **plugin-webpack:** better webpack-dev-server types (#2952) ([6c0c222b](https://github.com/electron-userland/electron-forge/commit/6c0c222b))
+
+##### Other Changes
+
+- upgrade electron-packager@17 (#2978) ([629872da](https://github.com/electron-userland/electron-forge/commit/629872da))
+- improve forge configuration DX (#2963) ([2c12d73f](https://github.com/electron-userland/electron-forge/commit/2c12d73f))
+- **maker-pkg:** upgrade to `@electron/osx-sign` (#2959) ([dba93590](https://github.com/electron-userland/electron-forge/commit/dba93590))
+
+#### [6.0.0-beta.67](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.67) (2022-10-05)
+
+##### New Features
+
+- remove preload.js from TypeScript templates (#2938) ([50484dcc](https://github.com/electron-userland/electron-forge/commit/50484dcc))
+
+##### Bug Fixes
+
+- **template-typescript-webpack:** preload file to webpack config (#2936) ([cb1e5600](https://github.com/electron-userland/electron-forge/commit/cb1e5600))
+
+#### [6.0.0-beta.66](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.66) (2022-09-07)
+
+##### New Features
+
+- **plugin-webpack:** Allow each entrypoints to specify `nodeIntegration` (#2867) ([1f45e2ca](https://github.com/electron-userland/electron-forge/commit/1f45e2ca))
+
+##### Other Changes
+
+- update got to 2.0.0 (#2924) ([23eebf19](https://github.com/electron-userland/electron-forge/commit/23eebf19))
+
+#### [6.0.0-beta.65](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.65) (2022-07-25)
+
+##### Bug Fixes
+
+- add missing exports from packages (#2920) ([460546b7](https://github.com/electron-userland/electron-forge/commit/460546b7))
+- keep stdin unpaused after ora completes (#2904) ([aad9c7e4](https://github.com/electron-userland/electron-forge/commit/aad9c7e4))
+
+##### Chores
+
+- upgrade Node.js to 14 LTS (#2921) ([4dcca1ce](https://github.com/electron-userland/electron-forge/commit/4dcca1ce))
+
 #### [6.0.0-beta.64](https://github.com/electron-userland/electron-forge/releases/tag/v6.0.0-beta.64) (2022-06-16)
 
 ##### New Features

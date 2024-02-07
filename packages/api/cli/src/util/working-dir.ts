@@ -1,5 +1,6 @@
-import fs from 'fs-extra';
 import path from 'path';
+
+import fs from 'fs-extra';
 
 export default function workingDir(dir: string, cwd: string, checkExisting = true): string {
   let finalDir = dir;

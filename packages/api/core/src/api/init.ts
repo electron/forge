@@ -1,17 +1,19 @@
-import { asyncOra } from '@electron-forge/async-ora';
-import debug from 'debug';
-import { ForgeTemplate } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
+
+import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { ForgeTemplate } from '@electron-forge/shared-types';
+import debug from 'debug';
+import { Listr } from 'listr2';
 import semver from 'semver';
 
-import findTemplate from './init-scripts/find-template';
-import initDirectory from './init-scripts/init-directory';
-import initGit from './init-scripts/init-git';
-import initNPM from './init-scripts/init-npm';
-import installDepList, { DepType } from '../util/install-dependencies';
+import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
-import { setInitialForgeConfig } from '../util/forge-config';
+
+import { findTemplate } from './init-scripts/find-template';
+import { initDirectory } from './init-scripts/init-directory';
+import { initGit } from './init-scripts/init-git';
+import { initLink } from './init-scripts/init-link';
+import { initNPM } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:init');
 
@@ -25,7 +27,7 @@ export interface InitOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to copy Travis and AppVeyor CI files
+   * Whether to copy template CI files
    */
   copyCIFiles?: boolean;
   /**
@@ -52,29 +54,109 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
 }
 
 export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
-  asyncOra.interactive = interactive;
-
   d(`Initializing in: ${dir}`);
 
-  await initDirectory(dir, force);
-  await initGit(dir);
-  const templateModule = await findTemplate(dir, template);
+  const packageManager = safeYarnOrNpm();
 
-  await validateTemplate(template, templateModule);
+  const runner = new Listr<{
+    templateModule: ForgeTemplate;
+  }>(
+    [
+      {
+        title: `Locating custom template: "${template}"`,
+        task: async (ctx) => {
+          ctx.templateModule = await findTemplate(dir, template);
+        },
+      },
+      {
+        title: 'Initializing directory',
+        task: async (_, task) => {
+          await initDirectory(dir, task, force);
+          await initGit(dir);
+        },
+        options: {
+          persistentOutput: true,
+        },
+      },
+      {
+        title: 'Preparing template',
+        task: async ({ templateModule }) => {
+          await validateTemplate(template, templateModule);
+        },
+      },
+      {
+        title: 'Initializing template',
+        task: async ({ templateModule }, task) => {
+          if (typeof templateModule.initializeTemplate === 'function') {
+            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles });
+            if (tasks) {
+              return task.newListr(tasks, { concurrent: false });
+            }
+          }
+        },
+      },
+      {
+        title: 'Installing template dependencies',
+        task: async ({ templateModule }, task) => {
+          return task.newListr(
+            [
+              {
+                title: 'Installing production dependencies',
+                task: async (_, task) => {
+                  d('installing dependencies');
+                  if (templateModule.dependencies?.length) {
+                    task.output = `${packageManager} install ${templateModule.dependencies.join(' ')}`;
+                  }
+                  return await installDepList(dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
+                },
+                exitOnError: false,
+              },
+              {
+                title: 'Installing development dependencies',
+                task: async (_, task) => {
+                  d('installing devDependencies');
+                  if (templateModule.devDependencies?.length) {
+                    task.output = `${packageManager} install --dev ${templateModule.devDependencies.join(' ')}`;
+                  }
+                  await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
+                },
+                exitOnError: false,
+              },
+              {
+                title: 'Finalizing dependencies',
+                task: async (_, task) => {
+                  return task.newListr([
+                    {
+                      title: 'Installing common dependencies',
+                      task: async (_, task) => {
+                        await initNPM(dir, task);
+                      },
+                      exitOnError: false,
+                    },
+                    {
+                      title: process.env.LINK_FORGE_DEPENDENCIES_ON_INIT ? 'Linking forge dependencies' : 'Skip linking forge dependencies',
+                      task: async (_, task) => {
+                        await initLink(dir, task);
+                      },
+                      exitOnError: true,
+                    },
+                  ]);
+                },
+              },
+            ],
+            {
+              concurrent: false,
+            }
+          );
+        },
+      },
+    ],
+    {
+      concurrent: false,
+      rendererSilent: !interactive,
+      rendererFallback: Boolean(process.env.DEBUG),
+    }
+  );
 
-  if (typeof templateModule.initializeTemplate === 'function') {
-    await templateModule.initializeTemplate(dir, { copyCIFiles });
-    const packageJSON = await readRawPackageJson(dir);
-    setInitialForgeConfig(packageJSON);
-    await fs.writeJson(path.join(dir, 'package.json'), packageJSON, { spaces: 2 });
-  }
-
-  await asyncOra('Installing Template Dependencies', async () => {
-    d('installing dependencies');
-    await installDepList(dir, templateModule.dependencies || []);
-    d('installing devDependencies');
-    await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
-  });
-
-  await initNPM(dir);
+  await runner.run();
 };

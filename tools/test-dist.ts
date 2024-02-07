@@ -1,16 +1,25 @@
+import * as path from 'path';
+
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
-import * as path from 'path';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
 (async () => {
-  const dirsToCheck = [];
+  const dirsToCheck: string[] = [];
 
   for (const subDir of await fs.readdir(PACKAGES_DIR)) {
-    for (const packageDir of await fs.readdir(path.resolve(PACKAGES_DIR, subDir))) {
-      dirsToCheck.push(path.resolve(PACKAGES_DIR, subDir, packageDir));
+    const subDirPath = path.resolve(PACKAGES_DIR, subDir);
+    const stat = await fs.lstat(subDirPath);
+    if (stat.isDirectory()) {
+      for (const packageDir of await fs.readdir(subDirPath)) {
+        const packageDirPath = path.resolve(PACKAGES_DIR, subDir, packageDir);
+        const stat = await fs.lstat(packageDirPath);
+        if (stat.isDirectory()) {
+          dirsToCheck.push(packageDirPath);
+        }
+      }
     }
   }
 

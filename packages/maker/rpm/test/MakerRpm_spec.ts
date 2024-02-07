@@ -1,10 +1,10 @@
-import { ForgeArch } from '@electron-forge/shared-types';
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-
-import { expect } from 'chai';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
 import { MakerRpmConfig } from '../src/Config';
 import { rpmArch } from '../src/MakerRpm';
@@ -23,7 +23,7 @@ describe('MakerRpm', () => {
   let ensureDirectoryStub: SinonStub;
   let config: MakerRpmConfig;
   let maker: MakerImpl;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/make/dir');
@@ -31,7 +31,7 @@ describe('MakerRpm', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
     eirStub = stub().returns(Promise.resolve({ packagePaths: ['/foo/bar.rpm'] }));
     config = {};
@@ -39,12 +39,12 @@ describe('MakerRpm', () => {
     MakerRpm = proxyquire.noPreserveCache().noCallThru().load('../src/MakerRpm', {
       'electron-installer-redhat': eirStub,
     }).default;
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerRpm(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
   });
 
   it('should pass through correct defaults', async () => {
@@ -56,11 +56,11 @@ describe('MakerRpm', () => {
       packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
+    delete opts.rename;
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       src: dir,
       dest: path.join(makeDir, 'rpm', process.arch),
-      rename: undefined,
     });
   });
 
@@ -71,7 +71,7 @@ describe('MakerRpm', () => {
         productName: 'Redhat',
       },
     } as MakerRpmConfig;
-    createMaker();
+    await createMaker();
 
     await (maker.make as MakeFunction)({
       dir,
@@ -81,6 +81,7 @@ describe('MakerRpm', () => {
       packageJSON,
     });
     const opts = eirStub.firstCall.args[0];
+    delete opts.rename;
     expect(opts).to.deep.equal({
       arch: rpmArch(process.arch as ForgeArch),
       options: {
@@ -88,7 +89,6 @@ describe('MakerRpm', () => {
       },
       src: dir,
       dest: path.join(makeDir, 'rpm', process.arch),
-      rename: undefined,
     });
   });
 
@@ -99,6 +99,10 @@ describe('MakerRpm', () => {
 
     it('should convert x64 to x86_64', () => {
       expect(rpmArch('x64')).to.equal('x86_64');
+    });
+
+    it('should convert arm64 to aarch64', () => {
+      expect(rpmArch('arm64')).to.equal('aarch64');
     });
 
     it('should convert arm to armv6hl', () => {

@@ -1,0 +1,8 @@
+{
+  "name": "async-test",
+  "devDependencies": {
+    "electron": "^1000.0.0",
+    "@electron-forge/cli": "6.0.0",
+    "@electron-forge/core": "6.0.0"
+  }
+}

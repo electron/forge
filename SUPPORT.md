@@ -13,14 +13,14 @@ value of the environment variable is a comma-separated list of modules which sup
 feature. Known modules include:
 
 - `@electron/get:*`
+- `@electron/osx-sign`
+- `@electron/packager`
 - `electron-forge:*` (always use this one before filing an issue)
 - `electron-installer-debian`
 - `electron-installer-dmg`
 - `electron-installer-flatpak`
 - `electron-installer-redhat`
 - `electron-installer-snap:*`
-- `electron-osx-sign`
-- `electron-packager`
 - `electron-rebuild`
 - `electron-windows-installer:main`
 - `electron-windows-store`

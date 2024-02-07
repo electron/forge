@@ -1,8 +1,8 @@
 {
   "name": "@electron-forge/cli",
-  "version": "6.0.0-beta.64",
+  "version": "7.2.0",
   "description": "A complete tool for building modern Electron applications",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "bin": {
@@ -17,19 +17,18 @@
     "mocha": "^9.0.1"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.64",
-    "@electron-forge/core": "6.0.0-beta.64",
-    "@electron-forge/shared-types": "6.0.0-beta.64",
-    "@electron/get": "^1.9.0",
+    "@electron-forge/core": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0",
+    "@electron/get": "^3.0.0",
     "chalk": "^4.0.0",
     "commander": "^4.1.1",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
-    "inquirer": "^8.0.0",
+    "listr2": "^5.0.3",
     "semver": "^7.2.1"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 16.4.0"
   },
   "funding": [
     {
@@ -40,5 +39,13 @@
       "type": "tidelift",
       "url": "https://tidelift.com/subscription/pkg/npm-.electron-forge-cli?utm_medium=referral&utm_source=npm_fund"
     }
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src",
+    "script"
   ]
 }

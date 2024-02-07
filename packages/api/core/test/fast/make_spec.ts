@@ -1,6 +1,7 @@
-import { expect } from 'chai';
-import { ForgeMakeResult } from '@electron-forge/shared-types';
 import * as path from 'path';
+
+import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
 import { MakeOptions } from '../../src/api';
@@ -31,7 +32,7 @@ describe('make', () => {
     before(() => {
       const electronPath = path.resolve(__dirname, 'node_modules/electron');
       stubbedMake = proxyquire.noCallThru().load('../../src/api/make', {
-        '../util/electron-version': {
+        '@electron-forge/core-utils': {
           getElectronModulePath: () => Promise.resolve(electronPath),
           getElectronVersion: () => Promise.resolve('1.0.0'),
         },

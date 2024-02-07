@@ -1,4 +1,4 @@
-import { MSICreator, Features } from 'electron-wix-msi/lib/creator';
+import { Features, MSICreator } from 'electron-wix-msi/lib/creator';
 
 export interface MakerWixConfig {
   /**
@@ -15,6 +15,10 @@ export interface MakerWixConfig {
    * The name of the exe file
    */
   exe?: string;
+  /*
+   * The app's icon
+   */
+  icon?: string;
   /**
    * The [Microsoft Windows Language Code identifier](https://msdn.microsoft.com/en-us/library/cc233965.aspx) used by the installer.
    * Will use 1033 (English, United-States) if left undefined.

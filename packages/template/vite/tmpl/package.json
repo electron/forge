@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@electron/fuses": "^1.7.0",
+    "@electron-forge/plugin-fuses": "^7.2.0",
+    "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION"
+  }
+}

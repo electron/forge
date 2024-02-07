@@ -1,7 +1,9 @@
-import debug from 'debug';
-import { Octokit } from '@octokit/rest';
-import { retry } from '@octokit/plugin-retry';
+import path from 'path';
+
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
+import { retry } from '@octokit/plugin-retry';
+import { Octokit } from '@octokit/rest';
+import debug from 'debug';
 
 const logInfo = debug('electron-forge:publisher:github:info');
 const logDebug = debug('electron-forge:publisher:github:debug');
@@ -20,9 +22,9 @@ export default class GitHub {
       ...options,
       log: {
         debug: logDebug.enabled ? logDebug : noOp,
-        error: console.error, // eslint-disable-line no-console
+        error: console.error,
         info: logInfo.enabled ? logInfo : noOp,
-        warn: console.warn, // eslint-disable-line no-console
+        warn: console.warn,
       },
       userAgent: 'Electron Forge',
     };
@@ -44,5 +46,16 @@ export default class GitHub {
     const RetryableOctokit = Octokit.plugin(retry);
     const github = new RetryableOctokit(options);
     return github;
+  }
+
+  // Based on https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-asset and
+  // https://stackoverflow.com/questions/59081778/rules-for-special-characters-in-github-repository-name
+  static sanitizeName(name: string): string {
+    return path
+      .basename(name)
+      .replace(/\.+/g, '.')
+      .replace(/^\./g, '')
+      .replace(/\.$/g, '')
+      .replace(/[^\w.-]+/g, '-');
   }
 }

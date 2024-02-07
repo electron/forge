@@ -1,14 +1,13 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgePlatform } from '@electron-forge/shared-types';
-
-import chalk from 'chalk';
-import logSymbols from 'log-symbols';
 import path from 'path';
 
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
-import getNameFromAuthor from './util/author-name';
+import logSymbols from 'log-symbols';
 
 import { MakerWixConfig } from './Config';
+import getNameFromAuthor from './util/author-name';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
@@ -25,7 +24,6 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
 
     let { version } = packageJSON;
     if (version.includes('-')) {
-      // eslint-disable-next-line no-console
       console.warn(
         logSymbols.warning,
         chalk.yellow('WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI')
@@ -53,3 +51,5 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     return [msiFile];
   }
 }
+
+export { MakerWix, MakerWixConfig, MSICreatorOptions };

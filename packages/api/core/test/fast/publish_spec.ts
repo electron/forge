@@ -1,8 +1,9 @@
-import { expect } from 'chai';
-import fs from 'fs-extra';
-import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
 import os from 'os';
 import path from 'path';
+
+import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
+import { expect } from 'chai';
+import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 import { SinonStub, stub } from 'sinon';
 
@@ -29,8 +30,7 @@ describe('publish', () => {
     publisherSpy = stub();
     voidStub = stub();
     nowhereStub = stub();
-    publishers = ['@electron-forge/publisher-test'];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    publishers = [{ name: '@electron-forge/publisher-test' }];
     const fakePublisher = (stub: SinonStub, name = 'default') =>
       class _FakePublisher {
         private publish: SinonStub;
@@ -45,7 +45,11 @@ describe('publish', () => {
 
     publish = proxyquire.noCallThru().load('../../src/api/publish', {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      './make': async (...args: any[]) => makeStub(...args),
+      './make': {
+        listrMake: async (...args: any[]) => {
+          makeStub(...args);
+        },
+      },
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(require('../fixture/dummy_app/package.json')),
@@ -75,10 +79,9 @@ describe('publish', () => {
 
     publisherSpy.returns(Promise.resolve());
     resolveStub.returns(path.resolve(__dirname, '../fixture/dummy_app'));
-    makeStub.returns([]);
   });
 
-  it('should should call make with makeOptions', async () => {
+  it('should should call make', async () => {
     await publish({
       dir: __dirname,
       interactive: false,
@@ -109,7 +112,7 @@ describe('publish', () => {
   });
 
   it('should call the resolved publisher with the appropriate args', async () => {
-    makeStub.returns([{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(2, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -117,6 +120,7 @@ describe('publish', () => {
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
+    delete publisherSpy.firstCall.args[0].setStatusLine;
     const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
@@ -132,7 +136,7 @@ describe('publish', () => {
   });
 
   it('should call the provided publisher with the appropriate args', async () => {
-    makeStub.returns([{ artifacts: ['artifact1', 'artifact2'] }]);
+    makeStub.onCall(0).callsArgWith(2, [{ artifacts: ['artifact1', 'artifact2'] }]);
     await publish({
       dir: __dirname,
       interactive: false,
@@ -148,6 +152,7 @@ describe('publish', () => {
     expect(publisherSpy.callCount).to.equal(1);
     // pluginInterface will be a new instance so we ignore it
     delete publisherSpy.firstCall.args[0].forgeConfig.pluginInterface;
+    delete publisherSpy.firstCall.args[0].setStatusLine;
     const testConfig = await loadFixtureConfig();
 
     testConfig.publishers = publishers;
@@ -223,9 +228,15 @@ describe('publish', () => {
       dir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'electron-forge-test-'));
     });
 
+    beforeEach(() => {
+      resolveStub.returns(dir);
+    });
+
     describe('when creating a dry run', () => {
       beforeEach(async () => {
-        makeStub.returns(fakeMake('darwin'));
+        makeStub.onCall(0).callsArgWith(2, fakeMake('darwin'));
+        makeStub.onCall(1).callsArgWith(2, fakeMake('win32'));
+
         const dryPath = path.resolve(dir, 'out', 'publish-dry-run');
         await fs.mkdirs(dryPath);
         await fs.writeFile(path.resolve(dryPath, 'hash.json'), 'test');
@@ -237,7 +248,6 @@ describe('publish', () => {
         expect(await fs.pathExists(path.resolve(dryPath, 'hash.json'))).to.equal(false, 'previous hashes should be erased');
         const backupDir = path.resolve(dir, 'out', 'backup');
         await fs.move(dryPath, backupDir);
-        makeStub.returns(fakeMake('win32'));
         await publish({
           dir,
           interactive: false,
@@ -295,7 +305,7 @@ describe('publish', () => {
         const darwinIndex = publisherSpy.firstCall.args[0].makeResults[0].artifacts.some((a: string) => a.includes('darwin')) ? 0 : 1;
         const win32Index = darwinIndex === 0 ? 1 : 0;
         const darwinArgs = publisherSpy.getCall(darwinIndex).args[0];
-        const darwinArtifacts = [];
+        const darwinArtifacts: unknown[] = [];
         for (const result of darwinArgs.makeResults) {
           darwinArtifacts.push(...result.artifacts);
         }
@@ -305,7 +315,7 @@ describe('publish', () => {
             .sort()
         );
         const win32Args = publisherSpy.getCall(win32Index).args[0];
-        const win32Artifacts = [];
+        const win32Artifacts: unknown[] = [];
         for (const result of win32Args.makeResults) {
           win32Artifacts.push(...result.artifacts);
         }

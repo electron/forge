@@ -1,5 +1,6 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+
+import * as fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -7,21 +8,26 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 export interface Package {
   path: string;
   name: string;
-  manifest: object; // the parsed package.json
+  manifest: Record<string, unknown>; // the parsed package.json
 }
 
 export const getPackageInfo = async (): Promise<Package[]> => {
   const packages: Package[] = [];
 
   for (const subDir of await fs.readdir(PACKAGES_DIR)) {
-    for (const packageDir of await fs.readdir(path.resolve(PACKAGES_DIR, subDir))) {
-      const packagePath = path.resolve(PACKAGES_DIR, subDir, packageDir);
-      const pkg = await fs.readJson(path.resolve(packagePath, 'package.json'));
-      packages.push({
-        path: packagePath,
-        name: pkg.name,
-        manifest: pkg,
-      });
+    const subDirPath = path.resolve(PACKAGES_DIR, subDir);
+    const stat = await fs.lstat(subDirPath);
+
+    if (stat.isDirectory()) {
+      for (const packageDir of await fs.readdir(subDirPath)) {
+        const packagePath = path.resolve(subDirPath, packageDir);
+        const pkg = await fs.readJson(path.resolve(packagePath, 'package.json'));
+        packages.push({
+          path: packagePath,
+          name: pkg.name,
+          manifest: pkg,
+        });
+      }
     }
   }
 
@@ -32,14 +38,18 @@ export const getPackageInfoSync = (): Package[] => {
   const packages: Package[] = [];
 
   for (const subDir of fs.readdirSync(PACKAGES_DIR)) {
-    for (const packageDir of fs.readdirSync(path.resolve(PACKAGES_DIR, subDir))) {
-      const packagePath = path.resolve(PACKAGES_DIR, subDir, packageDir);
-      const pkg = fs.readJsonSync(path.resolve(packagePath, 'package.json'));
-      packages.push({
-        path: packagePath,
-        name: pkg.name,
-        manifest: pkg,
-      });
+    const subDirPath = path.resolve(PACKAGES_DIR, subDir);
+    const stat = fs.lstatSync(subDirPath);
+    if (stat.isDirectory()) {
+      for (const packageDir of fs.readdirSync(subDirPath)) {
+        const packagePath = path.resolve(subDirPath, packageDir);
+        const pkg = fs.readJsonSync(path.resolve(packagePath, 'package.json'));
+        packages.push({
+          path: packagePath,
+          name: pkg.name,
+          manifest: pkg,
+        });
+      }
     }
   }
 

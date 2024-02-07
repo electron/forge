@@ -1,7 +1,10 @@
+import path from 'path';
+
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
 import fs from 'fs-extra';
-import path from 'path';
+import { Listr } from 'listr2';
+
 import template from '../src/WebpackTemplate';
 
 describe('WebpackTemplate', () => {
@@ -12,7 +15,10 @@ describe('WebpackTemplate', () => {
   });
 
   it('should succeed in initializing the webpack template', async () => {
-    await template.initializeTemplate(dir, {});
+    const tasks = await template.initializeTemplate(dir, {});
+    const runner = new Listr(tasks, { concurrent: false, exitOnError: false });
+    await runner.run();
+    expect(runner.err).to.have.lengthOf(0);
   });
 
   context('template files are copied to project', () => {

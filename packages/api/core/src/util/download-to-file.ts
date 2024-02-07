@@ -1,6 +1,7 @@
+import * as path from 'path';
+
 import * as fs from 'fs-extra';
 import got, { HTTPError } from 'got';
-import * as path from 'path';
 import ProgressBar from 'progress';
 
 const PROGRESS_BAR_DELAY_IN_SECONDS = 30;

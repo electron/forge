@@ -1,6 +1,7 @@
 .nyc_output
 dist/
 docs/
+packages/tsconfig.json
 packages/*/*/dist
 packages/*/*/doc
 packages/*/*/index.d.ts
@@ -9,3 +10,4 @@ packages/*/*/README.md
 packages/*/*/tsconfig.json
 packages/api/core/test/fixture/bad_external_forge_config/bad.js
 packages/plugin/webpack/test/**/.webpack
+.links

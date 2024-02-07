@@ -1,16 +1,19 @@
-import { createDefaultCertificate } from '@electron-forge/maker-appx';
-import { ensureTestDirIsNonexistent, expectProjectPathExists } from '@electron-forge/test-utils';
+import assert from 'assert';
 import { execSync } from 'child_process';
-import { expect } from 'chai';
-import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import path from 'path';
-import proxyquire from 'proxyquire';
-import { readMetadata } from 'electron-installer-common';
 
+import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { createDefaultCertificate } from '@electron-forge/maker-appx';
+import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
+import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
+import { expect } from 'chai';
+import { readMetadata } from 'electron-installer-common';
+import fs from 'fs-extra';
+import proxyquire from 'proxyquire';
+
+import { InitOptions } from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
-import { InitOptions } from '../../src/api';
 
 const forge = proxyquire.noCallThru().load('../../src/api', {
   './install': async () => {
@@ -36,6 +39,10 @@ for (const nodeInstaller of ['npm', 'yarn']) {
   process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;
+
+    before(async () => {
+      await yarnOrNpmSpawn(['link:prepare']);
+    });
 
     const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
       before(async () => {
@@ -77,14 +84,18 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
       });
 
+      it('should create a forge.config.js', async () => {
+        await expectProjectPathExists(dir, 'forge.config.js', 'file');
+      });
+
       describe('lint', () => {
-        it('should initially pass the linting process', () => forge.lint({ dir }));
+        it('should initially pass the linting process', () => expectLintToPass(dir));
       });
 
       after(() => fs.remove(dir));
     });
 
-    describe('init with CI files enabled', () => {
+    describe.skip('init with CI files enabled', () => {
       beforeInitTest({ copyCIFiles: true });
 
       it('should copy over the CI config files correctly', async () => {
@@ -116,12 +127,12 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       });
 
       describe('lint', () => {
-        it('should initially pass the linting process', () => forge.lint({ dir }));
+        it('should initially pass the linting process', () => expectLintToPass(dir));
       });
 
       after(async () => {
         await fs.remove(dir);
-        execSync('npm unlink', {
+        execSync('npm unlink -g', {
           cwd: path.resolve(__dirname, '../fixture/custom_init'),
         });
       });
@@ -202,20 +213,8 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
         await forge.import({ dir });
 
-        const {
-          config: {
-            forge: {
-              makers: [
-                {
-                  config: { name: winstallerName },
-                },
-              ],
-            },
-          },
-          customProp,
-        } = await readRawPackageJson(dir);
+        const { customProp } = await readRawPackageJson(dir);
 
-        expect(winstallerName).to.equal('Name');
         expect(customProp).to.equal('propVal');
       });
 
@@ -223,11 +222,19 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         await fs.remove(dir);
       });
     });
+
+    after(async () => {
+      await yarnOrNpmSpawn(['link:remove']);
+    });
   });
 }
 
 describe('Electron Forge API', () => {
   let dir: string;
+
+  before(async () => {
+    await yarnOrNpmSpawn(['link:prepare']);
+  });
 
   describe('after init', () => {
     let devCert: string;
@@ -240,12 +247,21 @@ describe('Electron Forge API', () => {
         packageJSON.name = 'testapp';
         packageJSON.version = '1.0.0-beta.1';
         packageJSON.productName = 'Test-App';
-        packageJSON.config.forge.packagerConfig.asar = false;
+        packageJSON.config = packageJSON.config || {};
+        packageJSON.config.forge = {
+          ...packageJSON.config.forge,
+          packagerConfig: {
+            asar: false,
+          },
+        };
         if (process.platform === 'win32') {
           await fs.copy(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
           devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
         } else if (process.platform === 'linux') {
-          packageJSON.config.forge.packagerConfig.executableName = 'testapp';
+          packageJSON.config.forge.packagerConfig = {
+            ...packageJSON.config.forge.packagerConfig,
+            executableName: 'testapp',
+          };
         }
         packageJSON.homepage = 'http://www.example.com/';
         packageJSON.author = 'Test Author';
@@ -254,10 +270,12 @@ describe('Electron Forge API', () => {
 
     it('throws an error when all is set', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.all = true;
       });
       await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         delete packageJSON.config.forge.packagerConfig.all;
       });
     });
@@ -287,7 +305,7 @@ describe('Electron Forge API', () => {
 
     // FIXME(erickzhao): This test hangs on the electron-rebuild step
     // with Electron 19. It was tested to work on Electron 18.
-    // see https://github.com/electron-userland/electron-forge/pull/2869
+    // see https://github.com/electron/forge/pull/2869
     describe.skip('with prebuilt native module deps installed', () => {
       before(async () => {
         await installDeps(dir, ['ref-napi']);
@@ -307,6 +325,7 @@ describe('Electron Forge API', () => {
 
     it('can package without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
+        assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 
@@ -317,7 +336,6 @@ describe('Electron Forge API', () => {
       it('should have deleted the forge config from the packaged app', async () => {
         const cleanPackageJSON = await readMetadata({
           src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
-          // eslint-disable-next-line no-console
           logger: console.error,
         });
         expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
@@ -386,7 +404,6 @@ describe('Electron Forge API', () => {
 
           for (const optionsFetcher of options) {
             if (shouldPass) {
-              // eslint-disable-next-line no-loop-func
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
                 const outputs = await forge.make(optionsFetcher());
                 for (const outputResult of outputs) {
@@ -479,5 +496,9 @@ describe('Electron Forge API', () => {
     });
 
     after(() => fs.remove(dir));
+  });
+
+  after(async () => {
+    await yarnOrNpmSpawn(['link:remove']);
   });
 });

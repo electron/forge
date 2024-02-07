@@ -1,23 +1,83 @@
 import { ChildProcess } from 'child_process';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ArchOption, Options, TargetPlatform } from 'electron-packager';
-import { RebuildOptions } from 'electron-rebuild';
 
+import { autoTrace } from '@electron-forge/tracer';
+import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
+import { RebuildOptions } from '@electron/rebuild';
+import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
+
+export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
+export type ForgeListrTaskFn<Ctx = any> = ListrTask<Ctx, ListrDefaultRenderer>['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
 export type ForgeArch = ArchOption;
-// Why: hooks have any number/kind of args/return values
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export type ForgeHookFn = (forgeConfig: ForgeConfig, ...args: any[]) => Promise<any>;
-export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher | string;
+export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
+export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
+export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
+
+export interface ForgeSimpleHookSignatures {
+  generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  postStart: [appProcess: ElectronProcess];
+  prePackage: [platform: ForgePlatform, version: ForgeArch];
+  packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterPrune: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterExtract: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  postPackage: [
+    packageResult: {
+      platform: ForgePlatform;
+      arch: ForgeArch;
+      outputPaths: string[];
+    }
+  ];
+  preMake: [];
+}
+
+export interface ForgeMutatingHookSignatures {
+  postMake: [makeResults: ForgeMakeResult[]];
+  resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readPackageJson: [packageJson: Record<string, any>];
+}
+
+export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHookSignatures);
+export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeSimpleHookSignatures[Hook]
+) => Promise<void>;
+export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
+  forgeConfig: ResolvedForgeConfig,
+  ...args: ForgeMutatingHookSignatures[Hook]
+) => Promise<ForgeMutatingHookSignatures[Hook][0] | undefined>;
+export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
+  ? ForgeSimpleHookFn<Hook>
+  : Hook extends keyof ForgeMutatingHookSignatures
+  ? ForgeMutatingHookFn<Hook>
+  : never;
+export type ForgeHookMap = {
+  [S in ForgeHookName]?: ForgeHookFn<S>;
+};
+export type ForgeMultiHookMap = {
+  [S in ForgeHookName]?: ForgeHookFn<S> | ForgeHookFn<S>[];
+};
+
 export interface IForgePluginInterface {
-  triggerHook(hookName: string, hookArgs: any[]): Promise<void>;
-  triggerMutatingHook<T>(hookName: string, item: T): Promise<any>;
+  triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
+  getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    childTrace: typeof autoTrace,
+    hookName: Hook,
+    hookArgs: ForgeSimpleHookSignatures[Hook]
+  ): Promise<ForgeListrTaskDefinition[]>;
+  triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
+    hookName: Hook,
+    item: ForgeMutatingHookSignatures[Hook][0]
+  ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
-export interface ForgeConfig {
+
+export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
+export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
+export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
    * to the out dir to generate a nested directory.  E.g. out/current-timestamp
@@ -25,9 +85,7 @@ export interface ForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
-  hooks?: {
-    [hookName: string]: ForgeHookFn;
-  };
+  hooks?: ForgeHookMap;
   /**
    * @internal
    */
@@ -35,12 +93,13 @@ export interface ForgeConfig {
   /**
    * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
-  plugins: (IForgePlugin | [string, Record<string, unknown>])[];
-  electronRebuildConfig: Partial<RebuildOptions>;
-  packagerConfig: Partial<Options>;
-  makers: (IForgeResolvableMaker | IForgeMaker)[];
+  plugins: ForgeConfigPlugin[];
+  rebuildConfig: ForgeRebuildOptions;
+  packagerConfig: ForgePackagerOptions;
+  makers: ForgeConfigMaker[];
   publishers: ForgeConfigPublisher[];
 }
+export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
 export interface ForgeMakeResult {
   /**
    * An array of paths to artifacts generated for this make run
@@ -60,23 +119,30 @@ export interface ForgeMakeResult {
   arch: ForgeArch;
 }
 
+export interface IForgeResolvablePlugin {
+  name: string;
+  config?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
 export interface IForgePlugin {
+  /** @internal */
   __isElectronForgePlugin: boolean;
   name: string;
 
-  init(dir: string, forgeConfig: ForgeConfig): void;
-  getHook?(hookName: string): ForgeHookFn | null;
+  init(dir: string, forgeConfig: ResolvedForgeConfig): void;
+  getHooks?(): ForgeMultiHookMap;
   startLogic?(opts: StartOptions): Promise<StartResult>;
 }
 
 export interface IForgeResolvableMaker {
-  enabled: boolean;
   name: string;
-  platforms: ForgePlatform[] | null;
   config: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  enabled?: boolean;
+  platforms?: ForgePlatform[] | null;
 }
 
 export interface IForgeMaker {
+  /** @internal */
   __isElectronForgeMaker: boolean;
   readonly platforms?: ForgePlatform[];
 }
@@ -88,6 +154,7 @@ export interface IForgeResolvablePublisher {
 }
 
 export interface IForgePublisher {
+  /** @internal */
   __isElectronForgePublisher: boolean;
   readonly platforms?: ForgePlatform[];
 }
@@ -128,17 +195,22 @@ export interface StartOptions {
   inspectBrk?: boolean;
 }
 
-export type StartResult = ElectronProcess | string | string[] | false;
+export type InnerStartResult = ElectronProcess | string | string[] | false;
+export type StartResult = InnerStartResult | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
 
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ForgeListrTaskDefinition = ListrTask<never>;
+export { ListrTask };
+
 export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void>;
+  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void | ForgeListrTaskDefinition[]>;
 }
 
 export type PackagePerson =

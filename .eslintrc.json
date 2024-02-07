@@ -1,5 +1,5 @@
 {
-  "plugins": ["mocha"],
+  "plugins": ["mocha", "import"],
   "env": {
     "mocha": true
   },
@@ -17,13 +17,38 @@
         "vars": "all"
       }
     ],
-    "mocha/no-exclusive-tests": "error"
+    "mocha/no-exclusive-tests": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true,
+        "allowSeparatedGroups": true,
+        "ignoreCase": true
+      }
+    ],
+    "import/no-named-as-default": "error"
   },
   "overrides": [
     {
       "files": ["**/*.ts"],
       "extends": ["@malept/eslint-config/src/typescript"],
+      "parserOptions": {
+        "project": ["./tsconfig.base.json"]
+      },
       "rules": {
+        "no-throw-literal": "off",
+        "@typescript-eslint/no-throw-literal": "error",
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -36,16 +61,23 @@
       }
     },
     {
-      "files": ["packages/*/*/test/**/*_spec*.ts"],
+      "files": ["ci/**/*.js"],
+      "rules": {
+        "node/no-unpublished-require": "off"
+      }
+    },
+    {
+      "files": ["packages/*/*/test/**/*_spec*.ts", "packages/*/*/test/fixture/**/*.ts"],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",
+        "node/no-extraneous-import": "off",
         "node/no-unpublished-import": "off",
         "node/no-unpublished-require": "off"
       }
     },
     {
-      "files": ["packages/api/cli/src/**/*.ts", "tools/*.{js,ts}"],
+      "files": ["packages/api/cli/src/**/*.ts", "packages/external/create-electron-app/src/**/*.ts", "tools/*.{js,ts}"],
       "rules": {
         "no-process-exit": "off",
         "node/shebang": [

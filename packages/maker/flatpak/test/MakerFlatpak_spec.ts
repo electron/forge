@@ -1,14 +1,14 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
+import path from 'path';
 
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import 'chai-as-promised';
-import path from 'path';
 import proxyquire from 'proxyquire';
-import { stub, SinonStub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 
-import { flatpakArch } from '../src/MakerFlatpak';
 import { MakerFlatpakConfig } from '../src/Config';
+import { flatpakArch } from '../src/MakerFlatpak';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
@@ -24,7 +24,7 @@ describe('MakerFlatpak', () => {
   let eifStub: SinonStub;
   let ensureDirectoryStub: SinonStub;
   let config: MakerFlatpakConfig;
-  let createMaker: () => void;
+  let createMaker: () => Promise<void>;
 
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/make/dir');
@@ -32,7 +32,7 @@ describe('MakerFlatpak', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ensureDirectoryStub = stub().returns(Promise.resolve());
     eifStub = stub().resolves();
     config = {};
@@ -44,12 +44,12 @@ describe('MakerFlatpak', () => {
         'fs-extra': { readdir: stub().returns(Promise.resolve([])) },
         '@malept/electron-installer-flatpak': eifStub,
       }).default;
-    createMaker = () => {
+    createMaker = async () => {
       maker = new MakerFlatpak(config);
       maker.ensureDirectory = ensureDirectoryStub;
-      maker.prepareConfig(targetArch as ForgeArch);
+      await maker.prepareConfig(targetArch);
     };
-    createMaker();
+    await createMaker();
   });
 
   it('should pass through correct defaults', async () => {
@@ -76,7 +76,7 @@ describe('MakerFlatpak', () => {
         productName: 'Flatpak',
       },
     } as Record<string, unknown>;
-    createMaker();
+    await createMaker();
 
     await (maker.make as MakeFunction)({
       dir,

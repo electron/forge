@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
+const { spawn } = require('@malept/cross-spawn-promise');
 const glob = require('fast-glob');
 const { satisfies } = require('semver');
-const { spawn } = require('@malept/cross-spawn-promise');
 
 const DO_NOT_UPGRADE = [
   '@types/node-fetch', // No longer needed when node-fetch is upgraded to >= 3.0.0
   '@typescript-eslint/eslint-plugin', // special case
   'chalk', // Requires ESM
   'commander', // TODO: convert to yargs
-  'electron-osx-sign', // Requires Electron Packager's dependency to also be upgraded
   'eslint-plugin-mocha', // Requires Node 14
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM
@@ -23,10 +22,6 @@ const DO_NOT_UPGRADE = [
  */
 async function spawnPassthrough(cmd, args, options) {
   await spawn(cmd, args, { stdio: 'inherit', ...options });
-}
-
-async function bolt(...args) {
-  await spawnPassthrough('bolt', args);
 }
 
 async function git(...args) {
@@ -85,25 +80,25 @@ class Package {
   async smoketestAndCommit(packageName = null) {
     const packageJSONs = await glob('packages/*/*/package.json');
     await yarn('lint');
-    await bolt('build');
+    await yarn('build');
     await git('add', 'package.json', 'yarn.lock', ...packageJSONs);
     await git('commit', '-m', `build(${this.commitType}): upgrade ${packageName || this.name} to ${this.commitVersion}`);
   }
 
   async upgrade() {
     if (this.isMajorVersionBump() || this.isMinorVersionBump()) {
-      await this.bolt_upgrade();
+      await this.yarn_upgrade_and_update_packageJSON();
     } else {
-      await this.yarn_upgrade();
+      await this.yarn_upgrade_in_yarn_lock();
     }
   }
 
-  async bolt_upgrade() {
+  async yarn_upgrade_and_update_packageJSON() {
     console.log(`Upgrading ${this.name} from ${this.wantedVersion} to ^${this.latestVersion} (and updating package.json)...`);
-    await bolt('upgrade', `${this.name}@^${this.latestVersion}`);
+    await yarn('upgrade', `${this.name}@^${this.latestVersion}`);
   }
 
-  async yarn_upgrade() {
+  async yarn_upgrade_in_yarn_lock() {
     console.log(`Upgrading ${this.name} from ${this.currentVersion} to ${this.latestVersion} in yarn.lock...`);
     await yarn('upgrade', this.name);
   }

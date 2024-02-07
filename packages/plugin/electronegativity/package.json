@@ -1,10 +1,10 @@
 {
   "name": "@electron-forge/plugin-electronegativity",
-  "version": "6.0.0-beta.64",
+  "version": "7.2.0",
   "description": "Integrate Electronegativity into the Electron Forge workflow",
   "repository": {
     "type": "git",
-    "url": "https://github.com/electron-userland/electron-forge",
+    "url": "https://github.com/electron/forge",
     "directory": "packages/plugin/electronegativity"
   },
   "author": "Mark Lee",
@@ -12,11 +12,18 @@
   "main": "dist/ElectronegativityPlugin.js",
   "typings": "dist/ElectronegativityPlugin.d.ts",
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
     "@doyensec/electronegativity": "^1.9.1",
-    "@electron-forge/plugin-base": "6.0.0-beta.64",
-    "@electron-forge/shared-types": "6.0.0-beta.64"
-  }
+    "@electron-forge/plugin-base": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

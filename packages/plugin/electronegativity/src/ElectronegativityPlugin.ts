@@ -1,11 +1,6 @@
-import { ForgeConfig, ForgeHookFn } from '@electron-forge/shared-types';
-import PluginBase from '@electron-forge/plugin-base';
 import runElectronegativity from '@doyensec/electronegativity';
-
-// To be more precise, postPackage options we care about.
-type PostPackageOptions = {
-  outputPaths: string[];
-};
+import { PluginBase } from '@electron-forge/plugin-base';
+import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 
 export type Confidence = 'certain' | 'firm' | 'tentative';
 export type CustomCheck = 'dangerousfunctionsjscheck' | 'remotemodulejscheck';
@@ -43,7 +38,7 @@ export type ElectronegativityConfig = {
    *
    * Defaults to `false`.
    */
-  isRelative?: false;
+  isRelative?: boolean;
   /**
    * Specify a range to run Electron upgrade checks. For example, `'7..8'` checks an upgrade
    * from Electron 7 to Electron 8.
@@ -54,23 +49,23 @@ export type ElectronegativityConfig = {
    *
    * Defaults to empty array (`[]`)
    */
-  parserPlugins: Array<string>;
+  parserPlugins?: Array<string>;
 };
 
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
   name = 'electronegativity';
 
-  getHook(hookName: string): ForgeHookFn | null {
-    if (hookName === 'postPackage') {
-      return this.postPackage;
-    }
-    return null;
+  getHooks(): ForgeHookMap {
+    return {
+      postPackage: this.postPackage,
+    };
   }
 
-  postPackage = async (_forgeConfig: ForgeConfig, options: PostPackageOptions): Promise<void> => {
+  postPackage: ForgeHookFn<'postPackage'> = async (_forgeConfig, options): Promise<void> => {
     await runElectronegativity(
       {
         ...this.config,
+        isRelative: this.config.isRelative ?? false,
         parserPlugins: this.config.parserPlugins ?? [],
         input: options.outputPaths[0],
       },
@@ -78,3 +73,5 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
     );
   };
 }
+
+export { ElectronegativityPlugin };

@@ -1,37 +1,54 @@
-import PluginBase from '@electron-forge/plugin-base';
-import { IForgePluginInterface, ForgeConfig, IForgePlugin, StartResult } from '@electron-forge/shared-types';
+import { PluginBase } from '@electron-forge/plugin-base';
+import {
+  ForgeListrTaskDefinition,
+  ForgeMutatingHookFn,
+  ForgeMutatingHookSignatures,
+  ForgeSimpleHookFn,
+  ForgeSimpleHookSignatures,
+  IForgePlugin,
+  IForgePluginInterface,
+  ResolvedForgeConfig,
+  StartResult,
+} from '@electron-forge/shared-types';
+import { autoTrace } from '@electron-forge/tracer';
+import chalk from 'chalk';
 import debug from 'debug';
 
 import { StartOptions } from '../api';
+
 import requireSearch from './require-search';
 
 const d = debug('electron-forge:plugins');
 
+function isForgePlugin(plugin: IForgePlugin | unknown): plugin is IForgePlugin {
+  return (plugin as IForgePlugin).__isElectronForgePlugin;
+}
+
 export default class PluginInterface implements IForgePluginInterface {
   private plugins: IForgePlugin[];
 
-  private config: ForgeConfig;
+  private config: ResolvedForgeConfig;
 
-  constructor(dir: string, forgeConfig: ForgeConfig) {
+  constructor(dir: string, forgeConfig: ResolvedForgeConfig) {
     this.plugins = forgeConfig.plugins.map((plugin) => {
-      // eslint-disable-next-line no-underscore-dangle
-      if ((plugin as IForgePlugin).__isElectronForgePlugin) {
+      if (isForgePlugin(plugin)) {
         return plugin;
       }
 
-      if (Array.isArray(plugin)) {
-        const [pluginName, opts = {}] = plugin;
+      if (typeof plugin === 'object' && 'name' in plugin && 'config' in plugin) {
+        const { name: pluginName, config: opts } = plugin;
         if (typeof pluginName !== 'string') {
           throw new Error(`Expected plugin[0] to be a string but found ${pluginName}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const Plugin = requireSearch<any>(dir, [pluginName]);
         if (!Plugin) {
-          throw new Error(`Could not find module with name: ${plugin[0]}. Make sure it's listed in the devDependencies of your package.json`);
+          throw new Error(`Could not find module with name: ${pluginName}. Make sure it's listed in the devDependencies of your package.json`);
         }
         return new Plugin(opts);
       }
-      throw new Error(`Expected plugin to either be a plugin instance or [string, object] but found ${plugin}`);
+
+      throw new Error(`Expected plugin to either be a plugin instance or a { name, config } object but found ${JSON.stringify(plugin)}`);
     });
     // TODO: fix hack
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,31 +68,78 @@ export default class PluginInterface implements IForgePluginInterface {
     this.overrideStartLogic = this.overrideStartLogic.bind(this);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async triggerHook(hookName: string, hookArgs: any[]): Promise<void> {
+  async triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void> {
     for (const plugin of this.plugins) {
-      if (typeof plugin.getHook === 'function') {
-        const hook = plugin.getHook(hookName);
-        if (hook) await hook(this.config, ...hookArgs);
+      if (typeof plugin.getHooks === 'function') {
+        let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            await hook(this.config, ...hookArgs);
+          }
+        }
       }
     }
   }
 
-  async triggerMutatingHook<T>(hookName: string, item: T): Promise<T> {
+  async getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    childTrace: typeof autoTrace,
+    hookName: Hook,
+    hookArgs: ForgeSimpleHookSignatures[Hook]
+  ): Promise<ForgeListrTaskDefinition[]> {
+    const tasks: ForgeListrTaskDefinition[] = [];
+
     for (const plugin of this.plugins) {
-      if (typeof plugin.getHook === 'function') {
-        const hook = plugin.getHook(hookName);
-        if (hook) {
-          item = await hook(this.config, item);
+      if (typeof plugin.getHooks === 'function') {
+        let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            tasks.push({
+              title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
+              task: childTrace(
+                { name: 'forge-plugin-hook', category: '@electron-forge/hooks', extraDetails: { plugin: plugin.name, hook: hookName } },
+                async (_, __, task) => {
+                  if ((hook as any).__hookName) {
+                    // Also give it the task
+                    return await (hook as any).call(task, this.config, ...(hookArgs as any[]));
+                  } else {
+                    await hook(this.config, ...hookArgs);
+                  }
+                }
+              ),
+              options: {},
+            });
+          }
         }
       }
     }
-    return item;
+
+    return tasks;
+  }
+
+  async triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
+    hookName: Hook,
+    ...item: ForgeMutatingHookSignatures[Hook]
+  ): Promise<ForgeMutatingHookSignatures[Hook][0]> {
+    let result: ForgeMutatingHookSignatures[Hook][0] = item[0];
+    for (const plugin of this.plugins) {
+      if (typeof plugin.getHooks === 'function') {
+        let hooks = plugin.getHooks()[hookName] as ForgeMutatingHookFn<Hook>[] | ForgeMutatingHookFn<Hook>;
+        if (hooks) {
+          if (typeof hooks === 'function') hooks = [hooks];
+          for (const hook of hooks) {
+            result = (await hook(this.config, ...item)) || result;
+          }
+        }
+      }
+    }
+    return result;
   }
 
   async overrideStartLogic(opts: StartOptions): Promise<StartResult> {
     let newStartFn;
-    const claimed = [];
+    const claimed: string[] = [];
     for (const plugin of this.plugins) {
       if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
         claimed.push(plugin.name);
@@ -87,7 +151,14 @@ export default class PluginInterface implements IForgePluginInterface {
     }
     if (claimed.length === 1 && newStartFn) {
       d(`plugin: "${claimed[0]}" has taken control of the start command`);
-      return newStartFn(opts);
+      const result = await newStartFn(opts);
+      if (typeof result === 'object' && 'tasks' in result) {
+        result.tasks = result.tasks.map((task) => ({
+          ...task,
+          title: `${chalk.cyan(`[plugin-${claimed[0]}]`)} ${task.title}`,
+        }));
+      }
+      return result;
     }
     return false;
   }

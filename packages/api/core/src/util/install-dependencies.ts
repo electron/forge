@@ -1,6 +1,6 @@
-import debug from 'debug';
+import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
-import { yarnOrNpmSpawn, hasYarn } from './yarn-or-npm';
+import debug from 'debug';
 
 const d = debug('electron-forge:dependency-installer');
 

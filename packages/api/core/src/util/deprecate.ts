@@ -1,4 +1,3 @@
-/* eslint "no-console": "off" */
 import chalk from 'chalk';
 import logSymbols from 'log-symbols';
 

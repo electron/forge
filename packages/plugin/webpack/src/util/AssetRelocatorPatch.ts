@@ -14,10 +14,7 @@ export default class AssetRelocatorPatch {
     if (this.nodeIntegration) {
       // In production the assets are found one directory up from
       // __dirname
-      //
-      // __dirname cannot be used directly until this PR lands
-      // https://github.com/jantimon/html-webpack-plugin/pull/1650
-      return 'require("path").resolve(require("path").dirname(__filename), "..")';
+      return 'require("path").resolve(__dirname, "..")';
     }
 
     // If nodeIntegration is disabled, we replace __dirname

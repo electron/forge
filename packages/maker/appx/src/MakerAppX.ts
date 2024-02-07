@@ -1,14 +1,14 @@
-import MakerBase, { MakerOptions } from '@electron-forge/maker-base';
-import { ForgePlatform } from '@electron-forge/shared-types';
-
-import fs from 'fs-extra';
 import path from 'path';
+
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
 import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
 import windowsStore from 'electron-windows-store';
 import { isValidPublisherName, makeCert } from 'electron-windows-store/lib/sign';
+import fs from 'fs-extra';
 
-import getNameFromAuthor from './util/author-name';
 import { MakerAppXConfig } from './Config';
+import getNameFromAuthor from './util/author-name';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
@@ -26,8 +26,8 @@ async function findSdkTool(exe: string) {
       }
       const topDir = path.dirname(testPath);
       for (const subVersion of await fs.readdir(topDir)) {
-        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue; // eslint-disable-line max-len, no-continue
-        if (subVersion.substr(0, 2) !== '10') continue; // eslint-disable-line no-continue
+        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory()) continue;
+        if (subVersion.substr(0, 2) !== '10') continue;
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
         if (await fs.pathExists(testExe)) {
@@ -110,7 +110,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       opts.devCert = await createDefaultCertificate(opts.publisher, { certFilePath: outPath, program: opts });
     }
 
-    if (opts.packageVersion.includes('-')) {
+    if (/[-+]/.test(opts.packageVersion)) {
       if (opts.makeVersionWinStoreCompatible) {
         opts.packageVersion = this.normalizeWindowsVersion(opts.packageVersion);
       } else {
@@ -129,3 +129,5 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     return [path.resolve(outPath, `${opts.packageName}.appx`)];
   }
 }
+
+export { MakerAppX, MakerAppXConfig };

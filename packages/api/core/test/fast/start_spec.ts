@@ -21,20 +21,21 @@ describe('start', () => {
 
     start = proxyquire.noCallThru().load('../../src/api/start', {
       '../util/electron-executable': () => Promise.resolve('fake_electron_path'),
-      '../util/electron-version': {
+      '@electron-forge/core-utils': {
         getElectronVersion: () => Promise.resolve('1.0.0'),
+        listrCompatibleRebuildHook: () => Promise.resolve(),
       },
       '../util/forge-config': async () => ({
         pluginInterface: {
           overrideStartLogic: async () => shouldOverride,
           triggerHook: async () => false,
+          getHookListrTasks: () => Promise.resolve([]),
         },
       }),
       '../util/resolve-dir': async (dir: string) => resolveStub(dir),
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
       },
-      '../util/rebuild': () => Promise.resolve(),
       child_process: {
         spawn: spawnStub,
       },

@@ -1,5 +1,6 @@
-import debug from 'debug';
 import path from 'path';
+
+import debug from 'debug';
 
 const d = debug('electron-forge:require-search');
 
@@ -11,6 +12,19 @@ type RequireError = Error & {
 };
 
 export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | null {
+  // Attempt to locally short-circuit if we're running from a checkout of forge
+  if (__dirname.includes('forge/packages/api/core/') && paths.length === 1 && paths[0].startsWith('@electron-forge/')) {
+    const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
+    try {
+      const localPath = path.resolve(__dirname, '..', '..', '..', '..', moduleType, moduleName);
+      d('testing local forge build', { moduleType, moduleName, localPath });
+      return require(localPath);
+    } catch {
+      // Ignore
+    }
+  }
+
+  // Load via normal search paths
   const testPaths = paths
     .concat(paths.map((mapPath) => path.resolve(relativeTo, mapPath)))
     .concat(paths.map((mapPath) => path.resolve(relativeTo, 'node_modules', mapPath)));
@@ -18,7 +32,6 @@ export function requireSearchRaw<T>(relativeTo: string, paths: string[]): T | nu
   for (const testPath of testPaths) {
     try {
       d('testing', testPath);
-      // eslint-disable-next-line global-require, import/no-dynamic-require
       return require(testPath);
     } catch (err) {
       if (err instanceof Error) {
@@ -38,7 +51,6 @@ export type PossibleModule<T> = {
   default?: T;
 } & T;
 
-// eslint-disable-next-line arrow-parens
 export default <T>(relativeTo: string, paths: string[]): T | null => {
   const result = requireSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default ? result.default : (result as T | null);

@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ForgePlatform, ForgeConfig, ForgeMakeResult, IForgePublisher } from '@electron-forge/shared-types';
+import { ForgeListrTaskDefinition, ForgeMakeResult, ForgePlatform, IForgePublisher, ResolvedForgeConfig } from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**
@@ -15,7 +14,13 @@ export interface PublisherOptions {
    *
    * You probably shouldn't use this
    */
-  forgeConfig: ForgeConfig;
+  forgeConfig: ResolvedForgeConfig;
+  /**
+   * A method that allows the publisher to provide status / progress updates
+   * to the user. This method currently maps to setting the "output" line
+   * in the publisher listr task.
+   */
+  setStatusLine: (statusLine: string) => void;
 }
 
 export default abstract class Publisher<C> implements IForgePublisher {
@@ -23,9 +28,14 @@ export default abstract class Publisher<C> implements IForgePublisher {
 
   public defaultPlatforms?: ForgePlatform[];
 
+  /** @internal */
   __isElectronForgePublisher!: true;
 
-  constructor(public config: C, protected providedPlatforms?: ForgePlatform[]) {
+  /**
+   * @param config - A configuration object for this publisher
+   * @param platformsToPublishOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
+   */
+  constructor(public config: C, protected platformsToPublishOn?: ForgePlatform[]) {
     this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
@@ -35,7 +45,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
   }
 
   get platforms(): ForgePlatform[] {
-    if (this.providedPlatforms) return this.providedPlatforms;
+    if (this.platformsToPublishOn) return this.platformsToPublishOn;
     if (this.defaultPlatforms) return this.defaultPlatforms;
     return ['win32', 'linux', 'darwin', 'mas'];
   }
@@ -52,7 +62,9 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * be appending files to the existing version.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async publish(opts: PublisherOptions): Promise<void> {
+  async publish(opts: PublisherOptions): Promise<ForgeListrTaskDefinition[] | void> {
     throw new Error(`Publisher ${this.name} did not implement the publish method`);
   }
 }
+
+export { Publisher as PublisherBase };

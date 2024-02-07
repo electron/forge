@@ -1,9 +1,8 @@
 {
   "name": "@electron-forge/maker-snap",
-  "version": "6.0.0-beta.64",
+  "version": "7.2.0",
   "description": "Snap maker for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
-  "author": "Samuel Attard",
+  "repository": "https://github.com/electron/forge",
   "license": "MIT",
   "main": "dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
@@ -19,13 +18,20 @@
     "sinon": "^13.0.1"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.0.0-beta.64",
-    "@electron-forge/shared-types": "6.0.0-beta.64"
+    "@electron-forge/maker-base": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0"
   },
   "optionalDependencies": {
-    "electron-installer-snap": "^5.1.0"
-  }
+    "electron-installer-snap": "^5.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

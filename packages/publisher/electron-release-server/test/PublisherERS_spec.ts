@@ -1,12 +1,17 @@
+import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
-import { ForgeConfig, ForgeMakeResult } from '@electron-forge/shared-types';
 import fetchMock from 'fetch-mock';
 import proxyquire from 'proxyquire';
 import { stub } from 'sinon';
 
+import type { PublisherERS as PublisherERSType } from '../src/PublisherERS';
+
+const noop = () => void 0;
+
 describe('PublisherERS', () => {
   let fetch: typeof fetchMock;
-  let PublisherERS: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let PublisherERS: typeof PublisherERSType;
 
   beforeEach(() => {
     fetch = fetchMock.sandbox();
@@ -30,7 +35,10 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/versions/sorted', {
+        body: { total: 1, offset: 0, page: 0, items: [{ name: '2.0.0', assets: [], flavor: { name: 'default' } }] },
+        status: 200,
+      });
       // mock creating a new version
       fetch.postOnce('path:/api/version', { status: 200 });
       // mock asset upload
@@ -54,13 +62,13 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
       // creates a new version with the correct flavor, name, and channel
       expect(calls[2][0]).to.equal(`${baseUrl}/api/version`);
-      expect(calls[2][1]?.body).to.equal(`{"channel":{"name":"stable"},"flavor":"${flavor}","name":"${version}","notes":""}`);
+      expect(calls[2][1]?.body).to.equal(`{"channel":"stable","flavor":"${flavor}","name":"${version}","notes":"","id":"${version}_stable"}`);
 
       // uploads asset successfully
       expect(calls[3][0]).to.equal(`${baseUrl}/api/asset`);
@@ -78,7 +86,10 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [], flavor: 'lite' }], status: 200 });
+      fetch.getOnce('path:/versions/sorted', {
+        body: { total: 1, offset: 0, page: 0, items: [{ name: '2.0.0', assets: [], flavor: { name: 'lite' } }] },
+        status: 200,
+      });
       // mock asset upload
       fetch.post('path:/api/asset', { status: 200 });
 
@@ -101,7 +112,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
@@ -118,7 +129,15 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/versions/sorted', {
+        body: {
+          total: 1,
+          offset: 0,
+          page: 0,
+          items: [{ name: '2.0.0', assets: [{ name: 'existing-artifact', platform: 'linux_64' }], flavor: { name: 'default' } }],
+        },
+        status: 200,
+      });
 
       const publisher = new PublisherERS({
         baseUrl,
@@ -138,7 +157,7 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
       expect(calls).to.have.length(2);
@@ -153,7 +172,10 @@ describe('PublisherERS', () => {
       // mock login
       fetch.postOnce('path:/api/auth/login', { body: { token }, status: 200 });
       // mock fetch all existing versions
-      fetch.getOnce('path:/api/version', { body: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: 'default' }], status: 200 });
+      fetch.getOnce('path:/versions/sorted', {
+        body: { total: 1, offset: 0, page: 0, items: [{ name: '2.0.0', assets: [{ name: 'existing-artifact' }], flavor: { name: 'default' } }] },
+        status: 200,
+      });
       // mock creating a new version
       fetch.postOnce('path:/api/version', { status: 200 });
       // mock asset upload
@@ -177,13 +199,13 @@ describe('PublisherERS', () => {
         },
       ];
 
-      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ForgeConfig });
+      await publisher.publish({ makeResults, dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop });
 
       const calls = fetch.calls();
 
       // creates a new version with the correct flavor, name, and channel
       expect(calls[2][0]).to.equal(`${baseUrl}/api/version`);
-      expect(calls[2][1]?.body).to.equal(`{"channel":{"name":"stable"},"flavor":"${flavor}","name":"${version}","notes":""}`);
+      expect(calls[2][1]?.body).to.equal(`{"channel":"stable","flavor":"${flavor}","name":"${version}","notes":"","id":"${version}_stable"}`);
 
       // uploads asset successfully
       expect(calls[3][0]).to.equal(`${baseUrl}/api/asset`);
@@ -195,9 +217,10 @@ describe('PublisherERS', () => {
   });
 
   it('fails if username and password are not provided', () => {
+    // @ts-expect-error testing invalid options
     const publisher = new PublisherERS({});
 
-    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+    expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop })).to.eventually.be.rejectedWith(
       'In order to publish to ERS you must set the "electronReleaseServer.baseUrl", "electronReleaseServer.username" and "electronReleaseServer.password" properties in your Forge config. See the docs for more info'
     );
   });
@@ -210,7 +233,7 @@ describe('PublisherERS', () => {
       username: 'test',
       password: 'test',
     });
-    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ForgeConfig })).to.eventually.be.rejectedWith(
+    return expect(publisher.publish({ makeResults: [], dir: '', forgeConfig: {} as ResolvedForgeConfig, setStatusLine: noop })).to.eventually.be.rejectedWith(
       'ERS publish failed with status code: 400 (http://example.com/api/auth/login)'
     );
   });

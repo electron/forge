@@ -1,12 +1,14 @@
-import { Configuration, webpack } from 'webpack';
-import path from 'path';
-import { expect } from 'chai';
 import http from 'http';
-import { pathExists, readFile } from 'fs-extra';
+import path from 'path';
+
 import { spawn } from '@malept/cross-spawn-promise';
-import { WebpackPluginConfig } from '../src/Config';
-import WebpackConfigGenerator from '../src/WebpackConfig';
+import { expect } from 'chai';
+import { pathExists, readFile } from 'fs-extra';
+import { Configuration, webpack } from 'webpack';
 import which from 'which';
+
+import { WebpackPluginConfig, WebpackPluginEntryPointLocalWindow } from '../src/Config';
+import WebpackConfigGenerator from '../src/WebpackConfig';
 
 type Closeable = {
   close: () => void;
@@ -16,7 +18,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
-const pmCmd = process.platform === 'win32' ? which.sync('npm.cmd') : 'npm';
+const pmCmd = process.platform === 'win32' ? `"${which.sync('npm.cmd')}"` : 'npm';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -95,6 +97,11 @@ async function yarnStart(): Promise<string> {
   });
 }
 
+const safeFirstRendererConfig = (renderer: WebpackPluginConfig['renderer']) => {
+  if (Array.isArray(renderer)) return renderer[0];
+  return renderer;
+};
+
 describe('AssetRelocatorPatch', () => {
   const rendererOut = path.join(appPath, '.webpack/renderer');
   const mainOut = path.join(appPath, '.webpack/main');
@@ -143,25 +150,22 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
-      await asyncWebpack(preloadConfig);
+      const preloadConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
-        outDir: path.join(rendererOut, 'main_window'),
+        outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
-        nativeModulesString: '__webpack_require__.ab = __dirname + "/native_modules/"',
+        nativeModulesString: `__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`,
         nativePathString: `require(__webpack_require__.ab + \\"${nativePathSuffix}\\")`,
       });
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
@@ -198,30 +202,31 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = config.renderer.entryPoints[0];
-      const preloadConfig = await generator.getPreloadRendererConfig(
-        entryPoint,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        entryPoint.preload!
-      );
-      await asyncWebpack(preloadConfig);
+      const entryPoint = safeFirstRendererConfig(config.renderer).entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const preloadConfig = await generator.getRendererConfig({
+        ...safeFirstRendererConfig(config.renderer),
+        entryPoints: [entryPoint],
+      });
+      await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
-        outDir: path.join(rendererOut, 'main_window'),
+        outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
-        nativeModulesString: '.ab=__dirname+"/native_modules/"',
+        nativeModulesString: '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/index.js'),
-        nativeModulesString: '.ab=require("path").resolve(require("path").dirname(__filename),"..")+"/native_modules/"',
+        nativeModulesString: '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -235,11 +240,13 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer with nodeIntegration = false', async () => {
-      config.renderer.nodeIntegration = false;
+      safeFirstRendererConfig(config.renderer).nodeIntegration = false;
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
-      const rendererConfig = await generator.getRendererConfig(config.renderer.entryPoints);
-      await asyncWebpack(rendererConfig);
+      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      for (const rendererEntryConfig of rendererConfig) {
+        await asyncWebpack(rendererEntryConfig);
+      }
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,

@@ -1,0 +1,29 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "mocha.env": {
+    "TS_NODE_PROJECT": "tsconfig.test.json",
+    "TS_NODE_FILES": "1",
+    "TEST_FAST_ONLY": "1"
+  },
+  "mocha.files.glob": "packages/*/*/test/**/*_spec*.ts",
+  "mocha.requires": ["ts-node/register", "tools/test-setup.ts"],
+  "mocha.options": {
+    "extension": ["ts"],
+    "timeout": 800000,
+    "recursive": true
+  }
+}

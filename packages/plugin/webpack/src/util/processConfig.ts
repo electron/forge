@@ -1,4 +1,5 @@
 import { Configuration } from 'webpack';
+
 import { ConfigurationFactory } from '../WebpackConfig';
 
 const trivialConfigurationFactory =

@@ -1,7 +1,8 @@
-import fetch from 'node-fetch';
+import * as path from 'path';
+
 import * as fs from 'fs-extra';
 import { Listr } from 'listr2';
-import * as path from 'path';
+import fetch from 'node-fetch';
 
 const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined } } = {
   maker: {

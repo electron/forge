@@ -6,10 +6,16 @@ function redConsoleError(msg: string) {
 
 process.on('unhandledRejection', (reason: string, promise: Promise<unknown>) => {
   redConsoleError('\nAn unhandled rejection has occurred inside Forge:');
-  redConsoleError(reason.toString());
-  redConsoleError('\nElectron Forge was terminated. Location:');
-  redConsoleError(JSON.stringify(promise));
-  process.exit(1);
+  redConsoleError(reason.toString().trim());
+  promise.catch((err: Error) => {
+    if ('stack' in err) {
+      const usefulStack = err.stack;
+      if (usefulStack?.startsWith(reason.toString().trim())) {
+        redConsoleError(usefulStack.substring(reason.toString().trim().length + 1).trim());
+      }
+    }
+    process.exit(1);
+  });
 });
 
 process.on('uncaughtException', (err) => {

@@ -1,29 +1,25 @@
-import { asyncOra } from '@electron-forge/async-ora';
+import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
+import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import fs from 'fs-extra';
 import mime from 'mime-types';
-import path from 'path';
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 
+import { PublisherGitHubConfig } from './Config';
 import GitHub from './util/github';
 import NoReleaseError from './util/no-release-error';
-import { PublisherGitHubConfig } from './Config';
 
 interface GitHubRelease {
-  // eslint-disable-next-line camelcase
   tag_name: string;
   assets: {
     name: string;
   }[];
-  // eslint-disable-next-line camelcase
   upload_url: string;
 }
 
 export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
-  async publish({ makeResults }: PublisherOptions): Promise<void> {
+  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const { config } = this;
 
     const perReleaseArtifacts: {
@@ -40,7 +36,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
     if (!(config.repository && typeof config.repository === 'object' && config.repository.owner && config.repository.name)) {
       throw new Error(
-        'In order to publish to github you must set the "github_repository.owner" and "github_repository.name" properties in your Forge config. See the docs for more info'
+        'In order to publish to GitHub, you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
       );
     }
 
@@ -55,59 +51,65 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
       const artifacts = perReleaseArtifacts[releaseVersion];
       const releaseName = `${config.tagPrefix ?? 'v'}${releaseVersion}`;
 
-      await asyncOra(`Searching for target release: ${releaseName}`, async () => {
-        try {
+      setStatusLine(`Searching for target release: ${releaseName}`);
+      try {
+        release = (
+          await github.getGitHub().repos.listReleases({
+            owner: config.repository.owner,
+            repo: config.repository.name,
+            per_page: 100,
+          })
+        ).data.find((testRelease: GitHubRelease) => testRelease.tag_name === releaseName);
+        if (!release) {
+          throw new NoReleaseError(404);
+        }
+      } catch (err) {
+        if (err instanceof NoReleaseError && err.code === 404) {
+          // Release does not exist, let's make it
           release = (
-            await github.getGitHub().repos.listReleases({
+            await github.getGitHub().repos.createRelease({
               owner: config.repository.owner,
               repo: config.repository.name,
-              per_page: 100,
+              tag_name: releaseName,
+              name: releaseName,
+              draft: config.draft !== false,
+              prerelease: config.prerelease === true,
+              generate_release_notes: config.generateReleaseNotes === true,
             })
-          ).data.find((testRelease: GitHubRelease) => testRelease.tag_name === releaseName);
-          if (!release) {
-            throw new NoReleaseError(404);
-          }
-        } catch (err) {
-          if (err instanceof NoReleaseError && err.code === 404) {
-            // Release does not exist, let's make it
-            release = (
-              await github.getGitHub().repos.createRelease({
-                owner: config.repository.owner,
-                repo: config.repository.name,
-                tag_name: releaseName,
-                name: releaseName,
-                draft: config.draft !== false,
-                prerelease: config.prerelease === true,
-              })
-            ).data;
-          } else {
-            // Unknown error
-            throw err;
-          }
+          ).data;
+        } else {
+          // Unknown error
+          throw err;
         }
-      });
+      }
 
       let uploaded = 0;
-      await asyncOra(`Uploading Artifacts ${uploaded}/${artifacts.length} to ${releaseName}`, async (uploadSpinner) => {
-        const updateSpinner = () => {
-          uploadSpinner.text = `Uploading Artifacts ${uploaded}/${artifacts.length} to ${releaseName}`;
-        };
+      const updateUploadStatus = () => {
+        setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length} to ${releaseName})`);
+      };
+      updateUploadStatus();
 
-        const flatArtifacts: string[] = [];
-        for (const artifact of artifacts) {
-          flatArtifacts.push(...artifact.artifacts);
-        }
-
-        await Promise.all(
-          flatArtifacts.map(async (artifactPath) => {
+      await Promise.all(
+        artifacts
+          .flatMap((artifact) => artifact.artifacts)
+          .map(async (artifactPath) => {
             const done = () => {
               uploaded += 1;
-              updateSpinner();
+              updateUploadStatus();
             };
-            const artifactName = path.basename(artifactPath);
+            const artifactName = GitHub.sanitizeName(artifactPath);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            if (release!.assets.find((asset: OctokitReleaseAsset) => asset.name === artifactName)) {
-              return done();
+            const asset = release!.assets.find((item: OctokitReleaseAsset) => item.name === artifactName);
+            if (asset !== undefined) {
+              if (config.force === true) {
+                await github.getGitHub().repos.deleteReleaseAsset({
+                  owner: config.repository.owner,
+                  repo: config.repository.name,
+                  asset_id: asset.id,
+                });
+              } else {
+                return done();
+              }
             }
             await github.getGitHub().repos.uploadReleaseAsset({
               owner: config.repository.owner,
@@ -122,12 +124,13 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
                 'content-type': mime.lookup(artifactPath) || 'application/octet-stream',
                 'content-length': (await fs.stat(artifactPath)).size,
               },
-              name: path.basename(artifactPath),
+              name: artifactName,
             });
             return done();
           })
-        );
-      });
+      );
     }
   }
 }
+
+export { PublisherGithub, PublisherGitHubConfig };

@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import { merge } from 'lodash';
@@ -18,12 +20,12 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.packagerConfig).to.deep.equal(expected);
   });
 
-  it('converts electron-rebuild config', () => {
+  it('converts @electron/rebuild config', () => {
     const rebuildConfig = { types: ['prod'] };
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.electronRebuildConfig).to.deep.equal(rebuildConfig);
+    expect(newConfig.rebuildConfig).to.deep.equal(rebuildConfig);
   });
 
   it('converts maker config', () => {
@@ -104,6 +106,7 @@ describe('upgradeForgeConfig', () => {
     };
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.publishers).to.have.lengthOf(1);
+    assert(newConfig.publishers);
     const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
     expect(publisherConfig.repository).to.deep.equal(repo);
     expect(publisherConfig.octokitOptions).to.deep.equal(octokitOptions);
@@ -116,7 +119,7 @@ describe('updateUpgradedForgeDevDeps', () => {
     config: {
       forge: {
         packagerConfig: {},
-        electronRebuildConfig: {},
+        rebuildConfig: {},
         makers: [],
         publishers: [],
         plugins: [],
@@ -164,17 +167,5 @@ describe('updateUpgradedForgeDevDeps', () => {
     expect(actual).to.have.lengthOf(2);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).to.not.equal(undefined);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).to.not.equal(undefined);
-  });
-
-  it('adds electron-compile plugin to devDependencies when electron-prebuilt-compile is in devDependencies', () => {
-    const packageJSON = merge({}, skeletonPackageJSON, {
-      devDependencies: {
-        'electron-prebuilt-compile': '2.0.0',
-      },
-    });
-
-    const actual = updateUpgradedForgeDevDeps(packageJSON, []);
-    expect(actual, JSON.stringify(actual)).to.have.lengthOf(1);
-    expect(actual[0]).to.match(/^@electron-forge\/plugin-compile/);
   });
 });

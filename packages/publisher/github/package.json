@@ -1,8 +1,8 @@
 {
   "name": "@electron-forge/publisher-github",
-  "version": "6.0.0-beta.64",
+  "version": "7.2.0",
   "description": "Github publisher for Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/PublisherGithub.js",
@@ -18,12 +18,11 @@
     "sinon": "^13.0.1"
   },
   "engines": {
-    "node": ">= 12.13.0"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.64",
-    "@electron-forge/publisher-base": "6.0.0-beta.64",
-    "@electron-forge/shared-types": "6.0.0-beta.64",
+    "@electron-forge/publisher-base": "7.2.0",
+    "@electron-forge/shared-types": "7.2.0",
     "@octokit/core": "^3.2.4",
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/rest": "^18.0.11",
@@ -31,5 +30,12 @@
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
     "mime-types": "^2.1.25"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

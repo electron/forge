@@ -1,19 +1,26 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "6.0.0-beta.64",
+  "version": "7.2.0",
   "description": "Shared types across Electron Forge",
-  "repository": "https://github.com/electron-userland/electron-forge",
+  "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@electron-forge/async-ora": "6.0.0-beta.64",
-    "electron-packager": "^15.4.0",
-    "electron-rebuild": "^3.2.6",
-    "ora": "^5.0.0"
+    "@electron-forge/tracer": "7.2.0",
+    "@electron/packager": "^18.1.2",
+    "@electron/rebuild": "^3.2.10",
+    "listr2": "^5.0.3"
   },
   "engines": {
-    "node": ">= 12.13.0"
-  }
+    "node": ">= 16.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

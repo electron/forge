@@ -6,3 +6,4 @@ packages/*/*/doc
 packages/*/*/index.ts
 packages/**/bad.js
 tmpl
+packages/api/core/helper/dynamic-import.js

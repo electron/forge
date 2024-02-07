@@ -1,12 +1,11 @@
-import { Credentials } from '@aws-sdk/types';
-import debug from 'debug';
 import fs from 'fs';
 import path from 'path';
+
 import { S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
-
-import PublisherBase, { PublisherOptions } from '@electron-forge/publisher-base';
-import { asyncOra } from '@electron-forge/async-ora';
+import { Credentials } from '@aws-sdk/types';
+import { PublisherOptions, PublisherStatic } from '@electron-forge/publisher-static';
+import debug from 'debug';
 
 import { PublisherS3Config } from './Config';
 
@@ -19,10 +18,14 @@ type S3Artifact = {
   arch: string;
 };
 
-export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
+export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
   name = 's3';
 
-  async publish({ makeResults }: PublisherOptions): Promise<void> {
+  private s3KeySafe = (key: string) => {
+    return key.replace(/@/g, '_').replace(/\//g, '_');
+  };
+
+  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
 
     if (!this.config.bucket) {
@@ -33,7 +36,7 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
       artifacts.push(
         ...makeResult.artifacts.map((artifact) => ({
           path: artifact,
-          keyPrefix: this.config.folder || makeResult.packageJSON.version,
+          keyPrefix: this.config.folder || this.s3KeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
         }))
@@ -50,53 +53,48 @@ export default class PublisherS3 extends PublisherBase<PublisherS3Config> {
     d('creating s3 client with options:', this.config);
 
     let uploaded = 0;
-    const spinnerText = () => `Uploading Artifacts ${uploaded}/${artifacts.length}`;
+    const updateStatusLine = () => setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length})`);
 
-    await asyncOra(spinnerText(), async (uploadSpinner) => {
-      await Promise.all(
-        artifacts.map(async (artifact) => {
-          d('uploading:', artifact.path);
-          const uploader = new Upload({
-            client: s3Client,
-            params: {
-              Body: fs.createReadStream(artifact.path),
-              Bucket: this.config.bucket,
-              Key: this.keyForArtifact(artifact),
-              ACL: this.config.public ? 'public-read' : 'private',
-            },
-          });
+    updateStatusLine();
+    await Promise.all(
+      artifacts.map(async (artifact) => {
+        d('uploading:', artifact.path);
+        const uploader = new Upload({
+          client: s3Client,
+          leavePartsOnError: true,
+          params: {
+            Body: fs.createReadStream(artifact.path),
+            Bucket: this.config.bucket,
+            Key: this.keyForArtifact(artifact),
+            ACL: this.config.public ? 'public-read' : 'private',
+          },
+        });
 
-          uploader.on('httpUploadProgress', (progress: Progress) => {
-            if (progress.total) {
-              const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
-              d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
-            }
-          });
+        uploader.on('httpUploadProgress', (progress: Progress) => {
+          if (progress.total) {
+            const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
+            d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
+          }
+        });
 
-          await uploader.done();
-          uploaded += 1;
-          uploadSpinner.text = spinnerText();
-        })
-      );
-    });
-  }
-
-  keyForArtifact(artifact: S3Artifact): string {
-    if (this.config.keyResolver) {
-      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
-    }
-
-    return `${artifact.keyPrefix}/${path.basename(artifact.path)}`;
+        await uploader.done();
+        uploaded += 1;
+        updateStatusLine();
+      })
+    );
   }
 
   generateCredentials(): Credentials | undefined {
-    const accessKeyId = this.config.accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = this.config.secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+    const accessKeyId = this.config.accessKeyId;
+    const secretAccessKey = this.config.secretAccessKey;
+    const sessionToken = this.config.sessionToken;
 
     if (accessKeyId && secretAccessKey) {
-      return { accessKeyId, secretAccessKey };
+      return { accessKeyId, secretAccessKey, sessionToken };
     }
 
     return undefined;
   }
 }
+
+export { PublisherS3, PublisherS3Config };

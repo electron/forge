@@ -1,9 +1,9 @@
 ## Electron Forge
 
-[![Build Status](https://github.com/electron-userland/electron-forge/workflows/CI/badge.svg)](https://github.com/electron-userland/electron-forge/actions?query=workflow:CI)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/electron/forge/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/electron/forge/tree/main)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 [![npm version](https://img.shields.io/npm/v/@electron-forge/cli)](https://npm.im/@electron-forge/cli)
-[![license](https://img.shields.io/github/license/electron-userland/electron-forge.svg)](https://github.com/electron-userland/electron-forge/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/electron/forge.svg)](https://github.com/electron/forge/blob/main/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
 A complete tool for building modern Electron applications.
@@ -14,26 +14,22 @@ jump right in to Electron development.
 
 ---
 
-## :rotating_light: :construction: **WARNING** :construction: :rotating_light:
-
-:building_construction:
-
-The `master` branch is a rewrite of Electron Forge that will eventually be the 6.x series. If you
-are looking for the 5.x series (the version currently published to NPM under `electron-forge`), please view the [5.x branch](https://github.com/electron-userland/electron-forge/tree/5.x).
-
----
-
 [Website](https://www.electronforge.io) |
 [Goals](#project-goals) |
 [Docs and Usage](#docs-and-usage) |
 [Configuration](https://www.electronforge.io/configuration) |
-[Support](https://github.com/electron-userland/electron-forge/blob/master/SUPPORT.md) |
-[Contributing](https://github.com/electron-userland/electron-forge/blob/master/CONTRIBUTING.md) |
-[Changelog](https://github.com/electron-userland/electron-forge/blob/master/CHANGELOG.md)
+[Support](https://github.com/electron/forge/blob/main/SUPPORT.md) |
+[Contributing](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) |
+[Changelog](https://github.com/electron/forge/blob/main/CHANGELOG.md)
+
+---
 
 # Getting Started
 
-**Note**: Electron Forge requires Node 12.13.0 (LTS) or above, plus git installed.
+Pre-requisites:
+
+- Node 16.4.0 or higher
+- Git
 
 If you have a more recent version of `npm` or `yarn`, you can use
 [`npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b),
@@ -50,14 +46,12 @@ cd my-new-app
 npm start
 ```
 
-Alternatively (less recommended):
+For more information on creating a new project from a template, [see our CLI documentation](https://www.electronforge.io/cli).
 
-```bash
-npm install -g @electron-forge/cli
-electron-forge init my-new-app
-cd my-new-app
-npm start
-```
+# Docs and Usage
+
+For Electron Forge documentation and usage you should check out our website:
+[electronforge.io](https://www.electronforge.io)
 
 # Project Goals
 
@@ -71,27 +65,17 @@ npm start
 
 With these goals in mind, under the hood this project uses, among others:
 
-- [`electron-rebuild`](https://github.com/electron/electron-rebuild):
+- [`@electron/rebuild`](https://github.com/electron/rebuild):
   Automatically recompiles native Node.js modules against the correct
   Electron version.
-- [Electron Packager](https://github.com/electron/electron-packager):
+- [`@electron/packager`](https://github.com/electron/packager):
   Customizes and bundles your Electron app to get it ready for distribution.
 
-# Docs and Usage
+## Contributing
 
-For Electron Forge documentation and usage you should check out our website:
-[electronforge.io](https://www.electronforge.io)
+If you are interested in reporting/fixing issues and contributing directly to the code base, please see [CONTRIBUTING.md](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) for more information on what we're looking for and how to get started.
 
-# FAQ
+## Community
 
-## How do I use this with `webpack`/`babel`/`typescript`/other build tool?
-
-By default, Electron Forge only runs vanilla (i.e., non-compiled) JavaScript, but for typescript, webpack, and other build tool support check out the [plugins](https://www.electronforge.io/config/plugins)
-section of our docs site. We currently have plugins for Webpack and Electron Compile, and a
-[template for Webpack](https://www.electronforge.io/templates/webpack-template).
-
-# Team
-
-| <img src="https://s.gravatar.com/avatar/1576c987b53868acf73d6ccb08110a78?s=144" width="144" /> | <img src="https://avatars2.githubusercontent.com/u/11417?s=460&v=4" width="144" /> |
-| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Samuel Attard](https://samuelattard.com)                                                      | [Mark Lee](https://github.com/malept)                                              |
+Please report bugs or feature requests in our [issue tracker](https://github.com/electron/forge/issues).
+You can find help for debugging your Electron Forge on the [Support page](https://github.com/electron/forge/blob/main/SUPPORT.md), and ask questions in the [official Electron Discord server](https://discord.gg/invite/APGC3k5yaH), where there is a dedicated channel for Electron Forge.

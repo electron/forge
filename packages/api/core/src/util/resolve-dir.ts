@@ -1,8 +1,10 @@
+import path from 'path';
+
+import { getElectronVersion } from '@electron-forge/core-utils';
 import debug from 'debug';
 import fs from 'fs-extra';
-import path from 'path';
+
 import { readRawPackageJson } from './read-package-json';
-import { getElectronVersion } from './electron-version';
 
 const d = debug('electron-forge:project-resolver');
 
@@ -37,6 +39,11 @@ export default async (dir: string): Promise<string | null> => {
         return mDir;
       }
 
+      if (packageJSON.devDependencies?.['@electron-forge/cli'] || packageJSON.devDependencies?.['@electron-forge/core']) {
+        d('package.json with forge dependency found in', testPath);
+        return mDir;
+      }
+
       bestGuessDir = mDir;
     }
     mDir = path.dirname(mDir);
@@ -46,7 +53,7 @@ export default async (dir: string): Promise<string | null> => {
     return bestGuessDir;
   }
   if (lastError) {
-    throw lastError;
+    throw new Error(lastError);
   }
   return null;
 };

@@ -1,21 +1,23 @@
-/* eslint "no-console": "off" */
-import { asyncOra } from '@electron-forge/async-ora';
-import PluginBase from '@electron-forge/plugin-base';
-import { ElectronProcess, ForgeArch, ForgeConfig, ForgeHookFn, ForgePlatform } from '@electron-forge/shared-types';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
+import crypto from 'crypto';
+import http from 'http';
+import path from 'path';
+import { pipeline } from 'stream/promises';
 
+import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
+import glob from 'fast-glob';
 import fs from 'fs-extra';
-import http from 'http';
-import { merge } from 'webpack-merge';
-import path from 'path';
-import { utils } from '@electron-forge/core';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
+import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig } from './Config';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
+import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';
 import WebpackConfigGenerator from './WebpackConfig';
 
@@ -25,6 +27,10 @@ const DEFAULT_LOGGER_PORT = 9000;
 
 type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
 type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
+
+type NativeDepsCtx = {
+  nativeDeps: Record<string, string[]>;
+};
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -64,7 +70,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
 
     this.startLogic = this.startLogic.bind(this);
-    this.getHook = this.getHook.bind(this);
+    this.getHooks = this.getHooks.bind(this);
   }
 
   private isValidPort = (port: number) => {
@@ -104,20 +110,22 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   };
 
-  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions): Promise<void> {
+  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions, suffix: string): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
-    const jsonStatsFilename = path.resolve(this.baseDir, type, 'stats.json');
+    const jsonStatsFilename = path.resolve(this.baseDir, type, `stats-${suffix}.json`);
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  // eslint-disable-next-line max-len
-  private runWebpack = async (options: Configuration, isRenderer = false): Promise<webpack.Stats | undefined> =>
+  private runWebpack = async (options: Configuration[], rendererOptions: WebpackPluginRendererConfig | null): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
-        if (isRenderer && this.config.renderer.jsonStats) {
-          await this.writeJSONStats('renderer', stats, options.stats as WebpackToJsonOptions);
+        if (rendererOptions && rendererOptions.jsonStats) {
+          for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
+            const name = rendererOptions.entryPoints[index].name;
+            await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
+          }
         }
         if (err) {
           return reject(err);
@@ -140,56 +148,232 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   };
 
   get configGenerator(): WebpackConfigGenerator {
-    // eslint-disable-next-line no-underscore-dangle
     if (!this._configGenerator) {
-      // eslint-disable-next-line no-underscore-dangle
       this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
     }
 
-    // eslint-disable-next-line no-underscore-dangle
     return this._configGenerator;
   }
 
-  private loggedOutputUrl = false;
-
-  getHook(name: string): ForgeHookFn | null {
-    switch (name) {
-      case 'prePackage':
-        this.isProd = true;
-        return async (config: ForgeConfig, platform: ForgePlatform, arch: ForgeArch) => {
-          await fs.remove(this.baseDir);
-          await utils.rebuildHook(
-            this.projectDir,
-            await utils.getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-            platform,
-            arch,
-            config.electronRebuildConfig
-          );
-          await this.compileMain();
-          await this.compileRenderers();
-        };
-      case 'postStart':
-        return async (_config: ForgeConfig, child: ElectronProcess) => {
-          if (!this.loggedOutputUrl) {
-            console.info(`\n\nWebpack Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`);
-            this.loggedOutputUrl = true;
+  getHooks(): ForgeMultiHookMap {
+    return {
+      prePackage: [
+        namedHookWithTaskFn<'prePackage'>(async (task, config, platform, arch) => {
+          if (!task) {
+            throw new Error('Incompatible usage of webpack-plugin prePackage hook');
           }
-          d('hooking electron process exit');
-          child.on('exit', () => {
-            if (child.restarted) return;
-            this.exitHandler({ cleanup: true, exit: true });
-          });
-        };
-      case 'resolveForgeConfig':
-        return this.resolveForgeConfig;
-      case 'packageAfterCopy':
-        return this.packageAfterCopy;
-      default:
-        return null;
-    }
+
+          this.isProd = true;
+          await fs.remove(this.baseDir);
+
+          // TODO: Figure out how to get matrix from packager
+          const arches: string[] = Array.from(
+            new Set(arch.split(',').reduce<string[]>((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []))
+          );
+
+          const firstArch = arches[0];
+          const otherArches = arches.slice(1);
+
+          const multiArchTasks: ListrTask<NativeDepsCtx>[] =
+            otherArches.length === 0
+              ? []
+              : [
+                  {
+                    title: 'Mapping native dependencies',
+                    task: async (ctx: NativeDepsCtx) => {
+                      const firstArchDir = path.resolve(this.baseDir, firstArch);
+                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+                      const mapping: Record<string, string[]> = Object.create(null);
+
+                      const webpackNodeFiles = await glob('**/*.node', {
+                        cwd: firstArchDir,
+                      });
+                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                        cwd: nodeModulesDir,
+                      });
+                      const hashToNodeModules: Record<string, string[]> = Object.create(null);
+
+                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+                        const digest = hash.digest('hex');
+
+                        hashToNodeModules[digest] = hashToNodeModules[digest] || [];
+                        hashToNodeModules[digest].push(resolvedNodeFile);
+                      }
+
+                      for (const webpackNodeFile of webpackNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        await pipeline(fs.createReadStream(path.resolve(firstArchDir, webpackNodeFile)), hash);
+                        const matchedNodeModule = hashToNodeModules[hash.digest('hex')];
+                        if (!matchedNodeModule || !matchedNodeModule.length) {
+                          throw new Error(`Could not find originating native module for "${webpackNodeFile}"`);
+                        }
+
+                        mapping[webpackNodeFile] = matchedNodeModule;
+                      }
+
+                      ctx.nativeDeps = mapping;
+                    },
+                  },
+                  {
+                    title: `Generating multi-arch bundles`,
+                    task: async (_, task) => {
+                      return task.newListr(
+                        otherArches.map(
+                          (pArch): ListrTask<NativeDepsCtx> => ({
+                            title: `Generating ${chalk.magenta(pArch)} bundle`,
+                            task: async (_, innerTask) => {
+                              return innerTask.newListr(
+                                [
+                                  {
+                                    title: 'Preparing native dependencies',
+                                    task: async (_, innerTask) => {
+                                      await listrCompatibleRebuildHook(
+                                        this.projectDir,
+                                        await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                                        platform,
+                                        pArch,
+                                        config.rebuildConfig,
+                                        innerTask
+                                      );
+                                    },
+                                    options: {
+                                      persistentOutput: true,
+                                      bottomBar: Infinity,
+                                      showTimer: true,
+                                    },
+                                  },
+                                  {
+                                    title: 'Mapping native dependencies',
+                                    task: async (ctx) => {
+                                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+
+                                      // Duplicate the firstArch build
+                                      const firstDir = path.resolve(this.baseDir, firstArch);
+                                      const targetDir = path.resolve(this.baseDir, pArch);
+                                      await fs.mkdirp(targetDir);
+                                      for (const child of await fs.readdir(firstDir)) {
+                                        await fs.promises.cp(path.resolve(firstDir, child), path.resolve(targetDir, child), {
+                                          recursive: true,
+                                        });
+                                      }
+
+                                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                                        cwd: nodeModulesDir,
+                                      });
+                                      const nodeModuleToHash: Record<string, string> = Object.create(null);
+
+                                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                                        const hash = crypto.createHash('sha256');
+                                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+
+                                        nodeModuleToHash[resolvedNodeFile] = hash.digest('hex');
+                                      }
+
+                                      // Use the native module map to find the newly built native modules
+                                      for (const nativeDep of Object.keys(ctx.nativeDeps)) {
+                                        const archPath = path.resolve(targetDir, nativeDep);
+                                        await fs.remove(archPath);
+
+                                        const mappedPaths = ctx.nativeDeps[nativeDep];
+                                        if (!mappedPaths || !mappedPaths.length) {
+                                          throw new Error(`The "${nativeDep}" module could not be mapped to any native modules on disk`);
+                                        }
+
+                                        if (!mappedPaths.every((mappedPath) => nodeModuleToHash[mappedPath] === nodeModuleToHash[mappedPaths[0]])) {
+                                          throw new Error(
+                                            `The "${nativeDep}" mapped to multiple modules "${mappedPaths.join(
+                                              ', '
+                                            )}" but the same modules post rebuild did not map to the same native code`
+                                          );
+                                        }
+
+                                        await fs.promises.cp(mappedPaths[0], archPath);
+                                      }
+                                    },
+                                  },
+                                ],
+                                { concurrent: false }
+                              );
+                            },
+                          })
+                        )
+                      );
+                    },
+                  },
+                ];
+
+          return task.newListr<NativeDepsCtx>(
+            [
+              {
+                title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                task: async (_, innerTask) => {
+                  await listrCompatibleRebuildHook(
+                    this.projectDir,
+                    await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                    platform,
+                    firstArch,
+                    config.rebuildConfig,
+                    innerTask
+                  );
+                },
+                options: {
+                  persistentOutput: true,
+                  bottomBar: Infinity,
+                  showTimer: true,
+                },
+              },
+              {
+                title: 'Building webpack bundles',
+                task: async () => {
+                  await this.compileMain();
+                  await this.compileRenderers();
+                  // Store it in a place that won't get messed with
+                  // We'll restore the right "arch" in the afterCopy hook further down
+                  const preExistingChildren = await fs.readdir(this.baseDir);
+                  const targetDir = path.resolve(this.baseDir, firstArch);
+                  await fs.mkdirp(targetDir);
+                  for (const child of preExistingChildren) {
+                    await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
+                  }
+                },
+                options: {
+                  showTimer: true,
+                },
+              },
+              ...multiArchTasks,
+            ],
+            { concurrent: false }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ) as any;
+        }, 'Preparing webpack bundles'),
+      ],
+      postStart: async (_config, child) => {
+        d('hooking electron process exit');
+        child.on('exit', () => {
+          if (child.restarted) return;
+          this.exitHandler({ cleanup: true, exit: true });
+        });
+      },
+      resolveForgeConfig: this.resolveForgeConfig,
+      packageAfterCopy: [
+        async (_forgeConfig: ResolvedForgeConfig, buildPath: string, _electronVersion: string, _platform: string, pArch: string): Promise<void> => {
+          // Restore the correct 'arch' build of webpack
+          // Steal the correct arch, wipe the folder, move it back to pretend to be ".webpack" root
+          const tmpWebpackDir = path.resolve(buildPath, '.webpack.tmp');
+          await fs.move(path.resolve(buildPath, '.webpack', pArch), tmpWebpackDir);
+          await fs.remove(path.resolve(buildPath, '.webpack'));
+          await fs.move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
+        },
+        this.packageAfterCopy,
+      ],
+    };
   }
 
-  resolveForgeConfig = async (forgeConfig: ForgeConfig): Promise<ForgeConfig> => {
+  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -210,7 +394,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
-      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (this.allRendererOptions.some((r) => r.jsonStats) && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
         return true;
       }
 
@@ -223,7 +407,11 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   };
 
-  packageAfterCopy = async (_forgeConfig: ForgeConfig, buildPath: string): Promise<void> => {
+  private get allRendererOptions() {
+    return Array.isArray(this.config.renderer) ? this.config.renderer : [this.config.renderer];
+  }
+
+  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {
@@ -235,10 +423,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (pj.config) {
       delete pj.config.forge;
     }
-    pj.devDependencies = {};
-    pj.dependencies = {};
-    pj.optionalDependencies = {};
-    pj.peerDependencies = {};
 
     await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
       spaces: 2,
@@ -252,122 +436,119 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     if (logger) {
       tab = logger.createTab('Main Process');
     }
-    await asyncOra('Compiling Main Process Code', async () => {
-      const mainConfig = await this.configGenerator.getMainConfig();
-      await new Promise((resolve, reject) => {
-        const compiler = webpack(mainConfig);
-        const [onceResolve, onceReject] = once(resolve, reject);
-        const cb: WebpackWatchHandler = async (err, stats) => {
-          if (tab && stats) {
-            tab.log(
-              stats.toString({
-                colors: true,
-              })
-            );
-          }
-          if (this.config.jsonStats) {
-            await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions);
-          }
 
-          if (err) return onceReject(err);
-          if (!watch && stats?.hasErrors()) {
-            return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
-          }
-
-          return onceResolve(undefined);
-        };
-        if (watch) {
-          this.watchers.push(compiler.watch({}, cb));
-        } else {
-          compiler.run(cb);
+    const mainConfig = await this.configGenerator.getMainConfig();
+    await new Promise((resolve, reject) => {
+      const compiler = webpack(mainConfig);
+      const [onceResolve, onceReject] = once(resolve, reject);
+      const cb: WebpackWatchHandler = async (err, stats) => {
+        if (tab && stats) {
+          tab.log(
+            stats.toString({
+              colors: true,
+            })
+          );
         }
-      });
+        if (this.config.jsonStats) {
+          await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
+        }
+
+        if (err) return onceReject(err);
+        if (!watch && stats?.hasErrors()) {
+          return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+        }
+
+        return onceResolve(undefined);
+      };
+      if (watch) {
+        this.watchers.push(compiler.watch({}, cb));
+      } else {
+        compiler.run(cb);
+      }
     });
   };
 
   compileRenderers = async (watch = false): Promise<void> => {
-    await asyncOra('Compiling Renderer Template', async () => {
-      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
+    for (const rendererOptions of this.allRendererOptions) {
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(rendererOptions), rendererOptions);
       if (!watch && stats?.hasErrors()) {
         throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
-      }
-    });
-
-    for (const entryPoint of this.config.renderer.entryPoints) {
-      if (entryPoint.preload) {
-        await asyncOra(`Compiling Renderer Preload: ${entryPoint.name}`, async () => {
-          const stats = await this.runWebpack(
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await this.configGenerator.getPreloadRendererConfig(entryPoint, entryPoint.preload!)
-          );
-
-          if (stats?.hasErrors()) {
-            throw new Error(`Compilation errors in the preload (${entryPoint.name}): ${stats.toString()}`);
-          }
-        });
       }
     }
   };
 
-  launchDevServers = async (logger: Logger): Promise<void> => {
-    await asyncOra('Launch Dev Servers', async () => {
-      const tab = logger.createTab('Renderers');
-      const pluginLogs = new ElectronForgeLoggingPlugin(tab);
+  launchRendererDevServers = async (logger: Logger): Promise<void> => {
+    const configs: Configuration[] = [];
+    const rollingDependencies: string[] = [];
+    for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
+      const groupName = `group_${i}`;
+      configs.push(
+        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
+          ...config,
+          name: groupName,
+          dependencies: [...rollingDependencies],
+        }))
+      );
+      rollingDependencies.push(groupName);
+    }
 
-      const config = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
-      if (!config.plugins) config.plugins = [];
-      config.plugins.push(pluginLogs);
+    if (configs.length === 0) {
+      return;
+    }
 
-      const compiler = webpack(config);
-      const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
-      await webpackDevServer.start();
-      this.servers.push(webpackDevServer.server);
-    });
+    const preloadPlugins: string[] = [];
+    let numPreloadEntriesWithConfig = 0;
+    for (const entryConfig of configs) {
+      if (!entryConfig.plugins) entryConfig.plugins = [];
+      entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
 
-    await asyncOra('Compiling Preload Scripts', async () => {
-      for (const entryPoint of this.config.renderer.entryPoints) {
-        if (entryPoint.preload) {
-          const config = await this.configGenerator.getPreloadRendererConfig(
-            entryPoint,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            entryPoint.preload!
-          );
-          await new Promise((resolve, reject) => {
-            const tab = logger.createTab(`${entryPoint.name} - Preload`);
-            const [onceResolve, onceReject] = once(resolve, reject);
-
-            this.watchers.push(
-              webpack(config).watch({}, (err, stats) => {
-                if (stats) {
-                  tab.log(
-                    stats.toString({
-                      colors: true,
-                    })
-                  );
-                }
-
-                if (err) return onceReject(err);
-                return onceResolve(undefined);
-              })
-            );
-          });
+      const filename = entryConfig.output?.filename as string;
+      if (filename?.endsWith('preload.js')) {
+        let name = `entry-point-preload-${entryConfig.target}`;
+        if (preloadPlugins.includes(name)) {
+          name = `${name}-${++numPreloadEntriesWithConfig}`;
         }
+        entryConfig.plugins.push(new EntryPointPreloadPlugin({ name }));
+        preloadPlugins.push(name);
       }
+
+      entryConfig.infrastructureLogging = {
+        level: 'none',
+      };
+      entryConfig.stats = 'none';
+    }
+
+    const compiler = webpack(configs);
+
+    const promises = preloadPlugins.map((preloadPlugin) => {
+      return new Promise((resolve, reject) => {
+        compiler.hooks.done.tap(preloadPlugin, (stats) => {
+          if (stats.hasErrors()) {
+            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+          }
+          return resolve(undefined);
+        });
+      });
     });
+
+    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+    await webpackDevServer.start();
+    this.servers.push(webpackDevServer.server!);
+    await Promise.all(promises);
   };
 
-  devServerOptions(): Record<string, unknown> {
+  devServerOptions(): WebpackDevServer.Configuration {
     const cspDirectives =
       this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
-    const defaults = {
+    const defaults: Partial<WebpackDevServer.Configuration> = {
       hot: true,
       devMiddleware: {
         writeToDisk: true,
       },
       historyApiFallback: true,
     };
-    const overrides = {
+    const overrides: Partial<WebpackDevServer.Configuration> = {
       port: this.port,
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
@@ -381,7 +562,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
   private alreadyStarted = false;
 
-  async startLogic(): Promise<false> {
+  async startLogic(): Promise<StartResult> {
     if (this.alreadyStarted) return false;
     this.alreadyStarted = true;
 
@@ -389,9 +570,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
-    await this.compileMain(true, logger);
-    await this.launchDevServers(logger);
     await logger.start();
-    return false;
+
+    return {
+      tasks: [
+        {
+          title: 'Compiling main process code',
+          task: async () => {
+            await this.compileMain(true, logger);
+          },
+          options: {
+            showTimer: true,
+          },
+        },
+        {
+          title: 'Launching dev servers for renderer process code',
+          task: async (_, task) => {
+            await this.launchRendererDevServers(logger);
+            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+          },
+          options: {
+            persistentOutput: true,
+            showTimer: true,
+          },
+        },
+      ],
+      result: false,
+    };
   }
 }
+
+export { WebpackPlugin, WebpackPluginConfig };

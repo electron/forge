@@ -1,6 +1,6 @@
-import debug from 'debug';
 import { PackagePerson } from '@electron-forge/shared-types';
 import { spawn } from '@malept/cross-spawn-promise';
+import debug from 'debug';
 import username from 'username';
 
 const d = debug('electron-forge:determine-author');

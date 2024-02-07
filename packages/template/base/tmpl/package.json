@@ -10,34 +10,11 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
+  "devDependencies": {
+    "@electron/fuses": "^1.7.0",
+    "@electron-forge/plugin-fuses": "^7.2.0"
+  },
   "keywords": [],
   "author": "",
-  "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": ""
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
-  }
+  "license": "MIT"
 }
