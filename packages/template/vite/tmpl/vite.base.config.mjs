@@ -8,7 +8,7 @@ export const builtins = [
 
 export const external = [...builtins, ...Object.keys(pkg.dependencies || {})];
 
-/** @type {(env: import('vite').ConfigEnv & { root: string; }) => import('vite').UserConfig} */
+/** @type {(env: import('vite').ConfigEnv<'build'>) => import('vite').UserConfig} */
 export const getBuildConfig = (env) => {
   const { root, mode, command } = env;
 
@@ -27,12 +27,14 @@ export const getBuildConfig = (env) => {
   };
 };
 
-/** @type {(names: string[]) => { [name: string]: { VITE_DEV_SERVER_URL: `${string}_VITE_DEV_SERVER_URL`; VITE_NAME: `${string}_VITE_NAME`; } }} */
+/** @type {(names: string[]) => { [name: string]: VitePluginRuntimeKeys } }} */
 export const getDefineKeys = (names) => {
+  /** @type {{ [name: string]: VitePluginRuntimeKeys }} */
   const define = {};
 
   return names.reduce((acc, name) => {
     const NAME = name.toUpperCase();
+    /** @type {VitePluginRuntimeKeys} */
     const keys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
       VITE_NAME: `${NAME}_VITE_NAME`,
@@ -42,7 +44,7 @@ export const getDefineKeys = (names) => {
   }, define);
 };
 
-/** @type {(env: Record<string, any>) => Record<string, any>} */
+/** @type {(env: import('vite').ConfigEnv<'build'>) => Record<string, any>} */
 export const getBuildDefine = (env) => {
   const { command, forgeConfig } = env;
   const names = forgeConfig.renderer
