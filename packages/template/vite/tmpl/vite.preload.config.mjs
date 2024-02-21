@@ -7,7 +7,9 @@ import {
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const { forgeConfigSelf } = env;
+  /** @type {import('vite').ConfigEnv<'build'>} */
+  const forgeEnv = env;
+  const { forgeConfigSelf } = forgeEnv;
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
@@ -28,5 +30,5 @@ export default defineConfig((env) => {
     plugins: [pluginHotRestart('reload')],
   };
 
-  return mergeConfig(getBuildConfig(env), config);
+  return mergeConfig(getBuildConfig(forgeEnv), config);
 });

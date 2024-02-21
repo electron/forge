@@ -1,9 +1,11 @@
-import { type UserConfig, defineConfig, mergeConfig } from 'vite';
+import type { ConfigEnv, UserConfig } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
 import { getBuildConfig, external, pluginHotRestart } from './vite.base.config';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const { forgeConfigSelf } = env as ForgeConfigEnv<'build'>;
+  const forgeEnv = env as ConfigEnv<'build'>;
+  const { forgeConfigSelf } = forgeEnv;
   const config: UserConfig = {
     build: {
       rollupOptions: {
@@ -23,5 +25,5 @@ export default defineConfig((env) => {
     plugins: [pluginHotRestart('reload')],
   };
 
-  return mergeConfig(getBuildConfig(env as any), config);
+  return mergeConfig(getBuildConfig(forgeEnv), config);
 });

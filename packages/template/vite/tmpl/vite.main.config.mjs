@@ -8,8 +8,10 @@ import {
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const { forgeConfigSelf } = env;
-  const define = getBuildDefine(env);
+  /** @type {import('vite').ConfigEnv<'build'>} */
+  const forgeEnv = env;
+  const { forgeConfigSelf } = forgeEnv;
+  const define = getBuildDefine(forgeEnv);
   const config = {
     build: {
       lib: {
@@ -29,5 +31,5 @@ export default defineConfig((env) => {
     },
   };
 
-  return mergeConfig(getBuildConfig(env), config);
+  return mergeConfig(getBuildConfig(forgeEnv), config);
 });
