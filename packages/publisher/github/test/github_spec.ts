@@ -120,12 +120,16 @@ describe('GitHub', () => {
     });
 
     it('should preserve special symbols', () => {
-      expect(GitHub.sanitizeName('path/to/@foo+bar')).to.equal('@foo+bar');
+      expect(GitHub.sanitizeName('path/to/@foo+bar_')).to.equal('@foo+bar_');
     });
 
     it('should preserve hyphens', () => {
       const name = 'electron-fiddle-0.99.0-full.nupkg';
       expect(GitHub.sanitizeName(`path/to/${name}`)).to.equal(name);
+    });
+
+    it('should remove diacritics', () => {
+      expect(GitHub.sanitizeName('électron')).to.equal('electron');
     });
   });
 });
