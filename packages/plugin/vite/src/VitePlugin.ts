@@ -1,18 +1,21 @@
-import { AddressInfo } from 'node:net';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-// eslint-disable-next-line node/no-extraneous-import
-import { RollupWatcher } from 'rollup';
+// eslint-disable-next-line node/no-unpublished-import
 import { default as vite } from 'vite';
 
-import { VitePluginConfig } from './Config';
 import { getFlatDependencies } from './util/package';
+import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
+
+import type { VitePluginConfig } from './Config';
+import type { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import type { AddressInfo } from 'node:net';
+// eslint-disable-next-line node/no-extraneous-import
+import type { RollupWatcher } from 'rollup';
 
 const d = debug('electron-forge:plugin:vite');
 
@@ -144,7 +147,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         {
           title: 'Compiling main process code',
           task: async () => {
-            await this.build(true);
+            await this.build();
           },
           options: {
             showTimer: true,
@@ -156,42 +159,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   // Main process, Preload scripts and Worker process, etc.
-  build = async (watch = false): Promise<void> => {
-    await Promise.all(
-      (
-        await this.configGenerator.getBuildConfig(watch)
-      ).map((userConfig) => {
-        return new Promise<void>((resolve, reject) => {
-          vite
-            .build({
-              // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
-              configFile: false,
-              ...userConfig,
-              plugins: [
-                {
-                  name: '@electron-forge/plugin-vite:start',
-                  closeBundle() {
-                    resolve();
+  build = async (): Promise<void> => {
+    const configs = await this.configGenerator.getBuildConfig();
+    const buildTasks: Promise<void>[] = [];
+    const isWatcher = (x: any): x is RollupWatcher => typeof x?.close === 'function';
 
-                    // TODO: implement hot-restart here
-                  },
-                },
-                ...(userConfig.plugins ?? []),
-              ],
-            })
-            .then((result) => {
-              const isWatcher = (x: any): x is RollupWatcher => typeof x?.close === 'function';
+    for (const userConfig of configs) {
+      const buildTask = new Promise<void>((resolve, reject) => {
+        vite
+          .build({
+            // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
+            configFile: false,
+            ...userConfig,
+            plugins: [onBuildDone(resolve), ...(userConfig.plugins ?? [])],
+          })
+          .then((result) => {
+            if (isWatcher(result)) {
+              this.watchers.push(result);
+            }
 
-              if (isWatcher(result)) {
-                this.watchers.push(result);
-              }
+            return result;
+          })
+          .catch(reject);
+      });
 
-              return result;
-            })
-            .catch(reject);
-        });
-      })
-    );
+      buildTasks.push(buildTask);
+    }
+
+    await Promise.all(buildTasks);
   };
 
   // Renderer process

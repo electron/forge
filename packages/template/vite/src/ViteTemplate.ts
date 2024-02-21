@@ -15,14 +15,17 @@ class ViteTemplate extends BaseTemplate {
         title: 'Setting up Forge configuration',
         task: async () => {
           await this.copyTemplateFile(directory, 'forge.config.js');
+          await this.copyTemplateFile(directory, 'forge.env.d.txt');
+          await fs.rename(path.join(directory, 'forge.env.d.txt'), path.join(directory, 'forge.env.d.ts'));
         },
       },
       {
         title: 'Setting up Vite configuration',
         task: async () => {
-          await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
+          await this.copyTemplateFile(directory, 'vite.base.config.mjs');
           await this.copyTemplateFile(directory, 'vite.main.config.mjs');
           await this.copyTemplateFile(directory, 'vite.preload.config.mjs');
+          await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
           await this.copyTemplateFile(path.join(directory, 'src'), 'preload.js');
 

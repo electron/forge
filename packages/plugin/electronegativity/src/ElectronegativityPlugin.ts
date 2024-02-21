@@ -38,7 +38,7 @@ export type ElectronegativityConfig = {
    *
    * Defaults to `false`.
    */
-  isRelative?: false;
+  isRelative?: boolean;
   /**
    * Specify a range to run Electron upgrade checks. For example, `'7..8'` checks an upgrade
    * from Electron 7 to Electron 8.
@@ -49,7 +49,7 @@ export type ElectronegativityConfig = {
    *
    * Defaults to empty array (`[]`)
    */
-  parserPlugins: Array<string>;
+  parserPlugins?: Array<string>;
 };
 
 export default class ElectronegativityPlugin extends PluginBase<ElectronegativityConfig> {
@@ -65,6 +65,7 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
     await runElectronegativity(
       {
         ...this.config,
+        isRelative: this.config.isRelative ?? false,
         parserPlugins: this.config.parserPlugins ?? [],
         input: options.outputPaths[0],
       },
