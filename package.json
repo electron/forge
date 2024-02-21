@@ -12,7 +12,7 @@
     "build:watch": "yarn build --watch",
     "postbuild": "ts-node tools/test-dist",
     "docs": "yarn build && yarn docs:generate",
-    "docs:generate": "yarn docs:plugin && node --max-old-space-size=8192 -r ts-node/register ./tools/gen-docs.ts",
+    "docs:generate": "yarn docs:plugin && node --max-old-space-size=16384 -r ts-node/register ./tools/gen-docs.ts",
     "docs:plugin": "cd ./tools/doc-plugin && yarn build",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint:js": "prettier --check . && eslint .",
