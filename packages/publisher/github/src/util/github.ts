@@ -48,14 +48,22 @@ export default class GitHub {
     return github;
   }
 
-  // Based on https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28#upload-a-release-asset and
-  // https://stackoverflow.com/questions/59081778/rules-for-special-characters-in-github-repository-name
+  // Based on https://github.com/cli/cli/blob/b07f955c23fb54c400b169d39255569e240b324e/pkg/cmd/release/upload/upload.go#L131-L153
   static sanitizeName(name: string): string {
-    return path
-      .basename(name)
-      .replace(/\.+/g, '.')
-      .replace(/^\./g, '')
-      .replace(/\.$/g, '')
-      .replace(/[^\w.-]+/g, '-');
+    return (
+      path
+        .basename(name)
+        // Remove diacritics (e.g. é -> e)
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        // Replace special characters with dot
+        .replace(/[^\w_.@+-]+/g, '.')
+        // Replace multiple dots with a single dot
+        .replace(/\.+/g, '.')
+        // Remove leading dot if present
+        .replace(/^\./g, '')
+        // Remove trailing dot if present
+        .replace(/\.$/g, '')
+    );
   }
 }
