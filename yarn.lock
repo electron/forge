@@ -5539,10 +5539,10 @@ electron-winstaller@^5.3.0:
   optionalDependencies:
     "@electron/windows-sign" "^1.1.2"
 
-electron-wix-msi@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/electron-wix-msi/-/electron-wix-msi-5.1.1.tgz#e41883a87c954d1d2bfd3b0658b1c06e571232b1"
-  integrity sha512-9IKCaMRj7eJBptLVnTuVioRwk97s4uxKAkIBzOZWte0FbkBCDgsXP4pd50GzE+zsbhk2HVenI3G1d114Xt2kIQ==
+electron-wix-msi@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/electron-wix-msi/-/electron-wix-msi-5.1.2.tgz#382d39ab9fcfe2cecdcc769bc7ef0ea88895b397"
+  integrity sha512-/hSyUXD/Kg8a82piMljjdQXlD8TW9PoMTUXqJd1j8Jn06fDAsJbbBtgWMiKE+OeJGWg3Rmg7UbfCaR8ykm9APA==
   dependencies:
     "@electron/windows-sign" "^1.1.2"
     debug "^4.3.4"

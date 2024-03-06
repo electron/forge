@@ -18,7 +18,7 @@
     "@electron-forge/maker-base": "7.3.0",
     "@electron-forge/shared-types": "7.3.0",
     "chalk": "^4.0.0",
-    "electron-wix-msi": "^5.1.1",
+    "electron-wix-msi": "^5.1.2",
     "log-symbols": "^4.0.0",
     "parse-author": "^2.0.0"
   },
