@@ -42,9 +42,6 @@ describe('MakerDMG', () => {
       .load('../src/MakerDMG', {
         '../../util/ensure-output': { ensureFile: ensureFileStub },
         'electron-installer-dmg': eidStub,
-        'fs-extra': {
-          rename: renameStub,
-        },
       }).default;
     createMaker = async () => {
       maker = new MakerDMG(config);
@@ -65,33 +62,10 @@ describe('MakerDMG', () => {
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       overwrite: true,
-      name: appName,
+      name: `${appName}-${packageJSON.version}-${targetArch}.dmg`,
       appPath: path.resolve(`${dir}/My Test App.app`),
       out: path.resolve(`${dir.substr(0, dir.length - 4)}/make`),
     });
-  });
-
-  it('should attempt to rename the DMG file if no custom name is set', async () => {
-    await (maker.make as MakeFunction)({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-    });
-    expect(renameStub.callCount).to.equal(1);
-    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
-  });
-
-  it('should rename the DMG file to include the version if no custom name is set', async () => {
-    await (maker.make as MakeFunction)({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-    });
-    expect(renameStub.firstCall.args[1]).to.include(`1.2.3-${targetArch}`);
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {
