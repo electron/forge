@@ -27,6 +27,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
       name: dmgOutName,
+      title: this.config.name ?? appName,
     };
     const opts = await electronDMG(dmgConfig);
 
