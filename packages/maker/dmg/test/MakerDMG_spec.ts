@@ -64,6 +64,7 @@ describe('MakerDMG', () => {
       overwrite: true,
       name: `${appName}-${packageJSON.version}-${targetArch}.dmg`,
       appPath: path.resolve(`${dir}/My Test App.app`),
+      title: 'My Test App',
       out: path.resolve(`${dir.substr(0, dir.length - 4)}/make`),
     });
   });
