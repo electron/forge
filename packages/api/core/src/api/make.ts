@@ -282,7 +282,7 @@ export const listrMake = (
                         packageJSON,
                         targetArch,
                         dir: packageDir,
-                        makeDir: path.resolve(actualOutDir, `make-${platform}-${targetArch}`),
+                        makeDir: path.resolve(actualOutDir, 'make'),
                         targetPlatform: platform,
                       });
 
