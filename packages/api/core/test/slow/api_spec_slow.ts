@@ -395,7 +395,7 @@ describe('Electron Forge API', () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...options: any[]
       ) {
-        describe(`make (with target=${path.basename(path.dirname(target().name))})`, async () => {
+        describe(`make (with target=${target().name})`, async () => {
           before(async () => {
             await updatePackageJSON(dir, async (packageJSON) => {
               packageJSON.config.forge.makers = [target() as IForgeResolvableMaker];
