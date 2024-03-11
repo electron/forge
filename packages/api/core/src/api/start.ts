@@ -1,6 +1,6 @@
-import { exec, spawn, SpawnOptions } from 'child_process';
+import { spawn, SpawnOptions } from 'child_process';
 
-import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { getElectronVersion, getForgeVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { ElectronProcess, ForgeArch, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
@@ -14,12 +14,6 @@ import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:start');
-
-async function getForgeVersion(): Promise<string | null> {
-  return new Promise<string | null>((resolve) => {
-    exec('npm show @electron-forge/cli version', (err, output) => (err ? resolve(null) : resolve(output.toString().trim())));
-  });
-}
 
 export { StartOptions };
 

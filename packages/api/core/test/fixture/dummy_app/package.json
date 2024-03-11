@@ -19,6 +19,7 @@
     }
   },
   "devDependencies": {
-    "electron": "1000.100.10"
+    "electron": "1000.100.10",
+    "@electron-forge/cli": "^7.3.0"
   }
 }
