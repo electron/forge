@@ -14,6 +14,7 @@ import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:start');
+
 async function getForgeVersion(): Promise<string | null> {
   return new Promise<string | null>((resolve) => {
     exec('npm show @electron-forge/cli version', (err, output) => (err ? resolve(null) : resolve(output.toString().trim())));
