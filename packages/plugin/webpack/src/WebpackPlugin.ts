@@ -570,7 +570,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const logger = new Logger(this.loggerPort);
     this.loggers.push(logger);
-    await logger.start();
+    const currLoggerPort = await logger.start();
 
     return {
       tasks: [
@@ -587,7 +587,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           title: 'Launching dev servers for renderer process code',
           task: async (_, task) => {
             await this.launchRendererDevServers(logger);
-            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+            task.output = `Output Available: ${chalk.cyan(`http://localhost:${currLoggerPort}`)}\n`;
           },
           options: {
             persistentOutput: true,

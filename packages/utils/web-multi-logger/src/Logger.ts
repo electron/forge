@@ -33,6 +33,36 @@ export default class Logger {
       // I assume this endpoint is just a no-op needed for some reason.
     });
   }
+  /**
+   * Find an available port between 9000 and 9009 for web UI.
+   * @returns the port number.
+   */
+  private async findAvailablePort(): Promise<number> {
+    const maxPortAttempts = 10; // Maximum attempts to find an available port
+    let port = this.port;
+    let attempts = 0;
+
+    while (attempts < maxPortAttempts) {
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const server = http.createServer();
+          server.unref(); // Allows the program to exit if this is the only active server
+          server.on('error', reject);
+          server.listen(port, () => {
+            server.close(() => {
+              resolve();
+            });
+          });
+        });
+        return port;
+      } catch {
+        // Port is in use, try the next one
+        port++;
+        attempts++;
+      }
+    }
+    throw new Error('Could not find an available port between 9000 and 9009. Please free up a port and try again.');
+  }
 
   /**
    * Creates a new tab with the given name, the name should be human readable
@@ -49,12 +79,11 @@ export default class Logger {
    *
    * @returns the port number
    */
-  start(): Promise<number> {
-    return new Promise<number>((resolve) => {
-      this.server = this.app.listen(this.port, () => resolve(this.port));
-    });
+  async start(): Promise<number> {
+    this.port = await this.findAvailablePort();
+    this.server = this.app.listen(this.port);
+    return this.port;
   }
-
   /**
    * Stop the HTTP server hosting the web UI
    */
