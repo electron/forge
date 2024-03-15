@@ -1,6 +1,7 @@
 import http from 'http';
 import path from 'path';
 
+import { findAvailablePort, portOccupied } from '@electron-forge/core-utils';
 import express from 'express';
 import ews from 'express-ws';
 
@@ -34,45 +35,6 @@ export default class Logger {
     });
   }
   /**
-   * Check if a port is occupied.
-   * @returns boolean promise that resolves to true if the port is available, false otherwise.
-   */
-  private static async portOccupied(port: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const server = http.createServer().listen(port);
-      server.on('listening', () => {
-        server.close();
-        resolve();
-      });
-
-      server.on('error', (error) => {
-        if ('code' in error && (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
-          reject(new Error(`port: ${port} is occupied`));
-        } else {
-          reject(error);
-        }
-      });
-    });
-  }
-  /**
-   * Find an available port for web UI.
-   * @returns the port number.
-   */
-  private static async findAvailablePort(initialPort: number): Promise<number> {
-    const maxPort = initialPort + 10;
-
-    for (let p = initialPort; p <= maxPort; p++) {
-      try {
-        await Logger.portOccupied(p);
-        return p;
-      } catch (_err) {
-        // Pass
-      }
-    }
-    throw new Error(`Could not find an available port between ${initialPort} and ${maxPort}. Please free up a port and try again.`);
-  }
-
-  /**
    * Creates a new tab with the given name, the name should be human readable
    * it will be used as the tab title in the front end.
    */
@@ -88,7 +50,7 @@ export default class Logger {
    * @returns the port number
    */
   async start(): Promise<number> {
-    this.port = await Logger.findAvailablePort(this.port);
+    this.port = await findAvailablePort(this.port, portOccupied);
     this.server = this.app.listen(this.port);
     return this.port;
   }
