@@ -34,34 +34,42 @@ export default class Logger {
     });
   }
   /**
-   * Find an available port between 9000 and 9009 for web UI.
+   * Check if a port is occupied.
+   * @returns boolean promise that resolves to true if the port is available, false otherwise.
+   */
+  private static async portOccupied(port: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const server = http.createServer().listen(port);
+      server.on('listening', () => {
+        server.close();
+        resolve();
+      });
+
+      server.on('error', (error) => {
+        if ('code' in error && (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
+          reject(new Error(`port: ${port} is occupied`));
+        } else {
+          reject(error);
+        }
+      });
+    });
+  }
+  /**
+   * Find an available port for web UI.
    * @returns the port number.
    */
-  private async findAvailablePort(): Promise<number> {
-    const maxPortAttempts = 10; // Maximum attempts to find an available port
-    let port = this.port;
-    let attempts = 0;
+  private static async findAvailablePort(initialPort: number): Promise<number> {
+    const maxPort = initialPort + 10;
 
-    while (attempts < maxPortAttempts) {
+    for (let p = initialPort; p <= maxPort; p++) {
       try {
-        await new Promise<void>((resolve, reject) => {
-          const server = http.createServer();
-          server.unref(); // Allows the program to exit if this is the only active server
-          server.on('error', reject);
-          server.listen(port, () => {
-            server.close(() => {
-              resolve();
-            });
-          });
-        });
-        return port;
-      } catch {
-        // Port is in use, try the next one
-        port++;
-        attempts++;
+        await Logger.portOccupied(p);
+        return p;
+      } catch (_err) {
+        // Pass
       }
     }
-    throw new Error('Could not find an available port between 9000 and 9009. Please free up a port and try again.');
+    throw new Error(`Could not find an available port between ${initialPort} and ${maxPort}. Please free up a port and try again.`);
   }
 
   /**
@@ -80,7 +88,7 @@ export default class Logger {
    * @returns the port number
    */
   async start(): Promise<number> {
-    this.port = await this.findAvailablePort();
+    this.port = await Logger.findAvailablePort(this.port);
     this.server = this.app.listen(this.port);
     return this.port;
   }
