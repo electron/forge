@@ -43,7 +43,7 @@ commands:
           name: 'Run slow tests'
           command: |
             echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
+            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings --timings-type=classname)
             yarn test $TEST_GLOB
 
 jobs:
