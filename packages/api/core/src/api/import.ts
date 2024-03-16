@@ -61,7 +61,7 @@ export default autoTrace(
     const listrOptions = {
       concurrent: false,
       rendererOptions: {
-        collapse: false,
+        collapseSubtasks: false,
         collapseErrors: false,
       },
       rendererSilent: !interactive,
@@ -91,7 +91,7 @@ export default autoTrace(
         },
         {
           title: 'Processing configuration and dependencies',
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
           },
@@ -251,7 +251,7 @@ export default autoTrace(
         },
         {
           title: 'Finalizing import',
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
           },

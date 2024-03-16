@@ -18,7 +18,7 @@ describe('WebpackTemplate', () => {
     const tasks = await template.initializeTemplate(dir, {});
     const runner = new Listr(tasks, { concurrent: false, exitOnError: false });
     await runner.run();
-    expect(runner.err).to.have.lengthOf(0);
+    expect(runner.errors).to.have.lengthOf(0);
   });
 
   context('template files are copied to project', () => {

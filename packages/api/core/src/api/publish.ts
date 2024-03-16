@@ -109,7 +109,7 @@ export default autoTrace(
 
             return delayTraceTillSignal(
               childTrace,
-              task.newListr<never>(
+              task.newListr<any>(
                 publishers.map((publisher) => ({
                   title: `${chalk.cyan(`[publisher-${publisher.name}]`)} Running the ${chalk.yellow('publish')} command`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
@@ -126,13 +126,13 @@ export default autoTrace(
                       });
                     }
                   ),
-                  options: {
+                  rendererOptions: {
                     persistentOutput: true,
                   },
                 })),
                 {
                   rendererOptions: {
-                    collapse: false,
+                    collapseSubtasks: false,
                     collapseErrors: false,
                   },
                 }
@@ -141,7 +141,7 @@ export default autoTrace(
             );
           }
         ),
-        options: {
+        rendererOptions: {
           persistentOutput: true,
         },
       },
@@ -215,7 +215,7 @@ export default autoTrace(
               }
             }
           ),
-          options: {
+          rendererOptions: {
             persistentOutput: true,
           },
         },
@@ -267,7 +267,7 @@ export default autoTrace(
                                   makeResults: restoredMakeResults,
                                 },
                                 rendererOptions: {
-                                  collapse: false,
+                                  collapseSubtasks: false,
                                   collapseErrors: false,
                                 },
                               }),
@@ -279,7 +279,7 @@ export default autoTrace(
                     }),
                     {
                       rendererOptions: {
-                        collapse: false,
+                        collapseSubtasks: false,
                         collapseErrors: false,
                       },
                     }

@@ -5,7 +5,7 @@ import { ElectronProcess, ForgeArch, ForgeListrTaskFn, ForgePlatform, ResolvedFo
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
-import { Listr } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 
 import locateElectronExecutable from '../util/electron-executable';
 import getForgeConfig from '../util/forge-config';
@@ -89,10 +89,10 @@ export default autoTrace(
               );
             }
           ),
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
-            showTimer: true,
+            timer: { ...PRESET_TIMER },
           },
         },
         {

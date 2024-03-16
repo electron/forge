@@ -11,7 +11,7 @@
     "@electron-forge/tracer": "7.3.0",
     "@electron/packager": "^18.1.2",
     "@electron/rebuild": "^3.2.10",
-    "listr2": "^5.0.3"
+    "listr2": "8.0.2"
   },
   "engines": {
     "node": ">= 16.4.0"

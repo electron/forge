@@ -16,7 +16,7 @@ import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
-import { Listr } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 import logSymbols from 'log-symbols';
 
 import getForgeConfig from '../util/forge-config';
@@ -112,7 +112,7 @@ export const listrMake = (
   const listrOptions = {
     concurrent: false,
     rendererOptions: {
-      collapse: false,
+      collapseSubtasks: false,
       collapseErrors: false,
     },
     rendererSilent: !interactive,
@@ -206,7 +206,7 @@ export const listrMake = (
             task.output = `Making for the following targets: ${chalk.magenta(`${makers.map((maker) => maker.name).join(', ')}`)}`;
           }
         ),
-        options: {
+        rendererOptions: {
           persistentOutput: true,
         },
       },
@@ -230,7 +230,7 @@ export const listrMake = (
             task.skip();
           }
         }),
-        options: {
+        rendererOptions: {
           persistentOutput: true,
         },
       },
@@ -258,7 +258,7 @@ export const listrMake = (
               ...listrOptions,
               concurrent: true,
               rendererOptions: {
-                collapse: false,
+                collapseSubtasks: false,
                 collapseErrors: false,
               },
             });
@@ -300,8 +300,8 @@ export const listrMake = (
                       }
                     }
                   }),
-                  options: {
-                    showTimer: true,
+                  rendererOptions: {
+                    timer: { ...PRESET_TIMER },
                   },
                 });
               }
@@ -321,7 +321,7 @@ export const listrMake = (
 
           task.output = `Artifacts available at: ${chalk.green(path.resolve(ctx.actualOutDir, 'make'))}`;
         }),
-        options: {
+        rendererOptions: {
           persistentOutput: true,
         },
       },
