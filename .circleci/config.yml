@@ -97,7 +97,7 @@ jobs:
         type: enum
         enum: ['x64', 'arm64']
     executor: << parameters.executor >>
-    parallelism: 2
+    parallelism: 4
     steps:
       - install
       - when:
