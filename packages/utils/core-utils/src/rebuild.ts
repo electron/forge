@@ -59,7 +59,7 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
         break;
       }
       case 'rebuild-done': {
-        if ('persistentOutput' in task.task.rendererTaskOptions) {
+        if (task.task.rendererTaskOptions && 'persistentOutput' in task.task.rendererTaskOptions) {
           task.task.rendererTaskOptions.persistentOutput = false;
         }
         break;
