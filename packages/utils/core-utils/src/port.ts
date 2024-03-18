@@ -24,7 +24,7 @@ export const portOccupied = async (port: number): Promise<void> => {
  * Find an available port for web UI.
  * @returns the port number.
  */
-export const findAvailablePort = async (initialPort: number, portOccupied: (port: number) => Promise<void>): Promise<number> => {
+export const findAvailablePort = async (initialPort: number): Promise<number> => {
   const maxPort = initialPort + 10;
 
   for (let p = initialPort; p <= maxPort; p++) {

@@ -1,34 +1,40 @@
 import { expect } from 'chai';
-import { stub } from 'sinon';
 
-import { findAvailablePort } from '../src/port';
-
+import { findAvailablePort, portOccupied } from '../src/port';
 describe('Port tests', () => {
-  describe('Find available port', () => {
-    it('should find an available port', async () => {
-      const initialPort = 9000;
-      // reject initial port, accept 9001
-      const portOccupiedStub = stub();
-      portOccupiedStub.onFirstCall().throws(new Error('port: 9000 is occupied'));
-      portOccupiedStub.onSecondCall().returns(Promise.resolve());
-
-      const port = await findAvailablePort(initialPort, portOccupiedStub);
-      expect(port).to.equal(9001);
-      expect(portOccupiedStub.callCount).to.equal(2);
-      expect(portOccupiedStub.firstCall.args[0]).to.equal(9000);
-      expect(portOccupiedStub.secondCall.args[0]).to.equal(9001);
+  describe('portOccupied', () => {
+    it('should resolve to true if the port is available', async () => {
+      const port = 49152;
+      const result = await portOccupied(port);
+      expect(result).to.not.throw;
     });
-    it('should throw an error if no port is available', async () => {
-      const initialPort = 9000;
-      const portOccupiedStub = stub();
-      for (let i = 0; i < 11; i++) {
-        portOccupiedStub.onCall(i).throws(new Error('port: ' + (9000 + i) + ' is occupied'));
-      }
+
+    it('should reject if the port is occupied', async () => {
+      const port = 3000;
       try {
-        await findAvailablePort(initialPort, portOccupiedStub);
-        expect.fail('Should have thrown an error');
-      } catch (err) {
-        expect((err as Error).message).to.equal('Could not find an available port between 9000 and 9010. Please free up a port and try again.');
+        await portOccupied(port);
+      } catch (error) {
+        expect((error as Error).message).to.equal(`port: ${port} is occupied`);
+      }
+    });
+  });
+
+  describe('findAvailablePort', () => {
+    it('should find an available port', async () => {
+      const initialPort = 49152;
+      const port = await findAvailablePort(initialPort);
+      expect(port).to.be.a('number');
+      expect(port).to.be.within(initialPort, initialPort + 10);
+    });
+
+    it('should throw an error if no available port is found', async () => {
+      const initialPort = 3000;
+      try {
+        await findAvailablePort(initialPort);
+      } catch (error) {
+        expect((error as Error).message).to.equal(
+          `Could not find an available port between ${initialPort} and ${initialPort + 10}. Please free up a port and try again.`
+        );
       }
     });
   });

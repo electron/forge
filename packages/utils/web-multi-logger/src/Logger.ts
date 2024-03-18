@@ -1,7 +1,7 @@
 import http from 'http';
 import path from 'path';
 
-import { findAvailablePort, portOccupied } from '@electron-forge/core-utils';
+import { findAvailablePort } from '@electron-forge/core-utils';
 import express from 'express';
 import ews from 'express-ws';
 
@@ -50,7 +50,7 @@ export default class Logger {
    * @returns the port number
    */
   async start(): Promise<number> {
-    this.port = await findAvailablePort(this.port, portOccupied);
+    this.port = await findAvailablePort(this.port);
     this.server = this.app.listen(this.port);
     return this.port;
   }
