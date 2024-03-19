@@ -1,4 +1,5 @@
-import * as http from 'http';
+import http from 'http';
+
 /**
  * Check if a port is occupied.
  * @returns boolean promise that resolves to true if the port is available, false otherwise.
@@ -20,6 +21,7 @@ export const portOccupied = async (port: number): Promise<void> => {
     });
   });
 };
+
 /**
  * Find an available port for web UI.
  * @returns the port number.
