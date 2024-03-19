@@ -134,7 +134,7 @@
     "inquirer": "^8.0.0",
     "lerna": "^6.6.2",
     "lint-staged": "^12.1.7",
-    "listr2": "8.0.2",
+    "listr2": "^8.0.2",
     "minimist": "^1.2.6",
     "mocha": "^9.0.1",
     "mocha-junit-reporter": "^2.2.1",
