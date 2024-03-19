@@ -109,7 +109,7 @@ export default autoTrace(
 
             return delayTraceTillSignal(
               childTrace,
-              task.newListr<any>(
+              task.newListr<never>(
                 publishers.map((publisher) => ({
                   title: `${chalk.cyan(`[publisher-${publisher.name}]`)} Running the ${chalk.yellow('publish')} command`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
