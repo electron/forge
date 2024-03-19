@@ -568,9 +568,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     await fs.remove(this.baseDir);
 
-    const logger = new Logger(this.loggerPort);
+    const logger = new Logger();
     this.loggers.push(logger);
-    const currLoggerPort = await logger.start();
+    this.loggerPort = await logger.start(this.loggerPort);
 
     return {
       tasks: [
@@ -587,7 +587,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           title: 'Launching dev servers for renderer process code',
           task: async (_, task) => {
             await this.launchRendererDevServers(logger);
-            task.output = `Output Available: ${chalk.cyan(`http://localhost:${currLoggerPort}`)}\n`;
+            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
           },
           options: {
             persistentOutput: true,
