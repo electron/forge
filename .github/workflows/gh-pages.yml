@@ -41,7 +41,7 @@ jobs:
           yarn docs
 
       - name: Prepare docs
-        uses: malept/github-action-gh-pages@e151760357583e2f9152f8e8c8658ceb3ccf3d64 # tag: v1.3.1
+        uses: malept/github-action-gh-pages@f7952a65c4b763dc84b824a530dc38bd375ac91e # tag: v1.4.0
         with:
           cname: js.electronforge.io
           defaultBranch: main
