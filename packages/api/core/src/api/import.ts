@@ -65,7 +65,7 @@ export default autoTrace(
         collapseErrors: false,
       },
       silentRendererCondition: !interactive,
-      fallbackRendererCondition: Boolean(process.env.DEBUG),
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const runner = new Listr(

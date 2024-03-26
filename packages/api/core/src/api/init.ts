@@ -152,7 +152,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
     {
       concurrent: false,
       silentRendererCondition: !interactive,
-      fallbackRendererCondition: Boolean(process.env.DEBUG),
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     }
   );
 
