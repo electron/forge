@@ -3,8 +3,17 @@ import { ChildProcess } from 'child_process';
 import { autoTrace } from '@electron-forge/tracer';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
-import { ListrDefaultRenderer, ListrSimpleRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
+import {
+  ListrBaseClassOptions,
+  ListrDefaultRenderer,
+  ListrDefaultRendererValue,
+  ListrSimpleRenderer,
+  ListrSimpleRendererValue,
+  ListrTask,
+  ListrTaskWrapper,
+} from 'listr2';
 
+export type ForgeListrOptions<T> = ListrBaseClassOptions<T, ListrDefaultRendererValue, ListrSimpleRendererValue>;
 export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer, ListrDefaultRenderer | ListrSimpleRenderer>;
 export type ForgeListrTaskFn<Ctx = any> = ListrTask<Ctx, ListrDefaultRenderer>['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };

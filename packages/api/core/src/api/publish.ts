@@ -3,6 +3,7 @@ import path from 'path';
 import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
+  ForgeListrOptions,
   ForgeListrTask,
   ForgeListrTaskFn,
   ForgeMakeResult,
@@ -86,13 +87,13 @@ export default autoTrace(
       throw new Error("Can't dry run and resume a dry run at the same time");
     }
 
-    const listrOptions = {
+    const listrOptions: ForgeListrOptions<PublishContext> = {
       concurrent: false,
       rendererOptions: {
         collapseErrors: false,
       },
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG),
     };
 
     const publishDistributablesTasks = (childTrace: typeof autoTrace) => [

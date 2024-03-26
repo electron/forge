@@ -5,6 +5,7 @@ import { MakerBase } from '@electron-forge/maker-base';
 import {
   ForgeArch,
   ForgeConfigMaker,
+  ForgeListrOptions,
   ForgeListrTaskFn,
   ForgeMakeResult,
   ForgePlatform,
@@ -109,14 +110,14 @@ export const listrMake = (
   }: MakeOptions,
   receiveMakeResults?: (results: ForgeMakeResult[]) => void
 ) => {
-  const listrOptions = {
+  const listrOptions: ForgeListrOptions<MakeContext> = {
     concurrent: false,
     rendererOptions: {
       collapseSubtasks: false,
       collapseErrors: false,
     },
-    rendererSilent: !interactive,
-    rendererFallback: Boolean(process.env.DEBUG),
+    silentRendererCondition: !interactive,
+    fallbackRendererCondition: Boolean(process.env.DEBUG),
   };
 
   const runner = new Listr<MakeContext>(
