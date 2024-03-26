@@ -11,7 +11,6 @@ import chalk from 'chalk';
 import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
-// eslint-disable-next-line node/no-extraneous-import
 import { PRESET_TIMER } from 'listr2';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
