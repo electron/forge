@@ -108,7 +108,7 @@ export default class PluginInterface implements IForgePluginInterface {
                   }
                 }
               ),
-              options: {},
+              rendererOptions: {},
             });
           }
         }

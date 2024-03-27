@@ -11,6 +11,7 @@ import chalk from 'chalk';
 import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
+import { PRESET_TIMER } from 'listr2';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
@@ -239,7 +240,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                         innerTask
                                       );
                                     },
-                                    options: {
+                                    rendererOptions: {
                                       persistentOutput: true,
                                       bottomBar: Infinity,
                                       showTimer: true,
@@ -320,10 +321,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                     innerTask
                   );
                 },
-                options: {
+                rendererOptions: {
                   persistentOutput: true,
                   bottomBar: Infinity,
-                  showTimer: true,
+                  timer: { ...PRESET_TIMER },
                 },
               },
               {
@@ -340,8 +341,8 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                     await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
                   }
                 },
-                options: {
-                  showTimer: true,
+                rendererOptions: {
+                  timer: { ...PRESET_TIMER },
                 },
               },
               ...multiArchTasks,
@@ -579,8 +580,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           task: async () => {
             await this.compileMain(true, logger);
           },
-          options: {
-            showTimer: true,
+          rendererOptions: {
+            timer: { ...PRESET_TIMER },
           },
         },
         {
@@ -589,9 +590,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
             await this.launchRendererDevServers(logger);
             task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
           },
-          options: {
+          rendererOptions: {
             persistentOutput: true,
-            showTimer: true,
+            timer: { ...PRESET_TIMER },
           },
         },
       ],

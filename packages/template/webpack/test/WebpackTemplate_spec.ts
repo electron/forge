@@ -16,9 +16,13 @@ describe('WebpackTemplate', () => {
 
   it('should succeed in initializing the webpack template', async () => {
     const tasks = await template.initializeTemplate(dir, {});
-    const runner = new Listr(tasks, { concurrent: false, exitOnError: false });
+    const runner = new Listr(tasks, {
+      concurrent: false,
+      exitOnError: false,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+    });
     await runner.run();
-    expect(runner.err).to.have.lengthOf(0);
+    expect(runner.errors).to.have.lengthOf(0);
   });
 
   context('template files are copied to project', () => {
