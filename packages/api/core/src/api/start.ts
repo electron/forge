@@ -1,6 +1,6 @@
 import { spawn, SpawnOptions } from 'child_process';
 
-import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { getElectronVersion, getForgeVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { ElectronProcess, ForgeArch, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
@@ -73,6 +73,27 @@ export default autoTrace(
               throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
             }
           }),
+        },
+        {
+          title: 'Checking Forge version',
+          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
+            { name: 'check-forge-version', category: '@electron-forge/core' },
+            async (_, ctx, task) => {
+              const { dir } = ctx;
+              ctx.forgeConfig = await getForgeConfig(dir);
+              ctx.packageJSON = await readMutatedPackageJson(dir, ctx.forgeConfig);
+              const currentForgeVersion = ctx.packageJSON.devDependencies['@electron-forge/cli'];
+              const latestForgeVersion = await getForgeVersion();
+              const currentMajorVersion = currentForgeVersion.match(/\^(\d+)/)?.[1];
+              const latestMajorVersion = latestForgeVersion?.match(/^(\d+)/)?.[1]; // Added null check
+              if (currentMajorVersion !== latestMajorVersion) {
+                task.output = `Update available\n ${chalk.dim(currentForgeVersion)} ${chalk.reset('→')} ${chalk.green(latestForgeVersion)}`;
+              }
+            }
+          ),
+          options: {
+            persistentOutput: true,
+          },
         },
         {
           title: 'Preparing native dependencies',
