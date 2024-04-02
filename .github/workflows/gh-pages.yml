@@ -17,13 +17,16 @@ jobs:
         id: generate-token
         with:
           creds: ${{ secrets.GH_APP_CREDS }}
-          export-git-user: true
 
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: true
           fetch-depth: 0
           token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Get short SHA for HEAD
+        id: get-short-sha
+        run: echo "sha=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
 
       - name: Use Node.js LTS
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
@@ -37,11 +40,20 @@ jobs:
           yarn
           yarn docs
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3.9.3
+      - name: Prepare docs
+        uses: malept/github-action-gh-pages@f7952a65c4b763dc84b824a530dc38bd375ac91e # tag: v1.4.0
         with:
-          github_token: ${{ steps.generate-token.outputs.token }}
-          publish_dir: ./docs
           cname: js.electronforge.io
-          user_name: ${{ env.GIT_COMMITTER_NAME }}
-          user_email: ${{ env.GIT_COMMITTER_EMAIL }}
+          defaultBranch: main
+          noCommit: true
+          showUnderscoreFiles: true
+          versionDocs: true
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+
+      - name: Commit docs
+        uses: dsanders11/github-app-commit-action@48d2ff8c1a855eb15d16afa97ae12616456d7cbc # v1.4.0
+        with:
+          fail-on-no-changes: false
+          message: 'deploy: ${{ steps.get-short-sha.outputs.sha }}'
+          token: ${{ steps.generate-token.outputs.token }}
