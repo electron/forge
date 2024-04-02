@@ -117,7 +117,7 @@ export async function checkSystem(task: ForgeListrTask<never>) {
         concurrent: true,
         exitOnError: false,
         rendererOptions: {
-          collapse: true,
+          collapseSubtasks: true,
         },
       }
     );
