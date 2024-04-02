@@ -22,7 +22,7 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
-    "listr2": "^8.0.2"
+    "listr2": "^7.0.2"
   },
   "devDependencies": {
     "@electron/packager": "^18.1.3",
