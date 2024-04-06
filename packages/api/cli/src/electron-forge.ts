@@ -66,7 +66,7 @@ program
 
   await runner.run();
 
-  if (runner.err.length) {
+  if (runner.errors.length) {
     console.error(
       chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
 Make sure you have git installed and Node.js version ${metadata.engines.node}`)
