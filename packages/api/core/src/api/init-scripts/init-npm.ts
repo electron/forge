@@ -16,6 +16,7 @@ export function siblingDep(name: string): string {
 
 export const deps = ['electron-squirrel-startup'];
 export const devDeps = [
+  '@electron/fuses',
   siblingDep('cli'),
   siblingDep('maker-squirrel'),
   siblingDep('maker-zip'),
