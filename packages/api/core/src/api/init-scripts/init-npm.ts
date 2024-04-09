@@ -22,7 +22,7 @@ export const devDeps = [
   siblingDep('maker-deb'),
   siblingDep('maker-rpm'),
   siblingDep('plugin-auto-unpack-natives'),
-  siblingDep('plugin-fuses')
+  siblingDep('plugin-fuses'),
 ];
 export const exactDevDeps = ['electron'];
 
