@@ -25,7 +25,7 @@
   "devDependencies": {
     "@electron-forge/test-utils": "7.3.1",
     "chai": "^4.3.3",
-    "listr2": "^5.0.3"
+    "listr2": "^7.0.2"
   },
   "publishConfig": {
     "access": "public"
