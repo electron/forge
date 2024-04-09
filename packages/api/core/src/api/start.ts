@@ -1,11 +1,19 @@
 import { spawn, SpawnOptions } from 'child_process';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
-import { ElectronProcess, ForgeArch, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig, StartOptions } from '@electron-forge/shared-types';
+import {
+  ElectronProcess,
+  ForgeArch,
+  ForgeListrOptions,
+  ForgeListrTaskFn,
+  ForgePlatform,
+  ResolvedForgeConfig,
+  StartOptions,
+} from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
-import { Listr } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 
 import locateElectronExecutable from '../util/electron-executable';
 import getForgeConfig from '../util/forge-config';
@@ -41,13 +49,13 @@ export default autoTrace(
   ): Promise<ElectronProcess> => {
     const platform = process.env.npm_config_platform || process.platform;
     const arch = process.env.npm_config_arch || process.arch;
-    const listrOptions = {
+    const listrOptions: ForgeListrOptions<StartContext> = {
       concurrent: false,
       rendererOptions: {
         collapseErrors: false,
       },
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const runner = new Listr<StartContext>(
@@ -89,10 +97,10 @@ export default autoTrace(
               );
             }
           ),
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
-            showTimer: true,
+            timer: { ...PRESET_TIMER },
           },
         },
         {
@@ -128,7 +136,7 @@ export default autoTrace(
         inspectBrk,
       });
       if (typeof spawnedPluginChild === 'object' && 'tasks' in spawnedPluginChild) {
-        const innerRunner = new Listr<never>([], listrOptions);
+        const innerRunner = new Listr<never>([], listrOptions as ForgeListrOptions<never>);
         for (const task of spawnedPluginChild.tasks) {
           innerRunner.add(task);
         }
