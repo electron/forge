@@ -12,11 +12,12 @@ import workingDir from './util/working-dir';
 (async () => {
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
     .arguments('[cwd]')
     .option('--target [target[,target...]]', 'The comma-separated deployment targets, defaults to "github"')
     .option('--dry-run', "Triggers a publish dry run which saves state and doesn't upload anything")
     .option('--from-dry-run', 'Attempts to publish artifacts from the last saved dry run')
+    .helpOption('-h, --help', 'Output usage information')
     .allowUnknownOption(true)
     .action((cwd) => {
       dir = workingDir(dir, cwd);
