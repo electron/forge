@@ -20,7 +20,7 @@ import workingDir from './util/working-dir';
 
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
     .arguments('[cwd]')
     .option('-p, --app-path <path>', "Override the path to the Electron app to launch (defaults to '.')")
     .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
@@ -28,6 +28,7 @@ import workingDir from './util/working-dir';
     .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
     .option('-i, --inspect-electron', 'Triggers inspect mode on Electron to allow debugging the main process.  Electron >1.7 only')
     .option('--inspect-brk-electron', 'Triggers inspect-brk mode on Electron to allow debugging the main process.  Electron >1.7 only')
+    .helpOption('-h, --help', 'Output usage information')
     .action((cwd) => {
       dir = workingDir(dir, cwd);
     })

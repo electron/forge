@@ -30,8 +30,9 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
 };
 
 program
-  .version(metadata.version)
+  .version(metadata.version, '-V, --version', 'Output the current version')
   .option('--verbose', 'Enables verbose mode')
+  .helpOption('-h, --help', 'Output usage information')
   .command('init', 'Initialize a new Electron application')
   .command('import', 'Attempts to navigate you through the process of importing an existing project to "electron-forge"')
   .command('start', 'Start the current Electron application in development mode')
