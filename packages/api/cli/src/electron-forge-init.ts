@@ -10,11 +10,12 @@ import workingDir from './util/working-dir';
 (async () => {
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
     .arguments('[name]')
     .option('-t, --template [name]', 'Name of the Forge template to use')
     .option('-c, --copy-ci-files', 'Whether to copy the templated CI files (defaults to false)', false)
     .option('-f, --force', 'Whether to overwrite an existing directory (defaults to false)', false)
+    .helpOption('-h, --help', 'Output usage information')
     .action((name) => {
       dir = workingDir(dir, name, false);
     })
