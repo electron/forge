@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import program from 'commander';
 import fs from 'fs-extra';
 import semver from 'semver';
+// eslint-disable-next-line node/no-unpublished-import
 import updateNotifier from 'update-notifier';
 
 import './util/terminate';
