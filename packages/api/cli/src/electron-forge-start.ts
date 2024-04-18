@@ -2,15 +2,30 @@ import path from 'path';
 
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import program from 'commander';
 import fs from 'fs-extra';
+import semver from 'semver';
+import updateNotifier from 'update-notifier';
 
 import './util/terminate';
 import workingDir from './util/working-dir';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const metadata = require('../package.json');
 (async () => {
   let commandArgs = process.argv;
   let appArgs;
+  const notifier = updateNotifier({
+    pkg: {
+      name: metadata.name,
+      version: metadata.version,
+    },
+    updateCheckInterval: 1000 * 60 * 60,
+  });
+  if (notifier.update && semver.lt(notifier.update.current, notifier.update.latest)) {
+    console.log(`Update available: ${chalk.dim(`${notifier.update?.current}`)} -> ${chalk.green(`${notifier.update?.latest}`)}`);
+  }
 
   const doubleDashIndex = process.argv.indexOf('--');
   if (doubleDashIndex !== -1) {
