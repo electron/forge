@@ -18,7 +18,7 @@ jobs:
         with:
           creds: ${{ secrets.GH_APP_CREDS }}
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
         with:
           submodules: true
           fetch-depth: 0
@@ -52,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Commit docs
-        uses: dsanders11/github-app-commit-action@56f54b482f8019a16d8f8b0bfbbc9fa3ee9802e8 # v1.3.0
+        uses: dsanders11/github-app-commit-action@48d2ff8c1a855eb15d16afa97ae12616456d7cbc # v1.4.0
         with:
           fail-on-no-changes: false
           message: 'deploy: ${{ steps.get-short-sha.outputs.sha }}'

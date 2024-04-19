@@ -3,6 +3,7 @@ import path from 'path';
 import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
+  ForgeListrOptions,
   ForgeListrTask,
   ForgeListrTaskFn,
   ForgeMakeResult,
@@ -86,13 +87,13 @@ export default autoTrace(
       throw new Error("Can't dry run and resume a dry run at the same time");
     }
 
-    const listrOptions = {
+    const listrOptions: ForgeListrOptions<PublishContext> = {
       concurrent: false,
       rendererOptions: {
         collapseErrors: false,
       },
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const publishDistributablesTasks = (childTrace: typeof autoTrace) => [
@@ -126,13 +127,13 @@ export default autoTrace(
                       });
                     }
                   ),
-                  options: {
+                  rendererOptions: {
                     persistentOutput: true,
                   },
                 })),
                 {
                   rendererOptions: {
-                    collapse: false,
+                    collapseSubtasks: false,
                     collapseErrors: false,
                   },
                 }
@@ -141,7 +142,7 @@ export default autoTrace(
             );
           }
         ),
-        options: {
+        rendererOptions: {
           persistentOutput: true,
         },
       },
@@ -215,7 +216,7 @@ export default autoTrace(
               }
             }
           ),
-          options: {
+          rendererOptions: {
             persistentOutput: true,
           },
         },
@@ -267,7 +268,7 @@ export default autoTrace(
                                   makeResults: restoredMakeResults,
                                 },
                                 rendererOptions: {
-                                  collapse: false,
+                                  collapseSubtasks: false,
                                   collapseErrors: false,
                                 },
                               }),
@@ -279,7 +280,7 @@ export default autoTrace(
                     }),
                     {
                       rendererOptions: {
-                        collapse: false,
+                        collapseSubtasks: false,
                         collapseErrors: false,
                       },
                     }

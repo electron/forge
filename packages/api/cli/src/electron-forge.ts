@@ -30,8 +30,9 @@ program.executeSubCommand = (argv: string[], args: string[], unknown: string[]) 
 };
 
 program
-  .version(metadata.version)
+  .version(metadata.version, '-V, --version', 'Output the current version')
   .option('--verbose', 'Enables verbose mode')
+  .helpOption('-h, --help', 'Output usage information')
   .command('init', 'Initialize a new Electron application')
   .command('import', 'Attempts to navigate you through the process of importing an existing project to "electron-forge"')
   .command('start', 'Start the current Electron application in development mode')
@@ -65,7 +66,7 @@ program
 
   await runner.run();
 
-  if (runner.err.length) {
+  if (runner.errors.length) {
     console.error(
       chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
 Make sure you have git installed and Node.js version ${metadata.engines.node}`)

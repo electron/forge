@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
-import { ForgeListrTaskFn } from '@electron-forge/shared-types';
+import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
@@ -58,14 +58,14 @@ export default autoTrace(
     childTrace,
     { dir = process.cwd(), interactive = false, confirmImport, shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript, outDir }: ImportOptions
   ): Promise<void> => {
-    const listrOptions = {
+    const listrOptions: ForgeListrOptions<unknown> = {
       concurrent: false,
       rendererOptions: {
-        collapse: false,
+        collapseSubtasks: false,
         collapseErrors: false,
       },
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const runner = new Listr(
@@ -91,7 +91,7 @@ export default autoTrace(
         },
         {
           title: 'Processing configuration and dependencies',
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
           },
@@ -251,7 +251,7 @@ export default autoTrace(
         },
         {
           title: 'Finalizing import',
-          options: {
+          rendererOptions: {
             persistentOutput: true,
             bottomBar: Infinity,
           },
