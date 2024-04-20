@@ -38,7 +38,7 @@ describe('Port tests', () => {
       try {
         await portOccupied(port);
       } catch (error) {
-        expect((error as Error).message).to.equal(`port: ${port} is occupied`);
+        expect(error).to.equal(false);
       } finally {
         releasePort();
       }

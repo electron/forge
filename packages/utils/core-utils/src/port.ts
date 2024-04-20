@@ -4,20 +4,18 @@ import http from 'http';
  * Check if a port is occupied.
  * @returns boolean promise that resolves to true if the port is available, false otherwise.
  */
-export const portOccupied = async (port: number): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
+export const portOccupied = async (port: number): Promise<boolean> => {
+  return new Promise<boolean>((resolve, reject) => {
     const server = http.createServer().listen(port);
     server.on('listening', () => {
       server.close();
-      resolve();
+      server.on('close', () => {
+        resolve(true);
+      });
     });
 
-    server.on('error', (error) => {
-      if ('code' in error && (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
-        reject(new Error(`port: ${port} is occupied`));
-      } else {
-        reject(error);
-      }
+    server.on('error', (_err) => {
+      reject(false);
     });
   });
 };
