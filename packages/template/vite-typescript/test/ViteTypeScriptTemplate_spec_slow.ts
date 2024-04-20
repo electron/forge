@@ -22,6 +22,7 @@ describe('ViteTypeScriptTemplate', () => {
     await yarnOrNpmSpawn(['link:remove']);
     if (os.platform() !== 'win32') {
       // Windows platform `fs.remove(dir)` logic useing npm `npm run test:clear`.
+      // https://github.com/electron/forge/pull/3468#issuecomment-1920805240
       await fs.remove(dir);
     }
   });
@@ -40,7 +41,7 @@ describe('ViteTypeScriptTemplate', () => {
       'tsconfig.json',
       '.eslintrc.json',
       'forge.env.d.ts',
-      'forge.config.ts',
+      'forge.config.cts',
       'vite.base.config.ts',
       'vite.main.config.ts',
       'vite.preload.config.ts',

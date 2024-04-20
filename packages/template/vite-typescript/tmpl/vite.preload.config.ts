@@ -13,11 +13,13 @@ export default defineConfig((env) => {
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry!,
         output: {
+          // https://github.com/electron-vite/vite-plugin-electron/blob/v0.28.5/README.md#built-format
+          // https://github.com/electron-vite/vite-plugin-electron/blob/v0.28.5/src/simple.ts#L56-L82
           format: 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
+          entryFileNames: '[name].mjs',
+          chunkFileNames: '[name].mjs',
           assetFileNames: '[name].[ext]',
         },
       },

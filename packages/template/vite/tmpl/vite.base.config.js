@@ -1,10 +1,7 @@
 import { builtinModules } from 'node:module';
 import pkg from './package.json';
 
-export const builtins = [
-  'electron',
-  ...builtinModules.map((m) => [m, `node:${m}`]).flat(),
-];
+export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
 
 export const external = [...builtins, ...Object.keys(pkg.dependencies || {})];
 
@@ -22,6 +19,7 @@ export const getBuildConfig = (env) => {
       outDir: '.vite/build',
       watch: command === 'serve' ? {} : null,
       minify: command === 'build',
+      sourcemap: command === 'serve',
     },
     clearScreen: false,
   };
@@ -47,17 +45,12 @@ export const getDefineKeys = (names) => {
 /** @type {(env: import('vite').ConfigEnv<'build'>) => Record<string, any>} */
 export const getBuildDefine = (env) => {
   const { command, forgeConfig } = env;
-  const names = forgeConfig.renderer
-    .filter(({ name }) => name != null)
-    .map(({ name }) => name);
+  const names = forgeConfig.renderer.filter(({ name }) => name != null).map(({ name }) => name);
   const defineKeys = getDefineKeys(names);
   const define = Object.entries(defineKeys).reduce((acc, [name, keys]) => {
     const { VITE_DEV_SERVER_URL, VITE_NAME } = keys;
     const def = {
-      [VITE_DEV_SERVER_URL]:
-        command === 'serve'
-          ? JSON.stringify(process.env[VITE_DEV_SERVER_URL])
-          : undefined,
+      [VITE_DEV_SERVER_URL]: command === 'serve' ? JSON.stringify(process.env[VITE_DEV_SERVER_URL]) : undefined,
       [VITE_NAME]: JSON.stringify(name),
     };
     return { ...acc, ...def };
@@ -81,9 +74,7 @@ export const pluginExposeRenderer = (name) => {
         /** @type {import('node:net').AddressInfo} */
         const addressInfo = server.httpServer?.address();
         // Expose env constant for main process use.
-        process.env[
-          VITE_DEV_SERVER_URL
-        ] = `http://localhost:${addressInfo?.port}`;
+        process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
       });
     },
   };
