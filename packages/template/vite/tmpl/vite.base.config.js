@@ -5,6 +5,8 @@ export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}
 
 export const external = [...builtins, ...Object.keys(pkg.dependencies || {})];
 
+export const esmodule = pkg.type === 'module';
+
 /** @type {(env: import('vite').ConfigEnv<'build'>) => import('vite').UserConfig} */
 export const getBuildConfig = (env) => {
   const { root, mode, command } = env;

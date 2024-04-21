@@ -1,11 +1,12 @@
 import { defineConfig, mergeConfig } from 'vite';
-import { getBuildConfig, external, pluginHotRestart } from './vite.base.config';
+import { getBuildConfig, external, esmodule, pluginHotRestart } from './vite.base.config';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
   /** @type {import('vite').ConfigEnv<'build'>} */
   const forgeEnv = env;
   const { forgeConfigSelf } = forgeEnv;
+  const ext = esmodule ? 'mjs' : 'js';
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
@@ -19,8 +20,8 @@ export default defineConfig((env) => {
           format: 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: '[name].mjs',
-          chunkFileNames: '[name].mjs',
+          entryFileNames: `[name].${ext}`,
+          chunkFileNames: `[name].${ext}`,
           assetFileNames: '[name].[ext]',
         },
       },

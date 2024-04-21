@@ -1,11 +1,12 @@
 import type { ConfigEnv, UserConfig } from 'vite';
 import { defineConfig, mergeConfig } from 'vite';
-import { getBuildConfig, external, pluginHotRestart } from './vite.base.config';
+import { getBuildConfig, external, esmodule, pluginHotRestart } from './vite.base.config';
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'build'>;
   const { forgeConfigSelf } = forgeEnv;
+  const ext = esmodule ? 'mjs' : 'js';
   const config: UserConfig = {
     build: {
       rollupOptions: {
@@ -18,8 +19,8 @@ export default defineConfig((env) => {
           format: 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: '[name].mjs',
-          chunkFileNames: '[name].mjs',
+          entryFileNames: `[name].${ext}`,
+          chunkFileNames: `[name].${ext}`,
           assetFileNames: '[name].[ext]',
         },
       },
