@@ -47,7 +47,6 @@ jobs:
           defaultBranch: main
           noCommit: true
           showUnderscoreFiles: true
-          versionDocs: true
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
