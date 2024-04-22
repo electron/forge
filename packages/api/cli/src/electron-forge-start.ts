@@ -1,31 +1,61 @@
+import { createRequire } from 'module';
 import path from 'path';
 
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
+import boxen, { Options } from 'boxen';
 import chalk from 'chalk';
 import program from 'commander';
 import fs from 'fs-extra';
-import semver from 'semver';
 // eslint-disable-next-line node/no-unpublished-import
 import updateNotifier from 'update-notifier';
 
 import './util/terminate';
 import workingDir from './util/working-dir';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const metadata = require('../package.json');
+let userPackage;
+try {
+  userPackage = createRequire(path.resolve('package.json'))('./package.json');
+} catch {
+  console.warn(`path=${'package.json'} file not found at CWD: path=${process.cwd()}.`);
+}
 (async () => {
   let commandArgs = process.argv;
   let appArgs;
   const notifier = updateNotifier({
-    pkg: {
-      name: metadata.name,
-      version: metadata.version,
-    },
+    pkg: await fs.readJson(path.resolve(__dirname, '../package.json')),
+    // Use 0 for debugging.
     updateCheckInterval: 1000 * 60 * 60,
   });
-  if (notifier.update && semver.lt(notifier.update.current, notifier.update.latest)) {
-    console.log(`Update available: ${chalk.dim(`${notifier.update?.current}`)} -> ${chalk.green(`${notifier.update?.latest}`)}`);
+  if (notifier.update) {
+    const sitePackagesForUpdate = Object.keys({
+      ...userPackage.devDependencies,
+    })
+      .filter((p) => p.startsWith('@electron-forge'))
+      .map((p) => p.concat('@latest'))
+      .join(' ');
+    const boxenOptions: Options = {
+      padding: 1,
+      margin: 1,
+      align: 'center',
+      borderColor: 'cyan',
+      borderStyle: {
+        topLeft: '╭',
+        topRight: '╮',
+        bottomLeft: '╰',
+        bottomRight: '╯',
+        horizontal: '─',
+        vertical: '│',
+      },
+    };
+    const forgeUpdateMessage = boxen(
+      `Update available ${chalk.dim(`${notifier.update.current}`)} → ${chalk.green(`${notifier.update.latest}`)}
+
+      To upgrade Electron Forge packages to the latest version, execute the following command:
+    ${chalk.cyanBright(`npm i ${sitePackagesForUpdate}`)}`,
+      boxenOptions
+    );
+    console.log(forgeUpdateMessage);
   }
 
   const doubleDashIndex = process.argv.indexOf('--');
