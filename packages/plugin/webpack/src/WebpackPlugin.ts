@@ -571,7 +571,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const logger = new Logger();
     this.loggers.push(logger);
-    this.loggerPort = await logger.start(this.loggerPort);
+    this.loggerPort = await logger.start(this.loggerPort as number);
 
     return {
       tasks: [
