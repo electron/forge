@@ -1,91 +1,64 @@
-import { AddressInfo } from 'node:net';
+import { builtinModules } from 'node:module';
 import path from 'node:path';
 
 import { expect } from 'chai';
-import { UserConfig, default as vite, ViteDevServer } from 'vite';
 
-import { VitePluginConfig } from '../src/Config';
 import ViteConfigGenerator from '../src/ViteConfig';
 
+import type { VitePluginConfig } from '../src/Config';
+import type { UserConfig } from 'vite';
+
+const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
+const configRoot = path.join(__dirname, 'fixture/config');
+
 describe('ViteConfigGenerator', () => {
-  it('is `getDefines` will be gets auto-updated `server.port`', async () => {
-    const config = {
-      renderer: [{ name: 'foo_window' }, { name: 'bar_window' }],
-    } as VitePluginConfig;
-    const generator = new ViteConfigGenerator(config, '', false);
-    const servers: ViteDevServer[] = [];
-
-    for (const userConfig of await generator.getRendererConfig()) {
-      const viteDevServer = await vite.createServer({
-        configFile: false,
-        ...userConfig,
-      });
-
-      await viteDevServer.listen();
-      viteDevServer.printUrls();
-      servers.push(viteDevServer);
-
-      // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
-      const addressInfo = viteDevServer.httpServer!.address() as AddressInfo;
-      userConfig.server ??= {};
-      userConfig.server.port = addressInfo.port;
-    }
-
-    const define = await generator.getDefines();
-
-    for (const server of servers) {
-      server.close();
-    }
-    servers.length = 0;
-
-    expect(define.FOO_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5173"');
-    expect(define.FOO_WINDOW_VITE_NAME).equal('"foo_window"');
-    expect(define.BAR_WINDOW_VITE_DEV_SERVER_URL).equal('"http://localhost:5174"');
-    expect(define.BAR_WINDOW_VITE_NAME).equal('"bar_window"');
-  });
-
   it('getBuildConfig', async () => {
     const config = {
-      build: [{ entry: 'foo.js' }],
+      build: [{ config: path.join(configRoot, 'vite.main.config.mjs') }],
       renderer: [],
     } as VitePluginConfig;
-    const generator = new ViteConfigGenerator(config, '', true);
-    const buildConfig = (await generator.getBuildConfig())[0];
-    expect(buildConfig).deep.equal({
+    const generator = new ViteConfigGenerator(config, configRoot, true);
+    const buildConfig1 = (await generator.getBuildConfig())[0];
+    const buildConfig2: UserConfig = {
+      root: configRoot,
       mode: 'production',
       build: {
         lib: {
-          entry: 'foo.js',
+          entry: 'src/main.js',
           formats: ['cjs'],
           // shims
-          fileName: (buildConfig.build?.lib as any)?.fileName,
+          fileName: (buildConfig1.build?.lib as any)?.fileName,
         },
         emptyOutDir: false,
-        outDir: path.join('.vite', 'build'),
-        watch: undefined,
+        outDir: '.vite/build',
+        minify: true, // this.isProd === true
+        watch: null,
+        rollupOptions: {
+          external: builtins,
+        },
       },
       clearScreen: false,
-      define: {},
-      // shims
-      plugins: [buildConfig.plugins?.[0]],
-    } as UserConfig);
+    };
+
+    expect(buildConfig1).deep.equal(buildConfig2);
   });
 
   it('getRendererConfig', async () => {
     const config = {
-      renderer: [{ name: 'foo_window' }, { name: 'bar_window' }],
+      build: [{ config: path.join(configRoot, 'vite.renderer.config.mjs') }],
+      renderer: [],
     } as VitePluginConfig;
-    const generator = new ViteConfigGenerator(config, '', false);
-    const configs = await generator.getRendererConfig();
-    for (const [index, rendererConfig] of configs.entries()) {
-      expect(rendererConfig).deep.equal({
-        mode: 'development',
-        base: './',
-        build: {
-          outDir: path.join('.vite', 'renderer', config.renderer[index].name),
-        },
-        clearScreen: false,
-      } as UserConfig);
-    }
+    const generator = new ViteConfigGenerator(config, configRoot, true);
+    const buildConfig1 = (await generator.getBuildConfig())[0];
+    const buildConfig2: UserConfig = {
+      root: configRoot,
+      mode: 'production',
+      base: './',
+      build: {
+        outDir: 'renderer/main_window',
+      },
+    };
+
+    expect(buildConfig1).deep.equal(buildConfig2);
   });
 });

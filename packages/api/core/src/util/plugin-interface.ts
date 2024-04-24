@@ -10,6 +10,7 @@ import {
   ResolvedForgeConfig,
   StartResult,
 } from '@electron-forge/shared-types';
+import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
 
@@ -82,6 +83,7 @@ export default class PluginInterface implements IForgePluginInterface {
   }
 
   async getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    childTrace: typeof autoTrace,
     hookName: Hook,
     hookArgs: ForgeSimpleHookSignatures[Hook]
   ): Promise<ForgeListrTaskDefinition[]> {
@@ -95,15 +97,18 @@ export default class PluginInterface implements IForgePluginInterface {
           for (const hook of hooks) {
             tasks.push({
               title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
-              task: async (_, task) => {
-                if ((hook as any).__hookName) {
-                  // Also give it the task
-                  await (hook as any).call(task, this.config, ...(hookArgs as any[]));
-                } else {
-                  await hook(this.config, ...hookArgs);
+              task: childTrace(
+                { name: 'forge-plugin-hook', category: '@electron-forge/hooks', extraDetails: { plugin: plugin.name, hook: hookName } },
+                async (_, __, task) => {
+                  if ((hook as any).__hookName) {
+                    // Also give it the task
+                    return await (hook as any).call(task, this.config, ...(hookArgs as any[]));
+                  } else {
+                    await hook(this.config, ...hookArgs);
+                  }
                 }
-              },
-              options: {},
+              ),
+              rendererOptions: {},
             });
           }
         }

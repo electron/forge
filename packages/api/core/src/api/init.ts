@@ -74,9 +74,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
           await initDirectory(dir, task, force);
           await initGit(dir);
         },
-        options: {
-          persistentOutput: true,
-        },
+        rendererOptions: { persistentOutput: true },
       },
       {
         title: 'Preparing template',
@@ -153,8 +151,8 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
     ],
     {
       concurrent: false,
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     }
   );
 

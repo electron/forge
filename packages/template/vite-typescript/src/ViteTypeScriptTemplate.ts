@@ -14,6 +14,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
       {
         title: 'Setting up Forge configuration',
         task: async () => {
+          await this.copyTemplateFile(directory, 'forge.env.d.ts');
           await this.copyTemplateFile(directory, 'forge.config.ts');
           await fs.remove(path.resolve(directory, 'forge.config.js'));
         },
@@ -24,9 +25,10 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
           // Copy Vite files
+          await this.copyTemplateFile(directory, 'vite.base.config.ts');
           await this.copyTemplateFile(directory, 'vite.main.config.ts');
-          await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
           await this.copyTemplateFile(directory, 'vite.preload.config.ts');
+          await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
 
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
@@ -39,7 +41,6 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
 
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
-          await this.copyTemplateFile(path.join(directory, 'src'), 'types.d.ts');
 
           // Remove preload.js and replace with preload.ts
           await fs.remove(filePath('preload.js'));

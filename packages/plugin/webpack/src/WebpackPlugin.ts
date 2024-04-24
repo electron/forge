@@ -1,18 +1,22 @@
+import crypto from 'crypto';
 import http from 'http';
 import path from 'path';
+import { pipeline } from 'stream/promises';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
+import glob from 'fast-glob';
 import fs from 'fs-extra';
+import { PRESET_TIMER } from 'listr2';
 import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig } from './Config';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';
@@ -24,6 +28,10 @@ const DEFAULT_LOGGER_PORT = 9000;
 
 type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
 type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
+
+type NativeDepsCtx = {
+  nativeDeps: Record<string, string[]>;
+};
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -111,12 +119,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  private runWebpack = async (options: Configuration[], isRenderer = false): Promise<webpack.MultiStats | undefined> =>
+  private runWebpack = async (options: Configuration[], rendererOptions: WebpackPluginRendererConfig | null): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
-        if (isRenderer && this.config.renderer.jsonStats) {
+        if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
-            const name = this.config.renderer.entryPoints[index].name;
+            const name = rendererOptions.entryPoints[index].name;
             await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
           }
         }
@@ -158,20 +166,191 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
           this.isProd = true;
           await fs.remove(this.baseDir);
-          await listrCompatibleRebuildHook(
-            this.projectDir,
-            await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-            platform,
-            arch,
-            config.rebuildConfig,
-            task,
-            chalk.cyan('[plugin-webpack] ')
+
+          // TODO: Figure out how to get matrix from packager
+          const arches: string[] = Array.from(
+            new Set(arch.split(',').reduce<string[]>((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []))
           );
-        }, 'Preparing native dependencies'),
-        namedHookWithTaskFn<'prePackage'>(async () => {
-          await this.compileMain();
-          await this.compileRenderers();
-        }, 'Building webpack bundles'),
+
+          const firstArch = arches[0];
+          const otherArches = arches.slice(1);
+
+          const multiArchTasks: ListrTask<NativeDepsCtx>[] =
+            otherArches.length === 0
+              ? []
+              : [
+                  {
+                    title: 'Mapping native dependencies',
+                    task: async (ctx: NativeDepsCtx) => {
+                      const firstArchDir = path.resolve(this.baseDir, firstArch);
+                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+                      const mapping: Record<string, string[]> = Object.create(null);
+
+                      const webpackNodeFiles = await glob('**/*.node', {
+                        cwd: firstArchDir,
+                      });
+                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                        cwd: nodeModulesDir,
+                      });
+                      const hashToNodeModules: Record<string, string[]> = Object.create(null);
+
+                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+                        const digest = hash.digest('hex');
+
+                        hashToNodeModules[digest] = hashToNodeModules[digest] || [];
+                        hashToNodeModules[digest].push(resolvedNodeFile);
+                      }
+
+                      for (const webpackNodeFile of webpackNodeFiles) {
+                        const hash = crypto.createHash('sha256');
+                        await pipeline(fs.createReadStream(path.resolve(firstArchDir, webpackNodeFile)), hash);
+                        const matchedNodeModule = hashToNodeModules[hash.digest('hex')];
+                        if (!matchedNodeModule || !matchedNodeModule.length) {
+                          throw new Error(`Could not find originating native module for "${webpackNodeFile}"`);
+                        }
+
+                        mapping[webpackNodeFile] = matchedNodeModule;
+                      }
+
+                      ctx.nativeDeps = mapping;
+                    },
+                  },
+                  {
+                    title: `Generating multi-arch bundles`,
+                    task: async (_, task) => {
+                      return task.newListr(
+                        otherArches.map(
+                          (pArch): ListrTask<NativeDepsCtx> => ({
+                            title: `Generating ${chalk.magenta(pArch)} bundle`,
+                            task: async (_, innerTask) => {
+                              return innerTask.newListr(
+                                [
+                                  {
+                                    title: 'Preparing native dependencies',
+                                    task: async (_, innerTask) => {
+                                      await listrCompatibleRebuildHook(
+                                        this.projectDir,
+                                        await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                                        platform,
+                                        pArch,
+                                        config.rebuildConfig,
+                                        innerTask
+                                      );
+                                    },
+                                    rendererOptions: {
+                                      persistentOutput: true,
+                                      bottomBar: Infinity,
+                                      showTimer: true,
+                                    },
+                                  },
+                                  {
+                                    title: 'Mapping native dependencies',
+                                    task: async (ctx) => {
+                                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+
+                                      // Duplicate the firstArch build
+                                      const firstDir = path.resolve(this.baseDir, firstArch);
+                                      const targetDir = path.resolve(this.baseDir, pArch);
+                                      await fs.mkdirp(targetDir);
+                                      for (const child of await fs.readdir(firstDir)) {
+                                        await fs.promises.cp(path.resolve(firstDir, child), path.resolve(targetDir, child), {
+                                          recursive: true,
+                                        });
+                                      }
+
+                                      const nodeModulesNodeFiles = await glob('**/*.node', {
+                                        cwd: nodeModulesDir,
+                                      });
+                                      const nodeModuleToHash: Record<string, string> = Object.create(null);
+
+                                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                                        const hash = crypto.createHash('sha256');
+                                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
+                                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
+
+                                        nodeModuleToHash[resolvedNodeFile] = hash.digest('hex');
+                                      }
+
+                                      // Use the native module map to find the newly built native modules
+                                      for (const nativeDep of Object.keys(ctx.nativeDeps)) {
+                                        const archPath = path.resolve(targetDir, nativeDep);
+                                        await fs.remove(archPath);
+
+                                        const mappedPaths = ctx.nativeDeps[nativeDep];
+                                        if (!mappedPaths || !mappedPaths.length) {
+                                          throw new Error(`The "${nativeDep}" module could not be mapped to any native modules on disk`);
+                                        }
+
+                                        if (!mappedPaths.every((mappedPath) => nodeModuleToHash[mappedPath] === nodeModuleToHash[mappedPaths[0]])) {
+                                          throw new Error(
+                                            `The "${nativeDep}" mapped to multiple modules "${mappedPaths.join(
+                                              ', '
+                                            )}" but the same modules post rebuild did not map to the same native code`
+                                          );
+                                        }
+
+                                        await fs.promises.cp(mappedPaths[0], archPath);
+                                      }
+                                    },
+                                  },
+                                ],
+                                { concurrent: false }
+                              );
+                            },
+                          })
+                        )
+                      );
+                    },
+                  },
+                ];
+
+          return task.newListr<NativeDepsCtx>(
+            [
+              {
+                title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                task: async (_, innerTask) => {
+                  await listrCompatibleRebuildHook(
+                    this.projectDir,
+                    await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
+                    platform,
+                    firstArch,
+                    config.rebuildConfig,
+                    innerTask
+                  );
+                },
+                rendererOptions: {
+                  persistentOutput: true,
+                  bottomBar: Infinity,
+                  timer: { ...PRESET_TIMER },
+                },
+              },
+              {
+                title: 'Building webpack bundles',
+                task: async () => {
+                  await this.compileMain();
+                  await this.compileRenderers();
+                  // Store it in a place that won't get messed with
+                  // We'll restore the right "arch" in the afterCopy hook further down
+                  const preExistingChildren = await fs.readdir(this.baseDir);
+                  const targetDir = path.resolve(this.baseDir, firstArch);
+                  await fs.mkdirp(targetDir);
+                  for (const child of preExistingChildren) {
+                    await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
+                  }
+                },
+                rendererOptions: {
+                  timer: { ...PRESET_TIMER },
+                },
+              },
+              ...multiArchTasks,
+            ],
+            { concurrent: false }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ) as any;
+        }, 'Preparing webpack bundles'),
       ],
       postStart: async (_config, child) => {
         d('hooking electron process exit');
@@ -181,7 +360,17 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         });
       },
       resolveForgeConfig: this.resolveForgeConfig,
-      packageAfterCopy: this.packageAfterCopy,
+      packageAfterCopy: [
+        async (_forgeConfig: ResolvedForgeConfig, buildPath: string, _electronVersion: string, _platform: string, pArch: string): Promise<void> => {
+          // Restore the correct 'arch' build of webpack
+          // Steal the correct arch, wipe the folder, move it back to pretend to be ".webpack" root
+          const tmpWebpackDir = path.resolve(buildPath, '.webpack.tmp');
+          await fs.move(path.resolve(buildPath, '.webpack', pArch), tmpWebpackDir);
+          await fs.remove(path.resolve(buildPath, '.webpack'));
+          await fs.move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
+        },
+        this.packageAfterCopy,
+      ],
     };
   }
 
@@ -206,7 +395,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
         return true;
       }
 
-      if (this.config.renderer.jsonStats && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (this.allRendererOptions.some((r) => r.jsonStats) && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
         return true;
       }
 
@@ -218,6 +407,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     };
     return forgeConfig;
   };
+
+  private get allRendererOptions() {
+    return Array.isArray(this.config.renderer) ? this.config.renderer : [this.config.renderer];
+  }
 
   packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
@@ -277,14 +470,29 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   compileRenderers = async (watch = false): Promise<void> => {
-    const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints), true);
-    if (!watch && stats?.hasErrors()) {
-      throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+    for (const rendererOptions of this.allRendererOptions) {
+      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(rendererOptions), rendererOptions);
+      if (!watch && stats?.hasErrors()) {
+        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+      }
     }
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const configs = await this.configGenerator.getRendererConfig(this.config.renderer.entryPoints);
+    const configs: Configuration[] = [];
+    const rollingDependencies: string[] = [];
+    for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
+      const groupName = `group_${i}`;
+      configs.push(
+        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
+          ...config,
+          name: groupName,
+          dependencies: [...rollingDependencies],
+        }))
+      );
+      rollingDependencies.push(groupName);
+    }
+
     if (configs.length === 0) {
       return;
     }
@@ -372,8 +580,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           task: async () => {
             await this.compileMain(true, logger);
           },
-          options: {
-            showTimer: true,
+          rendererOptions: {
+            timer: { ...PRESET_TIMER },
           },
         },
         {
@@ -382,9 +590,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
             await this.launchRendererDevServers(logger);
             task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
           },
-          options: {
+          rendererOptions: {
             persistentOutput: true,
-            showTimer: true,
+            timer: { ...PRESET_TIMER },
           },
         },
       ],

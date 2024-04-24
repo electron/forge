@@ -1,36 +1,33 @@
-import path from 'node:path';
-
 import debug from 'debug';
-import { ConfigEnv, loadConfigFromFile, mergeConfig, UserConfig } from 'vite';
+// eslint-disable-next-line node/no-unpublished-import
+import { loadConfigFromFile } from 'vite';
 
-import { VitePluginConfig } from './Config';
-import { externalBuiltins } from './util/plugins';
+import type { VitePluginBuildConfig, VitePluginConfig, VitePluginRendererConfig } from './Config';
+// eslint-disable-next-line node/no-unpublished-import
+import type { ConfigEnv, UserConfig } from 'vite';
 
-const d = debug('electron-forge:plugin:vite:viteconfig');
-
-/**
- * Vite allows zero-config runs, if the user does not provide `vite.config.js`,
- * then the value of `LoadResult` will become `null`.
- */
-export type LoadResult = Awaited<ReturnType<typeof loadConfigFromFile>>;
+const d = debug('@electron-forge/plugin-vite:ViteConfig');
 
 export default class ViteConfigGenerator {
-  private readonly baseDir: string;
-
-  private rendererConfigCache!: Promise<UserConfig>[];
-
   constructor(private readonly pluginConfig: VitePluginConfig, private readonly projectDir: string, private readonly isProd: boolean) {
-    this.baseDir = path.join(projectDir, '.vite');
     d('Config mode:', this.mode);
   }
 
-  resolveConfig(config: string, configEnv: Partial<ConfigEnv> = {}) {
-    // `command` is to be passed as an arguments when the user export a function in `vite.config.js`.
+  resolveConfig(buildConfig: VitePluginBuildConfig | VitePluginRendererConfig, configEnv: Partial<ConfigEnv> = {}) {
     // @see - https://vitejs.dev/config/#conditional-config
     configEnv.command ??= this.isProd ? 'build' : 'serve';
-    // `mode` affects `.env.[mode]` file loading.
+    // `mode` affects `.env.[mode]` file load.
     configEnv.mode ??= this.mode;
-    return loadConfigFromFile(configEnv as ConfigEnv, config);
+
+    // Hack! Pass the forge runtime config to the vite config file in the template.
+    Object.assign(configEnv, {
+      root: this.projectDir,
+      forgeConfig: this.pluginConfig,
+      forgeConfigSelf: buildConfig,
+    });
+
+    // `configEnv` is to be passed as an arguments when the user export a function in `vite.config.js`.
+    return loadConfigFromFile(configEnv as ConfigEnv, buildConfig.config);
   }
 
   get mode(): string {
@@ -40,60 +37,15 @@ export default class ViteConfigGenerator {
     return this.isProd ? 'production' : 'development';
   }
 
-  async getDefines(): Promise<Record<string, string>> {
-    const defines: Record<string, any> = {};
-    const rendererConfigs = await this.getRendererConfig();
-    for (const [index, userConfig] of rendererConfigs.entries()) {
-      const name = this.pluginConfig.renderer[index].name;
-      if (!name) {
-        continue;
-      }
-      const NAME = name.toUpperCase().replace(/ /g, '_');
-      // `server.port` is set in `launchRendererDevServers` in `VitePlugin.ts`.
-      defines[`${NAME}_VITE_DEV_SERVER_URL`] = this.isProd ? undefined : JSON.stringify(`http://localhost:${userConfig?.server?.port}`);
-      defines[`${NAME}_VITE_NAME`] = JSON.stringify(name);
-    }
-    return defines;
-  }
-
-  async getBuildConfig(watch = false): Promise<UserConfig[]> {
+  async getBuildConfig(): Promise<UserConfig[]> {
     if (!Array.isArray(this.pluginConfig.build)) {
       throw new Error('"config.build" must be an Array');
     }
 
-    const define = await this.getDefines();
-    const plugins = [externalBuiltins()];
     const configs = this.pluginConfig.build
-      .filter(({ entry, config }) => entry || config)
-      .map<Promise<UserConfig>>(async ({ entry, config }) => {
-        const defaultConfig: UserConfig = {
-          // Ensure that each build config loads the .env file correctly.
-          mode: this.mode,
-          build: {
-            lib: entry
-              ? {
-                  entry,
-                  // Electron can only support cjs.
-                  formats: ['cjs'],
-                  fileName: () => '[name].js',
-                }
-              : undefined,
-            // Prevent multiple builds from interfering with each other.
-            emptyOutDir: false,
-            // 🚧 Multiple builds may conflict.
-            outDir: path.join(this.baseDir, 'build'),
-            watch: watch ? {} : undefined,
-          },
-          clearScreen: false,
-          define,
-          plugins,
-        };
-        if (config) {
-          const loadResult = await this.resolveConfig(config);
-          return mergeConfig(defaultConfig, loadResult?.config ?? {});
-        }
-        return defaultConfig;
-      });
+      // Prevent load the default `vite.config.js` file.
+      .filter(({ config }) => config)
+      .map<Promise<UserConfig>>(async (buildConfig) => (await this.resolveConfig(buildConfig))?.config ?? {});
 
     return await Promise.all(configs);
   }
@@ -103,20 +55,9 @@ export default class ViteConfigGenerator {
       throw new Error('"config.renderer" must be an Array');
     }
 
-    const configs = (this.rendererConfigCache ??= this.pluginConfig.renderer.map(async ({ name, config }) => {
-      const defaultConfig: UserConfig = {
-        // Ensure that each build config loads the .env file correctly.
-        mode: this.mode,
-        // Make sure that Electron can be loaded into the local file using `loadFile` after packaging.
-        base: './',
-        build: {
-          outDir: path.join(this.baseDir, 'renderer', name),
-        },
-        clearScreen: false,
-      };
-      const loadResult = (await this.resolveConfig(config)) ?? { path: '', config: {}, dependencies: [] };
-      return mergeConfig(defaultConfig, loadResult.config);
-    }));
+    const configs = this.pluginConfig.renderer
+      .filter(({ config }) => config)
+      .map<Promise<UserConfig>>(async (buildConfig) => (await this.resolveConfig(buildConfig))?.config ?? {});
 
     return await Promise.all(configs);
   }

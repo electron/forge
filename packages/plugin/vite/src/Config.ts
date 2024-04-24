@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-unpublished-import
 import type { LibraryOptions } from 'vite';
 
 export interface VitePluginBuildConfig {
@@ -8,14 +9,14 @@ export interface VitePluginBuildConfig {
   /**
    * Vite config file path.
    */
-  config?: string;
+  config: string;
 }
 
 export interface VitePluginRendererConfig {
   /**
-   * Human friendly name of your entry point
+   * Human friendly name of your entry point.
    */
-  name: string;
+  name?: string;
   /**
    * Vite config file path.
    */
@@ -23,12 +24,16 @@ export interface VitePluginRendererConfig {
 }
 
 export interface VitePluginConfig {
+  // Reserved option, may support modification in the future.
+  // @defaultValue '.vite'
+  // baseDir?: string;
+
   /**
    * Build anything such as Main process, Preload scripts and Worker process, etc.
    */
   build: VitePluginBuildConfig[];
   /**
-   * Renderer process.
+   * Renderer process Vite configs.
    */
   renderer: VitePluginRendererConfig[];
 }

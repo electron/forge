@@ -9,7 +9,7 @@ import { getPackageManager } from './package-manager';
 
 const d = debug('electron-forge:electron-version');
 
-const electronPackageNames = ['electron-prebuilt-compile', 'electron-prebuilt', 'electron-nightly', 'electron'];
+const electronPackageNames = ['electron-nightly', 'electron'];
 
 type PackageJSONWithDeps = {
   devDependencies?: Record<string, string>;

@@ -54,20 +54,6 @@ describe('getElectronVersion', () => {
     return expect(getElectronVersion(fixtureDir, { devDependencies: { electron: '^4.0.2' } })).to.eventually.equal('4.0.9');
   });
 
-  it('works with electron-prebuilt-compile', () => {
-    const packageJSON = {
-      devDependencies: { 'electron-prebuilt-compile': '1.0.0' },
-    };
-    return expect(getElectronVersion('', packageJSON)).to.eventually.equal('1.0.0');
-  });
-
-  it('works with electron-prebuilt', async () => {
-    const packageJSON = {
-      devDependencies: { 'electron-prebuilt': '1.0.0' },
-    };
-    return expect(await getElectronVersion('', packageJSON)).to.be.equal('1.0.0');
-  });
-
   it('works with electron-nightly', async () => {
     const packageJSON = {
       devDependencies: { 'electron-nightly': '5.0.0-nightly.20190107' },

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2019",
+    "target": "ES2021",
     "outDir": "dist",
-    "lib": ["dom", "es2019"],
+    "lib": ["dom", "ES2021"],
     "inlineSourceMap": true,
     "rootDir": "src",
     "experimentalDecorators": true,

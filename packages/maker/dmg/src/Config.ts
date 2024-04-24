@@ -8,7 +8,7 @@ export interface DMGContents {
   y: number;
   type: 'link' | 'file' | 'position';
   path: string;
-  name: string;
+  name?: string;
 }
 
 export interface WindowPositionOptions {
@@ -69,7 +69,7 @@ export interface MakerDMGConfig {
    */
   contents?: DMGContents[] | ((opts: MakerDMGConfig & AdditionalDMGOptions) => DMGContents[]);
   /**
-   * Additional options to pass through to node-appdmng
+   * Additional options to pass through to node-appdmg
    *
    * All available options are available in the [`appdmg` docs](https://github.com/LinusU/node-appdmg)
    */

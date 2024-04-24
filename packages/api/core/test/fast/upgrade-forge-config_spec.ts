@@ -168,16 +168,4 @@ describe('updateUpgradedForgeDevDeps', () => {
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).to.not.equal(undefined);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).to.not.equal(undefined);
   });
-
-  it('adds electron-compile plugin to devDependencies when electron-prebuilt-compile is in devDependencies', () => {
-    const packageJSON = merge({}, skeletonPackageJSON, {
-      devDependencies: {
-        'electron-prebuilt-compile': '2.0.0',
-      },
-    });
-
-    const actual = updateUpgradedForgeDevDeps(packageJSON, []);
-    expect(actual, JSON.stringify(actual)).to.have.lengthOf(1);
-    expect(actual[0]).to.match(/^@electron-forge\/plugin-compile/);
-  });
 });

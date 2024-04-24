@@ -1,15 +1,16 @@
 import path from 'path';
 import { promisify } from 'util';
 
-import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
-import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { getHostArch } from '@electron/get';
+import { FinalizePackageTargetsHookFunction, HookFunction, Options, packager, TargetDefinition } from '@electron/packager';
+import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
-import packager, { FinalizePackageTargetsHookFunction, HookFunction, TargetDefinition } from 'electron-packager';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
-import { Listr } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runHook } from '../util/hook';
@@ -110,18 +111,21 @@ export interface PackageOptions {
   outDir?: string;
 }
 
-export const listrPackage = ({
-  dir: providedDir = process.cwd(),
-  interactive = false,
-  arch = getHostArch() as ForgeArch,
-  platform = process.platform as ForgePlatform,
-  outDir,
-}: PackageOptions) => {
+export const listrPackage = (
+  childTrace: typeof autoTrace,
+  {
+    dir: providedDir = process.cwd(),
+    interactive = false,
+    arch = getHostArch() as ForgeArch,
+    platform = process.platform as ForgePlatform,
+    outDir,
+  }: PackageOptions
+) => {
   const runner = new Listr<PackageContext>(
     [
       {
         title: 'Preparing to package application',
-        task: async (ctx) => {
+        task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>({ name: 'package-prepare', category: '@electron-forge/core' }, async (_, ctx) => {
           const resolvedDir = await resolveDir(providedDir);
           if (!resolvedDir) {
             throw new Error('Failed to locate compilable Electron application');
@@ -136,307 +140,356 @@ export const listrPackage = ({
           }
 
           ctx.calculatedOutDir = outDir || getCurrentOutDir(resolvedDir, ctx.forgeConfig);
-        },
+        }),
       },
       {
         title: 'Running packaging hooks',
-        task: async ({ forgeConfig }, task) => {
-          return task.newListr([
-            {
-              title: `Running ${chalk.yellow('generateAssets')} hook`,
-              task: async (_, task) => {
-                return task.newListr(await getHookListrTasks(forgeConfig, 'generateAssets', platform, arch));
-              },
-            },
-            {
-              title: `Running ${chalk.yellow('prePackage')} hook`,
-              task: async (_, task) => {
-                return task.newListr(await getHookListrTasks(forgeConfig, 'prePackage', platform, arch));
-              },
-            },
-          ]);
-        },
+        task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>(
+          { name: 'run-packaging-hooks', category: '@electron-forge/core' },
+          async (childTrace, { forgeConfig }, task) => {
+            return delayTraceTillSignal(
+              childTrace,
+              task.newListr([
+                {
+                  title: `Running ${chalk.yellow('generateAssets')} hook`,
+                  task: childTrace<Parameters<ForgeListrTaskFn>>(
+                    { name: 'run-generateAssets-hook', category: '@electron-forge/core' },
+                    async (childTrace, _, task) => {
+                      return delayTraceTillSignal(
+                        childTrace,
+                        task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'generateAssets', platform, arch)),
+                        'run'
+                      );
+                    }
+                  ),
+                },
+                {
+                  title: `Running ${chalk.yellow('prePackage')} hook`,
+                  task: childTrace<Parameters<ForgeListrTaskFn>>(
+                    { name: 'run-prePackage-hook', category: '@electron-forge/core' },
+                    async (childTrace, _, task) => {
+                      return delayTraceTillSignal(
+                        childTrace,
+                        task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'prePackage', platform, arch)),
+                        'run'
+                      );
+                    }
+                  ),
+                },
+              ]),
+              'run'
+            );
+          }
+        ),
       },
       {
         title: 'Packaging application',
-        task: async (ctx, task) => {
-          const { calculatedOutDir, forgeConfig, packageJSON } = ctx;
-          const getTargetKey = (target: TargetDefinition) => `${target.platform}/${target.arch}`;
+        task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>(
+          { name: 'packaging-application', category: '@electron-forge/core' },
+          async (childTrace, ctx, task) => {
+            const { calculatedOutDir, forgeConfig, packageJSON } = ctx;
+            const getTargetKey = (target: TargetDefinition) => `${target.platform}/${target.arch}`;
 
-          task.output = 'Determining targets...';
+            task.output = 'Determining targets...';
 
-          type StepDoneSignalMap = Map<string, (() => void)[]>;
-          const signalCopyDone: StepDoneSignalMap = new Map();
-          const signalRebuildDone: StepDoneSignalMap = new Map();
-          const signalPackageDone: StepDoneSignalMap = new Map();
-          const rejects: ((err: any) => void)[] = [];
-          const signalDone = (map: StepDoneSignalMap, target: TargetDefinition) => {
-            map.get(getTargetKey(target))?.pop()?.();
-          };
-          const addSignalAndWait = async (map: StepDoneSignalMap, target: TargetDefinition) => {
-            const targetKey = getTargetKey(target);
-            await new Promise<void>((resolve, reject) => {
+            type StepDoneSignalMap = Map<string, (() => void)[]>;
+            const signalCopyDone: StepDoneSignalMap = new Map();
+            const signalRebuildDone: StepDoneSignalMap = new Map();
+            const signalPackageDone: StepDoneSignalMap = new Map();
+            const rejects: ((err: any) => void)[] = [];
+            const signalDone = (map: StepDoneSignalMap, target: TargetDefinition) => {
+              map.get(getTargetKey(target))?.pop()?.();
+            };
+            const addSignalAndWait = async (map: StepDoneSignalMap, target: TargetDefinition) => {
+              const targetKey = getTargetKey(target);
+              await new Promise<void>((resolve, reject) => {
+                rejects.push(reject);
+                map.set(targetKey, (map.get(targetKey) || []).concat([resolve]));
+              });
+            };
+
+            let provideTargets: (targets: TargetDefinition[]) => void;
+            const targetsPromise = new Promise<InternalTargetDefinition[]>((resolve, reject) => {
+              provideTargets = resolve;
               rejects.push(reject);
-              map.set(targetKey, (map.get(targetKey) || []).concat([resolve]));
             });
-          };
 
-          let provideTargets: (targets: TargetDefinition[]) => void;
-          const targetsPromise = new Promise<InternalTargetDefinition[]>((resolve, reject) => {
-            provideTargets = resolve;
-            rejects.push(reject);
-          });
+            const rebuildTasks = new Map<string, Promise<ForgeListrTask<never>>[]>();
+            const signalRebuildStart = new Map<string, ((task: ForgeListrTask<never>) => void)[]>();
 
-          const rebuildTasks = new Map<string, Promise<ForgeListrTask<never>>[]>();
-          const signalRebuildStart = new Map<string, ((task: ForgeListrTask<never>) => void)[]>();
+            const afterFinalizePackageTargetsHooks: FinalizePackageTargetsHookFunction[] = [
+              (targets, done) => {
+                provideTargets(targets);
+                done();
+              },
+              ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, ctx.dir),
+            ];
 
-          const afterFinalizePackageTargetsHooks: FinalizePackageTargetsHookFunction[] = [
-            (targets, done) => {
-              provideTargets(targets);
-              done();
-            },
-            ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, ctx.dir),
-          ];
+            const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
-          const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
-
-          const afterCopyHooks: HookFunction[] = [
-            async (buildPath, electronVersion, platform, arch, done) => {
-              signalDone(signalCopyDone, { platform, arch });
-              done();
-            },
-            async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
-              for (const bin of bins) {
-                await fs.remove(bin);
-              }
-              done();
-            },
-            async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
-              done();
-            },
-            async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              const targetKey = getTargetKey({ platform: pPlatform, arch: pArch });
-              await listrCompatibleRebuildHook(
-                buildPath,
-                electronVersion,
-                pPlatform,
-                pArch,
-                forgeConfig.rebuildConfig,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                await rebuildTasks.get(targetKey)!.pop()!
-              );
-              signalRebuildDone.get(targetKey)?.pop()?.();
-              done();
-            },
-            async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
-              if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
-                delete copiedPackageJSON.config.forge;
-              }
-              await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
-              done();
-            },
-            ...resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir),
-          ];
-
-          const afterCompleteHooks: HookFunction[] = [
-            async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
-              done();
-            },
-            ...resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir),
-          ];
-
-          const afterPruneHooks = [];
-
-          if (pruneEnabled) {
-            afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir));
-          }
-
-          afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
-            await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
-            done();
-          }) as HookFunction);
-
-          const afterExtractHooks = [
-            (async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
-              done();
-            }) as HookFunction,
-          ];
-          afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, ctx.dir));
-
-          type PackagerArch = Exclude<ForgeArch, 'arm'>;
-
-          const packageOpts: packager.Options = {
-            asar: false,
-            overwrite: true,
-            ignore: [/^\/out\//g],
-            ...forgeConfig.packagerConfig,
-            quiet: true,
-            dir: ctx.dir,
-            arch: arch as PackagerArch,
-            platform,
-            afterFinalizePackageTargets: sequentialFinalizePackageTargetsHooks(afterFinalizePackageTargetsHooks),
-            afterComplete: sequentialHooks(afterCompleteHooks),
-            afterCopy: sequentialHooks(afterCopyHooks),
-            afterExtract: sequentialHooks(afterExtractHooks),
-            afterPrune: sequentialHooks(afterPruneHooks),
-            out: calculatedOutDir,
-            electronVersion: await getElectronVersion(ctx.dir, packageJSON),
-          };
-          packageOpts.quiet = true;
-
-          if (packageOpts.all) {
-            throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
-          }
-
-          if (!packageJSON.version && !packageOpts.appVersion) {
-            warn(
-              interactive,
-              chalk.yellow('Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly')
-            );
-          }
-
-          if (packageOpts.prebuiltAsar) {
-            throw new Error('config.forge.packagerConfig.prebuiltAsar is not supported by Electron Forge');
-          }
-
-          d('packaging with options', packageOpts);
-
-          ctx.packagerPromise = packager(packageOpts);
-          // Handle error by failing this task
-          // rejects is populated by the reject handlers for every
-          // signal based promise in every subtask
-          ctx.packagerPromise.catch((err) => {
-            for (const reject of rejects) {
-              reject(err);
-            }
-          });
-
-          const targets = await targetsPromise;
-          // Copy the resolved targets into the context for later
-          ctx.targets = [...targets];
-          // If we are targetting a universal build we need to add the "fake"
-          // x64 and arm64 builds into the list of targets so that we can
-          // show progress for those
-          for (const target of targets) {
-            if (target.arch === 'universal') {
-              targets.push(
-                {
-                  platform: target.platform,
-                  arch: 'x64',
-                  forUniversal: true,
-                },
-                {
-                  platform: target.platform,
-                  arch: 'arm64',
-                  forUniversal: true,
+            const afterCopyHooks: HookFunction[] = [
+              async (buildPath, electronVersion, platform, arch, done) => {
+                signalDone(signalCopyDone, { platform, arch });
+                done();
+              },
+              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
+                for (const bin of bins) {
+                  await fs.remove(bin);
                 }
+                done();
+              },
+              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
+                done();
+              },
+              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                const targetKey = getTargetKey({ platform: pPlatform, arch: pArch });
+                await listrCompatibleRebuildHook(
+                  buildPath,
+                  electronVersion,
+                  pPlatform,
+                  pArch,
+                  forgeConfig.rebuildConfig,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  await rebuildTasks.get(targetKey)!.pop()!
+                );
+                signalRebuildDone.get(targetKey)?.pop()?.();
+                done();
+              },
+              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
+                if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
+                  delete copiedPackageJSON.config.forge;
+                }
+                await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
+                done();
+              },
+              ...resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir),
+            ];
+
+            const afterCompleteHooks: HookFunction[] = [
+              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
+                done();
+              },
+              ...resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir),
+            ];
+
+            const afterPruneHooks = [];
+
+            if (pruneEnabled) {
+              afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir));
+            }
+
+            afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
+              done();
+            }) as HookFunction);
+
+            const afterExtractHooks = [
+              (async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
+                done();
+              }) as HookFunction,
+            ];
+            afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, ctx.dir));
+
+            type PackagerArch = Exclude<ForgeArch, 'arm'>;
+
+            const packageOpts: Options = {
+              asar: false,
+              overwrite: true,
+              ignore: [/^\/out\//g],
+              ...forgeConfig.packagerConfig,
+              quiet: true,
+              dir: ctx.dir,
+              arch: arch as PackagerArch,
+              platform,
+              afterFinalizePackageTargets: sequentialFinalizePackageTargetsHooks(afterFinalizePackageTargetsHooks),
+              afterComplete: sequentialHooks(afterCompleteHooks),
+              afterCopy: sequentialHooks(afterCopyHooks),
+              afterExtract: sequentialHooks(afterExtractHooks),
+              afterPrune: sequentialHooks(afterPruneHooks),
+              out: calculatedOutDir,
+              electronVersion: await getElectronVersion(ctx.dir, packageJSON),
+            };
+            packageOpts.quiet = true;
+
+            if (packageOpts.all) {
+              throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
+            }
+
+            if (!packageJSON.version && !packageOpts.appVersion) {
+              warn(
+                interactive,
+                chalk.yellow(
+                  'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly'
+                )
               );
             }
-          }
 
-          // Populate rebuildTasks with promises that resolve with the rebuild tasks
-          // that will eventually run
-          for (const target of targets) {
-            // Skip universal tasks as they do not have rebuild sub-tasks
-            if (target.arch === 'universal') continue;
+            if (packageOpts.prebuiltAsar) {
+              throw new Error('config.forge.packagerConfig.prebuiltAsar is not supported by Electron Forge');
+            }
 
-            const targetKey = getTargetKey(target);
-            rebuildTasks.set(
-              targetKey,
-              (rebuildTasks.get(targetKey) || []).concat([
-                new Promise((resolve) => {
-                  signalRebuildStart.set(targetKey, (signalRebuildStart.get(targetKey) || []).concat([resolve]));
-                }),
-              ])
+            d('packaging with options', packageOpts);
+
+            ctx.packagerPromise = packager(packageOpts);
+            // Handle error by failing this task
+            // rejects is populated by the reject handlers for every
+            // signal based promise in every subtask
+            ctx.packagerPromise.catch((err) => {
+              for (const reject of rejects) {
+                reject(err);
+              }
+            });
+
+            const targets = await targetsPromise;
+            // Copy the resolved targets into the context for later
+            ctx.targets = [...targets];
+            // If we are targetting a universal build we need to add the "fake"
+            // x64 and arm64 builds into the list of targets so that we can
+            // show progress for those
+            for (const target of targets) {
+              if (target.arch === 'universal') {
+                targets.push(
+                  {
+                    platform: target.platform,
+                    arch: 'x64',
+                    forUniversal: true,
+                  },
+                  {
+                    platform: target.platform,
+                    arch: 'arm64',
+                    forUniversal: true,
+                  }
+                );
+              }
+            }
+
+            // Populate rebuildTasks with promises that resolve with the rebuild tasks
+            // that will eventually run
+            for (const target of targets) {
+              // Skip universal tasks as they do not have rebuild sub-tasks
+              if (target.arch === 'universal') continue;
+
+              const targetKey = getTargetKey(target);
+              rebuildTasks.set(
+                targetKey,
+                (rebuildTasks.get(targetKey) || []).concat([
+                  new Promise((resolve) => {
+                    signalRebuildStart.set(targetKey, (signalRebuildStart.get(targetKey) || []).concat([resolve]));
+                  }),
+                ])
+              );
+            }
+            d('targets:', targets);
+
+            return delayTraceTillSignal(
+              childTrace,
+              task.newListr(
+                targets.map(
+                  (target): ForgeListrTaskDefinition =>
+                    target.arch === 'universal'
+                      ? {
+                          title: `Stitching ${chalk.cyan(`${target.platform}/x64`)} and ${chalk.cyan(`${target.platform}/arm64`)} into a ${chalk.green(
+                            `${target.platform}/universal`
+                          )} package`,
+                          task: async () => {
+                            await addSignalAndWait(signalPackageDone, target);
+                          },
+                          rendererOptions: {
+                            timer: { ...PRESET_TIMER },
+                          },
+                        }
+                      : {
+                          title: `Packaging for ${chalk.cyan(target.arch)} on ${chalk.cyan(target.platform)}${
+                            target.forUniversal ? chalk.italic(' (for universal package)') : ''
+                          }`,
+                          task: childTrace<Parameters<ForgeListrTaskFn<never>>>(
+                            {
+                              name: `package-app-${target.platform}-${target.arch}${target.forUniversal ? '-universal-tmp' : ''}`,
+                              category: '@electron-forge/core',
+                              extraDetails: { arch: target.arch, platform: target.platform },
+                              newRoot: true,
+                            },
+                            async (childTrace, _, task) => {
+                              return delayTraceTillSignal(
+                                childTrace,
+                                task.newListr(
+                                  [
+                                    {
+                                      title: 'Copying files',
+                                      task: childTrace({ name: 'copy-files', category: '@electron-forge/core' }, async () => {
+                                        await addSignalAndWait(signalCopyDone, target);
+                                      }),
+                                    },
+                                    {
+                                      title: 'Preparing native dependencies',
+                                      task: childTrace({ name: 'prepare-native-dependencies', category: '@electron-forge/core' }, async (_, __, task) => {
+                                        signalRebuildStart.get(getTargetKey(target))?.pop()?.(task);
+                                        await addSignalAndWait(signalRebuildDone, target);
+                                      }),
+                                      rendererOptions: {
+                                        persistentOutput: true,
+                                        bottomBar: Infinity,
+                                        timer: { ...PRESET_TIMER },
+                                      },
+                                    },
+                                    {
+                                      title: 'Finalizing package',
+                                      task: childTrace({ name: 'finalize-package', category: '@electron-forge/core' }, async () => {
+                                        await addSignalAndWait(signalPackageDone, target);
+                                      }),
+                                    },
+                                  ],
+                                  { rendererOptions: { collapseSubtasks: true, collapseErrors: false } }
+                                ),
+                                'run'
+                              );
+                            }
+                          ),
+                          rendererOptions: {
+                            timer: { ...PRESET_TIMER },
+                          },
+                        }
+                ),
+                { concurrent: true, rendererOptions: { collapseSubtasks: false, collapseErrors: false } }
+              ),
+              'run'
             );
           }
-          d('targets:', targets);
-
-          return task.newListr(
-            targets.map(
-              (target): ForgeListrTaskDefinition =>
-                target.arch === 'universal'
-                  ? {
-                      title: `Stitching ${chalk.cyan(`${target.platform}/x64`)} and ${chalk.cyan(`${target.platform}/arm64`)} into a ${chalk.green(
-                        `${target.platform}/universal`
-                      )} package`,
-                      task: async () => {
-                        await addSignalAndWait(signalPackageDone, target);
-                      },
-                      options: {
-                        showTimer: true,
-                      },
-                    }
-                  : {
-                      title: `Packaging for ${chalk.cyan(target.arch)} on ${chalk.cyan(target.platform)}${
-                        target.forUniversal ? chalk.italic(' (for universal package)') : ''
-                      }`,
-                      task: async (_, task) => {
-                        return task.newListr(
-                          [
-                            {
-                              title: 'Copying files',
-                              task: async () => {
-                                await addSignalAndWait(signalCopyDone, target);
-                              },
-                            },
-                            {
-                              title: 'Preparing native dependencies',
-                              task: async (_, task) => {
-                                signalRebuildStart.get(getTargetKey(target))?.pop()?.(task);
-                                await addSignalAndWait(signalRebuildDone, target);
-                              },
-                              options: {
-                                persistentOutput: true,
-                                bottomBar: Infinity,
-                                showTimer: true,
-                              },
-                            },
-                            {
-                              title: 'Finalizing package',
-                              task: async () => {
-                                await addSignalAndWait(signalPackageDone, target);
-                              },
-                            },
-                          ],
-                          { rendererOptions: { collapse: true, collapseErrors: false } }
-                        );
-                      },
-                      options: {
-                        showTimer: true,
-                      },
-                    }
-            ),
-            { concurrent: true, rendererOptions: { collapse: false, collapseErrors: false } }
-          );
-        },
+        ),
       },
       {
         title: `Running ${chalk.yellow('postPackage')} hook`,
-        task: async ({ packagerPromise, forgeConfig }, task) => {
-          const outputPaths = await packagerPromise;
-          d('outputPaths:', outputPaths);
-          return task.newListr(
-            await getHookListrTasks(forgeConfig, 'postPackage', {
-              arch,
-              outputPaths,
-              platform,
-            })
-          );
-        },
+        task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>(
+          { name: 'run-postPackage-hook', category: '@electron-forge/core' },
+          async (childTrace, { packagerPromise, forgeConfig }, task) => {
+            const outputPaths = await packagerPromise;
+            d('outputPaths:', outputPaths);
+            return delayTraceTillSignal(
+              childTrace,
+              task.newListr(
+                await getHookListrTasks(childTrace, forgeConfig, 'postPackage', {
+                  arch,
+                  outputPaths,
+                  platform,
+                })
+              ),
+              'run'
+            );
+          }
+        ),
       },
     ],
     {
       concurrent: false,
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       rendererOptions: {
-        collapse: false,
+        collapseSubtasks: false,
         collapseErrors: false,
       },
       ctx: {} as PackageContext,
@@ -446,8 +499,8 @@ export const listrPackage = ({
   return runner;
 };
 
-export default async (opts: PackageOptions): Promise<PackageResult[]> => {
-  const runner = listrPackage(opts);
+export default autoTrace({ name: 'package()', category: '@electron-forge/core' }, async (childTrace, opts: PackageOptions): Promise<PackageResult[]> => {
+  const runner = listrPackage(childTrace, opts);
 
   await runner.run();
 
@@ -457,4 +510,4 @@ export default async (opts: PackageOptions): Promise<PackageResult[]> => {
     arch: target.arch,
     packagedPath: outputPaths[index],
   }));
-};
+});

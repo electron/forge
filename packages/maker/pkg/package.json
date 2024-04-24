@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-pkg",
-  "version": "6.4.2",
+  "version": "7.4.0",
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
@@ -14,11 +14,11 @@
     "sinon": "^13.0.1"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "6.4.2",
-    "@electron-forge/shared-types": "6.4.2",
+    "@electron-forge/maker-base": "7.4.0",
+    "@electron-forge/shared-types": "7.4.0",
     "@electron/osx-sign": "^1.0.5"
   },
   "publishConfig": {

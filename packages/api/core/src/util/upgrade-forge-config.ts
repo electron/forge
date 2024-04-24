@@ -168,9 +168,5 @@ export function updateUpgradedForgeDevDeps(packageJSON: ForgePackageJSON, devDep
     (forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
   );
 
-  if (Object.keys(packageJSON.devDependencies).find((dep: string) => dep === 'electron-prebuilt-compile')) {
-    devDeps = devDeps.concat(siblingDep('plugin-compile'));
-  }
-
   return devDeps;
 }

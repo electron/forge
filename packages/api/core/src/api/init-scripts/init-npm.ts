@@ -16,12 +16,14 @@ export function siblingDep(name: string): string {
 
 export const deps = ['electron-squirrel-startup'];
 export const devDeps = [
+  '@electron/fuses',
   siblingDep('cli'),
   siblingDep('maker-squirrel'),
   siblingDep('maker-zip'),
   siblingDep('maker-deb'),
   siblingDep('maker-rpm'),
   siblingDep('plugin-auto-unpack-natives'),
+  siblingDep('plugin-fuses'),
 ];
 export const exactDevDeps = ['electron'];
 

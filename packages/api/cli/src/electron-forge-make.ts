@@ -1,7 +1,7 @@
 import path from 'path';
 
-import { api, MakeOptions } from '@electron-forge/core';
 import { initializeProxy } from '@electron/get';
+import { api, MakeOptions } from '@electron-forge/core';
 import program from 'commander';
 import fs from 'fs-extra';
 
@@ -11,12 +11,13 @@ import workingDir from './util/working-dir';
 export async function getMakeOptions(): Promise<MakeOptions> {
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version)
+    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
     .arguments('[cwd]')
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
     .option('--targets [targets]', 'Override your make targets for this run')
+    .helpOption('-h, --help', 'Output usage information')
     .allowUnknownOption(true)
     .action((cwd) => {
       dir = workingDir(dir, cwd);

@@ -1,10 +1,21 @@
 import { ChildProcess } from 'child_process';
 
+import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
-import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from 'electron-packager';
-import { ListrDefaultRenderer, ListrTask, ListrTaskWrapper } from 'listr2';
+import { autoTrace } from '@electron-forge/tracer';
+import {
+  ListrBaseClassOptions,
+  ListrDefaultRenderer,
+  ListrDefaultRendererValue,
+  ListrSimpleRenderer,
+  ListrSimpleRendererValue,
+  ListrTask,
+  ListrTaskWrapper,
+} from 'listr2';
 
-export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer>;
+export type ForgeListrOptions<T> = ListrBaseClassOptions<T, ListrDefaultRendererValue, ListrSimpleRendererValue>;
+export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer, ListrDefaultRenderer | ListrSimpleRenderer>;
+export type ForgeListrTaskFn<Ctx = any> = ListrTask<Ctx, ListrDefaultRenderer>['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
@@ -61,6 +72,7 @@ export type ForgeMultiHookMap = {
 export interface IForgePluginInterface {
   triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
   getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
+    childTrace: typeof autoTrace,
     hookName: Hook,
     hookArgs: ForgeSimpleHookSignatures[Hook]
   ): Promise<ForgeListrTaskDefinition[]>;
@@ -82,6 +94,10 @@ export interface ResolvedForgeConfig {
    * If a function is provided, it must synchronously return the buildIdentifier
    */
   buildIdentifier?: string | (() => string);
+  /**
+   * Output directory. Default is './out'.
+   */
+  outDir?: string;
   hooks?: ForgeHookMap;
   /**
    * @internal
@@ -201,6 +217,7 @@ export interface InitTemplateOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ForgeListrTaskDefinition = ListrTask<never>;
+export { ListrTask };
 
 export interface ForgeTemplate {
   requiredForgeVersion?: string;

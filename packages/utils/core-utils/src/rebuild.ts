@@ -1,16 +1,16 @@
 import * as cp from 'child_process';
 import * as path from 'path';
 
-import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
 import { RebuildOptions } from '@electron/rebuild';
+import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
 
-export const listrCompatibleRebuildHook = async (
+export const listrCompatibleRebuildHook = async <Ctx = never>(
   buildPath: string,
   electronVersion: string,
   platform: ForgePlatform,
   arch: ForgeArch,
   config: Partial<RebuildOptions> = {},
-  task: ForgeListrTask<never>,
+  task: ForgeListrTask<Ctx>,
   taskTitlePrefix = ''
 ): Promise<void> => {
   task.title = `${taskTitlePrefix}Preparing native dependencies`;
@@ -59,7 +59,9 @@ export const listrCompatibleRebuildHook = async (
         break;
       }
       case 'rebuild-done': {
-        task.task.rendererTaskOptions.persistentOutput = false;
+        if (task.task.rendererTaskOptions && 'persistentOutput' in task.task.rendererTaskOptions) {
+          task.task.rendererTaskOptions.persistentOutput = false;
+        }
         break;
       }
     }

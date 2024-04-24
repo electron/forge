@@ -11,6 +11,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron-prebuilt": "9.9.9"
+    "electron": "99.99.99"
   }
 }

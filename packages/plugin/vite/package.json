@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-vite",
-  "version": "6.4.2",
+  "version": "7.4.0",
   "description": "Vite plugin for Electron Forge, lets you use Vite directly in your tooling",
   "repository": {
     "type": "git",
@@ -12,28 +12,30 @@
   "main": "dist/VitePlugin.js",
   "typings": "dist/VitePlugin.d.ts",
   "scripts": {
-    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts"
+    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts test/*_spec.ts"
+  },
+  "dependencies": {
+    "@electron-forge/core-utils": "7.4.0",
+    "@electron-forge/plugin-base": "7.4.0",
+    "@electron-forge/shared-types": "7.4.0",
+    "@electron-forge/web-multi-logger": "7.4.0",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.1",
+    "fs-extra": "^10.0.0",
+    "listr2": "^7.0.2"
   },
   "devDependencies": {
+    "@electron/packager": "^18.3.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
     "chai": "^4.3.3",
-    "fs-extra": "^10.0.0",
     "mocha": "^9.0.1",
+    "vite": "^5.0.12",
     "which": "^2.0.2",
     "xvfb-maybe": "^0.2.1"
   },
   "engines": {
-    "node": "^14.18.0 || >=16.0.0"
-  },
-  "dependencies": {
-    "@electron-forge/core-utils": "6.4.2",
-    "@electron-forge/plugin-base": "6.4.2",
-    "@electron-forge/shared-types": "6.4.2",
-    "@electron-forge/web-multi-logger": "6.4.2",
-    "chalk": "^4.0.0",
-    "debug": "^4.3.1",
-    "vite": "^4.1.1"
+    "node": ">= 16.4.0"
   },
   "publishConfig": {
     "access": "public"
