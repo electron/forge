@@ -44,7 +44,7 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
         const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
         if (envValue) return envValue;
       }
-      const value = Reflect.get(target, name, receiver);
+      const value = Reflect.get(target, name, receiver) as BuildIdentifierConfig<string>;
 
       if (value && typeof value === 'object' && value.__isMagicBuildIdentifierMap) {
         const identifier = typeof buildIdentifier === 'function' ? buildIdentifier() : buildIdentifier;
