@@ -294,7 +294,7 @@ export const listrMake = (
                         arch: targetArch,
                       });
                     } catch (err) {
-                      if (err) {
+                      if (err instanceof Error) {
                         throw err;
                       } else {
                         throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);

@@ -1,8 +1,8 @@
 import path from 'path';
 
+import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { ForgeConfig } from '@electron-forge/shared-types';
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import fsExtra from 'fs-extra';
 
 const forgeConfig: ForgeConfig = {
