@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
 
-import { IgnoreFunction, IgnoreFunction } from '@electron/packager';
+import { IgnoreFunction } from '@electron/packager';
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 import * as fs from 'fs-extra';
