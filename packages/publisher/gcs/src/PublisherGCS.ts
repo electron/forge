@@ -25,7 +25,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
 
     const { storageOptions, bucket: configBucket, folder, ...uploadOptions } = this.config;
     
-    if (configBucket) {
+    if (!configBucket) {
       throw new Error('In order to publish to Google Cloud Storage you must set the "bucket" property in your Forge config.');
     }
 
