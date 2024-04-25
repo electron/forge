@@ -20,6 +20,7 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       outDir: '.vite/build',
       watch: command === 'serve' ? {} : null,
       minify: command === 'build',
+      sourcemap: command === 'serve',
     },
     clearScreen: false,
   };
