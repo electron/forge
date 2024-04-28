@@ -1,8 +1,9 @@
 const url = require('url');
+const fs = require('fs');
 
 exports.dynamicImport = function dynamicImport(path) {
   try {
-    return import(url.pathToFileURL(path));
+    return import(fs.existsSync(path) ? url.pathToFileURL(path) : path);
   } catch (error) {
     return Promise.reject(error);
   }
