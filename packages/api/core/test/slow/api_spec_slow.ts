@@ -199,23 +199,30 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       before(async () => {
         dir = await ensureTestDirIsNonexistent();
         await fs.mkdir(dir);
-        execSync(`${nodeInstaller} init -y`, {
+        execSync(`git clone https://github.com/electron/electron-quick-start.git . --quiet`, {
           cwd: dir,
         });
       });
 
-      it('creates a forge config', async () => {
+      it('creates forge.config.js and is packageable', async () => {
         await updatePackageJSON(dir, async (packageJSON) => {
           packageJSON.name = 'Name';
-          packageJSON.productName = 'Product Name';
-          packageJSON.customProp = 'propVal';
+          packageJSON.productName = 'ProductName';
         });
 
         await forge.import({ dir });
 
-        const { customProp } = await readRawPackageJson(dir);
+        expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
 
-        expect(customProp).to.equal('propVal');
+        execSync(`${nodeInstaller} install`, {
+          cwd: dir,
+        });
+
+        await forge.package({ dir });
+
+        const outDirContents = fs.readdirSync(path.join(dir, 'out'));
+        expect(outDirContents).to.have.length(1);
+        expect(outDirContents[0]).to.equal(`ProductName-${process.platform}-${process.arch}`);
       });
 
       after(async () => {
