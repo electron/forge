@@ -15,7 +15,8 @@ exports.dynamicImportMaybe = async function dynamicImportMaybe(path) {
   } catch (e1) {
     try {
       return await exports.dynamicImport(path);
-    } catch {
+    } catch (e2) {
+      e1.message = '\n1. ' + e1.message + '\n2. ' + e2.message;
       throw e1;
     }
   }
