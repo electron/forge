@@ -7,3 +7,7 @@ exports.dynamicImport = function dynamicImport(path) {
     return Promise.reject(error);
   }
 };
+
+exports.dynamicImportMaybe = function dynamicImportMaybe(path) {
+  return exports.dynamicImport(path).catch(() => require(path));
+};

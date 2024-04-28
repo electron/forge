@@ -16,7 +16,7 @@ import debug from 'debug';
 
 import { StartOptions } from '../api';
 
-import requireSearch from './require-search';
+import importSearch from './import-search';
 
 const d = debug('electron-forge:plugins');
 
@@ -25,12 +25,12 @@ function isForgePlugin(plugin: IForgePlugin | unknown): plugin is IForgePlugin {
 }
 
 export default class PluginInterface implements IForgePluginInterface {
-  private plugins: IForgePlugin[];
+  private plugins: Promise<IForgePlugin>[];
 
   private config: ResolvedForgeConfig;
 
   constructor(dir: string, forgeConfig: ResolvedForgeConfig) {
-    this.plugins = forgeConfig.plugins.map((plugin) => {
+    this.plugins = forgeConfig.plugins.map(async (plugin) => {
       if (isForgePlugin(plugin)) {
         return plugin;
       }
@@ -41,7 +41,7 @@ export default class PluginInterface implements IForgePluginInterface {
           throw new Error(`Expected plugin[0] to be a string but found ${pluginName}`);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const Plugin = requireSearch<any>(dir, [pluginName]);
+        const Plugin = await importSearch<any>(dir, [pluginName]);
         if (!Plugin) {
           throw new Error(`Could not find module with name: ${pluginName}. Make sure it's listed in the devDependencies of your package.json`);
         }
@@ -61,7 +61,7 @@ export default class PluginInterface implements IForgePluginInterface {
     });
 
     for (const plugin of this.plugins) {
-      plugin.init(dir, forgeConfig);
+      void plugin.then((plugin) => plugin.init(dir, forgeConfig));
     }
 
     this.triggerHook = this.triggerHook.bind(this);
@@ -69,7 +69,7 @@ export default class PluginInterface implements IForgePluginInterface {
   }
 
   async triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void> {
-    for (const plugin of this.plugins) {
+    for await (const plugin of this.plugins) {
       if (typeof plugin.getHooks === 'function') {
         let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
         if (hooks) {
@@ -89,7 +89,7 @@ export default class PluginInterface implements IForgePluginInterface {
   ): Promise<ForgeListrTaskDefinition[]> {
     const tasks: ForgeListrTaskDefinition[] = [];
 
-    for (const plugin of this.plugins) {
+    for await (const plugin of this.plugins) {
       if (typeof plugin.getHooks === 'function') {
         let hooks = plugin.getHooks()[hookName] as ForgeSimpleHookFn<Hook>[] | ForgeSimpleHookFn<Hook>;
         if (hooks) {
@@ -123,7 +123,7 @@ export default class PluginInterface implements IForgePluginInterface {
     ...item: ForgeMutatingHookSignatures[Hook]
   ): Promise<ForgeMutatingHookSignatures[Hook][0]> {
     let result: ForgeMutatingHookSignatures[Hook][0] = item[0];
-    for (const plugin of this.plugins) {
+    for await (const plugin of this.plugins) {
       if (typeof plugin.getHooks === 'function') {
         let hooks = plugin.getHooks()[hookName] as ForgeMutatingHookFn<Hook>[] | ForgeMutatingHookFn<Hook>;
         if (hooks) {
@@ -140,7 +140,7 @@ export default class PluginInterface implements IForgePluginInterface {
   async overrideStartLogic(opts: StartOptions): Promise<StartResult> {
     let newStartFn;
     const claimed: string[] = [];
-    for (const plugin of this.plugins) {
+    for await (const plugin of this.plugins) {
       if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
         claimed.push(plugin.name);
         newStartFn = plugin.startLogic;
