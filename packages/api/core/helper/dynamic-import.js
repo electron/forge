@@ -9,6 +9,14 @@ exports.dynamicImport = function dynamicImport(path) {
   }
 };
 
-exports.dynamicImportMaybe = function dynamicImportMaybe(path) {
-  return exports.dynamicImport(path).catch(() => require(path));
+exports.dynamicImportMaybe = async function dynamicImportMaybe(path) {
+  try {
+    return require(path);
+  } catch (e1) {
+    try {
+      return await exports.dynamicImport(path);
+    } catch {
+      throw e1;
+    }
+  }
 };
