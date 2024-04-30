@@ -30,10 +30,9 @@ describe('ViteTemplate', () => {
       'package.json',
       'forge.env.d.ts',
       'forge.config.js',
-      'vite.base.config.mjs',
-      'vite.main.config.mjs',
-      'vite.preload.config.mjs',
-      'vite.renderer.config.mjs',
+      'vite.main.config.js',
+      'vite.preload.config.js',
+      'vite.renderer.config.js',
       path.join('src', 'renderer.js'),
       path.join('src', 'preload.js'),
     ];

@@ -1,11 +1,12 @@
 import { builtinModules } from 'node:module';
+
 import type { AddressInfo } from 'node:net';
+// eslint-disable-next-line node/no-unpublished-import
 import type { ConfigEnv, Plugin, UserConfig } from 'vite';
-import pkg from './package.json';
 
 export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];
 
-export const external = [...builtins, ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {})];
+export const external = [...builtins];
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   const { root, mode, command } = env;
@@ -66,7 +67,7 @@ export function pluginExposeRenderer(name: string): Plugin {
       process.viteDevServers[name] = server;
 
       server.httpServer?.once('listening', () => {
-        const addressInfo = server.httpServer!.address() as AddressInfo;
+        const addressInfo = server.httpServer?.address() as AddressInfo;
         // Expose env constant for main process use.
         process.env[VITE_DEV_SERVER_URL] = `http://localhost:${addressInfo?.port}`;
       });
@@ -86,7 +87,8 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
       } else {
         // Main process hot restart.
         // https://github.com/electron/forge/blob/v7.2.0/packages/api/core/src/api/start.ts#L216-L223
-        process.stdin.emit('data', 'rs');
+        // TODO: blocked in #3380
+        // process.stdin.emit('data', 'rs');
       }
     },
   };

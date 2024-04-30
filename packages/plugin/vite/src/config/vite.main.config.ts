@@ -1,21 +1,15 @@
-import { defineConfig, mergeConfig } from 'vite';
-import {
-  getBuildConfig,
-  getBuildDefine,
-  external,
-  pluginHotRestart,
-} from './vite.base.config.mjs';
+// eslint-disable-next-line node/no-unpublished-import
+import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-// https://vitejs.dev/config
-export default defineConfig((env) => {
-  /** @type {import('vite').ConfigEnv<'build'>} */
-  const forgeEnv = env;
+import { external, getBuildConfig, getBuildDefine, pluginHotRestart } from './vite.base.config';
+
+export function getConfig(forgeEnv: ConfigEnv<'build'>): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
   const define = getBuildDefine(forgeEnv);
-  const config = {
+  const config: UserConfig = {
     build: {
       lib: {
-        entry: forgeConfigSelf.entry,
+        entry: forgeConfigSelf.entry!,
         fileName: () => '[name].js',
         formats: ['cjs'],
       },
@@ -27,9 +21,10 @@ export default defineConfig((env) => {
     define,
     resolve: {
       // Load the Node.js entry.
+      conditions: ['node'],
       mainFields: ['module', 'jsnext:main', 'jsnext'],
     },
   };
 
   return mergeConfig(getBuildConfig(forgeEnv), config);
-});
+}
