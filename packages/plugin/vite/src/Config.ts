@@ -10,6 +10,11 @@ export interface VitePluginBuildConfig {
    * Vite config file path.
    */
   config: string;
+  /**
+   * The build target is main process or preload script.
+   * @defaultValue 'main'
+   */
+  target?: 'main' | 'preload';
 }
 
 export interface VitePluginRendererConfig {
