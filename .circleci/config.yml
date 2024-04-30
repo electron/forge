@@ -136,7 +136,7 @@ jobs:
           name: Make test report paths relative
           command: |
             if [ -e ./reports/out/report.xml ]; then
-              sed -i.bak "s|`pwd`/||g" ./reports/out/report.xml
+              sed -i.bak 's/"[^"]*packages/"packages/' ./reports/out/report.xml
             fi
       - store_test_results:
           path: ./reports/
