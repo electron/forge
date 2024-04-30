@@ -43,7 +43,7 @@ commands:
           name: 'Run slow tests'
           command: |
             echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
+            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | xargs -I@ -P4 bash -c "echo $(pwd)/@" | circleci tests split --split-by=timings)
             yarn test $TEST_GLOB
 
 jobs:
@@ -131,13 +131,13 @@ jobs:
                     libgtk-3-0 \
                     libgbm1
       - run-slow-tests
-      - run:
-          when: always # the report is generated on pass or fail
-          name: Make test report paths relative
-          command: |
-            if [ -e ./reports/out/test_output.xml ]; then
-              sed -i.bak "s|`pwd`/||g" ./reports/out/test_output.xml
-            fi
+      # - run:
+      #     when: always # the report is generated on pass or fail
+      #     name: Make test report paths relative
+      #     command: |
+      #       if [ -e ./reports/out/test_output.xml ]; then
+      #         sed -i.bak "s|`pwd`/||g" ./reports/out/test_output.xml
+      #       fi
       - store_test_results:
           path: ./reports/
 
