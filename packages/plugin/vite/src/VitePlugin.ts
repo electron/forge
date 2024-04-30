@@ -93,20 +93,45 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
 
     const flatDeps = await getFlatDependencies(this.projectDir);
+    const names = flatDeps.map((dep) => dep.name);
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
       // `file` always starts with `/`
       // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
 
-      // Collect dependencies from package.json
+      // Collect dependencies from package.json by default
       if (file.startsWith('/node_modules')) {
-        const [, , name] = file.split('/');
-        return flatDeps.some((dep) => dep.name === name);
+        const [, , orgOrName, sub] = file.split('/');
+
+        if (orgOrName) {
+          if (orgOrName.startsWith('@')) {
+            if (sub) {
+              // /node_modules/@org/name
+              const name = `${orgOrName}/${sub}`;
+
+              if (names.includes(name)) return false;
+            } else {
+              // /node_modules/@org
+              return names.some((name) => name.startsWith(orgOrName)) ? false : true;
+            }
+          } else {
+            const name = orgOrName;
+
+            if (names.includes(name)) return false;
+
+            // .bin, .vite, .yarn-integrity etc
+            // TODO: Something must be explicitly filtered out here, prehaps this a BUG of `ignore`
+            if (name.startsWith('.')) return true;
+          }
+        }
+      } else {
+        // Collect the files built by Vite
+        return !file.startsWith('/.vite');
       }
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      // TODO: return false behavior diff than reutrn undefined, prehaps this a BUG of `ignore`
+      return undefined as unknown as boolean;
     };
     return forgeConfig;
   };
