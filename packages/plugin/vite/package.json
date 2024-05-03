@@ -34,6 +34,9 @@
     "which": "^2.0.2",
     "xvfb-maybe": "^0.2.1"
   },
+  "peerDependencies": {
+    "vite": "^5.0.0"
+  }
   "engines": {
     "node": ">= 16.4.0"
   },
