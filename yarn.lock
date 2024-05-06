@@ -945,34 +945,10 @@
     vscode-languageserver-types "^3.17.1"
     vscode-uri "^3.0.3"
 
-"@electron/asar@^3.0.3":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.2.tgz#f6ae4eb4343ad00b994c40db3f09f71f968ff9c0"
-  integrity sha512-32fMU68x8a6zvxtC1IC/BhPDKTh8rQjdmwEplj3CDpnkcwBzZVN9v/8cK0LJqQ0FOQQVZW8BWZ1S6UU53TYR4w==
-  dependencies:
-    chromium-pickle-js "^0.2.0"
-    commander "^5.0.0"
-    glob "^7.1.6"
-    minimatch "^3.0.4"
-  optionalDependencies:
-    "@types/glob" "^7.1.1"
-
-"@electron/asar@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.1.tgz#c4143896f3dd43b59a80a9c9068d76f77efb62ea"
-  integrity sha512-hE2cQMZ5+4o7+6T2lUaVbxIzrOjZZfX7dB02xuapyYFJZEAiWTelq6J3mMoxzd0iONDvYLPVKecB5tyjIoVDVA==
-  dependencies:
-    chromium-pickle-js "^0.2.0"
-    commander "^5.0.0"
-    glob "^7.1.6"
-    minimatch "^3.0.4"
-  optionalDependencies:
-    "@types/glob" "^7.1.1"
-
-"@electron/asar@^3.2.7":
-  version "3.2.8"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.8.tgz#2ea722f3452583dbd4ffdcc4b4f5dc903f1d8178"
-  integrity sha512-cmskk5M06ewHMZAplSiF4AlME3IrnnZhKnWbtwKVLRkdJkKyUVjMLhDIiPIx/+6zQWVlKX/LtmK9xDme7540Sg==
+"@electron/asar@^3.0.3", "@electron/asar@^3.2.1", "@electron/asar@^3.2.7":
+  version "3.2.10"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.10.tgz#615cf346b734b23cafa4e0603551010bd0e50aa8"
+  integrity sha512-mvBSwIBUeiRscrCeJE1LwctAriBj65eUDm0Pc11iE5gRwzkmsdbS7FnZ1XUWjpSeQWL1L5g12Fc/SchPM9DUOw==
   dependencies:
     commander "^5.0.0"
     glob "^7.1.6"
