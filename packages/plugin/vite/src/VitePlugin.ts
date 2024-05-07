@@ -4,6 +4,7 @@ import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
+import { PRESET_TIMER } from 'listr2';
 // eslint-disable-next-line node/no-unpublished-import
 import { default as vite } from 'vite';
 
@@ -138,9 +139,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           task: async () => {
             await this.launchRendererDevServers();
           },
-          options: {
+          rendererOptions: {
             persistentOutput: true,
-            showTimer: true,
+            timer: { ...PRESET_TIMER },
           },
         },
         // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
@@ -149,8 +150,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           task: async () => {
             await this.build();
           },
-          options: {
-            showTimer: true,
+          rendererOptions: {
+            timer: { ...PRESET_TIMER },
           },
         },
       ],
@@ -212,7 +213,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       this.servers.push(viteDevServer);
 
       if (viteDevServer.httpServer) {
-        // Make suee that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
+        // Make sure that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
         const addressInfo = viteDevServer.httpServer.address();
         const isAddressInfo = (x: any): x is AddressInfo => x?.address;
 
