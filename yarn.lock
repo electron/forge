@@ -904,9 +904,9 @@
     vscode-uri "^3.0.3"
 
 "@electron/asar@^3.0.3", "@electron/asar@^3.2.1", "@electron/asar@^3.2.7":
-  version "3.2.9"
-  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.9.tgz#7b3a1fd677b485629f334dd80ced8c85353ba7e7"
-  integrity sha512-Vu2P3X2gcZ3MY9W7yH72X9+AMXwUQZEJBrsPIbX0JsdllLtoh62/Q8Wg370/DawIEVKOyfD6KtTLo645ezqxUA==
+  version "3.2.10"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.10.tgz#615cf346b734b23cafa4e0603551010bd0e50aa8"
+  integrity sha512-mvBSwIBUeiRscrCeJE1LwctAriBj65eUDm0Pc11iE5gRwzkmsdbS7FnZ1XUWjpSeQWL1L5g12Fc/SchPM9DUOw==
   dependencies:
     commander "^5.0.0"
     glob "^7.1.6"
