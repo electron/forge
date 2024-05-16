@@ -62,7 +62,7 @@ describe('MakerDMG', () => {
     const opts = eidStub.firstCall.args[0];
     expect(opts).to.deep.equal({
       overwrite: true,
-      name: `${appName}-${packageJSON.version}-${targetArch}.dmg`,
+      name: `${appName}-${packageJSON.version}-${targetArch}`,
       appPath: path.resolve(`${dir}/My Test App.app`),
       title: 'My Test App',
       out: path.resolve(`${dir.substr(0, dir.length - 4)}/make`),
