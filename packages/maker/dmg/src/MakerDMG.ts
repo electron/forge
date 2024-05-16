@@ -17,7 +17,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   async make({ dir, makeDir, appName, packageJSON, targetArch }: MakerOptions): Promise<string[]> {
     const electronDMG = require('electron-installer-dmg');
 
-    const dmgOutName = this.config.name ?? `${appName}-${packageJSON.version}-${targetArch}.dmg`;
+    const dmgOutName = this.config.name ?? `${appName}-${packageJSON.version}-${targetArch}`;
     const outPath = path.resolve(makeDir, dmgOutName);
 
     await this.ensureFile(outPath);
