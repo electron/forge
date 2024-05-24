@@ -41,7 +41,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-full.nupkg`),
     ];
     const deltaPath = path.resolve(outPath, `${winstallerConfig.name}-${nupkgVersion}-delta.nupkg`);
-    if ((winstallerConfig.remoteReleases && !winstallerConfig.noDelta) || (await fs.pathExists(deltaPath))) {
+    if (winstallerConfig.remoteReleases && !winstallerConfig.noDelta && (await fs.pathExists(deltaPath))) {
       artifacts.push(deltaPath);
     }
     const msiPath = path.resolve(outPath, winstallerConfig.setupMsi || `${appName}Setup.msi`);
