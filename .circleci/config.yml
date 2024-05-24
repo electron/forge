@@ -88,7 +88,7 @@ jobs:
                   sudo add-apt-repository -y ppa:alexlarsson/flatpak
       - run-fast-tests
       - store_test_results:
-          path: ./reports/
+          path: ./experimental/
   slow-tests:
     parameters:
       executor:
@@ -135,11 +135,11 @@ jobs:
           when: always # the report is generated on pass or fail
           name: Make test report paths relative
           command: |
-            if [ -e ./reports/out/test_output.xml ]; then
-              sed -i.bak 's/"[^"]*packages/"packages/' ./reports/out/test_output.xml
+            if [ -e ./experimental/out/test_results.xml ]; then
+              sed -i.bak 's/"[^"]*packages/"packages/' ./experimental/out/test_results.xml
             fi
       - store_test_results:
-          path: ./reports/
+          path: ./experimental/
 
 workflows:
   tests:

@@ -31,7 +31,7 @@ if (args.length === 0) {
 const reporterConfig = process.env.CI
   ? {
       reporter: 'mocha-junit-reporter',
-      'reporter-option': ['mochaFile=./reports/out/test_output.xml'],
+      'reporter-option': ['mochaFile=./experimental/out/test_results.xml'],
     }
   : {};
 
