@@ -6,7 +6,7 @@
 [![license](https://img.shields.io/github/license/electron/forge.svg)](https://github.com/electron/forge/blob/main/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
-A complete tool for building modern Electron applications.
+A complete tool for building modern Electron applications
 
 Electron Forge unifies the existing (and well maintained) build tools for
 Electron development into a simple, easy to use package so that anyone can
