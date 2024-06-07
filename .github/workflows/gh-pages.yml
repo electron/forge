@@ -18,7 +18,7 @@ jobs:
         with:
           creds: ${{ secrets.GH_APP_CREDS }}
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           submodules: true
           fetch-depth: 0
@@ -47,7 +47,6 @@ jobs:
           defaultBranch: main
           noCommit: true
           showUnderscoreFiles: true
-          versionDocs: true
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 

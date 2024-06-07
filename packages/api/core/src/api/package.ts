@@ -10,7 +10,7 @@ import chalk from 'chalk';
 import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
-import { Listr } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runHook } from '../util/hook';
@@ -399,8 +399,8 @@ export const listrPackage = (
                           task: async () => {
                             await addSignalAndWait(signalPackageDone, target);
                           },
-                          options: {
-                            showTimer: true,
+                          rendererOptions: {
+                            timer: { ...PRESET_TIMER },
                           },
                         }
                       : {
@@ -431,10 +431,10 @@ export const listrPackage = (
                                         signalRebuildStart.get(getTargetKey(target))?.pop()?.(task);
                                         await addSignalAndWait(signalRebuildDone, target);
                                       }),
-                                      options: {
+                                      rendererOptions: {
                                         persistentOutput: true,
                                         bottomBar: Infinity,
-                                        showTimer: true,
+                                        timer: { ...PRESET_TIMER },
                                       },
                                     },
                                     {
@@ -444,18 +444,18 @@ export const listrPackage = (
                                       }),
                                     },
                                   ],
-                                  { rendererOptions: { collapse: true, collapseErrors: false } }
+                                  { rendererOptions: { collapseSubtasks: true, collapseErrors: false } }
                                 ),
                                 'run'
                               );
                             }
                           ),
-                          options: {
-                            showTimer: true,
+                          rendererOptions: {
+                            timer: { ...PRESET_TIMER },
                           },
                         }
                 ),
-                { concurrent: true, rendererOptions: { collapse: false, collapseErrors: false } }
+                { concurrent: true, rendererOptions: { collapseSubtasks: false, collapseErrors: false } }
               ),
               'run'
             );
@@ -486,10 +486,10 @@ export const listrPackage = (
     ],
     {
       concurrent: false,
-      rendererSilent: !interactive,
-      rendererFallback: Boolean(process.env.DEBUG),
+      silentRendererCondition: !interactive,
+      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       rendererOptions: {
-        collapse: false,
+        collapseSubtasks: false,
         collapseErrors: false,
       },
       ctx: {} as PackageContext,
