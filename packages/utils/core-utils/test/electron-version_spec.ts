@@ -130,7 +130,7 @@ describe('getElectronModulePath', () => {
         devDependencies: { electron: '^4.0.4' },
       };
 
-      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     });
 
     after(() => {
@@ -150,7 +150,7 @@ describe('getElectronModulePath', () => {
         devDependencies: { electron: '^4.0.4' },
       };
 
-      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     });
 
     it('finds the top-level electron module despite the additional node_modules folder inside the package', async () => {
@@ -160,7 +160,7 @@ describe('getElectronModulePath', () => {
         devDependencies: { electron: '^4.0.4' },
       };
 
-      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     });
 
     it('finds the correct electron module in nohoist mode', async () => {
@@ -170,8 +170,8 @@ describe('getElectronModulePath', () => {
         devDependencies: { electron: '^13.0.0' },
       };
 
-      expect(await getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(fixtureDir, 'node_modules', 'electron'));
-      expect(await getElectronModulePath(fixtureDir, packageJSON)).not.to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
+      expect(getElectronModulePath(fixtureDir, packageJSON)).to.be.equal(path.join(fixtureDir, 'node_modules', 'electron'));
+      expect(getElectronModulePath(fixtureDir, packageJSON)).not.to.be.equal(path.join(workspaceDir, 'node_modules', 'electron'));
     });
 
     after(() => {

@@ -154,7 +154,7 @@ export default autoTrace(
       }
 
       if (!electronExecPath) {
-        electronExecPath = await locateElectronExecutable(dir, packageJSON);
+        electronExecPath = locateElectronExecutable(dir, packageJSON);
       }
 
       d('Electron binary path:', electronExecPath);

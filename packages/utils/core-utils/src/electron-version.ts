@@ -1,7 +1,6 @@
 import path from 'path';
 
 import debug from 'debug';
-import findUp from 'find-up';
 import fs from 'fs-extra';
 import semver from 'semver';
 
@@ -18,28 +17,6 @@ type PackageJSONWithDeps = {
 
 function findElectronDep(dep: string): boolean {
   return electronPackageNames.includes(dep);
-}
-
-async function findAncestorNodeModulesPath(dir: string, packageName: string): Promise<string | undefined> {
-  d('Looking for a lock file to indicate the root of the repo');
-  const lockPath = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], { cwd: dir, type: 'file' });
-  if (lockPath) {
-    d(`Found lock file: ${lockPath}`);
-    const nodeModulesPath = path.join(path.dirname(lockPath), 'node_modules', packageName);
-    if (await fs.pathExists(nodeModulesPath)) {
-      return nodeModulesPath;
-    }
-  }
-
-  return Promise.resolve(undefined);
-}
-
-async function determineNodeModulesPath(dir: string, packageName: string): Promise<string | undefined> {
-  const nodeModulesPath: string | undefined = path.join(dir, 'node_modules', packageName);
-  if (await fs.pathExists(nodeModulesPath)) {
-    return nodeModulesPath;
-  }
-  return findAncestorNodeModulesPath(dir, packageName);
 }
 
 export class PackageNotFoundError extends Error {
@@ -63,23 +40,18 @@ function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
   return packageName;
 }
 
-async function getElectronPackageJSONPath(dir: string, packageName: string): Promise<string | undefined> {
-  const nodeModulesPath = await determineNodeModulesPath(dir, packageName);
-  if (!nodeModulesPath) {
+function getElectronPackageJSONPath(dir: string, packageName: string): string {
+  try {
+    // eslint-disable-next-line node/no-missing-require
+    return require.resolve(`${packageName}/package.json`, { paths: [dir] });
+  } catch {
     throw new PackageNotFoundError(packageName, dir);
   }
-
-  const electronPackageJSONPath = path.join(nodeModulesPath, 'package.json');
-  if (await fs.pathExists(electronPackageJSONPath)) {
-    return electronPackageJSONPath;
-  }
-
-  return undefined;
 }
 
-export async function getElectronModulePath(dir: string, packageJSON: PackageJSONWithDeps): Promise<string | undefined> {
+export function getElectronModulePath(dir: string, packageJSON: PackageJSONWithDeps): string | undefined {
   const moduleName = getElectronModuleName(packageJSON);
-  const packageJSONPath = await getElectronPackageJSONPath(dir, moduleName);
+  const packageJSONPath = getElectronPackageJSONPath(dir, moduleName);
   if (packageJSONPath) {
     return path.dirname(packageJSONPath);
   }
@@ -95,7 +67,7 @@ export async function getElectronVersion(dir: string, packageJSON: PackageJSONWi
   let version = packageJSON.devDependencies![packageName];
   if (!semver.valid(version)) {
     // It's not an exact version, find it in the actual module
-    const electronPackageJSONPath = await getElectronPackageJSONPath(dir, packageName);
+    const electronPackageJSONPath = getElectronPackageJSONPath(dir, packageName);
     if (electronPackageJSONPath) {
       const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
       version = electronPackageJSON.version;

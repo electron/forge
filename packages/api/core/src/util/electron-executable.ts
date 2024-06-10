@@ -5,8 +5,8 @@ import logSymbols from 'log-symbols';
 
 type PackageJSON = Record<string, unknown>;
 
-export default async function locateElectronExecutable(dir: string, packageJSON: PackageJSON): Promise<string> {
-  const electronModulePath: string | undefined = await getElectronModulePath(dir, packageJSON);
+export default function locateElectronExecutable(dir: string, packageJSON: PackageJSON): string {
+  const electronModulePath: string | undefined = getElectronModulePath(dir, packageJSON);
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   let electronExecPath = require(electronModulePath || path.resolve(dir, 'node_modules/electron'));
