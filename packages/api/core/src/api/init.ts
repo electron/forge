@@ -56,7 +56,7 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
 export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
-  const packageManager = getPackageManager();
+  const packageManager = await getPackageManager();
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;

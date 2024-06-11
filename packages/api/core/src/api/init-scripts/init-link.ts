@@ -22,7 +22,7 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
   if (shouldLink) {
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
-    const packageManager = getPackageManager();
+    const packageManager = await getPackageManager();
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
