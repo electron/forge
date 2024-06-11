@@ -3,6 +3,9 @@ import * as path from 'path';
 
 import { RebuildOptions } from '@electron/rebuild';
 import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
+import debug from 'debug';
+
+const d = debug('electron-forge:rebuild');
 
 export const listrCompatibleRebuildHook = async <Ctx = never>(
   buildPath: string,
@@ -22,6 +25,7 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
     arch,
   };
 
+  d('Spawning a remote rebuilder process with options:', options);
   const child = cp.fork(path.resolve(__dirname, 'remote-rebuild.js'), [JSON.stringify(options)], {
     stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
   });
@@ -42,6 +46,7 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
   });
 
   child.on('message', (message: { msg: string; err: { message: string; stack: string } }) => {
+    d('Received message from rebuilder:', message);
     switch (message.msg) {
       case 'module-found': {
         found += 1;

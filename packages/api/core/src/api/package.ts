@@ -245,6 +245,7 @@ export const listrPackage = (
               },
               async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const targetKey = getTargetKey({ platform: pPlatform, arch: pArch });
+                d('rebuilding for target:', targetKey);
                 await listrCompatibleRebuildHook(
                   buildPath,
                   electronVersion,
@@ -254,6 +255,7 @@ export const listrPackage = (
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   await rebuildTasks.get(targetKey)!.pop()!
                 );
+                d('rebuild complete');
                 signalRebuildDone.get(targetKey)?.pop()?.();
                 done();
               },
@@ -415,6 +417,7 @@ export const listrPackage = (
                               newRoot: true,
                             },
                             async (childTrace, _, task) => {
+                              d('target:', target);
                               return delayTraceTillSignal(
                                 childTrace,
                                 task.newListr(
@@ -422,14 +425,18 @@ export const listrPackage = (
                                     {
                                       title: 'Copying files',
                                       task: childTrace({ name: 'copy-files', category: '@electron-forge/core' }, async () => {
+                                        d('copying files');
                                         await addSignalAndWait(signalCopyDone, target);
+                                        d('done copying files');
                                       }),
                                     },
                                     {
                                       title: 'Preparing native dependencies',
                                       task: childTrace({ name: 'prepare-native-dependencies', category: '@electron-forge/core' }, async (_, __, task) => {
                                         signalRebuildStart.get(getTargetKey(target))?.pop()?.(task);
+                                        d('waiting for rebuild to start');
                                         await addSignalAndWait(signalRebuildDone, target);
+                                        d('done rebuilding');
                                       }),
                                       rendererOptions: {
                                         persistentOutput: true,
@@ -440,7 +447,9 @@ export const listrPackage = (
                                     {
                                       title: 'Finalizing package',
                                       task: childTrace({ name: 'finalize-package', category: '@electron-forge/core' }, async () => {
+                                        d('finalizing package');
                                         await addSignalAndWait(signalPackageDone, target);
+                                        d('done finalizing package');
                                       }),
                                     },
                                   ],
@@ -467,6 +476,7 @@ export const listrPackage = (
         task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>(
           { name: 'run-postPackage-hook', category: '@electron-forge/core' },
           async (childTrace, { packagerPromise, forgeConfig }, task) => {
+            d('waiting for packagerPromise');
             const outputPaths = await packagerPromise;
             d('outputPaths:', outputPaths);
             return delayTraceTillSignal(

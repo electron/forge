@@ -193,7 +193,9 @@ export default autoTrace(
                 {
                   title: 'Installing dependencies',
                   task: async (_, task) => {
+                    d(`getting package manager, NODE_INSTALLER = ${process.env.NODE_INSTALLER}`);
                     const packageManager = getPackageManager();
+                    d('using package manager: ', packageManager);
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
