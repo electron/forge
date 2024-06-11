@@ -11,7 +11,6 @@ import { readMetadata } from 'electron-installer-common';
 import fs from 'fs-extra';
 import proxyquire from 'proxyquire';
 
-import { InitOptions } from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
@@ -21,7 +20,6 @@ const forge = proxyquire.noCallThru().load('../../src/api', {
   },
 }).api;
 
-type BeforeInitFunction = () => void;
 type PackageJSON = Record<string, unknown> & {
   config: {
     forge: ForgeConfig;
@@ -36,32 +34,36 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
 }
 
 for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
-  process.env.NODE_INSTALLER = nodeInstaller;
   describe(`electron-forge API (with installer=${nodeInstaller})`, () => {
     let dir: string;
 
     before(async () => {
-      await packageManagerSpawn(['link:prepare']);
+      process.env.NODE_INSTALLER = nodeInstaller;
+      await packageManagerSpawn(['run', 'link:prepare']);
     });
 
-    const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
-      before(async () => {
-        dir = await ensureTestDirIsNonexistent();
-        if (beforeInit) {
-          beforeInit();
-        }
-        await forge.init({ ...params, dir });
-      });
-    };
+    beforeEach(async () => {
+      dir = await ensureTestDirIsNonexistent();
+      console.log('creating new dir', dir);
+      await fs.mkdir(dir);
+    });
+
+    after(async () => {
+      await packageManagerSpawn(['run', 'link:remove']);
+    });
+
+    afterEach(async () => await fs.remove(dir));
 
     describe('init', () => {
-      beforeInitTest();
-
       it('should fail in initializing an already initialized directory', async () => {
+        console.log('initialising dir', dir);
+        await forge.init({ dir });
         await expect(forge.init({ dir })).to.eventually.be.rejected;
       });
 
       it('should initialize an already initialized directory when forced to', async () => {
+        console.log('initialising dir', dir);
+        await forge.init({ dir });
         await forge.init({
           dir,
           force: true,
@@ -69,15 +71,18 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
       });
 
       it('should create a new folder with a npm module inside', async () => {
+        await forge.init({ dir });
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
         await expectProjectPathExists(dir, 'package.json', 'file');
       });
 
       it('should have initialized a git repository', async () => {
+        await forge.init({ dir });
         await expectProjectPathExists(dir, '.git', 'folder');
       });
 
       it('should have installed the initial node_modules', async () => {
+        await forge.init({ dir });
         await expectProjectPathExists(dir, 'node_modules', 'folder');
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
@@ -85,20 +90,19 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
       });
 
       it('should create a forge.config.js', async () => {
+        await forge.init({ dir });
         await expectProjectPathExists(dir, 'forge.config.js', 'file');
       });
 
-      describe('lint', () => {
-        it('should initially pass the linting process', () => expectLintToPass(dir));
+      it('should initially pass the linting process', async () => {
+        await forge.init({ dir });
+        expectLintToPass(dir);
       });
-
-      after(() => fs.remove(dir));
     });
 
     describe.skip('init with CI files enabled', () => {
-      beforeInitTest({ copyCIFiles: true });
-
       it('should copy over the CI config files correctly', async () => {
+        await forge.init({ copyCIFiles: true, dir });
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
         await expectProjectPathExists(dir, '.appveyor.yml', 'file');
         await expectProjectPathExists(dir, '.travis.yml', 'file');
@@ -106,43 +110,41 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
     });
 
     describe('init (with custom templater)', () => {
-      beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
+      afterEach(async () => {
+        execSync(`${nodeInstaller} unlink -g`, {
+          cwd: path.resolve(__dirname, '../fixture/custom_init'),
+        });
+      });
 
       it('should add custom dependencies', async () => {
+        await forge.init({ template: path.resolve(__dirname, '../fixture/custom_init'), dir });
         expect(Object.keys(require(path.resolve(dir, 'package.json')).dependencies)).to.contain('debug');
       });
 
       it('should add custom devDependencies', async () => {
+        await forge.init({ template: path.resolve(__dirname, '../fixture/custom_init'), dir });
         expect(Object.keys(require(path.resolve(dir, 'package.json')).devDependencies)).to.contain('lodash');
       });
 
       it('should create dot files correctly', async () => {
+        await forge.init({ template: path.resolve(__dirname, '../fixture/custom_init'), dir });
         expect(await fs.pathExists(dir), 'the target dir should have been created').to.equal(true);
         await expectProjectPathExists(dir, '.bar', 'file');
       });
 
       it('should create deep files correctly', async () => {
+        await forge.init({ template: path.resolve(__dirname, '../fixture/custom_init'), dir });
         await expectProjectPathExists(dir, 'src/foo.js', 'file');
         await expectProjectPathExists(dir, 'src/index.html', 'file');
       });
 
-      describe('lint', () => {
-        it('should initially pass the linting process', () => expectLintToPass(dir));
-      });
-
-      after(async () => {
-        await fs.remove(dir);
-        execSync('npm unlink -g', {
-          cwd: path.resolve(__dirname, '../fixture/custom_init'),
-        });
+      it('should initially pass the linting process', async () => {
+        await forge.init({ template: path.resolve(__dirname, '../fixture/custom_init'), dir });
+        expectLintToPass(dir);
       });
     });
 
     describe('init (with a templater sans required Forge version)', () => {
-      before(async () => {
-        dir = await ensureTestDirIsNonexistent();
-      });
-
       it('should fail in initializing', async () => {
         await expect(
           forge.init({
@@ -151,17 +153,9 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
           })
         ).to.eventually.be.rejectedWith(/it does not specify its required Forge version\.$/);
       });
-
-      after(async () => {
-        await fs.remove(dir);
-      });
     });
 
     describe('init (with a templater with a non-matching Forge version)', () => {
-      before(async () => {
-        dir = await ensureTestDirIsNonexistent();
-      });
-
       it('should fail in initializing', async () => {
         await expect(
           forge.init({
@@ -170,17 +164,9 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
           })
         ).to.eventually.be.rejectedWith(/is not compatible with this version of Electron Forge/);
       });
-
-      after(async () => {
-        await fs.remove(dir);
-      });
     });
 
     describe('init (with a nonexistent templater)', () => {
-      before(async () => {
-        dir = await ensureTestDirIsNonexistent();
-      });
-
       it('should fail in initializing', async () => {
         await expect(
           forge.init({
@@ -189,19 +175,19 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
           })
         ).to.eventually.be.rejectedWith('Failed to locate custom template');
       });
-
-      after(async () => {
-        await fs.remove(dir);
-      });
     });
 
     describe('import', () => {
-      before(async () => {
-        dir = await ensureTestDirIsNonexistent();
-        await fs.mkdir(dir);
+      beforeEach(async () => {
         execSync(`git clone https://github.com/electron/electron-quick-start.git . --quiet`, {
           cwd: dir,
         });
+        // electron-quick-start has a package-lock.json, which we remove when not using npm
+        if (nodeInstaller !== 'npm') {
+          execSync(`rm package-lock.json`, {
+            cwd: dir,
+          });
+        }
       });
 
       it('creates forge.config.js and is packageable', async () => {
@@ -210,28 +196,28 @@ for (const nodeInstaller of ['npm', 'pnpm', 'yarn']) {
           packageJSON.productName = 'ProductName';
         });
 
-        await forge.import({ dir });
-
-        expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
-
+        console.log('installing dependencies');
         execSync(`${nodeInstaller} install`, {
           cwd: dir,
         });
 
+        console.log('Importing');
+
+        await forge.import({ dir });
+        console.log('Imported');
+
+        expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
+
+        console.log('Packaging', dir);
+
         await forge.package({ dir });
+
+        console.log('Packaged');
 
         const outDirContents = fs.readdirSync(path.join(dir, 'out'));
         expect(outDirContents).to.have.length(1);
         expect(outDirContents[0]).to.equal(`ProductName-${process.platform}-${process.arch}`);
       });
-
-      after(async () => {
-        await fs.remove(dir);
-      });
-    });
-
-    after(async () => {
-      await packageManagerSpawn(['link:remove']);
     });
   });
 }
