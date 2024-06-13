@@ -2,6 +2,7 @@ import path from 'path';
 
 import { expect } from 'chai';
 
+import { registerForgeConfigForDirectory, unregisterForgeConfigForDirectory } from '../../src/util/forge-config';
 import resolveDir from '../../src/util/resolve-dir';
 
 describe('resolve-dir', () => {
@@ -19,5 +20,15 @@ describe('resolve-dir', () => {
   it('should return a directory if it finds a node module', async () => {
     expect(await resolveDir(path.resolve(__dirname, '../fixture/dummy_app/foo'))).to.not.be.equal(null);
     expect(await resolveDir(path.resolve(__dirname, '../fixture/dummy_app/foo'))).to.be.equal(path.resolve(__dirname, '../fixture/dummy_app'));
+  });
+
+  it('should return a directory if it finds a virtual config', async () => {
+    try {
+      registerForgeConfigForDirectory('/foo/var/virtual', {});
+      expect(await resolveDir('/foo/var/virtual')).to.not.be.equal(null);
+      expect(await resolveDir(path.resolve(__dirname, '/foo/var/virtual'))).to.be.equal(path.resolve(__dirname, '/foo/var/virtual'));
+    } finally {
+      unregisterForgeConfigForDirectory('/foo/var/virtual');
+    }
   });
 });

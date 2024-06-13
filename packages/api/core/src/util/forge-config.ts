@@ -74,6 +74,14 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+export const registeredForgeConfigs: Map<string, ForgeConfig> = new Map();
+export function registerForgeConfigForDirectory(dir: string, config: ForgeConfig): void {
+  registeredForgeConfigs.set(path.resolve(dir), config);
+}
+export function unregisterForgeConfigForDirectory(dir: string): void {
+  registeredForgeConfigs.delete(path.resolve(dir));
+}
+
 export type BuildIdentifierMap<T> = Record<string, T | undefined>;
 export type BuildIdentifierConfig<T> = {
   map: BuildIdentifierMap<T>;
@@ -109,8 +117,12 @@ type MaybeESM<T> = T | { default: T };
 type AsyncForgeConfigGenerator = () => Promise<ForgeConfig>;
 
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
+  let forgeConfig: ForgeConfig | string | null | undefined = registeredForgeConfigs.get(dir);
+
   const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
+  if (forgeConfig === undefined) {
+    forgeConfig = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
+  }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
     for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
