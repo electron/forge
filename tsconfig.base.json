@@ -13,5 +13,5 @@
     "composite": true,
     "declarationMap": true
   },
-  "exclude": ["node_modules", "dist", "test", "index.ts", "tmpl"]
+  "exclude": ["node_modules", "dist", "test", "tmpl"]
 }

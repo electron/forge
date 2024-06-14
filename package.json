@@ -27,7 +27,7 @@
     "test:fast": "npm run test -- --suite=fast",
     "test:slow": "npm run test -- --suite=slow",
     "test:clear": "ts-node tools/test-clear",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
+    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts",
     "prepare": "husky install",
     "preversion": "yarn build"
   },
