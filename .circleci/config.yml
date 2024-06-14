@@ -10,18 +10,18 @@ commands:
       - node/install:
           node-version: '18.15.0'
       - checkout
-  run-lint-and-build:
+  run-build-and-lint:
     steps:
       - node/install-packages
+      - run:
+          name: 'Build Electron Forge'
+          command: |
+            yarn build
       - run:
           name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
-      - run:
-          name: 'Build Electron Forge'
-          command: |
-            yarn build
   run-fast-tests:
     steps:
       - node/install-packages:
@@ -47,11 +47,11 @@ commands:
             yarn test $TEST_GLOB
 
 jobs:
-  lint-and-build:
+  build-and-lint:
     executor: node/linux
     steps:
       - install
-      - run-lint-and-build
+      - run-build-and-lint
       - persist_to_workspace:
           root: .
           paths:
@@ -144,10 +144,10 @@ jobs:
 workflows:
   tests:
     jobs:
-      - lint-and-build
+      - build-and-lint
       - fast-tests:
           requires:
-            - lint-and-build
+            - build-and-lint
           matrix:
             parameters:
               executor: [node/windows, node/linux, node/macos]
@@ -159,7 +159,7 @@ workflows:
                 arch: arm64
       - slow-tests:
           requires:
-            - lint-and-build
+            - build-and-lint
           matrix:
             parameters:
               executor: [node/windows, node/linux, node/macos]
