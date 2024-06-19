@@ -41,12 +41,15 @@ function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
 }
 
 function getElectronPackageJSONPath(dir: string, packageName: string): string {
-  try {
-    // eslint-disable-next-line node/no-missing-require
-    return require.resolve(`${packageName}/package.json`, { paths: [dir] });
-  } catch {
-    throw new PackageNotFoundError(packageName, dir);
+  if (packageName) {
+    try {
+      // eslint-disable-next-line node/no-missing-require
+      return require.resolve(`${packageName}/package.json`, { paths: [dir] });
+    } catch {
+      // Ignore
+    }
   }
+  throw new PackageNotFoundError(packageName, dir);
 }
 
 export function getElectronModulePath(dir: string, packageJSON: PackageJSONWithDeps): string | undefined {
