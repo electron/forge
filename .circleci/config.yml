@@ -157,6 +157,8 @@ workflows:
                 arch: arm64
               - executor: node/linux
                 arch: arm64
+              - executor: node/macos
+                arch: x64
       - slow-tests:
           requires:
             - lint-and-build
@@ -169,3 +171,5 @@ workflows:
                 arch: arm64
               - executor: node/linux
                 arch: arm64
+              - executor: node/macos
+                arch: x64
