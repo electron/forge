@@ -11,7 +11,7 @@
     "chrome-trace-event": "^1.0.3"
   },
   "engines": {
-    "node": ">= 14.17.5"
+    "node": ">=18.3.0 || >=20 || >=22"
   },
   "publishConfig": {
     "access": "public"

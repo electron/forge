@@ -12,7 +12,7 @@
   "main": "dist/ElectronegativityPlugin.js",
   "typings": "dist/ElectronegativityPlugin.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">=18.3.0 || >=20 || >=22"
   },
   "dependencies": {
     "@doyensec/electronegativity": "^1.9.1",

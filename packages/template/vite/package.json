@@ -15,7 +15,7 @@
     "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">=18.3.0 || >=20 || >=22"
   },
   "dependencies": {
     "@electron-forge/shared-types": "7.4.0",
