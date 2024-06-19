@@ -120,9 +120,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       spaces: 2,
     });
 
+    const dereference = this.configGenerator.derefSymlinks;
+
     // Copy the dependencies in package.json
     for (const dep of flatDependencies) {
-      await fs.copy(dep.src, path.resolve(buildPath, dep.dest));
+      await fs.copy(dep.src, path.resolve(buildPath, dep.dest), { dereference });
     }
   };
 
