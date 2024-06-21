@@ -3,7 +3,12 @@ import path from 'path';
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
 
-import findConfig, { forgeConfigIsValidFilePath, renderConfigTemplate } from '../../src/util/forge-config';
+import findConfig, {
+  forgeConfigIsValidFilePath,
+  registerForgeConfigForDirectory,
+  renderConfigTemplate,
+  unregisterForgeConfigForDirectory,
+} from '../../src/util/forge-config';
 
 const defaults = {
   packagerConfig: {},
@@ -45,6 +50,51 @@ describe('forge-config', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (config as any).pluginInterface;
     expect(config).to.deep.equal(defaults);
+  });
+
+  it('should resolve to the virtual config if present', async () => {
+    const fixturePath = path.resolve(__dirname, '../fixture/no_forge_config');
+    try {
+      registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
+      const config = await findConfig(fixturePath);
+      delete (config as any).pluginInterface;
+      expect(config).to.be.deep.equal({
+        ...defaults,
+        outDir: 'magic',
+      });
+    } finally {
+      unregisterForgeConfigForDirectory(fixturePath);
+    }
+  });
+
+  it('should resolve virtual config instead of package.json', async () => {
+    const fixturePath = path.resolve(__dirname, '../fixture/dummy_app');
+    try {
+      registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
+      const config = await findConfig(fixturePath);
+      delete (config as any).pluginInterface;
+      expect(config).to.be.deep.equal({
+        ...defaults,
+        outDir: 'magic',
+      });
+    } finally {
+      unregisterForgeConfigForDirectory(fixturePath);
+    }
+  });
+
+  it('should resolve virtual config instead of forge.config.js', async () => {
+    const fixturePath = path.resolve(__dirname, '../fixture/async_forge_config');
+    try {
+      registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
+      const config = await findConfig(fixturePath);
+      delete (config as any).pluginInterface;
+      expect(config).to.be.deep.equal({
+        ...defaults,
+        outDir: 'magic',
+      });
+    } finally {
+      unregisterForgeConfigForDirectory(fixturePath);
+    }
   });
 
   it('should resolve the object in package.json with defaults if one exists', async () => {
