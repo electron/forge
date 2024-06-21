@@ -207,4 +207,41 @@ describe('start', () => {
       })
     ).to.eventually.equal(fakeChild);
   });
+
+  it(`should spawn remove pnp environment variable in NODE_OPTIONS`, async () => {
+    resolveStub.returnsArg(0);
+    const oldNodeOptions = process.env.NODE_OPTIONS;
+    try {
+      process.env.NODE_OPTIONS = '--require /some/workspace/.pnp.cjs --experimental-loader file:///some/workspace/.pnp.loader.mjs';
+      await start({
+        dir: __dirname,
+        interactive: false,
+      });
+      expect(spawnStub.firstCall.args[2].env.NODE_OPTIONS).to.equal('');
+    } finally {
+      process.env.NODE_OPTIONS = oldNodeOptions;
+    }
+  });
+
+  const testNodeOptions = [
+    '--hello --require /some/workspace/.pnp.cjs --experimental-loader file:///some/workspace/.pnp.loader.mjs --require /some/debugConnector.js --world --some args',
+    '--hello --require "/some/space path/.pnp.cjs" --experimental-loader "file:///some/space path/.pnp.loader.mjs" --require /some/debugConnector.js --world --some args',
+    '--hello --require "C:\\\\some space path\\\\.pnp.cjs" --experimental-loader "file:///c:/some space path/.pnp.loader.mjs" --require /some/debugConnector.js --world --some args',
+  ];
+  for (let i = 0; i < testNodeOptions.length; i++) {
+    it(`should spawn remove pnp environment variable in NODE_OPTIONS case ${i}`, async () => {
+      resolveStub.returnsArg(0);
+      const oldNodeOptions = process.env.NODE_OPTIONS;
+      try {
+        process.env.NODE_OPTIONS = testNodeOptions[i];
+        await start({
+          dir: __dirname,
+          interactive: false,
+        });
+        expect(spawnStub.lastCall.args[2].env.NODE_OPTIONS).to.equal('--hello --require /some/debugConnector.js --world --some args');
+      } finally {
+        process.env.NODE_OPTIONS = oldNodeOptions;
+      }
+    });
+  }
 });
