@@ -131,6 +131,45 @@ export interface WebpackPluginConfig {
    */
   mainConfig: WebpackConfiguration | string;
   /**
+   * Configuration for a custom protocol used to load assets from disk in packaged apps.
+   * This has no effect on development apps.
+   */
+  customProtocolForPackagedAssets?: {
+    /**
+     * Whether to use a custom protocol, if false file:// will be used
+     * file:// is considered unsafe so you should opt in to this if you
+     * can. It will become the default in an upcoming major version
+     * of Electron Forge
+     */
+    enabled: boolean;
+    /**
+     * Custom protocol name, defaults to "app-internal-static",
+     */
+    protocolName?: string;
+    /**
+     * If you are going to register the protocol handler yourself for
+     * some reason you can set this to false explicitly to avoid forge
+     * injecting the protocol initialization code.
+     */
+    autoRegisterProtocol?: boolean;
+    /**
+     * Protocol privileges, maps to the [`CustomScheme.privileges`](https://www.electronjs.org/docs/latest/api/structures/custom-scheme)
+     * object from the core Electron API.
+     *
+     * Defaults to `standard | secure | allowServiceWorkers | supportFetchAPI | corsEnabled | codeCache`
+     */
+    privileges?: {
+      standard?: boolean;
+      secure?: boolean;
+      bypassCSP?: boolean;
+      allowServiceWorkers?: boolean;
+      supportFetchAPI?: boolean;
+      corsEnabled?: boolean;
+      stream?: boolean;
+      codeCache?: boolean;
+    };
+  };
+  /**
    * Instructs webpack to emit a JSON file containing statistics about modules, the dependency
    * graph, and various other build information for the main process. This file is located in
    * `.webpack/main/stats.json`, but is not packaged with your app.
