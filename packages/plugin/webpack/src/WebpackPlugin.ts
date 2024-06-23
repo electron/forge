@@ -101,7 +101,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       this.servers = [];
       for (const logger of this.loggers) {
         d('stopping logger');
-        logger.stop();
+        logger.stopPort();
       }
       this.loggers = [];
     }
@@ -569,9 +569,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     await fs.remove(this.baseDir);
 
-    const logger = new Logger(this.loggerPort);
+    const logger = new Logger();
     this.loggers.push(logger);
-    await logger.start();
+    this.loggerPort = await logger.startPort(this.loggerPort);
 
     return {
       tasks: [

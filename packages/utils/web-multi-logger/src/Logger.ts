@@ -1,6 +1,7 @@
 import http from 'http';
 import path from 'path';
 
+import { findAvailablePort } from '@electron-forge/core-utils';
 import express from 'express';
 import ews from 'express-ws';
 
@@ -33,7 +34,6 @@ export default class Logger {
       // I assume this endpoint is just a no-op needed for some reason.
     });
   }
-
   /**
    * Creates a new tab with the given name, the name should be human readable
    * it will be used as the tab title in the front end.
@@ -49,16 +49,16 @@ export default class Logger {
    *
    * @returns the port number
    */
-  start(): Promise<number> {
-    return new Promise<number>((resolve) => {
-      this.server = this.app.listen(this.port, () => resolve(this.port));
-    });
+  async startPort(loggerPort: number): Promise<number> {
+    loggerPort = await findAvailablePort(loggerPort);
+    this.server = this.app.listen(loggerPort);
+    return loggerPort;
   }
 
   /**
    * Stop the HTTP server hosting the web UI
    */
-  stop(): void {
+  stopPort(): void {
     if (this.server) this.server.close();
   }
 }
