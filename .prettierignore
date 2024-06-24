@@ -8,6 +8,7 @@ packages/*/*/index.d.ts
 packages/*/*/index.ts
 packages/*/*/README.md
 packages/*/*/tsconfig.json
+packages/*/*/typedoc.json
 packages/api/core/test/fixture/bad_external_forge_config/bad.js
 packages/plugin/webpack/test/**/.webpack
 .links
