@@ -1,14 +1,14 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@2.2.1
+  node: electronjs/node@2.3.0
 
 commands:
   install:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.15.0'
+          node-version: '18.20.3'
       - checkout
   run-lint-and-build:
     steps:
