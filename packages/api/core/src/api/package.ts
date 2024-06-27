@@ -25,9 +25,9 @@ const d = debug('electron-forge:packager');
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
-function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
+async function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
   if (hooks) {
-    return Promise.all(hooks.map(async (hook) => (typeof hook === 'string' ? ((await importSearch<F>(dir, [hook])) as F) : hook)));
+    return await Promise.all(hooks.map(async (hook) => (typeof hook === 'string' ? ((await importSearch<F>(dir, [hook])) as F) : hook)));
   }
 
   return [];

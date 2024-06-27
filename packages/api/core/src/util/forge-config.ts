@@ -155,7 +155,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const templateObj = { ...packageJSON, year: new Date().getFullYear() };
   renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
-  resolvedForgeConfig.pluginInterface = new PluginInterface(dir, resolvedForgeConfig);
+  resolvedForgeConfig.pluginInterface = await PluginInterface.create(dir, resolvedForgeConfig);
 
   resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
 
