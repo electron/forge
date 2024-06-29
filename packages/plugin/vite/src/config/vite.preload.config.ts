@@ -1,22 +1,16 @@
-import { defineConfig, mergeConfig } from 'vite';
-import {
-  getBuildConfig,
-  external,
-  pluginHotRestart,
-} from './vite.base.config.mjs';
+// eslint-disable-next-line node/no-unpublished-import
+import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-// https://vitejs.dev/config
-export default defineConfig((env) => {
-  /** @type {import('vite').ConfigEnv<'build'>} */
-  const forgeEnv = env;
+import { external, getBuildConfig, pluginHotRestart } from './vite.base.config';
+
+export function getConfig(forgeEnv: ConfigEnv<'build'>): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
-  /** @type {import('vite').UserConfig} */
-  const config = {
+  const config: UserConfig = {
     build: {
       rollupOptions: {
         external,
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
-        input: forgeConfigSelf.entry,
+        input: forgeConfigSelf.entry!,
         output: {
           format: 'cjs',
           // It should not be split chunks.
@@ -31,4 +25,4 @@ export default defineConfig((env) => {
   };
 
   return mergeConfig(getBuildConfig(forgeEnv), config);
-});
+}

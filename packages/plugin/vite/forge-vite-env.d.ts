@@ -7,13 +7,6 @@ declare global {
   const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
   const MAIN_WINDOW_VITE_NAME: string;
 
-  namespace NodeJS {
-    interface Process {
-      // Used for hot reload after preload scripts.
-      viteDevServers: Record<string, import('vite').ViteDevServer>;
-    }
-  }
-
   type VitePluginConfig = ConstructorParameters<typeof import('@electron-forge/plugin-vite').VitePlugin>[0];
 
   interface VitePluginRuntimeKeys {
