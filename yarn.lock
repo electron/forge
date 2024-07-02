@@ -5449,13 +5449,13 @@ electron-installer-debian@^3.2.0:
     word-wrap "^1.2.3"
     yargs "^16.0.2"
 
-electron-installer-dmg@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-4.0.0.tgz#0520bcc8a928e559b3f16fc5cbc12b182a66ea1c"
-  integrity sha512-g3W6XnyUa7QGrAF7ViewHdt6bXV2KYU1Pm1CY3pZpp+H6mOjCHHAhf/iZAxtaX1ERCb+SQHz7xSsAHuNH9I8ZQ==
+electron-installer-dmg@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-5.0.0.tgz#21e805bc92bbb04b672c214aa431c60809a57f5d"
+  integrity sha512-Z21l/z6HKGxiaIBB76i8YK1DqRggWCbIezvojbKW3zZE7wN9jXqupXByWD3szoGam+1k1/MjAUbkdlZcvI6PTQ==
   dependencies:
     debug "^4.3.2"
-    minimist "^1.1.1"
+    minimist "^1.2.7"
   optionalDependencies:
     appdmg "^0.6.4"
 
@@ -9532,12 +9532,12 @@ minimist-options@4.1.0:
     is-plain-obj "^1.1.0"
     kind-of "^6.0.3"
 
-minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
+minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
   integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
 
-minimist@^1.2.8:
+minimist@^1.2.7, minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
