@@ -2814,6 +2814,13 @@
     "@tufjs/canonical-json" "1.0.0"
     minimatch "^9.0.0"
 
+"@types/appdmg@^0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@types/appdmg/-/appdmg-0.5.5.tgz#141a4f565395acf587c3f35642a021aea97deea2"
+  integrity sha512-G+n6DgZTZFOteITE30LnWj+HRVIGr7wMlAiLWOO02uJFWVEitaPU9JVXm9wJokkgshBawb2O1OykdcsmkkZfgg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -5449,11 +5456,12 @@ electron-installer-debian@^3.2.0:
     word-wrap "^1.2.3"
     yargs "^16.0.2"
 
-electron-installer-dmg@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-5.0.0.tgz#21e805bc92bbb04b672c214aa431c60809a57f5d"
-  integrity sha512-Z21l/z6HKGxiaIBB76i8YK1DqRggWCbIezvojbKW3zZE7wN9jXqupXByWD3szoGam+1k1/MjAUbkdlZcvI6PTQ==
+electron-installer-dmg@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/electron-installer-dmg/-/electron-installer-dmg-5.0.1.tgz#309662eccce4a8585a79fe4bce79c23976a950f0"
+  integrity sha512-qOa1aAQdX57C+vzhDk3549dd/PRlNL4F8y736MTD1a43qptD+PvHY97Bo9gSf+OZ8iUWE7BrYSpk/FgLUe40EA==
   dependencies:
+    "@types/appdmg" "^0.5.5"
     debug "^4.3.2"
     minimist "^1.2.7"
   optionalDependencies:
