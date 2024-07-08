@@ -1,7 +1,6 @@
 import { builtinModules } from 'node:module';
 
 import type { AddressInfo } from 'node:net';
-// eslint-disable-next-line node/no-unpublished-import
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 
 export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()];

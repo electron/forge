@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-unpublished-import
 import type { LibraryOptions } from 'vite';
 
 export interface VitePluginBuildConfig {

@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-unpublished-import
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import { external, getBuildConfig, getBuildDefine, pluginHotRestart } from './vite.base.config';

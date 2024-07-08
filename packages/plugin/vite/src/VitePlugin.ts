@@ -5,7 +5,6 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
-// eslint-disable-next-line node/no-unpublished-import
 import { default as vite } from 'vite';
 
 import { onBuildDone } from './util/plugins';

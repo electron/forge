@@ -16,7 +16,7 @@ describe('ViteConfigGenerator', () => {
       build: [
         {
           entry: 'src/main.js',
-          config: path.join(configRoot, 'vite.main.config.js'),
+          config: path.join(configRoot, 'vite.main.config.mjs'),
           target: 'main',
         },
       ],
@@ -49,7 +49,7 @@ describe('ViteConfigGenerator', () => {
       build: [
         {
           entry: 'src/preload.js',
-          config: path.join(configRoot, 'vite.preload.config.js'),
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
           target: 'preload',
         },
       ],
@@ -83,7 +83,7 @@ describe('ViteConfigGenerator', () => {
       renderer: [
         {
           name: 'main_window',
-          config: path.join(configRoot, 'vite.renderer.config.js'),
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
         },
       ],
     };

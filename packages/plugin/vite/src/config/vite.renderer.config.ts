@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-unpublished-import
 import { type ConfigEnv, type UserConfig } from 'vite';
 
 import { pluginExposeRenderer } from './vite.base.config';

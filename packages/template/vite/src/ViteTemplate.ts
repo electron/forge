@@ -21,9 +21,9 @@ class ViteTemplate extends BaseTemplate {
       {
         title: 'Setting up Vite configuration',
         task: async () => {
-          await this.copyTemplateFile(directory, 'vite.main.config.js');
-          await this.copyTemplateFile(directory, 'vite.preload.config.js');
-          await this.copyTemplateFile(directory, 'vite.renderer.config.js');
+          await this.copyTemplateFile(directory, 'vite.main.config.mjs');
+          await this.copyTemplateFile(directory, 'vite.preload.config.mjs');
+          await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
           await this.copyTemplateFile(path.join(directory, 'src'), 'preload.js');
 
