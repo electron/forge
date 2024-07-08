@@ -4,7 +4,7 @@ export interface VitePluginBuildConfig {
   /**
    * Alias of `build.lib.entry` in `config`.
    */
-  entry?: LibraryOptions['entry'];
+  entry: LibraryOptions['entry'];
   /**
    * Vite config file path.
    */
@@ -20,7 +20,7 @@ export interface VitePluginRendererConfig {
   /**
    * Human friendly name of your entry point.
    */
-  name?: string;
+  name: string;
   /**
    * Vite config file path.
    */
