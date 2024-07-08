@@ -35,7 +35,7 @@ const forgeConfig: VitePluginConfig = {
 
 describe('vite.base.config', () => {
   it('getDefineKeys', () => {
-    const defineKeys1 = getDefineKeys(forgeConfig.renderer.map(({ name }) => name!));
+    const defineKeys1 = getDefineKeys(forgeConfig.renderer.map(({ name }) => name));
     const defineKeys2 = {
       main_window: {
         VITE_DEV_SERVER_URL: 'MAIN_WINDOW_VITE_DEV_SERVER_URL',
@@ -56,7 +56,7 @@ describe('vite.base.config', () => {
       mode: 'production',
       root: configRoot,
       forgeConfig,
-      forgeConfigSelf: forgeConfig.build.find(({ target }) => target === 'main')!,
+      forgeConfigSelf: forgeConfig.build[0],
     });
     const define2 = {
       MAIN_WINDOW_VITE_DEV_SERVER_URL: undefined,
@@ -69,27 +69,38 @@ describe('vite.base.config', () => {
   });
 
   it('getBuildDefine:serve', async () => {
-    const server = await vite.createServer({
-      publicDir: false,
-      plugins: [pluginExposeRenderer('main_window')],
-    });
-    await server.listen(5173);
+    const servers = await Promise.all(
+      forgeConfig.renderer.map(({ name }) =>
+        vite.createServer({
+          publicDir: false,
+          plugins: [pluginExposeRenderer(name)],
+        })
+      )
+    );
+    let port = 5173;
+
+    for (const server of servers) {
+      await server.listen(port);
+      port++;
+    }
 
     const define1 = getBuildDefine({
       command: 'serve',
       mode: 'development',
       root: configRoot,
       forgeConfig,
-      forgeConfigSelf: forgeConfig.renderer.find(({ name }) => name === 'main_window')!,
+      forgeConfigSelf: forgeConfig.build[0],
     });
     const define2 = {
       MAIN_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5173"',
       MAIN_WINDOW_VITE_NAME: '"main_window"',
-      SECOND_WINDOW_VITE_DEV_SERVER_URL: undefined, // Only one server has been started here.
+      SECOND_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5174"',
       SECOND_WINDOW_VITE_NAME: '"second_window"',
     };
 
-    await server.close();
+    for (const server of servers) {
+      await server.close();
+    }
 
     expect(define1).deep.equal(define2);
   });
