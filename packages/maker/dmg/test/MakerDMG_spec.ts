@@ -32,16 +32,18 @@ describe('MakerDMG', () => {
 
   beforeEach(async () => {
     ensureFileStub = stub().returns(Promise.resolve());
-    eidStub = stub().returns(Promise.resolve({ dmgPath: '/path/to/dmg' }));
+    eidStub = stub().returns(Promise.resolve());
     renameStub = stub().returns(Promise.resolve());
-    config = {};
+    config = {
+      appPath: 'fake',
+    };
 
     MakerDMG = proxyquire
       .noPreserveCache()
       .noCallThru()
       .load('../src/MakerDMG', {
         '../../util/ensure-output': { ensureFile: ensureFileStub },
-        'electron-installer-dmg': eidStub,
+        'electron-installer-dmg': { createDMG: eidStub },
         'fs-extra': {
           rename: renameStub,
         },
