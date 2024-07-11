@@ -549,11 +549,16 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       },
       historyApiFallback: true,
     };
+    let customHeaders = {}
+    if (this.config.devServer && this.config.devServer.headers) {
+      customHeaders = this.config.devServer.headers
+    }
     const overrides: Partial<WebpackDevServer.Configuration> = {
       port: this.port,
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
       headers: {
+        ...customHeaders,
         'Content-Security-Policy': cspDirectives,
       },
     };
