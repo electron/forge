@@ -549,7 +549,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       },
       historyApiFallback: true,
     };
-
     const overrides: Partial<WebpackDevServer.Configuration> = {
       port: this.port,
       setupExitSignals: true,
