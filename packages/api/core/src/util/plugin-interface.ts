@@ -60,6 +60,9 @@ export default class PluginInterface implements IForgePluginInterface {
       })
     ).then((plugins) => {
       this.plugins = plugins;
+      for (const plugin of this.plugins) {
+        plugin.init(dir, forgeConfig);
+      }
       return;
     });
     // TODO: fix hack
@@ -71,11 +74,6 @@ export default class PluginInterface implements IForgePluginInterface {
       configurable: false,
       writable: false,
     });
-
-    for (const plugin of this.plugins) {
-      plugin.init(dir, forgeConfig);
-    }
-
     this.triggerHook = this.triggerHook.bind(this);
     this.overrideStartLogic = this.overrideStartLogic.bind(this);
   }
