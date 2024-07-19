@@ -49,16 +49,16 @@ export default class Logger {
    *
    * @returns the port number
    */
-  async startPort(loggerPort: number): Promise<number> {
-    loggerPort = await findAvailablePort(loggerPort);
-    this.server = this.app.listen(loggerPort);
-    return loggerPort;
+  async start(): Promise<number> {
+    this.port = await findAvailablePort(this.port);
+    this.server = this.app.listen(this.port);
+    return this.port;
   }
 
   /**
    * Stop the HTTP server hosting the web UI
    */
-  stopPort(): void {
+  stop(): void {
     if (this.server) this.server.close();
   }
 }
