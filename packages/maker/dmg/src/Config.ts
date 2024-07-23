@@ -1,3 +1,5 @@
+import type { ElectronInstallerDMGOptions } from 'electron-installer-dmg';
+
 export interface CodeSignOptions {
   'signing-identity': string;
   identifier?: string;
@@ -33,45 +35,4 @@ export interface AdditionalDMGOptions {
   'code-sign'?: CodeSignOptions;
 }
 
-export interface MakerDMGConfig {
-  /**
-   * The application name
-   */
-  name?: string;
-  /**
-   * Path to the background for the DMG window
-   */
-  background?: string;
-  /**
-   * Path to the icon to use for the app in the DMG window
-   */
-  icon?: string;
-  /**
-   * Overwrite an existing DMG file if if already exists
-   */
-  overwrite?: boolean;
-  /**
-   * Enable debug message output
-   */
-  debug?: boolean;
-  /**
-   * How big to make the icon for the app in the DMG
-   */
-  iconSize?: number;
-  /**
-   * Disk image format
-   *
-   * Default: UDZO
-   */
-  format?: 'UDRW' | 'UDRO' | 'UDCO' | 'UDZO' | 'UDBZ' | 'ULFO';
-  /**
-   * Override the contents of the DMG, has a reasonable default
-   */
-  contents?: DMGContents[] | ((opts: MakerDMGConfig & AdditionalDMGOptions) => DMGContents[]);
-  /**
-   * Additional options to pass through to node-appdmg
-   *
-   * All available options are available in the [`appdmg` docs](https://github.com/LinusU/node-appdmg)
-   */
-  additionalDMGOptions?: AdditionalDMGOptions;
-}
+export type MakerDMGConfig = Omit<ElectronInstallerDMGOptions, 'name'> & { name?: string };
