@@ -1,12 +1,11 @@
 import { builtinModules } from 'node:module';
-import pkg from './package.json';
 
 export const builtins = [
   'electron',
   ...builtinModules.map((m) => [m, `node:${m}`]).flat(),
 ];
 
-export const external = [...builtins, ...Object.keys(pkg.dependencies || {})];
+export const external = [...builtins];
 
 /** @type {(env: import('vite').ConfigEnv<'build'>) => import('vite').UserConfig} */
 export const getBuildConfig = (env) => {
