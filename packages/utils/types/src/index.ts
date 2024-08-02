@@ -56,7 +56,7 @@ export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
 export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeMutatingHookSignatures[Hook]
-) => Promise<ForgeMutatingHookSignatures[Hook][0] | undefined>;
+) => Promise<ForgeMutatingHookSignatures[Hook][0] | void>;
 export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
   ? ForgeSimpleHookFn<Hook>
   : Hook extends keyof ForgeMutatingHookSignatures
