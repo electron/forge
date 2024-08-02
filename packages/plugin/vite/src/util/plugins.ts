@@ -1,4 +1,3 @@
-// eslint-disable-next-line node/no-unpublished-import
 import type { Plugin } from 'vite';
 
 export function onBuildDone(callback: () => void) {

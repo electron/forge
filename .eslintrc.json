@@ -129,6 +129,17 @@
         "node/no-unpublished-require": "off",
         "node/shebang": "off"
       }
+    },
+    {
+      "files": ["packages/plugin/vite/src/**/*.ts"],
+      "rules": {
+        "node/no-unpublished-import": [
+          "error",
+          {
+            "allowModules": ["vite"]
+          }
+        ]
+      }
     }
   ]
 }
