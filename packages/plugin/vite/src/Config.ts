@@ -36,4 +36,8 @@ export interface VitePluginConfig {
    * Renderer process Vite configs.
    */
   renderer: VitePluginRendererConfig[];
+  /**
+   * Whether symlinked dependencies should be dereferenced during the copying of node_modules. Defaults to false.
+   */
+  derefSymlinks?: boolean;
 }

@@ -61,4 +61,23 @@ describe('ViteConfigGenerator', () => {
 
     expect(buildConfig1).deep.equal(buildConfig2);
   });
+
+  it('derefSymlinks', () => {
+    const createGeneratorWithConfig = (config: Partial<VitePluginConfig>) => {
+      const _config: VitePluginConfig = { build: [], renderer: [], ...config };
+      return new ViteConfigGenerator(_config, configRoot, true);
+    };
+
+    const testCases = new Map<boolean, Partial<VitePluginConfig>>([
+      [false, {}],
+      [false, { derefSymlinks: false }],
+      [true, { derefSymlinks: true }],
+    ]);
+
+    for (const [expectedResult, config] of testCases) {
+      const generator = createGeneratorWithConfig(config);
+
+      expect(generator.derefSymlinks).to.eq(expectedResult);
+    }
+  });
 });
