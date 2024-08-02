@@ -14,10 +14,10 @@ import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runHook } from '../util/hook';
+import importSearch from '../util/import-search';
 import { warn } from '../util/messages';
 import getCurrentOutDir from '../util/out-dir';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 const d = debug('electron-forge:packager');
@@ -25,9 +25,9 @@ const d = debug('electron-forge:packager');
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
-function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
+async function resolveHooks<F = HookFunction>(hooks: (string | F)[] | undefined, dir: string) {
   if (hooks) {
-    return hooks.map((hook) => (typeof hook === 'string' ? (requireSearch<F>(dir, [hook]) as F) : hook));
+    return await Promise.all(hooks.map(async (hook) => (typeof hook === 'string' ? ((await importSearch<F>(dir, [hook])) as F) : hook)));
   }
 
   return [];
@@ -216,13 +216,12 @@ export const listrPackage = (
 
             const rebuildTasks = new Map<string, Promise<ForgeListrTask<never>>[]>();
             const signalRebuildStart = new Map<string, ((task: ForgeListrTask<never>) => void)[]>();
-
             const afterFinalizePackageTargetsHooks: FinalizePackageTargetsHookFunction[] = [
               (targets, done) => {
                 provideTargets(targets);
                 done();
               },
-              ...resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, ctx.dir),
+              ...(await resolveHooks(forgeConfig.packagerConfig.afterFinalizePackageTargets, ctx.dir)),
             ];
 
             const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
@@ -265,7 +264,7 @@ export const listrPackage = (
                 await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
                 done();
               },
-              ...resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir),
+              ...(await resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir)),
             ];
 
             const afterCompleteHooks: HookFunction[] = [
@@ -273,13 +272,13 @@ export const listrPackage = (
                 signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
                 done();
               },
-              ...resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir),
+              ...(await resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir)),
             ];
 
             const afterPruneHooks = [];
 
             if (pruneEnabled) {
-              afterPruneHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir));
+              afterPruneHooks.push(...(await resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir)));
             }
 
             afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
@@ -293,7 +292,7 @@ export const listrPackage = (
                 done();
               }) as HookFunction,
             ];
-            afterExtractHooks.push(...resolveHooks(forgeConfig.packagerConfig.afterExtract, ctx.dir));
+            afterExtractHooks.push(...(await resolveHooks(forgeConfig.packagerConfig.afterExtract, ctx.dir)));
 
             type PackagerArch = Exclude<ForgeArch, 'arm'>;
 

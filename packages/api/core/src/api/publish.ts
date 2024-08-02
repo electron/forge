@@ -19,9 +19,9 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
+import importSearch from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import PublishState from '../util/publish-state';
-import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 import { listrMake, MakeOptions } from './make';
@@ -198,7 +198,7 @@ export default autoTrace(
                 } else {
                   const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const PublisherClass: any = requireSearch(dir, [resolvablePublishTarget.name]);
+                  const PublisherClass: any = await importSearch(dir, [resolvablePublishTarget.name]);
                   if (!PublisherClass) {
                     throw new Error(
                       `Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`
