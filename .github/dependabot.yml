@@ -1,6 +1,12 @@
 version: 2
 updates:
-  - package-ecosystem: 'github-actions'
+  - package-ecosystem: github-actions
     directory: '/'
     schedule:
-      interval: 'monthly'
+      interval: monthly
+    versioning-strategy: increase # Update package.json too
+    groups:
+      patterns:
+        update-types:
+          - patch
+          - minor
