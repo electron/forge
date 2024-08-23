@@ -8,6 +8,10 @@ export interface MakerWixConfig {
    */
   appUserModelId?: string;
   /**
+   * A comma separated string of extensions with each to be associated the app icon.
+   */
+  associateExtensions?: string;
+  /**
    * The app's description
    */
   description?: string;
