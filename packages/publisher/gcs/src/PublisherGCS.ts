@@ -6,7 +6,7 @@ import { PublisherGCSConfig } from './Config';
 
 const d = debug('electron-forge:publish:gcs');
 
-type GCSArtifact = {
+export type GCSArtifact = {
   path: string;
   keyPrefix: string;
   platform: string;
@@ -53,7 +53,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
         d('uploading:', artifact.path);
 
         await bucket.upload(artifact.path, {
-          metadata: this.config.metadata || {},
+          metadata: this.config.metadataGenerator ? this.config.metadataGenerator(artifact) : {},
           gzip: true,
           destination: this.keyForArtifact(artifact),
           predefinedAcl: this.config.predefinedAcl,
