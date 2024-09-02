@@ -53,6 +53,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
         d('uploading:', artifact.path);
 
         await bucket.upload(artifact.path, {
+          metadata: this.config.metadata || {},
           gzip: true,
           destination: this.keyForArtifact(artifact),
           predefinedAcl: this.config.predefinedAcl,
