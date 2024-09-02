@@ -1,5 +1,5 @@
 import { PredefinedAcl, StorageOptions } from '@google-cloud/storage';
-import { ConfigMetadata } from "@google-cloud/storage/build/cjs/src/resumable-upload";
+import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 
 export interface PublisherGCSConfig {
   /**
