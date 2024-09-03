@@ -1,4 +1,7 @@
 import { PredefinedAcl, StorageOptions } from '@google-cloud/storage';
+import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
+
+import { GCSArtifact } from './PublisherGCS';
 
 export interface PublisherGCSConfig {
   /**
@@ -34,4 +37,10 @@ export interface PublisherGCSConfig {
    * Custom function to provide the key to upload a given file to
    */
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
+  /**
+   * Generate optional Metadata for GCS Objects
+   * See https://cloud.google.com/storage/docs/metadata for more info.
+   * Expects a function that takes a GCSArtifact object and returns a `ConfigMetadata` object.
+   */
+  metadataGenerator?: (artifact: GCSArtifact) => ConfigMetadata;
 }
