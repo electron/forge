@@ -9,7 +9,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/tracer": "7.4.0",
-    "@electron/packager": "^18.3.1",
+    "@electron/packager": "^18.3.5",
     "@electron/rebuild": "^3.2.10",
     "listr2": "^7.0.2"
   },
