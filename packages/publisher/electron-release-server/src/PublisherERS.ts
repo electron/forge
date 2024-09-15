@@ -29,7 +29,7 @@ interface ERSVersion {
 interface ERSVersionSorted {
   total: number;
   offset: number;
-  page: number;
+  page: string;
   items: ERSVersion[];
 }
 
@@ -93,10 +93,16 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
-      const versions: ERSVersionSorted = await (await authFetch('versions/sorted')).json();
-
       // Find the version with the same name and flavor
-      const existingVersion = versions['items'].find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
+      const findVersion = (versions: ERSVersion[]) => versions.find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
+
+      let versions: ERSVersionSorted = await (await authFetch('versions/sorted')).json();
+      let existingVersion: ERSVersion | undefined = findVersion(versions.items);
+
+      while (!existingVersion && versions.offset + versions.items.length < versions.total) {
+        versions = await (await authFetch(`versions/sorted?page=${Number(versions.page) + 1}`)).json();
+        existingVersion = findVersion(versions.items);
+      }
 
       let channel = 'stable';
       if (config.channel) {
