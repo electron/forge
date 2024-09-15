@@ -29,7 +29,7 @@ interface ERSVersion {
 interface ERSVersionSorted {
   total: number;
   offset: number;
-  page: string;
+  page: string | number;
   items: ERSVersion[];
 }
 
