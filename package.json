@@ -37,7 +37,7 @@
     "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^3.0.0",
     "@electron/osx-sign": "^1.0.5",
-    "@electron/packager": "^18.3.1",
+    "@electron/packager": "^18.3.5",
     "@electron/rebuild": "^3.2.10",
     "@google-cloud/storage": "^7.5.0",
     "@malept/cross-spawn-promise": "^2.0.0",
