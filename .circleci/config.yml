@@ -108,6 +108,7 @@ jobs:
                 name: Windows Setup
                 shell: bash
                 command: |
+                  pip install setuptools
                   choco install --no-progress -y wixtoolset  --version=3.14.0
                   echo 'export PATH=$PATH:"/C/Program Files (x86)/WiX Toolset v3.14/bin"' >> "$BASH_ENV"
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
