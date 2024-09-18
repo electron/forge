@@ -554,6 +554,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
       headers: {
+        ...this.config.devServer?.headers,
         'Content-Security-Policy': cspDirectives,
       },
     };
