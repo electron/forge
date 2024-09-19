@@ -23,7 +23,9 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
   async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
     const artifacts: GCSArtifact[] = [];
 
-    if (!this.config.bucket) {
+    const { storageOptions, bucket: configBucket, folder, ...uploadOptions } = this.config;
+
+    if (!configBucket) {
       throw new Error('In order to publish to Google Cloud Storage you must set the "bucket" property in your Forge config.');
     }
 
@@ -31,16 +33,16 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
       artifacts.push(
         ...makeResult.artifacts.map((artifact) => ({
           path: artifact,
-          keyPrefix: this.config.folder || this.GCSKeySafe(makeResult.packageJSON.name),
+          keyPrefix: folder || this.GCSKeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
         }))
       );
     }
 
-    const storage = new Storage(this.config.storageOptions);
+    const storage = new Storage(storageOptions);
 
-    const bucket = storage.bucket(this.config.bucket);
+    const bucket = storage.bucket(configBucket);
 
     d('creating Google Cloud Storage client with options:', this.config);
 
@@ -51,14 +53,11 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
     await Promise.all(
       artifacts.map(async (artifact) => {
         d('uploading:', artifact.path);
-
         await bucket.upload(artifact.path, {
           metadata: this.config.metadataGenerator ? this.config.metadataGenerator(artifact) : {},
           gzip: true,
           destination: this.keyForArtifact(artifact),
-          predefinedAcl: this.config.predefinedAcl,
-          public: this.config.public,
-          private: this.config.private,
+          ...uploadOptions,
         });
 
         uploaded += 1;
