@@ -130,7 +130,7 @@
     "generate-changelog": "^1.8.0",
     "husky": "^7.0.1",
     "inquirer": "^8.0.0",
-    "lerna": "^6.6.2",
+    "lerna": "^7.4.2",
     "lint-staged": "^12.1.7",
     "minimist": "^1.2.6",
     "mocha": "^9.0.1",
