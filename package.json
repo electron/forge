@@ -30,10 +30,9 @@
     "preversion": "yarn build"
   },
   "dependencies": {
-    "@aws-sdk/abort-controller": "^3.29.0",
-    "@aws-sdk/client-s3": "^3.461.0",
-    "@aws-sdk/lib-storage": "^3.28.0",
-    "@aws-sdk/types": "^3.25.0",
+    "@aws-sdk/client-s3": "^3.654.0",
+    "@aws-sdk/lib-storage": "^3.654.0",
+    "@aws-sdk/types": "^3.654.0",
     "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^3.0.0",
     "@electron/osx-sign": "^1.0.5",
