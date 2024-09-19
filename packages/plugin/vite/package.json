@@ -25,7 +25,7 @@
     "listr2": "^7.0.2"
   },
   "devDependencies": {
-    "@electron/packager": "^18.3.1",
+    "@electron/packager": "^18.3.5",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
     "chai": "^4.3.3",
