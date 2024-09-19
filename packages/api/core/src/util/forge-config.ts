@@ -6,7 +6,7 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
-import { dynamicImport } from '../../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
@@ -140,13 +140,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     const forgeConfigPath = path.resolve(dir, forgeConfig as string);
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
-      let loaded;
-      try {
-        loaded = (await dynamicImport(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      } catch (err) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        loaded = require(forgeConfigPath) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      }
+      const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
@@ -173,7 +167,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const templateObj = { ...packageJSON, year: new Date().getFullYear() };
   renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
-  resolvedForgeConfig.pluginInterface = new PluginInterface(dir, resolvedForgeConfig);
+  resolvedForgeConfig.pluginInterface = await PluginInterface.create(dir, resolvedForgeConfig);
 
   resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
 

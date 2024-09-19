@@ -60,7 +60,7 @@ describe('publish', () => {
         config.publishers = publishers;
         return config;
       },
-      '../util/require-search': (_: string, [name]: [string]) => {
+      '../util/import-search': async (_: string, [name]: [string]) => {
         if (name === 'void') {
           return fakePublisher(voidStub);
         }
