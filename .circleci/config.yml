@@ -1,14 +1,14 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@2.2.1
+  node: electronjs/node@2.3.0
 
 commands:
   install:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.15.0'
+          node-version: '18.20.3'
       - checkout
   run-lint-and-build:
     steps:
@@ -69,6 +69,17 @@ jobs:
       - install
       - when:
           condition:
+            equal: [node/windows, << parameters.executor >>]
+          steps:
+            - run:
+                name: Windows Setup
+                shell: bash
+                command: |
+                  pip install setuptools
+                  cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
+                  npm install node-gyp@9.4.0
+      - when:
+          condition:
             equal: [node/linux, << parameters.executor >>]
           steps:
             - run:
@@ -108,6 +119,7 @@ jobs:
                 name: Windows Setup
                 shell: bash
                 command: |
+                  pip install setuptools
                   choco install --no-progress -y wixtoolset  --version=3.14.0
                   echo 'export PATH=$PATH:"/C/Program Files (x86)/WiX Toolset v3.14/bin"' >> "$BASH_ENV"
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
