@@ -114,7 +114,8 @@ export default class WebpackConfigGenerator {
     if (this.isProd) {
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
-    const baseUrl = `http://localhost:${this.port}/${entryPoint.name}`;
+    const protocol = this.pluginConfig.devServer?.server === 'https' ? 'https' : 'http';
+    const baseUrl = `${protocol}://localhost:${this.port}/${entryPoint.name}`;
     if (basename !== 'index.html') {
       return `'${baseUrl}/${basename}'`;
     }
