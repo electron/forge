@@ -69,6 +69,17 @@ jobs:
       - install
       - when:
           condition:
+            equal: [node/windows, << parameters.executor >>]
+          steps:
+            - run:
+                name: Windows Setup
+                shell: bash
+                command: |
+                  pip install setuptools
+                  cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
+                  npm install node-gyp@9.4.0
+      - when:
+          condition:
             equal: [node/linux, << parameters.executor >>]
           steps:
             - run:
