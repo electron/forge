@@ -76,6 +76,14 @@
     "username": "^5.1.0",
     "yarn-or-npm": "^3.0.1"
   },
+  "peerDependencies": {
+    "ts-node": "^10"
+  },
+  "peerDependenciesMeta": {
+    "ts-node": {
+      "optional": true
+    }
+  },
   "engines": {
     "node": ">= 16.4.0"
   },

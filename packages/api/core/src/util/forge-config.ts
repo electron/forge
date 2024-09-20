@@ -126,6 +126,13 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
     for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+      if (extension === '.ts') {
+        try {
+          require.resolve('ts-node');
+        } catch {
+          throw new Error('forge.config.ts is a TypeScript file, please install ts-node dependency');
+        }
+      }
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
         rechoir.prepare(interpret.extensions, pathToConfig, dir);

@@ -158,7 +158,13 @@
     "macos-alias": "^0.2.11"
   },
   "peerDependencies": {
-    "@electron/fuses": ">=1.0.0"
+    "@electron/fuses": ">=1.0.0",
+    "ts-node": "^10"
+  },
+  "peerDependenciesMeta": {
+    "ts-node": {
+      "optional": true
+    }
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write",
