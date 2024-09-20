@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/web-multi-logger",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Display multiple streams of logs in one window",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-vite",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Vite template for Electron Forge, gets you started with Vite really quickly",
   "repository": {
     "type": "git",
@@ -18,12 +18,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.4.0",
-    "@electron-forge/template-base": "7.4.0",
+    "@electron-forge/shared-types": "7.5.0",
+    "@electron-forge/template-base": "7.5.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.4.0",
+    "@electron-forge/test-utils": "7.5.0",
     "chai": "^4.3.3",
     "listr2": "^7.0.2"
   },

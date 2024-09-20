@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-bitbucket",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Bitbucket publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Luke Batchelor",
@@ -15,7 +15,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.4.0",
+    "@electron-forge/publisher-base": "7.5.0",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
     "node-fetch": "^2.6.7"

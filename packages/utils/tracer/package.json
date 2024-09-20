@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/tracer",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Tracing helpers for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
