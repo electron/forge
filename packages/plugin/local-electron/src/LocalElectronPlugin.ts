@@ -11,7 +11,6 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     super(c);
 
     this.getHooks = this.getHooks.bind(this);
-    this.startLogic = this.startLogic.bind(this);
   }
 
   get enabled(): boolean {
@@ -21,16 +20,9 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     return this.config.enabled;
   }
 
-  async startLogic(): Promise<false> {
-    if (this.enabled) {
-      this.checkPlatform(process.platform);
-      process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
-    }
-    return false;
-  }
-
   getHooks(): ForgeHookMap {
     return {
+      preStart: this.preStart,
       packageAfterExtract: this.afterExtract,
     };
   }
@@ -46,6 +38,13 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   private checkArch = (arch: string) => {
     if ((this.config.electronArch || process.arch) !== arch) {
       throw new Error(`Can not use local Electron version, required arch "${arch}" but local arch is "${this.config.electronArch || process.arch}"`);
+    }
+  };
+
+  private preStart: ForgeHookFn<'preStart'> = async () => {
+    if (this.enabled) {
+      this.checkPlatform(process.platform);
+      process.env.ELECTRON_OVERRIDE_DIST_PATH = this.config.electronPath;
     }
   };
 
