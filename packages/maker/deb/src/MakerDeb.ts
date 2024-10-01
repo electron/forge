@@ -5,6 +5,10 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerDebConfig } from './Config';
 
+function renameDeb(dest: string, _src: string): string {
+  return path.join(dest, '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.deb');
+}
+
 export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
@@ -44,7 +48,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
       arch: debianArch(targetArch),
       src: dir,
       dest: outDir,
-      rename: undefined,
+      rename: renameDeb,
     });
 
     return packagePaths;
