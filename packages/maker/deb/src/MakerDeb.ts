@@ -5,10 +5,6 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerDebConfig } from './Config';
 
-function renameDeb(dest: string, _src: string): string {
-  return path.join(dest, '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.deb');
-}
-
 export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
@@ -35,20 +31,23 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
     return this.isInstalled('electron-installer-debian');
   }
 
-  async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
+  async make({ dir, makeDir, appName, packageJSON, targetArch, forgeConfig }: MakerOptions): Promise<string[]> {
     // eslint-disable-next-line node/no-missing-require
     const installer = require('electron-installer-debian');
 
     const outDir = path.resolve(makeDir, 'deb', targetArch);
+    const name = this.config.name || `${appName}_${packageJSON.version}_${debianArch(targetArch)}`;
 
     await this.ensureDirectory(outDir);
     const { packagePaths } = await installer({
-      options: {},
       ...this.config,
+      bin: forgeConfig.packagerConfig.executableName || appName,
       arch: debianArch(targetArch),
       src: dir,
       dest: outDir,
-      rename: renameDeb,
+      rename: (dest: string) => {
+        return path.join(dest, `${name}.deb`);
+      },
     });
 
     return packagePaths;
