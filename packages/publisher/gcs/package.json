@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-gcs",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Google Cloud Storage publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Evgeny Vlasenko",
@@ -15,8 +15,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-static": "7.4.0",
-    "@electron-forge/shared-types": "7.4.0",
+    "@electron-forge/publisher-static": "7.5.0",
+    "@electron-forge/shared-types": "7.5.0",
     "@google-cloud/storage": "^7.5.0",
     "debug": "^4.3.1"
   },

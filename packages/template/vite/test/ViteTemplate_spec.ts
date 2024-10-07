@@ -30,7 +30,6 @@ describe('ViteTemplate', () => {
       'package.json',
       'forge.env.d.ts',
       'forge.config.js',
-      'vite.base.config.mjs',
       'vite.main.config.mjs',
       'vite.preload.config.mjs',
       'vite.renderer.config.mjs',

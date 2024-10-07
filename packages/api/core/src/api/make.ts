@@ -22,10 +22,10 @@ import logSymbols from 'log-symbols';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runMutatingHook } from '../util/hook';
+import importSearch from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 import { listrPackage } from './package';
@@ -168,7 +168,7 @@ export const listrMake = (
                   throw new Error(`The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`);
                 }
 
-                const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
+                const MakerClass = await importSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
                 if (!MakerClass) {
                   throw new Error(
                     `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`

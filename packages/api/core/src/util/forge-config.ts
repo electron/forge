@@ -6,7 +6,7 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
-import { dynamicImport } from '../../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
@@ -74,6 +74,14 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
 };
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+export const registeredForgeConfigs: Map<string, ForgeConfig> = new Map();
+export function registerForgeConfigForDirectory(dir: string, config: ForgeConfig): void {
+  registeredForgeConfigs.set(path.resolve(dir), config);
+}
+export function unregisterForgeConfigForDirectory(dir: string): void {
+  registeredForgeConfigs.delete(path.resolve(dir));
+}
+
 export type BuildIdentifierMap<T> = Record<string, T | undefined>;
 export type BuildIdentifierConfig<T> = {
   map: BuildIdentifierMap<T>;
@@ -109,8 +117,12 @@ type MaybeESM<T> = T | { default: T };
 type AsyncForgeConfigGenerator = () => Promise<ForgeConfig>;
 
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
+  let forgeConfig: ForgeConfig | string | null | undefined = registeredForgeConfigs.get(dir);
+
   const packageJSON = await readRawPackageJson(dir);
-  let forgeConfig: ForgeConfig | string | null = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
+  if (forgeConfig === undefined) {
+    forgeConfig = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
+  }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
     for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
@@ -128,13 +140,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     const forgeConfigPath = path.resolve(dir, forgeConfig as string);
     try {
       // The loaded "config" could potentially be a static forge config, ESM module or async function
-      let loaded;
-      try {
-        loaded = (await dynamicImport(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      } catch (err) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        loaded = require(forgeConfigPath) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      }
+      const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
@@ -161,7 +167,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   const templateObj = { ...packageJSON, year: new Date().getFullYear() };
   renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
-  resolvedForgeConfig.pluginInterface = new PluginInterface(dir, resolvedForgeConfig);
+  resolvedForgeConfig.pluginInterface = await PluginInterface.create(dir, resolvedForgeConfig);
 
   resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
 

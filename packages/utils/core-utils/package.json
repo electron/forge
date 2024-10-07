@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/core-utils",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Core utilities for the Electron Forge packages",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@electron-forge/shared-types": "7.4.0",
+    "@electron-forge/shared-types": "7.5.0",
     "@electron/rebuild": "^3.2.10",
     "@malept/cross-spawn-promise": "^2.0.0",
     "chalk": "^4.0.0",
