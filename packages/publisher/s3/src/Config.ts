@@ -39,6 +39,12 @@ export interface PublisherS3Config {
    */
   public?: boolean;
   /**
+   * Whether to omit the ACL when creating the S3 object
+   *
+   * Default: false
+   */
+  omitAcl?: boolean;
+  /**
    * The endpoint URI to send requests to.
    *
    * E.g. `https://s3.example.com`
