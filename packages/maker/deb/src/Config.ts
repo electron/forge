@@ -209,5 +209,6 @@ export interface MakerDebConfigOptions {
 }
 
 export interface MakerDebConfig {
+  name?: string;
   options?: MakerDebConfigOptions;
 }
