@@ -1,13 +1,13 @@
-import { type ConfigEnv, type UserConfig } from 'vite';
+import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import { pluginExposeRenderer } from './vite.base.config';
 
 // https://vitejs.dev/config
-export function getConfig(forgeEnv: ConfigEnv<'renderer'>) {
+export function getConfig(forgeEnv: ConfigEnv<'renderer'>, userConfig: UserConfig = {}) {
   const { root, mode, forgeConfigSelf } = forgeEnv;
   const name = forgeConfigSelf.name ?? '';
 
-  return {
+  const config: UserConfig = {
     root,
     mode,
     base: './',
@@ -19,5 +19,7 @@ export function getConfig(forgeEnv: ConfigEnv<'renderer'>) {
       preserveSymlinks: true,
     },
     clearScreen: false,
-  } as UserConfig;
+  };
+
+  return mergeConfig(config, userConfig);
 }

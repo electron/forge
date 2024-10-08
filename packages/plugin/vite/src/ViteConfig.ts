@@ -1,5 +1,5 @@
 import debug from 'debug';
-import { loadConfigFromFile, mergeConfig } from 'vite';
+import { loadConfigFromFile } from 'vite';
 
 import { getConfig as getMainViteConfig } from './config/vite.main.config';
 import { getConfig as getPreloadViteConfig } from './config/vite.preload.config';
@@ -31,14 +31,14 @@ export default class ViteConfigGenerator {
     };
 
     // `configEnv` is to be passed as an arguments when the user export a function in `vite.config.js`.
-    const userConfig = (await loadConfigFromFile(configEnv, buildConfig.config))?.config ?? {};
+    const userConfig = (await loadConfigFromFile(configEnv, buildConfig.config))?.config;
     switch (target) {
       case 'main':
-        return mergeConfig(getMainViteConfig(configEnv as ConfigEnv<'build'>), userConfig);
+        return getMainViteConfig(configEnv as ConfigEnv<'build'>, userConfig);
       case 'preload':
-        return mergeConfig(getPreloadViteConfig(configEnv as ConfigEnv<'build'>), userConfig);
+        return getPreloadViteConfig(configEnv as ConfigEnv<'build'>, userConfig);
       case 'renderer':
-        return mergeConfig(getRendererViteConfig(configEnv as ConfigEnv<'renderer'>), userConfig);
+        return getRendererViteConfig(configEnv as ConfigEnv<'renderer'>, userConfig);
       default:
         throw new Error(`Unknown target: ${target}, expected 'main', 'preload' or 'renderer'`);
     }
