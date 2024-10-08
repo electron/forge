@@ -317,10 +317,28 @@ export const listrMake = (
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'run-postMake-hook', category: '@electron-forge/core' }, async (_, ctx, task) => {
           // If the postMake hooks modifies the locations / names of the outputs it must return
           // the new locations so that the publish step knows where to look
+          const originalOutputs = JSON.stringify(ctx.outputs);
           ctx.outputs = await runMutatingHook(ctx.forgeConfig, 'postMake', ctx.outputs);
+
+          let outputLocations = [path.resolve(ctx.actualOutDir, 'make')];
+          if (originalOutputs !== JSON.stringify(ctx.outputs)) {
+            const newDirs = new Set<string>();
+            const artifactPaths = [];
+            for (const result of ctx.outputs) {
+              for (const artifact of result.artifacts) {
+                newDirs.add(path.dirname(artifact));
+                artifactPaths.push(artifact);
+              }
+            }
+            if (newDirs.size <= ctx.outputs.length) {
+              outputLocations = [...newDirs];
+            } else {
+              outputLocations = artifactPaths;
+            }
+          }
           receiveMakeResults?.(ctx.outputs);
 
-          task.output = `Artifacts available at: ${chalk.green(path.resolve(ctx.actualOutDir, 'make'))}`;
+          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))})}`;
         }),
         rendererOptions: {
           persistentOutput: true,
