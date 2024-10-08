@@ -26,6 +26,7 @@ export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 
 export interface ForgeSimpleHookSignatures {
   generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  preStart: [];
   postStart: [appProcess: ElectronProcess];
   prePackage: [platform: ForgePlatform, version: ForgeArch];
   packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];

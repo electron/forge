@@ -11,7 +11,7 @@ import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
-import type { ForgeMultiHookMap, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import type { ForgeMultiHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
 // eslint-disable-next-line node/no-extraneous-import
 import type { RollupWatcher } from 'rollup';
@@ -56,6 +56,37 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   getHooks = (): ForgeMultiHookMap => {
     return {
+      preStart: [
+        namedHookWithTaskFn<'preStart'>(async (task) => {
+          if (VitePlugin.alreadyStarted) return;
+          VitePlugin.alreadyStarted = true;
+
+          await fs.remove(this.baseDir);
+
+          return task?.newListr([
+            {
+              title: 'Launching dev servers for renderer process code',
+              task: async () => {
+                await this.launchRendererDevServers();
+              },
+              rendererOptions: {
+                persistentOutput: true,
+                timer: { ...PRESET_TIMER },
+              },
+            },
+            // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
+            {
+              title: 'Compiling main process code',
+              task: async () => {
+                await this.build();
+              },
+              rendererOptions: {
+                timer: { ...PRESET_TIMER },
+              },
+            },
+          ]) as any;
+        }, 'Preparing vite bundles'),
+      ],
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async () => {
           this.isProd = true;
@@ -116,39 +147,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     }
 
     await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, { spaces: 2 });
-  };
-
-  startLogic = async (): Promise<StartResult> => {
-    if (VitePlugin.alreadyStarted) return false;
-    VitePlugin.alreadyStarted = true;
-
-    await fs.remove(this.baseDir);
-
-    return {
-      tasks: [
-        {
-          title: 'Launching dev servers for renderer process code',
-          task: async () => {
-            await this.launchRendererDevServers();
-          },
-          rendererOptions: {
-            persistentOutput: true,
-            timer: { ...PRESET_TIMER },
-          },
-        },
-        // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
-        {
-          title: 'Compiling main process code',
-          task: async () => {
-            await this.build();
-          },
-          rendererOptions: {
-            timer: { ...PRESET_TIMER },
-          },
-        },
-      ],
-      result: false,
-    };
   };
 
   // Main process, Preload scripts and Worker process, etc.
