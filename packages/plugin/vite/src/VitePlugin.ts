@@ -164,7 +164,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
             // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
             configFile: false,
             ...userConfig,
-            plugins: [onBuildDone(resolve), ...(userConfig.plugins ?? [])],
+            plugins: [onBuildDone(resolve, reject), ...(userConfig.plugins ?? [])],
           })
           .then((result) => {
             if (isWatcher(result)) {
