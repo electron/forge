@@ -9,7 +9,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/shared-types": "7.5.0",
-    "@electron/rebuild": "^3.2.10",
+    "@electron/rebuild": "^3.7.0",
     "@malept/cross-spawn-promise": "^2.0.0",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",

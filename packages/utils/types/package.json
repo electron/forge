@@ -10,7 +10,7 @@
   "dependencies": {
     "@electron-forge/tracer": "7.5.0",
     "@electron/packager": "^18.3.5",
-    "@electron/rebuild": "^3.2.10",
+    "@electron/rebuild": "^3.7.0",
     "listr2": "^7.0.2"
   },
   "engines": {
