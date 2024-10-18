@@ -39,7 +39,7 @@ export interface PublisherS3Config {
    */
   public?: boolean;
   /**
-   * Whether to omit the ACL when creating the S3 object
+   * Whether to omit the ACL when creating the S3 object. If set, `public` will have no effect.
    *
    * Default: false
    */
