@@ -42,6 +42,7 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "forge-vite-env.d.ts"
   ]
 }
