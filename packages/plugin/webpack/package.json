@@ -13,7 +13,7 @@
   "devDependencies": {
     "@electron/packager": "^18.3.5",
     "@malept/cross-spawn-promise": "^2.0.0",
-    "@types/node": "^18.0.3",
+    "@types/node": "^20.16.13",
     "chai": "^4.3.3",
     "mocha": "^9.0.1",
     "sinon": "^13.0.1",
@@ -35,7 +35,7 @@
     "html-webpack-plugin": "^5.5.3",
     "listr2": "^7.0.2",
     "webpack": "^5.69.1",
-    "webpack-dev-server": "^4.0.0",
+    "webpack-dev-server": "^5.1.0",
     "webpack-merge": "^5.7.3"
   },
   "publishConfig": {
