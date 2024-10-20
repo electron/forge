@@ -295,6 +295,7 @@ export const listrMake = (
                       });
                     } catch (err) {
                       if (err) {
+                        // eslint-disable-next-line @typescript-eslint/no-throw-literal
                         throw err;
                       } else {
                         throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);
