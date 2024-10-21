@@ -17,15 +17,15 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
 
   async make({ dir, makeDir, appName, packageJSON, targetArch }: MakerOptions): Promise<string[]> {
     const { createDMG } = require('electron-installer-dmg');
-
-    const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
+    const dmgName = `${this.config.name || appName}_${targetArch}.dmg`
+    const outPath = path.resolve(makeDir, dmgName);
     const forgeDefaultOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}-${targetArch}.dmg`);
 
     await this.ensureFile(outPath);
     const dmgConfig = {
       overwrite: true,
-      name: appName,
       ...this.config,
+      name: dmgName,
       appPath: path.resolve(dir, `${appName}.app`),
       out: path.dirname(outPath),
     };
