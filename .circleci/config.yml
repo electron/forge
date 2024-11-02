@@ -3,6 +3,12 @@ version: 2.1
 orbs:
   node: electronjs/node@2.3.1
 
+executors:
+  linux-medium-plus:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium+
+
 commands:
   install:
     steps:
@@ -126,7 +132,7 @@ jobs:
                   npm install node-gyp@9.4.0
       - when:
           condition:
-            equal: [node/linux, << parameters.executor >>]
+            equal: [linux-medium-plus, << parameters.executor >>]
           steps:
             - run:
                 name: Linux specific setup
@@ -174,10 +180,10 @@ workflows:
             - lint-and-build
           matrix:
             parameters:
-              executor: [node/windows, node/linux, node/macos]
+              executor: [node/windows, linux-medium-plus, node/macos]
               arch: [x64, arm64]
             exclude:
               - executor: node/windows
                 arch: arm64
-              - executor: node/linux
+              - executor: linux-medium-plus
                 arch: arm64
