@@ -127,7 +127,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   if (forgeConfig && typeof forgeConfig === 'string') {
     const pathToConfig = path.resolve(dir, forgeConfig);
     if (!rechoir.prepare(interpret.extensions, pathToConfig, dir)) {
-      throw new Error(`Not found interpret for config file[${pathToConfig}]`);
+      throw new Error(`Not found interpret for config file: ${pathToConfig}`);
     }
   }
 
