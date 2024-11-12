@@ -28,7 +28,6 @@ describe('ViteTemplate', () => {
   context('template files are copied to project', () => {
     const expectedFiles = [
       'package.json',
-      'forge.env.d.ts',
       'forge.config.js',
       'vite.main.config.mjs',
       'vite.preload.config.mjs',
