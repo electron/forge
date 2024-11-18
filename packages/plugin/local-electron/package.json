@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-local-electron",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Local Electron plugin for Electron Forge, let's you use a local build of Electron",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -11,8 +11,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/plugin-base": "7.4.0",
-    "@electron-forge/shared-types": "7.4.0",
+    "@electron-forge/plugin-base": "7.5.0",
+    "@electron-forge/shared-types": "7.5.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {

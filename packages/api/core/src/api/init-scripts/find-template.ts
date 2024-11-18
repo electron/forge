@@ -2,7 +2,7 @@ import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 import resolvePackage from 'resolve-package';
 
-import { PossibleModule } from '../../util/require-search';
+import { PossibleModule } from '../../util/import-search';
 
 const d = debug('electron-forge:init:find-template');
 

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-base",
-  "version": "7.4.0",
+  "version": "7.5.0",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -12,7 +12,7 @@
     "test:base": "cross-env TS_NODE_FILES=1 mocha --config ../../../.mocharc.js"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.4.0"
+    "@electron-forge/shared-types": "7.5.0"
   },
   "devDependencies": {
     "chai": "^4.3.3",

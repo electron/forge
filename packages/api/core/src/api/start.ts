@@ -112,6 +112,15 @@ export default autoTrace(
             }
           ),
         },
+        {
+          title: `Running ${chalk.yellow('preStart')} hook`,
+          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
+            { name: 'run-preStart-hook', category: '@electron-forge/core' },
+            async (childTrace, { forgeConfig }, task) => {
+              return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'preStart')), 'run');
+            }
+          ),
+        },
       ],
       listrOptions
     );
