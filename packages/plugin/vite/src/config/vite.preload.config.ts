@@ -2,7 +2,7 @@ import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import { external, getBuildConfig, pluginHotRestart } from './vite.base.config';
 
-export function getConfig(forgeEnv: ConfigEnv<'build'>): UserConfig {
+export function getConfig(forgeEnv: ConfigEnv<'build'>, userConfig: UserConfig = {}): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
   const config: UserConfig = {
     build: {
@@ -22,6 +22,7 @@ export function getConfig(forgeEnv: ConfigEnv<'build'>): UserConfig {
     },
     plugins: [pluginHotRestart('reload')],
   };
+  const buildConfig = getBuildConfig(forgeEnv);
 
-  return mergeConfig(getBuildConfig(forgeEnv), config);
+  return mergeConfig(mergeConfig(buildConfig, config), userConfig);
 }
