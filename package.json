@@ -21,6 +21,7 @@
     "lint:fix": "prettier --write .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
     "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
+    "spec": "vitest run",
     "test": "npm run test:clear && xvfb-maybe cross-env NODE_ENV=test TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha",
     "test:fast": "npm run test -- --suite=fast",
     "test:slow": "npm run test -- --suite=slow",
@@ -140,6 +141,7 @@
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
     "typescript": "^4.6.3",
+    "vitest": "^2.1.6",
     "xvfb-maybe": "^0.2.1",
     "yaml-hook": "^1.0.0"
   },
@@ -179,5 +181,8 @@
       "packages/template/*",
       "packages/utils/*"
     ]
+  },
+  "resolutions": {
+    "esbuild": "0.24.0"
   }
 }
