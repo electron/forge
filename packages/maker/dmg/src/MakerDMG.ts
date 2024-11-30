@@ -6,6 +6,8 @@ import fs from 'fs-extra';
 
 import { MakerDMGConfig } from './Config';
 
+import type { ElectronInstallerDMGOptions } from 'electron-installer-dmg';
+
 export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   name = 'dmg';
 
@@ -22,7 +24,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     const forgeDefaultOutPath = path.resolve(makeDir, `${appName}-${packageJSON.version}-${targetArch}.dmg`);
 
     await this.ensureFile(outPath);
-    const dmgConfig = {
+    const dmgConfig: ElectronInstallerDMGOptions = {
       overwrite: true,
       name: appName,
       ...this.config,
