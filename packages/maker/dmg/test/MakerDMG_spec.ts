@@ -34,9 +34,6 @@ describe('MakerDMG', () => {
     ensureFileStub = stub().returns(Promise.resolve());
     eidStub = stub().returns(Promise.resolve());
     renameStub = stub().returns(Promise.resolve());
-    config = {
-      appPath: 'fake',
-    };
 
     MakerDMG = proxyquire
       .noPreserveCache()
