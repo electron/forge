@@ -597,7 +597,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   }
 
   private alreadyStarted = false;
-
 }
 
 export { WebpackPlugin, WebpackPluginConfig };
