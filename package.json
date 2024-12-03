@@ -75,7 +75,7 @@
     "username": "^5.1.0",
     "vite": "^5.0.12",
     "webpack": "^5.69.1",
-    "webpack-dev-server": "^4.0.0",
+    "webpack-dev-server": "^5.1.0",
     "webpack-merge": "^5.7.3",
     "which": "^2.0.2",
     "xterm": "^4.9.0",
@@ -171,7 +171,7 @@
   "prettier": {
     "singleQuote": true
   },
-  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
+  "packageManager": "yarn@1.22.22+sha1.",
   "workspaces": {
     "packages": [
       "packages/api/*",

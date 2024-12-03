@@ -35,7 +35,7 @@
     "html-webpack-plugin": "^5.5.3",
     "listr2": "^7.0.2",
     "webpack": "^5.69.1",
-    "webpack-dev-server": "^4.0.0",
+    "webpack-dev-server": "^5.1.0",
     "webpack-merge": "^5.7.3"
   },
   "publishConfig": {
