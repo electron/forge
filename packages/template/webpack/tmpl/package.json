@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "@electron/fuses": "^1.7.0",
+    "@electron-forge/plugin-fuses": "ELECTRON_FORGE/VERSION",
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
