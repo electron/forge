@@ -67,7 +67,6 @@
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
     "node-fetch": "^2.6.7",
-    "progress": "^2.0.3",
     "rechoir": "^0.8.0",
     "resolve-package": "^1.0.1",
     "semver": "^7.2.1",
