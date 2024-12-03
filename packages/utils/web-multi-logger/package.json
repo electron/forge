@@ -8,6 +8,7 @@
   "main": "dist/Logger.js",
   "typings": "dist/Logger.d.ts",
   "dependencies": {
+    "@electron-forge/core-utils": "7.5.0",
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "xterm": "^4.9.0",
