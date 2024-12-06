@@ -27,7 +27,7 @@
   "devDependencies": {
     "@electron/packager": "^18.3.5",
     "@malept/cross-spawn-promise": "^2.0.0",
-    "@types/node": "^18.0.3",
+    "@types/node": "^20.16.13",
     "chai": "^4.3.3",
     "mocha": "^9.0.1",
     "vite": "^5.0.12",
