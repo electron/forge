@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { spawn } from '@malept/cross-spawn-promise';
 import chai, { expect } from 'chai';

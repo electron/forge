@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';

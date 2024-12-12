@@ -1,5 +1,5 @@
-import path from 'path';
-import { promisify } from 'util';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
