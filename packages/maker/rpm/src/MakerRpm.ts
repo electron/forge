@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';

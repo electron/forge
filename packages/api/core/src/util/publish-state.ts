@@ -1,5 +1,5 @@
-import crypto from 'crypto';
-import path from 'path';
+import crypto from 'node:crypto';
+import path from 'node:path';
 
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import fs from 'fs-extra';

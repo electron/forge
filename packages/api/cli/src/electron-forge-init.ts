@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { api, InitOptions } from '@electron-forge/core';
 import program from 'commander';

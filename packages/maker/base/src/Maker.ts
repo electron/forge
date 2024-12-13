@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';

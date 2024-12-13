@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import chai, { expect } from 'chai';
 import { createSandbox } from 'sinon';

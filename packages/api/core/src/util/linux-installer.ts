@@ -1,5 +1,5 @@
-import { spawnSync } from 'child_process';
-import { promisify } from 'util';
+import { spawnSync } from 'node:child_process';
+import { promisify } from 'node:util';
 
 import sudoPrompt from 'sudo-prompt';
 
