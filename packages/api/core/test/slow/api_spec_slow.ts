@@ -77,8 +77,8 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
       });
 
-      it('should create a api.config.js', async () => {
-        await expectProjectPathExists(dir, 'api.config.js', 'file');
+      it('should create a forge.config.js', async () => {
+        await expectProjectPathExists(dir, 'forge.config.js', 'file');
       });
 
       describe('lint', () => {
