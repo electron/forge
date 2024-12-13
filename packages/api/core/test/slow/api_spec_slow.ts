@@ -9,17 +9,10 @@ import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists }
 import { expect } from 'chai';
 import { readMetadata } from 'electron-installer-common';
 import fs from 'fs-extra';
-import proxyquire from 'proxyquire';
 
-import { InitOptions } from '../../src/api';
+import { api, InitOptions } from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
-
-const forge = proxyquire.noCallThru().load('../../src/api', {
-  './install': async () => {
-    /* don't load the install module for this spec */
-  },
-}).api;
 
 type BeforeInitFunction = () => void;
 type PackageJSON = Record<string, unknown> & {
@@ -50,7 +43,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         if (beforeInit) {
           beforeInit();
         }
-        await forge.init({ ...params, dir });
+        await api.init({ ...params, dir });
       });
     };
 
@@ -58,11 +51,11 @@ for (const nodeInstaller of ['npm', 'yarn']) {
       beforeInitTest();
 
       it('should fail in initializing an already initialized directory', async () => {
-        await expect(forge.init({ dir })).to.eventually.be.rejected;
+        await expect(api.init({ dir })).to.eventually.be.rejected;
       });
 
       it('should initialize an already initialized directory when forced to', async () => {
-        await forge.init({
+        await api.init({
           dir,
           force: true,
         });
@@ -84,8 +77,8 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         expect(await fs.pathExists(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
       });
 
-      it('should create a forge.config.js', async () => {
-        await expectProjectPathExists(dir, 'forge.config.js', 'file');
+      it('should create a api.config.js', async () => {
+        await expectProjectPathExists(dir, 'api.config.js', 'file');
       });
 
       describe('lint', () => {
@@ -145,7 +138,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
       it('should fail in initializing', async () => {
         await expect(
-          forge.init({
+          api.init({
             dir,
             template: path.resolve(__dirname, '../fixture/template-sans-forge-version'),
           })
@@ -164,7 +157,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
       it('should fail in initializing', async () => {
         await expect(
-          forge.init({
+          api.init({
             dir,
             template: path.resolve(__dirname, '../fixture/template-nonmatching-forge-version'),
           })
@@ -183,7 +176,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
       it('should fail in initializing', async () => {
         await expect(
-          forge.init({
+          api.init({
             dir,
             template: 'does-not-exist',
           })
@@ -204,21 +197,21 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         });
       });
 
-      it('creates forge.config.js and is packageable', async () => {
+      it('creates api.config.js and is packageable', async () => {
         await updatePackageJSON(dir, async (packageJSON) => {
           packageJSON.name = 'Name';
           packageJSON.productName = 'ProductName';
         });
 
-        await forge.import({ dir });
+        await api.import({ dir });
 
-        expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
+        expect(fs.existsSync(path.join(dir, 'api.config.js'))).to.equal(true);
 
         execSync(`${nodeInstaller} install`, {
           cwd: dir,
         });
 
-        await forge.package({ dir });
+        await api.package({ dir });
 
         const outDirContents = fs.readdirSync(path.join(dir, 'out'));
         expect(outDirContents).to.have.length(1);
@@ -248,7 +241,7 @@ describe('Electron Forge API', () => {
 
     before(async () => {
       dir = path.join(await ensureTestDirIsNonexistent(), 'electron-forge-test');
-      await forge.init({ dir });
+      await api.init({ dir });
 
       await updatePackageJSON(dir, async (packageJSON) => {
         packageJSON.name = 'testapp';
@@ -280,7 +273,7 @@ describe('Electron Forge API', () => {
         assert(packageJSON.config.forge.packagerConfig);
         packageJSON.config.forge.packagerConfig.all = true;
       });
-      await expect(forge.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
+      await expect(api.package({ dir })).to.eventually.be.rejectedWith(/packagerConfig\.all is not supported by Electron Forge/);
       await updatePackageJSON(dir, async (packageJSON) => {
         assert(packageJSON.config.forge.packagerConfig);
         delete packageJSON.config.forge.packagerConfig.all;
@@ -292,7 +285,7 @@ describe('Electron Forge API', () => {
 
       expect(await fs.pathExists(outDir)).to.equal(false);
 
-      await forge.package({ dir, outDir });
+      await api.package({ dir, outDir });
 
       expect(await fs.pathExists(outDir)).to.equal(true);
     });
@@ -303,7 +296,7 @@ describe('Electron Forge API', () => {
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
 
-      await forge.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
+      await api.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
 
       // Cleanup here to ensure things dont break in the make tests
       await fs.remove(path.resolve(dir, 'foo'));
@@ -319,7 +312,7 @@ describe('Electron Forge API', () => {
       });
 
       it('can package without errors', async () => {
-        await forge.package({ dir });
+        await api.package({ dir });
       });
 
       after(async () => {
@@ -336,7 +329,7 @@ describe('Electron Forge API', () => {
         packageJSON.config.forge.packagerConfig.asar = true;
       });
 
-      await forge.package({ dir });
+      await api.package({ dir });
     });
 
     describe('after package', () => {
@@ -412,7 +405,7 @@ describe('Electron Forge API', () => {
           for (const optionsFetcher of options) {
             if (shouldPass) {
               it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-                const outputs = await forge.make(optionsFetcher());
+                const outputs = await api.make(optionsFetcher());
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {
                     expect(await fs.pathExists(output)).to.equal(true);
@@ -422,7 +415,7 @@ describe('Electron Forge API', () => {
               });
             } else {
               it(`fails for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-                await expect(forge.make(optionsFetcher())).to.eventually.be.rejected;
+                await expect(api.make(optionsFetcher())).to.eventually.be.rejected;
               });
             }
           }
@@ -440,18 +433,18 @@ describe('Electron Forge API', () => {
 
       describe('make', () => {
         it('throws an error when given an unrecognized platform', async () => {
-          await expect(forge.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
+          await expect(api.make({ dir, platform: 'dos' })).to.eventually.be.rejectedWith(/invalid platform/);
         });
 
         it("throws an error when the specified maker doesn't support the current platform", async () => {
           const makerPath = path.resolve(__dirname, '../fixture/maker-unsupported');
           await expect(
-            forge.make({
+            api.make({
               dir,
               overrideTargets: [
                 {
                   name: makerPath,
-                },
+                } as IForgeResolvableMaker,
               ],
               skipPackage: true,
             })
@@ -461,12 +454,12 @@ describe('Electron Forge API', () => {
         it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
           const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
           await expect(
-            forge.make({
+            api.make({
               dir,
               overrideTargets: [
                 {
                   name: makerPath,
-                },
+                } as IForgeResolvableMaker,
               ],
               skipPackage: true,
             })
@@ -475,12 +468,12 @@ describe('Electron Forge API', () => {
 
         it('throws an error when no makers are configured for the given platform', async () => {
           await expect(
-            forge.make({
+            api.make({
               dir,
               overrideTargets: [
                 {
                   name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
-                },
+                } as IForgeResolvableMaker,
               ],
               platform: 'linux',
               skipPackage: true,
@@ -491,7 +484,7 @@ describe('Electron Forge API', () => {
         it('can make for the MAS platform successfully', async () => {
           if (process.platform !== 'darwin') return;
           await expect(
-            forge.make({
+            api.make({
               dir,
               // eslint-disable-next-line node/no-missing-require
               overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
