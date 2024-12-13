@@ -197,7 +197,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
         });
       });
 
-      it('creates api.config.js and is packageable', async () => {
+      it('creates forge.config.js and is packageable', async () => {
         await updatePackageJSON(dir, async (packageJSON) => {
           packageJSON.name = 'Name';
           packageJSON.productName = 'ProductName';
@@ -205,7 +205,7 @@ for (const nodeInstaller of ['npm', 'yarn']) {
 
         await api.import({ dir });
 
-        expect(fs.existsSync(path.join(dir, 'api.config.js'))).to.equal(true);
+        expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
 
         execSync(`${nodeInstaller} install`, {
           cwd: dir,
