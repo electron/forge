@@ -151,7 +151,7 @@ export interface WebpackPluginConfig {
    */
   port?: number;
   /**
-   * The TCP port for web-multi-logger. Defaults to 9000.
+   * The TCP port for web-multi-logger. Defaults to 9000. If the specified port is unavailable, the server will attempt to start on ports up to 10 higher (port + 10).
    */
   loggerPort?: number;
   /**
