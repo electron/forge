@@ -1,5 +1,5 @@
-import http from 'http';
-import path from 'path';
+import http from 'node:http';
+import path from 'node:path';
 
 import { findAvailablePort } from '@electron-forge/core-utils';
 import express from 'express';

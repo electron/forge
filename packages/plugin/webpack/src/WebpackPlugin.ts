@@ -1,6 +1,6 @@
-import crypto from 'crypto';
-import http from 'http';
-import path from 'path';
+import crypto from 'node:crypto';
+import http from 'node:http';
+import path from 'node:path';
 import { pipeline } from 'stream/promises';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';

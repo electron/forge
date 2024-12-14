@@ -12,8 +12,8 @@
  * file (like index.ts) to redirect to the right file.
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
 import { getPackageInfo } from './utils';
 
