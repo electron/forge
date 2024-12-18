@@ -145,7 +145,6 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
       console.error(`Failed to load: ${forgeConfigPath}`);
-      console.error(err);
       throw err;
     }
   } else if (typeof forgeConfig !== 'object') {
