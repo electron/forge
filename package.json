@@ -181,8 +181,5 @@
       "packages/template/*",
       "packages/utils/*"
     ]
-  },
-  "resolutions": {
-    "esbuild": "0.24.0"
   }
 }
