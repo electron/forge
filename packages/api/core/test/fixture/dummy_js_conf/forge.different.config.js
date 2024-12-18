@@ -1,6 +1,6 @@
 const {
   utils: { fromBuildIdentifier },
-} = require('../../../src/api');
+} = require('@electron-forge/core');
 
 module.exports = {
   buildIdentifier: 'beta',

@@ -19,6 +19,7 @@ export default class ForgeUtils {
    * `fromBuildIdentifier({ stable: 'App', beta: 'App Beta' })`
    */
   fromBuildIdentifier<T>(map: BuildIdentifierMap<T>): BuildIdentifierConfig<T> {
+    console.log('erick was here');
     return fromBuildIdentifier(map);
   }
 
