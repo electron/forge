@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { flatAsync } from '@electron/osx-sign';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';

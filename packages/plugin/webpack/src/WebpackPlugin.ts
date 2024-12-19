@@ -1,11 +1,11 @@
-import crypto from 'crypto';
-import http from 'http';
-import path from 'path';
+import crypto from 'node:crypto';
+import http from 'node:http';
+import path from 'node:path';
 import { pipeline } from 'stream/promises';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig, StartResult } from '@electron-forge/shared-types';
+import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -70,7 +70,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       }
     }
 
-    this.startLogic = this.startLogic.bind(this);
     this.getHooks = this.getHooks.bind(this);
   }
 
@@ -158,6 +157,41 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   getHooks(): ForgeMultiHookMap {
     return {
+      preStart: [
+        namedHookWithTaskFn<'preStart'>(async (task) => {
+          if (this.alreadyStarted) return false;
+          this.alreadyStarted = true;
+
+          await fs.remove(this.baseDir);
+
+          const logger = new Logger(this.loggerPort);
+          this.loggers.push(logger);
+          await logger.start();
+
+          return task?.newListr([
+            {
+              title: 'Compiling main process code',
+              task: async () => {
+                await this.compileMain(true, logger);
+              },
+              rendererOptions: {
+                timer: { ...PRESET_TIMER },
+              },
+            },
+            {
+              title: 'Launching dev servers for renderer process code',
+              task: async (_, task) => {
+                await this.launchRendererDevServers(logger);
+                task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+              },
+              rendererOptions: {
+                persistentOutput: true,
+                timer: { ...PRESET_TIMER },
+              },
+            },
+          ]) as any;
+        }, 'Preparing webpack bundles'),
+      ],
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async (task, config, platform, arch) => {
           if (!task) {
@@ -554,6 +588,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       setupExitSignals: true,
       static: path.resolve(this.baseDir, 'renderer'),
       headers: {
+        ...this.config.devServer?.headers,
         'Content-Security-Policy': cspDirectives,
       },
     };
@@ -562,43 +597,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   }
 
   private alreadyStarted = false;
-
-  async startLogic(): Promise<StartResult> {
-    if (this.alreadyStarted) return false;
-    this.alreadyStarted = true;
-
-    await fs.remove(this.baseDir);
-
-    const logger = new Logger(this.loggerPort);
-    this.loggers.push(logger);
-    await logger.start();
-
-    return {
-      tasks: [
-        {
-          title: 'Compiling main process code',
-          task: async () => {
-            await this.compileMain(true, logger);
-          },
-          rendererOptions: {
-            timer: { ...PRESET_TIMER },
-          },
-        },
-        {
-          title: 'Launching dev servers for renderer process code',
-          task: async (_, task) => {
-            await this.launchRendererDevServers(logger);
-            task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
-          },
-          rendererOptions: {
-            persistentOutput: true,
-            timer: { ...PRESET_TIMER },
-          },
-        },
-      ],
-      result: false,
-    };
-  }
 }
 
 export { WebpackPlugin, WebpackPluginConfig };

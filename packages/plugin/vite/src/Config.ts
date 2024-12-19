@@ -1,22 +1,26 @@
-// eslint-disable-next-line node/no-unpublished-import
 import type { LibraryOptions } from 'vite';
 
 export interface VitePluginBuildConfig {
   /**
    * Alias of `build.lib.entry` in `config`.
    */
-  entry?: LibraryOptions['entry'];
+  entry: LibraryOptions['entry'];
   /**
    * Vite config file path.
    */
   config: string;
+  /**
+   * The build target is main process or preload script.
+   * @defaultValue 'main'
+   */
+  target?: 'main' | 'preload';
 }
 
 export interface VitePluginRendererConfig {
   /**
    * Human friendly name of your entry point.
    */
-  name?: string;
+  name: string;
   /**
    * Vite config file path.
    */

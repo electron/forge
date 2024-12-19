@@ -1,4 +1,4 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from 'node:child_process';
 
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
@@ -26,6 +26,7 @@ export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 
 export interface ForgeSimpleHookSignatures {
   generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  preStart: [];
   postStart: [appProcess: ElectronProcess];
   prePackage: [platform: ForgePlatform, version: ForgeArch];
   packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
@@ -56,7 +57,7 @@ export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
 export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeMutatingHookSignatures[Hook]
-) => Promise<ForgeMutatingHookSignatures[Hook][0] | undefined>;
+) => Promise<ForgeMutatingHookSignatures[Hook][0] | void>;
 export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
   ? ForgeSimpleHookFn<Hook>
   : Hook extends keyof ForgeMutatingHookSignatures

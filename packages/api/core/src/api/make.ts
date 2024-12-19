@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getHostArch } from '@electron/get';
 import { getElectronVersion } from '@electron-forge/core-utils';
@@ -22,10 +22,10 @@ import logSymbols from 'log-symbols';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runMutatingHook } from '../util/hook';
+import importSearch from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
-import requireSearch from '../util/require-search';
 import resolveDir from '../util/resolve-dir';
 
 import { listrPackage } from './package';
@@ -168,7 +168,7 @@ export const listrMake = (
                   throw new Error(`The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`);
                 }
 
-                const MakerClass = requireSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
+                const MakerClass = await importSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
                 if (!MakerClass) {
                   throw new Error(
                     `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`
@@ -317,10 +317,28 @@ export const listrMake = (
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'run-postMake-hook', category: '@electron-forge/core' }, async (_, ctx, task) => {
           // If the postMake hooks modifies the locations / names of the outputs it must return
           // the new locations so that the publish step knows where to look
+          const originalOutputs = JSON.stringify(ctx.outputs);
           ctx.outputs = await runMutatingHook(ctx.forgeConfig, 'postMake', ctx.outputs);
+
+          let outputLocations = [path.resolve(ctx.actualOutDir, 'make')];
+          if (originalOutputs !== JSON.stringify(ctx.outputs)) {
+            const newDirs = new Set<string>();
+            const artifactPaths = [];
+            for (const result of ctx.outputs) {
+              for (const artifact of result.artifacts) {
+                newDirs.add(path.dirname(artifact));
+                artifactPaths.push(artifact);
+              }
+            }
+            if (newDirs.size <= ctx.outputs.length) {
+              outputLocations = [...newDirs];
+            } else {
+              outputLocations = artifactPaths;
+            }
+          }
           receiveMakeResults?.(ctx.outputs);
 
-          task.output = `Artifacts available at: ${chalk.green(path.resolve(ctx.actualOutDir, 'make'))}`;
+          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))})}`;
         }),
         rendererOptions: {
           persistentOutput: true,

@@ -1,5 +1,5 @@
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 
 import { ForgeConfigPublisher, IForgePublisher } from '@electron-forge/shared-types';
 import { expect } from 'chai';
@@ -61,7 +61,7 @@ describe('publish', () => {
         config.publishers = publishers;
         return config;
       },
-      '../util/require-search': (_: string, [name]: [string]) => {
+      '../util/import-search': async (_: string, [name]: [string]) => {
         if (name === 'void') {
           return fakePublisher(voidStub);
         }

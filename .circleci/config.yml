@@ -1,14 +1,20 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@2.2.1
+  node: electronjs/node@2.3.1
+
+executors:
+  linux-medium-plus:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium+
 
 commands:
   install:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.15.0'
+          node-version: '18.20.3'
       - run:
           name: Install pnpm package manager
           command: |
@@ -74,6 +80,17 @@ jobs:
       - install
       - when:
           condition:
+            equal: [node/windows, << parameters.executor >>]
+          steps:
+            - run:
+                name: Windows Setup
+                shell: bash
+                command: |
+                  pip install setuptools
+                  cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
+                  npm install node-gyp@9.4.0
+      - when:
+          condition:
             equal: [node/linux, << parameters.executor >>]
           steps:
             - run:
@@ -113,13 +130,14 @@ jobs:
                 name: Windows Setup
                 shell: bash
                 command: |
+                  pip install setuptools
                   choco install --no-progress -y wixtoolset  --version=3.14.0
                   echo 'export PATH=$PATH:"/C/Program Files (x86)/WiX Toolset v3.14/bin"' >> "$BASH_ENV"
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
                   npm install node-gyp@9.4.0
       - when:
           condition:
-            equal: [node/linux, << parameters.executor >>]
+            equal: [linux-medium-plus, << parameters.executor >>]
           steps:
             - run:
                 name: Linux specific setup
@@ -167,10 +185,10 @@ workflows:
             - lint-and-build
           matrix:
             parameters:
-              executor: [node/windows, node/linux, node/macos]
+              executor: [node/windows, linux-medium-plus, node/macos]
               arch: [x64, arm64]
             exclude:
               - executor: node/windows
                 arch: arm64
-              - executor: node/linux
+              - executor: linux-medium-plus
                 arch: arm64

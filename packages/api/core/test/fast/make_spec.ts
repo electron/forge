@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { expect } from 'chai';

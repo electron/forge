@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-dmg",
-  "version": "7.4.0",
+  "version": "7.6.0",
   "description": "DMG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -22,12 +22,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "7.4.0",
-    "@electron-forge/shared-types": "7.4.0",
+    "@electron-forge/maker-base": "7.6.0",
+    "@electron-forge/shared-types": "7.6.0",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {
-    "electron-installer-dmg": "^4.0.0"
+    "electron-installer-dmg": "^5.0.1"
   },
   "publishConfig": {
     "access": "public"

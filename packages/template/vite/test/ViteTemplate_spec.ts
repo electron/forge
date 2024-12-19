@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';
@@ -28,9 +28,7 @@ describe('ViteTemplate', () => {
   context('template files are copied to project', () => {
     const expectedFiles = [
       'package.json',
-      'forge.env.d.ts',
       'forge.config.js',
-      'vite.base.config.mjs',
       'vite.main.config.mjs',
       'vite.preload.config.mjs',
       'vite.renderer.config.mjs',

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getPackageManager, isPnpm, packageManagerSpawn } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';

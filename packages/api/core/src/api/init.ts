@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getPackageManager } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';

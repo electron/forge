@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import * as testUtils from '@electron-forge/test-utils';
 import { expect } from 'chai';

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { initializeProxy } from '@electron/get';
 import { api, PublishOptions } from '@electron-forge/core';

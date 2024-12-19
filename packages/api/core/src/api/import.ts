@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getPackageManager, updateElectronDependency } from '@electron-forge/core-utils';
 import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';

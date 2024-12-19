@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { flipFuses, FuseConfig } from '@electron/fuses';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';

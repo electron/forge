@@ -1,6 +1,14 @@
 import { getElectronVersion, getPackageManager, isNpm, isPnpm, isYarn, packageManagerSpawn } from '@electron-forge/core-utils';
 
-import { BuildIdentifierConfig, BuildIdentifierMap, fromBuildIdentifier } from './forge-config';
+import {
+  BuildIdentifierConfig,
+  BuildIdentifierMap,
+  fromBuildIdentifier,
+  registerForgeConfigForDirectory,
+  unregisterForgeConfigForDirectory,
+} from './forge-config';
+
+import type { ForgeConfig } from '@electron-forge/shared-types';
 
 export default class ForgeUtils {
   /**
@@ -25,4 +33,20 @@ export default class ForgeUtils {
   isYarn = isYarn;
 
   isPnpm = isPnpm;
+
+  /**
+   * Register a virtual config file for forge to find.
+   * Takes precedence over other configuration options like a forge.config.js file.
+   * Dir should point to the folder containing the app.
+   */
+  registerForgeConfigForDirectory(dir: string, config: ForgeConfig): void {
+    return registerForgeConfigForDirectory(dir, config);
+  }
+
+  /**
+   * Unregister a forge config previously registered with registerForgeConfigForDirectory.
+   */
+  unregisterForgeConfigForDirectory(dir: string): void {
+    return unregisterForgeConfigForDirectory(dir);
+  }
 }

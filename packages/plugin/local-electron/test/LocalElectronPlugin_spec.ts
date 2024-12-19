@@ -1,5 +1,5 @@
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { expect } from 'chai';
@@ -9,6 +9,8 @@ import { LocalElectronPlugin } from '../src/LocalElectronPlugin';
 
 describe('LocalElectronPlugin', () => {
   describe('start logic', () => {
+    const fakeForgeConfig = {} as ResolvedForgeConfig;
+
     before(() => {
       delete process.env.ELECTRON_OVERRIDE_DIST_PATH;
     });
@@ -20,30 +22,22 @@ describe('LocalElectronPlugin', () => {
     it('should set ELECTRON_OVERRIDE_DIST_PATH when enabled', async () => {
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
       const p = new LocalElectronPlugin({ electronPath: 'test/foo' });
-      await p.startLogic();
+      await p.getHooks().preStart?.(fakeForgeConfig);
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal('test/foo');
     });
 
     it('should not set ELECTRON_OVERRIDE_DIST_PATH when disabled', async () => {
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
       const p = new LocalElectronPlugin({ enabled: false, electronPath: 'test/foo' });
-      await p.startLogic();
+      await p.getHooks().preStart?.(fakeForgeConfig);
       expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
     });
 
     it("should throw an error if platforms don't match", async () => {
       const p = new LocalElectronPlugin({ electronPath: 'test/bar', electronPlatform: 'wut' });
-      await expect(p.startLogic()).to.eventually.be.rejectedWith(
+      await expect(p.getHooks().preStart?.(fakeForgeConfig)).to.eventually.be.rejectedWith(
         `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`
       );
-    });
-
-    it('should always return false', async () => {
-      let p = new LocalElectronPlugin({ electronPath: 'test/bar' });
-      expect(await p.startLogic()).to.equal(false);
-
-      p = new LocalElectronPlugin({ enabled: false, electronPath: 'test/bar' });
-      expect(await p.startLogic()).to.equal(false);
     });
   });
 

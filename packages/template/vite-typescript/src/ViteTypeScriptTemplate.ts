@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
@@ -25,7 +25,6 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           const filePath = (fileName: string) => path.join(directory, 'src', fileName);
 
           // Copy Vite files
-          await this.copyTemplateFile(directory, 'vite.base.config.ts');
           await this.copyTemplateFile(directory, 'vite.main.config.ts');
           await this.copyTemplateFile(directory, 'vite.preload.config.ts');
           await this.copyTemplateFile(directory, 'vite.renderer.config.ts');

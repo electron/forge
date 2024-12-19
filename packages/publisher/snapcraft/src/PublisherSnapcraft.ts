@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import fs from 'fs-extra';

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getElectronModulePath } from '@electron-forge/core-utils';
 import logSymbols from 'log-symbols';
