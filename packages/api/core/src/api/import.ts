@@ -221,7 +221,7 @@ export default autoTrace(
                     // if there's an existing config.forge object in package.json
                     if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
                       d('detected existing Forge config in package.json, merging with base template Forge config');
-                      // eslint-disable-next-line @typescript-eslint/no-var-requires
+                      // eslint-disable-next-line @typescript-eslint/no-require-imports
                       const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
                       packageJSON = await readRawPackageJson(dir);
                       merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object

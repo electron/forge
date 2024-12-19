@@ -69,7 +69,7 @@ describe('WebpackTypeScriptTemplate', () => {
       // typescript type-resolution.  In prod no one has to worry about things like this
       const pj = await fs.readJson(path.resolve(dir, 'package.json'));
       pj.resolutions = {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
       };
       await fs.writeJson(path.resolve(dir, 'package.json'), pj);

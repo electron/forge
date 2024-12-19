@@ -79,7 +79,7 @@ describe('ViteTypeScriptTemplate', () => {
       // typescript type-resolution.  In prod no one has to worry about things like this
       const pj = await fs.readJson(path.resolve(dir, 'package.json'));
       pj.resolutions = {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
       await fs.writeJson(path.resolve(dir, 'package.json'), pj);
