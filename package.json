@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@electron/fuses": ">=1.0.0",
-    "@electron/lint-roller": "^2.0.0",
+    "@electron/lint-roller": "1.10.1",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
