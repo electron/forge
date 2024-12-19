@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import { getHostArch } from '@electron/get';
 import { getElectronVersion } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
@@ -14,6 +13,7 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
+import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import filenamify from 'filenamify';
 import fs from 'fs-extra';

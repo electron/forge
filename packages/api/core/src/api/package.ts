@@ -1,11 +1,11 @@
 import path from 'node:path';
 import { promisify } from 'node:util';
 
-import { getHostArch } from '@electron/get';
-import { FinalizePackageTargetsHookFunction, HookFunction, Options, packager, TargetDefinition } from '@electron/packager';
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import { ForgeArch, ForgeListrTask, ForgeListrTaskDefinition, ForgeListrTaskFn, ForgePlatform, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
+import { getHostArch } from '@electron/get';
+import { FinalizePackageTargetsHookFunction, HookFunction, Options, packager, TargetDefinition } from '@electron/packager';
 import chalk from 'chalk';
 import debug from 'debug';
 import glob from 'fast-glob';

@@ -1,8 +1,8 @@
 import * as cp from 'node:child_process';
 import * as path from 'node:path';
 
-import { RebuildOptions } from '@electron/rebuild';
 import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
+import { RebuildOptions } from '@electron/rebuild';
 import debug from 'debug';
 
 const d = debug('electron-forge:rebuild');
