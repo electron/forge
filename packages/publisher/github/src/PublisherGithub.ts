@@ -13,6 +13,8 @@ import { PublisherGitHubConfig } from './Config';
 import GitHub from './util/github';
 import NoReleaseError from './util/no-release-error';
 
+import type { Octokit } from '@octokit/rest';
+
 interface GitHubRelease {
   tag_name: string;
   assets: {
@@ -46,10 +48,10 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     }
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);
+    github.getGitHub();
 
-    const octokit = github.getGitHub();
-    type OctokitRelease = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.getRelease>;
-    type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.updateReleaseAsset>;
+    type OctokitRelease = GetResponseDataTypeFromEndpointMethod<Octokit['repos']['getRelease']>;
+    type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<Octokit['repos']['updateReleaseAsset']>;
 
     for (const releaseVersion of Object.keys(perReleaseArtifacts)) {
       let release: OctokitRelease | undefined;

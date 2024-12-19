@@ -18,7 +18,7 @@
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
     "lint:markdown-links": "electron-lint-markdown-links --root . --ignore-path .markdownlintignore \"**/*.md\"",
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
-    "lint:fix": "prettier --write .",
+    "lint:fix": "prettier --write . && eslint --fix .",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
     "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
     "test": "npm run test:clear && xvfb-maybe cross-env NODE_ENV=test TS_NODE_PROJECT='./tsconfig.test.json' TS_NODE_FILES=1 mocha",
@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@electron/fuses": ">=1.0.0",
-    "@electron/lint-roller": "1.10.1",
+    "@electron/lint-roller": "^2.0.0",
     "@malept/eslint-config": "^2.0.0",
     "@types/chai": "^4.2.12",
     "@types/chai-as-promised": "^7.1.2",
@@ -108,14 +108,14 @@
     "@types/sinon": "^10.0.0",
     "@types/sinon-chai": "^3.2.5",
     "@types/which": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "chai": "^4.3.3",
     "chai-as-promised": "^7.0.0",
     "cross-env": "^7.0.2",
     "electron-installer-common": "^0.10.2",
-    "eslint": "^8.0.1",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -139,7 +139,7 @@
     "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
-    "typescript": "^4.6.3",
+    "typescript": "~5.4.5",
     "xvfb-maybe": "^0.2.1",
     "yaml-hook": "^1.0.0"
   },
@@ -179,5 +179,8 @@
       "packages/template/*",
       "packages/utils/*"
     ]
+  },
+  "resolutions": {
+    "@typescript-eslint/parser": "^8.0.0"
   }
 }
