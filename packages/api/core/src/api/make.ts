@@ -294,6 +294,8 @@ export const listrMake = (
                     } catch (err) {
                       if (err instanceof Error) {
                         throw err;
+                      } else if (typeof err === 'string') {
+                        throw new Error(err);
                       } else {
                         throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);
                       }
