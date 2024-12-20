@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 
 import determineAuthor from './determine-author';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const currentForgeVersion = require('../package.json').version;
 
 const d = debug('electron-forge:template:base');

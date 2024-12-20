@@ -48,7 +48,8 @@
       },
       "rules": {
         "no-throw-literal": "off",
-        "@typescript-eslint/no-throw-literal": "error",
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-unused-expressions": "warn",
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -57,7 +58,8 @@
             "ignoreRestSiblings": true,
             "vars": "all"
           }
-        ]
+        ],
+        "@typescript-eslint/only-throw-error": "error"
       }
     },
     {
@@ -93,7 +95,7 @@
     {
       "files": ["packages/api/core/test/**/*.ts", "packages/maker/*/src/Maker*.ts"],
       "rules": {
-        "@typescript-eslint/no-var-requires": "off"
+        "@typescript-eslint/no-require-imports": "off"
       }
     },
     {

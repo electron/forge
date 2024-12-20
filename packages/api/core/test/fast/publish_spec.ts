@@ -38,6 +38,7 @@ describe('publish', () => {
         public name = name;
 
         constructor(public providedConfig: Record<string, unknown>) {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           fooPublisher = this;
           this.publish = stub;
         }
