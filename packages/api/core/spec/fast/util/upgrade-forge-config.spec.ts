@@ -1,10 +1,10 @@
 import assert from 'node:assert';
 
 import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
-import { expect } from 'chai';
 import { merge } from 'lodash';
+import { describe, expect, it } from 'vitest';
 
-import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../../src/util/upgrade-forge-config';
+import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../../../src/util/upgrade-forge-config';
 
 describe('upgradeForgeConfig', () => {
   it('converts Electron Packager config', () => {
@@ -17,7 +17,7 @@ describe('upgradeForgeConfig', () => {
     const expected = { asar: true };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.packagerConfig).to.deep.equal(expected);
+    expect(newConfig.packagerConfig).toEqual(expected);
   });
 
   it('converts @electron/rebuild config', () => {
@@ -25,7 +25,7 @@ describe('upgradeForgeConfig', () => {
     const oldConfig = { electronRebuildConfig: { ...rebuildConfig } };
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.rebuildConfig).to.deep.equal(rebuildConfig);
+    expect(newConfig.rebuildConfig).toEqual(rebuildConfig);
   });
 
   it('converts maker config', () => {
@@ -48,7 +48,7 @@ describe('upgradeForgeConfig', () => {
     ] as IForgeResolvableMaker[];
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.makers).to.deep.equal(expected);
+    expect(newConfig.makers).toEqual(expected);
   });
 
   it('adds the zip maker when specified in make_targets', () => {
@@ -66,7 +66,7 @@ describe('upgradeForgeConfig', () => {
     ] as IForgeResolvableMaker[];
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.makers).to.deep.equal(expected);
+    expect(newConfig.makers).toEqual(expected);
   });
 
   it('converts publisher config', () => {
@@ -86,7 +86,7 @@ describe('upgradeForgeConfig', () => {
     ] as IForgeResolvablePublisher[];
 
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.publishers).to.deep.equal(expected);
+    expect(newConfig.publishers).toEqual(expected);
   });
 
   it('converts GitHub publisher config', () => {
@@ -108,8 +108,8 @@ describe('upgradeForgeConfig', () => {
     expect(newConfig.publishers).to.have.lengthOf(1);
     assert(newConfig.publishers);
     const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
-    expect(publisherConfig.repository).to.deep.equal(repo);
-    expect(publisherConfig.octokitOptions).to.deep.equal(octokitOptions);
+    expect(publisherConfig.repository).toEqual(repo);
+    expect(publisherConfig.octokitOptions).toEqual(octokitOptions);
     expect(publisherConfig.draft).to.equal(true);
   });
 });
@@ -136,7 +136,7 @@ describe('updateUpgradedForgeDevDeps', () => {
   it('removes unused makers from devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
     const devDeps = updateUpgradedForgeDevDeps(packageJSON, ['@electron-forge/maker-squirrel']);
-    expect(devDeps).to.deep.equal([]);
+    expect(devDeps).toEqual([]);
   });
 
   it('adds makers to devDependencies', () => {
@@ -155,8 +155,8 @@ describe('updateUpgradedForgeDevDeps', () => {
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-zip'))).to.not.equal(undefined);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-zip'))).not.toEqual(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel'))).not.toEqual(undefined);
   });
 
   it('adds publishers to devDependencies', () => {
@@ -165,7 +165,7 @@ describe('updateUpgradedForgeDevDeps', () => {
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).to.have.lengthOf(2);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).to.not.equal(undefined);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).to.not.equal(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).not.toEqual(undefined);
+    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).not.toEqual(undefined);
   });
 });
