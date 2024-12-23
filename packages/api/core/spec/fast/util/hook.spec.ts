@@ -1,5 +1,5 @@
 import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { runHook, runMutatingHook } from '../../../src/util/hook';
 
@@ -9,6 +9,8 @@ const fakeConfig = {
     triggerMutatingHook: vi.fn(),
   },
 } as unknown as ResolvedForgeConfig;
+
+vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mockImplementation((_, arg1) => Promise.resolve(arg1));
 
 describe('runHook', () => {
   it('should not error when running non existent hooks', async () => {
@@ -28,10 +30,6 @@ describe('runHook', () => {
 });
 
 describe('runMutatingHook', () => {
-  beforeEach(() => {
-    vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mockImplementation((_, arg1) => Promise.resolve(arg1));
-  });
-
   it('should return the input when running non existent hooks', async () => {
     const info = {
       foo: 'bar',

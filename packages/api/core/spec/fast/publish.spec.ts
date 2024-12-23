@@ -1,45 +1,41 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { listrMake } from '../../src/api/make';
 import publish from '../../src/api/publish';
 import findConfig from '../../src/util/forge-config';
 import importSearch from '../../src/util/import-search';
 
+vi.mock(import('../../src/api/make'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    listrMake: vi.fn().mockReturnValue({ run: vi.fn() }),
+  };
+});
+
+vi.mock(import('../../src/util/forge-config'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    default: vi.fn().mockReturnValue({}),
+  };
+});
+
+vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    default: vi.fn(),
+  };
+});
+
 describe('publish', () => {
-  beforeEach(() => {
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    vi.mock(import('../../src/api/make'), async (importOriginal) => {
-      const mod = await importOriginal();
-      return {
-        ...mod,
-        listrMake: vi.fn().mockReturnValue({ run: vi.fn() }),
-      };
-    });
-
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    vi.mock(import('../../src/util/forge-config'), async (importOriginal) => {
-      const mod = await importOriginal();
-      return {
-        ...mod,
-        default: vi.fn().mockReturnValue({}),
-      };
-    });
-
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
-      const mod = await importOriginal();
-      return {
-        ...mod,
-        default: vi.fn(),
-      };
-    });
-  });
-
   it('calls "make"', async () => {
     await publish({
       dir: __dirname,

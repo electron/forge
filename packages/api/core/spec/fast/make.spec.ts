@@ -1,10 +1,10 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 import * as path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
 
 import make from '../../src/api/make';
 
-// eslint-disable-next-line node/no-unsupported-features/es-syntax
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
