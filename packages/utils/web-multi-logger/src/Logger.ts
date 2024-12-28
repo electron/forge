@@ -1,5 +1,5 @@
-import http from 'http';
-import path from 'path';
+import http from 'node:http';
+import path from 'node:path';
 
 import express from 'express';
 import ews from 'express-ws';

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { expect } from 'chai';
@@ -34,9 +34,7 @@ describe('MakerDMG', () => {
     ensureFileStub = stub().returns(Promise.resolve());
     eidStub = stub().returns(Promise.resolve());
     renameStub = stub().returns(Promise.resolve());
-    config = {
-      appPath: 'fake',
-    };
+    config = {};
 
     MakerDMG = proxyquire
       .noPreserveCache()

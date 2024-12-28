@@ -36,7 +36,7 @@ describe('start', () => {
       '../util/read-package-json': {
         readMutatedPackageJson: () => Promise.resolve(packageJSON),
       },
-      child_process: {
+      'node:child_process': {
         spawn: spawnStub,
       },
     }).default;

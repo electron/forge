@@ -1,4 +1,4 @@
-import { PromiseWithChild } from 'child_process';
+import { PromiseWithChild } from 'node:child_process';
 
 // Copied from https://github.com/jorangreef/sudo-prompt/pull/124
 // TODO: Remove this if/when that PR gets merged/released

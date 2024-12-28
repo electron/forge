@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
@@ -15,7 +15,6 @@ class ViteTemplate extends BaseTemplate {
         title: 'Setting up Forge configuration',
         task: async () => {
           await this.copyTemplateFile(directory, 'forge.config.js');
-          await this.copyTemplateFile(directory, 'forge.env.d.ts');
         },
       },
       {

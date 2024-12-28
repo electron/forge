@@ -1,5 +1,5 @@
-import { tmpdir } from 'os';
-import { join } from 'path';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { expect } from 'chai';
 import fs from 'fs-extra';

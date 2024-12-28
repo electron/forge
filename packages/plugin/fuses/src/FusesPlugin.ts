@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import { ForgeMultiHookMap, ForgePlatform } from '@electron-forge/shared-types';

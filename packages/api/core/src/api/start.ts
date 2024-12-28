@@ -1,4 +1,4 @@
-import { spawn, SpawnOptions } from 'child_process';
+import { spawn, SpawnOptions } from 'node:child_process';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import {
@@ -109,6 +109,15 @@ export default autoTrace(
             { name: 'run-generateAssets-hook', category: '@electron-forge/core' },
             async (childTrace, { forgeConfig }, task) => {
               return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'generateAssets', platform, arch)), 'run');
+            }
+          ),
+        },
+        {
+          title: `Running ${chalk.yellow('preStart')} hook`,
+          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
+            { name: 'run-preStart-hook', category: '@electron-forge/core' },
+            async (childTrace, { forgeConfig }, task) => {
+              return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'preStart')), 'run');
             }
           ),
         },
