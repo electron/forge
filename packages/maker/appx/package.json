@@ -9,7 +9,8 @@
   "typings": "dist/MakerAppX.d.ts",
   "devDependencies": {
     "chai": "^4.3.3",
-    "mocha": "^9.0.1"
+    "mocha": "^9.0.1",
+    "vitest": "^2.1.6"
   },
   "engines": {
     "node": ">= 16.4.0"
