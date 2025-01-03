@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import { EmptyConfig, MakerBase } from '../src/Maker';
 
@@ -14,6 +14,6 @@ describe('ensureExternalBinariesExist', () => {
   const maker = new MakerImpl({}, []);
 
   it('throws an error when one of the binaries does not exist', () => {
-    expect(() => maker.ensureExternalBinariesExist()).to.throw(/the following external binaries need to be installed: bash, nonexistent/);
+    expect(() => maker.ensureExternalBinariesExist()).toThrow(/the following external binaries need to be installed: bash, nonexistent/);
   });
 });
