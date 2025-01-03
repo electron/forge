@@ -78,7 +78,7 @@ describe('Install dependencies', () => {
 
     it('should install prod deps', () => {
       install('mydir', ['react']);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react', '--save']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react']);
     });
 
     it('should install dev deps', () => {
@@ -88,12 +88,12 @@ describe('Install dependencies', () => {
 
     it('should install exact deps', () => {
       install('mydir', ['react-dom'], DepType.PROD, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react-dom', '--save-exact', '--save']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'react-dom', '--save-exact']);
     });
 
     it('should install exact dev deps', () => {
       install('mydir', ['mocha'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'mocha', '--save-exact', '--save-dev']);
+      expect(spawnSpy.firstCall.args[0]).to.be.deep.equal(['install', 'mocha', '--save-dev', '--save-exact']);
     });
   });
 });
