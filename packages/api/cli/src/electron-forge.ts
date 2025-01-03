@@ -9,7 +9,7 @@ import './util/terminate';
 
 import { checkSystem } from './util/check-system';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const metadata = require('../package.json');
 
 const originalSC = program.executeSubCommand.bind(program);
