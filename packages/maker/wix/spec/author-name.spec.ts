@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import getNameFromAuthor from '../src/util/author-name';
 
