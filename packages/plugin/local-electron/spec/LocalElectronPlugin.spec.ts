@@ -1,9 +1,9 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
-import { expect } from 'chai';
-import fs from 'fs-extra';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { LocalElectronPlugin } from '../src/LocalElectronPlugin';
 
@@ -11,7 +11,7 @@ describe('LocalElectronPlugin', () => {
   describe('start logic', () => {
     const fakeForgeConfig = {} as ResolvedForgeConfig;
 
-    before(() => {
+    beforeAll(() => {
       delete process.env.ELECTRON_OVERRIDE_DIST_PATH;
     });
 
@@ -20,22 +20,22 @@ describe('LocalElectronPlugin', () => {
     });
 
     it('should set ELECTRON_OVERRIDE_DIST_PATH when enabled', async () => {
-      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
+      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).toEqual(undefined);
       const p = new LocalElectronPlugin({ electronPath: 'test/foo' });
       await p.getHooks().preStart?.(fakeForgeConfig);
-      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal('test/foo');
+      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).toEqual('test/foo');
     });
 
     it('should not set ELECTRON_OVERRIDE_DIST_PATH when disabled', async () => {
-      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
+      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).toEqual(undefined);
       const p = new LocalElectronPlugin({ enabled: false, electronPath: 'test/foo' });
       await p.getHooks().preStart?.(fakeForgeConfig);
-      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).to.equal(undefined);
+      expect(process.env.ELECTRON_OVERRIDE_DIST_PATH).toEqual(undefined);
     });
 
     it("should throw an error if platforms don't match", async () => {
       const p = new LocalElectronPlugin({ electronPath: 'test/bar', electronPlatform: 'wut' });
-      await expect(p.getHooks().preStart?.(fakeForgeConfig)).to.eventually.be.rejectedWith(
+      await expect(p.getHooks().preStart?.(fakeForgeConfig)).rejects.toThrow(
         `Can not use local Electron version, required platform "${process.platform}" but local platform is "wut"`
       );
     });
@@ -54,11 +54,13 @@ describe('LocalElectronPlugin', () => {
       let tmpDir: string;
 
       beforeEach(async () => {
-        tmpDir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'forge-test-'));
-        await fs.writeFile(path.resolve(tmpDir, 'touch'), 'hey');
+        const tmp = os.tmpdir();
+        const tmpdir = path.join(tmp, 'electron-forge-test-');
+        tmpDir = await fs.promises.mkdtemp(tmpdir);
+        await fs.promises.writeFile(path.resolve(tmpDir, 'touch'), 'hey');
       });
 
-      afterEach(() => fs.remove(tmpDir));
+      afterEach(async () => await fs.promises.rm(tmpDir, { recursive: true }));
 
       it('should return a function for packageAfterExtract', () => {
         expect(p.getHooks().packageAfterExtract).to.be.a('function');
@@ -71,15 +73,15 @@ describe('LocalElectronPlugin', () => {
 
         await fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, process.arch);
 
-        expect(await fs.pathExists(tmpDir)).to.equal(true);
-        expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(true);
+        expect(fs.existsSync(tmpDir)).toEqual(true);
+        expect(fs.existsSync(path.resolve(tmpDir, 'touch'))).toEqual(true);
       });
 
       it("should throw an error if the platform doesn't match", async () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
-        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', 'bad', process.arch)).to.eventually.be.rejectedWith(
+        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', 'bad', process.arch)).rejects.toThrow(
           `Can not use local Electron version, required platform "bad" but local platform is "${process.platform}"`
         );
       });
@@ -88,23 +90,23 @@ describe('LocalElectronPlugin', () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
-        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, 'bad')).to.eventually.be.rejectedWith(
+        await expect(fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, 'bad')).rejects.toThrow(
           `Can not use local Electron version, required arch "bad" but local arch is "${process.arch}"`
         );
       });
 
       it('should copy the electron dir to the build dir if everything is ok and enabled', async () => {
-        const electronDir = await fs.mkdtemp(path.resolve(os.tmpdir(), 'electron-tmp-'));
-        await fs.writeFile(path.resolve(electronDir, 'electron'), 'hi i am electron I swear');
+        const electronDir = await fs.promises.mkdtemp(path.resolve(os.tmpdir(), 'electron-tmp-'));
+        await fs.promises.writeFile(path.resolve(electronDir, 'electron'), 'hi i am electron I swear');
         p.config.electronPath = electronDir;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
         await fn({} as ResolvedForgeConfig, tmpDir, 'null', process.platform, process.arch);
 
-        expect(await fs.pathExists(path.resolve(tmpDir, 'touch'))).to.equal(false);
-        expect(await fs.pathExists(path.resolve(tmpDir, 'electron'))).to.equal(true);
-        expect(await fs.readFile(path.resolve(tmpDir, 'electron'), 'utf8')).to.equal('hi i am electron I swear');
+        expect(fs.existsSync(path.resolve(tmpDir, 'touch'))).toEqual(false);
+        expect(fs.existsSync(path.resolve(tmpDir, 'electron'))).toEqual(true);
+        expect(await fs.promises.readFile(path.resolve(tmpDir, 'electron'), 'utf8')).toEqual('hi i am electron I swear');
       });
     });
   });
