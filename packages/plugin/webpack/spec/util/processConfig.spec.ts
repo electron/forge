@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import processConfig, { ConfigProcessor } from '../../src/util/processConfig';
 import { ConfigurationFactory } from '../../src/WebpackConfig';
@@ -24,8 +24,8 @@ describe('processConfig', () => {
       return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
     };
 
-    expect(await processConfig(processor, sampleWebpackConfig)).to.deep.equal(sampleWebpackConfig);
-    expect(invoked).to.equal(1);
+    expect(await processConfig(processor, sampleWebpackConfig)).toEqual(sampleWebpackConfig);
+    expect(invoked).toEqual(1);
   });
 
   it('works for fn config', async () => {
@@ -36,13 +36,13 @@ describe('processConfig', () => {
     };
 
     const fnConfig: ConfigurationFactory = (arg0, arg1) => {
-      expect(arg0).to.be.equal(sampleConfigFactoryParams[0]);
-      expect(arg1).to.be.equal(sampleConfigFactoryParams[1]);
+      expect(arg0).toEqual(sampleConfigFactoryParams[0]);
+      expect(arg1).toEqual(sampleConfigFactoryParams[1]);
       return sampleWebpackConfig;
     };
 
-    expect(await processConfig(processor, fnConfig)).to.deep.equal(sampleWebpackConfig);
-    expect(invoked).to.equal(1);
+    expect(await processConfig(processor, fnConfig)).toEqual(sampleWebpackConfig);
+    expect(invoked).toEqual(1);
   });
 
   it('works for promise config', async () => {
@@ -53,12 +53,12 @@ describe('processConfig', () => {
     };
 
     const promiseConfig: ConfigurationFactory = (arg0, arg1) => {
-      expect(arg0).to.be.equal(sampleConfigFactoryParams[0]);
-      expect(arg1).to.be.equal(sampleConfigFactoryParams[1]);
+      expect(arg0).toEqual(sampleConfigFactoryParams[0]);
+      expect(arg1).toEqual(sampleConfigFactoryParams[1]);
       return sampleWebpackConfig;
     };
 
-    expect(await processConfig(processor, promiseConfig)).to.deep.equal(sampleWebpackConfig);
-    expect(invoked).to.equal(1);
+    expect(await processConfig(processor, promiseConfig)).toEqual(sampleWebpackConfig);
+    expect(invoked).toEqual(1);
   });
 });

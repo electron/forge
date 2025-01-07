@@ -4,11 +4,11 @@
   "main": "./.webpack/main/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "electron ."
+    "start": "npx electron ."
   },
   "devDependencies": {
     "@vercel/webpack-asset-relocator-loader": "1.7.0",
-    "electron": "^13.1.2"
+    "electron": "^33.3.1"
   },
   "dependencies": {
     "native-hello-world": "^2.0.0"

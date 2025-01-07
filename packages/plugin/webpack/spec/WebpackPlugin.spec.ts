@@ -1,15 +1,15 @@
-import * as os from 'node:os';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { IgnoreFunction } from '@electron/packager';
-import { expect } from 'chai';
-import * as fs from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { WebpackPluginConfig, WebpackPluginRendererConfig } from '../src/Config';
 import { WebpackPlugin } from '../src/WebpackPlugin';
 
-describe('WebpackPlugin', () => {
+describe('WebpackPlugin', async () => {
   const baseConfig: WebpackPluginConfig = {
     mainConfig: {},
     renderer: {
@@ -18,15 +18,21 @@ describe('WebpackPlugin', () => {
     },
   };
 
-  const webpackTestDir = path.resolve(os.tmpdir(), 'electron-forge-plugin-webpack-test');
+  const tmp = os.tmpdir();
+  const tmpdir = path.join(tmp, 'electron-forge-test-');
+  const webpackTestDir = await fs.promises.mkdtemp(tmpdir);
+
+  afterAll(async () => {
+    await fs.promises.rm(webpackTestDir, { recursive: true });
+  });
 
   describe('TCP port', () => {
     it('should fail for privileged ports', () => {
-      expect(() => new WebpackPlugin({ ...baseConfig, loggerPort: 80 })).to.throw(/privileged$/);
+      expect(() => new WebpackPlugin({ ...baseConfig, loggerPort: 80 })).toThrow(/privileged$/);
     });
 
     it('should fail for too-large port numbers', () => {
-      expect(() => new WebpackPlugin({ ...baseConfig, loggerPort: 99999 })).to.throw(/not a valid TCP port/);
+      expect(() => new WebpackPlugin({ ...baseConfig, loggerPort: 99999 })).toThrow(/not a valid TCP port/);
     });
   });
 
@@ -36,55 +42,51 @@ describe('WebpackPlugin', () => {
     const packagedPackageJSONPath = path.join(packagedPath, 'package.json');
     let plugin: WebpackPlugin;
 
-    before(async () => {
-      await fs.ensureDir(packagedPath);
+    beforeAll(async () => {
+      await fs.promises.mkdir(packagedPath);
       plugin = new WebpackPlugin(baseConfig);
       plugin.setDirectories(webpackTestDir);
     });
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = { main: './.webpack/main', config: { forge: 'config.js' } };
-      await fs.writeJson(packageJSONPath, packageJSON);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
       await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
-      expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
+      expect(fs.existsSync(packagedPackageJSONPath)).toEqual(true);
+      expect(JSON.parse(await fs.promises.readFile(packagedPackageJSONPath, 'utf-8')).config).not.toHaveProperty('forge');
     });
 
     it('should succeed if there is no config.forge', async () => {
       const packageJSON = { main: '.webpack/main' };
-      await fs.writeJson(packageJSONPath, packageJSON);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
       await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
-      expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
+      expect(fs.existsSync(packagedPackageJSONPath)).toEqual(true);
+      expect(JSON.parse(await fs.promises.readFile(packagedPackageJSONPath, 'utf-8'))).not.toHaveProperty('config');
     });
 
     it('should fail if there is no main key in package.json', async () => {
       const packageJSON = {};
-      await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).rejects.toThrow(/entry point/);
     });
 
     it('should fail if main in package.json does not end with .webpack/main', async () => {
       const packageJSON = { main: 'src/main.js' };
-      await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
-    });
-
-    after(async () => {
-      await fs.remove(webpackTestDir);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).rejects.toThrow(/entry point/);
     });
   });
 
   describe('resolveForgeConfig', () => {
     let plugin: WebpackPlugin;
 
-    before(() => {
+    beforeAll(() => {
       plugin = new WebpackPlugin(baseConfig);
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
       const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
-      expect(config.packagerConfig).to.not.equal(undefined);
+      expect(config.packagerConfig).not.toEqual(undefined);
       expect(config.packagerConfig.ignore).to.be.a('function');
     });
 
@@ -103,10 +105,10 @@ describe('WebpackPlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore('')).to.equal(false);
-        expect(ignore('/abc')).to.equal(true);
-        expect(ignore('/.webpack')).to.equal(false);
-        expect(ignore('/.webpack/foo')).to.equal(false);
+        expect(ignore('')).toEqual(false);
+        expect(ignore('/abc')).toEqual(true);
+        expect(ignore('/.webpack')).toEqual(false);
+        expect(ignore('/.webpack/foo')).toEqual(false);
       });
 
       it('ignores files generated by jsonStats config', async () => {
@@ -116,8 +118,8 @@ describe('WebpackPlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).to.equal(true);
-        expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).to.equal(true);
+        expect(ignore(path.join('foo', 'bar', '.webpack', 'main', 'stats.json'))).toEqual(true);
+        expect(ignore(path.join('foo', 'bar', '.webpack', 'renderer', 'stats.json'))).toEqual(true);
       });
 
       it('ignores source map files by default', async () => {
@@ -126,10 +128,10 @@ describe('WebpackPlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);
-        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).to.equal(true);
-        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).to.equal(false);
-        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).to.equal(true);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).toEqual(false);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).toEqual(true);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).toEqual(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).toEqual(true);
       });
 
       it('includes source map files when specified by config', async () => {
@@ -138,10 +140,10 @@ describe('WebpackPlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).to.equal(false);
-        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).to.equal(false);
-        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).to.equal(false);
-        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).to.equal(false);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).toEqual(false);
+        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).toEqual(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js'))).toEqual(false);
+        expect(ignore(path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'))).toEqual(false);
       });
     });
   });
@@ -150,7 +152,7 @@ describe('WebpackPlugin', () => {
     it('can override defaults', () => {
       const defaultPlugin = new WebpackPlugin(baseConfig);
       defaultPlugin.setDirectories(webpackTestDir);
-      expect(defaultPlugin.devServerOptions().hot).to.equal(true);
+      expect(defaultPlugin.devServerOptions().hot).toEqual(true);
 
       const webpackConfig = {
         ...baseConfig,
@@ -163,7 +165,7 @@ describe('WebpackPlugin', () => {
       plugin.setDirectories(webpackTestDir);
       const devServerConfig = plugin.devServerOptions();
 
-      expect(devServerConfig.hot).to.equal(false);
+      expect(devServerConfig.hot).toEqual(false);
     });
 
     it('cannot override certain configuration', () => {
@@ -183,10 +185,10 @@ describe('WebpackPlugin', () => {
       plugin.setDirectories(webpackTestDir);
       const devServerConfig = plugin.devServerOptions();
 
-      expect(devServerConfig.port).to.equal(9999);
+      expect(devServerConfig.port).toEqual(9999);
       const headers = devServerConfig.headers as Record<string, string>;
-      expect(headers['Content-Security-Policy']).to.not.equal('invalid');
-      expect(headers['X-Test-Header']).to.equal('test');
+      expect(headers['Content-Security-Policy']).not.toEqual('invalid');
+      expect(headers['X-Test-Header']).toEqual('test');
     });
   });
 });

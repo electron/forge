@@ -1,9 +1,9 @@
+import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 
 import { spawn } from '@malept/cross-spawn-promise';
-import { expect } from 'chai';
-import { pathExists, readFile } from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Configuration, webpack } from 'webpack';
 import which from 'which';
 
@@ -54,7 +54,7 @@ function createSimpleDevServer(rendererOut: string): http.Server {
       const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
       const fullPath = path.join(rendererOut, file);
       try {
-        const data = await readFile(fullPath);
+        const data = await fs.promises.readFile(fullPath, 'utf-8');
         res.writeHead(200);
         res.end(data);
       } catch (err) {
@@ -79,21 +79,24 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
   nativePathString,
 }: ExpectNativeModulePathOptions): Promise<void> {
   const nativePath = `native_modules/${nativePathSuffix}`;
-  expect(await pathExists(path.join(outDir, nativePath))).to.equal(true);
+  expect(fs.existsSync(path.join(outDir, nativePath))).toEqual(true);
 
-  const jsContents = await readFile(jsPath, { encoding: 'utf8' });
-  expect(jsContents).to.contain(nativeModulesString);
-  expect(jsContents).to.contain(nativePathString);
+  const jsContents = await fs.promises.readFile(jsPath, { encoding: 'utf8' });
+  expect(jsContents).toEqual(expect.stringContaining(nativeModulesString));
+  expect(jsContents).toEqual(expect.stringContaining(nativePathString));
 }
 
-async function yarnStart(): Promise<string> {
+async function runApp(): Promise<string> {
+  const env = {
+    PATH: process.env.PATH,
+    ELECTRON_ENABLE_LOGGING: '1',
+  };
+
   return spawn(pmCmd, ['start'], {
     cwd: appPath,
     shell: true,
-    env: {
-      ...process.env,
-      ELECTRON_ENABLE_LOGGING: 'true',
-    },
+    env,
+    stdio: 'pipe',
   });
 }
 
@@ -106,11 +109,11 @@ describe('AssetRelocatorPatch', () => {
   const rendererOut = path.join(appPath, '.webpack/renderer');
   const mainOut = path.join(appPath, '.webpack/main');
 
-  before(async () => {
+  beforeAll(async () => {
     await spawn(pmCmd, ['install'], { cwd: appPath, shell: true });
   });
 
-  after(() => {
+  afterAll(() => {
     for (const server of servers) {
       server.close();
     }
@@ -175,14 +178,14 @@ describe('AssetRelocatorPatch', () => {
       });
     });
 
-    it('runs the app with the native module', async () => {
+    it('runs the app with the native module', { timeout: 15000 }, async () => {
       servers.push(createSimpleDevServer(rendererOut));
 
-      const output = await yarnStart();
+      const output = await runApp();
 
-      expect(output).to.contain('Hello, world! from the main');
-      expect(output).to.contain('Hello, world! from the preload');
-      expect(output).to.contain('Hello, world! from the renderer');
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the main'));
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the preload'));
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the renderer'));
     });
   });
 
@@ -232,11 +235,11 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('runs the app with the native module', async () => {
-      const output = await yarnStart();
+      const output = await runApp();
 
-      expect(output).to.contain('Hello, world! from the main');
-      expect(output).to.contain('Hello, world! from the preload');
-      expect(output).to.contain('Hello, world! from the renderer');
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the main'));
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the preload'));
+      expect(output).toEqual(expect.stringContaining('Hello, world! from the renderer'));
     });
 
     it('builds renderer with nodeIntegration = false', async () => {
