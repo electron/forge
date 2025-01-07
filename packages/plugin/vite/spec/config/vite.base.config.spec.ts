@@ -1,7 +1,7 @@
 import path from 'node:path';
 
-import { expect } from 'chai';
-import { default as vite } from 'vite';
+import { createServer } from 'vite';
+import { describe, expect, it } from 'vitest';
 
 import { getBuildDefine, getDefineKeys, pluginExposeRenderer } from '../../src/config/vite.base.config';
 
@@ -47,7 +47,7 @@ describe('vite.base.config', () => {
       },
     };
 
-    expect(defineKeys1).deep.equal(defineKeys2);
+    expect(defineKeys1).toEqual(defineKeys2);
   });
 
   it('getBuildDefine:build', () => {
@@ -65,13 +65,13 @@ describe('vite.base.config', () => {
       SECOND_WINDOW_VITE_NAME: '"second_window"',
     };
 
-    expect(define1).deep.equal(define2);
+    expect(define1).toEqual(define2);
   });
 
   it('getBuildDefine:serve', async () => {
     const servers = await Promise.all(
       forgeConfig.renderer.map(({ name }) =>
-        vite.createServer({
+        createServer({
           publicDir: false,
           plugins: [pluginExposeRenderer(name)],
         })
@@ -102,6 +102,6 @@ describe('vite.base.config', () => {
       await server.close();
     }
 
-    expect(define1).deep.equal(define2);
+    expect(define1).toEqual(define2);
   });
 });

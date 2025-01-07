@@ -1,21 +1,23 @@
-import * as os from 'node:os';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { IgnoreFunction } from '@electron/packager';
-import { expect } from 'chai';
-import * as fs from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { VitePluginConfig } from '../src/Config';
 import { VitePlugin } from '../src/VitePlugin';
 
-describe('VitePlugin', () => {
+describe('VitePlugin', async () => {
   const baseConfig: VitePluginConfig = {
     build: [],
     renderer: [],
   };
 
-  const viteTestDir = path.resolve(os.tmpdir(), 'electron-forge-plugin-vite-test');
+  const tmp = os.tmpdir();
+  const tmpdir = path.join(tmp, 'electron-forge-test-');
+  const viteTestDir = await fs.promises.mkdtemp(tmpdir);
 
   describe('packageAfterCopy', () => {
     const packageJSONPath = path.join(viteTestDir, 'package.json');
@@ -23,49 +25,49 @@ describe('VitePlugin', () => {
     const packagedPackageJSONPath = path.join(packagedPath, 'package.json');
     let plugin: VitePlugin;
 
-    before(async () => {
-      await fs.ensureDir(packagedPath);
+    beforeAll(async () => {
+      await fs.promises.mkdir(packagedPath);
       plugin = new VitePlugin(baseConfig);
       plugin.setDirectories(viteTestDir);
     });
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = { main: './.vite/build/main.js', config: { forge: 'config.js' } };
-      await fs.writeJson(packageJSONPath, packageJSON);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
       await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
-      expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect((await fs.readJson(packagedPackageJSONPath)).config).to.not.have.property('forge');
+      expect(fs.existsSync(packagedPackageJSONPath)).toEqual(true);
+      expect(JSON.parse(await fs.promises.readFile(packagedPackageJSONPath, 'utf-8')).config).not.toHaveProperty('forge');
     });
 
     it('should succeed if there is no config.forge', async () => {
       const packageJSON = { main: '.vite/build/main.js' };
-      await fs.writeJson(packageJSONPath, packageJSON);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
       await plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath);
-      expect(await fs.pathExists(packagedPackageJSONPath)).to.equal(true);
-      expect(await fs.readJson(packagedPackageJSONPath)).to.not.have.property('config');
+      expect(fs.existsSync(packagedPackageJSONPath)).toEqual(true);
+      expect(JSON.parse(await fs.promises.readFile(packagedPackageJSONPath, 'utf-8'))).not.toHaveProperty('config');
     });
 
     it('should fail if there is no main key in package.json', async () => {
       const packageJSON = {};
-      await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).rejects.toThrow(/entry point/);
     });
 
     it('should fail if main in package.json does not starts with .vite/', async () => {
       const packageJSON = { main: 'src/main.js' };
-      await fs.writeJson(packageJSONPath, packageJSON);
-      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).to.eventually.be.rejectedWith(/entry point/);
+      await fs.promises.writeFile(packageJSONPath, JSON.stringify(packageJSON), 'utf-8');
+      await expect(plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath)).rejects.toThrow(/entry point/);
     });
 
-    after(async () => {
-      await fs.remove(viteTestDir);
+    afterAll(async () => {
+      await fs.promises.rm(viteTestDir, { recursive: true });
     });
   });
 
   describe('resolveForgeConfig', () => {
     let plugin: VitePlugin;
 
-    before(() => {
+    beforeAll(() => {
       plugin = new VitePlugin(baseConfig);
     });
 
@@ -90,10 +92,10 @@ describe('VitePlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore('')).to.equal(false);
-        expect(ignore('/abc')).to.equal(true);
-        expect(ignore('/.vite')).to.equal(false);
-        expect(ignore('/.vite/foo')).to.equal(false);
+        expect(ignore('')).toEqual(false);
+        expect(ignore('/abc')).toEqual(true);
+        expect(ignore('/.vite')).toEqual(false);
+        expect(ignore('/.vite/foo')).toEqual(false);
       });
 
       it('ignores source map files by default', async () => {
@@ -102,10 +104,10 @@ describe('VitePlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).toEqual(false);
       });
 
       it('includes source map files when specified by config', async () => {
@@ -114,10 +116,10 @@ describe('VitePlugin', () => {
         const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).to.equal(false);
-        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).to.equal(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.js.map'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js'))).toEqual(false);
+        expect(ignore(path.posix.join('/.vite', 'renderer', 'main_window', 'assets', 'index.js.map'))).toEqual(false);
       });
     });
   });
