@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import { PublisherStatic, StaticPublisherConfig } from '../src/PublisherStatic';
 
@@ -21,7 +21,7 @@ describe('PublisherStatic', () => {
           keyPrefix: 'stuff',
           path: __filename,
         })
-      ).to.equal('stuff/plat/arch/StaticPublisher_spec.ts');
+      ).toEqual('stuff/plat/arch/StaticPublisher.spec.ts');
     });
 
     it('should call the provided method', () => {
@@ -35,7 +35,7 @@ describe('PublisherStatic', () => {
           keyPrefix: 'stuff',
           path: __filename,
         })
-      ).to.equal('lololol');
+      ).toEqual('lololol');
     });
   });
 });

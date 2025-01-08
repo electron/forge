@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import Publisher, { PublisherOptions } from '../src/Publisher';
 
@@ -11,7 +11,7 @@ class PublisherImpl extends Publisher<null> {
 describe('Publisher', () => {
   it('should define __isElectronForgePublisher', () => {
     const publisher = new PublisherImpl(null);
-    expect(publisher).to.have.property('__isElectronForgePublisher', true);
+    expect(publisher).toHaveProperty('__isElectronForgePublisher', true);
   });
 
   it('__isElectronForgePublisher should not be settable', () => {
@@ -25,11 +25,11 @@ describe('Publisher', () => {
         value: false,
       });
     }).to.throw();
-    expect(publisher).to.have.property('__isElectronForgePublisher', true);
+    expect(publisher).toHaveProperty('__isElectronForgePublisher', true);
   });
 
   it('should throw an error when publish is called is called', async () => {
     const publisher = new PublisherImpl(null);
-    await expect(publisher.publish({} as PublisherOptions)).to.eventually.be.rejected;
+    await expect(publisher.publish({} as PublisherOptions)).rejects.toThrow();
   });
 });
