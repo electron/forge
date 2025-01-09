@@ -6,11 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { createDefaultCertificate } from '../src/MakerAppX';
 
-describe('MakerAppX', function () {
-  if (process.platform === 'win32') {
-    this.skip();
-  }
-
+describe.runIf(process.platform === 'win32')('MakerAppX', function () {
   describe('createDefaultCertificate', () => {
     let tmpDir: string;
 
