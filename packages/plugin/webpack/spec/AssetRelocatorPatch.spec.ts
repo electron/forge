@@ -88,7 +88,7 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
 
 async function runApp(): Promise<string> {
   const env = {
-    PATH: process.env.PATH,
+    ...process.env,
     ELECTRON_ENABLE_LOGGING: '1',
   };
 
