@@ -39,8 +39,7 @@ describe('installDependencies', () => {
 
     it('should install deps', async () => {
       await installDependencies('mydir', ['react']);
-      // TODO: narrow assertion when `--save` flag is removed
-      expect(yarnOrNpmSpawn).toHaveBeenCalledWith(expect.arrayContaining([install, 'react']), expect.anything());
+      expect(yarnOrNpmSpawn).toHaveBeenCalledWith([install, 'react'], expect.anything());
     });
 
     it('should install dev deps', async () => {
@@ -50,13 +49,12 @@ describe('installDependencies', () => {
 
     it('should install exact deps', async () => {
       await installDependencies('mydir', ['react'], DepType.PROD, DepVersionRestriction.EXACT);
-      // TODO: narrow assertion when `--save` flag is removed
-      expect(yarnOrNpmSpawn).toHaveBeenCalledWith(expect.arrayContaining([install, 'react', flags.exact]), expect.anything());
+      expect(yarnOrNpmSpawn).toHaveBeenCalledWith([install, 'react', flags.exact], expect.anything());
     });
 
     it('should install exact dev deps', async () => {
       await installDependencies('mydir', ['eslint'], DepType.DEV, DepVersionRestriction.EXACT);
-      expect(yarnOrNpmSpawn).toHaveBeenCalledWith(expect.arrayContaining([install, 'eslint', flags.dev, flags.exact]), expect.anything());
+      expect(yarnOrNpmSpawn).toHaveBeenCalledWith([install, 'eslint', flags.dev, flags.exact], expect.anything());
     });
   });
 });
