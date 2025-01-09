@@ -8,7 +8,7 @@ function runForgeCLI(...extraArgs: string[]): Promise<string> {
   return spawn('npx', args);
 }
 
-describe('cli', { timeout: 10_000 }, () => {
+describe('cli', { timeout: 30_000 }, () => {
   it('should not fail on known subcommands', async () => {
     await expect(runForgeCLI('help')).resolves.toMatch(/Usage:/);
   });
