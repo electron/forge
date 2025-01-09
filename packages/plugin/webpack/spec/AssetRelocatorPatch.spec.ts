@@ -111,7 +111,7 @@ describe('AssetRelocatorPatch', () => {
 
   beforeAll(async () => {
     await spawn(pmCmd, ['install'], { cwd: appPath, shell: true });
-  }, 30_000);
+  }, 60_000);
 
   afterAll(() => {
     for (const server of servers) {
