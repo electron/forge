@@ -181,6 +181,6 @@
     ]
   },
   "resolutions": {
-    "@typescript-eslint/parser": "^8.0.0"
+    "@malept/eslint-config/@typescript-eslint/parser": "^8.0.0"
   }
 }
