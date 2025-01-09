@@ -79,26 +79,26 @@ describe('MakerRpm', () => {
 
 describe('rpmArch', () => {
   it('should convert ia32 to i386', () => {
-    expect(rpmArch('ia32')).to.equal('i386');
+    expect(rpmArch('ia32')).toEqual('i386');
   });
 
   it('should convert x64 to x86_64', () => {
-    expect(rpmArch('x64')).to.equal('x86_64');
+    expect(rpmArch('x64')).toEqual('x86_64');
   });
 
   it('should convert arm64 to aarch64', () => {
-    expect(rpmArch('arm64')).to.equal('aarch64');
+    expect(rpmArch('arm64')).toEqual('aarch64');
   });
 
   it('should convert arm to armv6hl', () => {
-    expect(rpmArch('arm')).to.equal('armv6hl');
+    expect(rpmArch('arm')).toEqual('armv6hl');
   });
 
   it('should convert armv7l to armv7hl', () => {
-    expect(rpmArch('armv7l')).to.equal('armv7hl');
+    expect(rpmArch('armv7l')).toEqual('armv7hl');
   });
 
   it('should leave unknown values alone', () => {
-    expect(rpmArch('foo' as ForgeArch)).to.equal('foo');
+    expect(rpmArch('foo' as ForgeArch)).toEqual('foo');
   });
 });

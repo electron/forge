@@ -97,28 +97,28 @@ describe('GitHub', () => {
 
   describe('sanitizeName', () => {
     it('should remove leading and trailing periods from the basename', () => {
-      expect(GitHub.sanitizeName('path/to/.foo.')).to.equal('foo');
+      expect(GitHub.sanitizeName('path/to/.foo.')).toEqual('foo');
     });
 
     it('should remove multiple periods in a row', () => {
-      expect(GitHub.sanitizeName('path/to/foo..bar')).to.equal('foo.bar');
+      expect(GitHub.sanitizeName('path/to/foo..bar')).toEqual('foo.bar');
     });
 
     it('should replace non-alphanumeric, non-hyphen characters with periods', () => {
-      expect(GitHub.sanitizeName('path/to/foo%$bar   baz.')).to.equal('foo.bar.baz');
+      expect(GitHub.sanitizeName('path/to/foo%$bar   baz.')).toEqual('foo.bar.baz');
     });
 
     it('should preserve special symbols', () => {
-      expect(GitHub.sanitizeName('path/to/@foo+bar_')).to.equal('@foo+bar_');
+      expect(GitHub.sanitizeName('path/to/@foo+bar_')).toEqual('@foo+bar_');
     });
 
     it('should preserve hyphens', () => {
       const name = 'electron-fiddle-0.99.0-full.nupkg';
-      expect(GitHub.sanitizeName(`path/to/${name}`)).to.equal(name);
+      expect(GitHub.sanitizeName(`path/to/${name}`)).toEqual(name);
     });
 
     it('should remove diacritics', () => {
-      expect(GitHub.sanitizeName('électron')).to.equal('electron');
+      expect(GitHub.sanitizeName('électron')).toEqual('electron');
     });
   });
 });

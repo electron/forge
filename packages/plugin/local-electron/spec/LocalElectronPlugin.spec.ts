@@ -63,7 +63,7 @@ describe('LocalElectronPlugin', () => {
       afterEach(async () => await fs.promises.rm(tmpDir, { recursive: true }));
 
       it('should return a function for packageAfterExtract', () => {
-        expect(p.getHooks().packageAfterExtract).to.be.a('function');
+        expect(p.getHooks().packageAfterExtract).toBeTypeOf('function');
       });
 
       it('should do nothing when disabled', async () => {

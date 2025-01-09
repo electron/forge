@@ -52,7 +52,7 @@ describe('findConfig', () => {
   it('should leave regexps intact', async () => {
     type RegExpConfig = ResolvedForgeConfig & { regexp: RegExp };
     const conf = (await findConfig(path.resolve(__dirname, '../../../test/fixture/dummy_js_conf'))) as RegExpConfig;
-    expect(conf.regexp).to.be.instanceOf(RegExp);
+    expect(conf.regexp).toBeInstanceOf(RegExp);
     expect(conf.regexp.test('foo')).toEqual(true);
     expect(conf.regexp.test('bar')).toEqual(false);
   });
@@ -157,10 +157,10 @@ describe('findConfig', () => {
       // Why: This needs to get refactored anyway.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const conf: any = await findConfig(path.resolve(__dirname, '../../../test/fixture/dummy_js_conf'));
-      expect(conf.packagerConfig.baz.hasOwnProperty).to.be.a('function');
+      expect(conf.packagerConfig.baz.hasOwnProperty).toBeTypeOf('function');
       expect(() => {
         conf.packagerConfig.baz = 'bar';
-      }).to.not.throw();
+      }).not.toThrow();
       process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
 
       const descriptor = {
@@ -172,7 +172,7 @@ describe('findConfig', () => {
       expect(Object.getOwnPropertyDescriptor(conf.s3, 'secretAccessKey')).toEqual(descriptor);
       expect(() => {
         conf.s3.secretAccessKey = 'bar';
-      }).to.not.throw();
+      }).not.toThrow();
       expect(conf.s3.secretAccessKey).toEqual('bar');
       delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
     });
@@ -274,7 +274,7 @@ it('should resolve values fromBuildIdentifier', async () => {
   };
   const conf = (await findConfig(path.resolve(__dirname, '../../../test/fixture/dummy_js_conf'))) as ResolveBIConfig;
   expect(conf.topLevelProp).toEqual('foo');
-  expect(conf.sub).to.deep.equal({
+  expect(conf.sub).toEqual({
     prop: {
       deep: {
         prop: 'bar',
@@ -303,7 +303,7 @@ describe('renderConfigTemplate', () => {
       foo: 'require:foo',
     };
     renderConfigTemplate(dir, {}, config);
-    expect(config.foo).to.deep.equal({
+    expect(config.foo).toEqual({
       bar: {
         baz: 'quux',
       },

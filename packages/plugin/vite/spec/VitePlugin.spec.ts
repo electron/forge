@@ -73,8 +73,8 @@ describe('VitePlugin', async () => {
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
       const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
-      expect(config.packagerConfig).to.not.equal(undefined);
-      expect(config.packagerConfig.ignore).to.be.a('function');
+      expect(config.packagerConfig).not.toEqual(undefined);
+      expect(config.packagerConfig.ignore).toBeTypeOf('function');
     });
 
     describe('packagerConfig.ignore', () => {
@@ -85,7 +85,7 @@ describe('VitePlugin', async () => {
           },
         } as ResolvedForgeConfig);
 
-        expect(config.packagerConfig.ignore).to.deep.equal(/test/);
+        expect(config.packagerConfig.ignore).toEqual(/test/);
       });
 
       it('ignores everything but files in .vite', async () => {

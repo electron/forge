@@ -105,12 +105,12 @@ describe('upgradeForgeConfig', () => {
       },
     };
     const newConfig = upgradeForgeConfig(oldConfig);
-    expect(newConfig.publishers).to.have.lengthOf(1);
+    expect(newConfig.publishers).toHaveLength(1);
     assert(newConfig.publishers);
     const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
     expect(publisherConfig.repository).toEqual(repo);
     expect(publisherConfig.octokitOptions).toEqual(octokitOptions);
-    expect(publisherConfig.draft).to.equal(true);
+    expect(publisherConfig.draft).toEqual(true);
   });
 });
 
@@ -154,7 +154,7 @@ describe('updateUpgradedForgeDevDeps', () => {
     ] as IForgeResolvableMaker[];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
-    expect(actual).to.have.lengthOf(2);
+    expect(actual).toHaveLength(2);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-zip'))).not.toEqual(undefined);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel'))).not.toEqual(undefined);
   });
@@ -164,7 +164,7 @@ describe('updateUpgradedForgeDevDeps', () => {
     packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
-    expect(actual).to.have.lengthOf(2);
+    expect(actual).toHaveLength(2);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).not.toEqual(undefined);
     expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).not.toEqual(undefined);
   });

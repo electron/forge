@@ -19,12 +19,12 @@ describe('Publisher', () => {
     expect(() => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (publisher as any).__isElectronForgePublisher = false;
-    }).to.throw();
+    }).toThrow();
     expect(() => {
       Object.defineProperty(publisher, '__isElectronForgePublisher', {
         value: false,
       });
-    }).to.throw();
+    }).toThrow();
     expect(publisher).toHaveProperty('__isElectronForgePublisher', true);
   });
 

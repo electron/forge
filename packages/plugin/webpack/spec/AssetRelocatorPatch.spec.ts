@@ -90,6 +90,7 @@ async function runApp(): Promise<string> {
   const env = {
     ...process.env,
     ELECTRON_ENABLE_LOGGING: '1',
+    ELECTRON_RUN_AS_NODE: undefined, // This will make the test fail if turned on
   };
 
   return spawn(pmCmd, ['start'], {
