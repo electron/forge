@@ -27,6 +27,14 @@ vi.mock(import('../../src/util/forge-config'), async (importOriginal) => {
   };
 });
 
+vi.mock(import('../../src/util/resolve-dir'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    default: vi.fn().mockReturnValue('fake-target-dir'),
+  };
+});
+
 vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
@@ -75,7 +83,7 @@ describe('publish', () => {
     expect(mockPublish).toHaveBeenCalledOnce();
     expect(mockPublish.mock.calls[0]).toEqual([
       {
-        dir: expect.stringContaining('forge'),
+        dir: 'fake-target-dir',
         forgeConfig: config,
         setStatusLine: expect.anything(),
         makeResults: [
