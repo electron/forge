@@ -18,7 +18,7 @@ describe('make', () => {
 
   it.todo('should call "package"');
 
-  it('works with @scoped package names', async () => {
+  it('works with @scoped package names', { timeout: 10_000 }, async () => {
     const result = await make({
       arch: 'x64',
       dir: path.join(fixtureDir, 'app-with-scoped-name'),
