@@ -26,9 +26,8 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
     if (depType === DepType.DEV) cmd.push('--dev');
     if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
   } else {
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
     if (depType === DepType.DEV) cmd.push('--save-dev');
-    if (depType === DepType.PROD) cmd.push('--save');
+    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
   }
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
