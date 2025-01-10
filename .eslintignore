@@ -7,3 +7,4 @@ packages/*/*/index.ts
 packages/**/bad.js
 tmpl
 packages/api/core/helper/dynamic-import.js
+packages/plugin/webpack/spec/fixtures/**/*

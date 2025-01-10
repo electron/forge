@@ -37,7 +37,7 @@ commands:
       - run:
           name: 'Run fast tests'
           command: |
-            yarn test:fast
+            yarn test:fast --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   run-slow-tests:
     steps:
@@ -114,7 +114,7 @@ jobs:
         type: enum
         enum: ['x64', 'arm64']
     executor: << parameters.executor >>
-    parallelism: 2
+    parallelism: 1 # disabled due to being on CircleCI's free plan
     steps:
       - install
       - when:
