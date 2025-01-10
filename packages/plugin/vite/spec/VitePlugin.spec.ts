@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { IgnoreFunction } from '@electron/packager';
+import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { VitePluginConfig } from '../src/Config';

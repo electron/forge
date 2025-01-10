@@ -18,7 +18,6 @@ vi.mock('@octokit/rest', async (importOriginal) => {
         this.options = options;
       }
 
-      // eslint-disable-next-line @typescript-eslint/ban-types
       static plugin(): object {
         return this;
       }

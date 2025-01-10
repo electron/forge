@@ -1,8 +1,8 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 import path from 'node:path';
 
-import { MakerOptions } from '@electron-forge/maker-base';
 import { flatAsync } from '@electron/osx-sign';
+import { MakerOptions } from '@electron-forge/maker-base';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerPKG } from '../src/MakerPKG';

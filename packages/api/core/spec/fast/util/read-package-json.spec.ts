@@ -9,7 +9,7 @@ import { readMutatedPackageJson, readRawPackageJson } from '../../../src/util/re
 describe('readRawPackageJson', () => {
   it('should find a package.json file from the given directory', async () => {
     const raw = await readRawPackageJson(path.resolve(__dirname, '../../../'));
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     expect(raw).toEqual(packageJSON);
   });
 });

@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MakerRpm, rpmArch } from '../src/MakerRpm';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const installer = require('electron-installer-redhat');
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;

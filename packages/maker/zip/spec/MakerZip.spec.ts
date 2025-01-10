@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MakerZIP } from '../src/MakerZIP';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { zip } = require('cross-zip');
 
 vi.hoisted(async () => {

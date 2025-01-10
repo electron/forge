@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { debianArch, MakerDeb } from '../src/MakerDeb';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const installer = require('electron-installer-debian');
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
