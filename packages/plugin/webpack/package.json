@@ -15,6 +15,7 @@
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
     "chai": "^4.3.3",
+    "electron": "^29.0.1",
     "mocha": "^9.0.1",
     "sinon": "^13.0.1",
     "which": "^2.0.2",

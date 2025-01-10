@@ -21,6 +21,8 @@ type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
+const DEFAULT_CUSTOM_PROTOCOL_NAME = 'app-internal-static';
+
 export type ConfigurationFactory = (
   env: string | Record<string, string | boolean | number> | unknown,
   args: Record<string, unknown>
@@ -112,7 +114,7 @@ export default class WebpackConfigGenerator {
 
   rendererEntryPoint(entryPoint: WebpackPluginEntryPoint, basename: string): string {
     if (this.isProd) {
-      return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
+      return this.getInPackageURLForRenderer(entryPoint, basename);
     }
     const protocol = this.pluginConfig.devServer?.server === 'https' ? 'https' : 'http';
     const baseUrl = `${protocol}://localhost:${this.port}/${entryPoint.name}`;
@@ -166,7 +168,42 @@ export default class WebpackConfigGenerator {
       }
     }
 
+    if (this.isProd && this.pluginConfig.customProtocolForPackagedAssets?.enabled) {
+      defines['__ELECTRON_FORGE_INTERNAL_PROTOCOL_CONFIGURATION__'] = JSON.stringify({
+        protocolName: DEFAULT_CUSTOM_PROTOCOL_NAME,
+        autoRegisterProtocol: true,
+        privileges: {
+          standard: true,
+          secure: true,
+          allowServiceWorkers: true,
+          supportFetchAPI: true,
+          corsEnabled: true,
+          codeCache: true,
+        },
+        ...this.pluginConfig.customProtocolForPackagedAssets,
+      });
+    }
+
     return defines;
+  }
+
+  private get shouldInjectProtocolLoader() {
+    return (
+      this.isProd &&
+      this.pluginConfig.customProtocolForPackagedAssets?.enabled &&
+      this.pluginConfig.customProtocolForPackagedAssets?.autoRegisterProtocol !== false
+    );
+  }
+
+  private getInPackageURLForRenderer(entryPoint: WebpackPluginEntryPoint, basename: string) {
+    const shouldUseCustomProtocol = this.pluginConfig.customProtocolForPackagedAssets?.enabled;
+    if (!shouldUseCustomProtocol) {
+      return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
+    }
+    let customProtocol =
+      this.isProd && this.pluginConfig.customProtocolForPackagedAssets?.enabled && this.pluginConfig.customProtocolForPackagedAssets?.protocolName;
+    if (!customProtocol) customProtocol = DEFAULT_CUSTOM_PROTOCOL_NAME;
+    return `${customProtocol}://renderer/${entryPoint.name}/${basename}`;
   }
 
   async getMainConfig(): Promise<Configuration> {
@@ -178,7 +215,11 @@ export default class WebpackConfigGenerator {
     const fix = (item: EntryType): EntryType => {
       if (typeof item === 'string') return (fix([item]) as string[])[0];
       if (Array.isArray(item)) {
-        return item.map((val) => (val.startsWith('./') ? path.resolve(this.projectDir, val) : val));
+        const injectedCode: string[] = [];
+        if (this.shouldInjectProtocolLoader) {
+          injectedCode.push(path.resolve(__dirname, 'inject', 'protocol-loader.js'));
+        }
+        return injectedCode.concat(item.map((val) => (val.startsWith('./') ? path.resolve(this.projectDir, val) : val)));
       }
       const ret: Record<string, string | string[]> = {};
       for (const key of Object.keys(item)) {

@@ -997,6 +997,21 @@
     fs-extra "^9.0.1"
     minimist "^1.2.5"
 
+"@electron/get@^2.0.0":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@electron/get/-/get-2.0.3.tgz#fba552683d387aebd9f3fcadbcafc8e12ee4f960"
+  integrity sha512-Qkzpg2s9GnVV2I2BjRksUi43U5e6+zaQMcjoJy0C+C5oxaKl+fmckGDQFtRpZpZV0NQekuZZ+tGz7EA9TVnQtQ==
+  dependencies:
+    debug "^4.1.1"
+    env-paths "^2.2.0"
+    fs-extra "^8.1.0"
+    got "^11.8.5"
+    progress "^2.0.3"
+    semver "^6.2.0"
+    sumchecker "^3.0.1"
+  optionalDependencies:
+    global-agent "^3.0.0"
+
 "@electron/get@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-3.0.0.tgz#2b0c794b98902d0bc5218546872c1379bef68aa2"
@@ -3083,6 +3098,13 @@
   version "18.18.14"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.18.14.tgz#26771c647f2842af57eb96191cd615d845164295"
   integrity sha512-iSOeNeXYNYNLLOMDSVPvIFojclvMZ/HDY2dU17kUlcsOsSQETbWIslJbYLZgA+ox8g2XQwSHKTkght1a5X26lQ==
+  dependencies:
+    undici-types "~5.26.4"
+
+"@types/node@^20.9.0":
+  version "20.11.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.11.20.tgz#f0a2aee575215149a62784210ad88b3a34843659"
+  integrity sha512-7/rR21OS+fq8IyHTgtLkDK949uzsa6n8BkziAKtPVpugIkO6D+/ooXMvzXxDnZrmtXVfjb1bKQafYpb8s89LOg==
   dependencies:
     undici-types "~5.26.4"
 
@@ -5460,6 +5482,15 @@ electron-wix-msi@^5.1.3:
   optionalDependencies:
     "@bitdisaster/exe-icon-extractor" "^1.0.10"
 
+electron@^29.0.1:
+  version "29.0.1"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-29.0.1.tgz#936c0623a1bbf272dea423305f074de6ac016967"
+  integrity sha512-hsQr9clm8NCAMv4uhHlXThHn52UAgrHgyz3ubBAxZIPuUcpKVDtg4HPmx4hbmHIbYICI5OyLN3Ztp7rS+Dn4Lw==
+  dependencies:
+    "@electron/get" "^2.0.0"
+    "@types/node" "^20.9.0"
+    extract-zip "^2.0.1"
+
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
@@ -6411,7 +6442,7 @@ external-editor@^3.0.3:
     iconv-lite "^0.4.24"
     tmp "^0.0.33"
 
-extract-zip@^2.0.0:
+extract-zip@^2.0.0, extract-zip@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/extract-zip/-/extract-zip-2.0.1.tgz#663dca56fe46df890d5f131ef4a06d22bb8ba13a"
   integrity sha512-GDhU9ntwuKyGXdZBUgTIe+vXnWj0fppUEtMDL0+idd5Sta8TGpHssn/eusA9mrPr9qNDym6SxAYZjNvCn/9RBg==
