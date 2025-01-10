@@ -1,15 +1,19 @@
 const {
   utils: { fromBuildIdentifier },
-} = require('../../../src/api');
+} = require('@electron-forge/core');
 
 module.exports = {
   buildIdentifier: 'beta',
   makers: [],
   publishers: [],
+  hooks: {
+    preStart: () => {
+      return 'running preStart hook';
+    },
+  },
   packagerConfig: { foo: 'bar', baz: {} },
   s3: {},
   electronReleaseServer: {},
-  magicFn: () => 'magic result',
   topLevelProp: fromBuildIdentifier({ beta: 'foo' }),
   topLevelUndef: fromBuildIdentifier({ stable: 'heya' }),
   regexp: /foo/,

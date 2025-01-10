@@ -37,7 +37,7 @@ commands:
       - run:
           name: 'Run fast tests'
           command: |
-            yarn test:fast
+            yarn test:fast --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   run-slow-tests:
     steps:
