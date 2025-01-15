@@ -11,19 +11,17 @@ describe('resolve-dir', () => {
   });
 
   it('should return a directory if a forge config is found, but no package.json.forge.config', async () => {
-    const dir = path.resolve(__dirname, '../../../test/fixture/forge-config-no-package-json-config/');
+    const dir = path.resolve(__dirname, '../../fixture/forge-config-no-package-json-config/');
     const resolved = await resolveDir(dir);
     expect(resolved).not.toBeNull();
     expect(resolved).toEqual(dir);
   });
 
   it('should return a directory if it finds a node module', async () => {
-    const dir = path.resolve(__dirname, '../../../test/fixture/dummy_app/foo');
+    const dir = path.resolve(__dirname, '../../fixture/dummy_app/foo');
     const resolved = await resolveDir(dir);
     expect(resolved).not.toBeNull();
-    expect(await resolveDir(path.resolve(__dirname, '../../../test/fixture/dummy_app/foo'))).toEqual(
-      path.resolve(__dirname, '../../../test/fixture/dummy_app')
-    );
+    expect(await resolveDir(path.resolve(__dirname, '../../fixture/dummy_app/foo'))).toEqual(path.resolve(__dirname, '../../fixture/dummy_app'));
   });
 
   it('should return a directory if it finds a virtual config', async () => {
