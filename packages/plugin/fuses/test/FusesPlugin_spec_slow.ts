@@ -59,6 +59,6 @@ describe('FusesPlugin', () => {
       })
     ).trim();
 
-    expect(output).to.equals('The Fuses plugin is working');
+    expect(output).toEqual('The Fuses plugin is working');
   });
 });

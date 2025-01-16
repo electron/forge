@@ -63,13 +63,13 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
     });
 
     it('should create a new folder with a npm module inside', async () => {
-      expect(fs.existsSync(dir), 'the target dir should have been created').to.equal(true);
-      expect(fs.existsSync(path.join(dir, 'package.json'))).to.equal(true);
-      expect(fs.existsSync(path.join(dir, '.git'))).to.equal(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
-      expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
+      expect(fs.existsSync(dir), 'the target dir should have been created').toEqual(true);
+      expect(fs.existsSync(path.join(dir, 'package.json'))).toEqual(true);
+      expect(fs.existsSync(path.join(dir, '.git'))).toEqual(true);
+      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron')), 'electron should exist').toEqual(true);
+      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').toEqual(true);
+      expect(fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').toEqual(true);
+      expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
     });
 
     describe('lint', () => {
@@ -100,8 +100,8 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
     });
 
     it('should create dot files correctly', async () => {
-      expect(fs.existsSync(dir), 'the target dir should have been created').to.equal(true);
-      expect(fs.existsSync(path.join(dir, '.bar'))).to.equal(true);
+      expect(fs.existsSync(dir), 'the target dir should have been created').toEqual(true);
+      expect(fs.existsSync(path.join(dir, '.bar'))).toEqual(true);
     });
 
     it('should create deep files correctly', async () => {
@@ -195,7 +195,7 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
 
       await api.import({ dir });
 
-      expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
+      expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
 
       execSync(`${installer} install`, {
         cwd: dir,
@@ -204,8 +204,8 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
       await api.package({ dir });
 
       const outDirContents = fs.readdirSync(path.join(dir, 'out'));
-      expect(outDirContents).to.have.length(1);
-      expect(outDirContents[0]).to.equal(`ProductName-${process.platform}-${process.arch}`);
+      expect(outDirContents).toHaveLength(1);
+      expect(outDirContents[0]).toEqual(`ProductName-${process.platform}-${process.arch}`);
     });
 
     afterAll(async () => {
@@ -272,11 +272,11 @@ describe('Electron Forge API', { timeout: 60_000 }, () => {
     it('can package to outDir without errors', async () => {
       const outDir = `${dir}/foo`;
 
-      expect(fs.existsSync(outDir)).to.equal(false);
+      expect(fs.existsSync(outDir)).toEqual(false);
 
       await api.package({ dir, outDir });
 
-      expect(fs.existsSync(outDir)).to.equal(true);
+      expect(fs.existsSync(outDir)).toEqual(true);
     });
 
     it('can make from custom outDir without errors', async () => {
@@ -327,12 +327,12 @@ describe('Electron Forge API', { timeout: 60_000 }, () => {
           src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
           logger: console.error,
         });
-        expect(cleanPackageJSON).to.not.have.nested.property('config.forge');
+        expect(cleanPackageJSON).not.toHaveProperty('config.forge');
       });
 
       it('should not affect the actual forge config', async () => {
         const normalPackageJSON = await readRawPackageJson(dir);
-        expect(normalPackageJSON).to.have.nested.property('config.forge');
+        expect(normalPackageJSON).toHaveProperty('config.forge');
       });
 
       if (process.platform !== 'win32') {
@@ -398,8 +398,8 @@ describe('Electron Forge API', { timeout: 60_000 }, () => {
                 const outputs = await api.make(optionsFetcher());
                 for (const outputResult of outputs) {
                   for (const output of outputResult.artifacts) {
-                    expect(fs.existsSync(output)).to.equal(true);
-                    expect(output.startsWith(path.resolve(dir, 'out', 'make'))).to.equal(true);
+                    expect(fs.existsSync(output)).toEqual(true);
+                    expect(output.startsWith(path.resolve(dir, 'out', 'make'))).toEqual(true);
                   }
                 }
               });
