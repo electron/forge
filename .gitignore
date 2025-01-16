@@ -6,7 +6,6 @@ dist
 docs
 doc
 node_modules
-!packages/utils/core-utils/spec/fixture/non-exact/node_modules/electron/package.json
 lerna-debug.log
 yarn-error.log
 packages/**/.npmignore
