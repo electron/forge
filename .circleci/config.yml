@@ -20,14 +20,14 @@ commands:
     steps:
       - node/install-packages
       - run:
+          name: 'Build Electron Forge'
+          command: |
+            yarn build
+      - run:
           name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
-      - run:
-          name: 'Build Electron Forge'
-          command: |
-            yarn build
   run-fast-tests:
     steps:
       - node/install-packages:
