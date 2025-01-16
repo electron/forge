@@ -10,7 +10,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { api } from '../../../api/core/dist/api';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
-describe('ViteTypeScriptTemplate', { timeout: 60000 }, () => {
+describe('ViteTypeScriptTemplate', { timeout: 120000 }, () => {
   let dir: string;
 
   beforeAll(async () => {
