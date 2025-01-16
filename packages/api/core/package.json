@@ -21,8 +21,6 @@
     "@types/interpret": "^1.1.1",
     "@types/progress": "^2.0.5",
     "@types/rechoir": "^0.6.1",
-    "chai": "^4.3.3",
-    "chai-as-promised": "^7.0.0",
     "cross-env": "^7.0.2",
     "electron-installer-common": "^0.10.2",
     "vitest": "^2.1.6",

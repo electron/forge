@@ -14,7 +14,7 @@ commands:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.20.3'
+          node-version: 20.17.0
       - checkout
   run-lint-and-build:
     steps:
