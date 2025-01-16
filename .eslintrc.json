@@ -64,7 +64,7 @@
       }
     },
     {
-      "files": ["packages/*/*/test/**/*_spec*.ts", "packages/*/*/test/fixture/**/*.ts"],
+      "files": ["packages/*/*/spec/**/*.spec.ts", "packages/*/*/spec/fixture/**/*.ts"],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",
@@ -88,13 +88,13 @@
       }
     },
     {
-      "files": ["packages/api/core/test/**/*.ts", "packages/maker/*/src/Maker*.ts"],
+      "files": ["packages/api/core/spec/**/*.ts", "packages/maker/*/src/Maker*.ts"],
       "rules": {
         "@typescript-eslint/no-require-imports": "off"
       }
     },
     {
-      "files": ["packages/*/*/test/fixture/**/*.js", "packages/*/*/test/fixtures/**/*.js"],
+      "files": ["packages/*/*/spec/fixture/**/*.js", "packages/*/*/spec/fixtures/**/*.js"],
       "rules": {
         "node/no-extraneous-require": "off",
         "node/no-missing-require": "off",
@@ -102,7 +102,7 @@
       }
     },
     {
-      "files": ["packages/plugin/webpack/test/fixtures/**/*.js"],
+      "files": ["packages/plugin/webpack/spec/fixtures/**/*.js"],
       "rules": {
         "no-process-exit": "off",
         "no-undef": "off",
