@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import locateElectronExecutable from '../../../src/util/electron-executable';
 
-const fixtureDir = path.resolve(__dirname, '..', '..', '..', 'test', 'fixture', 'electron-executable');
+const fixtureDir = path.resolve(__dirname, '..', '..', '..', 'spec', 'fixture', 'electron-executable');
 
 describe('locateElectronExecutable', () => {
   it('returns the correct path to electron', async () => {
