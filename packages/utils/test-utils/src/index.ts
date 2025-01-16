@@ -47,3 +47,24 @@ export async function expectProjectPathExists(dir: string, subPath: string, path
 export async function expectProjectPathNotExists(dir: string, subPath: string, pathType: string): Promise<void> {
   await expectProjectPathExists(dir, subPath, pathType, false);
 }
+
+/**
+ * Helper function to mock CommonJS `require` calls with Vitest.
+ *
+ * @see https://github.com/vitest-dev/vitest/discussions/3134
+ * @param mockedUri - mocked module URI
+ * @param stub - stub function to assign to mock
+ */
+export async function mockRequire(mockedUri: string, stub: any) {
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  const { Module } = await import('module');
+
+  //@ts-expect-error undocumented functions
+  Module._load_original = Module._load;
+  //@ts-expect-error undocumented functions
+  Module._load = (uri, parent) => {
+    if (uri === mockedUri) return stub;
+    //@ts-expect-error undocumented functions
+    return Module._load_original(uri, parent);
+  };
+}

@@ -23,7 +23,7 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
       forgeConfig.packagerConfig.asar = {};
     }
     const existingUnpack = forgeConfig.packagerConfig.asar.unpack;
-    const newUnpack = '**/*.node';
+    const newUnpack = '**/{.**,**}/**/*.node';
     if (existingUnpack) {
       forgeConfig.packagerConfig.asar.unpack = `{${existingUnpack},${newUnpack}}`;
     } else {

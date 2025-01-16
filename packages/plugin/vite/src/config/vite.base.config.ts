@@ -32,8 +32,11 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
 export function getDefineKeys(names: string[]) {
   const define: { [name: string]: VitePluginRuntimeKeys } = {};
 
+  // change name from kebab case to upper snake case to agree with vite:define plugin
+  // this allows the VitePluginRendererConfig entries to contain names with dashes
+
   return names.reduce((acc, name) => {
-    const NAME = name.toUpperCase();
+    const NAME = name.toUpperCase().replaceAll('-', '_');
     const keys: VitePluginRuntimeKeys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
       VITE_NAME: `${NAME}_VITE_NAME`,
