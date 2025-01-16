@@ -28,7 +28,7 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
 }
 
-describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $installer)`, { timeout: 60_000 }, ({ installer }) => {
+describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $installer)`, ({ installer }) => {
   let dir: string;
 
   beforeAll(async () => {
@@ -218,7 +218,7 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
   });
 });
 
-describe('Electron Forge API', { timeout: 60_000 }, () => {
+describe('Electron Forge API', () => {
   let dir: string;
 
   beforeAll(async () => {
