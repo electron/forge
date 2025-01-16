@@ -6,7 +6,7 @@ import path from 'node:path';
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
-import { ensureTestDirIsNonexistent, expectLintToPass, expectProjectPathExists } from '@electron-forge/test-utils';
+import { ensureTestDirIsNonexistent, expectLintToPass } from '@electron-forge/test-utils';
 import { readMetadata } from 'electron-installer-common';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -64,22 +64,12 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
 
     it('should create a new folder with a npm module inside', async () => {
       expect(fs.existsSync(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, 'package.json', 'file');
-    });
-
-    it('should have initialized a git repository', async () => {
-      await expectProjectPathExists(dir, '.git', 'folder');
-    });
-
-    it('should have installed the initial node_modules', async () => {
-      await expectProjectPathExists(dir, 'node_modules', 'folder');
+      expect(fs.existsSync(path.join(dir, 'package.json'))).to.equal(true);
+      expect(fs.existsSync(path.join(dir, '.git'))).to.equal(true);
       expect(fs.existsSync(path.resolve(dir, 'node_modules/electron')), 'electron should exist').to.equal(true);
       expect(fs.existsSync(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').to.equal(true);
       expect(fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').to.equal(true);
-    });
-
-    it('should create a forge.config.js', async () => {
-      await expectProjectPathExists(dir, 'forge.config.js', 'file');
+      expect(fs.existsSync(path.join(dir, 'forge.config.js'))).to.equal(true);
     });
 
     describe('lint', () => {
@@ -91,12 +81,7 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
 
   describe.skip('init with CI files enabled', () => {
     beforeInitTest({ copyCIFiles: true });
-
-    it('should copy over the CI config files correctly', async () => {
-      expect(fs.existsSync(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, '.appveyor.yml', 'file');
-      await expectProjectPathExists(dir, '.travis.yml', 'file');
-    });
+    it.todo('should copy over the CI config files correctly');
   });
 
   describe('init (with custom templater)', () => {
@@ -116,12 +101,12 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
 
     it('should create dot files correctly', async () => {
       expect(fs.existsSync(dir), 'the target dir should have been created').to.equal(true);
-      await expectProjectPathExists(dir, '.bar', 'file');
+      expect(fs.existsSync(path.join(dir, '.bar'))).to.equal(true);
     });
 
     it('should create deep files correctly', async () => {
-      await expectProjectPathExists(dir, 'src/foo.js', 'file');
-      await expectProjectPathExists(dir, 'src/index.html', 'file');
+      expect(fs.existsSync(path.join(dir, 'src/foo.js'))).toBe(true);
+      expect(fs.existsSync(path.join(dir, 'src/index.html'))).toBe(true);
     });
 
     describe('lint', () => {

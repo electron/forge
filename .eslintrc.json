@@ -1,8 +1,4 @@
 {
-  "plugins": ["mocha", "import"],
-  "env": {
-    "mocha": true
-  },
   "extends": ["@malept/eslint-config/src/common"],
   "globals": {
     "NodeJS": "readonly"
@@ -17,7 +13,6 @@
         "vars": "all"
       }
     ],
-    "mocha/no-exclusive-tests": "error",
     "import/order": [
       "error",
       {

@@ -1,28 +1,28 @@
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
-import * as testUtils from '@electron-forge/test-utils';
-import { expect } from 'chai';
+import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { api } from '../../../api/core';
+import { api } from '../../../api/core/dist/api';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
-describe('ViteTypeScriptTemplate', () => {
+describe('ViteTypeScriptTemplate', { timeout: 60000 }, () => {
   let dir: string;
 
-  before(async () => {
-    await yarnOrNpmSpawn(['link:prepare']);
+  beforeAll(async () => {
+    await yarnOrNpmSpawn(['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
-  after(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
+  afterAll(async () => {
+    await yarnOrNpmSpawn(['run', 'link:remove']);
     if (os.platform() !== 'win32') {
-      // Windows platform `fs.remove(dir)` logic useing npm `npm run test:clear`.
-      await fs.remove(dir);
+      // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
+      await fs.promises.rm(dir, { force: true, recursive: true });
     }
   });
 
@@ -30,12 +30,12 @@ describe('ViteTypeScriptTemplate', () => {
     it('should succeed in initializing the typescript template', async () => {
       await api.init({
         dir,
-        template: path.resolve(__dirname, '..', 'src', 'ViteTypeScriptTemplate'),
+        template: path.resolve(__dirname, '..'),
         interactive: false,
       });
     });
 
-    const expectedFiles = [
+    it.each([
       'package.json',
       'tsconfig.json',
       '.eslintrc.json',
@@ -47,12 +47,9 @@ describe('ViteTypeScriptTemplate', () => {
       path.join('src', 'main.ts'),
       path.join('src', 'renderer.ts'),
       path.join('src', 'preload.ts'),
-    ];
-    for (const filename of expectedFiles) {
-      it(`${filename} should exist`, async () => {
-        await testUtils.expectProjectPathExists(dir, filename, 'file');
-      });
-    }
+    ])(`%s should exist`, async (filename) => {
+      expect(fs.existsSync(path.join(dir, filename))).toBe(true);
+    });
 
     it('should ensure js source files from base template are removed', async () => {
       const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
@@ -70,19 +67,19 @@ describe('ViteTypeScriptTemplate', () => {
   describe('package', () => {
     let cwd: string;
 
-    before(async () => {
+    beforeAll(async () => {
       delete process.env.TS_NODE_PROJECT;
       // Vite resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
       // We need the version of vite to match exactly during development due to a quirk in
       // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+      const pj = JSON.parse(await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'));
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
-      await fs.writeJson(path.resolve(dir, 'package.json'), pj);
+      await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
@@ -93,7 +90,7 @@ describe('ViteTypeScriptTemplate', () => {
       await initLink(dir);
     });
 
-    after(() => {
+    afterAll(() => {
       process.chdir(cwd);
     });
 

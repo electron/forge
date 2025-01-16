@@ -1,32 +1,32 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
-import * as testUtils from '@electron-forge/test-utils';
-import { expect } from 'chai';
+import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
-import fs from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { api } from '../../../api/core';
+import { api } from '../../../api/core/dist/api';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
-describe('WebpackTypeScriptTemplate', () => {
+describe('WebpackTypeScriptTemplate', { timeout: 60000 }, () => {
   let dir: string;
 
-  before(async () => {
-    await yarnOrNpmSpawn(['link:prepare']);
+  beforeAll(async () => {
+    await yarnOrNpmSpawn(['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
   it('should succeed in initializing the typescript template', async () => {
     await api.init({
       dir,
-      template: path.resolve(__dirname, '..', 'src', 'WebpackTypeScriptTemplate'),
+      template: path.join(__dirname, '..'),
       interactive: false,
     });
   });
 
-  context('template files are copied to project', () => {
-    const expectedFiles = [
+  describe('template files are copied to project', () => {
+    it.each([
       'tsconfig.json',
       '.eslintrc.json',
       'forge.config.ts',
@@ -37,12 +37,9 @@ describe('WebpackTypeScriptTemplate', () => {
       path.join('src', 'index.ts'),
       path.join('src', 'renderer.ts'),
       path.join('src', 'preload.ts'),
-    ];
-    for (const filename of expectedFiles) {
-      it(`${filename} should exist`, async () => {
-        await testUtils.expectProjectPathExists(dir, filename, 'file');
-      });
-    }
+    ])(`%s should exist`, async (filename) => {
+      expect(fs.existsSync(path.join(dir, filename))).toBe(true);
+    });
   });
 
   it('should ensure js source files from base template are removed', async () => {
@@ -60,19 +57,19 @@ describe('WebpackTypeScriptTemplate', () => {
   describe('package', () => {
     let cwd: string;
 
-    before(async () => {
+    beforeAll(async () => {
       delete process.env.TS_NODE_PROJECT;
       // Webpack resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
       // We need the version of webpack to match exactly during development due to a quirk in
       // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+      const pj = JSON.parse(await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'));
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
       };
-      await fs.writeJson(path.resolve(dir, 'package.json'), pj);
+      await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
       await yarnOrNpmSpawn(['install'], {
         cwd: dir,
       });
@@ -83,7 +80,7 @@ describe('WebpackTypeScriptTemplate', () => {
       await initLink(dir);
     });
 
-    after(() => {
+    afterAll(() => {
       process.chdir(cwd);
     });
 
@@ -95,8 +92,8 @@ describe('WebpackTypeScriptTemplate', () => {
     });
   });
 
-  after(async () => {
+  afterAll(async () => {
     await yarnOrNpmSpawn(['link:remove']);
-    await fs.remove(dir);
+    await fs.promises.rm(dir, { recursive: true, force: true });
   });
 });
