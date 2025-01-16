@@ -7,5 +7,3 @@ packages/*/*/index.ts
 packages/**/bad.js
 tmpl
 packages/api/core/helper/dynamic-import.js
-packages/**/spec/fixture/*/*
-packages/**/spec/fixtures/*/*
