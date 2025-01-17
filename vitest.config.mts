@@ -5,5 +5,6 @@ export default defineConfig({
   test: {
     clearMocks: true,
     exclude: ['**/.links/**', '**/node_modules/**'],
+    fileParallelism: false,
   },
 });

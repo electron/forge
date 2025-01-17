@@ -7,12 +7,6 @@ export default defineWorkspace([
       include: ['**/spec/**/*.spec.ts'],
       exclude: ['**/spec/**/*.slow.spec.ts'],
       name: 'fast',
-      maxConcurrency: 1,
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
-      },
     },
   },
   {
@@ -22,12 +16,6 @@ export default defineWorkspace([
       name: 'slow',
       hookTimeout: 60000,
       testTimeout: 120000,
-      maxConcurrency: 1,
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
-      },
     },
   },
 ]);
