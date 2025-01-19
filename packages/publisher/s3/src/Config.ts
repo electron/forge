@@ -62,6 +62,13 @@ export interface PublisherS3Config {
    * Default: false
    */
   s3ForcePathStyle?: boolean;
+
+  /**
+   * Whether to calculate checksums for uploaded files (Fix for Cloudflare R2)
+   *
+   * Default: false
+   */
+  s3RequestChecksumCalculation?: 'WHEN_SUPPORTED' | 'WHEN_REQUIRED';
   /**
    * Custom function to provide the key to upload a given file to
    */
