@@ -65,7 +65,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
       {
         title: `Locating custom template: "${template}"`,
         task: async (ctx) => {
-          ctx.templateModule = await findTemplate(dir, template);
+          ctx.templateModule = await findTemplate(template);
         },
       },
       {
