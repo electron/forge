@@ -174,7 +174,6 @@
     ]
   },
   "resolutions": {
-    "@malept/eslint-config/@typescript-eslint/parser": "^8.0.0",
-    "electron-installer-dmg/appdmg/ds-store/macos-alias": "^0.2.12"
+    "@malept/eslint-config/@typescript-eslint/parser": "^8.0.0"
   }
 }
