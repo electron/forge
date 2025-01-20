@@ -38,7 +38,7 @@ describe('yarn-or-npm', () => {
     process.env.NODE_INSTALLER = 'magical_unicorn';
     console.warn = vi.fn();
     const pm = await detect();
-    expect(safeYarnOrNpm()).resolves.toEqual(pm);
+    await expect(safeYarnOrNpm()).resolves.toEqual(pm);
     expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Unknown NODE_INSTALLER'));
   });
 });
