@@ -29,7 +29,7 @@ export const exactDevDeps = ['electron'];
 
 export const initNPM = async <T>(dir: string, task: ForgeListrTask<T>): Promise<void> => {
   d('installing dependencies');
-  const packageManager = safeYarnOrNpm();
+  const packageManager = await safeYarnOrNpm();
   task.output = `${packageManager} install ${deps.join(' ')}`;
   await installDepList(dir, deps);
 

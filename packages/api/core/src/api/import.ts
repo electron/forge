@@ -193,7 +193,7 @@ export default autoTrace(
                 {
                   title: 'Installing dependencies',
                   task: async (_, task) => {
-                    const packageManager = safeYarnOrNpm();
+                    const packageManager = await safeYarnOrNpm();
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
