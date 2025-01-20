@@ -1,8 +1,23 @@
 {
-  "extends": ["@malept/eslint-config/src/common"],
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "globals": {
     "NodeJS": "readonly"
   },
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:node/recommended",
+    "plugin:prettier/recommended",
+    "plugin:promise/recommended",
+    "prettier"
+  ],
   "rules": {
     "no-unused-vars": [
       "error",
@@ -37,11 +52,30 @@
   "overrides": [
     {
       "files": ["**/*.ts"],
-      "extends": ["@malept/eslint-config/src/typescript"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint", "eslint-plugin-tsdoc"],
       "parserOptions": {
+        "ecmaFeatures": {
+          "impliedStrict": true
+        },
         "project": ["./tsconfig.base.json"]
       },
+      "extends": ["plugin:@typescript-eslint/recommended", "plugin:import/typescript"],
       "rules": {
+        // There is no "recommended" ruleset for tsdoc yet.
+        "tsdoc/syntax": "warn",
+        "node/no-unsupported-features/es-syntax": [
+          "error",
+          {
+            "ignores": ["modules"]
+          }
+        ],
+        "node/no-missing-import": [
+          "error",
+          {
+            "tryExtensions": [".js", ".ts", ".d.ts"]
+          }
+        ],
         "no-throw-literal": "off",
         "@typescript-eslint/no-explicit-any": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
