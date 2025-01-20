@@ -60,7 +60,7 @@ describe('ViteConfigGenerator', () => {
 
     expect(buildConfig.root).toEqual(configRoot);
     expect(buildConfig.mode).toEqual('production');
-    expect(buildConfig.build?.emptyOutDir).false;
+    expect(buildConfig.build?.emptyOutDir).toBe(false);
     expect(buildConfig.build?.outDir).toEqual('.vite/build');
     expect(buildConfig.build?.watch).toBeNull();
     expect(buildConfig.build?.minify).toBe(true);

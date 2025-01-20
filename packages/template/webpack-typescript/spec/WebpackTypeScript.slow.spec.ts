@@ -6,6 +6,7 @@ import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+// eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 

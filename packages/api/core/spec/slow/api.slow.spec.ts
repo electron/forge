@@ -10,6 +10,7 @@ import { ensureTestDirIsNonexistent, expectLintToPass } from '@electron-forge/te
 import { readMetadata } from 'electron-installer-common';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+// eslint-disable-next-line n/no-missing-import
 import { api, InitOptions } from '../../src/api';
 import installDeps from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
@@ -88,13 +89,11 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
     beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
 
     it('should add custom dependencies', async () => {
-      // eslint-disable-next-line node/no-unsupported-features/es-syntax
       const packageJSON = await import(path.resolve(dir, 'package.json'));
       expect(packageJSON.dependencies).toHaveProperty('debug');
     });
 
     it('should add custom devDependencies', async () => {
-      // eslint-disable-next-line node/no-unsupported-features/es-syntax
       const packageJSON = await import(path.resolve(dir, 'package.json'));
       expect(packageJSON.devDependencies).toHaveProperty('lodash');
     });
@@ -281,7 +280,7 @@ describe('Electron Forge API', () => {
 
     it('can make from custom outDir without errors', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
-        // eslint-disable-next-line node/no-missing-require
+        // eslint-disable-next-line n/no-missing-require
         packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
       });
 
@@ -475,7 +474,7 @@ describe('Electron Forge API', () => {
           await expect(
             api.make({
               dir,
-              // eslint-disable-next-line node/no-missing-require
+              // eslint-disable-next-line n/no-missing-require
               overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
               platform: 'mas',
             })

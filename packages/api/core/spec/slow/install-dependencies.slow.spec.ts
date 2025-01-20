@@ -18,7 +18,6 @@ describe.runIf(!(process.platform === 'linux' && process.env.CI))('install-depen
   it('should install the latest minor version when the dependency has a caret', async () => {
     await installDeps(installDir, ['debug@^2.0.0']);
 
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const packageJSON = await import(path.resolve(installDir, 'node_modules', 'debug', 'package.json'));
     expect(packageJSON.version).not.toEqual('2.0.0');
   });

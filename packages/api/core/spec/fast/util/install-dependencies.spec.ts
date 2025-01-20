@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -1,5 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
-
 import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
