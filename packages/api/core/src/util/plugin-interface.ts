@@ -153,7 +153,7 @@ export default class PluginInterface implements IForgePluginInterface {
     for (const plugin of this.plugins) {
       if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
         claimed.push(plugin.name);
-        newStartFn = plugin.startLogic;
+        newStartFn = plugin.startLogic.bind(plugin);
       }
     }
     if (claimed.length > 1) {
