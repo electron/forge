@@ -15,6 +15,6 @@ describe('import-search', () => {
   });
 
   it('should throw if file exists but fails to load', async () => {
-    await expect(importSearch(__dirname, ['../../../test/fixture/require-search/throw-error'])).rejects.toThrowError('test');
+    await expect(importSearch(__dirname, ['../../fixture/require-search/throw-error'])).rejects.toThrowError('test');
   });
 });

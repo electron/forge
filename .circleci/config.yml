@@ -14,20 +14,20 @@ commands:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.20.3'
+          node-version: 20.17.0
       - checkout
   run-lint-and-build:
     steps:
       - node/install-packages
       - run:
+          name: 'Build Electron Forge'
+          command: |
+            yarn build
+      - run:
           name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
-      - run:
-          name: 'Build Electron Forge'
-          command: |
-            yarn build
   run-fast-tests:
     steps:
       - node/install-packages:
@@ -48,9 +48,7 @@ commands:
       - run:
           name: 'Run slow tests'
           command: |
-            echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
-            yarn test $TEST_GLOB
+            yarn test:slow --reporter=junit --outputFile="./reports/out/test_output.xml"
 
 jobs:
   lint-and-build:

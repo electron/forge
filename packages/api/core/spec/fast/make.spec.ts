@@ -14,7 +14,7 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
 });
 
 describe('make', () => {
-  const fixtureDir = path.resolve(__dirname, '../../test/fixture');
+  const fixtureDir = path.resolve(__dirname, '../fixture');
 
   it.todo('should call "package"');
 

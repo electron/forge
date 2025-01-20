@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { devDeps, exactDevDeps } from '../../../api/core/src/api/init-scripts/init-npm';
 import { getElectronModulePath, getElectronVersion, updateElectronDependency } from '../src/electron-version';
 
-const fixturePath = path.resolve(__dirname, '..', '..', '..', 'api', 'core', 'test', 'fixture');
+const fixturePath = path.resolve(__dirname, 'fixture');
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
