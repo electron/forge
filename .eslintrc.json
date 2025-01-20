@@ -9,15 +9,7 @@
   "globals": {
     "NodeJS": "readonly"
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:node/recommended",
-    "plugin:prettier/recommended",
-    "plugin:promise/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:import/errors", "plugin:import/warnings", "plugin:node/recommended", "plugin:promise/recommended", "prettier"],
   "rules": {
     "no-unused-vars": [
       "error",
