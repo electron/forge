@@ -1,6 +1,5 @@
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
-import globalDirectory from 'global-directory';
 
 import { PossibleModule } from '../../util/import-search';
 
@@ -16,6 +15,8 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
     ['local', template],
   ];
   let foundTemplate = false;
+  // eslint-disable-next-line
+  const { default: globalDirectory } = await import('global-directory');
   for (const [templateType, moduleName] of resolveTemplateTypes) {
     try {
       d(`Trying ${templateType} template: ${moduleName}`);
