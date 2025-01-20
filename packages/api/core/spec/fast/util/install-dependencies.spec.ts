@@ -34,7 +34,7 @@ describe('installDependencies', () => {
     { pm: 'yarn', install: 'add', flags: { exact: '--exact', dev: '--dev' } },
   ])('$pm', ({ pm, install, flags }) => {
     beforeEach(() => {
-      vi.mocked(hasYarn).mockReturnValue(pm === 'yarn');
+      vi.mocked(hasYarn).mockResolvedValue(pm === 'yarn');
     });
 
     it('should install deps', async () => {
