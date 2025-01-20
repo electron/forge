@@ -8,8 +8,6 @@
   "main": "dist/PublisherERS.js",
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1",
     "msw": "^2.7.0",
     "vitest": "^2.1.6"
   },

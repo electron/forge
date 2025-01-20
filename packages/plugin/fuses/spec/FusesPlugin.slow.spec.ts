@@ -2,8 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
-import { expect } from 'chai';
-import fsExtra from 'fs-extra';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
@@ -25,14 +24,14 @@ describe('FusesPlugin', () => {
 
   const outDir = path.join(appPath, 'out', 'fuses-test-app');
 
-  before(async () => {
+  beforeAll(async () => {
     delete process.env.TS_NODE_PROJECT;
     await fs.promises.copyFile(path.join(appPath, 'package.json.tmpl'), path.join(appPath, 'package.json'));
     await spawn('yarn', ['install'], spawnOptions);
   });
 
-  after(async () => {
-    await fsExtra.remove(path.resolve(outDir, '../'));
+  afterAll(async () => {
+    await fs.promises.rm(path.resolve(outDir, '../'), { recursive: true, force: true });
   });
 
   it('should flip Fuses', async () => {
@@ -59,6 +58,6 @@ describe('FusesPlugin', () => {
       })
     ).trim();
 
-    expect(output).to.equals('The Fuses plugin is working');
+    expect(output).toEqual('The Fuses plugin is working');
   });
 });

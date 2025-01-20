@@ -7,10 +7,6 @@
   "license": "MIT",
   "main": "dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
-  "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1"
-  },
   "engines": {
     "node": ">= 16.4.0"
   },

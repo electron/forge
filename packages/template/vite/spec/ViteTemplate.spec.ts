@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 
-import * as testUtils from '@electron-forge/test-utils';
+import testUtils from '@electron-forge/test-utils';
 import { Listr } from 'listr2';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -15,7 +15,7 @@ describe('ViteTemplate', () => {
   });
 
   afterAll(async () => {
-    await fs.rm(dir, { recursive: true });
+    await fs.promises.rm(dir, { recursive: true });
   });
 
   it('should succeed in initializing the vite template', async () => {
@@ -40,23 +40,24 @@ describe('ViteTemplate', () => {
       path.join('src', 'preload.js'),
     ];
     it.each(expectedFiles)(`%s should exist`, async (filename) => {
-      await testUtils.expectProjectPathExists(dir, filename, 'file');
+      const file = path.join(dir, filename);
+      expect(fs.existsSync(file)).toBe(true);
     });
   });
 
   it('should move and rewrite the main process file', async () => {
-    await testUtils.expectProjectPathNotExists(dir, path.join('src', 'index.js'), 'file');
-    await testUtils.expectProjectPathExists(dir, path.join('src', 'main.js'), 'file');
-    const mainFile = (await fs.readFile(path.join(dir, 'src', 'main.js'))).toString();
+    expect(fs.existsSync(path.join(dir, 'src', 'index.js'))).toBe(false);
+    expect(fs.existsSync(path.join(dir, 'src', 'main.js'))).toBe(true);
+    const mainFile = (await fs.promises.readFile(path.join(dir, 'src', 'main.js'))).toString();
     expect(mainFile).toMatch(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
     expect(mainFile).toMatch(/\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/);
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {
-    expect((await fs.readFile(path.join(dir, 'index.html'))).toString()).not.toMatch(/link rel="stylesheet"/);
+    expect((await fs.promises.readFile(path.join(dir, 'index.html'))).toString()).not.toMatch(/link rel="stylesheet"/);
   });
 
   it('should inject script into the HTML file', async () => {
-    expect((await fs.readFile(path.join(dir, 'index.html'))).toString()).toMatch(/src="\/src\/renderer\.js"/);
+    expect((await fs.promises.readFile(path.join(dir, 'index.html'))).toString()).toMatch(/src="\/src\/renderer\.js"/);
   });
 });
