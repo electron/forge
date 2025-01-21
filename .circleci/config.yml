@@ -23,11 +23,20 @@ commands:
           name: 'Build Electron Forge'
           command: |
             yarn build
+      - restore_cache:
+          name: Restore ESLint Cache
+          keys:
+            - v1-lint-dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.json" }}
       - run:
           name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
+      - save_cache:
+          name: Save ESlint Cache
+          paths:
+            - .eslintcache
+          key: v1-lint-dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.json" }}
   run-fast-tests:
     steps:
       - node/install-packages:

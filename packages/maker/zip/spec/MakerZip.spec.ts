@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import os from 'node:os';
 import path from 'node:path';
 

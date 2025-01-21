@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { MakerOptions } from '@electron-forge/maker-base';
 import fs from 'fs-extra';
 import { describe, expect, it, vi } from 'vitest';

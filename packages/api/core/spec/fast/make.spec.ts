@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import * as path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';

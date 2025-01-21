@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { ChildProcess, spawn } from 'node:child_process';
 
 import { ElectronProcess } from '@electron-forge/shared-types';

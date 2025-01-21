@@ -13,12 +13,12 @@
     "postbuild": "ts-node tools/test-dist",
     "docs": "yarn build && npx typedoc",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
-    "lint:js": "prettier --check . && eslint .",
+    "lint:js": "prettier --check . && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
     "lint:markdown-links": "electron-lint-markdown-links --root . --ignore-path .markdownlintignore \"**/*.md\"",
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
-    "lint:fix": "prettier --write . && eslint --fix .",
+    "lint:fix": "prettier --write . && eslint --fix . --cache",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
     "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
     "test": "xvfb-maybe vitest run --project fast --project slow",
@@ -84,7 +84,6 @@
   "devDependencies": {
     "@electron/fuses": ">=1.0.0",
     "@electron/lint-roller": "1.10.1",
-    "@malept/eslint-config": "^2.0.0",
     "@types/cross-spawn": "^6.0.1",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.9",
@@ -105,11 +104,11 @@
     "@typescript-eslint/parser": "^8.0.0",
     "electron-installer-common": "^0.10.2",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-tsdoc": "^0.2.14",
+    "eslint-plugin-n": "^17.15.1",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-tsdoc": "^0.4.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "generate-changelog": "^1.8.0",
     "husky": "^7.0.1",
@@ -164,8 +163,5 @@
       "packages/template/*",
       "packages/utils/*"
     ]
-  },
-  "resolutions": {
-    "@malept/eslint-config/@typescript-eslint/parser": "^8.0.0"
   }
 }
