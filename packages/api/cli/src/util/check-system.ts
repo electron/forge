@@ -57,7 +57,7 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
 async function checkPackageManagerVersion() {
   const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
   const versionString = version.toString().trim();
-  if (forgeUtils.hasYarn()) {
+  if (await forgeUtils.hasYarn()) {
     warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
     return `yarn@${versionString}`;
   } else {

@@ -1,10 +1,10 @@
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
+import { detect } from 'detect-package-manager';
 import logSymbols from 'log-symbols';
-import yarnOrNpm from 'yarn-or-npm';
 
-export const safeYarnOrNpm = () => {
-  const system = yarnOrNpm();
+export const safeYarnOrNpm = async () => {
+  const system = await detect();
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
     case 'npm':
@@ -17,6 +17,6 @@ export const safeYarnOrNpm = () => {
   }
 };
 
-export const yarnOrNpmSpawn = (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(safeYarnOrNpm(), args, opts);
+export const yarnOrNpmSpawn = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(await safeYarnOrNpm(), args, opts);
 
-export const hasYarn = (): boolean => safeYarnOrNpm() === 'yarn';
+export const hasYarn = async () => (await safeYarnOrNpm()) === 'yarn';
