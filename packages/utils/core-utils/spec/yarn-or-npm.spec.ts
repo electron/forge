@@ -1,5 +1,5 @@
+import { detect } from 'detect-package-manager';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import systemYarnOrNpm from 'yarn-or-npm';
 
 import { safeYarnOrNpm } from '../src/yarn-or-npm';
 
@@ -19,24 +19,26 @@ describe('yarn-or-npm', () => {
     }
   });
 
-  it('should by default equal the system yarn-or-npm value', () => {
-    expect(safeYarnOrNpm()).toEqual(systemYarnOrNpm());
+  it('should by default equal the system yarn-or-npm value', async () => {
+    const pm = await detect();
+    expect(safeYarnOrNpm()).resolves.toEqual(pm);
   });
 
   it('should return yarn if NODE_INSTALLER=yarn', () => {
     process.env.NODE_INSTALLER = 'yarn';
-    expect(safeYarnOrNpm()).toEqual('yarn');
+    expect(safeYarnOrNpm()).resolves.toEqual('yarn');
   });
 
   it('should return npm if NODE_INSTALLER=npm', () => {
     process.env.NODE_INSTALLER = 'npm';
-    expect(safeYarnOrNpm()).toEqual('npm');
+    expect(safeYarnOrNpm()).resolves.toEqual('npm');
   });
 
-  it('should return system value if NODE_INSTALLER is an unrecognized installer', () => {
+  it('should return system value if NODE_INSTALLER is an unrecognized installer', async () => {
     process.env.NODE_INSTALLER = 'magical_unicorn';
     console.warn = vi.fn();
-    expect(safeYarnOrNpm()).toEqual(systemYarnOrNpm());
+    const pm = await detect();
+    await expect(safeYarnOrNpm()).resolves.toEqual(pm);
     expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Unknown NODE_INSTALLER'));
   });
 });

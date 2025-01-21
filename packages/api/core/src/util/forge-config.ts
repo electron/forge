@@ -6,6 +6,7 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
+// eslint-disable-next-line n/no-missing-import
 import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 import { runMutatingHook } from './hook';

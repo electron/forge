@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -34,7 +33,7 @@ describe('installDependencies', () => {
     { pm: 'yarn', install: 'add', flags: { exact: '--exact', dev: '--dev' } },
   ])('$pm', ({ pm, install, flags }) => {
     beforeEach(() => {
-      vi.mocked(hasYarn).mockReturnValue(pm === 'yarn');
+      vi.mocked(hasYarn).mockResolvedValue(pm === 'yarn');
     });
 
     it('should install deps', async () => {

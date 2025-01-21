@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';

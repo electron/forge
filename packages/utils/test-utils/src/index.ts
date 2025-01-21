@@ -48,7 +48,6 @@ export async function expectLintToPass(dir: string): Promise<void> {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function mockRequire(mockedUri: string, stub: any) {
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
   const { Module } = await import('module');
 
   //@ts-expect-error undocumented functions
