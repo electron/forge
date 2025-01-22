@@ -23,7 +23,7 @@
     "@types/rechoir": "^0.6.1",
     "cross-env": "^7.0.2",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^2.1.6",
+    "vitest": "^3.0.3",
     "yaml-hook": "^1.0.0"
   },
   "dependencies": {

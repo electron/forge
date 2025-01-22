@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
-    "vitest": "^2.1.6"
+    "vitest": "^3.0.3"
   },
   "dependencies": {
     "@electron-forge/core": "7.6.0",
