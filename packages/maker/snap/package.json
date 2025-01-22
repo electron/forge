@@ -8,7 +8,7 @@
   "typings": "dist/MakerSnap.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "7.6.0",
-    "vitest": "^2.1.6"
+    "vitest": "^3.0.3"
   },
   "engines": {
     "node": ">= 16.4.0"
