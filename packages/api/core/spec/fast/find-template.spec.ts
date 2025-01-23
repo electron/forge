@@ -31,7 +31,7 @@ describe('findTemplate', () => {
    * `node_modules` in order for the `require.resolve` custom path to work.
    */
   describe('global modules', () => {
-    vi.mock(import('global-directory'), async (importOriginal) => {
+    vi.mock(import('global-dirs'), async (importOriginal) => {
       const mod = await importOriginal();
       return {
         default: {

@@ -1,5 +1,6 @@
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
+import globalDirs from 'global-dirs';
 
 import { PossibleModule } from '../../util/import-search';
 
@@ -21,13 +22,12 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
     [TemplateType.local, template],
   ];
   let foundTemplate = false;
-  const { default: globalDirectory } = await import('global-directory');
   for (const [templateType, moduleName] of resolveTemplateTypes) {
     try {
       d(`Trying ${templateType} template: ${moduleName}`);
       if (templateType === TemplateType.global) {
         templateModulePath = require.resolve(moduleName, {
-          paths: [globalDirectory.npm.packages, globalDirectory.yarn.packages],
+          paths: [globalDirs.npm.packages, globalDirs.yarn.packages],
         });
       } else {
         templateModulePath = require.resolve(moduleName);
