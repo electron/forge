@@ -88,21 +88,23 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
       // Find the version with the same name and flavor
       const existingVersion: ERSVersion = await authFetch(`api/version?name=${packageJSON.version}&flavor=${flavor}`)
-            .then(res => res.json())
-            .then(versions => versions.find((version: ERSVersion) => {
-              return version.name === packageJSON.version && version.flavor.name === flavor
-            }))
-            .catch(() => undefined)
+        .then((res) => res.json())
+        .then((versions) =>
+          versions.find((version: ERSVersion) => {
+            return version.name === packageJSON.version && version.flavor.name === flavor;
+          })
+        )
+        .catch(() => undefined);
 
-      let channel = "stable"
+      let channel = 'stable';
       if (config.channel) {
-          channel = config.channel
-      } else if (packageJSON.version.includes("rc")) {
-          channel = "rc"
-      } else if (packageJSON.version.includes("beta")) {
-          channel = "beta"
-      } else if (packageJSON.version.includes("alpha")) {
-          channel = "alpha"
+        channel = config.channel;
+      } else if (packageJSON.version.includes('rc')) {
+        channel = 'rc';
+      } else if (packageJSON.version.includes('beta')) {
+        channel = 'beta';
+      } else if (packageJSON.version.includes('alpha')) {
+        channel = 'alpha';
       }
 
       if (!existingVersion) {
