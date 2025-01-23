@@ -26,13 +26,6 @@ interface ERSVersion {
   flavor: ERSFlavor;
 }
 
-interface ERSVersionSorted {
-  total: number;
-  offset: number;
-  page: string | number;
-  items: ERSVersion[];
-}
-
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
   const result = await fetch(url, init);
   if (result.ok) {
@@ -94,25 +87,22 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
       // Find the version with the same name and flavor
-      const findVersion = (versions: ERSVersion[]) => versions.find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
+      const existingVersion = await authFetch(`api/version?name=${packageJSON.version}&flavor=${flavor}`)
+            .then(res => res.json())
+            .then(versions => versions.find((version) => {
+              return version.name === packageJSON.version && version.flavor.name === flavor
+            }))
+            .catch(() => undefined)
 
-      let versions: ERSVersionSorted = await (await authFetch('versions/sorted')).json();
-      let existingVersion: ERSVersion | undefined = findVersion(versions.items);
-
-      while (!existingVersion && versions.offset + versions.items.length < versions.total) {
-        versions = await (await authFetch(`versions/sorted?page=${Number(versions.page) + 1}`)).json();
-        existingVersion = findVersion(versions.items);
-      }
-
-      let channel = 'stable';
+      let channel = "stable"
       if (config.channel) {
-        channel = config.channel;
-      } else if (packageJSON.version.includes('rc')) {
-        channel = 'rc';
-      } else if (packageJSON.version.includes('beta')) {
-        channel = 'beta';
-      } else if (packageJSON.version.includes('alpha')) {
-        channel = 'alpha';
+          channel = config.channel
+      } else if (packageJSON.version.includes("rc")) {
+          channel = "rc"
+      } else if (packageJSON.version.includes("beta")) {
+          channel = "beta"
+      } else if (packageJSON.version.includes("alpha")) {
+          channel = "alpha"
       }
 
       if (!existingVersion) {
