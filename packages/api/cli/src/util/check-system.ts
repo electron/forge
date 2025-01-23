@@ -1,6 +1,6 @@
-import { exec } from 'child_process';
-import os from 'os';
-import path from 'path';
+import { exec } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
 
 import { utils as forgeUtils } from '@electron-forge/core';
 import { ForgeListrTask } from '@electron-forge/shared-types';
@@ -57,7 +57,7 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
 async function checkPackageManagerVersion() {
   const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
   const versionString = version.toString().trim();
-  if (forgeUtils.hasYarn()) {
+  if (await forgeUtils.hasYarn()) {
     warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
     return `yarn@${versionString}`;
   } else {

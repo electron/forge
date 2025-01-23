@@ -1,5 +1,6 @@
-import path from 'path';
+import path from 'node:path';
 
+import { getHostArch } from '@electron/get';
 import { getElectronVersion } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
@@ -13,7 +14,6 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
@@ -30,12 +30,10 @@ import resolveDir from '../util/resolve-dir';
 
 import { listrPackage } from './package';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-class MakerImpl extends MakerBase<any> {
-  name = 'impl';
-
-  defaultPlatforms = [];
-}
+type MakerImpl = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): MakerBase<any>;
+};
 
 type MakeTargets = ForgeConfigMaker[] | string[];
 
@@ -168,7 +166,7 @@ export const listrMake = (
                   throw new Error(`The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`);
                 }
 
-                const MakerClass = await importSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
+                const MakerClass = await importSearch<MakerImpl>(dir, [resolvableTarget.name]);
                 if (!MakerClass) {
                   throw new Error(
                     `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`
@@ -294,8 +292,10 @@ export const listrMake = (
                         arch: targetArch,
                       });
                     } catch (err) {
-                      if (err) {
+                      if (err instanceof Error) {
                         throw err;
+                      } else if (typeof err === 'string') {
+                        throw new Error(err);
                       } else {
                         throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);
                       }
@@ -317,10 +317,28 @@ export const listrMake = (
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'run-postMake-hook', category: '@electron-forge/core' }, async (_, ctx, task) => {
           // If the postMake hooks modifies the locations / names of the outputs it must return
           // the new locations so that the publish step knows where to look
+          const originalOutputs = JSON.stringify(ctx.outputs);
           ctx.outputs = await runMutatingHook(ctx.forgeConfig, 'postMake', ctx.outputs);
+
+          let outputLocations = [path.resolve(ctx.actualOutDir, 'make')];
+          if (originalOutputs !== JSON.stringify(ctx.outputs)) {
+            const newDirs = new Set<string>();
+            const artifactPaths = [];
+            for (const result of ctx.outputs) {
+              for (const artifact of result.artifacts) {
+                newDirs.add(path.dirname(artifact));
+                artifactPaths.push(artifact);
+              }
+            }
+            if (newDirs.size <= ctx.outputs.length) {
+              outputLocations = [...newDirs];
+            } else {
+              outputLocations = artifactPaths;
+            }
+          }
           receiveMakeResults?.(ctx.outputs);
 
-          task.output = `Artifacts available at: ${chalk.green(path.resolve(ctx.actualOutDir, 'make'))}`;
+          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))})}`;
         }),
         rendererOptions: {
           persistentOutput: true,

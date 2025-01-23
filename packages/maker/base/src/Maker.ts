@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
@@ -163,7 +163,7 @@ export default abstract class Maker<C> implements IForgeMaker {
     try {
       require(module);
       return true;
-    } catch (e) {
+    } catch {
       // Package doesn't exist -- must not be installable on this platform
       return false;
     }

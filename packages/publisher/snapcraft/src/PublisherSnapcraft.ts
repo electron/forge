@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
 import fs from 'fs-extra';
@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import { PublisherSnapcraftConfig } from './Config';
 
 // TODO: convert to import statement once electron-installer-snap imports Snapcraft properly.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const Snapcraft = require('electron-installer-snap/src/snapcraft');
 
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {

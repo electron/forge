@@ -35,4 +35,4 @@ export interface AdditionalDMGOptions {
   'code-sign'?: CodeSignOptions;
 }
 
-export type MakerDMGConfig = Omit<ElectronInstallerDMGOptions, 'name'> & { name?: string };
+export type MakerDMGConfig = Omit<ElectronInstallerDMGOptions, 'name' | 'appPath' | 'out'> & { name?: string };

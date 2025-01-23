@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { Credentials } from '@aws-sdk/types';
 import { PublisherOptions, PublisherStatic } from '@electron-forge/publisher-static';
@@ -59,15 +59,18 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
     await Promise.all(
       artifacts.map(async (artifact) => {
         d('uploading:', artifact.path);
+        const params: PutObjectCommandInput = {
+          Body: fs.createReadStream(artifact.path),
+          Bucket: this.config.bucket,
+          Key: this.keyForArtifact(artifact),
+        };
+        if (!this.config.omitAcl) {
+          params.ACL = this.config.public ? 'public-read' : 'private';
+        }
         const uploader = new Upload({
           client: s3Client,
           leavePartsOnError: true,
-          params: {
-            Body: fs.createReadStream(artifact.path),
-            Bucket: this.config.bucket,
-            Key: this.keyForArtifact(artifact),
-            ACL: this.config.public ? 'public-read' : 'private',
-          },
+          params,
         });
 
         uploader.on('httpUploadProgress', (progress: Progress) => {

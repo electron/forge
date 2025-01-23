@@ -1,22 +1,17 @@
 {
   "name": "@electron-forge/plugin-webpack",
-  "version": "7.5.0",
+  "version": "7.6.0",
   "description": "Webpack plugin for Electron Forge, lets you use Webpack directly in your tooling",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
-  "scripts": {
-    "test": "xvfb-maybe mocha --config ../../../.mocharc.js test/**/*_spec.ts test/*_spec.ts"
-  },
   "devDependencies": {
     "@electron/packager": "^18.3.5",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1",
-    "sinon": "^13.0.1",
+    "vitest": "^3.0.3",
     "which": "^2.0.2",
     "xvfb-maybe": "^0.2.1"
   },
@@ -24,10 +19,10 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/core-utils": "7.5.0",
-    "@electron-forge/plugin-base": "7.5.0",
-    "@electron-forge/shared-types": "7.5.0",
-    "@electron-forge/web-multi-logger": "7.5.0",
+    "@electron-forge/core-utils": "7.6.0",
+    "@electron-forge/plugin-base": "7.6.0",
+    "@electron-forge/shared-types": "7.6.0",
+    "@electron-forge/web-multi-logger": "7.6.0",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fast-glob": "^3.2.7",

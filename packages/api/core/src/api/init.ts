@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { safeYarnOrNpm } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
@@ -56,7 +56,7 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
 export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
-  const packageManager = safeYarnOrNpm();
+  const packageManager = await safeYarnOrNpm();
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;

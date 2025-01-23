@@ -1,27 +1,42 @@
 version: 2.1
 
 orbs:
-  node: electronjs/node@2.3.0
+  node: electronjs/node@2.3.1
+
+executors:
+  linux-medium-plus:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium+
 
 commands:
   install:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
-          node-version: '18.20.3'
+          node-version: 20.17.0
       - checkout
   run-lint-and-build:
     steps:
       - node/install-packages
       - run:
+          name: 'Build Electron Forge'
+          command: |
+            yarn build
+      - restore_cache:
+          name: Restore ESLint Cache
+          keys:
+            - v1-lint-dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.json" }}
+      - run:
           name: 'Lint codebase'
           command: |
             yarn lint
             yarn syncpack
-      - run:
-          name: 'Build Electron Forge'
-          command: |
-            yarn build
+      - save_cache:
+          name: Save ESlint Cache
+          paths:
+            - .eslintcache
+          key: v1-lint-dependencies-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.json" }}
   run-fast-tests:
     steps:
       - node/install-packages:
@@ -31,7 +46,7 @@ commands:
       - run:
           name: 'Run fast tests'
           command: |
-            yarn test:fast
+            yarn test:fast --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   run-slow-tests:
     steps:
@@ -42,9 +57,7 @@ commands:
       - run:
           name: 'Run slow tests'
           command: |
-            echo $(circleci tests glob "packages/**/*_spec_slow.ts")
-            TEST_GLOB=$(circleci tests glob "packages/**/*_spec_slow.ts" | circleci tests split --split-by=timings)
-            yarn test $TEST_GLOB
+            yarn test:slow --reporter=junit --outputFile="./reports/out/test_output.xml"
 
 jobs:
   lint-and-build:
@@ -108,7 +121,7 @@ jobs:
         type: enum
         enum: ['x64', 'arm64']
     executor: << parameters.executor >>
-    parallelism: 2
+    parallelism: 1 # disabled due to being on CircleCI's free plan
     steps:
       - install
       - when:
@@ -126,7 +139,7 @@ jobs:
                   npm install node-gyp@9.4.0
       - when:
           condition:
-            equal: [node/linux, << parameters.executor >>]
+            equal: [linux-medium-plus, << parameters.executor >>]
           steps:
             - run:
                 name: Linux specific setup
@@ -174,10 +187,10 @@ workflows:
             - lint-and-build
           matrix:
             parameters:
-              executor: [node/windows, node/linux, node/macos]
+              executor: [node/windows, linux-medium-plus, node/macos]
               arch: [x64, arm64]
             exclude:
               - executor: node/windows
                 arch: arm64
-              - executor: node/linux
+              - executor: linux-medium-plus
                 arch: arm64

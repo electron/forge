@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
@@ -6,6 +6,7 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
+// eslint-disable-next-line n/no-missing-import
 import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 import { runMutatingHook } from './hook';
@@ -19,10 +20,13 @@ const underscoreCase = (str: string) =>
     .toUpperCase();
 
 // Why: needs access to Object methods and also needs to be able to match any interface.
-// eslint-disable-next-line @typescript-eslint/ban-types
 type ProxiedObject = object;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+function isBuildIdentifierConfig(value: any): value is BuildIdentifierConfig<any> {
+  return value && typeof value === 'object' && value.__isMagicBuildIdentifierMap;
+}
+
 const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => string), proxifiedObject: T, envPrefix: string): T => {
   let newObject: T = {} as any;
   if (Array.isArray(proxifiedObject)) {
@@ -46,7 +50,7 @@ const proxify = <T extends ProxiedObject>(buildIdentifier: string | (() => strin
       }
       const value = Reflect.get(target, name, receiver);
 
-      if (value && typeof value === 'object' && value.__isMagicBuildIdentifierMap) {
+      if (isBuildIdentifierConfig(value)) {
         const identifier = typeof buildIdentifier === 'function' ? buildIdentifier() : buildIdentifier;
         return value.map[identifier];
       }
@@ -107,6 +111,7 @@ export function renderConfigTemplate(dir: string, templateObj: any, obj: any): v
     } else if (typeof value === 'string') {
       obj[key] = template(value)(templateObj);
       if (obj[key].startsWith('require:')) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));
       }
     }

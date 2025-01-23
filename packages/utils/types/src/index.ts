@@ -1,8 +1,8 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from 'node:child_process';
 
-import { autoTrace } from '@electron-forge/tracer';
 import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
+import { autoTrace } from '@electron-forge/tracer';
 import {
   ListrBaseClassOptions,
   ListrDefaultRenderer,
@@ -26,6 +26,7 @@ export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 
 export interface ForgeSimpleHookSignatures {
   generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  preStart: [];
   postStart: [appProcess: ElectronProcess];
   prePackage: [platform: ForgePlatform, version: ForgeArch];
   packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];

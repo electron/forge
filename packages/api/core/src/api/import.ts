@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
 import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';
@@ -193,7 +193,7 @@ export default autoTrace(
                 {
                   title: 'Installing dependencies',
                   task: async (_, task) => {
-                    const packageManager = safeYarnOrNpm();
+                    const packageManager = await safeYarnOrNpm();
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
@@ -221,7 +221,7 @@ export default autoTrace(
                     // if there's an existing config.forge object in package.json
                     if (packageJSON?.config?.forge && typeof packageJSON.config.forge === 'object') {
                       d('detected existing Forge config in package.json, merging with base template Forge config');
-                      // eslint-disable-next-line @typescript-eslint/no-var-requires
+                      // eslint-disable-next-line @typescript-eslint/no-require-imports
                       const templateConfig = require(path.resolve(baseTemplate.templateDir, 'forge.config.js'));
                       packageJSON = await readRawPackageJson(dir);
                       merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object

@@ -37,7 +37,7 @@ export const findTemplate = async (dir: string, template: string): Promise<Forge
 
   d(`found template module at: ${templateModulePath}`);
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
 
   return templateModule.default || templateModule;

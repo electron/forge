@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { safeYarnOrNpm, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
@@ -22,7 +22,7 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
   if (shouldLink) {
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
-    const packageManager = safeYarnOrNpm();
+    const packageManager = await safeYarnOrNpm();
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
