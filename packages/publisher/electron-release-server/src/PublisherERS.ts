@@ -87,9 +87,9 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
       // Find the version with the same name and flavor
-      const existingVersion = await authFetch(`api/version?name=${packageJSON.version}&flavor=${flavor}`)
+      const existingVersion: ERSVersion = await authFetch(`api/version?name=${packageJSON.version}&flavor=${flavor}`)
             .then(res => res.json())
-            .then(versions => versions.find((version) => {
+            .then(versions => versions.find((version: ERSVersion) => {
               return version.name === packageJSON.version && version.flavor.name === flavor
             }))
             .catch(() => undefined)
