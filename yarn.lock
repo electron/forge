@@ -855,6 +855,9 @@
   dependencies:
     fast-check "^3.12.0"
 
+"@electron-forge/template-fixture@file:./packages/api/core/spec/fixture/electron-forge-template-fixture":
+  version "13.3.7"
+
 "@electron/asar@^3.0.3", "@electron/asar@^3.2.1", "@electron/asar@^3.2.7":
   version "3.2.10"
   resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.10.tgz#615cf346b734b23cafa4e0603551010bd0e50aa8"
@@ -5535,6 +5538,9 @@ ejs@^3.1.7:
   integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
+
+"electron-forge-template-fixture-two@file:./packages/api/core/spec/fixture/electron-forge-template-fixture":
+  version "13.3.7"
 
 electron-installer-common@^0.10.0, electron-installer-common@^0.10.2:
   version "0.10.3"

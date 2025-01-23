@@ -5,25 +5,31 @@ import { PossibleModule } from '../../util/import-search';
 
 const d = debug('electron-forge:init:find-template');
 
+enum TemplateType {
+  global = 'global',
+  local = 'local',
+}
+
 export const findTemplate = async (template: string): Promise<ForgeTemplate> => {
   let templateModulePath!: string;
   const resolveTemplateTypes = [
-    ['global', `electron-forge-template-${template}`],
-    ['global', `@electron-forge/template-${template}`],
-    ['local', `electron-forge-template-${template}`],
-    ['local', `@electron-forge/template-${template}`],
-    ['local', template],
+    [TemplateType.global, `electron-forge-template-${template}`],
+    [TemplateType.global, `@electron-forge/template-${template}`],
+    [TemplateType.local, `electron-forge-template-${template}`],
+    [TemplateType.local, `@electron-forge/template-${template}`],
+    [TemplateType.global, template],
+    [TemplateType.local, template],
   ];
   let foundTemplate = false;
-  // eslint-disable-next-line
   const { default: globalDirectory } = await import('global-directory');
   for (const [templateType, moduleName] of resolveTemplateTypes) {
     try {
       d(`Trying ${templateType} template: ${moduleName}`);
-      if (templateType === 'global') {
-        templateModulePath = require.resolve(moduleName, { paths: [globalDirectory.npm.packages, globalDirectory.yarn.packages] });
+      if (templateType === TemplateType.global) {
+        templateModulePath = require.resolve(moduleName, {
+          paths: [globalDirectory.npm.packages, globalDirectory.yarn.packages],
+        });
       } else {
-        // local
         templateModulePath = require.resolve(moduleName);
       }
       foundTemplate = true;
@@ -38,8 +44,7 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
 
   d(`found template module at: ${templateModulePath}`);
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const templateModule: PossibleModule<ForgeTemplate> = require(templateModulePath);
+  const templateModule: PossibleModule<ForgeTemplate> = await import(templateModulePath);
 
-  return templateModule.default || templateModule;
+  return templateModule.default ?? templateModule;
 };
