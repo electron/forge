@@ -16,9 +16,10 @@
   "dependencies": {
     "@electron-forge/maker-base": "7.6.0",
     "@electron-forge/shared-types": "7.6.0",
-    "cross-spawn": "^7.0.3",
     "fs-extra": "^10.0.0",
-    "parse-author": "^2.0.0"
+    "parse-author": "^2.0.0",
+    "path-key": "^3.1.1",
+    "which": "^2.0.2"
   },
   "optionalDependencies": {
     "electron-windows-store": "^2.1.0"
