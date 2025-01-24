@@ -1,9 +1,9 @@
 import { detect } from 'detect-package-manager';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { safeYarnOrNpm } from '../src/yarn-or-npm';
+import { safeYarnOrNpm } from '../src/package-manager';
 
-describe('yarn-or-npm', () => {
+describe('package-manager', () => {
   let nodeInstaller: string | undefined;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('yarn-or-npm', () => {
     }
   });
 
-  it('should by default equal the system yarn-or-npm value', async () => {
+  it('should by default equal the system package manager value', async () => {
     const pm = await detect();
     await expect(safeYarnOrNpm()).resolves.toEqual(pm);
   });
