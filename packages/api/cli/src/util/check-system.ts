@@ -2,7 +2,7 @@ import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
-import { utils as forgeUtils } from '@electron-forge/core';
+import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -55,9 +55,9 @@ function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, versi
 }
 
 async function checkPackageManagerVersion() {
-  const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
+  const version = await spawnPackageManager(['--version']);
   const versionString = version.toString().trim();
-  if (await forgeUtils.hasYarn()) {
+  if ((await resolvePackageManager()) === 'yarn') {
     warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
     return `yarn@${versionString}`;
   } else {

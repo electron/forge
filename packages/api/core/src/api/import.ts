@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
+import { resolvePackageManager, updateElectronDependency } from '@electron-forge/core-utils';
 import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import { autoTrace } from '@electron-forge/tracer';
@@ -193,7 +193,7 @@ export default autoTrace(
                 {
                   title: 'Installing dependencies',
                   task: async (_, task) => {
-                    const packageManager = await safeYarnOrNpm();
+                    const packageManager = await resolvePackageManager();
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');

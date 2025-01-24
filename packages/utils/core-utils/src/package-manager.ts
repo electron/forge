@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { detect } from 'detect-package-manager';
 import logSymbols from 'log-symbols';
 
-export const safeYarnOrNpm = async () => {
+export const resolvePackageManager = async () => {
   const system = await detect();
   switch (process.env.NODE_INSTALLER) {
     case 'yarn':
@@ -17,6 +17,4 @@ export const safeYarnOrNpm = async () => {
   }
 };
 
-export const yarnOrNpmSpawn = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(await safeYarnOrNpm(), args, opts);
-
-export const hasYarn = async () => (await safeYarnOrNpm()) === 'yarn';
+export const spawnPackageManager = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => spawn(await resolvePackageManager(), args, opts);

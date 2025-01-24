@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { resolvePackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -29,7 +29,7 @@ export const exactDevDeps = ['electron'];
 
 export const initNPM = async <T>(dir: string, task: ForgeListrTask<T>): Promise<void> => {
   d('installing dependencies');
-  const packageManager = await safeYarnOrNpm();
+  const packageManager = await resolvePackageManager();
   task.output = `${packageManager} install ${deps.join(' ')}`;
   await installDepList(dir, deps);
 
