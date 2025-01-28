@@ -21,17 +21,17 @@ describe('yarn-or-npm', () => {
 
   it('should by default equal the system yarn-or-npm value', async () => {
     const pm = await detect();
-    expect(safeYarnOrNpm()).resolves.toEqual(pm);
+    await expect(safeYarnOrNpm()).resolves.toEqual(pm);
   });
 
-  it('should return yarn if NODE_INSTALLER=yarn', () => {
+  it('should return yarn if NODE_INSTALLER=yarn', async () => {
     process.env.NODE_INSTALLER = 'yarn';
-    expect(safeYarnOrNpm()).resolves.toEqual('yarn');
+    await expect(safeYarnOrNpm()).resolves.toEqual('yarn');
   });
 
-  it('should return npm if NODE_INSTALLER=npm', () => {
+  it('should return npm if NODE_INSTALLER=npm', async () => {
     process.env.NODE_INSTALLER = 'npm';
-    expect(safeYarnOrNpm()).resolves.toEqual('npm');
+    await expect(safeYarnOrNpm()).resolves.toEqual('npm');
   });
 
   it('should return system value if NODE_INSTALLER is an unrecognized installer', async () => {
