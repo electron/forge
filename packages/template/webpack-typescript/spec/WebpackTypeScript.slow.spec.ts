@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { spawnPackageManager } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -14,7 +14,7 @@ describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:prepare']);
+    await spawnPackageManager(['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -71,7 +71,7 @@ describe('WebpackTypeScriptTemplate', () => {
         webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
       };
       await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
-      await yarnOrNpmSpawn(['install'], {
+      await spawnPackageManager(['install'], {
         cwd: dir,
       });
 
@@ -94,7 +94,7 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   afterAll(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
+    await spawnPackageManager(['link:remove']);
     await fs.promises.rm(dir, { recursive: true, force: true });
   });
 });
