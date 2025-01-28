@@ -21,15 +21,10 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
     d('nothing to install, stopping immediately');
     return Promise.resolve();
   }
-  let cmd = ['install'].concat(deps);
-  if (pm === 'yarn') {
-    cmd = ['add'].concat(deps);
-    if (depType === DepType.DEV) cmd.push('--dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
-  } else {
-    if (depType === DepType.DEV) cmd.push('--save-dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
-  }
+  const cmd = [pm.install].concat(deps);
+  if (depType === DepType.DEV) cmd.push(pm.dev);
+  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push(pm.exact);
+
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
     await spawnPackageManager(cmd, {

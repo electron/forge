@@ -2,7 +2,7 @@ import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
-import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
+import { resolvePackageManager, spawnPackageManager, SupportedPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -27,43 +27,35 @@ async function checkNodeVersion() {
   return process.versions.node;
 }
 
-const NPM_ALLOWLISTED_VERSIONS = {
-  all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
-  darwin: '>= 5.4.0',
-  linux: '>= 5.4.0',
+const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, string>> = {
+  npm: {
+    all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
+    darwin: '>= 5.4.0',
+    linux: '>= 5.4.0',
+  },
+  yarn: {
+    all: '>= 1.0.0',
+  },
+  pnpm: {
+    all: '>= 8.0.0',
+  },
 };
-const YARN_ALLOWLISTED_VERSIONS = {
-  all: '>= 1.0.0',
-};
 
-export function checkValidPackageManagerVersion(packageManager: string, version: string, allowlistedVersions: string) {
-  if (!semver.valid(version)) {
-    d(`Invalid semver-string while checking version: ${version}`);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    throw new Error(`Could not check ${packageManager} version "${version}", assuming incompatible`);
-  }
-  if (!semver.satisfies(version, allowlistedVersions)) {
-    throw new Error(`Incompatible version of ${packageManager} detected "${version}", must be in range ${allowlistedVersions}`);
-  }
-}
-
-function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, version: string, allowlistedVersions: { [key: string]: string }) {
-  const osVersions = allowlistedVersions[process.platform];
-  const versions = osVersions ? `${allowlistedVersions.all} || ${osVersions}` : allowlistedVersions.all;
-  const versionString = version.toString();
-  checkValidPackageManagerVersion(packageManager, versionString, versions);
-}
-
-async function checkPackageManagerVersion() {
+export async function checkPackageManagerVersion() {
   const version = await spawnPackageManager(['--version']);
   const versionString = version.toString().trim();
-  if ((await resolvePackageManager()) === 'yarn') {
-    warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
-    return `yarn@${versionString}`;
-  } else {
-    warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_ALLOWLISTED_VERSIONS);
-    return `npm@${versionString}`;
+  const pm = await resolvePackageManager();
+
+  const range = ALLOWLISTED_VERSIONS[pm.executable][process.platform] ?? ALLOWLISTED_VERSIONS[pm.executable].all;
+  if (!semver.valid(version)) {
+    d(`Invalid semver-string while checking version: ${version}`);
+    throw new Error(`Could not check ${pm.executable} version "${version}", assuming incompatible`);
   }
+  if (!semver.satisfies(version, range)) {
+    throw new Error(`Incompatible version of ${pm.executable} detected: "${version}" must be in range ${range}`);
+  }
+
+  return `${pm.executable}@${versionString}`;
 }
 
 /**
@@ -106,7 +98,7 @@ export async function checkSystem(task: ForgeListrTask<never>) {
           },
         },
         {
-          title: 'Checking packageManager version',
+          title: 'Checking package manager version',
           task: async (_, task) => {
             const packageManager = await checkPackageManagerVersion();
             task.title = `Found ${packageManager}`;

@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { spawnPackageManager } from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import { ensureTestDirIsNonexistent, expectLintToPass } from '@electron-forge/test-utils';
@@ -29,12 +29,12 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
 }
 
-describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $installer)`, ({ installer }) => {
+describe.each([{ installer: 'npm' }, { installer: 'npm' }, { installer: 'pnpm' }])(`init (with $installer)`, ({ installer }) => {
   let dir: string;
 
   beforeAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:prepare']);
     process.env.NODE_INSTALLER = installer;
+    await spawnPackageManager(['run', 'link:prepare']);
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
@@ -213,7 +213,7 @@ describe.each([{ installer: 'npm' }, { installer: 'yarn' }])(`init (with $instal
   });
 
   afterAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:remove']);
+    await spawnPackageManager(['run', 'link:remove']);
   });
 });
 
@@ -221,7 +221,7 @@ describe('Electron Forge API', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:prepare']);
+    await spawnPackageManager(['run', 'link:prepare']);
   });
 
   describe('after init', () => {
@@ -487,6 +487,6 @@ describe('Electron Forge API', () => {
   });
 
   afterAll(async () => {
-    await yarnOrNpmSpawn(['link:remove']);
+    await spawnPackageManager(['link:remove']);
   });
 });

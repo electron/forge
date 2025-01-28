@@ -1,19 +1,61 @@
-import { describe, expect, it } from 'vitest';
+import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
+import { describe, expect, it, vi } from 'vitest';
 
-import { checkValidPackageManagerVersion } from '../src/util/check-system';
+import { checkPackageManagerVersion } from '../src/util/check-system';
 
-describe('check-system', () => {
-  describe('validPackageManagerVersion', () => {
-    it('should consider whitelisted versions to be valid', () => {
-      expect(() => checkValidPackageManagerVersion('NPM', '3.10.1', '^3.0.0')).not.toThrow();
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    resolvePackageManager: vi.fn(),
+    spawnPackageManager: vi.fn(),
+  };
+});
+
+describe('checkPackageManagerVersion', () => {
+  it('should consider allowlisted versions to be valid', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'npm',
+      install: 'install',
+      dev: '--save-dev',
+      exact: '--save-exact',
+    });
+    vi.mocked(spawnPackageManager).mockResolvedValue('10.9.2');
+    await expect(checkPackageManagerVersion()).resolves.not.toThrow();
+  });
+
+  it('rejects versions that are outside of the supported range', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'yarn',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
     });
 
-    it('should consider Yarn nightly versions to be invalid', () => {
-      expect(() => checkValidPackageManagerVersion('Yarn', '0.23.0-20170311.0515', '0.23.0')).toThrow();
-    });
+    // yarn 0.x unsupported
+    vi.mocked(spawnPackageManager).mockResolvedValue('0.22.0');
+    await expect(checkPackageManagerVersion()).rejects.toThrow();
+  });
 
-    it('should consider invalid semver versions to be invalid', () => {
-      expect(() => checkValidPackageManagerVersion('Yarn', '0.22', '0.22.0')).toThrow();
+  it('should consider Yarn nightly versions to be invalid', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'yarn',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
     });
+    vi.mocked(spawnPackageManager).mockResolvedValue('0.23.0-20170311.0515');
+    await expect(checkPackageManagerVersion()).rejects.toThrow();
+  });
+
+  it('should consider invalid semver versions to be invalid', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'yarn',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
+    });
+    vi.mocked(spawnPackageManager).mockResolvedValue('1.22');
+    await expect(checkPackageManagerVersion()).rejects.toThrow();
   });
 });

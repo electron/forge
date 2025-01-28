@@ -193,23 +193,24 @@ export default autoTrace(
                 {
                   title: 'Installing dependencies',
                   task: async (_, task) => {
-                    const packageManager = await resolvePackageManager();
+                    const pm = await resolvePackageManager();
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
                     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
                     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
 
+                    // FIXME(erickzhao): these flags should be package-manager-specific.
                     d('installing dependencies');
-                    task.output = `${packageManager} install ${importDeps.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${importDeps.join(' ')}`;
                     await installDepList(dir, importDeps);
 
                     d('installing devDependencies');
-                    task.output = `${packageManager} install --dev ${importDevDeps.join(' ')}`;
+                    task.output = `${pm} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
                     await installDepList(dir, importDevDeps, DepType.DEV);
 
-                    d('installing exactDevDependencies');
-                    task.output = `${packageManager} install --dev --exact ${importExactDevDeps.join(' ')}`;
+                    d('installing devDependencies with exact versions');
+                    task.output = `${pm} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
                     await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                   },
                 },

@@ -21,24 +21,23 @@ describe('package-manager', () => {
 
   it('should by default equal the system package manager value', async () => {
     const pm = await detect();
-    await expect(resolvePackageManager()).resolves.toEqual(pm);
+    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
   });
 
   it('should return yarn if NODE_INSTALLER=yarn', async () => {
     process.env.NODE_INSTALLER = 'yarn';
-    await expect(resolvePackageManager()).resolves.toEqual('yarn');
+    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
   });
 
   it('should return npm if NODE_INSTALLER=npm', async () => {
     process.env.NODE_INSTALLER = 'npm';
-    await expect(resolvePackageManager()).resolves.toEqual('npm');
+    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
   });
 
-  it('should return system value if NODE_INSTALLER is an unrecognized installer', async () => {
-    process.env.NODE_INSTALLER = 'magical_unicorn';
+  it('should return npm if package manager is unsupported', async () => {
+    process.env.NODE_INSTALLER = 'bun';
     console.warn = vi.fn();
-    const pm = await detect();
-    await expect(resolvePackageManager()).resolves.toEqual(pm);
-    expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Unknown NODE_INSTALLER'));
+    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
+    expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Package manager bun is unsupported'));
   });
 });
