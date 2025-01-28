@@ -113,7 +113,8 @@ jobs:
       - run:
           name: 'Install pnpm'
           command: |
-            npm install -g pnpm@10.0.0
+            # FIXME: upgrade to pnpm 10 and add Electron to allowlist for postinstall scripts
+            npm install -g pnpm@9.15.4
       - run-fast-tests
       - store_test_results:
           path: ./reports/
