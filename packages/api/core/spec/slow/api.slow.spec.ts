@@ -29,12 +29,12 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
 }
 
-describe.each([{ installer: 'npm' }, { installer: 'npm' }, { installer: 'pnpm' }])(`init (with $installer)`, ({ installer }) => {
+describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $installer)`, ({ pm }) => {
   let dir: string;
 
   beforeAll(async () => {
     await spawnPackageManager(['run', 'link:prepare']);
-    process.env.NODE_INSTALLER = installer;
+    process.env.NODE_INSTALLER = pm;
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
@@ -196,7 +196,7 @@ describe.each([{ installer: 'npm' }, { installer: 'npm' }, { installer: 'pnpm' }
 
       expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
 
-      execSync(`${installer} install`, {
+      execSync(`${pm} install`, {
         cwd: dir,
       });
 
