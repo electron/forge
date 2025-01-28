@@ -242,7 +242,7 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
             },
           };
           if (process.platform === 'win32') {
-            await fs.promises.rename(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
+            await fs.promises.copyFile(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
             devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
           } else if (process.platform === 'linux') {
             packageJSON.config.forge.packagerConfig = {
