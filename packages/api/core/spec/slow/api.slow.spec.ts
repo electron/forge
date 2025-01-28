@@ -33,8 +33,8 @@ describe.each([{ installer: 'npm' }, { installer: 'npm' }, { installer: 'pnpm' }
   let dir: string;
 
   beforeAll(async () => {
-    process.env.NODE_INSTALLER = installer;
     await spawnPackageManager(['run', 'link:prepare']);
+    process.env.NODE_INSTALLER = installer;
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
