@@ -110,6 +110,10 @@ jobs:
                     libgtk-3-0 \
                     libgbm1
                   sudo add-apt-repository -y ppa:alexlarsson/flatpak
+      - run:
+          name: 'Install pnpm'
+          command: |
+            npm install -g pnpm@10.0.0
       - run-fast-tests
       - store_test_results:
           path: ./reports/
@@ -155,6 +159,10 @@ jobs:
                     libgdk-pixbuf2.0-dev \
                     libgtk-3-0 \
                     libgbm1
+      - run:
+          name: 'Install pnpm'
+          command: |
+            npm install -g pnpm@10.0.0
       - run-slow-tests
       - run:
           when: always # the report is generated on pass or fail
