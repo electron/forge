@@ -35,6 +35,18 @@ describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $insta
   beforeAll(async () => {
     await spawnPackageManager(['run', 'link:prepare']);
     process.env.NODE_INSTALLER = pm;
+
+    if (pm === 'pnpm') {
+      await spawnPackageManager('config set node-linker hoisted'.split(' '));
+    }
+  });
+
+  afterAll(async () => {
+    await spawnPackageManager(['run', 'link:remove']);
+
+    if (pm === 'pnpm') {
+      await spawnPackageManager('config delete node-linker'.split(' '));
+    }
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
@@ -49,6 +61,8 @@ describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $insta
 
   describe('init', () => {
     beforeInitTest();
+
+    afterAll(() => fs.promises.rm(dir, { recursive: true, force: true }));
 
     it('should fail in initializing an already initialized directory', async () => {
       await expect(api.init({ dir })).rejects.toThrow(
@@ -76,8 +90,6 @@ describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $insta
     describe('lint', () => {
       it('should initially pass the linting process', () => expectLintToPass(dir));
     });
-
-    afterAll(() => fs.promises.rm(dir, { recursive: true, force: true }));
   });
 
   describe.skip('init with CI files enabled', () => {
@@ -186,7 +198,7 @@ describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $insta
       });
     });
 
-    it('creates forge.config.js and is packageable', async () => {
+    it('creates forge.config.js and can successfully package the application', async () => {
       await updatePackageJSON(dir, async (packageJSON) => {
         packageJSON.name = 'Name';
         packageJSON.productName = 'ProductName';
@@ -210,10 +222,6 @@ describe.each([{ pm: 'npm' }, { pm: 'npm' }, { pm: 'pnpm' }])(`init (with $insta
     afterAll(async () => {
       await fs.promises.rm(dir, { recursive: true, force: true });
     });
-  });
-
-  afterAll(async () => {
-    await spawnPackageManager(['run', 'link:remove']);
   });
 });
 
