@@ -11,6 +11,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "7.6.1",
     "@electron-forge/shared-types": "7.6.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.3.1",

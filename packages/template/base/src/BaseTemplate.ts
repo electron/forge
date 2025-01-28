@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { resolvePackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -78,6 +79,15 @@ export class BaseTemplate implements ForgeTemplate {
     const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
     packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
     packageJSON.author = await determineAuthor(directory);
+
+    const pm = await resolvePackageManager();
+
+    // As of pnpm v10, no postinstall scripts will run unless allowlisted through `onlyBuiltDependencies`
+    if (pm.executable === 'pnpm') {
+      packageJSON.pnpm = {
+        onlyBuiltDependencies: ['electron'],
+      };
+    }
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
 
