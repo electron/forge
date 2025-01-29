@@ -14,6 +14,7 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
 
 describe('installDependencies', () => {
   it('should immediately resolve if no deps are provided', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({ executable: 'npm', install: 'install', dev: '--save-dev', exact: '--save-exact' });
     await installDependencies('mydir', []);
     expect(spawnPackageManager).not.toHaveBeenCalled();
   });
