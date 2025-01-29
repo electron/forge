@@ -25,6 +25,7 @@ class ViteTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
           await this.copyTemplateFile(path.join(directory, 'src'), 'preload.js');
+          await this.copyTemplateFile(path.join(directory, 'src'), 'index.js');
 
           await this.updateFileByLine(
             path.resolve(directory, 'src', 'index.js'),
@@ -42,7 +43,7 @@ class ViteTemplate extends BaseTemplate {
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          fs.moveSync(path.join(directory, 'src', 'index.html'), path.join(directory, 'index.html'));
+          fs.moveSync(path.join(directory, 'src', 'index.html'), path.join(directory, 'index.html'), { overwrite: options.force });
           await this.updateFileByLine(path.join(directory, 'index.html'), (line) => {
             if (line.includes('link rel="stylesheet"')) return '';
             if (line.includes('</body>')) return '    <script type="module" src="/src/renderer.js"></script>\n  </body>';

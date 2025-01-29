@@ -65,7 +65,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
       {
         title: `Locating custom template: "${template}"`,
         task: async (ctx) => {
-          ctx.templateModule = await findTemplate(dir, template);
+          ctx.templateModule = await findTemplate(template);
         },
       },
       {
@@ -86,7 +86,7 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
         title: 'Initializing template',
         task: async ({ templateModule }, task) => {
           if (typeof templateModule.initializeTemplate === 'function') {
-            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles });
+            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles, force });
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });
             }
