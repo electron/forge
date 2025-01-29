@@ -1,6 +1,3 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-
 import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
@@ -33,7 +30,6 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
     if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
   }
   d('executing', JSON.stringify(cmd), 'in:', dir);
-  d(readFileSync(path.resolve(dir, 'package.json'), 'utf-8'));
   try {
     await yarnOrNpmSpawn(cmd, {
       cwd: dir,
