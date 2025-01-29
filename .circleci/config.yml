@@ -46,7 +46,7 @@ commands:
       - run:
           name: 'Run fast tests'
           command: |
-            yarn test:fast --reporter=junit --outputFile="./reports/out/test_output.xml"
+            yarn test:fast --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   run-slow-tests:
     steps:
@@ -57,7 +57,7 @@ commands:
       - run:
           name: 'Run slow tests'
           command: |
-            yarn test:slow --reporter=junit --outputFile="./reports/out/test_output.xml"
+            yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
 
 jobs:
   lint-and-build:
