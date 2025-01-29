@@ -18,6 +18,23 @@ export class BaseTemplate implements ForgeTemplate {
 
   public requiredForgeVersion = currentForgeVersion;
 
+  get dependencies(): string[] {
+    const packageJSONPath = path.join(this.templateDir, 'package.json');
+    if (fs.pathExistsSync(packageJSONPath)) {
+      const deps = fs.readJsonSync(packageJSONPath).dependencies;
+      if (deps) {
+        return Object.entries(deps).map(([packageName, version]) => {
+          if (version === 'ELECTRON_FORGE/VERSION') {
+            version = `^${currentForgeVersion}`;
+          }
+          return `${packageName}@${version}`;
+        });
+      }
+    }
+
+    return [];
+  }
+
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
     if (fs.pathExistsSync(packageJSONPath)) {
@@ -78,8 +95,7 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
+    await this.copy(path.join(this.templateDir, basename), path.resolve(destDir, basename));
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
