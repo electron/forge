@@ -5,8 +5,8 @@ const fs = require('fs-extra');
 
 module.exports = {
   requiredForgeVersion: '>= 6.0.0-beta.1',
-  dependencies: ['debug'],
-  devDependencies: ['lodash'],
+  dependencies: [...baseTemplate.dependencies, 'debug'],
+  devDependencies: [...baseTemplate.devDependencies, 'lodash'],
   initializeTemplate: async (directory) => {
     const tasks = await baseTemplate.initializeTemplate(directory, {});
     return [

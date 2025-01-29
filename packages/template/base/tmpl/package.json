@@ -10,10 +10,6 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
-  "devDependencies": {
-    "@electron/fuses": "^1.7.0",
-    "@electron-forge/plugin-fuses": "ELECTRON_FORGE/VERSION"
-  },
   "keywords": [],
   "author": "",
   "license": "MIT"
