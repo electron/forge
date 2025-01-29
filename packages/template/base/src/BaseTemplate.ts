@@ -70,8 +70,7 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
+    await this.copy(path.join(this.templateDir, basename), path.resolve(destDir, basename));
   }
 
   async initializePackageJSON(directory: string): Promise<void> {

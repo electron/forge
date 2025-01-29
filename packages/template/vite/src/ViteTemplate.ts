@@ -25,6 +25,7 @@ class ViteTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
           await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.js');
           await this.copyTemplateFile(path.join(directory, 'src'), 'preload.js');
+          await this.copyTemplateFile(path.join(directory, 'src'), 'index.js');
 
           await this.updateFileByLine(
             path.resolve(directory, 'src', 'index.js'),
