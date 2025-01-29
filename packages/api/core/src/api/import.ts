@@ -200,17 +200,16 @@ export default autoTrace(
                     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron'));
                     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
 
-                    // FIXME(erickzhao): these flags should be package-manager-specific.
                     d('installing dependencies');
                     task.output = `${pm.executable} ${pm.install} ${importDeps.join(' ')}`;
                     await installDepList(dir, importDeps);
 
                     d('installing devDependencies');
-                    task.output = `${pm} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
                     await installDepList(dir, importDevDeps, DepType.DEV);
 
                     d('installing devDependencies with exact versions');
-                    task.output = `${pm} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
                     await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                   },
                 },

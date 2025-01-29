@@ -16,7 +16,7 @@ export enum DepVersionRestriction {
 
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
   const pm = await resolvePackageManager();
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm}`);
+  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm.executable}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
