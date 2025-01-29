@@ -27,6 +27,14 @@ async function checkNodeVersion() {
   return process.versions.node;
 }
 
+async function checkPnpmNodeLinker() {
+  const nodeLinkerValue = await spawnPackageManager(['config', 'get', 'node-linker']);
+
+  if (nodeLinkerValue !== 'hoisted') {
+    throw new Error('When using pnpm, `node-linker` must be set to "hoisted". Run `pnpm config set node-linker hoisted` to set this config value.');
+  }
+}
+
 const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, string>> = {
   npm: {
     all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
@@ -41,7 +49,7 @@ const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, strin
   },
 };
 
-export async function checkPackageManagerVersion() {
+export async function checkPackageManager() {
   const version = await spawnPackageManager(['--version']);
   const versionString = version.toString().trim();
   const pm = await resolvePackageManager();
@@ -53,6 +61,10 @@ export async function checkPackageManagerVersion() {
   }
   if (!semver.satisfies(version, range)) {
     throw new Error(`Incompatible version of ${pm.executable} detected: "${version}" must be in range ${range}`);
+  }
+
+  if (pm.executable === 'pnpm') {
+    await checkPnpmNodeLinker();
   }
 
   return `${pm.executable}@${versionString}`;
@@ -100,7 +112,7 @@ export async function checkSystem(task: ForgeListrTask<never>) {
         {
           title: 'Checking package manager version',
           task: async (_, task) => {
-            const packageManager = await checkPackageManagerVersion();
+            const packageManager = await checkPackageManager();
             task.title = `Found ${packageManager}`;
           },
         },

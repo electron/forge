@@ -1,7 +1,7 @@
 import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
 import { describe, expect, it, vi } from 'vitest';
 
-import { checkPackageManagerVersion } from '../src/util/check-system';
+import { checkPackageManager } from '../src/util/check-system';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -12,7 +12,7 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   };
 });
 
-describe('checkPackageManagerVersion', () => {
+describe('checkPackageManager', () => {
   it('should consider allowlisted versions to be valid', async () => {
     vi.mocked(resolvePackageManager).mockResolvedValue({
       executable: 'npm',
@@ -21,7 +21,7 @@ describe('checkPackageManagerVersion', () => {
       exact: '--save-exact',
     });
     vi.mocked(spawnPackageManager).mockResolvedValue('10.9.2');
-    await expect(checkPackageManagerVersion()).resolves.not.toThrow();
+    await expect(checkPackageManager()).resolves.not.toThrow();
   });
 
   it('rejects versions that are outside of the supported range', async () => {
@@ -34,7 +34,7 @@ describe('checkPackageManagerVersion', () => {
 
     // yarn 0.x unsupported
     vi.mocked(spawnPackageManager).mockResolvedValue('0.22.0');
-    await expect(checkPackageManagerVersion()).rejects.toThrow();
+    await expect(checkPackageManager()).rejects.toThrow();
   });
 
   it('should consider Yarn nightly versions to be invalid', async () => {
@@ -45,7 +45,7 @@ describe('checkPackageManagerVersion', () => {
       exact: '--exact',
     });
     vi.mocked(spawnPackageManager).mockResolvedValue('0.23.0-20170311.0515');
-    await expect(checkPackageManagerVersion()).rejects.toThrow();
+    await expect(checkPackageManager()).rejects.toThrow();
   });
 
   it('should consider invalid semver versions to be invalid', async () => {
@@ -56,6 +56,27 @@ describe('checkPackageManagerVersion', () => {
       exact: '--exact',
     });
     vi.mocked(spawnPackageManager).mockResolvedValue('1.22');
-    await expect(checkPackageManagerVersion()).rejects.toThrow();
+    await expect(checkPackageManager()).rejects.toThrow();
+  });
+
+  it('should throw if using pnpm without node-linker=hoisted', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'pnpm',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
+    });
+    vi.mocked(spawnPackageManager).mockImplementation((args) => {
+      if (args?.join(' ') === 'config get node-linker') {
+        return Promise.resolve('isolated');
+      } else if (args?.join(' ') === '--version') {
+        return Promise.resolve('10.0.0');
+      } else {
+        throw new Error('Unexpected command');
+      }
+    });
+    await expect(checkPackageManager()).rejects.toThrow(
+      'When using pnpm, `node-linker` must be set to "hoisted". Run `pnpm config set node-linker hoisted` to set this config value.'
+    );
   });
 });

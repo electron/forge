@@ -40,12 +40,19 @@ export class BaseTemplate implements ForgeTemplate {
       {
         title: 'Copying starter files',
         task: async () => {
+          const pm = await resolvePackageManager();
           d('creating directory:', path.resolve(directory, 'src'));
           await fs.mkdirs(path.resolve(directory, 'src'));
           const rootFiles = ['_gitignore', 'forge.config.js'];
+
+          if (pm.executable === 'pnpm') {
+            rootFiles.push('.npmrc');
+          }
+
           if (copyCIFiles) {
             d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
           }
+
           const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
           for (const file of rootFiles) {
