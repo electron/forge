@@ -214,6 +214,7 @@ export type StartResult = InnerStartResult | { tasks: ForgeListrTaskDefinition[]
 
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
+  force?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
