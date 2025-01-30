@@ -29,17 +29,17 @@ export const exactDevDeps = ['electron'];
 
 export const initNPM = async <T>(dir: string, task: ForgeListrTask<T>): Promise<void> => {
   d('installing dependencies');
-  const packageManager = await resolvePackageManager();
-  task.output = `${packageManager} install ${deps.join(' ')}`;
+  const pm = await resolvePackageManager();
+  task.output = `${pm.executable} ${pm.install} ${deps.join(' ')}`;
   await installDepList(dir, deps);
 
   d('installing devDependencies');
-  task.output = `${packageManager} install --dev ${deps.join(' ')}`;
+  task.output = `${pm.executable} ${pm.install} ${pm.dev} ${deps.join(' ')}`;
   await installDepList(dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
   for (const packageName of exactDevDeps) {
-    task.output = `${packageManager} install --dev --exact ${packageName}`;
+    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${packageName}`;
     await installDepList(dir, [packageName], DepType.DEV, DepVersionRestriction.EXACT);
   }
 };
