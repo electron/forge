@@ -4,14 +4,14 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-permissions:
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   stale:
     runs-on: ubuntu-latest
-
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
         with:
