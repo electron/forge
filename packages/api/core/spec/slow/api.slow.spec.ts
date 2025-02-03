@@ -290,10 +290,7 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
         await fs.promises.rm(path.resolve(dir, 'out'), { recursive: true, force: true });
       });
 
-      // FIXME(erickzhao): This test hangs on the electron-rebuild step
-      // with Electron 19. It was tested to work on Electron 18.
-      // see https://github.com/electron/forge/pull/2869
-      describe.skip('with prebuilt native module deps installed', () => {
+      describe('with prebuilt native module deps installed', () => {
         beforeAll(async () => {
           await installDeps(dir, ['ref-napi']);
         });
