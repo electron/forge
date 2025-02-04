@@ -125,11 +125,11 @@ describe('getElectronModulePath', () => {
 
   describe('with npm workspaces', () => {
     beforeAll(() => {
-      process.env.NODE_INSTALLER = 'npm';
+      process.env.npm_config_user_agent = 'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
     });
 
     afterAll(() => {
-      delete process.env.NODE_INSTALLER;
+      delete process.env.npm_config_user_agent;
     });
 
     it('finds the top-level electron module', async () => {

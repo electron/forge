@@ -35,6 +35,7 @@ async function checkPnpmNodeLinker() {
   }
 }
 
+// TODO(v8): Drop antiquated versions of npm
 const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, string>> = {
   npm: {
     all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
@@ -50,9 +51,9 @@ const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, strin
 };
 
 export async function checkPackageManager() {
-  const version = await spawnPackageManager(['--version']);
-  const versionString = version.toString().trim();
   const pm = await resolvePackageManager();
+  const version = pm.version ?? (await spawnPackageManager(['--version']));
+  const versionString = version.toString().trim();
 
   const range = ALLOWLISTED_VERSIONS[pm.executable][process.platform] ?? ALLOWLISTED_VERSIONS[pm.executable].all;
   if (!semver.valid(version)) {

@@ -1,9 +1,10 @@
 import path from 'node:path';
 
 import debug from 'debug';
-import findUp from 'find-up';
 import fs from 'fs-extra';
 import semver from 'semver';
+
+import { findLockFile } from './package-manager';
 
 const d = debug('electron-forge:electron-version');
 
@@ -20,7 +21,7 @@ function findElectronDep(dep: string): boolean {
 
 async function findAncestorNodeModulesPath(dir: string, packageName: string): Promise<string | undefined> {
   d('Looking for a lock file to indicate the root of the repo');
-  const lockPath = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], { cwd: dir, type: 'file' });
+  const lockPath = await findLockFile(dir);
   if (lockPath) {
     d(`Found lock file: ${lockPath}`);
     const nodeModulesPath = path.join(path.dirname(lockPath), 'node_modules', packageName);

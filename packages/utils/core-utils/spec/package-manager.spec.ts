@@ -1,43 +1,92 @@
-import { detect } from 'detect-package-manager';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import findUp from 'find-up';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resolvePackageManager } from '../src/package-manager';
 
+vi.mock('find-up', async (importOriginal) => {
+  const mod = await importOriginal<object>();
+  return {
+    ...mod,
+    default: vi.fn(),
+  };
+});
+
 describe('package-manager', () => {
-  let nodeInstaller: string | undefined;
+  describe('npm_config_user_agent', () => {
+    let originalUa: string | undefined;
+    beforeAll(() => {
+      originalUa = process.env.npm_config_user_agent;
+    });
+    afterAll(() => {
+      process.env.npm_config_user_agent = originalUa;
+    });
 
-  beforeEach(() => {
-    nodeInstaller = process.env.NODE_INSTALLER;
-    delete process.env.NODE_INSTALLER;
+    it.each([
+      { ua: 'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64', pm: 'yarn', version: '1.22.22' },
+      { ua: 'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64', pm: 'pnpm', version: '10.0.0' },
+      { ua: 'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false', pm: 'npm', version: '10.9.2' },
+    ])('with $ua', async ({ ua, pm, version }) => {
+      process.env.npm_config_user_agent = ua;
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
+      await expect(resolvePackageManager()).resolves.toHaveProperty('version', version);
+    });
+
+    it('should return yarn if npm_config_user_agent=yarn', async () => {
+      process.env.npm_config_user_agent = 'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
+      await expect(resolvePackageManager()).resolves.toHaveProperty('version', '1.22.22');
+    });
+
+    it('should return pnpm if npm_config_user_agent=pnpm', async () => {
+      process.env.npm_config_user_agent = 'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64';
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'pnpm');
+    });
+
+    it('should return npm if npm_config_user_agent=npm', async () => {
+      process.env.npm_config_user_agent = 'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
+    });
   });
 
-  afterEach(() => {
-    if (!nodeInstaller) {
+  describe('NODE_INSTALLER', () => {
+    let nodeInstaller: string | undefined;
+
+    beforeEach(() => {
+      nodeInstaller = process.env.NODE_INSTALLER;
       delete process.env.NODE_INSTALLER;
-    } else {
-      process.env.NODE_INSTALLER = nodeInstaller;
-    }
+      // NODE_INSTALLER is deprecated for Electron Forge 8 and throws a console.warn that we want to silence in tests
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+    afterEach(() => {
+      if (!nodeInstaller) {
+        delete process.env.NODE_INSTALLER;
+      } else {
+        process.env.NODE_INSTALLER = nodeInstaller;
+      }
+      vi.restoreAllMocks();
+    });
+
+    it.each(['yarn', 'npm', 'pnpm'])('should return yarn if NODE_INSTALLER=yarn', async (pm) => {
+      process.env.NODE_INSTALLER = pm;
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
+    });
+
+    it('should return npm if package manager is unsupported', async () => {
+      process.env.NODE_INSTALLER = 'bun';
+      console.warn = vi.fn();
+      await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
+      expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Package manager bun is unsupported'));
+    });
   });
 
-  it('should by default equal the system package manager value', async () => {
-    const pm = await detect();
-    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
-  });
-
-  it('should return yarn if NODE_INSTALLER=yarn', async () => {
-    process.env.NODE_INSTALLER = 'yarn';
+  it('should equal the system package manager value if above strategies failed', async () => {
+    vi.mocked(findUp).mockResolvedValue('yarn.lock');
     await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
   });
 
-  it('should return npm if NODE_INSTALLER=npm', async () => {
-    process.env.NODE_INSTALLER = 'npm';
+  it('should fall back to npm if no other strategy worked', async () => {
+    process.env.npm_config_user_agent = undefined;
+    vi.mocked(findUp).mockResolvedValue(undefined);
     await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
-  });
-
-  it('should return npm if package manager is unsupported', async () => {
-    process.env.NODE_INSTALLER = 'bun';
-    console.warn = vi.fn();
-    await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
-    expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Package manager bun is unsupported'));
   });
 });

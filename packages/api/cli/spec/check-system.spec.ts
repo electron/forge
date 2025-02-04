@@ -79,4 +79,18 @@ describe('checkPackageManager', () => {
       'When using pnpm, `node-linker` must be set to "hoisted". Run `pnpm config set node-linker hoisted` to set this config value.'
     );
   });
+
+  // resolvePackageManager optionally returns a `version` if `npm_config_user_agent` was used to
+  // resolve the package manager being used.
+  it('should not shell out to child process if version was already parsed via npm_config_user_agent', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'npm',
+      install: 'install',
+      dev: '--save-dev',
+      exact: '--save-exact',
+      version: '10.9.2',
+    });
+    await expect(checkPackageManager()).resolves.not.toThrow();
+    expect(spawnPackageManager).not.toHaveBeenCalled();
+  });
 });
