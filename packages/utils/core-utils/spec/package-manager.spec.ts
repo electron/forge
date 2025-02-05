@@ -13,12 +13,12 @@ vi.mock('find-up', async (importOriginal) => {
 
 describe('package-manager', () => {
   describe('npm_config_user_agent', () => {
-    let originalUa: string | undefined;
     beforeAll(() => {
-      originalUa = process.env.npm_config_user_agent;
-    });
-    afterAll(() => {
-      process.env.npm_config_user_agent = originalUa;
+      const originalUa = process.env.npm_config_user_agent;
+      
+      return () => {
+        process.env.npm_config_user_agent = originalUa;
+      }
     });
 
     it.each([
