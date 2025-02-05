@@ -1,5 +1,5 @@
 import findUp from 'find-up';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resolvePackageManager } from '../src/package-manager';
 
@@ -15,10 +15,10 @@ describe('package-manager', () => {
   describe('npm_config_user_agent', () => {
     beforeAll(() => {
       const originalUa = process.env.npm_config_user_agent;
-      
+
       return () => {
         process.env.npm_config_user_agent = originalUa;
-      }
+      };
     });
 
     it.each([

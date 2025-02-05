@@ -39,11 +39,11 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
     if (pm === 'pnpm') {
       await spawnPackageManager('config set node-linker hoisted'.split(' '));
     }
-    
+
     return async () => {
-    	await spawnPackageManager(['run', 'link:remove']);
-    	delete process.env.NODE_INSTALLER;
-    } 
+      await spawnPackageManager(['run', 'link:remove']);
+      delete process.env.NODE_INSTALLER;
+    };
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
@@ -132,6 +132,10 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
   describe('init (with a templater sans required Forge version)', () => {
     beforeAll(async () => {
       dir = await ensureTestDirIsNonexistent();
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
     });
 
     it('should fail in initializing', async () => {
@@ -142,15 +146,15 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
         })
       ).rejects.toThrow(/it does not specify its required Forge version\.$/);
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(dir, { recursive: true, force: true });
-    });
   });
 
   describe('init (with a templater with a non-matching Forge version)', () => {
     beforeAll(async () => {
       dir = await ensureTestDirIsNonexistent();
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
     });
 
     it('should fail in initializing', async () => {
@@ -161,15 +165,15 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
         })
       ).rejects.toThrow(/is not compatible with this version of Electron Forge/);
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(dir, { recursive: true, force: true });
-    });
   });
 
   describe('init (with a nonexistent templater)', () => {
     beforeAll(async () => {
       dir = await ensureTestDirIsNonexistent();
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
     });
 
     it('should fail in initializing', async () => {
@@ -180,10 +184,6 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
         })
       ).rejects.toThrow('Failed to locate custom template');
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(dir, { recursive: true, force: true });
-    });
   });
 
   describe('import', () => {
@@ -193,6 +193,10 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
       execSync(`git clone https://github.com/electron/electron-quick-start.git . --quiet`, {
         cwd: dir,
       });
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
     });
 
     it('creates forge.config.js and can successfully package the application', async () => {
@@ -214,10 +218,6 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
       const outDirContents = fs.readdirSync(path.join(dir, 'out'));
       expect(outDirContents).toHaveLength(1);
       expect(outDirContents[0]).toEqual(`ProductName-${process.platform}-${process.arch}`);
-    });
-
-    afterAll(async () => {
-      await fs.promises.rm(dir, { recursive: true, force: true });
     });
   });
 
@@ -254,6 +254,10 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
           packageJSON.homepage = 'http://www.example.com/';
           packageJSON.author = 'Test Author';
         });
+
+        return async () => {
+          await fs.promises.rm(dir, { recursive: true, force: true });
+        };
       });
 
       it('throws an error when all is set', async () => {
@@ -294,17 +298,17 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
       describe('with prebuilt native module deps installed', () => {
         beforeAll(async () => {
           await installDeps(dir, ['ref-napi']);
+
+          return async () => {
+            await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), { recursive: true, force: true });
+            await updatePackageJSON(dir, async (packageJSON) => {
+              delete packageJSON.dependencies['ref-napi'];
+            });
+          };
         });
 
         it('can package without errors', async () => {
           await api.package({ dir });
-        });
-
-        afterAll(async () => {
-          await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), { recursive: true, force: true });
-          await updatePackageJSON(dir, async (packageJSON) => {
-            delete packageJSON.dependencies['ref-napi'];
-          });
         });
       });
 
@@ -479,8 +483,6 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
           });
         });
       });
-
-      afterAll(() => fs.promises.rm(dir, { recursive: true, force: true }));
     });
   });
 });
