@@ -39,10 +39,11 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
     if (pm === 'pnpm') {
       await spawnPackageManager('config set node-linker hoisted'.split(' '));
     }
-  });
-
-  afterAll(async () => {
-    await spawnPackageManager(['run', 'link:remove']);
+    
+    return async () => {
+    	await spawnPackageManager(['run', 'link:remove']);
+    	delete process.env.NODE_INSTALLER;
+    } 
   });
 
   const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
