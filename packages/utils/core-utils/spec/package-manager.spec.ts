@@ -1,5 +1,5 @@
 import findUp from 'find-up';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resolvePackageManager } from '../src/package-manager';
 
@@ -49,21 +49,25 @@ describe('package-manager', () => {
   });
 
   describe('NODE_INSTALLER', () => {
-    let nodeInstaller: string | undefined;
+    let initialNodeInstallerValue: string | undefined;
 
     beforeEach(() => {
-      nodeInstaller = process.env.NODE_INSTALLER;
+      initialNodeInstallerValue = process.env.NODE_INSTALLER;
       delete process.env.NODE_INSTALLER;
       // NODE_INSTALLER is deprecated for Electron Forge 8 and throws a console.warn that we want to silence in tests
       vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-    });
-    afterEach(() => {
-      if (!nodeInstaller) {
-        delete process.env.NODE_INSTALLER;
-      } else {
-        process.env.NODE_INSTALLER = nodeInstaller;
-      }
-      vi.restoreAllMocks();
+
+      return () => {
+        // For cleanup, we want to restore process.env.NODE_INSTALLER.
+        // If it wasn't explicitly set before, we delete the value set during the test.
+        // Otherwise, we restore the initial value.
+        if (!initialNodeInstallerValue) {
+          delete process.env.NODE_INSTALLER;
+        } else {
+          process.env.NODE_INSTALLER = initialNodeInstallerValue;
+        }
+        vi.restoreAllMocks();
+      };
     });
 
     it.each(['yarn', 'npm', 'pnpm'])('should return yarn if NODE_INSTALLER=yarn', async (pm) => {
