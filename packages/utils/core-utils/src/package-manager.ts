@@ -78,7 +78,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const lockfilePM = (lockfile && PM_FROM_LOCKFILE[lockfile]) ?? undefined;
   const installer = process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
-  // TODO(v8): Remove NODE_INSTALLER environment variable
+  // TODO(erickzhao): Remove NODE_INSTALLER environment variable for Forge 8
   if (typeof process.env.NODE_INSTALLER === 'string') {
     console.warn(logSymbols.warning, chalk.yellow(`The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`));
   }
