@@ -144,7 +144,7 @@
     "*.{html,json,md,yml}": "prettier --write",
     "*.{js,ts}": [
       "prettier --write",
-      "eslint --fix"
+      "eslint --fix --cache"
     ],
     "*.{json,lock}": "syncpack"
   },
