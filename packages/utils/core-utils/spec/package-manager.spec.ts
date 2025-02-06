@@ -70,7 +70,7 @@ describe('package-manager', () => {
       };
     });
 
-    it.each(['yarn', 'npm', 'pnpm'])('should return yarn if NODE_INSTALLER=yarn', async (pm) => {
+    it.each([{ pm: 'yarn' }, { pm: 'npm' }, { pm: 'pnpm' }])('should return $pm if NODE_INSTALLER=$pm', async ({ pm }) => {
       process.env.NODE_INSTALLER = pm;
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
     });
