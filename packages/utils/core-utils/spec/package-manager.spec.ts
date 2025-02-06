@@ -83,7 +83,7 @@ describe('package-manager', () => {
     });
   });
 
-  it('should equal the system package manager value if above strategies failed', async () => {
+  it('should use the package manager for the nearest ancestor lockfile if detected', async () => {
     vi.mocked(findUp).mockResolvedValue('yarn.lock');
     await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
   });

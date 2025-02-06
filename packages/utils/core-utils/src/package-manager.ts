@@ -1,7 +1,10 @@
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
+import debug from 'debug';
 import findUp from 'find-up';
 import logSymbols from 'log-symbols';
+
+const d = debug('electron-forge:package-manager');
 
 export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
 export type PMDetails = { executable: SupportedPackageManager; version?: string; install: string; dev: string; exact: string };
@@ -53,13 +56,6 @@ function pmFromUserAgent() {
 }
 
 /**
- * Finds a lockfile in the ancestor directories of the given directory
- */
-export async function findLockFile(dir: string) {
-  return await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], { cwd: dir, type: 'file' });
-}
-
-/**
  * Resolves the package manager to use. In order, it checks the following:
  *
  * 1. The value of the `NODE_INSTALLER` environment variable.
@@ -74,7 +70,7 @@ export async function findLockFile(dir: string) {
  */
 export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const executingPM = pmFromUserAgent();
-  const lockfile = await findLockFile(process.cwd());
+  const lockfile = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'], { type: 'file' });
   const lockfilePM = (lockfile && PM_FROM_LOCKFILE[lockfile]) ?? undefined;
   const installer = process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
@@ -87,6 +83,9 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     case 'yarn':
     case 'npm':
     case 'pnpm':
+      d(
+        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${executingPM}, lockfile: ${lockfilePM}.)`
+      );
       return { ...MANAGERS[installer], version: executingPM?.version };
     default:
       if (installer !== undefined) {
@@ -94,6 +93,8 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
           logSymbols.warning,
           chalk.yellow(`Package manager ${chalk.red(installer)} is unsupported. Falling back to ${chalk.green('npm')} instead.`)
         );
+      } else {
+        d(`No package manager detected. Falling back to npm.`);
       }
       return MANAGERS['npm'];
   }
