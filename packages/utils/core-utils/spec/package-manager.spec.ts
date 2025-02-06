@@ -58,7 +58,14 @@ describe('package-manager', () => {
       vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
       return () => {
-        process.env.NODE_INSTALLER = initialNodeInstallerValue;
+        // For cleanup, we want to restore process.env.NODE_INSTALLER.
+        // If it wasn't explicitly set before, we delete the value set during the test.
+        // Otherwise, we restore the initial value.
+        if (!initialNodeInstallerValue) {
+          delete process.env.NODE_INSTALLER;
+        } else {
+          process.env.NODE_INSTALLER = initialNodeInstallerValue;
+        }
         vi.restoreAllMocks();
       };
     });
