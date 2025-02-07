@@ -27,15 +27,37 @@ async function checkNodeVersion() {
   return process.versions.node;
 }
 
-async function checkPnpmNodeLinker() {
-  const nodeLinkerValue = await spawnPackageManager(['config', 'get', 'node-linker']);
+/**
+ * Packaging an app with Electron Forge requires `node_modules` to be on disk.
+ * With `pnpm`, this can be done in a few different ways.
+ *
+ * `node-linker=hoisted` replicates the behaviour of npm and Yarn Classic, while
+ * users may choose to set `public-hoist-pattern` or `hoist-pattern` for advanced
+ * configuration purposes.
+ */
+async function checkPnpmConfig() {
+  const hoistPattern = await spawnPackageManager(['config', 'get', 'hoist-pattern']);
+  const publicHoistPattern = await spawnPackageManager(['config', 'get', 'public-hoist-pattern']);
 
-  if (nodeLinkerValue !== 'hoisted') {
-    throw new Error('When using pnpm, `node-linker` must be set to "hoisted". Run `pnpm config set node-linker hoisted` to set this config value.');
+  if (hoistPattern !== 'undefined' || publicHoistPattern !== 'undefined') {
+    d(
+      `Custom hoist pattern detected ${JSON.stringify({
+        hoistPattern,
+        publicHoistPattern,
+      })}, assuming that the user has configured pnpm to package dependencies.`
+    );
+    return;
+  }
+
+  const nodeLinker = await spawnPackageManager(['config', 'get', 'node-linker']);
+  if (nodeLinker !== 'hoisted') {
+    throw new Error(
+      'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.'
+    );
   }
 }
 
-// TODO(v8): Drop antiquated versions of npm
+// TODO(erickzhao): Drop antiquated versions of npm for Forge v8
 const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, string>> = {
   npm: {
     all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
@@ -65,7 +87,7 @@ export async function checkPackageManager() {
   }
 
   if (pm.executable === 'pnpm') {
-    await checkPnpmNodeLinker();
+    await checkPnpmConfig();
   }
 
   return `${pm.executable}@${versionString}`;

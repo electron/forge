@@ -59,7 +59,7 @@ describe('checkPackageManager', () => {
     await expect(checkPackageManager()).rejects.toThrow();
   });
 
-  it('should throw if using pnpm without node-linker=hoisted', async () => {
+  it('should throw if using pnpm without node-linker=hoisted or custom hoist-pattern', async () => {
     vi.mocked(resolvePackageManager).mockResolvedValue({
       executable: 'pnpm',
       install: 'add',
@@ -69,6 +69,10 @@ describe('checkPackageManager', () => {
     vi.mocked(spawnPackageManager).mockImplementation((args) => {
       if (args?.join(' ') === 'config get node-linker') {
         return Promise.resolve('isolated');
+      } else if (args?.join(' ') === 'config get hoist-pattern') {
+        return Promise.resolve('undefined');
+      } else if (args?.join(' ') === 'config get public-hoist-pattern') {
+        return Promise.resolve('undefined');
       } else if (args?.join(' ') === '--version') {
         return Promise.resolve('10.0.0');
       } else {
@@ -76,8 +80,29 @@ describe('checkPackageManager', () => {
       }
     });
     await expect(checkPackageManager()).rejects.toThrow(
-      'When using pnpm, `node-linker` must be set to "hoisted". Run `pnpm config set node-linker hoisted` to set this config value.'
+      'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.'
     );
+  });
+
+  it.each(['hoist-pattern', 'public-hoist-pattern'])('should pass without validation if user has set %s in their pnpm config', async (cfg) => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'pnpm',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
+    });
+    vi.mocked(spawnPackageManager).mockImplementation((args) => {
+      if (args?.join(' ') === 'config get node-linker') {
+        return Promise.resolve('isolated');
+      } else if (args?.join(' ') === `config get ${cfg}`) {
+        return Promise.resolve('["*eslint*","*babel*"]');
+      } else if (args?.join(' ') === '--version') {
+        return Promise.resolve('10.0.0');
+      } else {
+        return Promise.resolve('undefined');
+      }
+    });
+    await expect(checkPackageManager()).resolves.not.toThrow();
   });
 
   // resolvePackageManager optionally returns a `version` if `npm_config_user_agent` was used to
