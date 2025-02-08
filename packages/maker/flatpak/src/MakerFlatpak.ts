@@ -14,6 +14,8 @@ export function flatpakArch(nodeArch: ForgeArch): string {
       return 'x86_64';
     case 'armv7l':
       return 'arm';
+    case 'arm64':
+      return 'aarch64';
     // arm => arm
     default:
       return nodeArch;
