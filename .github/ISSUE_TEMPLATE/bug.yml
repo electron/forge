@@ -1,6 +1,6 @@
 name: Bug report
 description: Create a report to help us improve Electron Forge
-labels: 'Bug'
+type: 'Bug'
 
 body:
   - type: checkboxes
@@ -17,29 +17,33 @@ body:
   - type: input
     id: forge-version
     attributes:
-      label: Electron Forge version
-      description: The output of `node_modules/.bin/electron-forge --version`, e.g. 6.0.0-beta.45
+      label: Forge version
+      description: The output of `node_modules/.bin/electron-forge --version`
+      placeholder: 7.6.1
     validations:
       required: true
   - type: input
     id: electron-version
     attributes:
       label: Electron version
-      description: The output of `node_modules/.bin/electron --version`, e.g. 14.0.0
+      description: The output of `node_modules/.bin/electron --version`
+      placeholder: 34.0.0
     validations:
       required: true
   - type: input
     id: operating-system
     attributes:
       label: Operating system
-      description: Platform and version, for example, macOS 10.13.6 / Windows 10 (1803) / Ubuntu 18.04 x64
+      description: Platform and version
+      placeholder: macOS 10.13.6 / Windows 10 (1803) / Ubuntu 18.04 x64
     validations:
       required: true
   - type: input
     id: last-working-version
     attributes:
-      label: Last known working Electron Forge version
-      description: e.g., 6.0.0-beta.44
+      label: Last known working Forge version
+      description: If this worked in a previous version of Forge, please let us know. Otherwise, please leave this field blank.
+      placeholder: 7.3.0
   - type: textarea
     id: expected-behavior
     attributes:
@@ -75,6 +79,6 @@ body:
           one exists.
         * Command line arguments you are passing to `electron-forge` (e.g.,
           `electron-forge make --not-a-real-flag`)
-        * The `config.forge` data in `package.json` or `forge.config.js` in use
+        * The Forge configuration you are using
         * A failing minimal testcase (with a link to the code) or detailed steps to reproduce the problem.
           Using `electron-forge init` is a good starting point, if that is not the source of your problem.
