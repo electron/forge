@@ -1,6 +1,7 @@
 name: Feature request
 description: Suggest an idea for Electron Forge
 labels: 'Enhancement'
+type: 'Enhancement'
 
 body:
   - type: checkboxes
