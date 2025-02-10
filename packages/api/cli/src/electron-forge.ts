@@ -39,40 +39,38 @@ program
   .command('package', 'Package the current Electron application')
   .command('make', 'Generate distributables for the current Electron application')
   .command('publish', 'Publish the current Electron application')
-  .on('command:*', (commands) => {
+  .on('command:*', async (commands) => {
     if (!program._execs.has(commands[0])) {
       console.error();
       console.error(chalk.red(`Unknown command "${program.args.join(' ')}".`));
       console.error('See --help for a list of available commands.');
       process.exit(1);
+    } else if (!process.argv.includes('--help') && !process.argv.includes('--h')) {
+      const runner = new Listr<never>(
+        [
+          {
+            title: 'Checking your system',
+            task: async (_, task) => {
+              return await checkSystem(task);
+            },
+          },
+        ],
+        {
+          concurrent: false,
+          exitOnError: false,
+        }
+      );
+
+      await runner.run();
+
+      if (runner.errors.length) {
+        console.error(
+          chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
+Make sure you have git installed and Node.js version ${metadata.engines.node}`)
+        );
+        process.exit(1);
+      }
     }
   });
 
-(async () => {
-  const runner = new Listr<never>(
-    [
-      {
-        title: 'Checking your system',
-        task: async (_, task) => {
-          return await checkSystem(task);
-        },
-      },
-    ],
-    {
-      concurrent: false,
-      exitOnError: false,
-    }
-  );
-
-  await runner.run();
-
-  if (runner.errors.length) {
-    console.error(
-      chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version ${metadata.engines.node}`)
-    );
-    process.exit(1);
-  }
-
-  program.parse(process.argv);
-})();
+program.parse(process.argv);
