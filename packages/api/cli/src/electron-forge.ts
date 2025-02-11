@@ -61,6 +61,7 @@ program
         {
           concurrent: false,
           exitOnError: false,
+          fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
         }
       );
 
