@@ -82,13 +82,16 @@ type SystemCheckContext = {
   node: boolean;
   packageManager: boolean;
 };
-export async function checkSystem(task: ForgeListrTask<never>) {
+
+export async function checkSystem(callerTask: ForgeListrTask<{ command: string }>) {
   if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
-    return task.newListr<SystemCheckContext>(
+    return callerTask.newListr<{ command: string } & SystemCheckContext>(
       [
         {
           title: 'Checking git exists',
+          // We only call the `initGit` helper in the `init` and `import` commands
+          enabled: (ctx): boolean => ctx.command === 'init' || ctx.command === 'import',
           task: async (_, task) => {
             const gitVersion = await getGitVersion();
             if (gitVersion) {

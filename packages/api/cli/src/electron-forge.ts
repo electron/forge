@@ -46,11 +46,14 @@ program
       console.error('See --help for a list of available commands.');
       process.exit(1);
     } else if (!process.argv.includes('--help') && !process.argv.includes('--h')) {
-      const runner = new Listr<never>(
+      const runner = new Listr<{
+        command: string;
+      }>(
         [
           {
             title: 'Checking your system',
-            task: async (_, task) => {
+            task: async (ctx, task) => {
+              ctx.command = commands[0];
               return await checkSystem(task);
             },
           },
