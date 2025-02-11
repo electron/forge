@@ -1,4 +1,4 @@
-import { hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
@@ -15,23 +15,19 @@ export enum DepVersionRestriction {
 }
 
 export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withYarn=${await hasYarn()}`);
+  const pm = await resolvePackageManager();
+  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm.executable}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
   }
-  let cmd = ['install'].concat(deps);
-  if (await hasYarn()) {
-    cmd = ['add'].concat(deps);
-    if (depType === DepType.DEV) cmd.push('--dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--exact');
-  } else {
-    if (depType === DepType.DEV) cmd.push('--save-dev');
-    if (versionRestriction === DepVersionRestriction.EXACT) cmd.push('--save-exact');
-  }
+  const cmd = [pm.install].concat(deps);
+  if (depType === DepType.DEV) cmd.push(pm.dev);
+  if (versionRestriction === DepVersionRestriction.EXACT) cmd.push(pm.exact);
+
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
-    await yarnOrNpmSpawn(cmd, {
+    await spawnPackageManager(cmd, {
       cwd: dir,
       stdio: 'pipe',
     });

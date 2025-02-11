@@ -46,7 +46,7 @@ commands:
       - run:
           name: 'Run fast tests'
           command: |
-            yarn test:fast --reporter=junit --outputFile="./reports/out/test_output.xml"
+            yarn test:fast --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   run-slow-tests:
     steps:
@@ -57,7 +57,7 @@ commands:
       - run:
           name: 'Run slow tests'
           command: |
-            yarn test:slow --reporter=junit --outputFile="./reports/out/test_output.xml"
+            yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
 
 jobs:
   lint-and-build:
@@ -110,6 +110,10 @@ jobs:
                     libgtk-3-0 \
                     libgbm1
                   sudo add-apt-repository -y ppa:alexlarsson/flatpak
+      - run:
+          name: 'Install pnpm'
+          command: |
+            npm install -g pnpm@10.0.0
       - run-fast-tests
       - store_test_results:
           path: ./reports/
@@ -155,6 +159,10 @@ jobs:
                     libgdk-pixbuf2.0-dev \
                     libgtk-3-0 \
                     libgbm1
+      - run:
+          name: 'Install pnpm'
+          command: |
+            npm install -g pnpm@10.0.0
       - run-slow-tests
       - run:
           when: always # the report is generated on pass or fail

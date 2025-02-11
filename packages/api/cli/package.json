@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@electron-forge/core": "7.6.1",
+    "@electron-forge/core-utils": "7.6.1",
     "@electron-forge/shared-types": "7.6.1",
     "@electron/get": "^3.0.0",
     "chalk": "^4.0.0",
