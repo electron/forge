@@ -1,17 +1,16 @@
-import path from 'node:path';
-
 import { initializeProxy } from '@electron/get';
 import { api, PackageOptions } from '@electron-forge/core';
-import program from 'commander';
-import fs from 'fs-extra';
+import { program } from 'commander';
 
 import './util/terminate';
+import packageJSON from '../package.json';
+
 import workingDir from './util/working-dir';
 
 (async () => {
   let dir: string = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
+    .version(packageJSON.version, '-V, --version', 'Output the current version')
     .arguments('[cwd]')
     .option('-a, --arch [arch]', 'Target architecture')
     .option('-p, --platform [platform]', 'Target build platform')
@@ -21,14 +20,16 @@ import workingDir from './util/working-dir';
     })
     .parse(process.argv);
 
+  const options = program.opts();
+
   initializeProxy();
 
   const packageOpts: PackageOptions = {
     dir,
     interactive: true,
   };
-  if (program.arch) packageOpts.arch = program.arch;
-  if (program.platform) packageOpts.platform = program.platform;
+  if (options.arch) packageOpts.arch = options.arch;
+  if (options.platform) packageOpts.platform = options.platform;
 
   await api.package(packageOpts);
 })();
