@@ -22,7 +22,7 @@ program
   .command('make', 'Generate distributables for the current Electron application')
   .command('publish', 'Publish the current Electron application')
   .hook('preSubcommand', async () => {
-    if (!process.argv.includes('--help') && !process.argv.includes('--h')) {
+    if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
       const runner = new Listr<never>(
         [
           {
