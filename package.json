@@ -45,7 +45,7 @@
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",
     "chalk": "^4.0.0",
-    "commander": "^4.1.1",
+    "commander": "^11.1.0",
     "cross-spawn": "^7.0.3",
     "cross-zip": "^4.0.0",
     "debug": "^4.3.1",
