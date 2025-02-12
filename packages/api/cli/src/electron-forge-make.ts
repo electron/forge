@@ -1,17 +1,16 @@
-import path from 'node:path';
-
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
-import program from 'commander';
-import fs from 'fs-extra';
+import { program } from 'commander';
 
 import './util/terminate';
+import packageJSON from '../package.json';
+
 import workingDir from './util/working-dir';
 
 export async function getMakeOptions(): Promise<MakeOptions> {
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
+    .version(packageJSON.version, '-V, --version', 'Output the current version')
     .arguments('[cwd]')
     .option('--skip-package', 'Assume the app is already packaged')
     .option('-a, --arch [arch]', 'Target architecture')
@@ -24,14 +23,16 @@ export async function getMakeOptions(): Promise<MakeOptions> {
     })
     .parse(process.argv);
 
+  const options = program.opts();
+
   const makeOpts: MakeOptions = {
     dir,
     interactive: true,
-    skipPackage: program.skipPackage,
+    skipPackage: options.skipPackage,
   };
-  if (program.targets) makeOpts.overrideTargets = program.targets.split(',');
-  if (program.arch) makeOpts.arch = program.arch;
-  if (program.platform) makeOpts.platform = program.platform;
+  if (options.targets) makeOpts.overrideTargets = options.targets.split(',');
+  if (options.arch) makeOpts.arch = options.arch;
+  if (options.platform) makeOpts.platform = options.platform;
 
   return makeOpts;
 }

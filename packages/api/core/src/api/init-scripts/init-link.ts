@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { safeYarnOrNpm, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 
@@ -22,12 +22,15 @@ export async function initLink<T>(dir: string, task?: ForgeListrTask<T>) {
   if (shouldLink) {
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
-    const packageManager = await safeYarnOrNpm();
+    const pm = await resolvePackageManager();
+    // TODO(erickzhao): the `--link-folder` argument only works for `yarn`. Since this command is
+    // only made for Forge contributors, it isn't a big deal if it doesn't work for other package managers,
+    // but we should make it cleaner.
     const linkFolder = path.resolve(__dirname, '..', '..', '..', '..', '..', '..', '.links');
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
-        if (task) task.output = `${packageManager} link --link-folder ${linkFolder} ${packageName}`;
-        await yarnOrNpmSpawn(['link', '--link-folder', linkFolder, packageName], {
+        if (task) task.output = `${pm.executable} link --link-folder ${linkFolder} ${packageName}`;
+        await spawnPackageManager(['link', '--link-folder', linkFolder, packageName], {
           cwd: dir,
         });
       }

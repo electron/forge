@@ -1,16 +1,15 @@
-import path from 'node:path';
-
 import { api, InitOptions } from '@electron-forge/core';
-import program from 'commander';
-import fs from 'fs-extra';
+import { program } from 'commander';
 
 import './util/terminate';
+import packageJSON from '../package.json';
+
 import workingDir from './util/working-dir';
 
 (async () => {
   let dir = process.cwd();
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
+    .version(packageJSON.version, '-V, --version', 'Output the current version')
     .arguments('[name]')
     .option('-t, --template [name]', 'Name of the Forge template to use')
     .option('-c, --copy-ci-files', 'Whether to copy the templated CI files', false)
@@ -21,13 +20,15 @@ import workingDir from './util/working-dir';
     })
     .parse(process.argv);
 
+  const options = program.opts();
+
   const initOpts: InitOptions = {
     dir,
     interactive: true,
-    copyCIFiles: !!program.copyCiFiles,
-    force: !!program.force,
+    copyCIFiles: !!options.copyCiFiles,
+    force: !!options.force,
   };
-  if (program.template) initOpts.template = program.template;
+  if (options.template) initOpts.template = options.template;
 
   await api.init(initOpts);
 })();

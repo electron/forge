@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import { spawnPackageManager } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -15,12 +15,12 @@ describe('ViteTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:prepare']);
+    await spawnPackageManager(['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
   afterAll(async () => {
-    await yarnOrNpmSpawn(['run', 'link:remove']);
+    await spawnPackageManager(['run', 'link:remove']);
     if (os.platform() !== 'win32') {
       // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
       await fs.promises.rm(dir, { force: true, recursive: true });
@@ -81,7 +81,7 @@ describe('ViteTypeScriptTemplate', () => {
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
       await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
-      await yarnOrNpmSpawn(['install'], {
+      await spawnPackageManager(['install'], {
         cwd: dir,
       });
 
