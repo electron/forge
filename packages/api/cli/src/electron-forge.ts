@@ -12,15 +12,14 @@ import packageJSON from '../package.json';
 import { checkSystem } from './util/check-system';
 
 program
-  .version(packageJSON.version, '-V, --version', 'Output the current version')
-  .option('--verbose', 'Enables verbose mode')
-  .helpOption('-h, --help', 'Output usage information')
-  .command('init', 'Initialize a new Electron application')
-  .command('import', 'Attempts to navigate you through the process of importing an existing project to "electron-forge"')
-  .command('start', 'Start the current Electron application in development mode')
-  .command('package', 'Package the current Electron application')
-  .command('make', 'Generate distributables for the current Electron application')
-  .command('publish', 'Publish the current Electron application')
+  .version(packageJSON.version, '-V, --version', 'Output the current version.')
+  .helpOption('-h, --help', 'Output usage information.')
+  .command('init', 'Initialize a new Electron application.')
+  .command('import', 'Import an existing Electron project to Forge.')
+  .command('start', 'Start the current Electron application in development mode.')
+  .command('package', 'Package the current Electron application.')
+  .command('make', 'Generate distributables for the current Electron application.')
+  .command('publish', 'Publish the current Electron application.')
   .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
       const runner = new Listr<{
