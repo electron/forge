@@ -21,13 +21,16 @@ program
   .command('package', 'Package the current Electron application')
   .command('make', 'Generate distributables for the current Electron application')
   .command('publish', 'Publish the current Electron application')
-  .hook('preSubcommand', async () => {
+  .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
-      const runner = new Listr<never>(
+      const runner = new Listr<{
+        command: string;
+      }>(
         [
           {
             title: 'Checking your system',
-            task: async (_, task) => {
+            task: async (ctx, task) => {
+              ctx.command = subcommand.name();
               return await checkSystem(task);
             },
           },
@@ -35,6 +38,7 @@ program
         {
           concurrent: false,
           exitOnError: false,
+          fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
         }
       );
 
