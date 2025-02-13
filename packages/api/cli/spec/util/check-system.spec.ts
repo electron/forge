@@ -1,7 +1,7 @@
 import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
 import { describe, expect, it, vi } from 'vitest';
 
-import { checkPackageManager } from '../src/util/check-system';
+import { checkPackageManager } from '../../src/util/check-system';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
