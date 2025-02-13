@@ -21,7 +21,7 @@ program
   .command('package', 'Package the current Electron application')
   .command('make', 'Generate distributables for the current Electron application')
   .command('publish', 'Publish the current Electron application')
-  .hook('preSubcommand', async () => {
+  .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
       const runner = new Listr<{
         command: string;
@@ -30,7 +30,7 @@ program
           {
             title: 'Checking your system',
             task: async (ctx, task) => {
-              ctx.command = commands[0];
+              ctx.command = subcommand.name();
               return await checkSystem(task);
             },
           },
