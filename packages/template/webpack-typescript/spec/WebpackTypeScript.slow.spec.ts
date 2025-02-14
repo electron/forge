@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { spawnPackageManager } from '@electron-forge/core-utils';
+import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -14,7 +14,7 @@ describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(['run', 'link:prepare']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -71,14 +71,14 @@ describe('WebpackTypeScriptTemplate', () => {
         webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
       };
       await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
-      await spawnPackageManager(['install'], {
+      await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
         cwd: dir,
       });
 
       // Installing deps removes symlinks that were added at the start of this
       // spec via `api.init`. So we should re-link local forge dependencies
       // again.
-      await initLink(dir);
+      await initLink(PACKAGE_MANAGERS['yarn'], dir);
     });
 
     afterAll(() => {
@@ -94,7 +94,7 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   afterAll(async () => {
-    await spawnPackageManager(['link:remove']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['link:remove']);
     await fs.promises.rm(dir, { recursive: true, force: true });
   });
 });
