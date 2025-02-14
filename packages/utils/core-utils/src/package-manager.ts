@@ -9,6 +9,8 @@ const d = debug('electron-forge:package-manager');
 export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
 export type PMDetails = { executable: SupportedPackageManager; version?: string; install: string; dev: string; exact: string };
 
+let hasWarned = false;
+
 /**
  * Supported package managers and the commands and flags they need to install dependencies.
  */
@@ -78,8 +80,9 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const installer = process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
   // TODO(erickzhao): Remove NODE_INSTALLER environment variable for Forge 8
-  if (typeof process.env.NODE_INSTALLER === 'string') {
+  if (typeof process.env.NODE_INSTALLER === 'string' && !hasWarned) {
     console.warn(logSymbols.warning, chalk.yellow(`The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`));
+    hasWarned = true;
   }
 
   switch (installer) {
