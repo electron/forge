@@ -9,6 +9,8 @@ const d = debug('electron-forge:package-manager');
 export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
 export type PMDetails = { executable: SupportedPackageManager; version?: string; install: string; dev: string; exact: string };
 
+let cachedPM: PMDetails | undefined = undefined;
+
 const MANAGERS: Record<SupportedPackageManager, PMDetails> = {
   yarn: {
     executable: 'yarn',
@@ -69,6 +71,10 @@ function pmFromUserAgent() {
  *
  */
 export const resolvePackageManager: () => Promise<PMDetails> = async () => {
+  if (cachedPM) {
+    return cachedPM;
+  }
+
   const executingPM = pmFromUserAgent();
   const lockfile = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'], { type: 'file' });
   const lockfilePM = (lockfile && PM_FROM_LOCKFILE[lockfile]) ?? undefined;
@@ -86,7 +92,8 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
       d(
         `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${executingPM}, lockfile: ${lockfilePM}.)`
       );
-      return { ...MANAGERS[installer], version: executingPM?.version };
+      cachedPM = { ...MANAGERS[installer], version: executingPM?.version };
+      break;
     default:
       if (installer !== undefined) {
         console.warn(
@@ -96,8 +103,9 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
       } else {
         d(`No package manager detected. Falling back to npm.`);
       }
-      return MANAGERS['npm'];
+      cachedPM = MANAGERS['npm'];
   }
+  return cachedPM;
 };
 
 export const spawnPackageManager = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> =>
