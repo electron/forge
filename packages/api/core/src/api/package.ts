@@ -300,7 +300,7 @@ export const listrPackage = (
               asar: false,
               overwrite: true,
               ignore: [/^\/out\//g],
-              quiet: false,
+              quiet: true,
               ...forgeConfig.packagerConfig,
               dir: ctx.dir,
               arch: arch as PackagerArch,
