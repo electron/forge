@@ -62,7 +62,7 @@ export interface MakerWixConfig {
    */
   upgradeCode?: string;
   /**
-   * The app's version
+   * The app's version. It must be a valid semantic version.
    */
   version?: string;
   /**

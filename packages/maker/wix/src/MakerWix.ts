@@ -22,13 +22,15 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
-    let { version } = packageJSON;
-    if (version.includes('-')) {
+    const { version } = packageJSON;
+    if (version.includes('-') || version.includes('+')) {
       console.warn(
         logSymbols.warning,
-        chalk.yellow('WARNING: WiX distributables do not handle prerelease information in the app version, removing it from the MSI')
+        chalk.yellow(
+          'WARNING: MSI packages follow Windows version format "major.minor.build.revision".\n' +
+            `The provided semantic version "${version}" will be transformed to Windows version format.`
+        )
       );
-      version = this.normalizeWindowsVersion(version);
     }
 
     const creator = new MSICreator({
