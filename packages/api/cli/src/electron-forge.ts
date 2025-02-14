@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // This file requires a shebang above. If it is missing, this is an error.
 
-import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
@@ -36,18 +35,14 @@ program
         ],
         {
           concurrent: false,
-          exitOnError: false,
+          exitOnError: true,
           fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
         }
       );
 
-      await runner.run();
-
-      if (runner.errors.length) {
-        console.error(
-          chalk.red(`\nIt looks like you are missing some dependencies you need to get Electron running.
-Make sure you have git installed and Node.js version ${packageJSON.engines.node}`)
-        );
+      try {
+        await runner.run();
+      } catch {
         process.exit(1);
       }
     }
