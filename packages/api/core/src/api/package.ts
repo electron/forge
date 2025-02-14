@@ -314,8 +314,6 @@ export const listrPackage = (
               electronVersion: await getElectronVersion(ctx.dir, packageJSON),
             };
 
-            console.log('erick');
-
             if (packageOpts.all) {
               throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
             }
