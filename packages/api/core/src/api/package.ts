@@ -300,7 +300,7 @@ export const listrPackage = (
               asar: false,
               overwrite: true,
               ignore: [/^\/out\//g],
-              quiet: false,
+              quiet: true,
               ...forgeConfig.packagerConfig,
               dir: ctx.dir,
               arch: arch as PackagerArch,
@@ -313,6 +313,8 @@ export const listrPackage = (
               out: calculatedOutDir,
               electronVersion: await getElectronVersion(ctx.dir, packageJSON),
             };
+
+            console.log('erick');
 
             if (packageOpts.all) {
               throw new Error('config.forge.packagerConfig.all is not supported by Electron Forge');
