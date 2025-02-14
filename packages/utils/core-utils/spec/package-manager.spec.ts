@@ -1,6 +1,8 @@
 import findUp from 'find-up';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resolvePackageManager } from '../src/package-manager';
+
 vi.mock('find-up', async (importOriginal) => {
   const mod = await importOriginal<object>();
   return {
@@ -10,11 +12,7 @@ vi.mock('find-up', async (importOriginal) => {
 });
 
 describe('package-manager', () => {
-  // Reset modules for each test because the value of `resolvePackageManager` is cached within the module.
-  beforeEach(() => {
-    vi.resetModules();
-  });
-  describe('npm_config_user_agent', async () => {
+  describe('npm_config_user_agent', () => {
     beforeAll(() => {
       const originalUa = process.env.npm_config_user_agent;
 
@@ -28,27 +26,23 @@ describe('package-manager', () => {
       { ua: 'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64', pm: 'pnpm', version: '10.0.0' },
       { ua: 'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false', pm: 'npm', version: '10.9.2' },
     ])('with $ua', async ({ ua, pm, version }) => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.npm_config_user_agent = ua;
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
       await expect(resolvePackageManager()).resolves.toHaveProperty('version', version);
     });
 
     it('should return yarn if npm_config_user_agent=yarn', async () => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.npm_config_user_agent = 'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
       await expect(resolvePackageManager()).resolves.toHaveProperty('version', '1.22.22');
     });
 
     it('should return pnpm if npm_config_user_agent=pnpm', async () => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.npm_config_user_agent = 'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64';
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'pnpm');
     });
 
     it('should return npm if npm_config_user_agent=npm', async () => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.npm_config_user_agent = 'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
     });
@@ -77,13 +71,11 @@ describe('package-manager', () => {
     });
 
     it.each([{ pm: 'yarn' }, { pm: 'npm' }, { pm: 'pnpm' }])('should return $pm if NODE_INSTALLER=$pm', async ({ pm }) => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.NODE_INSTALLER = pm;
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', pm);
     });
 
     it('should return npm if package manager is unsupported', async () => {
-      const { resolvePackageManager } = await import('../src/package-manager');
       process.env.NODE_INSTALLER = 'bun';
       console.warn = vi.fn();
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
@@ -92,13 +84,11 @@ describe('package-manager', () => {
   });
 
   it('should use the package manager for the nearest ancestor lockfile if detected', async () => {
-    const { resolvePackageManager } = await import('../src/package-manager');
     vi.mocked(findUp).mockResolvedValue('yarn.lock');
     await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'yarn');
   });
 
   it('should fall back to npm if no other strategy worked', async () => {
-    const { resolvePackageManager } = await import('../src/package-manager');
     process.env.npm_config_user_agent = undefined;
     vi.mocked(findUp).mockResolvedValue(undefined);
     await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
