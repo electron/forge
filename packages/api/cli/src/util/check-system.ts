@@ -145,7 +145,7 @@ export async function checkSystem(callerTask: ForgeListrTask<{ command: string }
       ],
       {
         concurrent: true,
-        exitOnError: false,
+        exitOnError: true,
         rendererOptions: {
           collapseSubtasks: true,
         },
