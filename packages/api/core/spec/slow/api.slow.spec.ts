@@ -3,12 +3,12 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { spawnPackageManager } from '@electron-forge/core-utils';
+import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
 import { ensureTestDirIsNonexistent, expectLintToPass } from '@electron-forge/test-utils';
 import { readMetadata } from 'electron-installer-common';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api, InitOptions } from '../../src/api';
@@ -29,19 +29,18 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
 }
 
-describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`, ({ pm }) => {
+describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGERS['pnpm']])(`init (with $executable)`, (pm) => {
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(['run', 'link:prepare']);
-    process.env.NODE_INSTALLER = pm;
+    await spawnPackageManager(pm, ['run', 'link:prepare']);
 
-    if (pm === 'pnpm') {
-      await spawnPackageManager('config set node-linker hoisted'.split(' '));
+    if (pm.executable === 'pnpm') {
+      await spawnPackageManager(pm, 'config set node-linker hoisted'.split(' '));
     }
 
     return async () => {
-      await spawnPackageManager(['run', 'link:remove']);
+      await spawnPackageManager(pm, ['run', 'link:remove']);
       delete process.env.NODE_INSTALLER;
     };
   });
@@ -187,7 +186,7 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
   });
 
   describe('import', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       dir = await ensureTestDirIsNonexistent();
       await fs.promises.mkdir(dir);
       execSync(`git clone https://github.com/electron/electron-quick-start.git . --quiet`, {
@@ -209,9 +208,7 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
 
       expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
 
-      execSync(`${pm} install`, {
-        cwd: dir,
-      });
+      await spawnPackageManager(pm, ['install'], { cwd: dir });
 
       await api.package({ dir });
 
@@ -297,7 +294,7 @@ describe.each([{ pm: 'npm' }, { pm: 'yarn' }, { pm: 'pnpm' }])(`init (with $pm)`
 
       describe('with prebuilt native module deps installed', () => {
         beforeAll(async () => {
-          await installDeps(dir, ['ref-napi']);
+          await installDeps(pm, dir, ['ref-napi']);
 
           return async () => {
             await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), { recursive: true, force: true });

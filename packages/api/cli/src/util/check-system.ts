@@ -2,7 +2,7 @@ import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
-import { resolvePackageManager, spawnPackageManager, SupportedPackageManager } from '@electron-forge/core-utils';
+import { PACKAGE_MANAGERS, resolvePackageManager, spawnPackageManager, SupportedPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -36,8 +36,9 @@ async function checkNodeVersion() {
  * configuration purposes.
  */
 async function checkPnpmConfig() {
-  const hoistPattern = await spawnPackageManager(['config', 'get', 'hoist-pattern']);
-  const publicHoistPattern = await spawnPackageManager(['config', 'get', 'public-hoist-pattern']);
+  const { pnpm } = PACKAGE_MANAGERS;
+  const hoistPattern = await spawnPackageManager(pnpm, ['config', 'get', 'hoist-pattern']);
+  const publicHoistPattern = await spawnPackageManager(pnpm, ['config', 'get', 'public-hoist-pattern']);
 
   if (hoistPattern !== 'undefined' || publicHoistPattern !== 'undefined') {
     d(
@@ -49,7 +50,7 @@ async function checkPnpmConfig() {
     return;
   }
 
-  const nodeLinker = await spawnPackageManager(['config', 'get', 'node-linker']);
+  const nodeLinker = await spawnPackageManager(pnpm, ['config', 'get', 'node-linker']);
   if (nodeLinker !== 'hoisted') {
     throw new Error(
       'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.'
@@ -74,7 +75,7 @@ const ALLOWLISTED_VERSIONS: Record<SupportedPackageManager, Record<string, strin
 
 export async function checkPackageManager() {
   const pm = await resolvePackageManager();
-  const version = pm.version ?? (await spawnPackageManager(['--version']));
+  const version = pm.version ?? (await spawnPackageManager(pm, ['--version']));
   const versionString = version.toString().trim();
 
   const range = ALLOWLISTED_VERSIONS[pm.executable][process.platform] ?? ALLOWLISTED_VERSIONS[pm.executable].all;

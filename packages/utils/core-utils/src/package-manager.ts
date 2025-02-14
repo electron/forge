@@ -9,7 +9,10 @@ const d = debug('electron-forge:package-manager');
 export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
 export type PMDetails = { executable: SupportedPackageManager; version?: string; install: string; dev: string; exact: string };
 
-const MANAGERS: Record<SupportedPackageManager, PMDetails> = {
+/**
+ * Supported package managers and the commands and flags they need to install dependencies.
+ */
+export const PACKAGE_MANAGERS: Record<SupportedPackageManager, PMDetails> = {
   yarn: {
     executable: 'yarn',
     install: 'add',
@@ -86,7 +89,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
       d(
         `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${executingPM}, lockfile: ${lockfilePM}.)`
       );
-      return { ...MANAGERS[installer], version: executingPM?.version };
+      return { ...PACKAGE_MANAGERS[installer], version: executingPM?.version };
     default:
       if (installer !== undefined) {
         console.warn(
@@ -96,9 +99,10 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
       } else {
         d(`No package manager detected. Falling back to npm.`);
       }
-      return MANAGERS['npm'];
+      return PACKAGE_MANAGERS['npm'];
   }
 };
 
-export const spawnPackageManager = async (args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> =>
-  spawn((await resolvePackageManager()).executable, args, opts);
+export const spawnPackageManager = async (pm: PMDetails, args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => {
+  return spawn(pm.executable, args, opts);
+};
