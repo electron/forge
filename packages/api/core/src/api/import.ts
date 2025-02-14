@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { resolvePackageManager, updateElectronDependency } from '@electron-forge/core-utils';
+import { PMDetails, resolvePackageManager, updateElectronDependency } from '@electron-forge/core-utils';
 import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import { autoTrace } from '@electron-forge/tracer';
@@ -58,7 +58,7 @@ export default autoTrace(
     childTrace,
     { dir = process.cwd(), interactive = false, confirmImport, shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript, outDir }: ImportOptions
   ): Promise<void> => {
-    const listrOptions: ForgeListrOptions<unknown> = {
+    const listrOptions: ForgeListrOptions<{ pm: PMDetails }> = {
       concurrent: false,
       rendererOptions: {
         collapseSubtasks: false,
@@ -188,12 +188,18 @@ export default autoTrace(
               await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
             };
 
-            return task.newListr(
+            return task.newListr<{ pm: PMDetails }>(
               [
                 {
+                  title: `Resolving package manager`,
+                  task: async (ctx, task) => {
+                    ctx.pm = await resolvePackageManager();
+                    task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
+                  },
+                },
+                {
                   title: 'Installing dependencies',
-                  task: async (_, task) => {
-                    const pm = await resolvePackageManager();
+                  task: async ({ pm }, task) => {
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
@@ -202,15 +208,15 @@ export default autoTrace(
 
                     d('installing dependencies');
                     task.output = `${pm.executable} ${pm.install} ${importDeps.join(' ')}`;
-                    await installDepList(dir, importDeps);
+                    await installDepList(pm, dir, importDeps);
 
                     d('installing devDependencies');
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
-                    await installDepList(dir, importDevDeps, DepType.DEV);
+                    await installDepList(pm, dir, importDevDeps, DepType.DEV);
 
                     d('installing devDependencies with exact versions');
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
-                    await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
+                    await installDepList(pm, dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                   },
                 },
                 {

@@ -1,4 +1,4 @@
-import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
+import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
@@ -14,8 +14,7 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export default async (dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  const pm = await resolvePackageManager();
+export default async (pm: PMDetails, dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
   d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm.executable}`);
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
@@ -27,7 +26,7 @@ export default async (dir: string, deps: string[], depType = DepType.PROD, versi
 
   d('executing', JSON.stringify(cmd), 'in:', dir);
   try {
-    await spawnPackageManager(cmd, {
+    await spawnPackageManager(pm, cmd, {
       cwd: dir,
       stdio: 'pipe',
     });

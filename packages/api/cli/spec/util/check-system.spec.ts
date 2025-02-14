@@ -66,7 +66,7 @@ describe('checkPackageManager', () => {
       dev: '--dev',
       exact: '--exact',
     });
-    vi.mocked(spawnPackageManager).mockImplementation((args) => {
+    vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
       if (args?.join(' ') === 'config get node-linker') {
         return Promise.resolve('isolated');
       } else if (args?.join(' ') === 'config get hoist-pattern') {
@@ -91,7 +91,7 @@ describe('checkPackageManager', () => {
       dev: '--dev',
       exact: '--exact',
     });
-    vi.mocked(spawnPackageManager).mockImplementation((args) => {
+    vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
       if (args?.join(' ') === 'config get node-linker') {
         return Promise.resolve('isolated');
       } else if (args?.join(' ') === `config get ${cfg}`) {
