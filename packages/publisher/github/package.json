@@ -18,7 +18,7 @@
     "@electron-forge/shared-types": "7.6.1",
     "@octokit/core": "^3.2.4",
     "@octokit/plugin-retry": "^3.0.9",
-    "@octokit/request-error": "^2.0.5",
+    "@octokit/request-error": "^5.1.1",
     "@octokit/rest": "^18.0.11",
     "@octokit/types": "^6.1.2",
     "chalk": "^4.0.0",
