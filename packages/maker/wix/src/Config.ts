@@ -1,5 +1,7 @@
 import { Features, MSICreator } from 'electron-wix-msi/lib/creator';
 
+import type { MSICreatorOptions } from 'electron-wix-msi/lib/creator';
+
 export interface MakerWixConfig {
   /**
    * String to set as appUserModelId on the shortcut. If none is passed, it'll
@@ -8,9 +10,9 @@ export interface MakerWixConfig {
    */
   appUserModelId?: string;
   /**
-   * A comma separated string of extensions with each to be associated the app icon.
+   * Custom System.AppUserModel.ToastActivatorCLSID shortcut property value
    */
-  associateExtensions?: string;
+  toastActivatorClsid?: string;
   /**
    * The app's description
    */
@@ -19,10 +21,23 @@ export interface MakerWixConfig {
    * The name of the exe file
    */
   exe?: string;
-  /*
+  /**
    * The app's icon
    */
   icon?: string;
+  /**
+   * Specify WiX extensions to use e.g `['WixUtilExtension', 'C:\My WiX Extensions\FooExtension.dll']`
+   */
+  extensions?: Array<string>;
+  /**
+   * Specify command line options to pass to light.exe e.g. `['-sval', '-ai']`.
+   * Used to activate PropertyGroup options as specified in the [Light Task](https://docs.firegiant.com/wix3/msbuild/task_reference/light/ documentation.
+   */
+  lightSwitches?: Array<string>;
+  /**
+   * Specify a specific culture for light.exe to build using the culture switch e.g `en-us`.
+   */
+  cultures?: string;
   /**
    * The [Microsoft Windows Language Code identifier](https://msdn.microsoft.com/en-us/library/cc233965.aspx) used by the installer.
    * Will use 1033 (English, United-States) if left undefined.
@@ -41,6 +56,11 @@ export interface MakerWixConfig {
    * undefined.
    */
   programFilesFolderName?: string;
+  /**
+   * Name of an additional subfolder in `programFilesFolderName` where the app will live,
+   * e.g. "Company" to install to "C:\Program Files\Company\App" instead of "C:\Program Files\App".
+   */
+  nestedFolderName?: string;
   /**
    * A short name for the app, used wherever spaces and special characters are
    * not allowed. Will use the `name` if left undefined.
@@ -66,16 +86,61 @@ export interface MakerWixConfig {
    */
   version?: string;
   /**
+   * Defines the architecture the MSI is build for. Values can be either `x86` or `x64`.
+   * Default's to `x86` if left undefined.
+   */
+  arch?: 'x64' | 'ia64' | 'x86';
+  /**
+   * Automatically run the app after the installation is complete
+   */
+  autoRun?: boolean;
+  /**
+   * Install mode. Defaults to `perMachine`.
+   */
+  defaultInstallMode?: 'perUser' | 'perMachine';
+  /**
+   * Overrides the default reboot behavior if files are in use during the upgrade.
+   * By default, this will be set to "ReallySuppress" to make sure no unexpected reboot will happpen.
+   */
+  rebootMode?: string;
+  /**
+   * Installlation level to use that determines which features are installed.
+   * see guides/enduser.md to check which Install Level maps to which feature that will
+   * correspondingly get installed.
+   * If not set, this will default to "2" (Main Feature, Launch On Login)
+   */
+  installLevel?: number;
+  /**
+   * A comma separated string of extensions with each to be associated the app icon.
+   */
+  associateExtensions?: string;
+  /**
+   * Set to true if the MSI will be bundled via Burn with other MSI
+   * to not make an individual UninstallDisplayName registry entry for it
+   */
+  bundled?: boolean;
+  /**
+   * Configuration options to sign the resulting `.msi` file.
+   * Accepts all [@electron/windows-sign](https://github.com/electron/windows-sign/) options.
+   */
+  windowsSign?: MSICreatorOptions['windowsSign'];
+  /**
    * Parameters to pass to signtool.exe. Overrides `certificateFile` and
    * `certificatePassword`.
+   * Deprecated, use `windowsSign` instead
+   * @deprecated
    */
   signWithParams?: string;
   /**
    * The path to an Authenticode Code Signing Certificate.
+   * Deprecated, use `windowsSign` instead
+   * @deprecated
    */
   certificateFile?: string;
   /**
    * The password to decrypt the certificate given in `certificateFile`.
+   * Deprecated, use `windowsSign` instead
+   * @deprecated
    */
   certificatePassword?: string;
   /**
@@ -104,6 +169,10 @@ export interface UIOptions {
    * Overwrites default installer images with custom files. I recommend JPG.
    */
   images?: UIImages;
+  /**
+   * Provide an array of paths to `.wxl` files containing the localizations
+   */
+  localizations?: Array<string>;
 }
 export interface UIImages {
   /**
