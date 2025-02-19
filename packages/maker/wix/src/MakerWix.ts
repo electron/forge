@@ -5,6 +5,7 @@ import { ForgePlatform } from '@electron-forge/shared-types';
 import chalk from 'chalk';
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 import logSymbols from 'log-symbols';
+import semver from 'semver';
 
 import { MakerWixConfig } from './Config';
 import getNameFromAuthor from './util/author-name';
@@ -23,12 +24,13 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     await this.ensureDirectory(outPath);
 
     const { version } = packageJSON;
-    if (version.includes('-') || version.includes('+')) {
+    const parsed = semver.prerelease(version);
+    if (Array.isArray(parsed) && parsed.length > 0) {
       console.warn(
         logSymbols.warning,
         chalk.yellow(
           'WARNING: MSI packages follow Windows version format "major.minor.build.revision".\n' +
-            `The provided semantic version "${version}" will be transformed to Windows version format.`
+            `The provided semantic version "${version}" will be transformed to Windows version format. Prerelease component will not be retained.`
         )
       );
     }
