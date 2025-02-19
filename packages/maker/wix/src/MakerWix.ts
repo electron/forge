@@ -44,7 +44,7 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,
-    } as MSICreatorOptions);
+    });
 
     if (this.config.beforeCreate) {
       await Promise.resolve(this.config.beforeCreate(creator));
