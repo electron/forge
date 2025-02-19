@@ -24,8 +24,8 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     await this.ensureDirectory(outPath);
 
     const { version } = packageJSON;
-    const parsed = semver.prerelease(version);
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    const parsed = semver.parse(version);
+    if ((Array.isArray(parsed?.prerelease) && parsed.prerelease.length > 0) || (Array.isArray(parsed?.build) && parsed.build.length > 0)) {
       console.warn(
         logSymbols.warning,
         chalk.yellow(
