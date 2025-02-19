@@ -55,6 +55,24 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     });
   };
 
+  describe('init (with skipGit)', () => {
+    beforeAll(async () => {
+      dir = await ensureTestDirIsNonexistent();
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
+    });
+
+    it('should not initialize a git repo if passed the skipGit option', async () => {
+      await api.init({
+        dir,
+        skipGit: true,
+      });
+      expect(fs.existsSync(path.join(dir, '.git'))).toEqual(false);
+    });
+  });
+
   describe('init', () => {
     beforeInitTest();
 
