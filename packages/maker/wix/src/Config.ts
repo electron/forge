@@ -14,7 +14,7 @@ export type MakerWixConfig = Omit<MSICreatorOptions, 'appDirectory' | 'outputDir
    */
   name?: string;
   /**
-   * The app's version
+   * The app's version. It must be a valid semantic version.
    *
    * @defaultValue The `version` field in package.json
    */
