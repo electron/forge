@@ -8,7 +8,7 @@ import './util/terminate';
 
 import packageJSON from '../package.json';
 
-import { checkSystem } from './util/check-system';
+import { checkSystem, SystemCheckContext } from './util/check-system';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
@@ -21,14 +21,13 @@ program
   .command('publish', 'Publish the current Electron application.')
   .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
-      const runner = new Listr<{
-        command: string;
-      }>(
+      const runner = new Listr<SystemCheckContext>(
         [
           {
             title: 'Checking your system',
             task: async (ctx, task) => {
               ctx.command = subcommand.name();
+              ctx.git = !process.argv.includes('--skip-git');
               return await checkSystem(task);
             },
           },

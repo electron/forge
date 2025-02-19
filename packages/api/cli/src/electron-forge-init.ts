@@ -13,6 +13,7 @@ program
   .option('-t, --template [name]', 'Name of the Forge template to use.', 'base')
   .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.', false)
   .option('-f, --force', 'Whether to overwrite an existing directory.', false)
+  .option('--skip-git', 'Skip initializing a git repository in the initialized project.', false)
   .action(async (dir) => {
     const workingDir = resolveWorkingDir(dir, false);
 

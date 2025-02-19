@@ -39,6 +39,10 @@ export interface InitOptions {
    * The custom template to use. If left empty, the default template is used
    */
   template?: string;
+  /**
+   * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
+   */
+  skipGit?: boolean;
 }
 
 async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
@@ -54,7 +58,14 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
   }
 }
 
-export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
+export default async ({
+  dir = process.cwd(),
+  interactive = false,
+  copyCIFiles = false,
+  force = false,
+  template = 'base',
+  skipGit = false,
+}: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
   const runner = new Listr<{
@@ -79,9 +90,15 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
         title: 'Initializing directory',
         task: async (_, task) => {
           await initDirectory(dir, task, force);
-          await initGit(dir);
         },
         rendererOptions: { persistentOutput: true },
+      },
+      {
+        title: 'Initializing git repository',
+        enabled: !skipGit,
+        task: async () => {
+          await initGit(dir);
+        },
       },
       {
         title: 'Preparing template',

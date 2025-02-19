@@ -50,13 +50,26 @@ export interface ImportOptions {
    * The path to the directory containing generated distributables
    */
   outDir?: string;
+  /**
+   * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
+   */
+  skipGit?: boolean;
 }
 
 export default autoTrace(
   { name: 'import()', category: '@electron-forge/core' },
   async (
     childTrace,
-    { dir = process.cwd(), interactive = false, confirmImport, shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript, outDir }: ImportOptions
+    {
+      dir = process.cwd(),
+      interactive = false,
+      confirmImport,
+      shouldContinueOnExisting,
+      shouldRemoveDependency,
+      shouldUpdateScript,
+      outDir,
+      skipGit = false,
+    }: ImportOptions
   ): Promise<void> => {
     const listrOptions: ForgeListrOptions<{ pm: PMDetails }> = {
       concurrent: false,
@@ -86,7 +99,9 @@ export default autoTrace(
               }
             }
 
-            await initGit(dir);
+            if (!skipGit) {
+              await initGit(dir);
+            }
           }),
         },
         {
