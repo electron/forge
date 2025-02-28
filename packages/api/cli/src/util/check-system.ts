@@ -50,7 +50,7 @@ async function checkPnpmConfig() {
     return;
   }
 
-  const nodeLinker = await spawnPackageManager(pnpm, ['config', 'get', 'node-linker']);
+  const nodeLinker = (await spawnPackageManager(pnpm, ['config', 'get', 'node-linker'])).trim();
   if (nodeLinker !== 'hoisted') {
     throw new Error(
       'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.'
