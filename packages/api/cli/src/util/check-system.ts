@@ -37,8 +37,8 @@ async function checkNodeVersion() {
  */
 async function checkPnpmConfig() {
   const { pnpm } = PACKAGE_MANAGERS;
-  const hoistPattern = await spawnPackageManager(pnpm, ['config', 'get', 'hoist-pattern']);
-  const publicHoistPattern = await spawnPackageManager(pnpm, ['config', 'get', 'public-hoist-pattern']);
+  const hoistPattern = (await spawnPackageManager(pnpm, ['config', 'get', 'hoist-pattern'])).trim();
+  const publicHoistPattern = (await spawnPackageManager(pnpm, ['config', 'get', 'public-hoist-pattern'])).trim();
 
   if (hoistPattern !== 'undefined' || publicHoistPattern !== 'undefined') {
     d(
