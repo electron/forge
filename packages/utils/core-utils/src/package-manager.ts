@@ -107,5 +107,6 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
 };
 
 export const spawnPackageManager = async (pm: PMDetails, args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => {
-  return spawn(pm.executable, args, opts);
+  const result = await spawn(pm.executable, args, opts);
+  return typeof result === 'string' ? result.trim() : result;
 };
