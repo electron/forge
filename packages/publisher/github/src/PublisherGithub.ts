@@ -5,6 +5,7 @@ import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { RequestError } from '@octokit/request-error';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import chalk from 'chalk';
+import cliProgress from 'cli-progress';
 import fs from 'fs-extra';
 import logSymbols from 'log-symbols';
 import mime from 'mime-types';
@@ -90,19 +91,26 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
         }
       }
 
-      let uploaded = 0;
-      const updateUploadStatus = () => {
-        setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length} to ${releaseName})`);
-      };
-      updateUploadStatus();
+      const totalArtifacts = artifacts.flatMap((artifact) => artifact.artifacts).length;
+
+      const progressBar = new cliProgress.SingleBar(
+        {
+          format: `Uploading to ${releaseName} | {bar} | {percentage}% ({value}/{total})`,
+          barCompleteChar: '#',
+          barIncompleteChar: '.',
+          hideCursor: true,
+        },
+        cliProgress.Presets.shades_classic
+      );
+
+      progressBar.start(totalArtifacts, 0);
 
       await Promise.all(
         artifacts
           .flatMap((artifact) => artifact.artifacts)
           .map(async (artifactPath) => {
             const done = () => {
-              uploaded += 1;
-              updateUploadStatus();
+              progressBar.increment();
             };
             const artifactName = path.basename(artifactPath);
             const sanitizedArtifactName = GitHub.sanitizeName(artifactName);
@@ -152,6 +160,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             return done();
           })
       );
+      progressBar.stop();
     }
   }
 }
