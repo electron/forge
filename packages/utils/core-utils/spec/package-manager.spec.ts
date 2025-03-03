@@ -1,8 +1,10 @@
+import { spawn } from '@malept/cross-spawn-promise';
 import findUp from 'find-up';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resolvePackageManager } from '../src/package-manager';
+import { resolvePackageManager, spawnPackageManager } from '../src/package-manager';
 
+vi.mock('@malept/cross-spawn-promise');
 vi.mock('find-up', async (importOriginal) => {
   const mod = await importOriginal<object>();
   return {
@@ -80,6 +82,19 @@ describe('package-manager', () => {
       console.warn = vi.fn();
       await expect(resolvePackageManager()).resolves.toHaveProperty('executable', 'npm');
       expect(console.warn).toHaveBeenCalledWith('⚠', expect.stringContaining('Package manager bun is unsupported'));
+    });
+  });
+
+  describe('spawnPackageManager', () => {
+    it('should trim the output', async () => {
+      vi.mocked(spawn).mockResolvedValue(' foo \n');
+      const result = await spawnPackageManager({
+        executable: 'npm',
+        install: 'install',
+        dev: '--save-dev',
+        exact: '--save-exact',
+      });
+      expect(result).toBe('foo');
     });
   });
 
