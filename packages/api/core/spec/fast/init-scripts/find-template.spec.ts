@@ -38,7 +38,7 @@ describe('findTemplate', () => {
           ...mod.default,
           npm: {
             ...mod.default.npm,
-            packages: path.resolve(__dirname, '..', 'fixture', 'global-stub', 'node_modules'),
+            packages: path.resolve(__dirname, '..', '..', 'fixture', 'global-stub', 'node_modules'),
           },
         },
       };

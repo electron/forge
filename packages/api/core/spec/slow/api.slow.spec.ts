@@ -28,7 +28,7 @@ async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: 
   await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
 }
 
-describe.each([PACKAGE_MANAGERS['npm']])(`init (with $executable)`, (pm) => {
+describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGERS['pnpm']])(`with package manager = $executable`, (pm) => {
   let dir: string;
 
   beforeAll(async () => {
@@ -169,7 +169,7 @@ describe.each([PACKAGE_MANAGERS['npm']])(`init (with $executable)`, (pm) => {
     });
   });
 
-  describe.only('after init', () => {
+  describe('after init', () => {
     beforeAll(async () => {
       dir = path.join(await ensureTestDirIsNonexistent(), 'electron-forge-test');
       await api.init({ dir });
@@ -309,9 +309,14 @@ describe.each([PACKAGE_MANAGERS['npm']])(`init (with $executable)`, (pm) => {
             // eslint-disable-next-line @typescript-eslint/no-require-imports
             const MakerClass = require(makerPath).default;
             const maker = new MakerClass();
+
+            // Skip the Squirrel.Windows maker test on non-Windows platforms
+            if (makerPath.includes('MakerSquirrel') && process.platform !== 'win32') {
+              return false;
+            }
             return maker.isSupportedOnCurrentPlatform() === good && maker.externalBinariesExist() === good;
           })
-          .map((makerPath) => () => {
+          .map((makerPath) => {
             const makerDefinition = {
               name: makerPath,
               platforms: [process.platform],
@@ -331,49 +336,42 @@ describe.each([PACKAGE_MANAGERS['npm']])(`init (with $executable)`, (pm) => {
       const goodMakers = getMakers(true);
       const badMakers = getMakers(false);
 
-      console.log({ good: goodMakers.map((m) => m().name), bad: badMakers.map((m) => m().name) });
-
-      const testMakeTarget = (
-        target: () => { name: string },
-        shouldPass: boolean,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...options: any[]
-      ) => {
-        describe(`make (with target=${path.basename(target().name)})`, async () => {
-          beforeAll(async () => {
-            await updatePackageJSON(dir, async (packageJSON) => {
-              packageJSON.config.forge.makers = [target() as IForgeResolvableMaker];
-            });
+      describe.each(goodMakers.map((m) => [path.basename(m.name), m]))('for target %s', async (_, target) => {
+        beforeAll(async () => {
+          await updatePackageJSON(dir, async (packageJSON) => {
+            packageJSON.config.forge.makers = [target as IForgeResolvableMaker];
           });
-
-          for (const optionsFetcher of options) {
-            if (shouldPass) {
-              it(`successfully makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-                const outputs = await api.make(optionsFetcher());
-                for (const outputResult of outputs) {
-                  for (const output of outputResult.artifacts) {
-                    expect(fs.existsSync(output)).toEqual(true);
-                    expect(output.startsWith(path.resolve(dir, 'out', 'make'))).toEqual(true);
-                  }
-                }
-              });
-            } else {
-              it(`fails for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-                await expect(api.make(optionsFetcher())).rejects.toThrow();
-              });
+        });
+        it('can make without errors', async () => {
+          const outputs = await api.make({
+            dir,
+            skipPackage: true,
+          });
+          for (const outputResult of outputs) {
+            for (const output of outputResult.artifacts) {
+              expect(fs.existsSync(output)).toEqual(true);
+              expect(output.startsWith(path.resolve(dir, 'out', 'make'))).toEqual(true);
             }
           }
         });
-      };
+      });
 
-      const targetOptionFetcher = () => ({ dir, skipPackage: true });
-      for (const maker of goodMakers) {
-        testMakeTarget(maker, true, targetOptionFetcher);
-      }
+      describe.each(badMakers.map((m) => [path.basename(m.name), m]))('for target %s', async (_, target) => {
+        beforeAll(async () => {
+          await updatePackageJSON(dir, async (packageJSON) => {
+            packageJSON.config.forge.makers = [target as IForgeResolvableMaker];
+          });
+        });
 
-      for (const maker of badMakers) {
-        testMakeTarget(maker, false, targetOptionFetcher);
-      }
+        it(`fails`, async () => {
+          await expect(
+            api.make({
+              dir,
+              skipPackage: true,
+            })
+          ).rejects.toThrow();
+        });
+      });
 
       it('throws an error when given an unrecognized platform', async () => {
         await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(/invalid platform/);
@@ -428,7 +426,6 @@ describe.each([PACKAGE_MANAGERS['npm']])(`init (with $executable)`, (pm) => {
         await expect(
           api.make({
             dir,
-            // eslint-disable-next-line n/no-missing-require
             overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
             platform: 'mas',
           })
