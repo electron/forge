@@ -129,7 +129,14 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     forgeConfig = packageJSON.config && packageJSON.config.forge ? packageJSON.config.forge : null;
   }
 
-  if (!forgeConfig || typeof forgeConfig === 'string') {
+  if (forgeConfig && typeof forgeConfig === 'string') {
+    const pathToConfig = path.resolve(dir, forgeConfig);
+    if (!rechoir.prepare(interpret.extensions, pathToConfig, dir)) {
+      throw new Error(`Not found interpret for config file: ${pathToConfig}`);
+    }
+  }
+
+  if (!forgeConfig) {
     for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
