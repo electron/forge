@@ -312,13 +312,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       };
     });
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       if (process.platform === 'win32') {
         await fs.promises.copyFile(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
         devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
-      }
-
-      if (process.platform !== 'win32') {
         process.env.DISABLE_SQUIRREL_TEST = 'true';
       }
     });
