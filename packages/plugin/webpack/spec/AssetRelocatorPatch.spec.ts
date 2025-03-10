@@ -179,7 +179,7 @@ describe('AssetRelocatorPatch', () => {
       });
     });
 
-    it('runs the app with the native module', { timeout: 15000 }, async () => {
+    it('runs the app with the native module', { timeout: 15_000 }, async () => {
       servers.push(createSimpleDevServer(rendererOut));
 
       const output = await runApp();

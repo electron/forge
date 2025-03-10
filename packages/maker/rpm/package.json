@@ -1,29 +1,22 @@
 {
   "name": "@electron-forge/maker-rpm",
-  "version": "7.6.0",
+  "version": "7.7.0",
   "description": "Rpm maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/MakerRpm.js",
   "typings": "dist/MakerRpm.d.ts",
-  "scripts": {
-    "test": "yarn test:base test/**/*_spec.ts",
-    "test:base": "cross-env TS_NODE_FILES=1 mocha --config ../../../.mocharc.js"
-  },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.6.0",
-    "chai": "^4.3.3",
-    "chai-as-promised": "^7.0.0",
-    "mocha": "^9.0.1",
-    "vitest": "^2.1.6"
+    "@electron-forge/test-utils": "7.7.0",
+    "vitest": "^3.0.3"
   },
   "engines": {
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "7.6.0",
-    "@electron-forge/shared-types": "7.6.0"
+    "@electron-forge/maker-base": "7.7.0",
+    "@electron-forge/shared-types": "7.7.0"
   },
   "optionalDependencies": {
     "electron-installer-redhat": "^3.2.0"

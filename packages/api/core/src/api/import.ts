@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { safeYarnOrNpm, updateElectronDependency } from '@electron-forge/core-utils';
+import { PMDetails, resolvePackageManager, updateElectronDependency } from '@electron-forge/core-utils';
 import { ForgeListrOptions, ForgeListrTaskFn } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import { autoTrace } from '@electron-forge/tracer';
@@ -50,15 +50,28 @@ export interface ImportOptions {
    * The path to the directory containing generated distributables
    */
   outDir?: string;
+  /**
+   * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
+   */
+  skipGit?: boolean;
 }
 
 export default autoTrace(
   { name: 'import()', category: '@electron-forge/core' },
   async (
     childTrace,
-    { dir = process.cwd(), interactive = false, confirmImport, shouldContinueOnExisting, shouldRemoveDependency, shouldUpdateScript, outDir }: ImportOptions
+    {
+      dir = process.cwd(),
+      interactive = false,
+      confirmImport,
+      shouldContinueOnExisting,
+      shouldRemoveDependency,
+      shouldUpdateScript,
+      outDir,
+      skipGit = false,
+    }: ImportOptions
   ): Promise<void> => {
-    const listrOptions: ForgeListrOptions<unknown> = {
+    const listrOptions: ForgeListrOptions<{ pm: PMDetails }> = {
       concurrent: false,
       rendererOptions: {
         collapseSubtasks: false,
@@ -86,7 +99,9 @@ export default autoTrace(
               }
             }
 
-            await initGit(dir);
+            if (!skipGit) {
+              await initGit(dir);
+            }
           }),
         },
         {
@@ -188,12 +203,18 @@ export default autoTrace(
               await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, { spaces: 2 });
             };
 
-            return task.newListr(
+            return task.newListr<{ pm: PMDetails }>(
               [
                 {
+                  title: `Resolving package manager`,
+                  task: async (ctx, task) => {
+                    ctx.pm = await resolvePackageManager();
+                    task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
+                  },
+                },
+                {
                   title: 'Installing dependencies',
-                  task: async (_, task) => {
-                    const packageManager = safeYarnOrNpm();
+                  task: async ({ pm }, task) => {
                     await writeChanges();
 
                     d('deleting old dependencies forcefully');
@@ -201,16 +222,16 @@ export default autoTrace(
                     await fs.remove(path.resolve(dir, 'node_modules/.bin/electron.cmd'));
 
                     d('installing dependencies');
-                    task.output = `${packageManager} install ${importDeps.join(' ')}`;
-                    await installDepList(dir, importDeps);
+                    task.output = `${pm.executable} ${pm.install} ${importDeps.join(' ')}`;
+                    await installDepList(pm, dir, importDeps);
 
                     d('installing devDependencies');
-                    task.output = `${packageManager} install --dev ${importDevDeps.join(' ')}`;
-                    await installDepList(dir, importDevDeps, DepType.DEV);
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
+                    await installDepList(pm, dir, importDevDeps, DepType.DEV);
 
-                    d('installing exactDevDependencies');
-                    task.output = `${packageManager} install --dev --exact ${importExactDevDeps.join(' ')}`;
-                    await installDepList(dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
+                    d('installing devDependencies with exact versions');
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
+                    await installDepList(pm, dir, importExactDevDeps, DepType.DEV, DepVersionRestriction.EXACT);
                   },
                 },
                 {

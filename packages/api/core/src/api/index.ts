@@ -1,5 +1,6 @@
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
+// eslint-disable-next-line n/no-missing-import
 import ForgeUtils from '../util';
 
 import _import, { ImportOptions } from './import';

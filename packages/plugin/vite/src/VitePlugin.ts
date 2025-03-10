@@ -13,7 +13,7 @@ import ViteConfigGenerator from './ViteConfig';
 import type { VitePluginConfig } from './Config';
 import type { ForgeMultiHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
-// eslint-disable-next-line node/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import
 import type { RollupWatcher } from 'rollup';
 
 const d = debug('electron-forge:plugin:vite');

@@ -1,33 +1,32 @@
-import path from 'node:path';
-
 import { api, InitOptions } from '@electron-forge/core';
-import program from 'commander';
-import fs from 'fs-extra';
+import { program } from 'commander';
 
 import './util/terminate';
-import workingDir from './util/working-dir';
+import packageJSON from '../package.json';
 
-(async () => {
-  let dir = process.cwd();
-  program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
-    .arguments('[name]')
-    .option('-t, --template [name]', 'Name of the Forge template to use')
-    .option('-c, --copy-ci-files', 'Whether to copy the templated CI files (defaults to false)', false)
-    .option('-f, --force', 'Whether to overwrite an existing directory (defaults to false)', false)
-    .helpOption('-h, --help', 'Output usage information')
-    .action((name) => {
-      dir = workingDir(dir, name, false);
-    })
-    .parse(process.argv);
+import { resolveWorkingDir } from './util/resolve-working-dir';
 
-  const initOpts: InitOptions = {
-    dir,
-    interactive: true,
-    copyCIFiles: !!program.copyCiFiles,
-    force: !!program.force,
-  };
-  if (program.template) initOpts.template = program.template;
+program
+  .version(packageJSON.version, '-V, --version', 'Output the current version.')
+  .helpOption('-h, --help', 'Output usage information.')
+  .argument('[dir]', 'Directory to initialize the project in. (default: current directory)')
+  .option('-t, --template [name]', 'Name of the Forge template to use.', 'base')
+  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.', false)
+  .option('-f, --force', 'Whether to overwrite an existing directory.', false)
+  .option('--skip-git', 'Skip initializing a git repository in the initialized project.', false)
+  .action(async (dir) => {
+    const workingDir = resolveWorkingDir(dir, false);
 
-  await api.init(initOpts);
-})();
+    const options = program.opts();
+
+    const initOpts: InitOptions = {
+      dir: workingDir,
+      interactive: true,
+      copyCIFiles: !!options.copyCiFiles,
+      force: !!options.force,
+    };
+    if (options.template) initOpts.template = options.template;
+
+    await api.init(initOpts);
+  })
+  .parse(process.argv);

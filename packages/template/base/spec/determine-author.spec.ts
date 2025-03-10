@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { describe, expect, it, vi } from 'vitest';
 
 import determineAuthor from '../src/determine-author';

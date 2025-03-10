@@ -22,9 +22,11 @@ packages/api/cli/README.md
 packages/**/tsconfig.tsbuildinfo
 packages/**/.swc
 .webpack
-packages/api/core/test/fixture/app-with-scoped-name/out/make
-packages/plugin/webpack/test/fixtures/apps/native-modules/package-lock.json
-packages/plugin/fuses/test/fixture/app
+packages/api/core/spec/fixture/app-with-scoped-name/out/make
+packages/plugin/webpack/spec/fixtures/apps/native-modules/package-lock.json
+packages/plugin/fuses/spec/fixture/app
 .links
 reports
 packages/**/typedoc.json
+.eslintcache
+.vscode/settings.json

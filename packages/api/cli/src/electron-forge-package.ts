@@ -1,34 +1,32 @@
-import path from 'node:path';
-
 import { initializeProxy } from '@electron/get';
 import { api, PackageOptions } from '@electron-forge/core';
-import program from 'commander';
-import fs from 'fs-extra';
+import { program } from 'commander';
 
 import './util/terminate';
-import workingDir from './util/working-dir';
+import packageJSON from '../package.json';
 
-(async () => {
-  let dir: string = process.cwd();
-  program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
-    .arguments('[cwd]')
-    .option('-a, --arch [arch]', 'Target architecture')
-    .option('-p, --platform [platform]', 'Target build platform')
-    .helpOption('-h, --help', 'Output usage information')
-    .action((cwd) => {
-      dir = workingDir(dir, cwd);
-    })
-    .parse(process.argv);
+import { resolveWorkingDir } from './util/resolve-working-dir';
 
-  initializeProxy();
+program
+  .version(packageJSON.version, '-V, --version', 'Output the current version')
+  .helpOption('-h, --help', 'Output usage information')
+  .argument('[dir]', 'Directory to run the command in. (default: current directory)')
+  .option('-a, --arch [arch]', 'Target build architecture')
+  .option('-p, --platform [platform]', 'Target build platform')
+  .action(async (dir) => {
+    const workingDir = resolveWorkingDir(dir);
 
-  const packageOpts: PackageOptions = {
-    dir,
-    interactive: true,
-  };
-  if (program.arch) packageOpts.arch = program.arch;
-  if (program.platform) packageOpts.platform = program.platform;
+    const options = program.opts();
 
-  await api.package(packageOpts);
-})();
+    initializeProxy();
+
+    const packageOpts: PackageOptions = {
+      dir: workingDir,
+      interactive: true,
+    };
+    if (options.arch) packageOpts.arch = options.arch;
+    if (options.platform) packageOpts.platform = options.platform;
+
+    await api.package(packageOpts);
+  })
+  .parse(process.argv);

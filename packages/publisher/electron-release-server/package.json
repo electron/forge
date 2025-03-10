@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-electron-release-server",
-  "version": "7.6.0",
+  "version": "7.7.0",
   "description": "Electron release server publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -8,17 +8,15 @@
   "main": "dist/PublisherERS.js",
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1",
     "msw": "^2.7.0",
-    "vitest": "^2.1.6"
+    "vitest": "^3.0.3"
   },
   "engines": {
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.6.0",
-    "@electron-forge/shared-types": "7.6.0",
+    "@electron-forge/publisher-base": "7.7.0",
+    "@electron-forge/shared-types": "7.7.0",
     "debug": "^4.3.1",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",

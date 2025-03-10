@@ -1,28 +1,24 @@
 {
   "name": "@electron-forge/template-webpack",
-  "version": "7.6.0",
+  "version": "7.7.0",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/WebpackTemplate.js",
   "typings": "dist/WebpackTemplate.d.ts",
-  "scripts": {
-    "test": "mocha --config ../../../.mocharc.js test/**/*_spec.ts"
-  },
   "engines": {
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.6.0",
-    "@electron-forge/template-base": "7.6.0",
+    "@electron-forge/shared-types": "7.7.0",
+    "@electron-forge/template-base": "7.7.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.6.0",
-    "chai": "^4.3.3",
+    "@electron-forge/test-utils": "7.7.0",
     "listr2": "^7.0.2",
-    "vitest": "^2.1.6"
+    "vitest": "^3.0.3"
   },
   "publishConfig": {
     "access": "public"

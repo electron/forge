@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import { OctokitOptions } from '@octokit/core/dist-types/types.d';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

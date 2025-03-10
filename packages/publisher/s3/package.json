@@ -1,16 +1,12 @@
 {
   "name": "@electron-forge/publisher-s3",
-  "version": "7.6.0",
+  "version": "7.7.0",
   "description": "S3 publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
-  "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1"
-  },
   "engines": {
     "node": ">= 16.4.0"
   },
@@ -18,8 +14,8 @@
     "@aws-sdk/client-s3": "^3.654.0",
     "@aws-sdk/lib-storage": "^3.654.0",
     "@aws-sdk/types": "^3.654.0",
-    "@electron-forge/publisher-static": "7.6.0",
-    "@electron-forge/shared-types": "7.6.0",
+    "@electron-forge/publisher-static": "7.7.0",
+    "@electron-forge/shared-types": "7.7.0",
     "debug": "^4.3.1"
   },
   "publishConfig": {

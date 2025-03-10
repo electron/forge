@@ -1,4 +1,3 @@
-/* eslint-disable node/no-unsupported-features/es-syntax */
 import * as path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
@@ -14,7 +13,7 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
 });
 
 describe('make', () => {
-  const fixtureDir = path.resolve(__dirname, '../../test/fixture');
+  const fixtureDir = path.resolve(__dirname, '../fixture');
 
   it.todo('should call "package"');
 

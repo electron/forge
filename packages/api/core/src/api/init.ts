@@ -1,7 +1,8 @@
 import path from 'node:path';
 
-import { safeYarnOrNpm } from '@electron-forge/core-utils';
+import { PMDetails, resolvePackageManager } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
@@ -38,6 +39,10 @@ export interface InitOptions {
    * The custom template to use. If left empty, the default template is used
    */
   template?: string;
+  /**
+   * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
+   */
+  skipGit?: boolean;
 }
 
 async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
@@ -53,28 +58,47 @@ async function validateTemplate(template: string, templateModule: ForgeTemplate)
   }
 }
 
-export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = false, force = false, template = 'base' }: InitOptions): Promise<void> => {
+export default async ({
+  dir = process.cwd(),
+  interactive = false,
+  copyCIFiles = false,
+  force = false,
+  template = 'base',
+  skipGit = false,
+}: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
-
-  const packageManager = safeYarnOrNpm();
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;
+    pm: PMDetails;
   }>(
     [
       {
+        title: `Resolving package manager`,
+        task: async (ctx, task) => {
+          ctx.pm = await resolvePackageManager();
+          task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
+        },
+      },
+      {
         title: `Locating custom template: "${template}"`,
         task: async (ctx) => {
-          ctx.templateModule = await findTemplate(dir, template);
+          ctx.templateModule = await findTemplate(template);
         },
       },
       {
         title: 'Initializing directory',
         task: async (_, task) => {
           await initDirectory(dir, task, force);
-          await initGit(dir);
         },
         rendererOptions: { persistentOutput: true },
+      },
+      {
+        title: 'Initializing git repository',
+        enabled: !skipGit,
+        task: async () => {
+          await initGit(dir);
+        },
       },
       {
         title: 'Preparing template',
@@ -83,10 +107,10 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
         },
       },
       {
-        title: 'Initializing template',
+        title: `Initializing template`,
         task: async ({ templateModule }, task) => {
           if (typeof templateModule.initializeTemplate === 'function') {
-            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles });
+            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles, force });
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });
             }
@@ -100,23 +124,23 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
             [
               {
                 title: 'Installing production dependencies',
-                task: async (_, task) => {
+                task: async ({ pm }, task) => {
                   d('installing dependencies');
                   if (templateModule.dependencies?.length) {
-                    task.output = `${packageManager} install ${templateModule.dependencies.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.dependencies.join(' ')}`;
                   }
-                  return await installDepList(dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
+                  return await installDepList(pm, dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
                 },
                 exitOnError: false,
               },
               {
                 title: 'Installing development dependencies',
-                task: async (_, task) => {
+                task: async ({ pm }, task) => {
                   d('installing devDependencies');
                   if (templateModule.devDependencies?.length) {
-                    task.output = `${packageManager} install --dev ${templateModule.devDependencies.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
                   }
-                  await installDepList(dir, templateModule.devDependencies || [], DepType.DEV);
+                  await installDepList(pm, dir, templateModule.devDependencies || [], DepType.DEV);
                 },
                 exitOnError: false,
               },
@@ -126,15 +150,16 @@ export default async ({ dir = process.cwd(), interactive = false, copyCIFiles = 
                   return task.newListr([
                     {
                       title: 'Installing common dependencies',
-                      task: async (_, task) => {
-                        await initNPM(dir, task);
+                      task: async ({ pm }, task) => {
+                        await initNPM(pm, dir, task);
                       },
                       exitOnError: false,
                     },
                     {
-                      title: process.env.LINK_FORGE_DEPENDENCIES_ON_INIT ? 'Linking forge dependencies' : 'Skip linking forge dependencies',
-                      task: async (_, task) => {
-                        await initLink(dir, task);
+                      title: 'Linking Forge dependencies to local build',
+                      enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
+                      task: async ({ pm }, task) => {
+                        await initLink(pm, dir, task);
                       },
                       exitOnError: true,
                     },

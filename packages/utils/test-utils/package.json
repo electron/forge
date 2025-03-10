@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/test-utils",
-  "version": "7.6.0",
+  "version": "7.7.0",
   "description": "Helper utilities for the Electron Forge testsuite",
   "repository": "https://github.com/electron/forge",
   "author": "Mark Lee",
@@ -8,9 +8,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@malept/cross-spawn-promise": "^2.0.0",
-    "chai": "^4.3.3",
-    "fs-extra": "^10.0.0"
+    "@malept/cross-spawn-promise": "^2.0.0"
   },
   "engines": {
     "node": ">= 16.4.0"

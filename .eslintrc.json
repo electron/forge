@@ -1,12 +1,15 @@
 {
-  "plugins": ["mocha", "import"],
   "env": {
-    "mocha": true
+    "node": true
   },
-  "extends": ["@malept/eslint-config/src/common"],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "globals": {
     "NodeJS": "readonly"
   },
+  "extends": ["eslint:recommended", "plugin:import/errors", "plugin:import/warnings", "plugin:n/recommended", "plugin:promise/recommended", "prettier"],
   "rules": {
     "no-unused-vars": [
       "error",
@@ -17,7 +20,6 @@
         "vars": "all"
       }
     ],
-    "mocha/no-exclusive-tests": "error",
     "import/order": [
       "error",
       {
@@ -37,16 +39,31 @@
         "ignoreCase": true
       }
     ],
-    "import/no-named-as-default": "error"
+    "import/no-named-as-default": "error",
+    "n/no-process-exit": "off"
   },
   "overrides": [
     {
       "files": ["**/*.ts"],
-      "extends": ["@malept/eslint-config/src/typescript"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint", "eslint-plugin-tsdoc"],
       "parserOptions": {
+        "ecmaFeatures": {
+          "impliedStrict": true
+        },
         "project": ["./tsconfig.base.json"]
       },
+      "extends": ["plugin:@typescript-eslint/recommended", "plugin:import/typescript"],
       "rules": {
+        // There is no "recommended" ruleset for tsdoc yet.
+        "tsdoc/syntax": "warn",
+        "n/no-missing-import": [
+          "error",
+          {
+            "tryExtensions": [".js", ".ts", ".d.ts"],
+            "ignoreTypeImport": true
+          }
+        ],
         "no-throw-literal": "off",
         "@typescript-eslint/no-explicit-any": "warn",
         "@typescript-eslint/no-unused-expressions": "warn",
@@ -65,24 +82,25 @@
     {
       "files": ["ci/**/*.js"],
       "rules": {
-        "node/no-unpublished-require": "off"
+        "n/no-unpublished-require": "off"
       }
     },
     {
-      "files": ["packages/*/*/test/**/*_spec*.ts", "packages/*/*/test/fixture/**/*.ts"],
+      "files": ["packages/*/*/spec/**/*.spec.ts", "packages/*/*/spec/fixture/**/*.ts"],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",
-        "node/no-extraneous-import": "off",
-        "node/no-unpublished-import": "off",
-        "node/no-unpublished-require": "off"
+        "n/no-extraneous-import": "off",
+        "n/no-unpublished-import": "off",
+        "n/no-unpublished-require": "off",
+        "n/no-unsupported-features/node-builtins": "off"
       }
     },
     {
       "files": ["packages/api/cli/src/**/*.ts", "packages/external/create-electron-app/src/**/*.ts", "tools/*.{js,ts}"],
       "rules": {
         "no-process-exit": "off",
-        "node/shebang": [
+        "n/hashbang": [
           "error",
           {
             "convertPath": {
@@ -93,28 +111,28 @@
       }
     },
     {
-      "files": ["packages/api/core/test/**/*.ts", "packages/maker/*/src/Maker*.ts"],
+      "files": ["packages/api/core/spec/**/*.ts", "packages/maker/*/src/Maker*.ts"],
       "rules": {
         "@typescript-eslint/no-require-imports": "off"
       }
     },
     {
-      "files": ["packages/*/*/test/fixture/**/*.js", "packages/*/*/test/fixtures/**/*.js"],
+      "files": ["packages/*/*/spec/fixture/**/*.js", "packages/*/*/spec/fixtures/**/*.js"],
       "rules": {
-        "node/no-extraneous-require": "off",
-        "node/no-missing-require": "off",
-        "node/no-unpublished-require": "off"
+        "n/no-extraneous-require": "off",
+        "n/no-missing-require": "off",
+        "n/no-unpublished-require": "off"
       }
     },
     {
-      "files": ["packages/plugin/webpack/test/fixtures/**/*.js"],
+      "files": ["packages/plugin/webpack/spec/fixtures/**/*.js"],
       "rules": {
         "no-process-exit": "off",
         "no-undef": "off",
         "import/no-unresolved": "off",
-        "node/no-missing-import": "off",
-        "node/no-unpublished-import": "off",
-        "node/no-unsupported-features/es-syntax": "off"
+        "n/no-missing-import": "off",
+        "n/no-unpublished-import": "off",
+        "n/no-unsupported-features/es-syntax": "off"
       }
     },
     {
@@ -127,20 +145,26 @@
     {
       "files": ["tools/*.{js,ts}"],
       "rules": {
-        "node/no-unpublished-import": "off",
-        "node/no-unpublished-require": "off",
-        "node/shebang": "off"
+        "n/no-unpublished-import": "off",
+        "n/no-unpublished-require": "off",
+        "n/hashbang": "off"
       }
     },
     {
       "files": ["packages/plugin/vite/src/**/*.ts"],
       "rules": {
-        "node/no-unpublished-import": [
+        "n/no-unpublished-import": [
           "error",
           {
             "allowModules": ["vite"]
           }
         ]
+      }
+    },
+    {
+      "files": ["packages/utils/web-multi-logger/static/*.js"],
+      "rules": {
+        "n/no-unsupported-features/node-builtins": "off"
       }
     }
   ]

@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { resolvePackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -16,6 +17,23 @@ export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
 
   public requiredForgeVersion = currentForgeVersion;
+
+  get dependencies(): string[] {
+    const packageJSONPath = path.join(this.templateDir, 'package.json');
+    if (fs.pathExistsSync(packageJSONPath)) {
+      const deps = fs.readJsonSync(packageJSONPath).dependencies;
+      if (deps) {
+        return Object.entries(deps).map(([packageName, version]) => {
+          if (version === 'ELECTRON_FORGE/VERSION') {
+            version = `^${currentForgeVersion}`;
+          }
+          return `${packageName}@${version}`;
+        });
+      }
+    }
+
+    return [];
+  }
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
@@ -39,12 +57,19 @@ export class BaseTemplate implements ForgeTemplate {
       {
         title: 'Copying starter files',
         task: async () => {
+          const pm = await resolvePackageManager();
           d('creating directory:', path.resolve(directory, 'src'));
           await fs.mkdirs(path.resolve(directory, 'src'));
           const rootFiles = ['_gitignore', 'forge.config.js'];
+
+          if (pm.executable === 'pnpm') {
+            rootFiles.push('.npmrc');
+          }
+
           if (copyCIFiles) {
             d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
           }
+
           const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
 
           for (const file of rootFiles) {
@@ -70,14 +95,22 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
+    await this.copy(path.join(this.templateDir, basename), path.resolve(destDir, basename));
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
     const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
     packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
     packageJSON.author = await determineAuthor(directory);
+
+    const pm = await resolvePackageManager();
+
+    // As of pnpm v10, no postinstall scripts will run unless allowlisted through `onlyBuiltDependencies`
+    if (pm.executable === 'pnpm') {
+      packageJSON.pnpm = {
+        onlyBuiltDependencies: ['electron'],
+      };
+    }
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
 

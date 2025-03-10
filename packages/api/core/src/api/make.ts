@@ -338,7 +338,7 @@ export const listrMake = (
           }
           receiveMakeResults?.(ctx.outputs);
 
-          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))})}`;
+          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))}`;
         }),
         rendererOptions: {
           persistentOutput: true,
