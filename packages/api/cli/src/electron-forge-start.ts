@@ -37,7 +37,6 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
                                     
       ...will pass the arguments "-d -f foo.txt" to the Electron app.`
     )
-    .passThroughOptions(true) // allows args to be passed down to the Electron executable
     .action((targetDir: string) => {
       dir = resolveWorkingDir(targetDir);
     })

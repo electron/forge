@@ -19,6 +19,7 @@ program
   .command('package', 'Package the current Electron application.')
   .command('make', 'Generate distributables for the current Electron application.')
   .command('publish', 'Publish the current Electron application.')
+  .passThroughOptions(true)
   .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {
       const runner = new Listr<SystemCheckContext>(
