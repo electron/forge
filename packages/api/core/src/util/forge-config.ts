@@ -106,6 +106,9 @@ export function fromBuildIdentifier<T>(map: BuildIdentifierMap<T>): BuildIdentif
   };
 }
 
+/**
+ * Checks specifically if the Forge config is a file path on disk.
+ */
 export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig): Promise<boolean> {
   return typeof forgeConfig === 'string' && ((await fs.pathExists(path.resolve(dir, forgeConfig))) || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)));
 }
@@ -137,10 +140,12 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
-    for (const extension of ['.js', ...Object.keys(interpret.extensions).filter((ext) => ext !== '.ts')]) {
+    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
-        rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        if (extension !== '.ts') {
+          rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        }
         forgeConfig = `forge.config${extension}`;
         break;
       }
