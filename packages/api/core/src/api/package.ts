@@ -413,6 +413,7 @@ export const listrPackage = (
                               newRoot: true,
                             },
                             async (childTrace, _, task) => {
+                              process.env.npm_config_arch = target.arch;
                               return delayTraceTillSignal(
                                 childTrace,
                                 task.newListr(
