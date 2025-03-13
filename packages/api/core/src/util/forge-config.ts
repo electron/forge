@@ -6,12 +6,23 @@ import * as interpret from 'interpret';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
-// eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../../helper/dynamic-import';
 
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
 import { readRawPackageJson } from './read-package-json';
+
+/* eslint-disable @typescript-eslint/no-require-imports */
+// TSX imports only work with Node16 resolution while we're still on CommonJS resolution in tsconfig.base.json
+// However, all of Vite's entire TS types break when using CommonJS with Node16 resolution, it's more approachable
+// to use `require` directly for the time being.
+const tsxCJS = require('tsx/cjs/api');
+const tsxESM = require('tsx/esm/api');
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+// Register tsx enhancements
+const unregisterCJS = tsxCJS.register();
+const unregisterESM = tsxESM.register();
 
 const underscoreCase = (str: string) =>
   str
@@ -130,7 +141,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
-    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+    for (const extension of ['.js', ...Object.keys(interpret.extensions).filter((ext) => ext !== '.ts')]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
         rechoir.prepare(interpret.extensions, pathToConfig, dir);
@@ -175,6 +186,9 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   resolvedForgeConfig.pluginInterface = await PluginInterface.create(dir, resolvedForgeConfig);
 
   resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
+
+  unregisterCJS();
+  unregisterESM();
 
   return proxify<ResolvedForgeConfig>(resolvedForgeConfig.buildIdentifier || '', resolvedForgeConfig, 'ELECTRON_FORGE');
 };
