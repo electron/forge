@@ -252,10 +252,24 @@ describe('findConfig', () => {
       expect(conf.buildIdentifier).toEqual('yml');
     });
 
-    it('should resolve the TS file exports of forge.config.ts if config.forge does not exist and the TS config exists', async () => {
-      const fixturePath = path.resolve(__dirname, '../../fixture/dummy_default_ts_conf');
-      const conf = await findConfig(fixturePath);
-      expect(conf.buildIdentifier).toEqual('typescript');
+    describe('TypeScript', () => {
+      it('should resolve forge.config.ts', async () => {
+        const fixturePath = path.resolve(__dirname, '../../fixture/dummy_default_ts_conf');
+        const conf = await findConfig(fixturePath);
+        expect(conf.buildIdentifier).toEqual('typescript');
+      });
+
+      it('should resolve forge.config.cts', async () => {
+        const fixturePath = path.resolve(__dirname, '../../fixture/dummy_default_cts_conf');
+        const conf = await findConfig(fixturePath);
+        expect(conf.buildIdentifier).toEqual('typescript-commonjs');
+      });
+
+      it('should resolve forge.config.mts', async () => {
+        const fixturePath = path.resolve(__dirname, '../../fixture/dummy_default_mts_conf');
+        const conf = await findConfig(fixturePath);
+        expect(conf.buildIdentifier).toEqual('typescript-esm');
+      });
     });
   });
 });
