@@ -20,10 +20,6 @@ const tsxCJS = require('tsx/cjs/api');
 const tsxESM = require('tsx/esm/api');
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-// Register tsx enhancements
-const unregisterCJS = tsxCJS.register();
-const unregisterESM = tsxESM.register();
-
 const underscoreCase = (str: string) =>
   str
     .replace(/(.)([A-Z][a-z]+)/g, '$1_$2')
@@ -154,7 +150,12 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     const forgeConfigPath = path.resolve(dir, forgeConfig as string);
+    let unregisterCJS, unregisterESM;
     try {
+      // Register tsx enhancements
+      unregisterCJS = tsxCJS.register();
+      unregisterESM = tsxESM.register();
+
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
@@ -162,6 +163,9 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     } catch (err) {
       console.error(`Failed to load: ${forgeConfigPath}`);
       throw err;
+    } finally {
+      unregisterCJS();
+      unregisterESM();
     }
   } else if (typeof forgeConfig !== 'object') {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
@@ -186,9 +190,6 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   resolvedForgeConfig.pluginInterface = await PluginInterface.create(dir, resolvedForgeConfig);
 
   resolvedForgeConfig = await runMutatingHook(resolvedForgeConfig, 'resolveForgeConfig', resolvedForgeConfig);
-
-  unregisterCJS();
-  unregisterESM();
 
   return proxify<ResolvedForgeConfig>(resolvedForgeConfig.buildIdentifier || '', resolvedForgeConfig, 'ELECTRON_FORGE');
 };
