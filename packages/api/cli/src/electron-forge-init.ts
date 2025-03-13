@@ -24,6 +24,7 @@ program
       interactive: true,
       copyCIFiles: !!options.copyCiFiles,
       force: !!options.force,
+      skipGit: !!options.skipGit,
     };
     if (options.template) initOpts.template = options.template;
 
