@@ -413,7 +413,10 @@ export const listrPackage = (
                               newRoot: true,
                             },
                             async (childTrace, _, task) => {
-                              process.env.npm_config_arch = target.arch;
+                              const originalConfigArch = process.env.npm_config_arch;
+                              if (target.forUniversal) {
+                                process.env.npm_config_arch = target.arch;
+                              }
                               return delayTraceTillSignal(
                                 childTrace,
                                 task.newListr(
@@ -440,6 +443,9 @@ export const listrPackage = (
                                       title: 'Finalizing package',
                                       task: childTrace({ name: 'finalize-package', category: '@electron-forge/core' }, async () => {
                                         await addSignalAndWait(signalPackageDone, target);
+                                        if (target.forUniversal) {
+                                          process.env.npm_config_arch = originalConfigArch;
+                                        }
                                       }),
                                     },
                                   ],
