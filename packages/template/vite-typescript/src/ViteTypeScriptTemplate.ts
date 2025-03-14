@@ -1,11 +1,24 @@
 import path from 'node:path';
 
+import { supportsModuleRegister } from '@electron-forge/core-utils';
 import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class ViteTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
+
+  /**
+   * `ts-node` is required for `forge.config.ts` files for Node.js versions where
+   * `module.register` is not supported.
+   */
+  public get devDependencies(): string[] {
+    if (!supportsModuleRegister(process.version)) {
+      return ['ts-node@^10.0.0', ...super.devDependencies];
+    } else {
+      return super.devDependencies;
+    }
+  }
 
   public async initializeTemplate(directory: string, options: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
     const superTasks = await super.initializeTemplate(directory, options);

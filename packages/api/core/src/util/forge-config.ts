@@ -1,10 +1,12 @@
 import path from 'node:path';
 
+import { supportsModuleRegister } from '@electron-forge/core-utils';
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import fs from 'fs-extra';
-import * as interpret from 'interpret';
+import interpret from 'interpret';
 import { template } from 'lodash';
-import * as rechoir from 'rechoir';
+import rechoir from 'rechoir';
 
 import { dynamicImportMaybe } from '../../helper/dynamic-import';
 
@@ -144,8 +146,8 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     for (const extension of ['.js', '.mts', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
-        // Use rechoir to parse any alternative syntaxes except for TypeScript
-        if (!['.cts', '.mts', '.ts'].includes(extension)) {
+        // Use rechoir to parse any alternative syntaxes (except for TypeScript when tsx register is supported)
+        if (!supportsModuleRegister(process.version) || !['.cts', '.mts', '.ts'].includes(extension)) {
           rechoir.prepare(interpret.extensions, pathToConfig, dir);
         }
         forgeConfig = `forge.config${extension}`;
@@ -163,16 +165,21 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
       unregisterCJS = tsxCJS.register();
       unregisterESM = tsxESM.register();
 
-      // The loaded "config" could potentially be a static forge config, ESM module or async function
+      // The loaded "config" could potentially be a static Forge config, ESM module, or async function
       const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
-      console.error(`Failed to load: ${forgeConfigPath}`);
+      console.error(chalk.red(`Failed to load config file at ${chalk.green(forgeConfigPath)}`));
+      console.error(chalk.red(err));
       throw err;
     } finally {
-      unregisterCJS();
-      unregisterESM();
+      if (typeof unregisterCJS === 'function') {
+        unregisterCJS();
+      }
+      if (typeof unregisterESM === 'function') {
+        unregisterESM();
+      }
     }
   } else if (typeof forgeConfig !== 'object') {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');
