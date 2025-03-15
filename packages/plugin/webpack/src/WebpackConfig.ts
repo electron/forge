@@ -116,10 +116,7 @@ export default class WebpackConfigGenerator {
     }
     const protocol = this.pluginConfig.devServer?.server === 'https' ? 'https' : 'http';
     const baseUrl = `${protocol}://localhost:${this.port}/${entryPoint.name}`;
-    if (basename !== 'index.html') {
-      return `'${baseUrl}/${basename}'`;
-    }
-    return `'${baseUrl}'`;
+    return `'${baseUrl}/${basename}'`;
   }
 
   toEnvironmentVariable(entryPoint: WebpackPluginEntryPoint, preload = false): string {
