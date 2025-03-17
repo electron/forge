@@ -63,7 +63,7 @@ export class BaseTemplate implements ForgeTemplate {
           const rootFiles = ['_gitignore', 'forge.config.js'];
 
           if (pm.executable === 'pnpm') {
-            rootFiles.push('.npmrc');
+            rootFiles.push('_npmrc');
           }
 
           if (copyCIFiles) {
