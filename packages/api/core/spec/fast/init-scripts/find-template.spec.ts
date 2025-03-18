@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { findTemplate } from '../../src/api/init-scripts/find-template';
+import { findTemplate } from '../../../src/api/init-scripts/find-template';
 
 describe('findTemplate', () => {
   /**
@@ -38,7 +38,7 @@ describe('findTemplate', () => {
           ...mod.default,
           npm: {
             ...mod.default.npm,
-            packages: path.resolve(__dirname, '..', 'fixture', 'global-stub', 'node_modules'),
+            packages: path.resolve(__dirname, '..', '..', 'fixture', 'global-stub', 'node_modules'),
           },
         },
       };
