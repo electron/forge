@@ -16,17 +16,6 @@ async function getGitVersion(): Promise<string | null> {
   });
 }
 
-async function checkNodeVersion() {
-  const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
-  const versionSatisfied = semver.satisfies(process.versions.node, engines.node);
-
-  if (!versionSatisfied) {
-    throw new Error(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
-  }
-
-  return process.versions.node;
-}
-
 /**
  * Packaging an app with Electron Forge requires `node_modules` to be on disk.
  * With `pnpm`, this can be done in a few different ways.
@@ -128,13 +117,6 @@ export async function checkSystem(callerTask: ForgeListrTask<SystemCheckContext>
             } else {
               throw new Error('Could not find git in environment');
             }
-          },
-        },
-        {
-          title: 'Checking node version',
-          task: async (_, task) => {
-            const nodeVersion = await checkNodeVersion();
-            task.title = `Found node@${nodeVersion}`;
           },
         },
         {
