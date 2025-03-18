@@ -2,19 +2,20 @@
 // This file requires a shebang above. If it is missing, this is an error.
 
 import { program } from 'commander';
-import { Listr } from 'listr2';
 import semver from 'semver';
 
 import packageJSON from '../package.json';
+import './util/terminate';
+
+import { checkSystem, SystemCheckContext } from './util/check-system';
 
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${packageJSON.engines.node}.`);
   process.exit(1);
 }
 
-import './util/terminate';
-
-import { checkSystem, SystemCheckContext } from './util/check-system';
+/* eslint-disable-next-line import/order */
+import { Listr } from 'listr2';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
