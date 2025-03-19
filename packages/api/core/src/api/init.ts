@@ -81,10 +81,13 @@ export default async ({
         },
       },
       {
-        title: `Locating custom template: "${template}"`,
-        task: async (ctx) => {
-          ctx.templateModule = await findTemplate(template);
+        title: `Resolving template: ${chalk.cyan(template)}`,
+        task: async (ctx, task) => {
+          const tmpl = await findTemplate(template);
+          ctx.templateModule = tmpl.template;
+          task.output = `Using ${chalk.green(tmpl.name)} (${tmpl.type} module)`;
         },
+        rendererOptions: { persistentOutput: true },
       },
       {
         title: 'Initializing directory',

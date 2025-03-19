@@ -11,8 +11,16 @@ enum TemplateType {
   local = 'local',
 }
 
-export const findTemplate = async (template: string): Promise<ForgeTemplate> => {
-  let templateModulePath!: string;
+export interface ForgeTemplateDetails {
+  name: string;
+  path: string;
+  template: ForgeTemplate;
+  type: TemplateType;
+}
+
+export const findTemplate = async (template: string): Promise<ForgeTemplateDetails> => {
+  let foundTemplate: Omit<ForgeTemplateDetails, 'template'> | null = null;
+
   const resolveTemplateTypes = [
     [TemplateType.global, `electron-forge-template-${template}`],
     [TemplateType.global, `@electron-forge/template-${template}`],
@@ -20,11 +28,11 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
     [TemplateType.local, `@electron-forge/template-${template}`],
     [TemplateType.global, template],
     [TemplateType.local, template],
-  ];
-  let foundTemplate = false;
+  ] as const;
   for (const [templateType, moduleName] of resolveTemplateTypes) {
     try {
       d(`Trying ${templateType} template: ${moduleName}`);
+      let templateModulePath: string;
       if (templateType === TemplateType.global) {
         templateModulePath = require.resolve(moduleName, {
           paths: [globalDirs.npm.packages, globalDirs.yarn.packages],
@@ -32,7 +40,11 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
       } else {
         templateModulePath = require.resolve(moduleName);
       }
-      foundTemplate = true;
+      foundTemplate = {
+        path: templateModulePath,
+        type: templateType,
+        name: moduleName,
+      };
       break;
     } catch (err) {
       d(`Error: ${err instanceof Error ? err.message : err}`);
@@ -40,11 +52,15 @@ export const findTemplate = async (template: string): Promise<ForgeTemplate> => 
   }
   if (!foundTemplate) {
     throw new Error(`Failed to locate custom template: "${template}".`);
+  } else {
+    d(`found template module at: ${foundTemplate.path}`);
+
+    const templateModule: PossibleModule<ForgeTemplate> = await import(foundTemplate.path);
+    const tmpl = templateModule.default ?? templateModule;
+
+    return {
+      ...foundTemplate,
+      template: tmpl,
+    };
   }
-
-  d(`found template module at: ${templateModulePath}`);
-
-  const templateModule: PossibleModule<ForgeTemplate> = await import(templateModulePath);
-
-  return templateModule.default ?? templateModule;
 };
