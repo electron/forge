@@ -1,17 +1,26 @@
 import path from 'node:path';
 
+import { supportsModuleRegister } from '@electron-forge/core-utils';
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import chalk from 'chalk';
 import fs from 'fs-extra';
-import * as interpret from 'interpret';
+import interpret from 'interpret';
 import { template } from 'lodash';
-import * as rechoir from 'rechoir';
+import rechoir from 'rechoir';
 
-// eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../../helper/dynamic-import';
 
 import { runMutatingHook } from './hook';
 import PluginInterface from './plugin-interface';
 import { readRawPackageJson } from './read-package-json';
+
+/* eslint-disable @typescript-eslint/no-require-imports */
+// TSX imports only work with Node16 resolution while we're still on CommonJS resolution in tsconfig.base.json
+// However, all of Vite's entire TS types break when using CommonJS with Node16 resolution, it's more approachable
+// to use `require` directly for the time being.
+const tsxCJS = require('tsx/cjs/api');
+const tsxESM = require('tsx/esm/api');
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 const underscoreCase = (str: string) =>
   str
@@ -99,6 +108,9 @@ export function fromBuildIdentifier<T>(map: BuildIdentifierMap<T>): BuildIdentif
   };
 }
 
+/**
+ * Checks specifically if the Forge config is a file path on disk.
+ */
 export async function forgeConfigIsValidFilePath(dir: string, forgeConfig: string | ForgeConfig): Promise<boolean> {
   return typeof forgeConfig === 'string' && ((await fs.pathExists(path.resolve(dir, forgeConfig))) || fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)));
 }
@@ -130,10 +142,14 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
-    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+    // interpret.extensions doesn't support `.mts` files
+    for (const extension of ['.js', '.mts', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
-        rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        // Use rechoir to parse any alternative syntaxes (except for TypeScript when tsx register is supported)
+        if (!supportsModuleRegister(process.version) || !['.cts', '.mts', '.ts'].includes(extension)) {
+          rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        }
         forgeConfig = `forge.config${extension}`;
         break;
       }
@@ -143,14 +159,27 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
 
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     const forgeConfigPath = path.resolve(dir, forgeConfig as string);
+    let unregisterCJS, unregisterESM;
     try {
-      // The loaded "config" could potentially be a static forge config, ESM module or async function
+      // Register tsx enhancements
+      unregisterCJS = tsxCJS.register();
+      unregisterESM = tsxESM.register();
+
+      // The loaded "config" could potentially be a static Forge config, ESM module, or async function
       const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
-      console.error(`Failed to load: ${forgeConfigPath}`);
+      console.error(chalk.red(`Failed to load config file at ${chalk.green(forgeConfigPath)}`));
+      console.error(chalk.red(err));
       throw err;
+    } finally {
+      if (typeof unregisterCJS === 'function') {
+        unregisterCJS();
+      }
+      if (typeof unregisterESM === 'function') {
+        unregisterESM();
+      }
     }
   } else if (typeof forgeConfig !== 'object') {
     throw new Error('Expected packageJSON.config.forge to be an object or point to a requirable JS file');

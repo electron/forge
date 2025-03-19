@@ -60,6 +60,7 @@
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
+    "tsx": "^4.19.3",
     "username": "^5.1.0"
   },
   "engines": {

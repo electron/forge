@@ -4,7 +4,7 @@ import path from 'node:path';
 import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
@@ -16,6 +16,15 @@ describe('WebpackTypeScriptTemplate', () => {
   beforeAll(async () => {
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
+
+    return async () => {
+      await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['link:remove']);
+
+      if (process.platform !== 'win32') {
+        // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
+        await fs.promises.rm(dir, { force: true, recursive: true });
+      }
+    };
   });
 
   it('should succeed in initializing the typescript template', async () => {
@@ -58,7 +67,7 @@ describe('WebpackTypeScriptTemplate', () => {
   describe('package', () => {
     let cwd: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       delete process.env.TS_NODE_PROJECT;
       // Webpack resolves plugins via cwd
       cwd = process.cwd();
@@ -79,10 +88,10 @@ describe('WebpackTypeScriptTemplate', () => {
       // spec via `api.init`. So we should re-link local forge dependencies
       // again.
       await initLink(PACKAGE_MANAGERS['yarn'], dir);
-    });
 
-    afterAll(() => {
-      process.chdir(cwd);
+      return () => {
+        process.chdir(cwd);
+      };
     });
 
     it('should pass', async () => {
@@ -91,10 +100,5 @@ describe('WebpackTypeScriptTemplate', () => {
         interactive: false,
       });
     });
-  });
-
-  afterAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['link:remove']);
-    await fs.promises.rm(dir, { recursive: true, force: true });
   });
 });

@@ -11,12 +11,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "7.7.0",
     "@electron-forge/shared-types": "7.7.0",
     "@electron-forge/template-base": "7.7.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/core-utils": "7.7.0",
     "@electron-forge/maker-deb": "7.7.0",
     "@electron-forge/maker-rpm": "7.7.0",
     "@electron-forge/maker-squirrel": "7.7.0",

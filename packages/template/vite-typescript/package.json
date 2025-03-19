@@ -15,12 +15,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "7.7.0",
     "@electron-forge/shared-types": "7.7.0",
     "@electron-forge/template-base": "7.7.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/core-utils": "7.7.0",
     "@electron-forge/test-utils": "7.7.0",
     "fast-glob": "^3.2.7",
     "vitest": "^3.0.3"
