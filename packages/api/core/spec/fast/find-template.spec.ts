@@ -1,6 +1,7 @@
 import path from 'node:path';
 
-import { describe, expect, it, vi } from 'vitest';
+import globalDirs from 'global-dirs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { findTemplate } from '../../src/api/init-scripts/find-template';
 
@@ -14,14 +15,20 @@ describe('findTemplate', () => {
    * for the fixtures to be installed in your local `node_modules`.
    */
   describe('local modules', () => {
-    it('should find an @electron-forge/template based on name', async () => {
-      await expect(findTemplate('fixture')).resolves.toEqual({ name: 'electron-forge-template-fixture' });
+    it('should find an @electron-forge/template based on partial name', async () => {
+      await expect(findTemplate('fixture')).resolves.toEqual(expect.objectContaining({ name: '@electron-forge/template-fixture' }));
     });
-    it('should find an @electron-forge/template based on name', async () => {
-      await expect(findTemplate('fixture-two')).resolves.toEqual({ name: 'electron-forge-template-fixture' });
+
+    it('should find an @electron-forge/template based on full name', async () => {
+      await expect(findTemplate('@electron-forge/template-fixture')).resolves.toEqual(expect.objectContaining({ name: '@electron-forge/template-fixture' }));
     });
-    it('should find an @electron-forge/template based on name', async () => {
-      await expect(findTemplate('electron-forge-template-fixture-two')).resolves.toEqual({ name: 'electron-forge-template-fixture' });
+    it('should find an electron-forge-template based on partial name', async () => {
+      await expect(findTemplate('fixture-two')).resolves.toEqual(expect.objectContaining({ name: 'electron-forge-template-fixture-two' }));
+    });
+    it('should find an @electron-forge-template based on full name', async () => {
+      await expect(findTemplate('electron-forge-template-fixture-two')).resolves.toEqual(
+        expect.objectContaining({ name: 'electron-forge-template-fixture-two' })
+      );
     });
   });
 
@@ -31,23 +38,22 @@ describe('findTemplate', () => {
    * `node_modules` in order for the `require.resolve` custom path to work.
    */
   describe('global modules', () => {
-    vi.mock(import('global-dirs'), async (importOriginal) => {
-      const mod = await importOriginal();
-      return {
-        default: {
-          ...mod.default,
-          npm: {
-            ...mod.default.npm,
-            packages: path.resolve(__dirname, '..', 'fixture', 'global-stub', 'node_modules'),
-          },
-        },
-      };
+    beforeEach(() => {
+      vi.spyOn(globalDirs, 'npm', 'get').mockReturnValue({
+        binaries: '',
+        prefix: '',
+        packages: path.resolve(__dirname, '..', 'fixture', 'global-stub', 'node_modules'),
+      });
     });
     it('should find an @electron-forge/template based on name', async () => {
-      await expect(findTemplate('global')).resolves.toEqual({ name: 'electron-forge-template-fixture-global' });
+      await expect(findTemplate('global')).resolves.toEqual(
+        expect.objectContaining({ template: { name: 'electron-forge-template-fixture-global' }, type: 'global' })
+      );
     });
     it('should find an electron-forge-template based on name', async () => {
-      await expect(findTemplate('global-two')).resolves.toEqual({ name: 'electron-forge-template-fixture-global' });
+      await expect(findTemplate('global-two')).resolves.toEqual(
+        expect.objectContaining({ template: { name: 'electron-forge-template-fixture-global' }, type: 'global' })
+      );
     });
   });
 

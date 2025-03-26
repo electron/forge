@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/cli",
-  "version": "7.7.0",
+  "version": "7.8.0",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -15,15 +15,16 @@
     "vitest": "^3.0.3"
   },
   "dependencies": {
-    "@electron-forge/core": "7.7.0",
-    "@electron-forge/core-utils": "7.7.0",
-    "@electron-forge/shared-types": "7.7.0",
+    "@electron-forge/core": "7.8.0",
+    "@electron-forge/core-utils": "7.8.0",
+    "@electron-forge/shared-types": "7.8.0",
     "@electron/get": "^3.0.0",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
     "listr2": "^7.0.2",
+    "log-symbols": "^4.0.0",
     "semver": "^7.2.1"
   },
   "engines": {

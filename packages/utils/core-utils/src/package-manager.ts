@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -75,8 +77,12 @@ function pmFromUserAgent() {
  */
 export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const executingPM = pmFromUserAgent();
+  let lockfilePM;
   const lockfile = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'], { type: 'file' });
-  const lockfilePM = (lockfile && PM_FROM_LOCKFILE[lockfile]) ?? undefined;
+  if (lockfile) {
+    const lockfileName = path.basename(lockfile);
+    lockfilePM = PM_FROM_LOCKFILE[lockfileName];
+  }
   const installer = process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
   // TODO(erickzhao): Remove NODE_INSTALLER environment variable for Forge 8
@@ -90,7 +96,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     case 'npm':
     case 'pnpm':
       d(
-        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${executingPM}, lockfile: ${lockfilePM}.)`
+        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`
       );
       return { ...PACKAGE_MANAGERS[installer], version: executingPM?.version };
     default:
