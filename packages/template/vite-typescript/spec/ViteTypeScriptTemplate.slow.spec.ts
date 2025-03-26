@@ -1,11 +1,10 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
 import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
@@ -17,14 +16,14 @@ describe('ViteTypeScriptTemplate', () => {
   beforeAll(async () => {
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:prepare']);
     dir = await testUtils.ensureTestDirIsNonexistent();
-  });
 
-  afterAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:remove']);
-    if (os.platform() !== 'win32') {
-      // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
-      await fs.promises.rm(dir, { force: true, recursive: true });
-    }
+    return async () => {
+      await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:remove']);
+      if (process.platform !== 'win32') {
+        // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
+        await fs.promises.rm(dir, { force: true, recursive: true });
+      }
+    };
   });
 
   describe('template files are copied to project', () => {
@@ -68,7 +67,7 @@ describe('ViteTypeScriptTemplate', () => {
   describe('package', () => {
     let cwd: string;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       delete process.env.TS_NODE_PROJECT;
       // Vite resolves plugins via cwd
       cwd = process.cwd();
@@ -89,10 +88,10 @@ describe('ViteTypeScriptTemplate', () => {
       // spec via `api.init`. So we should re-link local forge dependencies
       // again.
       await initLink(PACKAGE_MANAGERS['yarn'], dir);
-    });
 
-    afterAll(() => {
-      process.chdir(cwd);
+      return () => {
+        process.chdir(cwd);
+      };
     });
 
     it('should pass', async () => {

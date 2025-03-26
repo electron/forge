@@ -152,7 +152,8 @@ export default class PluginInterface implements IForgePluginInterface {
     let newStartFn;
     const claimed: string[] = [];
     for (const plugin of this.plugins) {
-      if (typeof plugin.startLogic === 'function' && plugin.startLogic !== PluginBase.prototype.startLogic) {
+      // FIXME(erickzhao): reference equality doesn't work due to loading Forge config from `tsx`
+      if (typeof plugin.startLogic === 'function' && plugin.startLogic.toString() !== PluginBase.prototype.startLogic.toString()) {
         claimed.push(plugin.name);
         newStartFn = plugin.startLogic;
       }
