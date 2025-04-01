@@ -48,6 +48,8 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
       region: this.config.region,
       endpoint: this.config.endpoint,
       forcePathStyle: !!this.config.s3ForcePathStyle,
+      requestChecksumCalculation: this.config.requestChecksumCalculation || "WHEN_SUPPORTED",
+      responseChecksumValidation: this.config.responseChecksumValidation || "WHEN_SUPPORTED",
     });
 
     d('creating s3 client with options:', this.config);
