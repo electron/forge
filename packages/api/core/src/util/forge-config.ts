@@ -3,6 +3,7 @@ import path from 'node:path';
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import * as interpret from 'interpret';
+import { createJiti } from 'jiti';
 import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
@@ -130,10 +131,14 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
-    for (const extension of ['.js', ...Object.keys(interpret.extensions)]) {
+    // interpret.extensions doesn't support `.mts` files
+    for (const extension of ['.js', '.mts', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
-        rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        // Use rechoir to parse any alternative syntaxes (except for TypeScript when tsx register is supported)
+        if (!['.cts', '.mts', '.ts'].includes(extension)) {
+          rechoir.prepare(interpret.extensions, pathToConfig, dir);
+        }
         forgeConfig = `forge.config${extension}`;
         break;
       }
@@ -144,8 +149,15 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
     const forgeConfigPath = path.resolve(dir, forgeConfig as string);
     try {
+      let loadFn;
+      if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
+        const jiti = createJiti(__filename);
+        loadFn = jiti.import;
+      } else {
+        loadFn = dynamicImportMaybe;
+      }
       // The loaded "config" could potentially be a static forge config, ESM module or async function
-      const loaded = (await dynamicImportMaybe(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+      const loaded = (await loadFn(forgeConfigPath)) as MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig = typeof maybeForgeConfig === 'function' ? await maybeForgeConfig() : maybeForgeConfig;
     } catch (err) {
