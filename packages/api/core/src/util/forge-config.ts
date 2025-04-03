@@ -135,7 +135,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     for (const extension of ['.js', '.mts', ...Object.keys(interpret.extensions)]) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
       if (await fs.pathExists(pathToConfig)) {
-        // Use rechoir to parse any alternative syntaxes (except for TypeScript when tsx register is supported)
+        // Use rechoir to parse alternative syntaxes (except for TypeScript where we use jiti)
         if (!['.cts', '.mts', '.ts'].includes(extension)) {
           rechoir.prepare(interpret.extensions, pathToConfig, dir);
         }
