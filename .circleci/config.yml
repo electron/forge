@@ -88,9 +88,9 @@ jobs:
                 name: Windows Setup
                 shell: bash
                 command: |
-                  pip install setuptools
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
-                  npm install node-gyp@9.4.0
+                  npm uninstall node-gyp
+                  npm install @electron/node-gyp@10.2.0-electron.1
       - when:
           condition:
             equal: [node/linux, << parameters.executor >>]
@@ -136,11 +136,11 @@ jobs:
                 name: Windows Setup
                 shell: bash
                 command: |
-                  pip install setuptools
                   choco install --no-progress -y wixtoolset  --version=3.14.0
                   echo 'export PATH=$PATH:"/C/Program Files (x86)/WiX Toolset v3.14/bin"' >> "$BASH_ENV"
                   cd 'C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\run-script'
-                  npm install node-gyp@9.4.0
+                  npm uninstall node-gyp
+                  npm install @electron/node-gyp@10.2.0-electron.1
       - when:
           condition:
             equal: [linux-medium-plus, << parameters.executor >>]
