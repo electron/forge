@@ -69,7 +69,6 @@
     "parse-author": "^2.0.0",
     "rechoir": "^0.8.0",
     "semver": "^7.2.1",
-    "source-map-support": "^0.5.13",
     "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
     "vite": "^5.0.12",
