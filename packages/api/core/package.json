@@ -52,6 +52,7 @@
     "global-dirs": "^3.0.0",
     "got": "^11.8.5",
     "interpret": "^3.1.1",
+    "jiti": "^2.4.2",
     "listr2": "^7.0.2",
     "lodash": "^4.17.20",
     "log-symbols": "^4.0.0",
