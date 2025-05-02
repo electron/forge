@@ -147,7 +147,7 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines();
 
-      expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'http://localhost:3000/hello'");
+      expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'http://localhost:3000/hello/index.html'");
     });
 
     describe('PRELOAD_WEBPACK_ENTRY', () => {
