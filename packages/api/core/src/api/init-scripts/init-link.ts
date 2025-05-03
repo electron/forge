@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
@@ -34,6 +35,7 @@ export async function initLink<T>(pm: PMDetails, dir: string, task?: ForgeListrT
         });
       }
     }
+    await fs.promises.chmod(path.resolve(dir, 'node_modules', '.bin', 'electron-forge'), 0o755);
   } else {
     d('LINK_FORGE_DEPENDENCIES_ON_INIT is falsy. Skipping.');
   }
