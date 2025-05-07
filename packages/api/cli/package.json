@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
+    "@types/inquirer": "^9.0.8",
     "vitest": "^3.0.3"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@electron-forge/core-utils": "7.8.1",
     "@electron-forge/shared-types": "7.8.1",
     "@electron/get": "^3.0.0",
+    "@inquirer/prompts": "^7.5.0",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
