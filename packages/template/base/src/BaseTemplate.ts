@@ -108,7 +108,7 @@ export class BaseTemplate implements ForgeTemplate {
     // As of pnpm v10, no postinstall scripts will run unless allowlisted through `onlyBuiltDependencies`
     if (pm.executable === 'pnpm') {
       packageJSON.pnpm = {
-        onlyBuiltDependencies: ['electron'],
+        onlyBuiltDependencies: ['electron', 'electron-winstaller'],
       };
     }
 
