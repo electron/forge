@@ -44,13 +44,16 @@ export default abstract class Plugin<C> implements IForgePlugin {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// This is a filthy hack around typescript to allow internal hooks in our
-// internal plugins to have some level of access to the "Task" that listr runs.
-// Specifically the ability to set a custom task name and receive the task
-// instance as a parameter
-//
-// This method is not type safe internally, but is type safe for consumers
-// @internal
+/**
+ *
+ * This is a filthy hack around TypeScript to allow internal hooks in our
+ * internal plugins to have some level of access to the "Task" that Listr2 runs.
+ * Specifically the ability to set a custom task name and receive the task
+ *
+ * This method is not type-safe internally, but is type-safe for consumers.
+ *
+ * @internal
+ */
 export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
   hookFn: <Ctx = never>(task: ForgeListrTask<Ctx> | null, ...args: Parameters<ForgeHookFn<Hook>>) => ReturnType<ForgeHookFn<Hook>>,
   name: string

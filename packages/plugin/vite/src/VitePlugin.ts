@@ -65,7 +65,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
           return task?.newListr([
             {
-              title: 'Launching dev servers for renderer process code',
+              title: 'Launching Vite dev servers for renderer process code',
               task: async () => {
                 await this.launchRendererDevServers();
               },
@@ -76,7 +76,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
             },
             // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
             {
-              title: 'Compiling main process code',
+              title: 'Bundling main process code',
               task: async () => {
                 await this.build();
               },
@@ -84,8 +84,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                 timer: { ...PRESET_TIMER },
               },
             },
-          ]) as any;
-        }, 'Preparing vite bundles'),
+          ]);
+        }, 'Preparing Vite bundles'),
       ],
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async () => {
@@ -171,7 +171,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
             return result;
           })
-          .catch(reject);
+          .catch((err) => {
+            console.error(chalk.red('Vite build failed:'));
+            console.error(err);
+            reject(err);
+            process.exit(1);
+          });
       });
 
       buildTasks.push(buildTask);

@@ -159,7 +159,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     return {
       preStart: [
         namedHookWithTaskFn<'preStart'>(async (task) => {
-          if (this.alreadyStarted) return false;
+          if (this.alreadyStarted) return;
           this.alreadyStarted = true;
 
           await fs.remove(this.baseDir);
@@ -189,7 +189,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                 timer: { ...PRESET_TIMER },
               },
             },
-          ]) as any;
+          ]);
         }, 'Preparing webpack bundles'),
       ],
       prePackage: [
