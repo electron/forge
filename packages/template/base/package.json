@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-base",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -11,15 +11,15 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/core-utils": "7.8.0",
-    "@electron-forge/shared-types": "7.8.0",
+    "@electron-forge/core-utils": "7.8.1",
+    "@electron-forge/shared-types": "7.8.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
     "username": "^5.1.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.8.0",
+    "@electron-forge/test-utils": "7.8.1",
     "vitest": "^3.0.3"
   },
   "publishConfig": {
