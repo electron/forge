@@ -10,6 +10,10 @@ import semver from 'semver';
 import { MakerWixConfig } from './Config';
 import getNameFromAuthor from './util/author-name';
 
+function isValidWixArch(arch: string): arch is 'x64' | 'ia64' | 'x86' {
+  return ['x64', 'ia64', 'x86'].includes(arch);
+}
+
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
 
@@ -35,12 +39,17 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       );
     }
 
+    if (!isValidWixArch(targetArch)) {
+      throw new Error(`Invalid arch: ${targetArch}`);
+    }
+
     const creator = new MSICreator({
       description: packageJSON.description,
       name: appName,
       version,
       manufacturer: getNameFromAuthor(packageJSON.author),
       exe: `${appName}.exe`,
+      arch: targetArch,
       ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,
