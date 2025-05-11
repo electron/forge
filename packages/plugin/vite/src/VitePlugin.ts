@@ -1,20 +1,20 @@
+// TODO(erickzhao): Remove this when upgrading to Vite 6 and converting to ESM
+process.env.VITE_CJS_IGNORE_WARNING = 'true';
+
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import { PRESET_TIMER } from 'listr2';
-import { default as vite } from 'vite';
+import { delay, Listr, PRESET_TIMER } from 'listr2';
+import { Logger, default as vite } from 'vite';
 
-import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
-import type { ForgeMultiHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import type { ForgeListrTask, ForgeMultiHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
-// eslint-disable-next-line n/no-extraneous-import
-import type { RollupWatcher } from 'rollup';
 
 const d = debug('electron-forge:plugin:vite');
 
@@ -25,15 +25,19 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private isProd = false;
 
-  // The root of the Electron app
+  /**
+   * Path to the root of the Electron app
+   */
   private projectDir!: string;
 
-  // Where the Vite output is generated. Usually `${projectDir}/.vite`
+  /**
+   * Path where Vite output is generated. Usually `${projectDir}/.vite`
+   */
   private baseDir!: string;
 
   private configGeneratorCache!: ViteConfigGenerator;
 
-  private watchers: RollupWatcher[] = [];
+  private watchers: vite.Rollup.RollupWatcher[] = [];
 
   private servers: vite.ViteDevServer[] = [];
 
@@ -41,8 +45,12 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     this.setDirectories(dir);
 
     d('hooking process events');
-    process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
-    process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
+    process.on('exit', (_code) => {
+      this.exitHandler({ cleanup: true });
+    });
+    process.on('SIGINT' as NodeJS.Signals, (_signal) => {
+      this.exitHandler({ exit: true });
+    });
   };
 
   public setDirectories(dir: string): void {
@@ -61,30 +69,53 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           if (VitePlugin.alreadyStarted) return;
           VitePlugin.alreadyStarted = true;
 
+          d(`preStart: removing old content from ${this.baseDir}`);
           await fs.remove(this.baseDir);
 
-          return task?.newListr([
-            {
-              title: 'Launching Vite dev servers for renderer process code',
-              task: async () => {
-                await this.launchRendererDevServers();
+          return task?.newListr(
+            [
+              {
+                title: 'Launching Vite dev servers for renderer process code...',
+                task: async (_ctx, task) => {
+                  const fn = (...args: string[]) => {
+                    if (task) {
+                      task.output = task.output?.concat('\n', args.join(' ')) ?? args.join(' ');
+                    }
+                  };
+
+                  const logger: Logger = vite.createLogger();
+
+                  logger.info = (msg) => {
+                    fn(msg);
+                  };
+                  logger.warn = (msg) => {
+                    fn(chalk.yellow(msg));
+                  };
+                  logger.error = (msg) => {
+                    fn(chalk.red(msg));
+                  };
+                  await this.launchRendererDevServers(logger);
+                  task.title = 'Launched Vite dev servers for renderer process code';
+                },
+                rendererOptions: {
+                  persistentOutput: true,
+                  timer: { ...PRESET_TIMER },
+                },
               },
-              rendererOptions: {
-                persistentOutput: true,
-                timer: { ...PRESET_TIMER },
+              // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
+              {
+                title: 'Building main process and preload bundles...',
+                task: async (_ctx, task) => {
+                  return this.build(task);
+                },
+                rendererOptions: {
+                  persistentOutput: true,
+                  timer: { ...PRESET_TIMER },
+                },
               },
-            },
-            // The main process depends on the `server.port` of the renderer process, so the renderer process is run first.
-            {
-              title: 'Bundling main process code',
-              task: async () => {
-                await this.build();
-              },
-              rendererOptions: {
-                timer: { ...PRESET_TIMER },
-              },
-            },
-          ]);
+            ],
+            { concurrent: false }
+          );
         }, 'Preparing Vite bundles'),
       ],
       prePackage: [
@@ -139,7 +170,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     if (!pj.main?.includes('.vite/')) {
       throw new Error(`Electron Forge is configured to use the Vite plugin. The plugin expects the
 "main" entry point in "package.json" to be ".vite/*" (where the plugin outputs
-the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
+the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
 
     if (pj.config) {
@@ -150,54 +181,76 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   // Main process, Preload scripts and Worker process, etc.
-  build = async (): Promise<void> => {
-    const configs = await this.configGenerator.getBuildConfig();
-    const buildTasks: Promise<void>[] = [];
-    const isWatcher = (x: any): x is RollupWatcher => typeof x?.close === 'function';
+  build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
+    const configs = await this.configGenerator.getBuildConfigs();
+    const isRollupWatcher = (x: vite.Rollup.RollupWatcher | vite.Rollup.RollupOutput | vite.Rollup.RollupOutput[]): x is vite.Rollup.RollupWatcher => true;
 
-    for (const userConfig of configs) {
-      const buildTask = new Promise<void>((resolve, reject) => {
-        vite
-          .build({
-            // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
-            configFile: false,
-            ...userConfig,
-            plugins: [onBuildDone(resolve), ...(userConfig.plugins ?? [])],
-          })
-          .then((result) => {
-            if (isWatcher(result)) {
+    return task?.newListr(
+      configs.map((userConfig) => {
+        const target = userConfig.build?.rollupOptions?.input || (userConfig.build?.lib as any).entry;
+        return {
+          title: `Building ${chalk.green(target)} bundle`,
+          task: async (_ctx, subtask) => {
+            const log = (...args: string[]) => {
+              subtask.output = args.join(' ');
+            };
+
+            const customLogger: Logger = vite.createLogger();
+
+            customLogger.info = (msg) => {
+              log(msg);
+            };
+            customLogger.warn = (msg) => {
+              log(chalk.yellow(msg));
+            };
+            customLogger.error = (msg) => {
+              log(chalk.red(msg));
+            };
+
+            const result = await vite.build({
+              // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
+              configFile: false,
+              customLogger,
+              logLevel: 'warn',
+              ...userConfig,
+              plugins: [...(userConfig.plugins ?? [])],
+              clearScreen: true,
+            });
+            await delay(150);
+
+            if (isRollupWatcher(result)) {
               this.watchers.push(result);
             }
-
-            return result;
-          })
-          .catch((err) => {
-            console.error(chalk.red('Vite build failed:'));
-            console.error(err);
-            reject(err);
-            process.exit(1);
-          });
-      });
-
-      buildTasks.push(buildTask);
-    }
-
-    await Promise.all(buildTasks);
+            subtask.title = `Watching for changes to ${chalk.green(target)}`;
+          },
+          rendererOptions: {
+            persistentOutput: true,
+            timer: { ...PRESET_TIMER },
+          },
+          exitOnError: true,
+        };
+      }),
+      {
+        concurrent: true,
+      }
+    );
   };
 
   // Renderer process
-  buildRenderer = async (): Promise<void> => {
+  buildRenderer = async (logger?: Logger): Promise<void> => {
     for (const userConfig of await this.configGenerator.getRendererConfig()) {
       await vite.build({
+        customLogger: logger,
         configFile: false,
         ...userConfig,
       });
     }
   };
 
-  launchRendererDevServers = async (): Promise<void> => {
+  launchRendererDevServers = async (logger?: Logger): Promise<void> => {
     for (const userConfig of await this.configGenerator.getRendererConfig()) {
       const viteDevServer = await vite.createServer({
+        customLogger: logger,
         configFile: false,
         ...userConfig,
       });
@@ -236,9 +289,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       this.servers = [];
     }
     if (err) console.error(err.stack);
-    // Why: This is literally what the option says to do.
-    // eslint-disable-next-line no-process-exit
-    if (options.exit) process.exit();
+    if (options.exit) process.exit(0);
   };
 }
 

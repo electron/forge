@@ -51,7 +51,7 @@ export default class ViteConfigGenerator {
     return this.isProd ? 'production' : 'development';
   }
 
-  async getBuildConfig(): Promise<UserConfig[]> {
+  async getBuildConfigs(): Promise<UserConfig[]> {
     if (!Array.isArray(this.pluginConfig.build)) {
       throw new Error('"config.build" must be an Array');
     }

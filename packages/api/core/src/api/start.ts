@@ -1,4 +1,5 @@
 import { spawn, SpawnOptions } from 'node:child_process';
+import readline from 'node:readline';
 
 import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
 import {
@@ -51,8 +52,10 @@ export default autoTrace(
     const arch = process.env.npm_config_arch || process.arch;
     const listrOptions: ForgeListrOptions<StartContext> = {
       concurrent: false,
+      registerSignalListeners: false, // Don't re-render on SIGINT
       rendererOptions: {
         collapseErrors: false,
+        collapseSubtasks: false,
       },
       silentRendererCondition: !interactive,
       fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
@@ -120,6 +123,11 @@ export default autoTrace(
               return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'preStart')), 'run');
             }
           ),
+        },
+        {
+          task: async (ctx, task) => {
+            task.title = `Launched Electron app. Type ${chalk.green('rs')} in terminal to restart main process.`;
+          },
         },
       ],
       listrOptions
@@ -232,7 +240,10 @@ export default autoTrace(
     if (interactive) {
       process.stdin.on('data', async (data) => {
         if (data.toString().trim() === 'rs' && lastSpawned) {
-          console.info(chalk.cyan('\nRestarting App\n'));
+          readline.moveCursor(process.stdout, 0, -1);
+          readline.clearLine(process.stdout, 0);
+          readline.cursorTo(process.stdout, 0);
+          console.info(`${chalk.green('✔ ')}${chalk.cyan('Restarting App')}`);
           lastSpawned.restarted = true;
           lastSpawned.kill('SIGTERM');
           lastSpawned.emit('restarted', await forgeSpawnWrapper());
