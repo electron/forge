@@ -125,7 +125,7 @@ export default autoTrace(
           ),
         },
         {
-          task: async (ctx, task) => {
+          task: (_ctx, task) => {
             task.title = `Launched Electron app. Type ${chalk.green('rs')} in terminal to restart main process.`;
           },
         },

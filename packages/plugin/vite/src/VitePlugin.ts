@@ -220,6 +220,13 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
             if (isRollupWatcher(result)) {
               this.watchers.push(result);
+              result.on('event', (event) => {
+                if (event.code === 'ERROR') {
+                  console.error(event.error.message);
+                } else if (event.code === 'BUNDLE_END') {
+                  console.log(`${chalk.green('✔')} Bundle ${chalk.green(target)} built in ${event.duration}ms`);
+                }
+              });
             }
             subtask.title = `Watching for changes to ${chalk.green(target)}`;
           },
