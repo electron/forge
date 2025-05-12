@@ -8,7 +8,7 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
-import { Logger, default as vite } from 'vite';
+import { default as vite } from 'vite';
 
 import ViteConfigGenerator from './ViteConfig';
 
@@ -105,12 +105,30 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
         }, 'Preparing Vite bundles'),
       ],
       prePackage: [
-        namedHookWithTaskFn<'prePackage'>(async () => {
+        namedHookWithTaskFn<'prePackage'>(async (task) => {
           this.isProd = true;
           await fs.remove(this.baseDir);
 
-          await Promise.all([this.build(), this.buildRenderer()]);
-        }, 'Building vite bundles'),
+          return task?.newListr(
+            [
+              {
+                title: 'Building main and preload targets...',
+                task: async (_ctx, subtask) => {
+                  const results = await this.build(subtask);
+                  return results;
+                },
+              },
+              {
+                title: 'Building renderer targets...',
+                task: async (_ctx, subtask) => {
+                  const results = await this.buildRenderer(subtask);
+                  return results;
+                },
+              },
+            ],
+            { concurrent: true }
+          );
+        }, 'Building production Vite bundles'),
       ],
       postStart: async (_config, child) => {
         d('hooking electron process exit');
@@ -174,9 +192,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
     return task?.newListr(
       configs.map((userConfig) => {
-        const target = userConfig.build?.rollupOptions?.input || (userConfig.build?.lib as any).entry;
+        const target = (userConfig.build?.rollupOptions?.input || (typeof userConfig.build?.lib !== 'boolean' && userConfig.build?.lib?.entry)) ?? '';
         return {
-          title: `Building ${chalk.green(target)} bundle`,
+          title: `Building ${chalk.green(target)} target`,
           task: async (_ctx, subtask) => {
             const result = await vite.build({
               // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
@@ -193,13 +211,14 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
                   console.error(`\n${chalk.dim(getTimestampString())} ${event.error.message}`);
                 } else if (event.code === 'BUNDLE_END') {
                   console.log(
-                    `${chalk.dim(getTimestampString())} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green('bundle built')} ${chalk.dim(target)}`
+                    `${chalk.dim(getTimestampString())} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green('target built')} ${chalk.dim(target)}`
                   );
                 }
               });
               this.watchers.push(result);
+            } else {
+              subtask.title = `Built target ${chalk.dim(target)}`;
             }
-            subtask.title = `Watching for changes ${chalk.dim(target)}`;
           },
           rendererOptions: {
             persistentOutput: true,
@@ -214,14 +233,20 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
   };
 
   // Renderer process
-  buildRenderer = async (logger?: Logger): Promise<void> => {
-    for (const userConfig of await this.configGenerator.getRendererConfig()) {
-      await vite.build({
-        customLogger: logger,
-        configFile: false,
-        ...userConfig,
-      });
-    }
+  buildRenderer = async (task?: ForgeListrTask<null>) => {
+    const rendererConfigs = await this.configGenerator.getRendererConfig();
+    return task?.newListr(
+      rendererConfigs.map((userConfig) => ({
+        task: async (_ctx, subtask) => {
+          await vite.build({
+            configFile: false,
+            logLevel: 'error',
+            ...userConfig,
+          });
+          subtask.title = `Built target ${chalk.dim(path.basename(userConfig.build?.outDir ?? ''))}`;
+        },
+      }))
+    );
   };
 
   launchRendererDevServers = async (task?: ForgeListrTask<null>) => {
