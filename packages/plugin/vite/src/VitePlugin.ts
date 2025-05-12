@@ -7,7 +7,7 @@ import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
-import { delay, Listr, PRESET_TIMER } from 'listr2';
+import { Listr, PRESET_TIMER } from 'listr2';
 import { Logger, default as vite } from 'vite';
 
 import ViteConfigGenerator from './ViteConfig';
@@ -77,25 +77,9 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
               {
                 title: 'Launching Vite dev servers for renderer process code...',
                 task: async (_ctx, task) => {
-                  const fn = (...args: string[]) => {
-                    if (task) {
-                      task.output = task.output?.concat('\n', args.join(' ')) ?? args.join(' ');
-                    }
-                  };
-
-                  const logger: Logger = vite.createLogger();
-
-                  logger.info = (msg) => {
-                    fn(msg);
-                  };
-                  logger.warn = (msg) => {
-                    fn(chalk.yellow(msg));
-                  };
-                  logger.error = (msg) => {
-                    fn(chalk.red(msg));
-                  };
-                  await this.launchRendererDevServers(logger);
+                  const result = await this.launchRendererDevServers(task);
                   task.title = 'Launched Vite dev servers for renderer process code';
+                  return result;
                 },
                 rendererOptions: {
                   persistentOutput: true,
@@ -106,7 +90,9 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
               {
                 title: 'Building main process and preload bundles...',
                 task: async (_ctx, task) => {
-                  return this.build(task);
+                  const result = await this.build(task);
+                  task.title = 'Built main process and preload bundles';
+                  return result;
                 },
                 rendererOptions: {
                   persistentOutput: true,
@@ -183,7 +169,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
   // Main process, Preload scripts and Worker process, etc.
   build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
     const configs = await this.configGenerator.getBuildConfigs();
-    const isRollupWatcher = (x: vite.Rollup.RollupWatcher | vite.Rollup.RollupOutput | vite.Rollup.RollupOutput[]): x is vite.Rollup.RollupWatcher => true;
+    const isRollupWatcher = (x: vite.Rollup.RollupWatcher | vite.Rollup.RollupOutput | vite.Rollup.RollupOutput[]): x is vite.Rollup.RollupWatcher =>
+      x && typeof x === 'object' && 'on' in x && typeof x.on === 'function' && 'close' in x && typeof x.close === 'function';
 
     return task?.newListr(
       configs.map((userConfig) => {
@@ -191,48 +178,31 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
         return {
           title: `Building ${chalk.green(target)} bundle`,
           task: async (_ctx, subtask) => {
-            const log = (...args: string[]) => {
-              subtask.output = args.join(' ');
-            };
-
-            const customLogger: Logger = vite.createLogger();
-
-            customLogger.info = (msg) => {
-              log(msg);
-            };
-            customLogger.warn = (msg) => {
-              log(chalk.yellow(msg));
-            };
-            customLogger.error = (msg) => {
-              log(chalk.red(msg));
-            };
-
             const result = await vite.build({
               // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
               configFile: false,
-              customLogger,
-              logLevel: 'warn',
+              logLevel: 'silent', // We suppress Vite output and instead log lines using RollupWatcher events
               ...userConfig,
               plugins: [...(userConfig.plugins ?? [])],
-              clearScreen: true,
+              clearScreen: false,
             });
-            await delay(150);
 
             if (isRollupWatcher(result)) {
-              this.watchers.push(result);
               result.on('event', (event) => {
                 if (event.code === 'ERROR') {
-                  console.error(event.error.message);
+                  console.error(`\n${chalk.dim(getTimestampString())} ${event.error.message}`);
                 } else if (event.code === 'BUNDLE_END') {
-                  console.log(`${chalk.green('✔')} Bundle ${chalk.green(target)} built in ${event.duration}ms`);
+                  console.log(
+                    `${chalk.dim(getTimestampString())} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green('bundle built')} ${chalk.dim(target)}`
+                  );
                 }
               });
+              this.watchers.push(result);
             }
-            subtask.title = `Watching for changes to ${chalk.green(target)}`;
+            subtask.title = `Watching for changes ${chalk.dim(target)}`;
           },
           rendererOptions: {
             persistentOutput: true,
-            timer: { ...PRESET_TIMER },
           },
           exitOnError: true,
         };
@@ -254,30 +224,39 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
   };
 
-  launchRendererDevServers = async (logger?: Logger): Promise<void> => {
-    for (const userConfig of await this.configGenerator.getRendererConfig()) {
-      const viteDevServer = await vite.createServer({
-        customLogger: logger,
-        configFile: false,
-        ...userConfig,
-      });
+  launchRendererDevServers = async (task?: ForgeListrTask<null>) => {
+    const rendererConfigs = await this.configGenerator.getRendererConfig();
+    return task?.newListr(
+      rendererConfigs.map((userConfig) => ({
+        title: `Target ${chalk.cyan(path.basename(userConfig.build?.outDir ?? ''))}`,
+        task: async (_ctx, subtask) => {
+          const viteDevServer = await vite.createServer({
+            configFile: false,
+            ...userConfig,
+          });
 
-      await viteDevServer.listen();
-      viteDevServer.printUrls();
+          await viteDevServer.listen();
+          const urls = getServerURLs(viteDevServer.resolvedUrls!);
+          subtask.output = urls;
 
-      this.servers.push(viteDevServer);
+          this.servers.push(viteDevServer);
 
-      if (viteDevServer.httpServer) {
-        // Make sure that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
-        const addressInfo = viteDevServer.httpServer.address();
-        const isAddressInfo = (x: any): x is AddressInfo => x?.address;
+          if (viteDevServer.httpServer) {
+            // Make sure that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
+            const addressInfo = viteDevServer.httpServer.address();
+            const isAddressInfo = (x: AddressInfo | string | null): x is AddressInfo => (typeof x === 'object' ? typeof x?.address === 'string' : false);
 
-        if (isAddressInfo(addressInfo)) {
-          userConfig.server ??= {};
-          userConfig.server.port = addressInfo.port;
-        }
-      }
-    }
+            if (isAddressInfo(addressInfo)) {
+              userConfig.server ??= {};
+              userConfig.server.port = addressInfo.port;
+            }
+          }
+        },
+        rendererOptions: {
+          persistentOutput: true,
+        },
+      }))
+    );
   };
 
   exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
@@ -298,6 +277,37 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     if (err) console.error(err.stack);
     if (options.exit) process.exit(0);
   };
+}
+
+/**
+ * Gets the current time in the same format that Vite's dev server uses for formatting purposes.
+ */
+const getTimestampString = () =>
+  new Date()
+    .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
+    .toLowerCase()
+    .replace('am', 'a.m.')
+    .replace('pm', 'p.m.');
+
+/**
+ * Get a string for Vite's printServerUrls function without actually printing it.
+ * Allows us to set `task.output` to that value without having to pass a custom logger into Vite.
+ * @see https://github.com/vitejs/vite/blob/42233d39674be808a6a1a79f1a6e44ed23ba0d61/packages/vite/src/node/logger.ts#L168-L188
+ */
+function getServerURLs(urls: vite.ResolvedServerUrls) {
+  let output = '';
+  const colorUrl = (url: string) => chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
+  for (const url of urls.local) {
+    output += `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(url)}`;
+  }
+  for (const url of urls.network) {
+    output += `  \n${chalk.green('➜')}  ${chalk.bold('Network')}: ${colorUrl(url)}`;
+  }
+  if (urls.network.length === 0) {
+    output += chalk.dim(`  \n${chalk.green('➜')}  ${chalk.bold('Network')}: use `) + chalk.bold('--host') + chalk.dim(' to expose');
+  }
+
+  return output;
 }
 
 export { VitePlugin };

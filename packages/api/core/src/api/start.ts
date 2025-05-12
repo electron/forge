@@ -126,7 +126,7 @@ export default autoTrace(
         },
         {
           task: (_ctx, task) => {
-            task.title = `Launched Electron app. Type ${chalk.green('rs')} in terminal to restart main process.`;
+            task.title = `${chalk.dim(`Launched Electron app. Type`)} ${chalk.bold('rs')} ${chalk.dim(`in terminal to restart main process.`)}`;
           },
         },
       ],
@@ -243,7 +243,7 @@ export default autoTrace(
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
-          console.info(`${chalk.green('✔ ')}${chalk.cyan('Restarting App')}`);
+          console.info(`${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`);
           lastSpawned.restarted = true;
           lastSpawned.kill('SIGTERM');
           lastSpawned.emit('restarted', await forgeSpawnWrapper());
