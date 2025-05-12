@@ -41,6 +41,13 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private servers: vite.ViteDevServer[] = [];
 
+  // Matches the format of the default Vite logger
+  private timeFormatter = new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+  });
+
   init = (dir: string): void => {
     this.setDirectories(dir);
 
@@ -208,10 +215,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
             if (isRollupWatcher(result)) {
               result.on('event', (event) => {
                 if (event.code === 'ERROR') {
-                  console.error(`\n${chalk.dim(getTimestampString())} ${event.error.message}`);
+                  console.error(`\n${this.timeFormatter.format(new Date())} ${event.error.message}`);
                 } else if (event.code === 'BUNDLE_END') {
                   console.log(
-                    `${chalk.dim(getTimestampString())} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green('target built')} ${chalk.dim(target)}`
+                    `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
+                      'target built'
+                    )} ${chalk.dim(target)}`
                   );
                 }
               });
@@ -303,16 +312,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     if (options.exit) process.exit(0);
   };
 }
-
-/**
- * Gets the current time in the same format that Vite's dev server uses for formatting purposes.
- */
-const getTimestampString = () =>
-  new Date()
-    .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true })
-    .toLowerCase()
-    .replace('am', 'a.m.')
-    .replace('pm', 'p.m.');
 
 /**
  * Get a string for Vite's printServerUrls function without actually printing it.

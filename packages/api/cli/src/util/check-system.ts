@@ -130,6 +130,9 @@ export async function checkSystem(callerTask: ForgeListrTask<SystemCheckContext>
       {
         concurrent: true,
         exitOnError: true,
+        rendererOptions: {
+          collapseSubtasks: true,
+        },
       }
     );
   }
