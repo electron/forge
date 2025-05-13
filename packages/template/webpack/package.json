@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-webpack",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -11,12 +11,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.8.0",
-    "@electron-forge/template-base": "7.8.0",
+    "@electron-forge/shared-types": "7.8.1",
+    "@electron-forge/template-base": "7.8.1",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.8.0",
+    "@electron-forge/test-utils": "7.8.1",
     "listr2": "^7.0.2",
     "vitest": "^3.1.3"
   },
