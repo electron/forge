@@ -1,5 +1,6 @@
 import { api, InitOptions } from '@electron-forge/core';
 import { confirm, select } from '@inquirer/prompts';
+import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
@@ -18,91 +19,114 @@ program
   .option('--skip-git', 'Skip initializing a git repository in the initialized project.', false)
   .action(async (dir) => {
     const options = program.opts();
-    const initOpts: InitOptions = {
-      interactive: true,
-      copyCIFiles: !!options.copyCiFiles,
-      force: !!options.force,
-    };
-
-    // Resolve the working directory
-    const resolveDirectoryTask = new Listr([
-      {
-        title: 'Resolving directory',
-        task: async () => {
-          initOpts.dir = resolveWorkingDir(dir, false);
+    const tasks = new Listr<InitOptions>(
+      [
+        {
+          task: async (initOpts): Promise<void> => {
+            // Initialize options and default values
+            initOpts.interactive = true;
+            initOpts.copyCIFiles = !!options.copyCiFiles;
+            initOpts.force = !!options.force;
+          },
         },
-      },
-    ]);
-    await resolveDirectoryTask.run();
-
-    if (options.template) {
-      initOpts.template = options.template;
-    } else {
-      // Prompt the user for a build tool
-      const buildTool: string = await select({
-        message: 'Select a build tool',
-        choices: [
-          {
-            name: 'Base',
-            value: 'base',
+        {
+          title: 'Resolving directory',
+          task: async (initOpts): Promise<void> => {
+            // Resolve the provided directory
+            initOpts.dir = resolveWorkingDir(dir, false);
           },
-          {
-            name: 'Vite',
-            value: 'vite',
+        },
+        {
+          task: async (initOpts, task): Promise<void> => {
+            // Exit early, template already provided.
+            if (options.template) {
+              initOpts.template = options.template;
+              return;
+            }
+
+            const prompt = task.prompt(ListrInquirerPromptAdapter);
+
+            // Prompt the user for a build tool
+            const buildTool: string = (await prompt.run(select, {
+              message: 'Select a build tool',
+              choices: [
+                {
+                  name: 'Base',
+                  value: 'base',
+                },
+                {
+                  name: 'Vite',
+                  value: 'vite',
+                },
+                {
+                  name: 'Webpack',
+                  value: 'webpack',
+                },
+              ],
+            })) as string;
+
+            // Prompt the user for a frontend framework
+            // let framework: string | undefined = undefined;
+            // if (buildTool !== 'base') {
+            //   framework = (await prompt.run(select, {
+            //     message: 'Select a frontend framework',
+            //     choices: [
+            //       {
+            //         name: 'None',
+            //         value: undefined,
+            //       },
+            //       {
+            //         name: 'React',
+            //         value: 'react',
+            //       },
+            //     ],
+            //   })) as string | undefined;
+            // }
+
+            // Prompt the user for a programming language
+            let language: string | undefined = undefined;
+            if (buildTool !== 'base') {
+              language = (await prompt.run(select, {
+                message: 'Select a programming language',
+                choices: [
+                  {
+                    name: 'JavaScript',
+                    value: undefined,
+                  },
+                  {
+                    name: 'Typescript',
+                    value: 'typescript',
+                  },
+                ],
+              })) as string | undefined;
+            }
+
+            initOpts.template = `${buildTool}${language ? `-${language}` : ''}`;
           },
-          {
-            name: 'Webpack',
-            value: 'webpack',
+        },
+        {
+          task: async (initOpts, task): Promise<void> => {
+            // Exit early, skipGit already provided.
+            if (options.skipGit) {
+              initOpts.skipGit = options.skipGit;
+              return;
+            }
+
+            const prompt = task.prompt(ListrInquirerPromptAdapter);
+
+            // Ask if the user would like to skip the git init command
+            const skipGit = await prompt.run(confirm, {
+              message: 'Would you like to skip the git initialization process?',
+            });
+
+            initOpts.skipGit = skipGit;
           },
-        ],
-      });
+        },
+      ],
+      { concurrent: false }
+    );
 
-      // Prompt the user for a frontend framework
-      // const framework: string | undefined  = await select({
-      //   message: 'Select a frontend framework',
-      //   choices: [
-      //   {
-      //     name: 'None',
-      //     value: undefined,
-      //   },
-      //   {
-      //     name: 'React',
-      //     value: 'react',
-      //   }]
-      // });
-
-      // Prompt the user for a programming language
-      let language: string | undefined = undefined;
-      if (buildTool !== 'base') {
-        language = await select({
-          message: 'Select a programming language',
-          choices: [
-            {
-              name: 'JavaScript',
-              value: undefined,
-            },
-            {
-              name: 'Typescript',
-              value: 'typescript',
-            },
-          ],
-        });
-      }
-
-      initOpts.template = `${buildTool}${language ? `-${language}` : ''}`;
-    }
-
-    if (options.skipGit) {
-      initOpts.skipGit = options.skipGit;
-    } else {
-      // Ask if the user would like to skip the git init command
-      const skipGit: boolean = await confirm({
-        message: 'Would you like to skip the git initialization process?',
-      });
-
-      initOpts.skipGit = skipGit;
-    }
-
+    const initOpts: InitOptions = await tasks.run();
     await api.init(initOpts);
   });
 
