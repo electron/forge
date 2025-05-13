@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-github",
-  "version": "7.8.0",
+  "version": "7.8.1",
   "description": "Github publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -14,8 +14,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.8.0",
-    "@electron-forge/shared-types": "7.8.0",
+    "@electron-forge/publisher-base": "7.8.1",
+    "@electron-forge/shared-types": "7.8.1",
     "@octokit/core": "^5.2.1",
     "@octokit/plugin-retry": "^6.1.0",
     "@octokit/rest": "^20.1.2",
