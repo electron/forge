@@ -11,7 +11,7 @@ import type { Plugin } from 'vite';
 const configRoot = path.join(__dirname, 'fixtures/vite-configs');
 
 describe('ViteConfigGenerator', () => {
-  it('getBuildConfig:main', async () => {
+  it('getBuildConfigs:main', async () => {
     const forgeConfig: VitePluginConfig = {
       build: [
         {
@@ -23,7 +23,7 @@ describe('ViteConfigGenerator', () => {
       renderer: [],
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
-    const buildConfig = (await generator.getBuildConfig())[0];
+    const buildConfig = (await generator.getBuildConfigs())[0];
 
     expect(buildConfig.root).toEqual(configRoot);
     expect(buildConfig.mode).toEqual('production');
@@ -44,7 +44,7 @@ describe('ViteConfigGenerator', () => {
     });
   });
 
-  it('getBuildConfig:preload', async () => {
+  it('getBuildConfigs:preload', async () => {
     const forgeConfig: VitePluginConfig = {
       build: [
         {
@@ -56,7 +56,7 @@ describe('ViteConfigGenerator', () => {
       renderer: [],
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
-    const buildConfig = (await generator.getBuildConfig())[0];
+    const buildConfig = (await generator.getBuildConfigs())[0];
 
     expect(buildConfig.root).toEqual(configRoot);
     expect(buildConfig.mode).toEqual('production');

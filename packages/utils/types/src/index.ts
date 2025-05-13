@@ -4,6 +4,7 @@ import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '
 import { RebuildOptions } from '@electron/rebuild';
 import { autoTrace } from '@electron-forge/tracer';
 import {
+  Listr,
   ListrBaseClassOptions,
   ListrDefaultRenderer,
   ListrDefaultRendererValue,
@@ -53,7 +54,7 @@ export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHook
 export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeSimpleHookSignatures[Hook]
-) => Promise<void>;
+) => Promise<Listr | void>;
 export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeMutatingHookSignatures[Hook]
