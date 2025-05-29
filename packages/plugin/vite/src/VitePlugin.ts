@@ -10,6 +10,7 @@ import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import { default as vite } from 'vite';
 
+import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
@@ -203,31 +204,43 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
         return {
           title: `Building ${chalk.green(target)} target`,
           task: async (_ctx, subtask) => {
-            const result = await vite.build({
-              // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
-              configFile: false,
-              logLevel: 'silent', // We suppress Vite output and instead log lines using RollupWatcher events
-              ...userConfig,
-              plugins: [...(userConfig.plugins ?? [])],
-              clearScreen: false,
-            });
+            // We wrap this function in a Promise to ensure that the task is marked as completed
+            // only after all bundles are done generated. This is done in the `closeBundle` Rollup hook
+            // rather than when the `vite.build` promise resolves.
+            await new Promise<void>((resolve, reject) => {
+              const plugins = [onBuildDone(resolve), ...(userConfig.plugins ?? [])];
 
-            if (isRollupWatcher(result)) {
-              result.on('event', (event) => {
-                if (event.code === 'ERROR') {
-                  console.error(`\n${this.timeFormatter.format(new Date())} ${event.error.message}`);
-                } else if (event.code === 'BUNDLE_END') {
-                  console.log(
-                    `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
-                      'target built'
-                    )} ${chalk.dim(target)}`
-                  );
-                }
-              });
-              this.watchers.push(result);
-            } else {
-              subtask.title = `Built target ${chalk.dim(target)}`;
-            }
+              vite
+                .build({
+                  // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
+                  configFile: false,
+                  logLevel: 'silent', // We suppress Vite output and instead log lines using RollupWatcher events
+                  ...userConfig,
+                  plugins,
+                  clearScreen: false,
+                })
+                .then((result) => {
+                  if (isRollupWatcher(result)) {
+                    result.on('event', (event) => {
+                      if (event.code === 'ERROR') {
+                        console.error(`\n${this.timeFormatter.format(new Date())} ${event.error.message}`);
+                        reject(event.error);
+                      } else if (event.code === 'BUNDLE_END') {
+                        console.log(
+                          `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
+                            'target built'
+                          )} ${chalk.dim(target)}`
+                        );
+                      }
+                    });
+                    this.watchers.push(result);
+                  } else {
+                    subtask.title = `Built target ${chalk.dim(target)}`;
+                  }
+                  return result;
+                })
+                .catch(reject);
+            });
           },
           rendererOptions: {
             persistentOutput: true,
