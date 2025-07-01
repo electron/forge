@@ -207,7 +207,7 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     beforeEach(async () => {
       dir = await ensureTestDirIsNonexistent();
       await fs.promises.mkdir(dir);
-      execSync(`git clone https://github.com/electron/electron-quick-start.git . --quiet`, {
+      execSync(`git clone https://github.com/electron/minimal-repro.git . --quiet`, {
         cwd: dir,
       });
 
