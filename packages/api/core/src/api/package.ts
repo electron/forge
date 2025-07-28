@@ -37,7 +37,10 @@ type DoneFunction = (err?: Error) => void;
 type PromisifiedHookFunction = (buildPath: string, electronVersion: string, platform: string, arch: string) => Promise<void>;
 type PromisifiedFinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void>;
 
-function hidePromiseFromPromisfy<P extends unknown[]>(fn: (...args: P) => Promise<void>): (...args: P) => void {
+/**
+ * @deprecated Only use until \@electron/packager publishes a new major version with promise based hooks
+ */
+function hidePromiseFromPromisify<P extends unknown[]>(fn: (...args: P) => Promise<void>): (...args: P) => void {
   return (...args: P) => {
     void fn(...args);
   };
@@ -49,7 +52,7 @@ function hidePromiseFromPromisfy<P extends unknown[]>(fn: (...args: P) => Promis
  */
 function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
   return [
-    hidePromiseFromPromisfy(async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
+    hidePromiseFromPromisify(async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
       for (const hook of hooks) {
         try {
           await promisify(hook)(buildPath, electronVersion, platform, arch);
@@ -64,7 +67,7 @@ function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
 }
 function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHookFunction[]): PromisifiedFinalizePackageTargetsHookFunction[] {
   return [
-    hidePromiseFromPromisfy(async (targets: TargetDefinition[], done: DoneFunction) => {
+    hidePromiseFromPromisify(async (targets: TargetDefinition[], done: DoneFunction) => {
       for (const hook of hooks) {
         try {
           await promisify(hook)(targets);
@@ -233,22 +236,22 @@ export const listrPackage = (
             const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
             const afterCopyHooks: HookFunction[] = [
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, platform, arch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, platform, arch, done) => {
                 signalDone(signalCopyDone, { platform, arch });
                 done();
               }),
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
                 for (const bin of bins) {
                   await fs.remove(bin);
                 }
                 done();
               }),
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
                 done();
               }),
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const targetKey = getTargetKey({ platform: pPlatform, arch: pArch });
                 await listrCompatibleRebuildHook(
                   buildPath,
@@ -262,7 +265,7 @@ export const listrPackage = (
                 signalRebuildDone.get(targetKey)?.pop()?.();
                 done();
               }),
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
                 if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
                   delete copiedPackageJSON.config.forge;
@@ -274,7 +277,7 @@ export const listrPackage = (
             ];
 
             const afterCompleteHooks: HookFunction[] = [
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
                 done();
               }),
@@ -288,14 +291,14 @@ export const listrPackage = (
             }
 
             afterPruneHooks.push(
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
                 done();
               }) as HookFunction
             );
 
             const afterExtractHooks = [
-              hidePromiseFromPromisfy(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
                 done();
               }) as HookFunction,
