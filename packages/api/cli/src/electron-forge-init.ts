@@ -65,24 +65,6 @@ program
               ],
             })) as string;
 
-            // Prompt the user for a frontend framework
-            // let framework: string | undefined = undefined;
-            // if (buildTool !== 'base') {
-            //   framework = (await prompt.run(select, {
-            //     message: 'Select a frontend framework',
-            //     choices: [
-            //       {
-            //         name: 'None',
-            //         value: undefined,
-            //       },
-            //       {
-            //         name: 'React',
-            //         value: 'react',
-            //       },
-            //     ],
-            //   })) as string | undefined;
-            // }
-
             // Prompt the user for a programming language
             let language: string | undefined = undefined;
             if (buildTool !== 'base') {
