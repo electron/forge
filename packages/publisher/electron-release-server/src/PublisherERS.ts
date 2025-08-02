@@ -26,13 +26,6 @@ interface ERSVersion {
   flavor: ERSFlavor;
 }
 
-interface ERSVersionSorted {
-  total: number;
-  offset: number;
-  page: number;
-  items: ERSVersion[];
-}
-
 const fetchAndCheckStatus = async (url: RequestInfo, init?: RequestInit): Promise<Response> => {
   const result = await fetch(url, init);
   if (result.ok) {
@@ -93,10 +86,15 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
       const { packageJSON } = makeResult;
       const artifacts = makeResult.artifacts.filter((artifactPath) => path.basename(artifactPath).toLowerCase() !== 'releases');
 
-      const versions: ERSVersionSorted = await (await authFetch('versions/sorted')).json();
-
       // Find the version with the same name and flavor
-      const existingVersion = versions['items'].find((version) => version.name === packageJSON.version && version.flavor.name === flavor);
+      const existingVersion: ERSVersion = await authFetch(`api/version?name=${packageJSON.version}&flavor=${flavor}`)
+        .then((res) => res.json())
+        .then((versions) =>
+          versions.find((version: ERSVersion) => {
+            return version.name === packageJSON.version && version.flavor.name === flavor;
+          })
+        )
+        .catch(() => undefined);
 
       let channel = 'stable';
       if (config.channel) {
