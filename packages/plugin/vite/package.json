@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-vite",
-  "version": "7.8.2",
+  "version": "7.8.3",
   "description": "Vite plugin for Electron Forge, lets you use Vite directly in your tooling",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
   "main": "dist/VitePlugin.js",
   "typings": "dist/VitePlugin.d.ts",
   "dependencies": {
-    "@electron-forge/plugin-base": "7.8.2",
-    "@electron-forge/shared-types": "7.8.2",
+    "@electron-forge/plugin-base": "7.8.3",
+    "@electron-forge/shared-types": "7.8.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
