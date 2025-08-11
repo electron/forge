@@ -7,6 +7,7 @@ export function getConfig(forgeEnv: ConfigEnv<'build'>, userConfig: UserConfig =
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {
+      copyPublicDir: false,
       rollupOptions: {
         external,
       },

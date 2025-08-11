@@ -12,6 +12,7 @@ export function getConfig(forgeEnv: ConfigEnv<'renderer'>, userConfig: UserConfi
     mode,
     base: './',
     build: {
+      copyPublicDir: true,
       outDir: `.vite/renderer/${name}`,
     },
     plugins: [pluginExposeRenderer(name)],
