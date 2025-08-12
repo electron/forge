@@ -19,6 +19,8 @@
     "@electron-forge/core-utils": "7.8.3",
     "@electron-forge/shared-types": "7.8.3",
     "@electron/get": "^3.0.0",
+    "@inquirer/prompts": "^6.0.1",
+    "@listr2/prompt-adapter-inquirer": "^2.0.22",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
