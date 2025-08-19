@@ -3,10 +3,19 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  PACKAGE_MANAGERS,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 import { createDefaultCertificate } from '@electron-forge/maker-appx';
-import { ForgeConfig, IForgeResolvableMaker } from '@electron-forge/shared-types';
-import { ensureTestDirIsNonexistent, expectLintToPass } from '@electron-forge/test-utils';
+import {
+  ForgeConfig,
+  IForgeResolvableMaker,
+} from '@electron-forge/shared-types';
+import {
+  ensureTestDirIsNonexistent,
+  expectLintToPass,
+} from '@electron-forge/test-utils';
 import { readMetadata } from 'electron-installer-common';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
@@ -23,20 +32,34 @@ type PackageJSON = Record<string, unknown> & {
   dependencies: Record<string, string>;
 };
 
-async function updatePackageJSON(dir: string, packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>) {
+async function updatePackageJSON(
+  dir: string,
+  packageJSONUpdater: (packageJSON: PackageJSON) => Promise<void>,
+) {
   const packageJSON = await readRawPackageJson(dir);
   await packageJSONUpdater(packageJSON);
-  await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(packageJSON), 'utf-8');
+  await fs.promises.writeFile(
+    path.resolve(dir, 'package.json'),
+    JSON.stringify(packageJSON),
+    'utf-8',
+  );
 }
 
-describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGERS['pnpm']])(`init (with $executable)`, (pm) => {
+describe.each([
+  PACKAGE_MANAGERS['npm'],
+  PACKAGE_MANAGERS['yarn'],
+  PACKAGE_MANAGERS['pnpm'],
+])(`init (with $executable)`, (pm) => {
   let dir: string;
 
   beforeAll(async () => {
     await spawnPackageManager(pm, ['run', 'link:prepare']);
 
     if (pm.executable === 'pnpm') {
-      await spawnPackageManager(pm, 'config set node-linker hoisted'.split(' '));
+      await spawnPackageManager(
+        pm,
+        'config set node-linker hoisted'.split(' '),
+      );
     }
 
     return async () => {
@@ -45,7 +68,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     };
   });
 
-  const beforeInitTest = (params?: Partial<InitOptions>, beforeInit?: BeforeInitFunction) => {
+  const beforeInitTest = (
+    params?: Partial<InitOptions>,
+    beforeInit?: BeforeInitFunction,
+  ) => {
     beforeAll(async () => {
       dir = await ensureTestDirIsNonexistent();
       if (beforeInit) {
@@ -80,7 +106,7 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
 
     it('should fail in initializing an already initialized directory', async () => {
       await expect(api.init({ dir })).rejects.toThrow(
-        `The specified path: "${dir}" is not empty.  Please ensure it is empty before initializing a new project`
+        `The specified path: "${dir}" is not empty.  Please ensure it is empty before initializing a new project`,
       );
     });
 
@@ -92,17 +118,32 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     });
 
     it('should create a new folder with a npm module inside', async () => {
-      expect(fs.existsSync(dir), 'the target dir should have been created').toEqual(true);
+      expect(
+        fs.existsSync(dir),
+        'the target dir should have been created',
+      ).toEqual(true);
       expect(fs.existsSync(path.join(dir, 'package.json'))).toEqual(true);
       expect(fs.existsSync(path.join(dir, '.git'))).toEqual(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron')), 'electron should exist').toEqual(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/electron-squirrel-startup')), 'electron-squirrel-startup should exist').toEqual(true);
-      expect(fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')), '@electron-forge/cli should exist').toEqual(true);
+      expect(
+        fs.existsSync(path.resolve(dir, 'node_modules/electron')),
+        'electron should exist',
+      ).toEqual(true);
+      expect(
+        fs.existsSync(
+          path.resolve(dir, 'node_modules/electron-squirrel-startup'),
+        ),
+        'electron-squirrel-startup should exist',
+      ).toEqual(true);
+      expect(
+        fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')),
+        '@electron-forge/cli should exist',
+      ).toEqual(true);
       expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
     });
 
     describe('lint', () => {
-      it('should initially pass the linting process', () => expectLintToPass(dir));
+      it('should initially pass the linting process', () =>
+        expectLintToPass(dir));
     });
   });
 
@@ -112,7 +153,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
   });
 
   describe('init (with custom templater)', () => {
-    beforeInitTest({ template: path.resolve(__dirname, '../fixture/custom_init') });
+    beforeInitTest({
+      template: path.resolve(__dirname, '../fixture/custom_init'),
+    });
 
     it('should add custom dependencies', async () => {
       const packageJSON = await import(path.resolve(dir, 'package.json'));
@@ -125,7 +168,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     });
 
     it('should create dot files correctly', async () => {
-      expect(fs.existsSync(dir), 'the target dir should have been created').toEqual(true);
+      expect(
+        fs.existsSync(dir),
+        'the target dir should have been created',
+      ).toEqual(true);
       expect(fs.existsSync(path.join(dir, '.bar'))).toEqual(true);
     });
 
@@ -135,7 +181,8 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     });
 
     describe('lint', () => {
-      it('should initially pass the linting process', () => expectLintToPass(dir));
+      it('should initially pass the linting process', () =>
+        expectLintToPass(dir));
     });
 
     afterAll(async () => {
@@ -159,8 +206,11 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       await expect(
         api.init({
           dir,
-          template: path.resolve(__dirname, '../fixture/template-sans-forge-version'),
-        })
+          template: path.resolve(
+            __dirname,
+            '../fixture/template-sans-forge-version',
+          ),
+        }),
       ).rejects.toThrow(/it does not specify its required Forge version\.$/);
     });
   });
@@ -178,9 +228,14 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       await expect(
         api.init({
           dir,
-          template: path.resolve(__dirname, '../fixture/template-nonmatching-forge-version'),
-        })
-      ).rejects.toThrow(/is not compatible with this version of Electron Forge/);
+          template: path.resolve(
+            __dirname,
+            '../fixture/template-nonmatching-forge-version',
+          ),
+        }),
+      ).rejects.toThrow(
+        /is not compatible with this version of Electron Forge/,
+      );
     });
   });
 
@@ -198,7 +253,7 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
         api.init({
           dir,
           template: 'does-not-exist',
-        })
+        }),
       ).rejects.toThrow('Failed to locate custom template');
     });
   });
@@ -207,9 +262,12 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
     beforeEach(async () => {
       dir = await ensureTestDirIsNonexistent();
       await fs.promises.mkdir(dir);
-      execSync(`git clone https://github.com/electron/minimal-repro.git . --quiet`, {
-        cwd: dir,
-      });
+      execSync(
+        `git clone https://github.com/electron/minimal-repro.git . --quiet`,
+        {
+          cwd: dir,
+        },
+      );
 
       return async () => {
         await fs.promises.rm(dir, { recursive: true, force: true });
@@ -232,7 +290,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
 
       const outDirContents = fs.readdirSync(path.join(dir, 'out'));
       expect(outDirContents).toHaveLength(1);
-      expect(outDirContents[0]).toEqual(`ProductName-${process.platform}-${process.arch}`);
+      expect(outDirContents[0]).toEqual(
+        `ProductName-${process.platform}-${process.arch}`,
+      );
     });
   });
 
@@ -243,7 +303,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       let devCert: string;
 
       beforeAll(async () => {
-        dir = path.join(await ensureTestDirIsNonexistent(), 'electron-forge-test');
+        dir = path.join(
+          await ensureTestDirIsNonexistent(),
+          'electron-forge-test',
+        );
         await api.init({ dir });
 
         await updatePackageJSON(dir, async (packageJSON) => {
@@ -258,8 +321,13 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
             },
           };
           if (process.platform === 'win32') {
-            await fs.promises.copyFile(path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'), path.join(dir, 'default.pvk'));
-            devCert = await createDefaultCertificate('CN=Test Author', { certFilePath: dir });
+            await fs.promises.copyFile(
+              path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
+              path.join(dir, 'default.pvk'),
+            );
+            devCert = await createDefaultCertificate('CN=Test Author', {
+              certFilePath: dir,
+            });
           } else if (process.platform === 'linux') {
             packageJSON.config.forge.packagerConfig = {
               ...packageJSON.config.forge.packagerConfig,
@@ -280,7 +348,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
           assert(packageJSON.config.forge.packagerConfig);
           packageJSON.config.forge.packagerConfig.all = true;
         });
-        await expect(api.package({ dir })).rejects.toThrow(/packagerConfig\.all is not supported by Electron Forge/);
+        await expect(api.package({ dir })).rejects.toThrow(
+          /packagerConfig\.all is not supported by Electron Forge/,
+        );
         await updatePackageJSON(dir, async (packageJSON) => {
           assert(packageJSON.config.forge.packagerConfig);
           delete packageJSON.config.forge.packagerConfig.all;
@@ -300,14 +370,24 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       it('can make from custom outDir without errors', async () => {
         await updatePackageJSON(dir, async (packageJSON) => {
           // eslint-disable-next-line n/no-missing-require
-          packageJSON.config.forge.makers = [{ name: require.resolve('@electron-forge/maker-zip') } as IForgeResolvableMaker];
+          packageJSON.config.forge.makers = [
+            {
+              name: require.resolve('@electron-forge/maker-zip'),
+            } as IForgeResolvableMaker,
+          ];
         });
 
         await api.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
 
         // Cleanup here to ensure things dont break in the make tests
-        await fs.promises.rm(path.resolve(dir, 'foo'), { recursive: true, force: true });
-        await fs.promises.rm(path.resolve(dir, 'out'), { recursive: true, force: true });
+        await fs.promises.rm(path.resolve(dir, 'foo'), {
+          recursive: true,
+          force: true,
+        });
+        await fs.promises.rm(path.resolve(dir, 'out'), {
+          recursive: true,
+          force: true,
+        });
       });
 
       describe('with prebuilt native module deps installed', () => {
@@ -315,7 +395,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
           await installDeps(pm, dir, ['ref-napi']);
 
           return async () => {
-            await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), { recursive: true, force: true });
+            await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), {
+              recursive: true,
+              force: true,
+            });
             await updatePackageJSON(dir, async (packageJSON) => {
               delete packageJSON.dependencies['ref-napi'];
             });
@@ -339,7 +422,11 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
       describe('after package', () => {
         it('should have deleted the forge config from the packaged app', async () => {
           const cleanPackageJSON = await readMetadata({
-            src: path.resolve(dir, 'out', `Test-App-${process.platform}-${process.arch}`),
+            src: path.resolve(
+              dir,
+              'out',
+              `Test-App-${process.platform}-${process.arch}`,
+            ),
             logger: console.error,
           });
           expect(cleanPackageJSON).not.toHaveProperty('config.forge');
@@ -372,7 +459,10 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
               // eslint-disable-next-line @typescript-eslint/no-require-imports
               const MakerClass = require(makerPath).default;
               const maker = new MakerClass();
-              return maker.isSupportedOnCurrentPlatform() === good && maker.externalBinariesExist() === good;
+              return (
+                maker.isSupportedOnCurrentPlatform() === good &&
+                maker.externalBinariesExist() === good
+              );
             })
             .map((makerPath) => () => {
               const makerDefinition = {
@@ -384,7 +474,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
               };
 
               if (process.platform === 'win32') {
-                (makerDefinition.config as Record<string, unknown>).makeVersionWinStoreCompatible = true;
+                (
+                  makerDefinition.config as Record<string, unknown>
+                ).makeVersionWinStoreCompatible = true;
               }
 
               return makerDefinition;
@@ -403,7 +495,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
           describe(`make (with target=${target().name})`, async () => {
             beforeAll(async () => {
               await updatePackageJSON(dir, async (packageJSON) => {
-                packageJSON.config.forge.makers = [target() as IForgeResolvableMaker];
+                packageJSON.config.forge.makers = [
+                  target() as IForgeResolvableMaker,
+                ];
               });
             });
 
@@ -414,7 +508,9 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
                   for (const outputResult of outputs) {
                     for (const output of outputResult.artifacts) {
                       expect(fs.existsSync(output)).toEqual(true);
-                      expect(output.startsWith(path.resolve(dir, 'out', 'make'))).toEqual(true);
+                      expect(
+                        output.startsWith(path.resolve(dir, 'out', 'make')),
+                      ).toEqual(true);
                     }
                   }
                 });
@@ -438,11 +534,16 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
 
         describe('make', () => {
           it('throws an error when given an unrecognized platform', async () => {
-            await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(/invalid platform/);
+            await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(
+              /invalid platform/,
+            );
           });
 
           it("throws an error when the specified maker doesn't support the current platform", async () => {
-            const makerPath = path.resolve(__dirname, '../fixture/maker-unsupported');
+            const makerPath = path.resolve(
+              __dirname,
+              '../fixture/maker-unsupported',
+            );
             await expect(
               api.make({
                 dir,
@@ -452,12 +553,15 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
                   } as IForgeResolvableMaker,
                 ],
                 skipPackage: true,
-              })
+              }),
             ).rejects.toThrow(/the maker declared that it cannot run/);
           });
 
           it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
-            const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
+            const makerPath = path.resolve(
+              __dirname,
+              '../fixture/maker-incompatible',
+            );
             await expect(
               api.make({
                 dir,
@@ -467,7 +571,7 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
                   } as IForgeResolvableMaker,
                 ],
                 skipPackage: true,
-              })
+              }),
             ).rejects.toThrow(/incompatible with this version/);
           });
 
@@ -477,25 +581,36 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
                 dir,
                 overrideTargets: [
                   {
-                    name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
+                    name: path.resolve(
+                      __dirname,
+                      '../fixture/maker-wrong-platform',
+                    ),
                   } as IForgeResolvableMaker,
                 ],
                 platform: 'linux',
                 skipPackage: true,
-              })
-            ).rejects.toThrow('Could not find any make targets configured for the "linux" platform.');
+              }),
+            ).rejects.toThrow(
+              'Could not find any make targets configured for the "linux" platform.',
+            );
           });
 
-          it.runIf(process.platform === 'darwin')('can make for the MAS platform successfully', async () => {
-            await expect(
-              api.make({
-                dir,
-                // eslint-disable-next-line n/no-missing-require
-                overrideTargets: [require.resolve('@electron-forge/maker-zip'), require.resolve('@electron-forge/maker-dmg')],
-                platform: 'mas',
-              })
-            ).resolves.toHaveLength(2);
-          });
+          it.runIf(process.platform === 'darwin')(
+            'can make for the MAS platform successfully',
+            async () => {
+              await expect(
+                api.make({
+                  dir,
+                  // eslint-disable-next-line n/no-missing-require
+                  overrideTargets: [
+                    require.resolve('@electron-forge/maker-zip'),
+                    require.resolve('@electron-forge/maker-dmg'),
+                  ],
+                  platform: 'mas',
+                }),
+              ).resolves.toHaveLength(2);
+            },
+          );
         });
       });
     });

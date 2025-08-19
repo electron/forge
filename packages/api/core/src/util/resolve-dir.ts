@@ -44,7 +44,10 @@ export default async (dir: string): Promise<string | null> => {
         return mDir;
       }
 
-      if (packageJSON.devDependencies?.['@electron-forge/cli'] || packageJSON.devDependencies?.['@electron-forge/core']) {
+      if (
+        packageJSON.devDependencies?.['@electron-forge/cli'] ||
+        packageJSON.devDependencies?.['@electron-forge/core']
+      ) {
         d('package.json with forge dependency found in', testPath);
         return mDir;
       }
@@ -54,7 +57,10 @@ export default async (dir: string): Promise<string | null> => {
     mDir = path.dirname(mDir);
   }
   if (bestGuessDir) {
-    d('guessing on the best electron-forge package.json found in', bestGuessDir);
+    d(
+      'guessing on the best electron-forge package.json found in',
+      bestGuessDir,
+    );
     return bestGuessDir;
   }
   if (lastError) {

@@ -2,7 +2,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ForgeMakeResult,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { listrMake } from '../../src/api/make';
@@ -61,7 +64,9 @@ describe('publish', () => {
       publishers: [new MockPublisher()],
     };
 
-    vi.mocked(findConfig).mockResolvedValue(config as unknown as ResolvedForgeConfig);
+    vi.mocked(findConfig).mockResolvedValue(
+      config as unknown as ResolvedForgeConfig,
+    );
     vi.mocked(listrMake).mockImplementationOnce((_childTrace, _opts, cb) => {
       cb!([
         {
@@ -100,7 +105,9 @@ describe('publish', () => {
     MockPublisher.prototype.publish = mockPublish;
     MockPublisher.prototype.__isElectronForgePublisher = true;
 
-    vi.mocked(findConfig).mockResolvedValue({} as unknown as ResolvedForgeConfig);
+    vi.mocked(findConfig).mockResolvedValue(
+      {} as unknown as ResolvedForgeConfig,
+    );
 
     await publish({
       dir: __dirname,
@@ -176,7 +183,10 @@ describe('publish', () => {
       expect(dryRunFolder).toHaveLength(1);
       folder.push(dryRunFolder.pop() as string);
       const hashFolder = await fs.readdir(path.join(...folder));
-      expect(hashFolder).toEqual([expect.stringContaining('.forge.publish'), expect.stringContaining('.forge.publish')]);
+      expect(hashFolder).toEqual([
+        expect.stringContaining('.forge.publish'),
+        expect.stringContaining('.forge.publish'),
+      ]);
 
       for (const file of hashFolder) {
         const hashFile = await fs.readFile(path.join(...folder, file), 'utf8');

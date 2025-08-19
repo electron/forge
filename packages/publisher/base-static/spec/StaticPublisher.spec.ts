@@ -20,7 +20,7 @@ describe('PublisherStatic', () => {
           arch: 'arch',
           keyPrefix: 'stuff',
           path: __filename,
-        })
+        }),
       ).toEqual('stuff/plat/arch/StaticPublisher.spec.ts');
     });
 
@@ -34,7 +34,7 @@ describe('PublisherStatic', () => {
           arch: 'arch',
           keyPrefix: 'stuff',
           path: __filename,
-        })
+        }),
       ).toEqual('lololol');
     });
   });

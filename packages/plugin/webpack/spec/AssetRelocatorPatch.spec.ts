@@ -7,7 +7,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Configuration, webpack } from 'webpack';
 import which from 'which';
 
-import { WebpackPluginConfig, WebpackPluginEntryPointLocalWindow } from '../src/Config';
+import {
+  WebpackPluginConfig,
+  WebpackPluginEntryPointLocalWindow,
+} from '../src/Config';
 import WebpackConfigGenerator from '../src/WebpackConfig';
 
 type Closeable = {
@@ -18,7 +21,8 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
-const pmCmd = process.platform === 'win32' ? `"${which.sync('npm.cmd')}"` : 'npm';
+const pmCmd =
+  process.platform === 'win32' ? `"${which.sync('npm.cmd')}"` : 'npm';
 
 async function asyncWebpack(config: Configuration): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -51,7 +55,9 @@ function createSimpleDevServer(rendererOut: string): http.Server {
   return http
     .createServer(async (req, res) => {
       const url = req.url || '';
-      const file = url.endsWith('main_window') ? path.join(url, '/index.html') : url;
+      const file = url.endsWith('main_window')
+        ? path.join(url, '/index.html')
+        : url;
       const fullPath = path.join(rendererOut, file);
       try {
         const data = await fs.promises.readFile(fullPath, 'utf-8');
@@ -148,13 +154,16 @@ describe('AssetRelocatorPatch', () => {
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: mainOut,
         jsPath: path.join(mainOut, 'index.js'),
-        nativeModulesString: '__webpack_require__.ab = __dirname + "/native_modules/"',
+        nativeModulesString:
+          '__webpack_require__.ab = __dirname + "/native_modules/"',
         nativePathString: `require(__webpack_require__.ab + "${nativePathSuffix}")`,
       });
     });
 
     it('builds preload', async () => {
-      const preloadConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const preloadConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       await asyncWebpack(preloadConfig[0]);
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
@@ -166,7 +175,9 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const rendererConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }
@@ -184,9 +195,15 @@ describe('AssetRelocatorPatch', () => {
 
       const output = await runApp();
 
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the main'));
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the preload'));
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the renderer'));
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the main'),
+      );
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the preload'),
+      );
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the renderer'),
+      );
     });
   });
 
@@ -206,7 +223,8 @@ describe('AssetRelocatorPatch', () => {
     });
 
     it('builds preload', async () => {
-      const entryPoint = safeFirstRendererConfig(config.renderer).entryPoints[0] as WebpackPluginEntryPointLocalWindow;
+      const entryPoint = safeFirstRendererConfig(config.renderer)
+        .entryPoints[0] as WebpackPluginEntryPointLocalWindow;
       const preloadConfig = await generator.getRendererConfig({
         ...safeFirstRendererConfig(config.renderer),
         entryPoints: [entryPoint],
@@ -216,13 +234,16 @@ describe('AssetRelocatorPatch', () => {
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
-        nativeModulesString: '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
+        nativeModulesString:
+          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
 
     it('builds renderer', async () => {
-      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const rendererConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }
@@ -230,7 +251,8 @@ describe('AssetRelocatorPatch', () => {
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/index.js'),
-        nativeModulesString: '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
+        nativeModulesString:
+          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -238,16 +260,24 @@ describe('AssetRelocatorPatch', () => {
     it('runs the app with the native module', async () => {
       const output = await runApp();
 
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the main'));
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the preload'));
-      expect(output).toEqual(expect.stringContaining('Hello, world! from the renderer'));
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the main'),
+      );
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the preload'),
+      );
+      expect(output).toEqual(
+        expect.stringContaining('Hello, world! from the renderer'),
+      );
     });
 
     it('builds renderer with nodeIntegration = false', async () => {
       safeFirstRendererConfig(config.renderer).nodeIntegration = false;
       generator = new WebpackConfigGenerator(config, appPath, true, 3000);
 
-      const rendererConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const rendererConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }

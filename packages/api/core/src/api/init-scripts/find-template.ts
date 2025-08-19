@@ -18,7 +18,9 @@ export interface ForgeTemplateDetails {
   type: TemplateType;
 }
 
-export const findTemplate = async (template: string): Promise<ForgeTemplateDetails> => {
+export const findTemplate = async (
+  template: string,
+): Promise<ForgeTemplateDetails> => {
   let foundTemplate: Omit<ForgeTemplateDetails, 'template'> | null = null;
 
   const resolveTemplateTypes = [
@@ -55,7 +57,9 @@ export const findTemplate = async (template: string): Promise<ForgeTemplateDetai
   } else {
     d(`found template module at: ${foundTemplate.path}`);
 
-    const templateModule: PossibleModule<ForgeTemplate> = await import(foundTemplate.path);
+    const templateModule: PossibleModule<ForgeTemplate> = await import(
+      foundTemplate.path
+    );
     const tmpl = templateModule.default ?? templateModule;
 
     return {

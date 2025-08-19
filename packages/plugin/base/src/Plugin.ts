@@ -55,10 +55,16 @@ export default abstract class Plugin<C> implements IForgePlugin {
  * @internal
  */
 export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
-  hookFn: <Ctx = never>(task: ForgeListrTask<Ctx> | null, ...args: Parameters<ForgeHookFn<Hook>>) => ReturnType<ForgeHookFn<Hook>>,
-  name: string
+  hookFn: <Ctx = never>(
+    task: ForgeListrTask<Ctx> | null,
+    ...args: Parameters<ForgeHookFn<Hook>>
+  ) => ReturnType<ForgeHookFn<Hook>>,
+  name: string,
 ): ForgeHookFn<Hook> => {
-  function namedHookWithTaskInner(this: ForgeListrTask<any> | null, ...args: any[]) {
+  function namedHookWithTaskInner(
+    this: ForgeListrTask<any> | null,
+    ...args: any[]
+  ) {
     return (hookFn as any)(this, ...args);
   }
   const fn = namedHookWithTaskInner as any;

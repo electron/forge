@@ -19,19 +19,28 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     return process.platform === 'win32';
   }
 
-  async make({ dir, makeDir, targetArch, packageJSON, appName }: MakerOptions): Promise<string[]> {
+  async make({
+    dir,
+    makeDir,
+    targetArch,
+    packageJSON,
+    appName,
+  }: MakerOptions): Promise<string[]> {
     const outPath = path.resolve(makeDir, `wix/${targetArch}`);
     await this.ensureDirectory(outPath);
 
     const { version } = packageJSON;
     const parsed = semver.parse(version);
-    if ((Array.isArray(parsed?.prerelease) && parsed.prerelease.length > 0) || (Array.isArray(parsed?.build) && parsed.build.length > 0)) {
+    if (
+      (Array.isArray(parsed?.prerelease) && parsed.prerelease.length > 0) ||
+      (Array.isArray(parsed?.build) && parsed.build.length > 0)
+    ) {
       console.warn(
         logSymbols.warning,
         chalk.yellow(
           'WARNING: MSI packages follow Windows version format "major.minor.build.revision".\n' +
-            `The provided semantic version "${version}" will be transformed to Windows version format. Prerelease component will not be retained.`
-        )
+            `The provided semantic version "${version}" will be transformed to Windows version format. Prerelease component will not be retained.`,
+        ),
       );
     }
 

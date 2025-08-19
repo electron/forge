@@ -41,7 +41,7 @@ describe('prepareConfig', () => {
       {
         a: 234,
       },
-      []
+      [],
     );
     expect(maker.config).toBeUndefined();
     await maker.prepareConfig('x64');

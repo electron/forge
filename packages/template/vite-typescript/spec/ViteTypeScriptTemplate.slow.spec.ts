@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  PACKAGE_MANAGERS,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -15,7 +18,10 @@ describe('ViteTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:prepare']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
+      'run',
+      'link:prepare',
+    ]);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -75,12 +81,17 @@ describe('ViteTypeScriptTemplate', () => {
       process.chdir(dir);
       // We need the version of vite to match exactly during development due to a quirk in
       // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = JSON.parse(await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'));
+      const pj = JSON.parse(
+        await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
       pj.resolutions = {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         vite: `${require('../../../../node_modules/vite/package.json').version}`,
       };
-      await fs.promises.writeFile(path.resolve(dir, 'package.json'), JSON.stringify(pj));
+      await fs.promises.writeFile(
+        path.resolve(dir, 'package.json'),
+        JSON.stringify(pj),
+      );
       await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
         cwd: dir,
       });

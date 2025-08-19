@@ -1,6 +1,10 @@
 import path from 'node:path';
 
-import { CrossSpawnArgs, CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
+import {
+  CrossSpawnArgs,
+  CrossSpawnOptions,
+  spawn,
+} from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import debug from 'debug';
 import findUp from 'find-up';
@@ -9,7 +13,13 @@ import logSymbols from 'log-symbols';
 const d = debug('electron-forge:package-manager');
 
 export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
-export type PMDetails = { executable: SupportedPackageManager; version?: string; install: string; dev: string; exact: string };
+export type PMDetails = {
+  executable: SupportedPackageManager;
+  version?: string;
+  install: string;
+  dev: string;
+  exact: string;
+};
 
 let hasWarned = false;
 
@@ -78,16 +88,25 @@ function pmFromUserAgent() {
 export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const executingPM = pmFromUserAgent();
   let lockfilePM;
-  const lockfile = await findUp(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'], { type: 'file' });
+  const lockfile = await findUp(
+    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
+    { type: 'file' },
+  );
   if (lockfile) {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
-  const installer = process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
+  const installer =
+    process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
   // TODO(erickzhao): Remove NODE_INSTALLER environment variable for Forge 8
   if (typeof process.env.NODE_INSTALLER === 'string' && !hasWarned) {
-    console.warn(logSymbols.warning, chalk.yellow(`The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`));
+    console.warn(
+      logSymbols.warning,
+      chalk.yellow(
+        `The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`,
+      ),
+    );
     hasWarned = true;
   }
 
@@ -96,14 +115,16 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     case 'npm':
     case 'pnpm':
       d(
-        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`
+        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
       );
       return { ...PACKAGE_MANAGERS[installer], version: executingPM?.version };
     default:
       if (installer !== undefined) {
         console.warn(
           logSymbols.warning,
-          chalk.yellow(`Package manager ${chalk.red(installer)} is unsupported. Falling back to ${chalk.green('npm')} instead.`)
+          chalk.yellow(
+            `Package manager ${chalk.red(installer)} is unsupported. Falling back to ${chalk.green('npm')} instead.`,
+          ),
         );
       } else {
         d(`No package manager detected. Falling back to npm.`);
@@ -112,6 +133,10 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   }
 };
 
-export const spawnPackageManager = async (pm: PMDetails, args?: CrossSpawnArgs, opts?: CrossSpawnOptions): Promise<string> => {
+export const spawnPackageManager = async (
+  pm: PMDetails,
+  args?: CrossSpawnArgs,
+  opts?: CrossSpawnOptions,
+): Promise<string> => {
   return (await spawn(pm.executable, args, opts)).trim();
 };

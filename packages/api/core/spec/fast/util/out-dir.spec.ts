@@ -18,14 +18,18 @@ describe('getCurrentOutDir', () => {
       const config = {
         buildIdentifier: 'bar',
       } as const;
-      expect(getCurrentOutDir(DIR, config as ResolvedForgeConfig)).toEqual(path.join(DIR, 'out', config.buildIdentifier));
+      expect(getCurrentOutDir(DIR, config as ResolvedForgeConfig)).toEqual(
+        path.join(DIR, 'out', config.buildIdentifier),
+      );
     });
 
     it('resolves to the return value of provided identifier getter', () => {
       const config = {
         buildIdentifier: () => 'thing',
       } as ResolvedForgeConfig;
-      expect(getCurrentOutDir(DIR, config)).toEqual(path.join(DIR, 'out', 'thing'));
+      expect(getCurrentOutDir(DIR, config)).toEqual(
+        path.join(DIR, 'out', 'thing'),
+      );
     });
   });
 
@@ -34,7 +38,7 @@ describe('getCurrentOutDir', () => {
       expect(
         getCurrentOutDir(DIR, {
           outDir: 'dist',
-        } as ResolvedForgeConfig)
+        } as ResolvedForgeConfig),
       ).toEqual(path.join(DIR, 'dist'));
     });
 
@@ -43,7 +47,7 @@ describe('getCurrentOutDir', () => {
         getCurrentOutDir(DIR, {
           buildIdentifier: 'bar',
           outDir: 'dist',
-        } as ResolvedForgeConfig)
+        } as ResolvedForgeConfig),
       ).toEqual(path.join(DIR, 'dist', 'bar'));
     });
 
@@ -52,7 +56,7 @@ describe('getCurrentOutDir', () => {
         getCurrentOutDir(DIR, {
           buildIdentifier: () => 'thing',
           outDir: 'dist',
-        } as ResolvedForgeConfig)
+        } as ResolvedForgeConfig),
       ).toEqual(path.join(DIR, 'dist', 'thing'));
     });
   });

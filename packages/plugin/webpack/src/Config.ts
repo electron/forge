@@ -35,7 +35,8 @@ export interface WebpackPluginEntryPointBase {
   nodeIntegration?: boolean;
 }
 
-export interface WebpackPluginEntryPointLocalWindow extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointLocalWindow
+  extends WebpackPluginEntryPointBase {
   /**
    * Relative or absolute path to the HTML template file for this entry point.
    */
@@ -51,21 +52,26 @@ export interface WebpackPluginEntryPointLocalWindow extends WebpackPluginEntryPo
   preload?: WebpackPreloadEntryPoint;
 }
 
-export interface WebpackPluginEntryPointPreloadOnly extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointPreloadOnly
+  extends WebpackPluginEntryPointBase {
   /**
    * Information about the preload script for this entry point.
    */
   preload: WebpackPreloadEntryPoint;
 }
 
-export interface WebpackPluginEntryPointNoWindow extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointNoWindow
+  extends WebpackPluginEntryPointBase {
   /**
    * Relative or absolute path to the main JS file for this entry point.
    */
   js: string;
 }
 
-export type WebpackPluginEntryPoint = WebpackPluginEntryPointLocalWindow | WebpackPluginEntryPointNoWindow | WebpackPluginEntryPointPreloadOnly;
+export type WebpackPluginEntryPoint =
+  | WebpackPluginEntryPointLocalWindow
+  | WebpackPluginEntryPointNoWindow
+  | WebpackPluginEntryPointPreloadOnly;
 
 export interface WebpackPreloadEntryPoint {
   /**
@@ -85,7 +91,8 @@ export interface WebpackPreloadEntryPoint {
   config?: WebpackConfiguration | string;
 }
 
-export interface StandaloneWebpackPreloadEntryPoint extends WebpackPreloadEntryPoint {
+export interface StandaloneWebpackPreloadEntryPoint
+  extends WebpackPreloadEntryPoint {
   name: string;
 }
 
@@ -183,7 +190,12 @@ export interface WebpackPluginConfig {
    * * `setupExitSignals`
    * * `headers.Content-Security-Policy` (use the `devContentSecurityPolicy` config option)
    */
-  devServer?: Omit<WebpackDevServer.Configuration, 'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'>;
+  devServer?: Omit<
+    WebpackDevServer.Configuration,
+    'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'
+  >;
 }
 
-export type WebpackConfiguration = RawWebpackConfiguration | WebpackConfigurationFactory;
+export type WebpackConfiguration =
+  | RawWebpackConfiguration
+  | WebpackConfigurationFactory;

@@ -19,15 +19,31 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
 
   let dir;
   program
-    .version(packageJSON.version, '-V, --version', 'Output the current version.')
+    .version(
+      packageJSON.version,
+      '-V, --version',
+      'Output the current version.',
+    )
     .helpOption('-h, --help', 'Output usage information.')
-    .argument('[dir]', 'Directory to run the command in. (default: current directory)')
-    .option('-p, --app-path <path>', 'Path to the Electron app to launch. (default: current directory)')
+    .argument(
+      '[dir]',
+      'Directory to run the command in. (default: current directory)',
+    )
+    .option(
+      '-p, --app-path <path>',
+      'Path to the Electron app to launch. (default: current directory)',
+    )
     .option('-l, --enable-logging', 'Enable internal Electron logging.')
     .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script.')
     .addOption(new Option('--vscode').hideHelp()) // Used to enable arg transformation for debugging Electron through VSCode. Hidden from users.
-    .option('-i, --inspect-electron', 'Run Electron in inspect mode to allow debugging the main process.')
-    .option('--inspect-brk-electron', 'Run Electron in inspect-brk mode to allow debugging the main process.')
+    .option(
+      '-i, --inspect-electron',
+      'Run Electron in inspect mode to allow debugging the main process.',
+    )
+    .option(
+      '--inspect-brk-electron',
+      'Run Electron in inspect-brk mode to allow debugging the main process.',
+    )
     .addHelpText(
       'after',
       `
@@ -35,7 +51,7 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
       
           $ npx electron-forge start /path/to/project --enable-logging -- -d -f foo.txt
                                     
-      ...will pass the arguments "-d -f foo.txt" to the Electron app.`
+      ...will pass the arguments "-d -f foo.txt" to the Electron app.`,
     )
     .action((targetDir: string) => {
       dir = resolveWorkingDir(targetDir);
@@ -55,7 +71,9 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
 
   if (options.vscode && appArgs) {
     // Args are in the format ~arg~ so we need to strip the "~"
-    appArgs = appArgs.map((arg) => arg.substr(1, arg.length - 2)).filter((arg) => arg.length > 0);
+    appArgs = appArgs
+      .map((arg) => arg.substr(1, arg.length - 2))
+      .filter((arg) => arg.length > 0);
   }
 
   if (options.appPath) opts.appPath = options.appPath;

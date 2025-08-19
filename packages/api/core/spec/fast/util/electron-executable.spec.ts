@@ -4,7 +4,13 @@ import { describe, expect, it } from 'vitest';
 
 import locateElectronExecutable from '../../../src/util/electron-executable';
 
-const fixtureDir = path.resolve(__dirname, '..', '..', 'fixture', 'electron-executable');
+const fixtureDir = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'fixture',
+  'electron-executable',
+);
 
 describe('locateElectronExecutable', () => {
   it('returns the correct path to electron', async () => {
@@ -13,6 +19,8 @@ describe('locateElectronExecutable', () => {
       devDependencies: { electron: '^100.0.0' },
     };
 
-    await expect(locateElectronExecutable(appFixture, packageJSON)).resolves.toEqual('execPath');
+    await expect(
+      locateElectronExecutable(appFixture, packageJSON),
+    ).resolves.toEqual('execPath');
   });
 });

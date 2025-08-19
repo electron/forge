@@ -25,7 +25,10 @@ describe('init-git', () => {
   it('creates Git repository when run inside non-Git directory', async () => {
     await initGit(dir);
     const gitDir = path.join(dir, '.git');
-    expect(fs.existsSync(gitDir), 'the .git directory inside the folder').toEqual(true);
+    expect(
+      fs.existsSync(gitDir),
+      'the .git directory inside the folder',
+    ).toEqual(true);
   });
 
   it('skips when run at root of Git repository', async () => {
@@ -63,6 +66,9 @@ describe('init-git', () => {
     const after = statAfter.mtimeMs;
 
     expect(after, 'the config file in the repository').toEqual(before);
-    expect(fs.existsSync(innerGitDir), 'a nested .git directory inside the repository').toEqual(false);
+    expect(
+      fs.existsSync(innerGitDir),
+      'a nested .git directory inside the repository',
+    ).toEqual(false);
   });
 });

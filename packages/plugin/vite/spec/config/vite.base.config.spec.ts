@@ -3,7 +3,11 @@ import path from 'node:path';
 import { createServer } from 'vite';
 import { describe, expect, it } from 'vitest';
 
-import { getBuildDefine, getDefineKeys, pluginExposeRenderer } from '../../src/config/vite.base.config';
+import {
+  getBuildDefine,
+  getDefineKeys,
+  pluginExposeRenderer,
+} from '../../src/config/vite.base.config';
 
 import type { VitePluginConfig } from '../../src/Config';
 
@@ -35,7 +39,9 @@ const forgeConfig: VitePluginConfig = {
 
 describe('vite.base.config', () => {
   it('getDefineKeys', () => {
-    const defineKeys1 = getDefineKeys(forgeConfig.renderer.map(({ name }) => name));
+    const defineKeys1 = getDefineKeys(
+      forgeConfig.renderer.map(({ name }) => name),
+    );
     const defineKeys2 = {
       main_window: {
         VITE_DEV_SERVER_URL: 'MAIN_WINDOW_VITE_DEV_SERVER_URL',
@@ -74,8 +80,8 @@ describe('vite.base.config', () => {
         createServer({
           publicDir: false,
           plugins: [pluginExposeRenderer(name)],
-        })
-      )
+        }),
+      ),
     );
     let port = 5173;
 

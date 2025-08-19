@@ -1,8 +1,16 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { external, getBuildConfig, getBuildDefine, pluginHotRestart } from './vite.base.config';
+import {
+  external,
+  getBuildConfig,
+  getBuildDefine,
+  pluginHotRestart,
+} from './vite.base.config';
 
-export function getConfig(forgeEnv: ConfigEnv<'build'>, userConfig: UserConfig = {}): UserConfig {
+export function getConfig(
+  forgeEnv: ConfigEnv<'build'>,
+  userConfig: UserConfig = {},
+): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
