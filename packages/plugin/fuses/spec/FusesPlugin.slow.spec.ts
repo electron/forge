@@ -1,7 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  PACKAGE_MANAGERS,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -19,7 +22,7 @@ describe('FusesPlugin', () => {
   const packageJSON = JSON.parse(
     fs.readFileSync(path.join(appPath, 'package.json.tmpl'), {
       encoding: 'utf-8',
-    })
+    }),
   );
 
   const { name: appName } = packageJSON;
@@ -27,9 +30,15 @@ describe('FusesPlugin', () => {
   const outDir = path.join(appPath, 'out', 'fuses-test-app');
 
   beforeAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:prepare']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
+      'run',
+      'link:prepare',
+    ]);
     delete process.env.TS_NODE_PROJECT;
-    await fs.promises.copyFile(path.join(appPath, 'package.json.tmpl'), path.join(appPath, 'package.json'));
+    await fs.promises.copyFile(
+      path.join(appPath, 'package.json.tmpl'),
+      path.join(appPath, 'package.json'),
+    );
     await spawn('yarn', ['install'], spawnOptions);
 
     // Installing deps removes symlinks that were added at the start of this
@@ -41,7 +50,10 @@ describe('FusesPlugin', () => {
   });
 
   afterAll(async () => {
-    await fs.promises.rm(path.resolve(outDir, '../'), { recursive: true, force: true });
+    await fs.promises.rm(path.resolve(outDir, '../'), {
+      recursive: true,
+      force: true,
+    });
   });
 
   it('should flip Fuses', async () => {
@@ -49,11 +61,17 @@ describe('FusesPlugin', () => {
 
     const electronExecutablePath = getElectronExecutablePath({
       appName,
-      basePath: path.join(outDir, ...(process.platform === 'darwin' ? [`${appName}.app`, 'Contents'] : [])),
+      basePath: path.join(
+        outDir,
+        ...(process.platform === 'darwin'
+          ? [`${appName}.app`, 'Contents']
+          : []),
+      ),
       platform: process.platform,
     });
 
-    const args: string[] = process.platform === 'linux' ? ['-v', '--no-sandbox'] : ['-v'];
+    const args: string[] =
+      process.platform === 'linux' ? ['-v', '--no-sandbox'] : ['-v'];
 
     /**
      * If the `RunAsNode` fuse had not been flipped,

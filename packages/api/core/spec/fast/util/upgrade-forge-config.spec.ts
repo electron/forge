@@ -1,10 +1,16 @@
 import assert from 'node:assert';
 
-import { ForgeConfig, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import {
+  ForgeConfig,
+  IForgeResolvableMaker,
+  IForgeResolvablePublisher,
+} from '@electron-forge/shared-types';
 import { merge } from 'lodash';
 import { describe, expect, it } from 'vitest';
 
-import upgradeForgeConfig, { updateUpgradedForgeDevDeps } from '../../../src/util/upgrade-forge-config';
+import upgradeForgeConfig, {
+  updateUpgradedForgeDevDeps,
+} from '../../../src/util/upgrade-forge-config';
 
 describe('upgradeForgeConfig', () => {
   it('converts Electron Packager config', () => {
@@ -107,7 +113,9 @@ describe('upgradeForgeConfig', () => {
     const newConfig = upgradeForgeConfig(oldConfig);
     expect(newConfig.publishers).toHaveLength(1);
     assert(newConfig.publishers);
-    const publisherConfig = (newConfig.publishers[0] as IForgeResolvablePublisher).config;
+    const publisherConfig = (
+      newConfig.publishers[0] as IForgeResolvablePublisher
+    ).config;
     expect(publisherConfig.repository).toEqual(repo);
     expect(publisherConfig.octokitOptions).toEqual(octokitOptions);
     expect(publisherConfig.draft).toEqual(true);
@@ -135,7 +143,9 @@ describe('updateUpgradedForgeDevDeps', () => {
 
   it('removes unused makers from devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
-    const devDeps = updateUpgradedForgeDevDeps(packageJSON, ['@electron-forge/maker-squirrel']);
+    const devDeps = updateUpgradedForgeDevDeps(packageJSON, [
+      '@electron-forge/maker-squirrel',
+    ]);
     expect(devDeps).toEqual([]);
   });
 
@@ -155,17 +165,30 @@ describe('updateUpgradedForgeDevDeps', () => {
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).toHaveLength(2);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-zip'))).not.toEqual(undefined);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel'))).not.toEqual(undefined);
+    expect(
+      actual.find((dep) => dep.startsWith('@electron-forge/maker-zip')),
+    ).not.toEqual(undefined);
+    expect(
+      actual.find((dep) => dep.startsWith('@electron-forge/maker-squirrel')),
+    ).not.toEqual(undefined);
   });
 
   it('adds publishers to devDependencies', () => {
     const packageJSON = merge({}, skeletonPackageJSON);
-    packageJSON.config.forge.publishers = [{ name: '@electron-forge/publisher-github' }, { name: '@electron-forge/publisher-snapcraft' }];
+    packageJSON.config.forge.publishers = [
+      { name: '@electron-forge/publisher-github' },
+      { name: '@electron-forge/publisher-snapcraft' },
+    ];
 
     const actual = updateUpgradedForgeDevDeps(packageJSON, []);
     expect(actual).toHaveLength(2);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-github'))).not.toEqual(undefined);
-    expect(actual.find((dep) => dep.startsWith('@electron-forge/publisher-snapcraft'))).not.toEqual(undefined);
+    expect(
+      actual.find((dep) => dep.startsWith('@electron-forge/publisher-github')),
+    ).not.toEqual(undefined);
+    expect(
+      actual.find((dep) =>
+        dep.startsWith('@electron-forge/publisher-snapcraft'),
+      ),
+    ).not.toEqual(undefined);
   });
 });

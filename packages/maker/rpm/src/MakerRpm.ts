@@ -6,7 +6,10 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { MakerRpmConfig } from './Config';
 
 function renameRpm(dest: string, _src: string): string {
-  return path.join(dest, '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.rpm');
+  return path.join(
+    dest,
+    '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.rpm',
+  );
 }
 
 export function rpmArch(nodeArch: ForgeArch): string {

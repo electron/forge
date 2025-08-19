@@ -77,7 +77,11 @@ describe('start', () => {
       interactive: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn)).toHaveBeenCalledWith('electron', expect.anything(), expect.anything());
+    expect(vi.mocked(spawn)).toHaveBeenCalledWith(
+      'electron',
+      expect.anything(),
+      expect.anything(),
+    );
   });
 
   it('allows plugin to override the start command with its own child process', async () => {
@@ -107,7 +111,9 @@ describe('start', () => {
       interactive: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0]).toEqual(expect.arrayContaining(['electron', expect.arrayContaining(['.'])]));
+    expect(vi.mocked(spawn).mock.calls[0]).toEqual(
+      expect.arrayContaining(['electron', expect.arrayContaining(['.'])]),
+    );
   });
 
   it('should pass electron the app path if specified', async () => {
@@ -117,7 +123,12 @@ describe('start', () => {
       appPath: './path/to/app.js',
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0]).toEqual(expect.arrayContaining(['electron', expect.arrayContaining(['./path/to/app.js'])]));
+    expect(vi.mocked(spawn).mock.calls[0]).toEqual(
+      expect.arrayContaining([
+        'electron',
+        expect.arrayContaining(['./path/to/app.js']),
+      ]),
+    );
   });
 
   it('should enable electron logging if enableLogging=true', async () => {
@@ -127,7 +138,10 @@ describe('start', () => {
       enableLogging: true,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('env', expect.objectContaining({ ELECTRON_ENABLE_LOGGING: 'true' }));
+    expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty(
+      'env',
+      expect.objectContaining({ ELECTRON_ENABLE_LOGGING: 'true' }),
+    );
   });
 
   it('should enable RUN_AS_NODE if runAsNode=true', async () => {
@@ -137,7 +151,10 @@ describe('start', () => {
       runAsNode: true,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('env', expect.objectContaining({ ELECTRON_RUN_AS_NODE: 'true' }));
+    expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty(
+      'env',
+      expect.objectContaining({ ELECTRON_RUN_AS_NODE: 'true' }),
+    );
   });
 
   it('should disable RUN_AS_NODE if runAsNode=false', async () => {
@@ -147,7 +164,9 @@ describe('start', () => {
       runAsNode: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0][2].env).not.toHaveProperty('ELECTRON_RUN_AS_NODE');
+    expect(vi.mocked(spawn).mock.calls[0][2].env).not.toHaveProperty(
+      'ELECTRON_RUN_AS_NODE',
+    );
   });
 
   it('should pass all args through to the spawned Electron instance', async () => {
@@ -170,7 +189,11 @@ describe('start', () => {
       inspect: true,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0][1]).toEqual(['.', '--inspect', ...args]);
+    expect(vi.mocked(spawn).mock.calls[0][1]).toEqual([
+      '.',
+      '--inspect',
+      ...args,
+    ]);
   });
 
   it('should pass --inspect-brk at the start of the args if inspectBrk is set', async () => {
@@ -182,7 +205,11 @@ describe('start', () => {
       inspectBrk: true,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
-    expect(vi.mocked(spawn).mock.calls[0][1]).toEqual(['.', '--inspect-brk', ...args]);
+    expect(vi.mocked(spawn).mock.calls[0][1]).toEqual([
+      '.',
+      '--inspect-brk',
+      ...args,
+    ]);
   });
 
   it('should resolve with a handle to the spawned instance', async () => {
@@ -192,7 +219,7 @@ describe('start', () => {
       start({
         dir: __dirname,
         interactive: false,
-      })
+      }),
     ).resolves.toEqual(child);
   });
 
@@ -202,7 +229,7 @@ describe('start', () => {
       start({
         dir: __dirname,
         interactive: false,
-      })
+      }),
     ).rejects.toThrowError('Failed to locate startable Electron application');
   });
 
@@ -212,13 +239,17 @@ describe('start', () => {
       start({
         dir: __dirname,
         interactive: false,
-      })
+      }),
     ).rejects.toThrowError("Please set your application's 'version' in");
   });
 
   // TODO(erickzhao): improve test coverage
-  it.todo('allows plugin to override the start command with a custom spawn string');
-  it.todo('allows plugin to override the start command with a custom spawn string with args');
+  it.todo(
+    'allows plugin to override the start command with a custom spawn string',
+  );
+  it.todo(
+    'allows plugin to override the start command with a custom spawn string with args',
+  );
   it.todo('runs the preStart hook');
   it.todo('runs the generateAssets hook');
 });

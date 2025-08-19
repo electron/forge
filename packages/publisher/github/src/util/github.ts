@@ -13,7 +13,11 @@ export default class GitHub {
 
   token?: string;
 
-  constructor(authToken: string | undefined = undefined, requireAuth = false, options: OctokitOptions = {}) {
+  constructor(
+    authToken: string | undefined = undefined,
+    requireAuth = false,
+    options: OctokitOptions = {},
+  ) {
     const noOp = () => {
       /* Intentionally does nothing */
     };
@@ -34,7 +38,9 @@ export default class GitHub {
     } else if (process.env.GITHUB_TOKEN) {
       this.token = process.env.GITHUB_TOKEN;
     } else if (requireAuth) {
-      throw new Error('Please set GITHUB_TOKEN in your environment to access these features');
+      throw new Error(
+        'Please set GITHUB_TOKEN in your environment to access these features',
+      );
     }
   }
 

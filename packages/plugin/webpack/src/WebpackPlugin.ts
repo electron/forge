@@ -3,9 +3,16 @@ import http from 'node:http';
 import path from 'node:path';
 import { pipeline } from 'stream/promises';
 
-import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import {
+  getElectronVersion,
+  listrCompatibleRebuildHook,
+} from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import { ForgeMultiHookMap, ListrTask, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ForgeMultiHookMap,
+  ListrTask,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
@@ -75,7 +82,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private isValidPort = (port: number) => {
     if (port < 1024) {
-      throw new Error(`Cannot specify port (${port}) below 1024, as they are privileged`);
+      throw new Error(
+        `Cannot specify port (${port}) below 1024, as they are privileged`,
+      );
     } else if (port > 65535) {
       throw new Error(`Port specified (${port}) is not a valid TCP port.`);
     } else {
@@ -83,7 +92,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
   };
 
-  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
+  exitHandler = (
+    options: { cleanup?: boolean; exit?: boolean },
+    err?: Error,
+  ): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
@@ -110,21 +122,38 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (options.exit) process.exit();
   };
 
-  async writeJSONStats(type: string, stats: webpack.Stats | undefined, statsOptions: WebpackToJsonOptions, suffix: string): Promise<void> {
+  async writeJSONStats(
+    type: string,
+    stats: webpack.Stats | undefined,
+    statsOptions: WebpackToJsonOptions,
+    suffix: string,
+  ): Promise<void> {
     if (!stats) return;
     d(`Writing JSON stats for ${type} config`);
     const jsonStats = stats.toJson(statsOptions);
-    const jsonStatsFilename = path.resolve(this.baseDir, type, `stats-${suffix}.json`);
+    const jsonStatsFilename = path.resolve(
+      this.baseDir,
+      type,
+      `stats-${suffix}.json`,
+    );
     await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
-  private runWebpack = async (options: Configuration[], rendererOptions: WebpackPluginRendererConfig | null): Promise<webpack.MultiStats | undefined> =>
+  private runWebpack = async (
+    options: Configuration[],
+    rendererOptions: WebpackPluginRendererConfig | null,
+  ): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
       webpack(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
             const name = rendererOptions.entryPoints[index].name;
-            await this.writeJSONStats('renderer', entryStats, options[index].stats as WebpackToJsonOptions, name);
+            await this.writeJSONStats(
+              'renderer',
+              entryStats,
+              options[index].stats as WebpackToJsonOptions,
+              name,
+            );
           }
         }
         if (err) {
@@ -139,7 +168,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
     d('hooking process events');
     process.on('exit', (_code) => this.exitHandler({ cleanup: true }));
-    process.on('SIGINT' as NodeJS.Signals, (_signal) => this.exitHandler({ exit: true }));
+    process.on('SIGINT' as NodeJS.Signals, (_signal) =>
+      this.exitHandler({ exit: true }),
+    );
   };
 
   setDirectories = (dir: string): void => {
@@ -149,7 +180,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   get configGenerator(): WebpackConfigGenerator {
     if (!this._configGenerator) {
-      this._configGenerator = new WebpackConfigGenerator(this.config, this.projectDir, this.isProd, this.port);
+      this._configGenerator = new WebpackConfigGenerator(
+        this.config,
+        this.projectDir,
+        this.isProd,
+        this.port,
+      );
     }
 
     return this._configGenerator;
@@ -193,198 +229,301 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         }, 'Preparing webpack bundles'),
       ],
       prePackage: [
-        namedHookWithTaskFn<'prePackage'>(async (task, config, platform, arch) => {
-          if (!task) {
-            throw new Error('Incompatible usage of webpack-plugin prePackage hook');
-          }
+        namedHookWithTaskFn<'prePackage'>(
+          async (task, config, platform, arch) => {
+            if (!task) {
+              throw new Error(
+                'Incompatible usage of webpack-plugin prePackage hook',
+              );
+            }
 
-          this.isProd = true;
-          await fs.remove(this.baseDir);
+            this.isProd = true;
+            await fs.remove(this.baseDir);
 
-          // TODO: Figure out how to get matrix from packager
-          const arches: string[] = Array.from(
-            new Set(arch.split(',').reduce<string[]>((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []))
-          );
+            // TODO: Figure out how to get matrix from packager
+            const arches: string[] = Array.from(
+              new Set(
+                arch
+                  .split(',')
+                  .reduce<
+                    string[]
+                  >((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []),
+              ),
+            );
 
-          const firstArch = arches[0];
-          const otherArches = arches.slice(1);
+            const firstArch = arches[0];
+            const otherArches = arches.slice(1);
 
-          const multiArchTasks: ListrTask<NativeDepsCtx>[] =
-            otherArches.length === 0
-              ? []
-              : [
-                  {
-                    title: 'Mapping native dependencies',
-                    task: async (ctx: NativeDepsCtx) => {
-                      const firstArchDir = path.resolve(this.baseDir, firstArch);
-                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
-                      const mapping: Record<string, string[]> = Object.create(null);
+            const multiArchTasks: ListrTask<NativeDepsCtx>[] =
+              otherArches.length === 0
+                ? []
+                : [
+                    {
+                      title: 'Mapping native dependencies',
+                      task: async (ctx: NativeDepsCtx) => {
+                        const firstArchDir = path.resolve(
+                          this.baseDir,
+                          firstArch,
+                        );
+                        const nodeModulesDir = path.resolve(
+                          this.projectDir,
+                          'node_modules',
+                        );
+                        const mapping: Record<string, string[]> =
+                          Object.create(null);
 
-                      const webpackNodeFiles = await glob('**/*.node', {
-                        cwd: firstArchDir,
-                      });
-                      const nodeModulesNodeFiles = await glob('**/*.node', {
-                        cwd: nodeModulesDir,
-                      });
-                      const hashToNodeModules: Record<string, string[]> = Object.create(null);
+                        const webpackNodeFiles = await glob('**/*.node', {
+                          cwd: firstArchDir,
+                        });
+                        const nodeModulesNodeFiles = await glob('**/*.node', {
+                          cwd: nodeModulesDir,
+                        });
+                        const hashToNodeModules: Record<string, string[]> =
+                          Object.create(null);
 
-                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
-                        const hash = crypto.createHash('sha256');
-                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
-                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
-                        const digest = hash.digest('hex');
+                        for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                          const hash = crypto.createHash('sha256');
+                          const resolvedNodeFile = path.resolve(
+                            nodeModulesDir,
+                            nodeModulesNodeFile,
+                          );
+                          await pipeline(
+                            fs.createReadStream(resolvedNodeFile),
+                            hash,
+                          );
+                          const digest = hash.digest('hex');
 
-                        hashToNodeModules[digest] = hashToNodeModules[digest] || [];
-                        hashToNodeModules[digest].push(resolvedNodeFile);
-                      }
-
-                      for (const webpackNodeFile of webpackNodeFiles) {
-                        const hash = crypto.createHash('sha256');
-                        await pipeline(fs.createReadStream(path.resolve(firstArchDir, webpackNodeFile)), hash);
-                        const matchedNodeModule = hashToNodeModules[hash.digest('hex')];
-                        if (!matchedNodeModule || !matchedNodeModule.length) {
-                          throw new Error(`Could not find originating native module for "${webpackNodeFile}"`);
+                          hashToNodeModules[digest] =
+                            hashToNodeModules[digest] || [];
+                          hashToNodeModules[digest].push(resolvedNodeFile);
                         }
 
-                        mapping[webpackNodeFile] = matchedNodeModule;
-                      }
+                        for (const webpackNodeFile of webpackNodeFiles) {
+                          const hash = crypto.createHash('sha256');
+                          await pipeline(
+                            fs.createReadStream(
+                              path.resolve(firstArchDir, webpackNodeFile),
+                            ),
+                            hash,
+                          );
+                          const matchedNodeModule =
+                            hashToNodeModules[hash.digest('hex')];
+                          if (!matchedNodeModule || !matchedNodeModule.length) {
+                            throw new Error(
+                              `Could not find originating native module for "${webpackNodeFile}"`,
+                            );
+                          }
 
-                      ctx.nativeDeps = mapping;
+                          mapping[webpackNodeFile] = matchedNodeModule;
+                        }
+
+                        ctx.nativeDeps = mapping;
+                      },
                     },
-                  },
-                  {
-                    title: `Generating multi-arch bundles`,
-                    task: async (_, task) => {
-                      return task.newListr(
-                        otherArches.map(
-                          (pArch): ListrTask<NativeDepsCtx> => ({
-                            title: `Generating ${chalk.magenta(pArch)} bundle`,
-                            task: async (_, innerTask) => {
-                              return innerTask.newListr(
-                                [
-                                  {
-                                    title: 'Preparing native dependencies',
-                                    task: async (_, innerTask) => {
-                                      await listrCompatibleRebuildHook(
-                                        this.projectDir,
-                                        await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-                                        platform,
-                                        pArch,
-                                        config.rebuildConfig,
-                                        innerTask
-                                      );
+                    {
+                      title: `Generating multi-arch bundles`,
+                      task: async (_, task) => {
+                        return task.newListr(
+                          otherArches.map(
+                            (pArch): ListrTask<NativeDepsCtx> => ({
+                              title: `Generating ${chalk.magenta(pArch)} bundle`,
+                              task: async (_, innerTask) => {
+                                return innerTask.newListr(
+                                  [
+                                    {
+                                      title: 'Preparing native dependencies',
+                                      task: async (_, innerTask) => {
+                                        await listrCompatibleRebuildHook(
+                                          this.projectDir,
+                                          await getElectronVersion(
+                                            this.projectDir,
+                                            await fs.readJson(
+                                              path.join(
+                                                this.projectDir,
+                                                'package.json',
+                                              ),
+                                            ),
+                                          ),
+                                          platform,
+                                          pArch,
+                                          config.rebuildConfig,
+                                          innerTask,
+                                        );
+                                      },
+                                      rendererOptions: {
+                                        persistentOutput: true,
+                                        bottomBar: Infinity,
+                                        showTimer: true,
+                                      },
                                     },
-                                    rendererOptions: {
-                                      persistentOutput: true,
-                                      bottomBar: Infinity,
-                                      showTimer: true,
-                                    },
-                                  },
-                                  {
-                                    title: 'Mapping native dependencies',
-                                    task: async (ctx) => {
-                                      const nodeModulesDir = path.resolve(this.projectDir, 'node_modules');
+                                    {
+                                      title: 'Mapping native dependencies',
+                                      task: async (ctx) => {
+                                        const nodeModulesDir = path.resolve(
+                                          this.projectDir,
+                                          'node_modules',
+                                        );
 
-                                      // Duplicate the firstArch build
-                                      const firstDir = path.resolve(this.baseDir, firstArch);
-                                      const targetDir = path.resolve(this.baseDir, pArch);
-                                      await fs.mkdirp(targetDir);
-                                      for (const child of await fs.readdir(firstDir)) {
-                                        await fs.promises.cp(path.resolve(firstDir, child), path.resolve(targetDir, child), {
-                                          recursive: true,
-                                        });
-                                      }
-
-                                      const nodeModulesNodeFiles = await glob('**/*.node', {
-                                        cwd: nodeModulesDir,
-                                      });
-                                      const nodeModuleToHash: Record<string, string> = Object.create(null);
-
-                                      for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
-                                        const hash = crypto.createHash('sha256');
-                                        const resolvedNodeFile = path.resolve(nodeModulesDir, nodeModulesNodeFile);
-                                        await pipeline(fs.createReadStream(resolvedNodeFile), hash);
-
-                                        nodeModuleToHash[resolvedNodeFile] = hash.digest('hex');
-                                      }
-
-                                      // Use the native module map to find the newly built native modules
-                                      for (const nativeDep of Object.keys(ctx.nativeDeps)) {
-                                        const archPath = path.resolve(targetDir, nativeDep);
-                                        await fs.remove(archPath);
-
-                                        const mappedPaths = ctx.nativeDeps[nativeDep];
-                                        if (!mappedPaths || !mappedPaths.length) {
-                                          throw new Error(`The "${nativeDep}" module could not be mapped to any native modules on disk`);
-                                        }
-
-                                        if (!mappedPaths.every((mappedPath) => nodeModuleToHash[mappedPath] === nodeModuleToHash[mappedPaths[0]])) {
-                                          throw new Error(
-                                            `The "${nativeDep}" mapped to multiple modules "${mappedPaths.join(
-                                              ', '
-                                            )}" but the same modules post rebuild did not map to the same native code`
+                                        // Duplicate the firstArch build
+                                        const firstDir = path.resolve(
+                                          this.baseDir,
+                                          firstArch,
+                                        );
+                                        const targetDir = path.resolve(
+                                          this.baseDir,
+                                          pArch,
+                                        );
+                                        await fs.mkdirp(targetDir);
+                                        for (const child of await fs.readdir(
+                                          firstDir,
+                                        )) {
+                                          await fs.promises.cp(
+                                            path.resolve(firstDir, child),
+                                            path.resolve(targetDir, child),
+                                            {
+                                              recursive: true,
+                                            },
                                           );
                                         }
 
-                                        await fs.promises.cp(mappedPaths[0], archPath);
-                                      }
-                                    },
-                                  },
-                                ],
-                                { concurrent: false }
-                              );
-                            },
-                          })
-                        )
-                      );
-                    },
-                  },
-                ];
+                                        const nodeModulesNodeFiles = await glob(
+                                          '**/*.node',
+                                          {
+                                            cwd: nodeModulesDir,
+                                          },
+                                        );
+                                        const nodeModuleToHash: Record<
+                                          string,
+                                          string
+                                        > = Object.create(null);
 
-          return task.newListr<NativeDepsCtx>(
-            [
-              {
-                title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
-                task: async (_, innerTask) => {
-                  await listrCompatibleRebuildHook(
-                    this.projectDir,
-                    await getElectronVersion(this.projectDir, await fs.readJson(path.join(this.projectDir, 'package.json'))),
-                    platform,
-                    firstArch,
-                    config.rebuildConfig,
-                    innerTask
-                  );
+                                        for (const nodeModulesNodeFile of nodeModulesNodeFiles) {
+                                          const hash =
+                                            crypto.createHash('sha256');
+                                          const resolvedNodeFile = path.resolve(
+                                            nodeModulesDir,
+                                            nodeModulesNodeFile,
+                                          );
+                                          await pipeline(
+                                            fs.createReadStream(
+                                              resolvedNodeFile,
+                                            ),
+                                            hash,
+                                          );
+
+                                          nodeModuleToHash[resolvedNodeFile] =
+                                            hash.digest('hex');
+                                        }
+
+                                        // Use the native module map to find the newly built native modules
+                                        for (const nativeDep of Object.keys(
+                                          ctx.nativeDeps,
+                                        )) {
+                                          const archPath = path.resolve(
+                                            targetDir,
+                                            nativeDep,
+                                          );
+                                          await fs.remove(archPath);
+
+                                          const mappedPaths =
+                                            ctx.nativeDeps[nativeDep];
+                                          if (
+                                            !mappedPaths ||
+                                            !mappedPaths.length
+                                          ) {
+                                            throw new Error(
+                                              `The "${nativeDep}" module could not be mapped to any native modules on disk`,
+                                            );
+                                          }
+
+                                          if (
+                                            !mappedPaths.every(
+                                              (mappedPath) =>
+                                                nodeModuleToHash[mappedPath] ===
+                                                nodeModuleToHash[
+                                                  mappedPaths[0]
+                                                ],
+                                            )
+                                          ) {
+                                            throw new Error(
+                                              `The "${nativeDep}" mapped to multiple modules "${mappedPaths.join(
+                                                ', ',
+                                              )}" but the same modules post rebuild did not map to the same native code`,
+                                            );
+                                          }
+
+                                          await fs.promises.cp(
+                                            mappedPaths[0],
+                                            archPath,
+                                          );
+                                        }
+                                      },
+                                    },
+                                  ],
+                                  { concurrent: false },
+                                );
+                              },
+                            }),
+                          ),
+                        );
+                      },
+                    },
+                  ];
+
+            return task.newListr<NativeDepsCtx>(
+              [
+                {
+                  title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                  task: async (_, innerTask) => {
+                    await listrCompatibleRebuildHook(
+                      this.projectDir,
+                      await getElectronVersion(
+                        this.projectDir,
+                        await fs.readJson(
+                          path.join(this.projectDir, 'package.json'),
+                        ),
+                      ),
+                      platform,
+                      firstArch,
+                      config.rebuildConfig,
+                      innerTask,
+                    );
+                  },
+                  rendererOptions: {
+                    persistentOutput: true,
+                    bottomBar: Infinity,
+                    timer: { ...PRESET_TIMER },
+                  },
                 },
-                rendererOptions: {
-                  persistentOutput: true,
-                  bottomBar: Infinity,
-                  timer: { ...PRESET_TIMER },
+                {
+                  title: 'Building webpack bundles',
+                  task: async () => {
+                    await this.compileMain();
+                    await this.compileRenderers();
+                    // Store it in a place that won't get messed with
+                    // We'll restore the right "arch" in the afterCopy hook further down
+                    const preExistingChildren = await fs.readdir(this.baseDir);
+                    const targetDir = path.resolve(this.baseDir, firstArch);
+                    await fs.mkdirp(targetDir);
+                    for (const child of preExistingChildren) {
+                      await fs.move(
+                        path.resolve(this.baseDir, child),
+                        path.resolve(targetDir, child),
+                      );
+                    }
+                  },
+                  rendererOptions: {
+                    timer: { ...PRESET_TIMER },
+                  },
                 },
-              },
-              {
-                title: 'Building webpack bundles',
-                task: async () => {
-                  await this.compileMain();
-                  await this.compileRenderers();
-                  // Store it in a place that won't get messed with
-                  // We'll restore the right "arch" in the afterCopy hook further down
-                  const preExistingChildren = await fs.readdir(this.baseDir);
-                  const targetDir = path.resolve(this.baseDir, firstArch);
-                  await fs.mkdirp(targetDir);
-                  for (const child of preExistingChildren) {
-                    await fs.move(path.resolve(this.baseDir, child), path.resolve(targetDir, child));
-                  }
-                },
-                rendererOptions: {
-                  timer: { ...PRESET_TIMER },
-                },
-              },
-              ...multiArchTasks,
-            ],
-            { concurrent: false }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ) as any;
-        }, 'Preparing webpack bundles'),
+                ...multiArchTasks,
+              ],
+              { concurrent: false },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ) as any;
+          },
+          'Preparing webpack bundles',
+        ),
       ],
       postStart: async (_config, child) => {
         d('hooking electron process exit');
@@ -395,11 +534,20 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       },
       resolveForgeConfig: this.resolveForgeConfig,
       packageAfterCopy: [
-        async (_forgeConfig: ResolvedForgeConfig, buildPath: string, _electronVersion: string, _platform: string, pArch: string): Promise<void> => {
+        async (
+          _forgeConfig: ResolvedForgeConfig,
+          buildPath: string,
+          _electronVersion: string,
+          _platform: string,
+          pArch: string,
+        ): Promise<void> => {
           // Restore the correct 'arch' build of webpack
           // Steal the correct arch, wipe the folder, move it back to pretend to be ".webpack" root
           const tmpWebpackDir = path.resolve(buildPath, '.webpack.tmp');
-          await fs.move(path.resolve(buildPath, '.webpack', pArch), tmpWebpackDir);
+          await fs.move(
+            path.resolve(buildPath, '.webpack', pArch),
+            tmpWebpackDir,
+          );
           await fs.remove(path.resolve(buildPath, '.webpack'));
           await fs.move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
         },
@@ -408,7 +556,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     };
   }
 
-  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
+  resolveForgeConfig = async (
+    forgeConfig: ResolvedForgeConfig,
+  ): Promise<ResolvedForgeConfig> => {
     if (!forgeConfig.packagerConfig) {
       forgeConfig.packagerConfig = {};
     }
@@ -417,7 +567,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         console.error(
           chalk.red(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`)
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`),
         );
       }
       return forgeConfig;
@@ -425,11 +575,17 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
-      if (this.config.jsonStats && file.endsWith(path.join('.webpack', 'main', 'stats.json'))) {
+      if (
+        this.config.jsonStats &&
+        file.endsWith(path.join('.webpack', 'main', 'stats.json'))
+      ) {
         return true;
       }
 
-      if (this.allRendererOptions.some((r) => r.jsonStats) && file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))) {
+      if (
+        this.allRendererOptions.some((r) => r.jsonStats) &&
+        file.endsWith(path.join('.webpack', 'renderer', 'stats.json'))
+      ) {
         return true;
       }
 
@@ -443,10 +599,15 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   };
 
   private get allRendererOptions() {
-    return Array.isArray(this.config.renderer) ? this.config.renderer : [this.config.renderer];
+    return Array.isArray(this.config.renderer)
+      ? this.config.renderer
+      : [this.config.renderer];
   }
 
-  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
+  packageAfterCopy = async (
+    _forgeConfig: ResolvedForgeConfig,
+    buildPath: string,
+  ): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {
@@ -481,16 +642,25 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
           tab.log(
             stats.toString({
               colors: true,
-            })
+            }),
           );
         }
         if (this.config.jsonStats) {
-          await this.writeJSONStats('main', stats, mainConfig.stats as WebpackToJsonOptions, 'main');
+          await this.writeJSONStats(
+            'main',
+            stats,
+            mainConfig.stats as WebpackToJsonOptions,
+            'main',
+          );
         }
 
         if (err) return onceReject(err);
         if (!watch && stats?.hasErrors()) {
-          return onceReject(new Error(`Compilation errors in the main process: ${stats.toString()}`));
+          return onceReject(
+            new Error(
+              `Compilation errors in the main process: ${stats.toString()}`,
+            ),
+          );
         }
 
         return onceResolve(undefined);
@@ -505,9 +675,14 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
   compileRenderers = async (watch = false): Promise<void> => {
     for (const rendererOptions of this.allRendererOptions) {
-      const stats = await this.runWebpack(await this.configGenerator.getRendererConfig(rendererOptions), rendererOptions);
+      const stats = await this.runWebpack(
+        await this.configGenerator.getRendererConfig(rendererOptions),
+        rendererOptions,
+      );
       if (!watch && stats?.hasErrors()) {
-        throw new Error(`Compilation errors in the renderer: ${stats.toString()}`);
+        throw new Error(
+          `Compilation errors in the renderer: ${stats.toString()}`,
+        );
       }
     }
   };
@@ -518,11 +693,13 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
       const groupName = `group_${i}`;
       configs.push(
-        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map((config) => ({
-          ...config,
-          name: groupName,
-          dependencies: [...rollingDependencies],
-        }))
+        ...(await this.configGenerator.getRendererConfig(rendererOptions)).map(
+          (config) => ({
+            ...config,
+            name: groupName,
+            dependencies: [...rollingDependencies],
+          }),
+        ),
       );
       rollingDependencies.push(groupName);
     }
@@ -535,7 +712,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     let numPreloadEntriesWithConfig = 0;
     for (const entryConfig of configs) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
-      entryConfig.plugins.push(new ElectronForgeLoggingPlugin(logger.createTab(`Renderer Target Bundle (${entryConfig.target})`)));
+      entryConfig.plugins.push(
+        new ElectronForgeLoggingPlugin(
+          logger.createTab(`Renderer Target Bundle (${entryConfig.target})`),
+        ),
+      );
 
       const filename = entryConfig.output?.filename as string;
       if (filename?.endsWith('preload.js')) {
@@ -559,14 +740,21 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       return new Promise((resolve, reject) => {
         compiler.hooks.done.tap(preloadPlugin, (stats) => {
           if (stats.hasErrors()) {
-            return reject(new Error(`Compilation errors in the preload: ${stats.toString()}`));
+            return reject(
+              new Error(
+                `Compilation errors in the preload: ${stats.toString()}`,
+              ),
+            );
           }
           return resolve(undefined);
         });
       });
     });
 
-    const webpackDevServer = new WebpackDevServer(this.devServerOptions(), compiler);
+    const webpackDevServer = new WebpackDevServer(
+      this.devServerOptions(),
+      compiler,
+    );
     await webpackDevServer.start();
     this.servers.push(webpackDevServer.server!);
     await Promise.all(promises);
@@ -574,7 +762,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
   devServerOptions(): WebpackDevServer.Configuration {
     const cspDirectives =
-      this.config.devContentSecurityPolicy ?? "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
+      this.config.devContentSecurityPolicy ??
+      "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:";
 
     const defaults: Partial<WebpackDevServer.Configuration> = {
       hot: true,

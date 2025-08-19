@@ -8,7 +8,11 @@ export default function getNameFromAuthor(author: PackagePerson): string {
     publisher = parseAuthor(publisher);
   }
 
-  if (typeof publisher !== 'string' && publisher && typeof publisher.name === 'string') {
+  if (
+    typeof publisher !== 'string' &&
+    publisher &&
+    typeof publisher.name === 'string'
+  ) {
     publisher = publisher.name;
   }
 

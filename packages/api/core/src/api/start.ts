@@ -1,7 +1,10 @@
 import { spawn, SpawnOptions } from 'node:child_process';
 import readline from 'node:readline';
 
-import { getElectronVersion, listrCompatibleRebuildHook } from '@electron-forge/core-utils';
+import {
+  getElectronVersion,
+  listrCompatibleRebuildHook,
+} from '@electron-forge/core-utils';
 import {
   ElectronProcess,
   ForgeArch,
@@ -46,7 +49,7 @@ export default autoTrace(
       runAsNode = false,
       inspect = false,
       inspectBrk = false,
-    }: StartOptions
+    }: StartOptions,
   ): Promise<ElectronProcess> => {
     const platform = process.env.npm_config_platform || process.platform;
     const arch = process.env.npm_config_arch || process.arch;
@@ -58,37 +61,54 @@ export default autoTrace(
         collapseSubtasks: false,
       },
       silentRendererCondition: !interactive,
-      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+      fallbackRendererCondition:
+        Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const runner = new Listr<StartContext>(
       [
         {
           title: 'Locating application',
-          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>({ name: 'locate-application', category: '@electron-forge/core' }, async (_, ctx) => {
-            const resolvedDir = await resolveDir(providedDir);
-            if (!resolvedDir) {
-              throw new Error('Failed to locate startable Electron application');
-            }
-            ctx.dir = resolvedDir;
-          }),
+          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
+            { name: 'locate-application', category: '@electron-forge/core' },
+            async (_, ctx) => {
+              const resolvedDir = await resolveDir(providedDir);
+              if (!resolvedDir) {
+                throw new Error(
+                  'Failed to locate startable Electron application',
+                );
+              }
+              ctx.dir = resolvedDir;
+            },
+          ),
         },
         {
           title: 'Loading configuration',
-          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>({ name: 'load-forge-config', category: '@electron-forge/core' }, async (_, ctx) => {
-            const { dir } = ctx;
-            ctx.forgeConfig = await getForgeConfig(dir);
-            ctx.packageJSON = await readMutatedPackageJson(dir, ctx.forgeConfig);
+          task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
+            { name: 'load-forge-config', category: '@electron-forge/core' },
+            async (_, ctx) => {
+              const { dir } = ctx;
+              ctx.forgeConfig = await getForgeConfig(dir);
+              ctx.packageJSON = await readMutatedPackageJson(
+                dir,
+                ctx.forgeConfig,
+              );
 
-            if (!ctx.packageJSON.version) {
-              throw new Error(`Please set your application's 'version' in '${dir}/package.json'.`);
-            }
-          }),
+              if (!ctx.packageJSON.version) {
+                throw new Error(
+                  `Please set your application's 'version' in '${dir}/package.json'.`,
+                );
+              }
+            },
+          ),
         },
         {
           title: 'Preparing native dependencies',
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
-            { name: 'prepare-native-dependencies', category: '@electron-forge/core' },
+            {
+              name: 'prepare-native-dependencies',
+              category: '@electron-forge/core',
+            },
             async (_, { dir, forgeConfig, packageJSON }, task) => {
               await listrCompatibleRebuildHook(
                 dir,
@@ -96,9 +116,9 @@ export default autoTrace(
                 platform as ForgePlatform,
                 arch as ForgeArch,
                 forgeConfig.rebuildConfig,
-                task as any
+                task as any,
               );
-            }
+            },
           ),
           rendererOptions: {
             persistentOutput: true,
@@ -109,10 +129,25 @@ export default autoTrace(
         {
           title: `Running ${chalk.yellow('generateAssets')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
-            { name: 'run-generateAssets-hook', category: '@electron-forge/core' },
+            {
+              name: 'run-generateAssets-hook',
+              category: '@electron-forge/core',
+            },
             async (childTrace, { forgeConfig }, task) => {
-              return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'generateAssets', platform, arch)), 'run');
-            }
+              return delayTraceTillSignal(
+                childTrace,
+                task.newListr(
+                  await getHookListrTasks(
+                    childTrace,
+                    forgeConfig,
+                    'generateAssets',
+                    platform,
+                    arch,
+                  ),
+                ),
+                'run',
+              );
+            },
           ),
         },
         {
@@ -120,8 +155,14 @@ export default autoTrace(
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             { name: 'run-preStart-hook', category: '@electron-forge/core' },
             async (childTrace, { forgeConfig }, task) => {
-              return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, forgeConfig, 'preStart')), 'run');
-            }
+              return delayTraceTillSignal(
+                childTrace,
+                task.newListr(
+                  await getHookListrTasks(childTrace, forgeConfig, 'preStart'),
+                ),
+                'run',
+              );
+            },
           ),
         },
         {
@@ -130,7 +171,7 @@ export default autoTrace(
           },
         },
       ],
-      listrOptions
+      listrOptions,
     );
 
     await runner.run();
@@ -142,18 +183,25 @@ export default autoTrace(
       let electronExecPath: string | null = null;
 
       // If a plugin has taken over the start command let's stop here
-      let spawnedPluginChild = await forgeConfig.pluginInterface.overrideStartLogic({
-        dir,
-        appPath,
-        interactive,
-        enableLogging,
-        args,
-        runAsNode,
-        inspect,
-        inspectBrk,
-      });
-      if (typeof spawnedPluginChild === 'object' && 'tasks' in spawnedPluginChild) {
-        const innerRunner = new Listr<never>([], listrOptions as ForgeListrOptions<never>);
+      let spawnedPluginChild =
+        await forgeConfig.pluginInterface.overrideStartLogic({
+          dir,
+          appPath,
+          interactive,
+          enableLogging,
+          args,
+          runAsNode,
+          inspect,
+          inspectBrk,
+        });
+      if (
+        typeof spawnedPluginChild === 'object' &&
+        'tasks' in spawnedPluginChild
+      ) {
+        const innerRunner = new Listr<never>(
+          [],
+          listrOptions as ForgeListrOptions<never>,
+        );
         for (const task of spawnedPluginChild.tasks) {
           innerRunner.add(task);
         }
@@ -206,7 +254,7 @@ export default autoTrace(
       const spawned = spawn(
         electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
         prefixArgs.concat([appPath]).concat(args as string[]),
-        spawnOpts as SpawnOptions
+        spawnOpts as SpawnOptions,
       ) as ElectronProcess;
 
       await runHook(forgeConfig, 'postStart', spawned);
@@ -243,7 +291,9 @@ export default autoTrace(
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
-          console.info(`${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`);
+          console.info(
+            `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
+          );
           lastSpawned.restarted = true;
           lastSpawned.kill('SIGTERM');
           lastSpawned.emit('restarted', await forgeSpawnWrapper());
@@ -257,5 +307,5 @@ export default autoTrace(
     if (interactive) console.log('');
 
     return spawned;
-  }
+  },
 );

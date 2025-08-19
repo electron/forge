@@ -14,8 +14,20 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export default async (pm: PMDetails, dir: string, deps: string[], depType = DepType.PROD, versionRestriction = DepVersionRestriction.RANGE): Promise<void> => {
-  d('installing', JSON.stringify(deps), 'in:', dir, `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm.executable}`);
+export default async (
+  pm: PMDetails,
+  dir: string,
+  deps: string[],
+  depType = DepType.PROD,
+  versionRestriction = DepVersionRestriction.RANGE,
+): Promise<void> => {
+  d(
+    'installing',
+    JSON.stringify(deps),
+    'in:',
+    dir,
+    `depType=${depType},versionRestriction=${versionRestriction},withPackageManager=${pm.executable}`,
+  );
   if (deps.length === 0) {
     d('nothing to install, stopping immediately');
     return Promise.resolve();
@@ -32,7 +44,9 @@ export default async (pm: PMDetails, dir: string, deps: string[], depType = DepT
     });
   } catch (err) {
     if (err instanceof ExitError) {
-      throw new Error(`Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`);
+      throw new Error(
+        `Failed to install modules: ${JSON.stringify(deps)}\n\nWith output: ${err.message}\n${err.stderr ? err.stderr.toString() : ''}`,
+      );
     } else {
       throw err;
     }

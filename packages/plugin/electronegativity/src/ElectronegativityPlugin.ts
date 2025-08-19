@@ -61,7 +61,10 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
     };
   }
 
-  postPackage: ForgeHookFn<'postPackage'> = async (_forgeConfig, options): Promise<void> => {
+  postPackage: ForgeHookFn<'postPackage'> = async (
+    _forgeConfig,
+    options,
+  ): Promise<void> => {
     await runElectronegativity(
       {
         ...this.config,
@@ -69,7 +72,7 @@ export default class ElectronegativityPlugin extends PluginBase<Electronegativit
         parserPlugins: this.config.parserPlugins ?? [],
         input: options.outputPaths[0],
       },
-      true
+      true,
     );
   };
 }

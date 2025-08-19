@@ -60,7 +60,10 @@ describe('MakerDMG', () => {
       packageJSON,
     });
     expect(vi.mocked(fs.rename)).toHaveBeenCalledOnce();
-    expect(vi.mocked(fs.rename)).toHaveBeenCalledWith(expect.anything(), expect.stringContaining(`1.2.3-${targetArch}`));
+    expect(vi.mocked(fs.rename)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining(`1.2.3-${targetArch}`),
+    );
   });
 
   it('should not attempt to rename the DMG file if a custom name is set', async () => {

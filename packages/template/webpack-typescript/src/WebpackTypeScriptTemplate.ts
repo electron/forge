@@ -1,13 +1,19 @@
 import path from 'node:path';
 
-import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
+import {
+  ForgeListrTaskDefinition,
+  InitTemplateOptions,
+} from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class WebpackTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-  async initializeTemplate(directory: string, options: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+  async initializeTemplate(
+    directory: string,
+    options: InitTemplateOptions,
+  ): Promise<ForgeListrTaskDefinition[]> {
     const superTasks = await super.initializeTemplate(directory, options);
     return [
       ...superTasks,
@@ -21,7 +27,8 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
       {
         title: 'Preparing TypeScript files and configuration',
         task: async () => {
-          const filePath = (fileName: string) => path.join(directory, 'src', fileName);
+          const filePath = (fileName: string) =>
+            path.join(directory, 'src', fileName);
 
           // Copy Webpack files
           await this.copyTemplateFile(directory, 'webpack.main.config.ts');
@@ -29,10 +36,13 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'webpack.rules.ts');
           await this.copyTemplateFile(directory, 'webpack.plugins.ts');
 
-          await this.updateFileByLine(path.resolve(directory, 'src', 'index.html'), (line) => {
-            if (line.includes('link rel="stylesheet"')) return '';
-            return line;
-          });
+          await this.updateFileByLine(
+            path.resolve(directory, 'src', 'index.html'),
+            (line) => {
+              if (line.includes('link rel="stylesheet"')) return '';
+              return line;
+            },
+          );
 
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
@@ -44,11 +54,17 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           await fs.remove(filePath('index.js'));
           await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
-          await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.ts');
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'renderer.ts',
+          );
 
           // Remove preload.js and replace with preload.ts
           await fs.remove(filePath('preload.js'));
-          await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'preload.ts',
+          );
 
           // update package.json
           const packageJSONPath = path.resolve(directory, 'package.json');

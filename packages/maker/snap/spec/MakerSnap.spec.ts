@@ -46,7 +46,7 @@ describe('MakerSnap', () => {
         arch: 'overridden',
         description: 'Snap description',
       },
-      []
+      [],
     );
     maker.ensureDirectory = vi.fn();
     await maker.prepareConfig(targetArch);
