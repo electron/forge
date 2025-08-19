@@ -9,6 +9,7 @@ export function getConfig(
   const { forgeConfigSelf } = forgeEnv;
   const config: UserConfig = {
     build: {
+      copyPublicDir: false,
       rollupOptions: {
         external,
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.

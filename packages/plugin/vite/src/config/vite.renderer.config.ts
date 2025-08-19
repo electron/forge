@@ -15,6 +15,7 @@ export function getConfig(
     mode,
     base: './',
     build: {
+      copyPublicDir: true,
       outDir: `.vite/renderer/${name}`,
     },
     plugins: [pluginExposeRenderer(name)],

@@ -286,7 +286,7 @@ export default autoTrace(
     };
 
     if (interactive) {
-      process.stdin.on('data', async (data) => {
+      process.stdin.on('data', (data) => {
         if (data.toString().trim() === 'rs' && lastSpawned) {
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
@@ -295,8 +295,10 @@ export default autoTrace(
             `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
           );
           lastSpawned.restarted = true;
+          lastSpawned.on('exit', async () => {
+            lastSpawned!.emit('restarted', await forgeSpawnWrapper());
+          });
           lastSpawned.kill('SIGTERM');
-          lastSpawned.emit('restarted', await forgeSpawnWrapper());
         }
       });
       process.stdin.resume();
