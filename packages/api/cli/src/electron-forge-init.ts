@@ -1,5 +1,5 @@
 import { api, InitOptions } from '@electron-forge/core';
-import { confirm, select } from '@inquirer/prompts';
+import { select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import { program } from 'commander';
 import { Listr } from 'listr2';
@@ -14,9 +14,9 @@ program
   .helpOption('-h, --help', 'Output usage information.')
   .argument('[dir]', 'Directory to initialize the project in. (default: current directory)')
   .option('-t, --template [name]', 'Name of the Forge template to use.', undefined)
-  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.', false)
-  .option('-f, --force', 'Whether to overwrite an existing directory.', false)
-  .option('--skip-git', 'Skip initializing a git repository in the initialized project.', false)
+  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.', true)
+  .option('-f, --force', 'Whether to overwrite an existing directory.', true)
+  .option('--skip-git', 'Skip initializing a git repository in the initialized project.', true)
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
@@ -25,8 +25,9 @@ program
           task: async (initOpts): Promise<void> => {
             // Initialize options and default values
             initOpts.interactive = true;
-            initOpts.copyCIFiles = !!options.copyCiFiles;
-            initOpts.force = !!options.force;
+            initOpts.copyCIFiles = Boolean(options.copyCiFiles);
+            initOpts.force = Boolean(options.force);
+            initOpts.skipGit = Boolean(options.skipGit);
           },
         },
         {
@@ -39,7 +40,7 @@ program
         {
           task: async (initOpts, task): Promise<void> => {
             // Exit early, template already provided.
-            if (options.template) {
+            if (options.template || Boolean(process.env.CI)) {
               initOpts.template = options.template;
               return;
             }
@@ -47,11 +48,11 @@ program
             const prompt = task.prompt(ListrInquirerPromptAdapter);
 
             // Prompt the user for a build tool
-            const buildTool: string = (await prompt.run(select, {
-              message: 'Select a build tool',
+            const bundler: string = (await prompt.run(select, {
+              message: 'Select a bundler',
               choices: [
                 {
-                  name: 'Base',
+                  name: 'None',
                   value: 'base',
                 },
                 {
@@ -59,7 +60,7 @@ program
                   value: 'vite',
                 },
                 {
-                  name: 'Webpack',
+                  name: 'webpack',
                   value: 'webpack',
                 },
               ],
@@ -67,7 +68,7 @@ program
 
             // Prompt the user for a programming language
             let language: string | undefined = undefined;
-            if (buildTool !== 'base') {
+            if (bundler !== 'base') {
               language = (await prompt.run(select, {
                 message: 'Select a programming language',
                 choices: [
@@ -83,25 +84,7 @@ program
               })) as string | undefined;
             }
 
-            initOpts.template = `${buildTool}${language ? `-${language}` : ''}`;
-          },
-        },
-        {
-          task: async (initOpts, task): Promise<void> => {
-            // Exit early, skipGit already provided.
-            if (options.skipGit) {
-              initOpts.skipGit = options.skipGit;
-              return;
-            }
-
-            const prompt = task.prompt(ListrInquirerPromptAdapter);
-
-            // Ask if the user would like to skip the git init command
-            const skipGit = await prompt.run(confirm, {
-              message: 'Would you like to skip the git initialization process?',
-            });
-
-            initOpts.skipGit = skipGit;
+            initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
           },
         },
       ],
