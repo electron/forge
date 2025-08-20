@@ -1,6 +1,9 @@
+import fs from 'node:fs/promises';
+
 import { api, InitOptions } from '@electron-forge/core';
-import { select } from '@inquirer/prompts';
+import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
+import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
@@ -9,11 +12,14 @@ import packageJSON from '../package.json';
 
 import { resolveWorkingDir } from './util/resolve-working-dir';
 
+// eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
+import type { Prompt } from '@inquirer/type';
+
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
-  .argument('[dir]', 'Directory to initialize the project in. (default: current directory)')
-  .option('-t, --template [name]', 'Name of the Forge template to use.', undefined)
+  .argument('[dir]', 'Directory to initialize the project in. Defaults to the current directory.')
+  .option('-t, --template [name]', 'Name of the Forge template to use.')
   .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.')
   .option('-f, --force', 'Whether to overwrite an existing directory.')
   .option('--skip-git', 'Skip initializing a git repository in the initialized project.')
@@ -23,32 +29,38 @@ program
       [
         {
           task: async (initOpts): Promise<void> => {
-            // Initialize options and default values
             initOpts.interactive = true;
+            initOpts.template = options.template ?? 'base';
             initOpts.copyCIFiles = Boolean(options.copyCiFiles);
             initOpts.force = Boolean(options.force);
             initOpts.skipGit = Boolean(options.skipGit);
-          },
-        },
-        {
-          title: 'Resolving directory',
-          task: async (initOpts): Promise<void> => {
-            // Resolve the provided directory
             initOpts.dir = resolveWorkingDir(dir, false);
           },
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            // Exit early, template already provided.
-            if (options.template || Boolean(process.env.CI)) {
-              initOpts.template = options.template;
+            // only run interactive prompts if no args passed and not in CI environment
+            if (Object.keys(options).length > 0 || process.env.CI || !process.stdout.isTTY) {
               return;
             }
 
             const prompt = task.prompt(ListrInquirerPromptAdapter);
 
-            // Prompt the user for a build tool
-            const bundler: string = (await prompt.run(select, {
+            if (typeof initOpts.dir === 'string' && (await fs.readdir(initOpts.dir)).length > 0) {
+              const confirmResult = await prompt.run(confirm, {
+                message: `${chalk.cyan(initOpts.dir)} is not empty. Would you like to continue and overwrite existing files?`,
+                default: false,
+              });
+
+              if (confirmResult) {
+                initOpts.force = true;
+              } else {
+                task.output = 'Directory is not empty. Exiting.';
+                process.exit(0);
+              }
+            }
+
+            const bundler: string = await prompt.run<Prompt<string, any>>(select, {
               message: 'Select a bundler',
               choices: [
                 {
@@ -64,12 +76,12 @@ program
                   value: 'webpack',
                 },
               ],
-            })) as string;
+            });
 
-            // Prompt the user for a programming language
-            let language: string | undefined = undefined;
+            let language: string | undefined;
+
             if (bundler !== 'base') {
-              language = (await prompt.run(select, {
+              language = await prompt.run<Prompt<string | undefined, any>>(select, {
                 message: 'Select a programming language',
                 choices: [
                   {
@@ -77,14 +89,18 @@ program
                     value: undefined,
                   },
                   {
-                    name: 'Typescript',
+                    name: 'TypeScript',
                     value: 'typescript',
                   },
                 ],
-              })) as string | undefined;
+              });
             }
 
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
+            initOpts.skipGit = !(await prompt.run(confirm, {
+              message: `Would you like to initialize Git in your new project?`,
+              default: true,
+            }));
           },
         },
       ],
