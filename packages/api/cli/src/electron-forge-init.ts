@@ -14,9 +14,9 @@ program
   .helpOption('-h, --help', 'Output usage information.')
   .argument('[dir]', 'Directory to initialize the project in. (default: current directory)')
   .option('-t, --template [name]', 'Name of the Forge template to use.', undefined)
-  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.', true)
-  .option('-f, --force', 'Whether to overwrite an existing directory.', true)
-  .option('--skip-git', 'Skip initializing a git repository in the initialized project.', true)
+  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.')
+  .option('-f, --force', 'Whether to overwrite an existing directory.')
+  .option('--skip-git', 'Skip initializing a git repository in the initialized project.')
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
