@@ -38,12 +38,21 @@ type PromisifiedHookFunction = (buildPath: string, electronVersion: string, plat
 type PromisifiedFinalizePackageTargetsHookFunction = (targets: TargetDefinition[]) => Promise<void>;
 
 /**
+ * @deprecated Only use until \@electron/packager publishes a new major version with promise based hooks
+ */
+function hidePromiseFromPromisify<P extends unknown[]>(fn: (...args: P) => Promise<void>): (...args: P) => void {
+  return (...args: P) => {
+    void fn(...args);
+  };
+}
+
+/**
  * Runs given hooks sequentially by mapping them to promises and iterating
  * through while awaiting
  */
 function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
   return [
-    async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
+    hidePromiseFromPromisify(async (buildPath: string, electronVersion: string, platform: string, arch: string, done: DoneFunction) => {
       for (const hook of hooks) {
         try {
           await promisify(hook)(buildPath, electronVersion, platform, arch);
@@ -53,12 +62,12 @@ function sequentialHooks(hooks: HookFunction[]): PromisifiedHookFunction[] {
         }
       }
       done();
-    },
+    }),
   ] as PromisifiedHookFunction[];
 }
 function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHookFunction[]): PromisifiedFinalizePackageTargetsHookFunction[] {
   return [
-    async (targets: TargetDefinition[], done: DoneFunction) => {
+    hidePromiseFromPromisify(async (targets: TargetDefinition[], done: DoneFunction) => {
       for (const hook of hooks) {
         try {
           await promisify(hook)(targets);
@@ -67,7 +76,7 @@ function sequentialFinalizePackageTargetsHooks(hooks: FinalizePackageTargetsHook
         }
       }
       done();
-    },
+    }),
   ] as PromisifiedFinalizePackageTargetsHookFunction[];
 }
 
@@ -227,22 +236,22 @@ export const listrPackage = (
             const pruneEnabled = !('prune' in forgeConfig.packagerConfig) || forgeConfig.packagerConfig.prune;
 
             const afterCopyHooks: HookFunction[] = [
-              async (buildPath, electronVersion, platform, arch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, platform, arch, done) => {
                 signalDone(signalCopyDone, { platform, arch });
                 done();
-              },
-              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              }),
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
                 for (const bin of bins) {
                   await fs.remove(bin);
                 }
                 done();
-              },
-              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              }),
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 await runHook(forgeConfig, 'packageAfterCopy', buildPath, electronVersion, pPlatform, pArch);
                 done();
-              },
-              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              }),
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const targetKey = getTargetKey({ platform: pPlatform, arch: pArch });
                 await listrCompatibleRebuildHook(
                   buildPath,
@@ -255,23 +264,23 @@ export const listrPackage = (
                 );
                 signalRebuildDone.get(targetKey)?.pop()?.();
                 done();
-              },
-              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              }),
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 const copiedPackageJSON = await readMutatedPackageJson(buildPath, forgeConfig);
                 if (copiedPackageJSON.config && copiedPackageJSON.config.forge) {
                   delete copiedPackageJSON.config.forge;
                 }
                 await fs.writeJson(path.resolve(buildPath, 'package.json'), copiedPackageJSON, { spaces: 2 });
                 done();
-              },
+              }),
               ...(await resolveHooks(forgeConfig.packagerConfig.afterCopy, ctx.dir)),
             ];
 
             const afterCompleteHooks: HookFunction[] = [
-              async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 signalPackageDone.get(getTargetKey({ platform: pPlatform, arch: pArch }))?.pop()?.();
                 done();
-              },
+              }),
               ...(await resolveHooks(forgeConfig.packagerConfig.afterComplete, ctx.dir)),
             ];
 
@@ -281,13 +290,15 @@ export const listrPackage = (
               afterPruneHooks.push(...(await resolveHooks(forgeConfig.packagerConfig.afterPrune, ctx.dir)));
             }
 
-            afterPruneHooks.push((async (buildPath, electronVersion, pPlatform, pArch, done) => {
-              await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
-              done();
-            }) as HookFunction);
+            afterPruneHooks.push(
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
+                await runHook(forgeConfig, 'packageAfterPrune', buildPath, electronVersion, pPlatform, pArch);
+                done();
+              }) as HookFunction
+            );
 
             const afterExtractHooks = [
-              (async (buildPath, electronVersion, pPlatform, pArch, done) => {
+              hidePromiseFromPromisify(async (buildPath, electronVersion, pPlatform, pArch, done) => {
                 await runHook(forgeConfig, 'packageAfterExtract', buildPath, electronVersion, pPlatform, pArch);
                 done();
               }) as HookFunction,
