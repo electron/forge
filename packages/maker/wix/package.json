@@ -14,6 +14,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "7.9.0",
     "@electron-forge/maker-base": "7.9.0",
     "@electron-forge/shared-types": "7.9.0",
     "chalk": "^4.0.0",
