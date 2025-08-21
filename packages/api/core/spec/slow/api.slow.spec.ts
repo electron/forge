@@ -360,6 +360,7 @@ describe.each([PACKAGE_MANAGERS['npm'], PACKAGE_MANAGERS['yarn'], PACKAGE_MANAGE
             '@electron-forge/maker-deb',
             '@electron-forge/maker-dmg',
             '@electron-forge/maker-flatpak',
+            '@electron-forge/maker-msix',
             '@electron-forge/maker-rpm',
             '@electron-forge/maker-snap',
             '@electron-forge/maker-squirrel',

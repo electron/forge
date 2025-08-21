@@ -1,0 +1,39 @@
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { ForgePlatform } from '@electron-forge/shared-types';
+import { packageMSIX } from 'electron-windows-msix';
+
+import { MakerMsixConfig } from './Config';
+import { toMsixArch } from './util/arch';
+import getNameFromAuthor from './util/author-name';
+
+export default class MakerMsix extends MakerBase<MakerMsixConfig> {
+  name = 'msix';
+  defaultPlatforms: ForgePlatform[] = ['win32'];
+
+  isSupportedOnCurrentPlatform(): boolean {
+    return process.platform === 'win32';
+  }
+
+  async make({ dir, makeDir, targetArch, packageJSON, appName }: MakerOptions): Promise<string[]> {
+    const configManifestVariables = this.config.manifestVariables;
+    const packageOptions = this.config;
+    delete packageOptions.manifestVariables;
+
+    const result = await packageMSIX({
+      appDir: dir,
+      outputDir: makeDir,
+      manifestVariables: {
+        packageDescription: packageJSON.description,
+        appExecutable: `${appName}.exe`,
+        packageVersion: packageJSON.version,
+        publisher: getNameFromAuthor(packageJSON.author),
+        packageIdentity: appName,
+        targetArch: toMsixArch(targetArch),
+        ...configManifestVariables,
+      },
+      ...packageOptions,
+    });
+
+    return [result.msixPackage, result.certificate];
+  }
+}
