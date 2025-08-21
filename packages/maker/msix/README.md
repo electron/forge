@@ -14,6 +14,6 @@ Configuration options are documented in [`MakerMSIXConfig`](https://js.electronf
       publisher: 'Electron Dev'
     },
     cert_pass: '12345'
-  },
+  }
 }
 ```
