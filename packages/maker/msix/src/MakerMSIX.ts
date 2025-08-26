@@ -34,6 +34,6 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
       ...packageOptions,
     });
 
-    return [result.msixPackage, result.certificate];
+    return [result.msixPackage];
   }
 }
