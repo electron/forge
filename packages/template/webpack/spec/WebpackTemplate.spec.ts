@@ -23,7 +23,8 @@ describe('WebpackTemplate', () => {
     const runner = new Listr(tasks, {
       concurrent: false,
       exitOnError: false,
-      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+      fallbackRendererCondition:
+        Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     });
     await runner.run();
     expect(runner.errors).toHaveLength(0);
@@ -46,12 +47,18 @@ describe('WebpackTemplate', () => {
   it('should move and rewrite the main process file', async () => {
     expect(fs.existsSync(path.join(dir, 'src', 'index.js'))).toBe(false);
     expect(fs.existsSync(path.join(dir, 'src', 'main.js'))).toBe(true);
-    const mainFile = (await fs.promises.readFile(path.join(dir, 'src', 'main.js'))).toString();
+    const mainFile = (
+      await fs.promises.readFile(path.join(dir, 'src', 'main.js'))
+    ).toString();
     expect(mainFile).toMatch(/MAIN_WINDOW_WEBPACK_ENTRY/);
     expect(mainFile).toMatch(/MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY/);
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {
-    expect((await fs.promises.readFile(path.join(dir, 'src', 'index.html'))).toString()).not.toMatch(/link rel="stylesheet"/);
+    expect(
+      (
+        await fs.promises.readFile(path.join(dir, 'src', 'index.html'))
+      ).toString(),
+    ).not.toMatch(/link rel="stylesheet"/);
   });
 });

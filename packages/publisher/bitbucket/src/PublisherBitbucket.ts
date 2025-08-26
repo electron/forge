@@ -1,6 +1,9 @@
 import path from 'node:path';
 
-import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import {
+  PublisherBase,
+  PublisherOptions,
+} from '@electron-forge/publisher-base';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import fetch from 'node-fetch';
@@ -10,7 +13,10 @@ import { PublisherBitbucketConfig } from './Config';
 export default class PublisherBitbucket extends PublisherBase<PublisherBitbucketConfig> {
   name = 'bitbucket';
 
-  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
+  async publish({
+    makeResults,
+    setStatusLine,
+  }: PublisherOptions): Promise<void> {
     const { config } = this;
     const hasRepositoryConfig = config.repository && typeof config.repository;
     const replaceExistingFiles = Boolean(config.replaceExistingFiles);
@@ -18,17 +24,25 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
     const username = process.env.BITBUCKET_USERNAME;
     const auth = { appPassword, username, ...(config.auth || {}) };
     const apiUrl = `https://api.bitbucket.org/2.0/repositories/${config.repository.owner}/${config.repository.name}/downloads`;
-    const encodedUserAndPass = Buffer.from(`${auth.username}:${auth.appPassword}`).toString('base64');
+    const encodedUserAndPass = Buffer.from(
+      `${auth.username}:${auth.appPassword}`,
+    ).toString('base64');
 
-    if (!(hasRepositoryConfig && config.repository.owner && config.repository.name)) {
+    if (
+      !(
+        hasRepositoryConfig &&
+        config.repository.owner &&
+        config.repository.name
+      )
+    ) {
       throw new Error(
-        'In order to publish to Bitbucket you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info'
+        'In order to publish to Bitbucket you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info',
       );
     }
 
     if (!auth.appPassword || !auth.username) {
       throw new Error(
-        'In order to publish to Bitbucket provide credentials, either through "auth.appPassword" and "auth.username" properties in your Forge config or using BITBUCKET_APP_PASSWORD and BITBUCKET_USERNAME environment variables'
+        'In order to publish to Bitbucket provide credentials, either through "auth.appPassword" and "auth.username" properties in your Forge config or using BITBUCKET_APP_PASSWORD and BITBUCKET_USERNAME environment variables',
       );
     }
 
@@ -57,13 +71,15 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
 
           if (response.status === 302) {
             throw new Error(
-              `Unable to publish "${fileName}" as it has been published previously. Use the "replaceExistingFiles" property in your Forge config to override this.`
+              `Unable to publish "${fileName}" as it has been published previously. Use the "replaceExistingFiles" property in your Forge config to override this.`,
             );
           }
         }
       }
 
-      setStatusLine(`Uploading distributable (${index + 1}/${makeResults.length})`);
+      setStatusLine(
+        `Uploading distributable (${index + 1}/${makeResults.length})`,
+      );
       const response = await fetch(apiUrl, {
         headers: {
           Authorization: `Basic ${encodedUserAndPass}`,
@@ -74,7 +90,9 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
 
       // We will get a 200 on the inital upload and a 201 if publishing over the same version
       if (response.status !== 200 && response.status !== 201) {
-        throw new Error(`Unexpected response code from Bitbucket: ${response.status} ${response.statusText}\n\nBody:\n${await response.text()}`);
+        throw new Error(
+          `Unexpected response code from Bitbucket: ${response.status} ${response.statusText}\n\nBody:\n${await response.text()}`,
+        );
       }
     }
   }

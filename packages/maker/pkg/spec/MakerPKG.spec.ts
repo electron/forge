@@ -57,6 +57,8 @@ describe('MakerPKG', () => {
       targetPlatform: 'win32',
     });
 
-    await expect(promise).rejects.toThrow('The pkg maker only supports targeting "mas" and "darwin" builds. You provided "win32".');
+    await expect(promise).rejects.toThrow(
+      'The pkg maker only supports targeting "mas" and "darwin" builds. You provided "win32".',
+    );
   });
 });

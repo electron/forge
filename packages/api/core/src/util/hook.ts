@@ -23,13 +23,18 @@ export const runHook = async <Hook extends keyof ForgeSimpleHookSignatures>(
     d(`hook triggered: ${hookName}`);
     if (typeof hooks[hookName] === 'function') {
       d('calling hook:', hookName, 'with args:', hookArgs);
-      await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(forgeConfig, ...hookArgs);
+      await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(
+        forgeConfig,
+        ...hookArgs,
+      );
     }
   }
   await forgeConfig.pluginInterface.triggerHook(hookName, hookArgs);
 };
 
-export const getHookListrTasks = async <Hook extends keyof ForgeSimpleHookSignatures>(
+export const getHookListrTasks = async <
+  Hook extends keyof ForgeSimpleHookSignatures,
+>(
   childTrace: typeof autoTrace,
   forgeConfig: ResolvedForgeConfig,
   hookName: Hook,
@@ -43,17 +48,35 @@ export const getHookListrTasks = async <Hook extends keyof ForgeSimpleHookSignat
       d('calling hook:', hookName, 'with args:', hookArgs);
       tasks.push({
         title: `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
-        task: childTrace({ name: 'forge-config-hook', category: '@electron-forge/hooks', extraDetails: { hook: hookName } }, async () => {
-          await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(forgeConfig, ...hookArgs);
-        }),
+        task: childTrace(
+          {
+            name: 'forge-config-hook',
+            category: '@electron-forge/hooks',
+            extraDetails: { hook: hookName },
+          },
+          async () => {
+            await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(
+              forgeConfig,
+              ...hookArgs,
+            );
+          },
+        ),
       });
     }
   }
-  tasks.push(...(await forgeConfig.pluginInterface.getHookListrTasks(childTrace, hookName, hookArgs)));
+  tasks.push(
+    ...(await forgeConfig.pluginInterface.getHookListrTasks(
+      childTrace,
+      hookName,
+      hookArgs,
+    )),
+  );
   return tasks;
 };
 
-export async function runMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
+export async function runMutatingHook<
+  Hook extends keyof ForgeMutatingHookSignatures,
+>(
   forgeConfig: ResolvedForgeConfig,
   hookName: Hook,
   ...item: ForgeMutatingHookSignatures[Hook]

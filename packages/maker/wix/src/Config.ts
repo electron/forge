@@ -1,6 +1,15 @@
 import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 
-export type MakerWixConfig = Omit<MSICreatorOptions, 'appDirectory' | 'outputDirectory' | 'description' | 'name' | 'version' | 'manufacturer' | 'exe'> & {
+export type MakerWixConfig = Omit<
+  MSICreatorOptions,
+  | 'appDirectory'
+  | 'outputDirectory'
+  | 'description'
+  | 'name'
+  | 'version'
+  | 'manufacturer'
+  | 'exe'
+> & {
   /**
    * The app's description
    *

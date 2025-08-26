@@ -7,9 +7,14 @@ import fs from 'fs-extra';
 const EXTENSION = '.forge.publish';
 
 export default class PublishState {
-  static async loadFromDirectory(directory: string, rootDir: string): Promise<PublishState[][]> {
+  static async loadFromDirectory(
+    directory: string,
+    rootDir: string,
+  ): Promise<PublishState[][]> {
     if (!(await fs.pathExists(directory))) {
-      throw new Error(`Attempted to load publish state from a missing directory: ${directory}`);
+      throw new Error(
+        `Attempted to load publish state from a missing directory: ${directory}`,
+      );
     }
 
     const publishes: PublishState[][] = [];
@@ -18,12 +23,16 @@ export default class PublishState {
       const states: PublishState[] = [];
 
       if ((await fs.stat(subDir)).isDirectory()) {
-        const filePaths = (await fs.readdir(subDir)).filter((fileName) => fileName.endsWith(EXTENSION)).map((fileName) => path.resolve(subDir, fileName));
+        const filePaths = (await fs.readdir(subDir))
+          .filter((fileName) => fileName.endsWith(EXTENSION))
+          .map((fileName) => path.resolve(subDir, fileName));
 
         for (const filePath of filePaths) {
           const state = new PublishState(filePath);
           await state.load();
-          state.state.artifacts = state.state.artifacts.map((artifactPath) => path.resolve(rootDir, artifactPath));
+          state.state.artifacts = state.state.artifacts.map((artifactPath) =>
+            path.resolve(rootDir, artifactPath),
+          );
           states.push(state);
         }
       }
@@ -32,11 +41,23 @@ export default class PublishState {
     return publishes;
   }
 
-  static async saveToDirectory(directory: string, artifacts: ForgeMakeResult[], rootDir: string): Promise<void> {
-    const id = crypto.createHash('SHA256').update(JSON.stringify(artifacts)).digest('hex');
+  static async saveToDirectory(
+    directory: string,
+    artifacts: ForgeMakeResult[],
+    rootDir: string,
+  ): Promise<void> {
+    const id = crypto
+      .createHash('SHA256')
+      .update(JSON.stringify(artifacts))
+      .digest('hex');
     for (const artifact of artifacts) {
-      artifact.artifacts = artifact.artifacts.map((artifactPath) => path.relative(rootDir, artifactPath));
-      const publishState = new PublishState(path.resolve(directory, id, 'null'), false);
+      artifact.artifacts = artifact.artifacts.map((artifactPath) =>
+        path.relative(rootDir, artifactPath),
+      );
+      const publishState = new PublishState(
+        path.resolve(directory, id, 'null'),
+        false,
+      );
       publishState.state = artifact;
       await publishState.saveToDisk();
     }

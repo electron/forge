@@ -1,7 +1,11 @@
 import path from 'node:path';
 
 import { resolvePackageManager } from '@electron-forge/core-utils';
-import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import {
+  ForgeListrTaskDefinition,
+  ForgeTemplate,
+  InitTemplateOptions,
+} from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
@@ -52,7 +56,10 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+  public async initializeTemplate(
+    directory: string,
+    { copyCIFiles }: InitTemplateOptions,
+  ): Promise<ForgeListrTaskDefinition[]> {
     return [
       {
         title: 'Copying starter files',
@@ -67,16 +74,29 @@ export class BaseTemplate implements ForgeTemplate {
           }
 
           if (copyCIFiles) {
-            d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
+            d(
+              `Copying CI files is currently not supported - this will be updated in a later version of Forge`,
+            );
           }
 
-          const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
+          const srcFiles = [
+            'index.css',
+            'index.js',
+            'index.html',
+            'preload.js',
+          ];
 
           for (const file of rootFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+            await this.copy(
+              path.resolve(tmplDir, file),
+              path.resolve(directory, file.replace(/^_/, '.')),
+            );
           }
           for (const file of srcFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+            await this.copy(
+              path.resolve(tmplDir, file),
+              path.resolve(directory, 'src', file),
+            );
           }
         },
       },
@@ -95,12 +115,19 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
-    await this.copy(path.join(this.templateDir, basename), path.resolve(destDir, basename));
+    await this.copy(
+      path.join(this.templateDir, basename),
+      path.resolve(destDir, basename),
+    );
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-    packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
+    const packageJSON = await fs.readJson(
+      path.resolve(__dirname, '../tmpl/package.json'),
+    );
+    packageJSON.productName = packageJSON.name = path
+      .basename(directory)
+      .toLowerCase();
     packageJSON.author = await determineAuthor(directory);
 
     const pm = await resolvePackageManager();
@@ -115,11 +142,20 @@ export class BaseTemplate implements ForgeTemplate {
     packageJSON.scripts.lint = 'echo "No linting configured"';
 
     d('writing package.json to:', directory);
-    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
+    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
+      spaces: 2,
+    });
   }
 
-  async updateFileByLine(inputPath: string, lineHandler: (line: string) => string, outputPath?: string | undefined): Promise<void> {
-    const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
+  async updateFileByLine(
+    inputPath: string,
+    lineHandler: (line: string) => string,
+    outputPath?: string | undefined,
+  ): Promise<void> {
+    const fileContents = (await fs.readFile(inputPath, 'utf8'))
+      .split('\n')
+      .map(lineHandler)
+      .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {
       await fs.remove(inputPath);

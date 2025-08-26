@@ -13,7 +13,10 @@ type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 vi.hoisted(async () => {
   const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('electron-installer-redhat', vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.rpm'] }));
+  void mockRequire(
+    'electron-installer-redhat',
+    vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.rpm'] }),
+  );
 });
 
 describe('MakerRpm', () => {
@@ -52,7 +55,7 @@ describe('MakerRpm', () => {
           productName: 'Redhat',
         },
       },
-      []
+      [],
     );
     maker.ensureDirectory = vi.fn();
     await maker.prepareConfig(targetArch);

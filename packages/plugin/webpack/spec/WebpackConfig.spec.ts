@@ -3,14 +3,27 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { Configuration, Entry } from 'webpack';
 
-import { WebpackConfiguration, WebpackPluginConfig, WebpackPluginEntryPoint } from '../src/Config';
+import {
+  WebpackConfiguration,
+  WebpackPluginConfig,
+  WebpackPluginEntryPoint,
+} from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
-import WebpackConfigGenerator, { ConfigurationFactory } from '../src/WebpackConfig';
+import WebpackConfigGenerator, {
+  ConfigurationFactory,
+} from '../src/WebpackConfig';
 
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
 
-function hasAssetRelocatorPatchPlugin(plugins?: Required<Configuration>['plugins']): boolean {
-  return (plugins || []).some((plugin) => plugin && typeof plugin === 'object' && plugin instanceof AssetRelocatorPatch);
+function hasAssetRelocatorPatchPlugin(
+  plugins?: Required<Configuration>['plugins'],
+): boolean {
+  return (plugins || []).some(
+    (plugin) =>
+      plugin &&
+      typeof plugin === 'object' &&
+      plugin instanceof AssetRelocatorPatch,
+  );
 }
 
 const sampleWebpackConfig = {
@@ -38,7 +51,9 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
     });
 
@@ -50,7 +65,9 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
     });
 
@@ -62,19 +79,25 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('electron-renderer');
     });
 
     it('is web if entry nodeIntegration is false', async () => {
       const config = {
         renderer: {
-          entryPoints: [{ name: 'foo', js: 'foo/index.js', nodeIntegration: false }],
+          entryPoints: [
+            { name: 'foo', js: 'foo/index.js', nodeIntegration: false },
+          ],
           nodeIntegration: true,
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
     });
   });
@@ -85,7 +108,9 @@ describe('WebpackConfigGenerator', () => {
         renderer: {},
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      expect(() => generator.getDefines()).toThrow(/renderer.entryPoints.* has not been defined/);
+      expect(() => generator.getDefines()).toThrow(
+        /renderer.entryPoints.* has not been defined/,
+      );
     });
 
     it('throws an error if renderer.entryPoints is not an array', () => {
@@ -95,7 +120,9 @@ describe('WebpackConfigGenerator', () => {
         },
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      expect(() => generator.getDefines()).toThrow(/renderer.entryPoints.* has not been defined/);
+      expect(() => generator.getDefines()).toThrow(
+        /renderer.entryPoints.* has not been defined/,
+      );
     });
 
     it('sets the renderer entry point to a JS file in development', () => {
@@ -112,7 +139,9 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines();
 
-      expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'http://localhost:3000/hello/index.js'");
+      expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+        "'http://localhost:3000/hello/index.js'",
+      );
     });
 
     it('sets the renderer entry point to a JS file in production', () => {
@@ -129,7 +158,9 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', true, 3000);
       const defines = generator.getDefines();
 
-      expect(defines.HELLO_WEBPACK_ENTRY).toEqual("`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.js')}`");
+      expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+        "`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.js')}`",
+      );
     });
 
     it('sets the renderer entry point to an HTML file if both an HTML & JS file are specified', () => {
@@ -147,7 +178,9 @@ describe('WebpackConfigGenerator', () => {
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
       const defines = generator.getDefines();
 
-      expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'http://localhost:3000/hello/index.html'");
+      expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+        "'http://localhost:3000/hello/index.html'",
+      );
     });
 
     describe('PRELOAD_WEBPACK_ENTRY', () => {
@@ -169,20 +202,36 @@ describe('WebpackConfigGenerator', () => {
       };
 
       it('should assign absolute preload script path in development', () => {
-        const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
+        const generator = new WebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          false,
+          3000,
+        );
         const defines = generator.getDefines();
 
         if (process.platform === 'win32') {
-          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(String.raw`'C:\\path\\.webpack\\renderer\\window\\preload.js'`);
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
+            String.raw`'C:\\path\\.webpack\\renderer\\window\\preload.js'`,
+          );
         } else {
-          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(`'${mockProjectDir}/.webpack/renderer/window/preload.js'`);
+          expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
+            `'${mockProjectDir}/.webpack/renderer/window/preload.js'`,
+          );
         }
       });
 
       it('should assign an expression to resolve the preload script in production', () => {
-        const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+        const generator = new WebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          true,
+          3000,
+        );
         const defines = generator.getDefines();
-        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual("require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')");
+        expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
+          "require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')",
+        );
       });
     });
   });
@@ -193,7 +242,9 @@ describe('WebpackConfigGenerator', () => {
         mainConfig: {},
       } as WebpackPluginConfig;
       const generator = new WebpackConfigGenerator(config, '/', false, 3000);
-      await expect(generator.getMainConfig()).rejects.toThrow('Required option "mainConfig.entry" has not been defined');
+      await expect(generator.getMainConfig()).rejects.toThrow(
+        'Required option "mainConfig.entry" has not been defined',
+      );
     });
 
     it('generates a development config', async () => {
@@ -205,7 +256,12 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        false,
+        3000,
+      );
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.target).toEqual('electron-main');
       expect(webpackConfig.mode).toEqual('development');
@@ -215,7 +271,9 @@ describe('WebpackConfigGenerator', () => {
         filename: 'index.js',
         libraryTarget: 'commonjs2',
       });
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(false);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
+        false,
+      );
     });
 
     it('generates a production config', async () => {
@@ -227,10 +285,17 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.mode).toEqual('production');
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(false);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
+        false,
+      );
     });
 
     it('generates a config with a relative entry path', async () => {
@@ -242,9 +307,16 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
       const webpackConfig = await generator.getMainConfig();
-      expect(webpackConfig.entry).toEqual(path.join(mockProjectDir, 'foo', 'main.js'));
+      expect(webpackConfig.entry).toEqual(
+        path.join(mockProjectDir, 'foo', 'main.js'),
+      );
     });
 
     it('generates a config with multiple entries', async () => {
@@ -259,7 +331,12 @@ describe('WebpackConfigGenerator', () => {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.entry).toEqual({
         foo: path.join(mockProjectDir, 'foo', 'main.js'),
@@ -301,7 +378,12 @@ describe('WebpackConfigGenerator', () => {
             entryPoints: [] as WebpackPluginEntryPoint[],
           },
         } as WebpackPluginConfig;
-        const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
+        const generator = new WebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          false,
+          3000,
+        );
         return generator.getMainConfig();
       };
 
@@ -315,7 +397,7 @@ describe('WebpackConfigGenerator', () => {
         await generateWebpackConfig(() => ({
           entry: 'main.js',
           ...sampleWebpackConfig,
-        }))
+        })),
       ).toEqual(modelWebpackConfig);
 
       // Check promise form
@@ -323,7 +405,7 @@ describe('WebpackConfigGenerator', () => {
         await generateWebpackConfig(async () => ({
           entry: 'main.js',
           ...sampleWebpackConfig,
-        }))
+        })),
       ).toEqual(modelWebpackConfig);
     });
   });
@@ -341,8 +423,15 @@ describe('WebpackConfigGenerator', () => {
           nodeIntegration: true,
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        false,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('electron-renderer');
       expect(webpackConfig[0].mode).toEqual('development');
       expect(webpackConfig[0].entry).toEqual({
@@ -356,7 +445,9 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(1);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('generates a development config with an HTML endpoint', async () => {
@@ -371,14 +462,23 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        false,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].entry).toEqual({
         main: ['rendererScript.js'],
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('generates a preload-only development config', async () => {
@@ -394,8 +494,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        false,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
       expect(webpackConfig[0].mode).toEqual('development');
       expect(webpackConfig[0].entry).toEqual({
@@ -409,7 +516,9 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('generates a production config', async () => {
@@ -423,8 +532,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
       expect(webpackConfig[0].mode).toEqual('production');
       expect(webpackConfig[0].entry).toEqual({
@@ -437,7 +553,9 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(1);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('generates a production config with entryPoint preload', async () => {
@@ -453,8 +571,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
       expect(webpackConfig[0].mode).toEqual('production');
       expect(webpackConfig[0].entry).toEqual({ main: ['preload.js'] });
@@ -466,7 +591,9 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('generates a preload-only production config', async () => {
@@ -482,8 +609,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
       expect(webpackConfig[0].mode).toEqual('production');
       expect(webpackConfig[0].entry).toEqual({
@@ -497,7 +631,9 @@ describe('WebpackConfigGenerator', () => {
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
-      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(true);
+      expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
+        true,
+      );
     });
 
     it('can override the renderer target', async () => {
@@ -514,8 +650,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
     });
 
@@ -536,8 +679,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('electron-preload');
     });
 
@@ -564,8 +714,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig[0].target).toEqual('web');
       expect(webpackConfig[0].name).toEqual('preload');
     });
@@ -613,8 +770,15 @@ describe('WebpackConfigGenerator', () => {
           ],
         },
       } as WebpackPluginConfig;
-      const generator = new WebpackConfigGenerator(config, mockProjectDir, true, 3000);
-      const webpackConfig = await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
       expect(webpackConfig.length).toEqual(4);
     });
 
@@ -631,8 +795,15 @@ describe('WebpackConfigGenerator', () => {
             ],
           },
         } as WebpackPluginConfig;
-        const generator = new WebpackConfigGenerator(config, mockProjectDir, false, 3000);
-        return generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+        const generator = new WebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          false,
+          3000,
+        );
+        return generator.getRendererConfig(
+          safeFirstRendererConfig(config.renderer),
+        );
       };
 
       const modelWebpackConfig = await generateWebpackConfig({
@@ -643,14 +814,14 @@ describe('WebpackConfigGenerator', () => {
       expect(
         await generateWebpackConfig(() => ({
           ...sampleWebpackConfig,
-        }))
+        })),
       ).toEqual(modelWebpackConfig);
 
       // Check promise form
       expect(
         await generateWebpackConfig(async () => ({
           ...sampleWebpackConfig,
-        }))
+        })),
       ).toEqual(modelWebpackConfig);
     });
   });
@@ -661,7 +832,9 @@ describe('WebpackConfigGenerator', () => {
         let invoked = 0;
 
         class MyWebpackConfigGenerator extends WebpackConfigGenerator {
-          preprocessConfig = async (config: ConfigurationFactory): Promise<Configuration> => {
+          preprocessConfig = async (
+            config: ConfigurationFactory,
+          ): Promise<Configuration> => {
             invoked += 1;
             return config({ hello: 'world' }, {});
           };
@@ -692,14 +865,21 @@ describe('WebpackConfigGenerator', () => {
           },
         } as WebpackPluginConfig;
 
-        const generator = new MyWebpackConfigGenerator(config, mockProjectDir, false, 3000);
+        const generator = new MyWebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          false,
+          3000,
+        );
 
         expect(getInvokedCounter()).toEqual(0);
 
         await generator.getMainConfig();
         expect(getInvokedCounter()).toEqual(1);
 
-        await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+        await generator.getRendererConfig(
+          safeFirstRendererConfig(config.renderer),
+        );
         expect(getInvokedCounter()).toEqual(2);
       });
 
@@ -722,14 +902,21 @@ describe('WebpackConfigGenerator', () => {
           },
         } as WebpackPluginConfig;
 
-        const generator = new MyWebpackConfigGenerator(config, mockProjectDir, false, 3000);
+        const generator = new MyWebpackConfigGenerator(
+          config,
+          mockProjectDir,
+          false,
+          3000,
+        );
 
         expect(getInvokedCounter()).toEqual(0);
 
         await generator.getMainConfig();
         expect(getInvokedCounter()).toEqual(1);
 
-        await generator.getRendererConfig(safeFirstRendererConfig(config.renderer));
+        await generator.getRendererConfig(
+          safeFirstRendererConfig(config.renderer),
+        );
         expect(getInvokedCounter()).toEqual(2);
       });
     });

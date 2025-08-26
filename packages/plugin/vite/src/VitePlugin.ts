@@ -14,7 +14,11 @@ import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
-import type { ForgeListrTask, ForgeMultiHookMap, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import type {
+  ForgeListrTask,
+  ForgeMultiHookMap,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
 
 const d = debug('electron-forge:plugin:vite');
@@ -67,7 +71,11 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   }
 
   private get configGenerator(): ViteConfigGenerator {
-    return (this.configGeneratorCache ??= new ViteConfigGenerator(this.config, this.projectDir, this.isProd));
+    return (this.configGeneratorCache ??= new ViteConfigGenerator(
+      this.config,
+      this.projectDir,
+      this.isProd,
+    ));
   }
 
   getHooks = (): ForgeMultiHookMap => {
@@ -83,10 +91,12 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           return task?.newListr(
             [
               {
-                title: 'Launching Vite dev servers for renderer process code...',
+                title:
+                  'Launching Vite dev servers for renderer process code...',
                 task: async (_ctx, task) => {
                   const result = await this.launchRendererDevServers(task);
-                  task.title = 'Launched Vite dev servers for renderer process code';
+                  task.title =
+                    'Launched Vite dev servers for renderer process code';
                   return result;
                 },
                 rendererOptions: {
@@ -108,7 +118,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                 },
               },
             ],
-            { concurrent: false }
+            { concurrent: false },
           );
         }, 'Preparing Vite bundles'),
       ],
@@ -134,7 +144,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                 },
               },
             ],
-            { concurrent: true }
+            { concurrent: true },
           );
         }, 'Building production Vite bundles'),
       ],
@@ -150,7 +160,9 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     };
   };
 
-  resolveForgeConfig = async (forgeConfig: ResolvedForgeConfig): Promise<ResolvedForgeConfig> => {
+  resolveForgeConfig = async (
+    forgeConfig: ResolvedForgeConfig,
+  ): Promise<ResolvedForgeConfig> => {
     forgeConfig.packagerConfig ??= {};
 
     if (forgeConfig.packagerConfig.ignore) {
@@ -158,7 +170,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
         console.error(
           chalk.yellow(`You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`)
+Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`),
         );
       }
       return forgeConfig;
@@ -176,7 +188,10 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     return forgeConfig;
   };
 
-  packageAfterCopy = async (_forgeConfig: ResolvedForgeConfig, buildPath: string): Promise<void> => {
+  packageAfterCopy = async (
+    _forgeConfig: ResolvedForgeConfig,
+    buildPath: string,
+  ): Promise<void> => {
     const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.includes('.vite/')) {
@@ -189,18 +204,34 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       delete pj.config.forge;
     }
 
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, { spaces: 2 });
+    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+      spaces: 2,
+    });
   };
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
     const configs = await this.configGenerator.getBuildConfigs();
-    const isRollupWatcher = (x: vite.Rollup.RollupWatcher | vite.Rollup.RollupOutput | vite.Rollup.RollupOutput[]): x is vite.Rollup.RollupWatcher =>
-      x && typeof x === 'object' && 'on' in x && typeof x.on === 'function' && 'close' in x && typeof x.close === 'function';
+    const isRollupWatcher = (
+      x:
+        | vite.Rollup.RollupWatcher
+        | vite.Rollup.RollupOutput
+        | vite.Rollup.RollupOutput[],
+    ): x is vite.Rollup.RollupWatcher =>
+      x &&
+      typeof x === 'object' &&
+      'on' in x &&
+      typeof x.on === 'function' &&
+      'close' in x &&
+      typeof x.close === 'function';
 
     return task?.newListr(
       configs.map((userConfig) => {
-        const target = (userConfig.build?.rollupOptions?.input || (typeof userConfig.build?.lib !== 'boolean' && userConfig.build?.lib?.entry)) ?? '';
+        const target =
+          (userConfig.build?.rollupOptions?.input ||
+            (typeof userConfig.build?.lib !== 'boolean' &&
+              userConfig.build?.lib?.entry)) ??
+          '';
         return {
           title: `Building ${chalk.green(target)} target`,
           task: async (_ctx, subtask) => {
@@ -214,20 +245,25 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
                   configFile: false,
                   logLevel: 'silent', // We suppress Vite output and instead log lines using RollupWatcher events
                   ...userConfig,
-                  plugins: [onBuildDone(resolve), ...(userConfig.plugins ?? [])],
+                  plugins: [
+                    onBuildDone(resolve),
+                    ...(userConfig.plugins ?? []),
+                  ],
                   clearScreen: false,
                 })
                 .then((result) => {
                   if (isRollupWatcher(result)) {
                     result.on('event', (event) => {
                       if (event.code === 'ERROR') {
-                        console.error(`\n${this.timeFormatter.format(new Date())} ${event.error.message}`);
+                        console.error(
+                          `\n${this.timeFormatter.format(new Date())} ${event.error.message}`,
+                        );
                         reject(event.error);
                       } else if (event.code === 'BUNDLE_END') {
                         console.log(
                           `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
-                            'target built'
-                          )} ${chalk.dim(target)}`
+                            'target built',
+                          )} ${chalk.dim(target)}`,
                         );
                       }
                     });
@@ -248,7 +284,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       }),
       {
         concurrent: true,
-      }
+      },
     );
   };
 
@@ -265,7 +301,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
           });
           subtask.title = `Built target ${chalk.dim(path.basename(userConfig.build?.outDir ?? ''))}`;
         },
-      }))
+      })),
     );
   };
 
@@ -289,7 +325,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
           if (viteDevServer.httpServer) {
             // Make sure that `getDefines` in VitePlugin.ts gets the correct `server.port`. (#3198)
             const addressInfo = viteDevServer.httpServer.address();
-            const isAddressInfo = (x: AddressInfo | string | null): x is AddressInfo => (typeof x === 'object' ? typeof x?.address === 'string' : false);
+            const isAddressInfo = (
+              x: AddressInfo | string | null,
+            ): x is AddressInfo =>
+              typeof x === 'object' ? typeof x?.address === 'string' : false;
 
             if (isAddressInfo(addressInfo)) {
               userConfig.server ??= {};
@@ -300,11 +339,14 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
         rendererOptions: {
           persistentOutput: true,
         },
-      }))
+      })),
     );
   };
 
-  exitHandler = (options: { cleanup?: boolean; exit?: boolean }, err?: Error): void => {
+  exitHandler = (
+    options: { cleanup?: boolean; exit?: boolean },
+    err?: Error,
+  ): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
       for (const watcher of this.watchers) {
@@ -331,7 +373,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
  */
 function getServerURLs(urls: vite.ResolvedServerUrls) {
   let output = '';
-  const colorUrl = (url: string) => chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
+  const colorUrl = (url: string) =>
+    chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
   for (const url of urls.local) {
     output += `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(url)}`;
   }
@@ -339,7 +382,10 @@ function getServerURLs(urls: vite.ResolvedServerUrls) {
     output += `  \n${chalk.green('➜')}  ${chalk.bold('Network')}: ${colorUrl(url)}`;
   }
   if (urls.network.length === 0) {
-    output += chalk.dim(`  \n${chalk.green('➜')}  ${chalk.bold('Network')}: use `) + chalk.bold('--host') + chalk.dim(' to expose');
+    output +=
+      chalk.dim(`  \n${chalk.green('➜')}  ${chalk.bold('Network')}: use `) +
+      chalk.bold('--host') +
+      chalk.dim(' to expose');
   }
 
   return output;

@@ -1,4 +1,7 @@
-import { resolvePackageManager, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  resolvePackageManager,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 import { describe, expect, it, vi } from 'vitest';
 
 import { checkPackageManager } from '../../src/util/check-system';
@@ -80,30 +83,33 @@ describe('checkPackageManager', () => {
       }
     });
     await expect(checkPackageManager()).rejects.toThrow(
-      'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.'
+      'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.',
     );
   });
 
-  it.each(['hoist-pattern', 'public-hoist-pattern'])('should pass without validation if user has set %s in their pnpm config', async (cfg) => {
-    vi.mocked(resolvePackageManager).mockResolvedValue({
-      executable: 'pnpm',
-      install: 'add',
-      dev: '--dev',
-      exact: '--exact',
-    });
-    vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
-      if (args?.join(' ') === 'config get node-linker') {
-        return Promise.resolve('isolated');
-      } else if (args?.join(' ') === `config get ${cfg}`) {
-        return Promise.resolve('["*eslint*","*babel*"]');
-      } else if (args?.join(' ') === '--version') {
-        return Promise.resolve('10.0.0');
-      } else {
-        return Promise.resolve('undefined');
-      }
-    });
-    await expect(checkPackageManager()).resolves.not.toThrow();
-  });
+  it.each(['hoist-pattern', 'public-hoist-pattern'])(
+    'should pass without validation if user has set %s in their pnpm config',
+    async (cfg) => {
+      vi.mocked(resolvePackageManager).mockResolvedValue({
+        executable: 'pnpm',
+        install: 'add',
+        dev: '--dev',
+        exact: '--exact',
+      });
+      vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
+        if (args?.join(' ') === 'config get node-linker') {
+          return Promise.resolve('isolated');
+        } else if (args?.join(' ') === `config get ${cfg}`) {
+          return Promise.resolve('["*eslint*","*babel*"]');
+        } else if (args?.join(' ') === '--version') {
+          return Promise.resolve('10.0.0');
+        } else {
+          return Promise.resolve('undefined');
+        }
+      });
+      await expect(checkPackageManager()).resolves.not.toThrow();
+    },
+  );
 
   // resolvePackageManager optionally returns a `version` if `npm_config_user_agent` was used to
   // resolve the package manager being used.

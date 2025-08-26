@@ -14,6 +14,8 @@ describe('ensureExternalBinariesExist', () => {
   const maker = new MakerImpl({}, []);
 
   it('throws an error when one of the binaries does not exist', () => {
-    expect(() => maker.ensureExternalBinariesExist()).toThrow(/the following external binaries need to be installed: bash, nonexistent/);
+    expect(() => maker.ensureExternalBinariesExist()).toThrow(
+      /the following external binaries need to be installed: bash, nonexistent/,
+    );
   });
 });

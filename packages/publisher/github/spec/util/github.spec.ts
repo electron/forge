@@ -63,7 +63,9 @@ describe('GitHub', () => {
     it('should not override the user agent', () => {
       const gh = new GitHub('1234', true, { userAgent: 'Something' });
       gh.getGitHub();
-      expect(gitHubSpy).toHaveBeenCalledWith(expect.objectContaining({ userAgent: 'Electron Forge' }));
+      expect(gitHubSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ userAgent: 'Electron Forge' }),
+      );
     });
 
     it('should authenticate if a token is present', () => {
@@ -73,7 +75,7 @@ describe('GitHub', () => {
         expect.objectContaining({
           auth: 'token',
           userAgent: 'Electron Forge',
-        })
+        }),
       );
     });
 
@@ -89,7 +91,9 @@ describe('GitHub', () => {
       expect(() => {
         const gh = new GitHub(undefined, true);
         gh.getGitHub();
-      }).toThrow('Please set GITHUB_TOKEN in your environment to access these features');
+      }).toThrow(
+        'Please set GITHUB_TOKEN in your environment to access these features',
+      );
     });
   });
 
@@ -103,7 +107,9 @@ describe('GitHub', () => {
     });
 
     it('should replace non-alphanumeric, non-hyphen characters with periods', () => {
-      expect(GitHub.sanitizeName('path/to/foo%$bar   baz.')).toEqual('foo.bar.baz');
+      expect(GitHub.sanitizeName('path/to/foo%$bar   baz.')).toEqual(
+        'foo.bar.baz',
+      );
     });
 
     it('should preserve special symbols', () => {
