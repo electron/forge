@@ -1,4 +1,4 @@
-## maker-appx
+## maker-msix
 
 `@electron-forge/maker-msix` builds `.msix` packages, which can be distributed directly or via the Windows Store.
 
