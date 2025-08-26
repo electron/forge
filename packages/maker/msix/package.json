@@ -17,7 +17,7 @@
     "@electron-forge/maker-base": "7.8.3",
     "@electron-forge/shared-types": "7.8.3",
     "cross-spawn": "^7.0.3",
-    "electron-windows-msix": "^1.2.6",
+    "electron-windows-msix": "^1.2.7",
     "fs-extra": "^10.0.0",
     "parse-author": "^2.0.0"
   },
