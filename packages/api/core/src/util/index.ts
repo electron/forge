@@ -1,4 +1,7 @@
-import { getElectronVersion, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  getElectronVersion,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 
 import {
   BuildIdentifierConfig,

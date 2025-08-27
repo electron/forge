@@ -16,7 +16,7 @@ export default class LoggingPlugin {
         this.tab.log(
           stats.toString({
             colors: true,
-          })
+          }),
         );
       }
     });

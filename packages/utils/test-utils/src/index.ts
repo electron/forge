@@ -12,7 +12,11 @@ export async function runNPMInstall(dir: string, ...args: string[]) {
   await runNPM(dir, 'install', ...args);
 }
 
-export async function ensureModulesInstalled(dir: string, deps: string[], devDeps: string[]): Promise<void> {
+export async function ensureModulesInstalled(
+  dir: string,
+  deps: string[],
+  devDeps: string[],
+): Promise<void> {
   await runNPMInstall(dir, ...deps);
   await runNPMInstall(dir, '--save-dev', ...devDeps);
 }

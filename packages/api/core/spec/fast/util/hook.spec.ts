@@ -10,7 +10,9 @@ const fakeConfig = {
   },
 } as unknown as ResolvedForgeConfig;
 
-vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mockImplementation((_, arg1) => Promise.resolve(arg1));
+vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mockImplementation(
+  (_, arg1) => Promise.resolve(arg1),
+);
 
 describe('runHook', () => {
   it('should not error when running non existent hooks', async () => {
@@ -18,7 +20,13 @@ describe('runHook', () => {
   });
 
   it('should not error when running a hook that is not a function', async () => {
-    await runHook({ hooks: { preMake: 'abc' as unknown as ForgeHookFn<'preMake'> }, ...fakeConfig }, 'preMake');
+    await runHook(
+      {
+        hooks: { preMake: 'abc' as unknown as ForgeHookFn<'preMake'> },
+        ...fakeConfig,
+      },
+      'preMake',
+    );
   });
 
   it('should run the hook if it is provided as a function', async () => {
@@ -34,7 +42,9 @@ describe('runMutatingHook', () => {
     const info = {
       foo: 'bar',
     };
-    expect(await runMutatingHook({ ...fakeConfig }, 'readPackageJson', info)).toEqual(info);
+    expect(
+      await runMutatingHook({ ...fakeConfig }, 'readPackageJson', info),
+    ).toEqual(info);
   });
 
   it('should return the mutated input when returned from a hook', async () => {
@@ -45,11 +55,17 @@ describe('runMutatingHook', () => {
     const info = {
       foo: 'bar',
     };
-    const output = await runMutatingHook({ hooks: { readPackageJson: fn }, ...fakeConfig }, 'readPackageJson', info);
+    const output = await runMutatingHook(
+      { hooks: { readPackageJson: fn }, ...fakeConfig },
+      'readPackageJson',
+      info,
+    );
     expect(output).toEqual({
       mutated: 'foo',
     });
-    expect(vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mock.lastCall).toEqual([
+    expect(
+      vi.mocked(fakeConfig.pluginInterface.triggerMutatingHook).mock.lastCall,
+    ).toEqual([
       'readPackageJson',
       {
         mutated: 'foo',

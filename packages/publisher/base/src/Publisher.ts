@@ -1,4 +1,10 @@
-import { ForgeListrTaskDefinition, ForgeMakeResult, ForgePlatform, IForgePublisher, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ForgeListrTaskDefinition,
+  ForgeMakeResult,
+  ForgePlatform,
+  IForgePublisher,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 
 export interface PublisherOptions {
   /**
@@ -35,7 +41,10 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * @param config - A configuration object for this publisher
    * @param platformsToPublishOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
    */
-  constructor(public config: C, protected platformsToPublishOn?: ForgePlatform[]) {
+  constructor(
+    public config: C,
+    protected platformsToPublishOn?: ForgePlatform[],
+  ) {
     this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
@@ -61,9 +70,12 @@ export default abstract class Publisher<C> implements IForgePublisher {
    * you will have to create the version on GitHub and the second call will just
    * be appending files to the existing version.
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async publish(opts: PublisherOptions): Promise<ForgeListrTaskDefinition[] | void> {
-    throw new Error(`Publisher ${this.name} did not implement the publish method`);
+  async publish(
+    _opts: PublisherOptions,
+  ): Promise<ForgeListrTaskDefinition[] | void> {
+    throw new Error(
+      `Publisher ${this.name} did not implement the publish method`,
+    );
   }
 }
 

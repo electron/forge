@@ -14,7 +14,7 @@ import { checkSystem, SystemCheckContext } from './util/check-system';
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error(
     logSymbols.error,
-    `You are running Node.js version ${chalk.red(process.versions.node)}, but Electron Forge requires Node.js ${chalk.red(packageJSON.engines.node)}. \n`
+    `You are running Node.js version ${chalk.red(process.versions.node)}, but Electron Forge requires Node.js ${chalk.red(packageJSON.engines.node)}. \n`,
   );
   process.exit(1);
 }
@@ -27,9 +27,15 @@ program
   .helpOption('-h, --help', 'Output usage information.')
   .command('init', 'Initialize a new Electron application.')
   .command('import', 'Import an existing Electron project to Forge.')
-  .command('start', 'Start the current Electron application in development mode.')
+  .command(
+    'start',
+    'Start the current Electron application in development mode.',
+  )
   .command('package', 'Package the current Electron application.')
-  .command('make', 'Generate distributables for the current Electron application.')
+  .command(
+    'make',
+    'Generate distributables for the current Electron application.',
+  )
   .command('publish', 'Publish the current Electron application.')
   .passThroughOptions(true)
   .hook('preSubcommand', async (_command, subcommand) => {
@@ -48,8 +54,9 @@ program
         {
           concurrent: false,
           exitOnError: true,
-          fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
-        }
+          fallbackRendererCondition:
+            Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+        },
       );
 
       try {

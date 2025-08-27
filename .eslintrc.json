@@ -9,7 +9,14 @@
   "globals": {
     "NodeJS": "readonly"
   },
-  "extends": ["eslint:recommended", "plugin:import/errors", "plugin:import/warnings", "plugin:n/recommended", "plugin:promise/recommended", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:n/recommended",
+    "plugin:promise/recommended",
+    "prettier"
+  ],
   "rules": {
     "no-unused-vars": [
       "error",
@@ -23,7 +30,16 @@
     "import/order": [
       "error",
       {
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"],
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
         "newlines-between": "always",
         "alphabetize": {
           "order": "asc",
@@ -53,7 +69,10 @@
         },
         "project": ["./tsconfig.base.json"]
       },
-      "extends": ["plugin:@typescript-eslint/recommended", "plugin:import/typescript"],
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript"
+      ],
       "rules": {
         // There is no "recommended" ruleset for tsdoc yet.
         "tsdoc/syntax": "warn",
@@ -86,7 +105,10 @@
       }
     },
     {
-      "files": ["packages/*/*/spec/**/*.spec.ts", "packages/*/*/spec/fixture/**/*.ts"],
+      "files": [
+        "packages/*/*/spec/**/*.spec.ts",
+        "packages/*/*/spec/fixture/**/*.ts"
+      ],
       "rules": {
         "global-require": "off",
         "import/no-dynamic-require": "off",
@@ -97,7 +119,11 @@
       }
     },
     {
-      "files": ["packages/api/cli/src/**/*.ts", "packages/external/create-electron-app/src/**/*.ts", "tools/*.{js,ts}"],
+      "files": [
+        "packages/api/cli/src/**/*.ts",
+        "packages/external/create-electron-app/src/**/*.ts",
+        "tools/*.{js,ts}"
+      ],
       "rules": {
         "no-process-exit": "off",
         "n/hashbang": [
@@ -111,13 +137,19 @@
       }
     },
     {
-      "files": ["packages/api/core/spec/**/*.ts", "packages/maker/*/src/Maker*.ts"],
+      "files": [
+        "packages/api/core/spec/**/*.ts",
+        "packages/maker/*/src/Maker*.ts"
+      ],
       "rules": {
         "@typescript-eslint/no-require-imports": "off"
       }
     },
     {
-      "files": ["packages/*/*/spec/fixture/**/*.js", "packages/*/*/spec/fixtures/**/*.js"],
+      "files": [
+        "packages/*/*/spec/fixture/**/*.js",
+        "packages/*/*/spec/fixtures/**/*.js"
+      ],
       "rules": {
         "n/no-extraneous-require": "off",
         "n/no-missing-require": "off",

@@ -25,7 +25,9 @@ describe('make', () => {
       skipPackage: true,
     });
     expect(result).toHaveLength(1);
-    expect(result[0].artifacts).toEqual([expect.stringContaining('@scope-package-linux-x64-1.0.0.zip')]);
+    expect(result[0].artifacts).toEqual([
+      expect.stringContaining('@scope-package-linux-x64-1.0.0.zip'),
+    ]);
   });
 
   it('can override targets', async () => {
@@ -47,8 +49,10 @@ describe('make', () => {
         dir: path.join(fixtureDir, 'maker-name-wrong-type'),
         platform: 'linux',
         skipPackage: true,
-      })
-    ).rejects.toThrowError(/^The following maker config has a maker name that is not a string:/);
+      }),
+    ).rejects.toThrowError(
+      /^The following maker config has a maker name that is not a string:/,
+    );
   });
 
   it('throws an error if the name is missing', async () => {
@@ -58,8 +62,10 @@ describe('make', () => {
         dir: path.join(fixtureDir, 'maker-sans-name'),
         platform: 'linux',
         skipPackage: true,
-      })
-    ).rejects.toThrowError(/^The following maker config is missing a maker name:/);
+      }),
+    ).rejects.toThrowError(
+      /^The following maker config is missing a maker name:/,
+    );
   });
 
   it('can skip makers via config', async () => {
@@ -69,8 +75,10 @@ describe('make', () => {
         dir: path.join(fixtureDir, 'app-with-maker-disable'),
         platform: 'linux',
         skipPackage: true,
-      })
-    ).rejects.toThrowError(/Could not find any make targets configured for the "linux" platform./);
+      }),
+    ).rejects.toThrowError(
+      /Could not find any make targets configured for the "linux" platform./,
+    );
   });
 
   it('throws if maker cannot be resolved', async () => {
@@ -81,6 +89,8 @@ describe('make', () => {
       skipPackage: true,
     };
 
-    await expect(make(opts)).rejects.toThrowError("Could not find module with name '@electron-forge/non-existent-forge-maker'");
+    await expect(make(opts)).rejects.toThrowError(
+      "Could not find module with name '@electron-forge/non-existent-forge-maker'",
+    );
   });
 });

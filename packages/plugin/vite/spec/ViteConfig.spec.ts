@@ -31,12 +31,21 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.outDir).toEqual('.vite/build');
     expect(buildConfig.build?.watch).toBeNull();
     expect(buildConfig.build?.minify).toBe(true);
-    expect(buildConfig.build?.lib && buildConfig.build.lib.entry).toEqual('src/main.js');
-    expect(buildConfig.build?.lib && (buildConfig.build.lib.fileName as () => string)()).toEqual('[name].js');
-    expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual(['cjs']);
+    expect(buildConfig.build?.lib && buildConfig.build.lib.entry).toEqual(
+      'src/main.js',
+    );
+    expect(
+      buildConfig.build?.lib &&
+        (buildConfig.build.lib.fileName as () => string)(),
+    ).toEqual('[name].js');
+    expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
+      'cjs',
+    ]);
     expect(buildConfig.build?.rollupOptions?.external).toEqual(external);
     expect(buildConfig.clearScreen).toBe(false);
-    expect(buildConfig.plugins?.map((plugin) => (plugin as Plugin).name)).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
     expect(buildConfig.define).toEqual({});
     expect(buildConfig.resolve).toEqual({
       conditions: ['node'],
@@ -74,7 +83,9 @@ describe('ViteConfigGenerator', () => {
       assetFileNames: '[name].[ext]',
     });
     expect(buildConfig.clearScreen).toBe(false);
-    expect(buildConfig.plugins?.map((plugin) => (plugin as Plugin).name)).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
   });
 
   it('getRendererConfig:renderer', async () => {
@@ -94,7 +105,9 @@ describe('ViteConfigGenerator', () => {
     expect(rendererConfig.mode).toEqual('production');
     expect(rendererConfig.base).toEqual('./');
     expect(rendererConfig.build?.outDir).toEqual('.vite/renderer/main_window');
-    expect(rendererConfig.plugins?.map((plugin) => (plugin as Plugin).name)).toEqual(['@electron-forge/plugin-vite:expose-renderer']);
+    expect(
+      rendererConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:expose-renderer']);
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
   });

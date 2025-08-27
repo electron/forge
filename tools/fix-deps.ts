@@ -7,7 +7,9 @@ import { getPackageInfo } from './utils';
 (async () => {
   const packages = await getPackageInfo();
 
-  const baseJson = await fs.readJson(path.resolve(__dirname, '..', 'package.json'));
+  const baseJson = await fs.readJson(
+    path.resolve(__dirname, '..', 'package.json'),
+  );
 
   const allDeps = {
     ...baseJson.dependencies,
@@ -18,7 +20,11 @@ import { getPackageInfo } from './utils';
   for (const p of packages) {
     const json = await fs.readJson(path.resolve(p.path, 'package.json'));
 
-    for (const key of ['dependencies', 'devDependencies', 'optionalDependencies']) {
+    for (const key of [
+      'dependencies',
+      'devDependencies',
+      'optionalDependencies',
+    ]) {
       const deps = json[key];
       if (!deps) continue;
 

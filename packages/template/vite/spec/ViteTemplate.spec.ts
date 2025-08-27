@@ -23,7 +23,8 @@ describe('ViteTemplate', () => {
     const runner = new Listr(tasks, {
       concurrent: false,
       exitOnError: false,
-      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+      fallbackRendererCondition:
+        Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     });
     await runner.run();
     expect(runner.errors).toHaveLength(0);
@@ -48,16 +49,24 @@ describe('ViteTemplate', () => {
   it('should move and rewrite the main process file', async () => {
     expect(fs.existsSync(path.join(dir, 'src', 'index.js'))).toBe(false);
     expect(fs.existsSync(path.join(dir, 'src', 'main.js'))).toBe(true);
-    const mainFile = (await fs.promises.readFile(path.join(dir, 'src', 'main.js'))).toString();
+    const mainFile = (
+      await fs.promises.readFile(path.join(dir, 'src', 'main.js'))
+    ).toString();
     expect(mainFile).toMatch(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
-    expect(mainFile).toMatch(/\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/);
+    expect(mainFile).toMatch(
+      /\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/,
+    );
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {
-    expect((await fs.promises.readFile(path.join(dir, 'index.html'))).toString()).not.toMatch(/link rel="stylesheet"/);
+    expect(
+      (await fs.promises.readFile(path.join(dir, 'index.html'))).toString(),
+    ).not.toMatch(/link rel="stylesheet"/);
   });
 
   it('should inject script into the HTML file', async () => {
-    expect((await fs.promises.readFile(path.join(dir, 'index.html'))).toString()).toMatch(/src="\/src\/renderer\.js"/);
+    expect(
+      (await fs.promises.readFile(path.join(dir, 'index.html'))).toString(),
+    ).toMatch(/src="\/src\/renderer\.js"/);
   });
 });

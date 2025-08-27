@@ -62,4 +62,16 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };
+export {
+  ForgeMakeResult,
+  ElectronProcess,
+  ForgeUtils,
+  ImportOptions,
+  InitOptions,
+  MakeOptions,
+  PackageOptions,
+  PublishOptions,
+  StartOptions,
+  api,
+  utils,
+};

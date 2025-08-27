@@ -64,7 +64,7 @@ describe('MakerFlatpak', () => {
           files: [],
         },
       },
-      []
+      [],
     );
     maker.ensureDirectory = vi.fn();
     await maker.prepareConfig(targetArch);
