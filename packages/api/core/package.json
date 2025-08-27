@@ -40,7 +40,7 @@
     "@electron-forge/template-webpack-typescript": "7.8.3",
     "@electron-forge/tracer": "7.8.3",
     "@electron/get": "^3.0.0",
-    "@electron/packager": "^18.3.5",
+    "@electron/packager": "^18.4.4",
     "@electron/rebuild": "^3.7.0",
     "@malept/cross-spawn-promise": "^2.0.0",
     "chalk": "^4.0.0",

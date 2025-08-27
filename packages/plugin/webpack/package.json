@@ -8,7 +8,7 @@
   "main": "dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "devDependencies": {
-    "@electron/packager": "^18.3.5",
+    "@electron/packager": "^18.4.4",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^18.0.3",
     "vitest": "^3.1.3",
