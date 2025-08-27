@@ -2,7 +2,7 @@ import { PromiseWithChild } from 'node:child_process';
 
 // Copied from https://github.com/jorangreef/sudo-prompt/pull/124
 // TODO: Remove this if/when that PR gets merged/released
-declare module 'sudo-prompt' {
+declare module '@vscode/sudo-prompt' {
   namespace exec {
     function __promisify__(
       command: string,
