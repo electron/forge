@@ -14,7 +14,13 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
     return process.platform === 'win32';
   }
 
-  async make({ dir, makeDir, targetArch, packageJSON, appName }: MakerOptions): Promise<string[]> {
+  async make({
+    dir,
+    makeDir,
+    targetArch,
+    packageJSON,
+    appName,
+  }: MakerOptions): Promise<string[]> {
     const configManifestVariables = this.config.manifestVariables;
     const packageOptions = this.config;
     delete packageOptions.manifestVariables;

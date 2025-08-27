@@ -10,5 +10,7 @@ export function toMsixArch(arch: string): MsixArch {
     return arch as MsixArch;
   }
 
-  throw new Error(`Invalid architecture: ${arch}. Must be one of ${validArchitectures.join(', ')} or ia32`);
+  throw new Error(
+    `Invalid architecture: ${arch}. Must be one of ${validArchitectures.join(', ')} or ia32`,
+  );
 }
