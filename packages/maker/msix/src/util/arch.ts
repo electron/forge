@@ -1,7 +1,7 @@
 type MsixArch = 'x64' | 'arm64' | 'x86' | 'arm' | '*';
 
 export function toMsixArch(arch: string): MsixArch {
-  const validArchitectures = ['x64', 'arm64', 'x86', 'arm', '*'];
+  const validArchitectures = ['x64', 'arm64', 'x86'];
   if (arch === 'ia32') {
     return 'x86';
   }
