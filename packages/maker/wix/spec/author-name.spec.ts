@@ -29,7 +29,9 @@ describe('author-name', () => {
       },
     ].forEach((scenario) => {
       it(`${JSON.stringify(scenario.author)} -> "${scenario.expectedReturnValue}"`, () => {
-        expect(getNameFromAuthor(scenario.author)).toEqual(scenario.expectedReturnValue);
+        expect(getNameFromAuthor(scenario.author)).toEqual(
+          scenario.expectedReturnValue,
+        );
       });
     });
   });

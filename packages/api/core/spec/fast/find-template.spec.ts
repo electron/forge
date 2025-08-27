@@ -16,18 +16,32 @@ describe('findTemplate', () => {
    */
   describe('local modules', () => {
     it('should find an @electron-forge/template based on partial name', async () => {
-      await expect(findTemplate('fixture')).resolves.toEqual(expect.objectContaining({ name: '@electron-forge/template-fixture' }));
+      await expect(findTemplate('fixture')).resolves.toEqual(
+        expect.objectContaining({ name: '@electron-forge/template-fixture' }),
+      );
     });
 
     it('should find an @electron-forge/template based on full name', async () => {
-      await expect(findTemplate('@electron-forge/template-fixture')).resolves.toEqual(expect.objectContaining({ name: '@electron-forge/template-fixture' }));
+      await expect(
+        findTemplate('@electron-forge/template-fixture'),
+      ).resolves.toEqual(
+        expect.objectContaining({ name: '@electron-forge/template-fixture' }),
+      );
     });
     it('should find an electron-forge-template based on partial name', async () => {
-      await expect(findTemplate('fixture-two')).resolves.toEqual(expect.objectContaining({ name: 'electron-forge-template-fixture-two' }));
+      await expect(findTemplate('fixture-two')).resolves.toEqual(
+        expect.objectContaining({
+          name: 'electron-forge-template-fixture-two',
+        }),
+      );
     });
     it('should find an @electron-forge-template based on full name', async () => {
-      await expect(findTemplate('electron-forge-template-fixture-two')).resolves.toEqual(
-        expect.objectContaining({ name: 'electron-forge-template-fixture-two' })
+      await expect(
+        findTemplate('electron-forge-template-fixture-two'),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          name: 'electron-forge-template-fixture-two',
+        }),
       );
     });
   });
@@ -42,22 +56,36 @@ describe('findTemplate', () => {
       vi.spyOn(globalDirs, 'npm', 'get').mockReturnValue({
         binaries: '',
         prefix: '',
-        packages: path.resolve(__dirname, '..', 'fixture', 'global-stub', 'node_modules'),
+        packages: path.resolve(
+          __dirname,
+          '..',
+          'fixture',
+          'global-stub',
+          'node_modules',
+        ),
       });
     });
     it('should find an @electron-forge/template based on name', async () => {
       await expect(findTemplate('global')).resolves.toEqual(
-        expect.objectContaining({ template: { name: 'electron-forge-template-fixture-global' }, type: 'global' })
+        expect.objectContaining({
+          template: { name: 'electron-forge-template-fixture-global' },
+          type: 'global',
+        }),
       );
     });
     it('should find an electron-forge-template based on name', async () => {
       await expect(findTemplate('global-two')).resolves.toEqual(
-        expect.objectContaining({ template: { name: 'electron-forge-template-fixture-global' }, type: 'global' })
+        expect.objectContaining({
+          template: { name: 'electron-forge-template-fixture-global' },
+          type: 'global',
+        }),
       );
     });
   });
 
   it('should error if there are no valid templates', async () => {
-    await expect(findTemplate('non-existent-template')).rejects.toThrowError('Failed to locate custom template: "non-existent-template".');
+    await expect(findTemplate('non-existent-template')).rejects.toThrowError(
+      'Failed to locate custom template: "non-existent-template".',
+    );
   });
 });

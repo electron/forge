@@ -81,7 +81,7 @@ export default autoTrace(
       dryRun = false,
       dryRunResume = false,
       outDir,
-    }: PublishOptions
+    }: PublishOptions,
   ): Promise<void> => {
     if (dryRun && dryRunResume) {
       throw new Error("Can't dry run and resume a dry run at the same time");
@@ -93,7 +93,8 @@ export default autoTrace(
         collapseErrors: false,
       },
       silentRendererCondition: !interactive,
-      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+      fallbackRendererCondition:
+        Boolean(process.env.DEBUG) || Boolean(process.env.CI),
     };
 
     const publishDistributablesTasks = (childTrace: typeof autoTrace) => [
@@ -101,7 +102,11 @@ export default autoTrace(
         title: 'Publishing distributables',
         task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
           { name: 'publish-distributables', category: '@electron-forge/core' },
-          async (childTrace, { dir, forgeConfig, makeResults, publishers }, task: ForgeListrTask<PublishContext>) => {
+          async (
+            childTrace,
+            { dir, forgeConfig, makeResults, publishers },
+            task: ForgeListrTask<PublishContext>,
+          ) => {
             if (publishers.length === 0) {
               task.output = 'No publishers configured';
               task.skip();
@@ -114,7 +119,10 @@ export default autoTrace(
                 publishers.map((publisher) => ({
                   title: `${chalk.cyan(`[publisher-${publisher.name}]`)} Running the ${chalk.yellow('publish')} command`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
-                    { name: `publish-${publisher.name}`, category: '@electron-forge/core' },
+                    {
+                      name: `publish-${publisher.name}`,
+                      category: '@electron-forge/core',
+                    },
                     async (childTrace, _, task) => {
                       const setStatusLine = (s: string) => {
                         task.output = s;
@@ -125,7 +133,7 @@ export default autoTrace(
                         forgeConfig,
                         setStatusLine,
                       });
-                    }
+                    },
                   ),
                   rendererOptions: {
                     persistentOutput: true,
@@ -136,11 +144,11 @@ export default autoTrace(
                     collapseSubtasks: false,
                     collapseErrors: false,
                   },
-                }
+                },
               ),
-              'run'
+              'run',
             );
-          }
+          },
         ),
         rendererOptions: {
           persistentOutput: true,
@@ -157,55 +165,75 @@ export default autoTrace(
             async (childTrace, ctx) => {
               const resolvedDir = await resolveDir(providedDir);
               if (!resolvedDir) {
-                throw new Error('Failed to locate publishable Electron application');
+                throw new Error(
+                  'Failed to locate publishable Electron application',
+                );
               }
 
               ctx.dir = resolvedDir;
               ctx.forgeConfig = await getForgeConfig(resolvedDir);
-            }
+            },
           ),
         },
         {
           title: 'Resolving publish targets',
           task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
-            { name: 'resolve-publish-targets', category: '@electron-forge/core' },
+            {
+              name: 'resolve-publish-targets',
+              category: '@electron-forge/core',
+            },
             async (childTrace, ctx, task) => {
               const { dir, forgeConfig } = ctx;
 
               if (!publishTargets) {
                 publishTargets = forgeConfig.publishers || [];
               }
-              publishTargets = (publishTargets as ForgeConfigPublisher[]).map((target) => {
-                if (typeof target === 'string') {
-                  return (
-                    (forgeConfig.publishers || []).find((p: ForgeConfigPublisher) => {
-                      if (typeof p === 'string') return false;
-                      if ((p as IForgePublisher).__isElectronForgePublisher) return false;
-                      return (p as IForgeResolvablePublisher).name === target;
-                    }) || { name: target }
-                  );
-                }
-                return target;
-              });
+              publishTargets = (publishTargets as ForgeConfigPublisher[]).map(
+                (target) => {
+                  if (typeof target === 'string') {
+                    return (
+                      (forgeConfig.publishers || []).find(
+                        (p: ForgeConfigPublisher) => {
+                          if (typeof p === 'string') return false;
+                          if ((p as IForgePublisher).__isElectronForgePublisher)
+                            return false;
+                          return (
+                            (p as IForgeResolvablePublisher).name === target
+                          );
+                        },
+                      ) || { name: target }
+                    );
+                  }
+                  return target;
+                },
+              );
 
               ctx.publishers = [];
               for (const publishTarget of publishTargets) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 let publisher: PublisherBase<any>;
-                if ((publishTarget as IForgePublisher).__isElectronForgePublisher) {
+                if (
+                  (publishTarget as IForgePublisher).__isElectronForgePublisher
+                ) {
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   publisher = publishTarget as PublisherBase<any>;
                 } else {
-                  const resolvablePublishTarget = publishTarget as IForgeResolvablePublisher;
+                  const resolvablePublishTarget =
+                    publishTarget as IForgeResolvablePublisher;
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const PublisherClass: any = await importSearch(dir, [resolvablePublishTarget.name]);
+                  const PublisherClass: any = await importSearch(dir, [
+                    resolvablePublishTarget.name,
+                  ]);
                   if (!PublisherClass) {
                     throw new Error(
-                      `Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`
+                      `Could not find a publish target with the name: ${resolvablePublishTarget.name}. Make sure it's listed in the devDependencies of your package.json`,
                     );
                   }
 
-                  publisher = new PublisherClass(resolvablePublishTarget.config || {}, resolvablePublishTarget.platforms);
+                  publisher = new PublisherClass(
+                    resolvablePublishTarget.config || {},
+                    resolvablePublishTarget.platforms,
+                  );
                 }
 
                 ctx.publishers.push(publisher);
@@ -214,24 +242,36 @@ export default autoTrace(
               if (ctx.publishers.length) {
                 task.output = `Publishing to the following targets: ${chalk.magenta(`${ctx.publishers.map((publisher) => publisher.name).join(', ')}`)}`;
               }
-            }
+            },
           ),
           rendererOptions: {
             persistentOutput: true,
           },
         },
         {
-          title: dryRunResume ? 'Resuming from dry run...' : `Running ${chalk.yellow('make')} command`,
+          title: dryRunResume
+            ? 'Resuming from dry run...'
+            : `Running ${chalk.yellow('make')} command`,
           task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
-            { name: dryRunResume ? 'resume-dry-run' : 'make()', category: '@electron-forge/core' },
+            {
+              name: dryRunResume ? 'resume-dry-run' : 'make()',
+              category: '@electron-forge/core',
+            },
             async (childTrace, ctx, task) => {
               const { dir, forgeConfig } = ctx;
-              const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-              const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
+              const calculatedOutDir =
+                outDir || getCurrentOutDir(dir, forgeConfig);
+              const dryRunDir = path.resolve(
+                calculatedOutDir,
+                'publish-dry-run',
+              );
 
               if (dryRunResume) {
                 d('attempting to resume from dry run');
-                const publishes = await PublishState.loadFromDirectory(dryRunDir, dir);
+                const publishes = await PublishState.loadFromDirectory(
+                  dryRunDir,
+                  dir,
+                );
                 task.title = `Resuming ${publishes.length} found dry runs...`;
 
                 return delayTraceTillSignal(
@@ -240,41 +280,59 @@ export default autoTrace(
                     publishes.map((publishStates, index) => {
                       return {
                         title: `Publishing dry-run ${chalk.blue(`#${index + 1}`)}`,
-                        task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
-                          { name: `publish-dry-run-${index + 1}`, category: '@electron-forge/core' },
+                        task: childTrace<
+                          Parameters<ForgeListrTaskFn<PublishContext>>
+                        >(
+                          {
+                            name: `publish-dry-run-${index + 1}`,
+                            category: '@electron-forge/core',
+                          },
                           async (childTrace, ctx, task) => {
-                            const restoredMakeResults = publishStates.map(({ state }) => state);
+                            const restoredMakeResults = publishStates.map(
+                              ({ state }) => state,
+                            );
                             d('restoring publish settings from dry run');
 
                             for (const makeResult of restoredMakeResults) {
                               makeResult.artifacts = await Promise.all(
-                                makeResult.artifacts.map(async (makePath: string) => {
-                                  // standardize the path to artifacts across platforms
-                                  const normalizedPath = makePath.split(/\/|\\/).join(path.sep);
-                                  if (!(await fs.pathExists(normalizedPath))) {
-                                    throw new Error(`Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`);
-                                  }
-                                  return normalizedPath;
-                                })
+                                makeResult.artifacts.map(
+                                  async (makePath: string) => {
+                                    // standardize the path to artifacts across platforms
+                                    const normalizedPath = makePath
+                                      .split(/\/|\\/)
+                                      .join(path.sep);
+                                    if (
+                                      !(await fs.pathExists(normalizedPath))
+                                    ) {
+                                      throw new Error(
+                                        `Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`,
+                                      );
+                                    }
+                                    return normalizedPath;
+                                  },
+                                ),
                               );
                             }
 
                             d('publishing for given state set');
                             return delayTraceTillSignal(
                               childTrace,
-                              task.newListr(publishDistributablesTasks(childTrace), {
-                                ctx: {
-                                  ...ctx,
-                                  makeResults: restoredMakeResults,
+                              task.newListr(
+                                publishDistributablesTasks(childTrace),
+                                {
+                                  ctx: {
+                                    ...ctx,
+                                    makeResults: restoredMakeResults,
+                                  },
+                                  rendererOptions: {
+                                    collapseSubtasks: false,
+                                    collapseErrors: false,
+                                  },
                                 },
-                                rendererOptions: {
-                                  collapseSubtasks: false,
-                                  collapseErrors: false,
-                                },
-                              }),
-                              'run'
+                              ),
+                              'run',
                             );
-                          }
+                          },
                         ),
                       };
                     }),
@@ -283,9 +341,9 @@ export default autoTrace(
                         collapseSubtasks: false,
                         collapseErrors: false,
                       },
-                    }
+                    },
                   ),
-                  'run'
+                  'run',
                 );
               }
 
@@ -301,37 +359,47 @@ export default autoTrace(
                   },
                   (results) => {
                     ctx.makeResults = results;
-                  }
+                  },
                 ),
-                'run'
+                'run',
               );
-            }
+            },
           ),
         },
         ...(dryRunResume
           ? []
           : dryRun
-          ? [
-              {
-                title: 'Saving dry-run state',
-                task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
-                  { name: 'save-dry-run', category: '@electron-forge/core' },
-                  async (childTrace, { dir, forgeConfig, makeResults }) => {
-                    d('saving results of make in dry run state', makeResults);
-                    const calculatedOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
-                    const dryRunDir = path.resolve(calculatedOutDir, 'publish-dry-run');
+            ? [
+                {
+                  title: 'Saving dry-run state',
+                  task: childTrace<
+                    Parameters<ForgeListrTaskFn<PublishContext>>
+                  >(
+                    { name: 'save-dry-run', category: '@electron-forge/core' },
+                    async (childTrace, { dir, forgeConfig, makeResults }) => {
+                      d('saving results of make in dry run state', makeResults);
+                      const calculatedOutDir =
+                        outDir || getCurrentOutDir(dir, forgeConfig);
+                      const dryRunDir = path.resolve(
+                        calculatedOutDir,
+                        'publish-dry-run',
+                      );
 
-                    await fs.remove(dryRunDir);
-                    await PublishState.saveToDirectory(dryRunDir, makeResults!, dir);
-                  }
-                ),
-              },
-            ]
-          : publishDistributablesTasks(childTrace)),
+                      await fs.remove(dryRunDir);
+                      await PublishState.saveToDirectory(
+                        dryRunDir,
+                        makeResults!,
+                        dir,
+                      );
+                    },
+                  ),
+                },
+              ]
+            : publishDistributablesTasks(childTrace)),
       ],
-      listrOptions
+      listrOptions,
     );
 
     await runner.run();
-  }
+  },
 );

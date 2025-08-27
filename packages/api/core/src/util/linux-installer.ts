@@ -4,7 +4,11 @@ import { promisify } from 'node:util';
 import sudoPrompt from 'sudo-prompt';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const which = async (type: string, prog: string, promise: () => Promise<any>): Promise<void> => {
+const which = async (
+  type: string,
+  prog: string,
+  promise: () => Promise<any>,
+): Promise<void> => {
   if (spawnSync('which', [prog]).status === 0) {
     await promise();
   } else {
@@ -13,6 +17,8 @@ const which = async (type: string, prog: string, promise: () => Promise<any>): P
 };
 
 export const sudo = (type: string, prog: string, args: string): Promise<void> =>
-  which(type, prog, () => promisify(sudoPrompt.exec)(`${prog} ${args}`, { name: 'Electron Forge' }));
+  which(type, prog, () =>
+    promisify(sudoPrompt.exec)(`${prog} ${args}`, { name: 'Electron Forge' }),
+  );
 
 export default which;

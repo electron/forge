@@ -1,6 +1,10 @@
 import { ChildProcess } from 'node:child_process';
 
-import { ArchOption, Options as ElectronPackagerOptions, TargetPlatform } from '@electron/packager';
+import {
+  ArchOption,
+  Options as ElectronPackagerOptions,
+  TargetPlatform,
+} from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
 import { autoTrace } from '@electron-forge/tracer';
 import {
@@ -14,9 +18,20 @@ import {
   ListrTaskWrapper,
 } from 'listr2';
 
-export type ForgeListrOptions<T> = ListrBaseClassOptions<T, ListrDefaultRendererValue, ListrSimpleRendererValue>;
-export type ForgeListrTask<T> = ListrTaskWrapper<T, ListrDefaultRenderer, ListrDefaultRenderer | ListrSimpleRenderer>;
-export type ForgeListrTaskFn<Ctx = any> = ListrTask<Ctx, ListrDefaultRenderer>['task'];
+export type ForgeListrOptions<T> = ListrBaseClassOptions<
+  T,
+  ListrDefaultRendererValue,
+  ListrSimpleRendererValue
+>;
+export type ForgeListrTask<T> = ListrTaskWrapper<
+  T,
+  ListrDefaultRenderer,
+  ListrDefaultRenderer | ListrSimpleRenderer
+>;
+export type ForgeListrTaskFn<Ctx = any> = ListrTask<
+  Ctx,
+  ListrDefaultRenderer
+>['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
 export type ForgePlatform = TargetPlatform;
@@ -30,15 +45,30 @@ export interface ForgeSimpleHookSignatures {
   preStart: [];
   postStart: [appProcess: ElectronProcess];
   prePackage: [platform: ForgePlatform, version: ForgeArch];
-  packageAfterCopy: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
-  packageAfterPrune: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
-  packageAfterExtract: [buildPath: string, electronVersion: string, platform: ForgePlatform, arch: ForgeArch];
+  packageAfterCopy: [
+    buildPath: string,
+    electronVersion: string,
+    platform: ForgePlatform,
+    arch: ForgeArch,
+  ];
+  packageAfterPrune: [
+    buildPath: string,
+    electronVersion: string,
+    platform: ForgePlatform,
+    arch: ForgeArch,
+  ];
+  packageAfterExtract: [
+    buildPath: string,
+    electronVersion: string,
+    platform: ForgePlatform,
+    arch: ForgeArch,
+  ];
   postPackage: [
     packageResult: {
       platform: ForgePlatform;
       arch: ForgeArch;
       outputPaths: string[];
-    }
+    },
   ];
   preMake: [];
 }
@@ -50,20 +80,24 @@ export interface ForgeMutatingHookSignatures {
   readPackageJson: [packageJson: Record<string, any>];
 }
 
-export type ForgeHookName = keyof (ForgeSimpleHookSignatures & ForgeMutatingHookSignatures);
+export type ForgeHookName = keyof (ForgeSimpleHookSignatures &
+  ForgeMutatingHookSignatures);
 export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeSimpleHookSignatures[Hook]
 ) => Promise<Listr | void>;
-export type ForgeMutatingHookFn<Hook extends keyof ForgeMutatingHookSignatures> = (
+export type ForgeMutatingHookFn<
+  Hook extends keyof ForgeMutatingHookSignatures,
+> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeMutatingHookSignatures[Hook]
 ) => Promise<ForgeMutatingHookSignatures[Hook][0] | void>;
-export type ForgeHookFn<Hook extends ForgeHookName> = Hook extends keyof ForgeSimpleHookSignatures
-  ? ForgeSimpleHookFn<Hook>
-  : Hook extends keyof ForgeMutatingHookSignatures
-  ? ForgeMutatingHookFn<Hook>
-  : never;
+export type ForgeHookFn<Hook extends ForgeHookName> =
+  Hook extends keyof ForgeSimpleHookSignatures
+    ? ForgeSimpleHookFn<Hook>
+    : Hook extends keyof ForgeMutatingHookSignatures
+      ? ForgeMutatingHookFn<Hook>
+      : never;
 export type ForgeHookMap = {
   [S in ForgeHookName]?: ForgeHookFn<S>;
 };
@@ -72,22 +106,31 @@ export type ForgeMultiHookMap = {
 };
 
 export interface IForgePluginInterface {
-  triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(hookName: Hook, hookArgs: ForgeSimpleHookSignatures[Hook]): Promise<void>;
+  triggerHook<Hook extends keyof ForgeSimpleHookSignatures>(
+    hookName: Hook,
+    hookArgs: ForgeSimpleHookSignatures[Hook],
+  ): Promise<void>;
   getHookListrTasks<Hook extends keyof ForgeSimpleHookSignatures>(
     childTrace: typeof autoTrace,
     hookName: Hook,
-    hookArgs: ForgeSimpleHookSignatures[Hook]
+    hookArgs: ForgeSimpleHookSignatures[Hook],
   ): Promise<ForgeListrTaskDefinition[]>;
   triggerMutatingHook<Hook extends keyof ForgeMutatingHookSignatures>(
     hookName: Hook,
-    item: ForgeMutatingHookSignatures[Hook][0]
+    item: ForgeMutatingHookSignatures[Hook][0],
   ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type ForgeRebuildOptions = Omit<RebuildOptions, 'buildPath' | 'electronVersion' | 'arch'>;
-export type ForgePackagerOptions = Omit<ElectronPackagerOptions, 'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'>;
+export type ForgeRebuildOptions = Omit<
+  RebuildOptions,
+  'buildPath' | 'electronVersion' | 'arch'
+>;
+export type ForgePackagerOptions = Omit<
+  ElectronPackagerOptions,
+  'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'
+>;
 export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
@@ -211,7 +254,9 @@ export interface StartOptions {
 }
 
 export type InnerStartResult = ElectronProcess | string | string[] | false;
-export type StartResult = InnerStartResult | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
+export type StartResult =
+  | InnerStartResult
+  | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
 
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
@@ -226,7 +271,10 @@ export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
-  initializeTemplate?: (dir: string, options: InitTemplateOptions) => Promise<void | ForgeListrTaskDefinition[]>;
+  initializeTemplate?: (
+    dir: string,
+    options: InitTemplateOptions,
+  ) => Promise<void | ForgeListrTaskDefinition[]>;
 }
 
 export type PackagePerson =

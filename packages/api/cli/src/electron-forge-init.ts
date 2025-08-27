@@ -18,11 +18,17 @@ import type { Prompt } from '@inquirer/type';
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
-  .argument('[dir]', 'Directory to initialize the project in. Defaults to the current directory.')
+  .argument(
+    '[dir]',
+    'Directory to initialize the project in. Defaults to the current directory.',
+  )
   .option('-t, --template [name]', 'Name of the Forge template to use.')
   .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.')
   .option('-f, --force', 'Whether to overwrite an existing directory.')
-  .option('--skip-git', 'Skip initializing a git repository in the initialized project.')
+  .option(
+    '--skip-git',
+    'Skip initializing a git repository in the initialized project.',
+  )
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
@@ -40,13 +46,20 @@ program
         {
           task: async (initOpts, task): Promise<void> => {
             // only run interactive prompts if no args passed and not in CI environment
-            if (Object.keys(options).length > 0 || process.env.CI || !process.stdout.isTTY) {
+            if (
+              Object.keys(options).length > 0 ||
+              process.env.CI ||
+              !process.stdout.isTTY
+            ) {
               return;
             }
 
             const prompt = task.prompt(ListrInquirerPromptAdapter);
 
-            if (typeof initOpts.dir === 'string' && (await fs.readdir(initOpts.dir)).length > 0) {
+            if (
+              typeof initOpts.dir === 'string' &&
+              (await fs.readdir(initOpts.dir)).length > 0
+            ) {
               const confirmResult = await prompt.run(confirm, {
                 message: `${chalk.cyan(initOpts.dir)} is not empty. Would you like to continue and overwrite existing files?`,
                 default: false,
@@ -60,40 +73,46 @@ program
               }
             }
 
-            const bundler: string = await prompt.run<Prompt<string, any>>(select, {
-              message: 'Select a bundler',
-              choices: [
-                {
-                  name: 'None',
-                  value: 'base',
-                },
-                {
-                  name: 'Vite',
-                  value: 'vite',
-                },
-                {
-                  name: 'webpack',
-                  value: 'webpack',
-                },
-              ],
-            });
+            const bundler: string = await prompt.run<Prompt<string, any>>(
+              select,
+              {
+                message: 'Select a bundler',
+                choices: [
+                  {
+                    name: 'None',
+                    value: 'base',
+                  },
+                  {
+                    name: 'Vite',
+                    value: 'vite',
+                  },
+                  {
+                    name: 'webpack',
+                    value: 'webpack',
+                  },
+                ],
+              },
+            );
 
             let language: string | undefined;
 
             if (bundler !== 'base') {
-              language = await prompt.run<Prompt<string | undefined, any>>(select, {
-                message: 'Select a programming language',
-                choices: [
-                  {
-                    name: 'JavaScript',
-                    value: undefined,
-                  },
-                  {
-                    name: 'TypeScript',
-                    value: 'typescript',
-                  },
-                ],
-              });
+              language = await prompt.run<Prompt<string | undefined, any>>(
+                select,
+                {
+                  message: 'Select a programming language',
+                  choices: [
+                    {
+                      name: 'JavaScript',
+                      value: undefined,
+                    },
+                    {
+                      name: 'TypeScript',
+                      value: 'typescript',
+                    },
+                  ],
+                },
+              );
             }
 
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
@@ -104,7 +123,7 @@ program
           },
         },
       ],
-      { concurrent: false }
+      { concurrent: false },
     );
 
     const initOpts: InitOptions = await tasks.run();

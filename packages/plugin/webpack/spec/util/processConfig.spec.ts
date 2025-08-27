@@ -14,17 +14,25 @@ const sampleWebpackConfig = {
   },
 };
 
-const sampleConfigFactoryParams: Parameters<ConfigurationFactory> = [{}, { mode: 'production' }];
+const sampleConfigFactoryParams: Parameters<ConfigurationFactory> = [
+  {},
+  { mode: 'production' },
+];
 
 describe('processConfig', () => {
   it('works for object config', async () => {
     let invoked = 0;
     const processor: ConfigProcessor = async (configFactory) => {
       invoked += 1;
-      return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
+      return configFactory(
+        sampleConfigFactoryParams[0],
+        sampleConfigFactoryParams[1],
+      );
     };
 
-    expect(await processConfig(processor, sampleWebpackConfig)).toEqual(sampleWebpackConfig);
+    expect(await processConfig(processor, sampleWebpackConfig)).toEqual(
+      sampleWebpackConfig,
+    );
     expect(invoked).toEqual(1);
   });
 
@@ -32,7 +40,10 @@ describe('processConfig', () => {
     let invoked = 0;
     const processor: ConfigProcessor = async (configFactory) => {
       invoked += 1;
-      return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
+      return configFactory(
+        sampleConfigFactoryParams[0],
+        sampleConfigFactoryParams[1],
+      );
     };
 
     const fnConfig: ConfigurationFactory = (arg0, arg1) => {
@@ -41,7 +52,9 @@ describe('processConfig', () => {
       return sampleWebpackConfig;
     };
 
-    expect(await processConfig(processor, fnConfig)).toEqual(sampleWebpackConfig);
+    expect(await processConfig(processor, fnConfig)).toEqual(
+      sampleWebpackConfig,
+    );
     expect(invoked).toEqual(1);
   });
 
@@ -49,7 +62,10 @@ describe('processConfig', () => {
     let invoked = 0;
     const processor: ConfigProcessor = async (configFactory) => {
       invoked += 1;
-      return configFactory(sampleConfigFactoryParams[0], sampleConfigFactoryParams[1]);
+      return configFactory(
+        sampleConfigFactoryParams[0],
+        sampleConfigFactoryParams[1],
+      );
     };
 
     const promiseConfig: ConfigurationFactory = (arg0, arg1) => {
@@ -58,7 +74,9 @@ describe('processConfig', () => {
       return sampleWebpackConfig;
     };
 
-    expect(await processConfig(processor, promiseConfig)).toEqual(sampleWebpackConfig);
+    expect(await processConfig(processor, promiseConfig)).toEqual(
+      sampleWebpackConfig,
+    );
     expect(invoked).toEqual(1);
   });
 });

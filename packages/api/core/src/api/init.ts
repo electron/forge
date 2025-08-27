@@ -7,7 +7,10 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import installDepList, { DepType, DepVersionRestriction } from '../util/install-dependencies';
+import installDepList, {
+  DepType,
+  DepVersionRestriction,
+} from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
 import { findTemplate } from './init-scripts/find-template';
@@ -45,15 +48,22 @@ export interface InitOptions {
   skipGit?: boolean;
 }
 
-async function validateTemplate(template: string, templateModule: ForgeTemplate): Promise<void> {
+async function validateTemplate(
+  template: string,
+  templateModule: ForgeTemplate,
+): Promise<void> {
   if (!templateModule.requiredForgeVersion) {
-    throw new Error(`Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`);
+    throw new Error(
+      `Cannot use a template (${template}) with this version of Electron Forge, as it does not specify its required Forge version.`,
+    );
   }
 
-  const forgeVersion = (await readRawPackageJson(path.join(__dirname, '..', '..'))).version;
+  const forgeVersion = (
+    await readRawPackageJson(path.join(__dirname, '..', '..'))
+  ).version;
   if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
     throw new Error(
-      `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`
+      `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`,
     );
   }
 }
@@ -113,7 +123,10 @@ export default async ({
         title: `Initializing template`,
         task: async ({ templateModule }, task) => {
           if (typeof templateModule.initializeTemplate === 'function') {
-            const tasks = await templateModule.initializeTemplate(dir, { copyCIFiles, force });
+            const tasks = await templateModule.initializeTemplate(dir, {
+              copyCIFiles,
+              force,
+            });
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });
             }
@@ -132,7 +145,13 @@ export default async ({
                   if (templateModule.dependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.dependencies.join(' ')}`;
                   }
-                  return await installDepList(pm, dir, templateModule.dependencies || [], DepType.PROD, DepVersionRestriction.RANGE);
+                  return await installDepList(
+                    pm,
+                    dir,
+                    templateModule.dependencies || [],
+                    DepType.PROD,
+                    DepVersionRestriction.RANGE,
+                  );
                 },
                 exitOnError: false,
               },
@@ -143,7 +162,12 @@ export default async ({
                   if (templateModule.devDependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
                   }
-                  await installDepList(pm, dir, templateModule.devDependencies || [], DepType.DEV);
+                  await installDepList(
+                    pm,
+                    dir,
+                    templateModule.devDependencies || [],
+                    DepType.DEV,
+                  );
                 },
                 exitOnError: false,
               },
@@ -172,7 +196,7 @@ export default async ({
             ],
             {
               concurrent: false,
-            }
+            },
           );
         },
       },
@@ -180,8 +204,9 @@ export default async ({
     {
       concurrent: false,
       silentRendererCondition: !interactive,
-      fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
-    }
+      fallbackRendererCondition:
+        Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+    },
   );
 
   await runner.run();
