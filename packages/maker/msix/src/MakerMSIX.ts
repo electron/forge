@@ -1,10 +1,10 @@
+import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
 
 import { MakerMsixConfig } from './Config';
 import { toMsixArch } from './util/arch';
-import getNameFromAuthor from './util/author-name';
 
 export default class MakerMsix extends MakerBase<MakerMsixConfig> {
   name = 'msix';

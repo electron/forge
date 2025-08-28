@@ -14,6 +14,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "7.8.3",
     "@electron-forge/maker-base": "7.8.3",
     "@electron-forge/shared-types": "7.8.3",
     "cross-spawn": "^7.0.3",

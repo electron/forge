@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import chalk from 'chalk';
@@ -8,7 +9,6 @@ import logSymbols from 'log-symbols';
 import semver from 'semver';
 
 import { MakerWixConfig } from './Config';
-import getNameFromAuthor from './util/author-name';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
