@@ -49,59 +49,39 @@ describe('MakerZip', () => {
   const targetArch = process.arch;
   const packageJSON = { version: '1.2.3' };
 
-  it.each([['win32', 'linux']])(`should generate a zip file for a %s app`, async (platform) => {
-    const maker = new MakerZIP({}, []);
-    maker.ensureFile = vi.fn();
-    const output = await maker.make({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      targetPlatform: platform,
-      packageJSON,
-      forgeConfig: null as any,
-    });
+  it.each([['win32', 'linux']])(
+    `should generate a zip file for a %s app`,
+    async (platform) => {
+      const maker = new MakerZIP({}, []);
+      maker.ensureFile = vi.fn();
+      const output = await maker.make({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform: platform,
+        packageJSON,
+        forgeConfig: null as any,
+      });
 
-    expect(output).toHaveLength(1);
-    expect(zip).toHaveBeenCalledOnce();
-    expect(zip).toHaveBeenCalledWith(dir, path.join(makeDir, 'zip', platform, targetArch, 'fake-app-1.2.3.zip'), expect.anything());
-  });
+      expect(output).toHaveLength(1);
+      expect(zip).toHaveBeenCalledOnce();
+      expect(zip).toHaveBeenCalledWith(
+        dir,
+        path.join(makeDir, 'zip', platform, targetArch, 'fake-app-1.2.3.zip'),
+        expect.anything(),
+      );
+    },
+  );
 
-  it.each([['darwin', 'mas']])(`should generate a zip file for a %s app`, async (platform) => {
-    const maker = new MakerZIP(
-      {
-        macUpdateManifestBaseUrl: undefined,
-      },
-      []
-    );
-    maker.prepareConfig(targetArch);
-    maker.ensureFile = vi.fn();
-    const output = await maker.make({
-      dir: darwinDir,
-      makeDir,
-      appName,
-      targetArch,
-      targetPlatform: platform,
-      packageJSON,
-      forgeConfig: null as any,
-    });
-
-    expect(output).toHaveLength(1);
-    expect(zip).toHaveBeenCalledOnce();
-    expect(zip).toHaveBeenCalledWith(
-      path.join(darwinDir, 'My Test App.app'),
-      path.join(makeDir, 'zip', platform, targetArch, 'fake-darwin-app-1.2.3.zip'),
-      expect.anything()
-    );
-  });
-
-  describe('macUpdateManifestBaseUrl', () => {
-    it.each([['win32', 'mas', 'linux']])('should not make a network request on $platform', async (platform) => {
+  it.each([['darwin', 'mas']])(
+    `should generate a zip file for a %s app`,
+    async (platform) => {
       const maker = new MakerZIP(
         {
-          macUpdateManifestBaseUrl: 'https://electronjs.org',
+          macUpdateManifestBaseUrl: undefined,
         },
-        []
+        [],
       );
       maker.prepareConfig(targetArch);
       maker.ensureFile = vi.fn();
@@ -116,8 +96,47 @@ describe('MakerZip', () => {
       });
 
       expect(output).toHaveLength(1);
-      expect(got.get).not.toHaveBeenCalled();
-    });
+      expect(zip).toHaveBeenCalledOnce();
+      expect(zip).toHaveBeenCalledWith(
+        path.join(darwinDir, 'My Test App.app'),
+        path.join(
+          makeDir,
+          'zip',
+          platform,
+          targetArch,
+          'fake-darwin-app-1.2.3.zip',
+        ),
+        expect.anything(),
+      );
+    },
+  );
+
+  describe('macUpdateManifestBaseUrl', () => {
+    it.each([['win32', 'mas', 'linux']])(
+      'should not make a network request on $platform',
+      async (platform) => {
+        const maker = new MakerZIP(
+          {
+            macUpdateManifestBaseUrl: 'https://electronjs.org',
+          },
+          [],
+        );
+        maker.prepareConfig(targetArch);
+        maker.ensureFile = vi.fn();
+        const output = await maker.make({
+          dir: darwinDir,
+          makeDir,
+          appName,
+          targetArch,
+          targetPlatform: platform,
+          packageJSON,
+          forgeConfig: null as any,
+        });
+
+        expect(output).toHaveLength(1);
+        expect(got.get).not.toHaveBeenCalled();
+      },
+    );
 
     describe('when making for the darwin platform', () => {
       it('should fetch the current RELEASES.json and write it to disk', async () => {
@@ -125,7 +144,7 @@ describe('MakerZip', () => {
           {
             macUpdateManifestBaseUrl: 'fake://test/foo',
           },
-          []
+          [],
         );
         maker.prepareConfig(targetArch);
         maker.ensureFile = vi.fn();
@@ -163,11 +182,14 @@ describe('MakerZip', () => {
           {
             macUpdateManifestBaseUrl: 'fake://test/foo',
           },
-          []
+          [],
         );
         maker.prepareConfig(targetArch);
         maker.ensureFile = vi.fn();
-        vi.mocked(got.get).mockResolvedValue({ statusCode: 404, body: undefined });
+        vi.mocked(got.get).mockResolvedValue({
+          statusCode: 404,
+          body: undefined,
+        });
         await maker.make({
           dir: darwinDir,
           makeDir,
@@ -202,7 +224,7 @@ describe('MakerZip', () => {
             macUpdateManifestBaseUrl: 'fake://test/foo',
             macUpdateReleaseNotes: 'my-notes',
           },
-          []
+          [],
         );
         maker.prepareConfig(targetArch);
         maker.ensureFile = vi.fn();
@@ -231,22 +253,25 @@ describe('MakerZip', () => {
           forgeConfig: null as any,
         });
 
-        expect(vi.mocked(fs.writeJson)).toHaveBeenCalledWith(expect.anything(), {
-          currentRelease: '1.2.3',
-          releases: [
-            oneOneOneRelease,
-            {
-              version: '1.2.3',
-              updateTo: {
+        expect(vi.mocked(fs.writeJson)).toHaveBeenCalledWith(
+          expect.anything(),
+          {
+            currentRelease: '1.2.3',
+            releases: [
+              oneOneOneRelease,
+              {
                 version: '1.2.3',
-                name: 'My Test App v1.2.3',
-                url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
-                notes: 'my-notes',
-                pub_date: expect.anything(),
+                updateTo: {
+                  version: '1.2.3',
+                  name: 'My Test App v1.2.3',
+                  url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
+                  notes: 'my-notes',
+                  pub_date: expect.anything(),
+                },
               },
-            },
-          ],
-        });
+            ],
+          },
+        );
       });
     });
   });

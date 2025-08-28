@@ -12,9 +12,18 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
-  .argument('[dir]', 'Directory to run the command in. (default: current directory)')
-  .option('--target [target[,target...]]', 'A comma-separated list of deployment targets. (default: all publishers in your Forge config)')
-  .option('--dry-run', `Run the ${chalk.green('make')} command and save publish metadata without uploading anything.`)
+  .argument(
+    '[dir]',
+    'Directory to run the command in. (default: current directory)',
+  )
+  .option(
+    '--target [target[,target...]]',
+    'A comma-separated list of deployment targets. (default: all publishers in your Forge config)',
+  )
+  .option(
+    '--dry-run',
+    `Run the ${chalk.green('make')} command and save publish metadata without uploading anything.`,
+  )
   .option('--from-dry-run', 'Publish artifacts from the last saved dry run.')
   .allowUnknownOption(true)
   .action(async (targetDir) => {

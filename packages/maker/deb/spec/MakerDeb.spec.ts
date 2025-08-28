@@ -19,7 +19,10 @@ const packageJSON = { version: '1.2.3' };
 
 vi.hoisted(async () => {
   const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('electron-installer-debian', vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.deb'] }));
+  void mockRequire(
+    'electron-installer-debian',
+    vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.deb'] }),
+  );
 });
 
 describe('MakerDeb', () => {

@@ -13,7 +13,11 @@ describe('parse-archs', () => {
 
   it('should use the official Electron arch list when arch is "all"', () => {
     expect(parseArchs('win32', 'all', '1.7.0')).toEqual(['ia32', 'x64']);
-    expect(parseArchs('win32', 'all', '33.0.0')).toEqual(['ia32', 'x64', 'arm64']);
+    expect(parseArchs('win32', 'all', '33.0.0')).toEqual([
+      'ia32',
+      'x64',
+      'arm64',
+    ]);
   });
 
   it('should default to [x64] when the platform is unknown', () => {

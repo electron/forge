@@ -30,11 +30,15 @@ describe('ensure-output', () => {
     it('should delete the directory contents if it exists', async () => {
       fs.mkdirSync(path.resolve(tmpDir, 'foo'));
       fs.writeFileSync(path.resolve(tmpDir, 'foo', 'touchedFile'), '');
-      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(true);
+      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(
+        true,
+      );
 
       await maker.ensureDirectory(path.resolve(tmpDir, 'foo'));
 
-      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(false);
+      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(
+        false,
+      );
     });
 
     it('should create the directory if it does not exist', async () => {
@@ -48,11 +52,15 @@ describe('ensure-output', () => {
     it('should delete the file if it exists', async () => {
       fs.mkdirSync(path.resolve(tmpDir, 'foo'));
       fs.writeFileSync(path.resolve(tmpDir, 'foo', 'touchedFile'), '');
-      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(true);
+      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(
+        true,
+      );
 
       await maker.ensureFile(path.resolve(tmpDir, 'foo'));
 
-      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(false);
+      expect(fs.existsSync(path.resolve(tmpDir, 'foo', 'touchedFile'))).toEqual(
+        false,
+      );
     });
 
     it('should create the containing directory if it does not exist', async () => {

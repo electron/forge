@@ -4,7 +4,11 @@ import { spawn } from '@malept/cross-spawn-promise';
 import { describe, expect, it } from 'vitest';
 
 function runForgeCLI(...extraArgs: string[]): Promise<string> {
-  const args = ['ts-node', path.resolve(__dirname, '../src/electron-forge.ts'), ...extraArgs];
+  const args = [
+    'ts-node',
+    path.resolve(__dirname, '../src/electron-forge.ts'),
+    ...extraArgs,
+  ];
   return spawn('npx', args);
 }
 

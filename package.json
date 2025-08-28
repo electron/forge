@@ -13,12 +13,12 @@
     "postbuild": "ts-node tools/test-dist",
     "docs": "yarn build && npx typedoc",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
-    "lint:js": "prettier --check . && eslint . --cache",
+    "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
     "lint:markdown-links": "electron-lint-markdown-links --root . --ignore-path .markdownlintignore \"**/*.md\"",
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
-    "lint:fix": "prettier --write . && eslint --fix . --cache",
+    "lint:fix": "prettier --write . --experimental-cli && eslint --fix . --cache",
     "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
     "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
     "test": "xvfb-maybe vitest run --project fast --project slow",
@@ -45,6 +45,7 @@
     "@octokit/request-error": "^5.1.1",
     "@octokit/rest": "^20.1.2",
     "@octokit/types": "^6.1.2",
+    "@vscode/sudo-prompt": "^9.3.1",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "cross-spawn": "^7.0.3",
@@ -71,7 +72,6 @@
     "rechoir": "^0.8.0",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
-    "sudo-prompt": "^9.1.1",
     "username": "^5.1.0",
     "vite": "^5.0.12",
     "webpack": "^5.69.1",
@@ -83,7 +83,7 @@
     "xterm-addon-search": "^0.8.0"
   },
   "devDependencies": {
-    "@electron/fuses": ">=1.0.0",
+    "@electron/fuses": "^1.0.0",
     "@electron/lint-roller": "1.10.1",
     "@types/cross-spawn": "^6.0.1",
     "@types/debug": "^4.1.5",
@@ -118,7 +118,7 @@
     "lint-staged": "^12.1.7",
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
-    "prettier": "^2.4.0",
+    "prettier": "^3.6.2",
     "rimraf": "^3.0.1",
     "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
@@ -139,12 +139,12 @@
     "electron-wix-msi": "^5.1.3"
   },
   "peerDependencies": {
-    "@electron/fuses": ">=1.0.0"
+    "@electron/fuses": "^1.0.0"
   },
   "lint-staged": {
-    "*.{html,json,md,yml}": "prettier --write",
+    "*.{html,json,md,yml}": "prettier --write --experimental-cli",
     "*.{js,ts}": [
-      "prettier --write",
+      "prettier --write --experimental-cli",
       "eslint --fix --cache"
     ],
     "*.{json,lock}": "syncpack"

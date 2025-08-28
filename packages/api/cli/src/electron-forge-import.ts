@@ -9,8 +9,15 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
-  .argument('[dir]', 'Directory of the project to import. (default: current directory)')
-  .option('--skip-git', 'Skip initializing a git repository in the imported project.', false)
+  .argument(
+    '[dir]',
+    'Directory of the project to import. (default: current directory)',
+  )
+  .option(
+    '--skip-git',
+    'Skip initializing a git repository in the imported project.',
+    false,
+  )
   .action(async (dir: string) => {
     const workingDir = resolveWorkingDir(dir, false);
 

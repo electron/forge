@@ -13,7 +13,9 @@ export function resolveWorkingDir(dir: string, checkExisting = true): string {
     return process.cwd();
   }
 
-  const resolved = path.isAbsolute(dir) ? dir : path.resolve(process.cwd(), dir);
+  const resolved = path.isAbsolute(dir)
+    ? dir
+    : path.resolve(process.cwd(), dir);
 
   if (checkExisting && !fs.existsSync(resolved)) {
     return process.cwd();

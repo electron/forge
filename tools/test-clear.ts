@@ -18,6 +18,10 @@ import fs from 'fs-extra';
       await fs.remove(dir);
     }
   } else {
-    console.log(chalk.gray('There is no "electron-forge-test-*" dir that needs to be cleaned.'));
+    console.log(
+      chalk.gray(
+        'There is no "electron-forge-test-*" dir that needs to be cleaned.',
+      ),
+    );
   }
 })();
