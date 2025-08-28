@@ -225,13 +225,35 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       'close' in x &&
       typeof x.close === 'function';
 
+    /**
+     * Rollup's `input` can be a string, an array of strings, or an object.
+     * This function converts the input to a string for the Forge CLI to consume.
+     *
+     * @see https://rollupjs.org/configuration-options/#input
+     */
+    const parseInputOptionToString = (input: vite.Rollup.InputOption) => {
+      if (typeof input === 'string') {
+        return input;
+      } else if (Array.isArray(input)) {
+        return input.join(' ');
+      } else {
+        return Object.keys(input).join(' ');
+      }
+    };
+
     return task?.newListr(
       configs.map((userConfig) => {
-        const target =
-          (userConfig.build?.rollupOptions?.input ||
-            (typeof userConfig.build?.lib !== 'boolean' &&
-              userConfig.build?.lib?.entry)) ??
-          '';
+        let target = '';
+        const input = userConfig.build?.rollupOptions?.input;
+        if (input) {
+          target = parseInputOptionToString(input);
+        } else if (
+          typeof userConfig.build?.lib !== 'boolean' &&
+          userConfig.build?.lib?.entry
+        ) {
+          target = parseInputOptionToString(userConfig.build.lib.entry);
+        }
+
         return {
           title: `Building ${chalk.green(target)} target`,
           task: async (_ctx, subtask) => {
