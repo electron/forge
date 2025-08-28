@@ -45,7 +45,7 @@ describe('ViteReactTypeScriptTemplate', () => {
     it.each([
       'package.json',
       'tsconfig.json',
-      '.eslintrc.json',
+      'eslint.config.js',
       'forge.env.d.ts',
       'forge.config.ts',
       'vite.main.config.mts',

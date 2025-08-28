@@ -69,6 +69,6 @@ describe('ViteReactTemplate', () => {
   it('should inject script into the HTML file', async () => {
     expect(
       (await fs.promises.readFile(path.join(dir, 'index.html'))).toString(),
-    ).toMatch(/src="\/src\/renderer\.js"/);
+    ).toMatch(/src="\/src\/renderer\.jsx"/);
   });
 });
