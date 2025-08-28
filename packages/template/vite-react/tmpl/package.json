@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@electron/fuses": "^1.7.0",
+    "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
+    "@vitejs/plugin-react-swc": "^4.0.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "vite": "^7.1.3"
+  }
+}

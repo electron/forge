@@ -1,13 +1,19 @@
 import path from 'node:path';
 
-import { ForgeListrTaskDefinition, InitTemplateOptions } from '@electron-forge/shared-types';
+import {
+  ForgeListrTaskDefinition,
+  InitTemplateOptions,
+} from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
-class ViteTypeScriptTemplate extends BaseTemplate {
+class ViteReactTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(__dirname, '..', 'tmpl');
 
-  public async initializeTemplate(directory: string, options: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+  public async initializeTemplate(
+    directory: string,
+    options: InitTemplateOptions,
+  ): Promise<ForgeListrTaskDefinition[]> {
     const superTasks = await super.initializeTemplate(directory, options);
     return [
       ...superTasks,
@@ -22,12 +28,13 @@ class ViteTypeScriptTemplate extends BaseTemplate {
       {
         title: 'Preparing TypeScript files and configuration',
         task: async () => {
-          const filePath = (fileName: string) => path.join(directory, 'src', fileName);
+          const filePath = (fileName: string) =>
+            path.join(directory, 'src', fileName);
 
           // Copy Vite files
-          await this.copyTemplateFile(directory, 'vite.main.config.ts');
-          await this.copyTemplateFile(directory, 'vite.preload.config.ts');
-          await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
+          await this.copyTemplateFile(directory, 'vite.main.config.mts');
+          await this.copyTemplateFile(directory, 'vite.preload.config.mts');
+          await this.copyTemplateFile(directory, 'vite.renderer.config.mts');
 
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
@@ -41,20 +48,34 @@ class ViteTypeScriptTemplate extends BaseTemplate {
 
           await this.copyTemplateFile(path.join(directory, 'src'), 'index.tsx');
 
-          await this.copyTemplateFile(path.join(directory, 'src'), 'renderer.tsx');
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'renderer.tsx',
+          );
 
           // Remove preload.js and replace with preload.ts
           await fs.remove(filePath('preload.js'));
-          await this.copyTemplateFile(path.join(directory, 'src'), 'preload.ts');
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'preload.ts',
+          );
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          await fs.move(filePath('index.html'), path.join(directory, 'index.html'), { overwrite: options.force });
-          await this.updateFileByLine(path.join(directory, 'index.html'), (line) => {
-            if (line.includes('link rel="stylesheet"')) return '';
-            if (line.includes('</body>')) return '    <script type="module" src="/src/renderer.tsx"></script>\n  </body>';
-            return line;
-          });
+          await fs.move(
+            filePath('index.html'),
+            path.join(directory, 'index.html'),
+            { overwrite: options.force },
+          );
+          await this.updateFileByLine(
+            path.join(directory, 'index.html'),
+            (line) => {
+              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('</body>'))
+                return '    <script type="module" src="/src/renderer.tsx"></script>\n  </body>';
+              return line;
+            },
+          );
 
           // update package.json
           const packageJSONPath = path.resolve(directory, 'package.json');
@@ -71,4 +92,4 @@ class ViteTypeScriptTemplate extends BaseTemplate {
   }
 }
 
-export default new ViteTypeScriptTemplate();
+export default new ViteReactTypeScriptTemplate();

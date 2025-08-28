@@ -1,16 +1,16 @@
 {
-  "name": "@electron-forge/template-vite-react-typescript",
+  "name": "@electron-forge/template-vite-react",
   "version": "7.8.3",
-  "description": "Vite-React-TypeScript template for Electron Forge",
+  "description": "Vite-React template for Electron Forge",
   "repository": {
     "type": "git",
     "url": "https://github.com/electron/forge",
-    "directory": "packages/template/vite-react-typescript"
+    "directory": "packages/template/vite-react"
   },
   "author": "sethcg",
   "license": "MIT",
-  "main": "dist/ViteReactTypeScriptTemplate.js",
-  "typings": "dist/ViteReactTypeScriptTemplate.d.ts",
+  "main": "dist/ViteReactTemplate.js",
+  "typings": "dist/ViteReactTemplate.d.ts",
   "engines": {
     "node": ">= 16.4.0"
   },
@@ -20,10 +20,12 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/core-utils": "7.8.3",
     "@electron-forge/test-utils": "7.8.3",
-    "fast-glob": "^3.2.7",
+    "listr2": "^7.0.2",
     "vitest": "^3.1.3"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",
