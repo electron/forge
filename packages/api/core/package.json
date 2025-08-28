@@ -35,6 +35,8 @@
     "@electron-forge/shared-types": "7.8.3",
     "@electron-forge/template-base": "7.8.3",
     "@electron-forge/template-vite": "7.8.3",
+    "@electron-forge/template-vite-react": "7.8.3",
+    "@electron-forge/template-vite-react-typescript": "7.8.3",
     "@electron-forge/template-vite-typescript": "7.8.3",
     "@electron-forge/template-webpack": "7.8.3",
     "@electron-forge/template-webpack-typescript": "7.8.3",
