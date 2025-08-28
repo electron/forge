@@ -1,12 +1,12 @@
 import { spawnSync } from 'node:child_process';
 import { promisify } from 'node:util';
 
-import sudoPrompt from 'sudo-prompt';
+import sudoPrompt from '@vscode/sudo-prompt';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const which = async (
   type: string,
   prog: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promise: () => Promise<any>,
 ): Promise<void> => {
   if (spawnSync('which', [prog]).status === 0) {
