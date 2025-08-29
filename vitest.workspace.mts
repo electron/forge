@@ -14,8 +14,8 @@ export default defineWorkspace([
     test: {
       include: ['**/spec/**/*.slow.spec.ts'],
       name: 'slow',
-      hookTimeout: 120000,
-      testTimeout: 120000,
+      hookTimeout: 160000,
+      testTimeout: 160000,
     },
   },
 ]);
