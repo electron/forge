@@ -24,7 +24,7 @@ describe('toMsixArch', () => {
 
   it(`throw for arch values without a match`, () => {
     expect(() => toMsixArch('armv7l')).toThrowError(
-      'Invalid architecture: armv7l. Must be one of x64, arm64, x86 or ia32',
+      'Invalid architecture: armv7l. Must be one of x64, arm64 or ia32',
     );
   });
 });
