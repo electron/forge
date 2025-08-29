@@ -82,7 +82,7 @@ class ViteReactTypeScriptTemplate extends BaseTemplate {
           const packageJSON = await fs.readJson(packageJSONPath);
           packageJSON.main = '.vite/build/main.js';
           // Configure scripts for TS template
-          packageJSON.scripts.lint = 'eslint "src/**/*.{ts,tsx}"';
+          packageJSON.scripts.lint = 'eslint .';
           await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });
