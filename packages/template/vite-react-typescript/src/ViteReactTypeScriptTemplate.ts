@@ -40,7 +40,7 @@ class ViteReactTypeScriptTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
           // Copy eslint config with recommended settings
-          await this.copyTemplateFile(directory, 'eslint.config.js');
+          await this.copyTemplateFile(directory, '.eslintrc.json');
 
           // Remove index.js and replace with main.ts
           await fs.remove(filePath('index.js'));
@@ -82,7 +82,7 @@ class ViteReactTypeScriptTemplate extends BaseTemplate {
           const packageJSON = await fs.readJson(packageJSONPath);
           packageJSON.main = '.vite/build/main.js';
           // Configure scripts for TS template
-          packageJSON.scripts.lint = 'eslint . --ext ".ts,.tsx"';
+          packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
           await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });
