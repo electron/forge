@@ -26,8 +26,6 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
     delete packageOptions.manifestVariables;
 
     const result = await packageMSIX({
-      appDir: dir,
-      outputDir: makeDir,
       manifestVariables: {
         packageDescription: packageJSON.description,
         appExecutable: `${appName}.exe`,
@@ -38,6 +36,8 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
         ...configManifestVariables,
       },
       ...packageOptions,
+      appDir: dir,
+      outputDir: makeDir,
     });
 
     return [result.msixPackage];
