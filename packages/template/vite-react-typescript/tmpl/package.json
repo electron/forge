@@ -8,10 +8,11 @@
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.25.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "typescript": "~5.0.0",
+    "typescript": "~4.5.0",
     "typescript-eslint": "^8.41.0",
     "vite": "^7.1.3"
   }
