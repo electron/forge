@@ -2,9 +2,15 @@
   "devDependencies": {
     "@electron/fuses": "^1.7.0",
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
+    "@eslint/js": "^9.34.0",
     "@vitejs/plugin-react-swc": "^4.0.1",
+    "electron": "37.4.0",
+    "eslint": "^9.34.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "vite": "^7.1.3"
+    "vite": "^5.0.12"
   }
 }

@@ -41,7 +41,10 @@ class ViteReactTemplate extends BaseTemplate {
             'preload.js',
           );
 
-          // Remove index.js and replace with main.ts
+          // Copy eslint config with recommended settings
+          await this.copyTemplateFile(directory, 'eslint.config.js');
+
+          // Remove index.js and replace with main.js
           await fs.remove(filePath('index.js'));
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.js');
 
@@ -65,10 +68,11 @@ class ViteReactTemplate extends BaseTemplate {
           );
 
           // update package.json entry point
-          const pjPath = path.resolve(directory, 'package.json');
-          const currentPJ = await fs.readJson(pjPath);
-          currentPJ.main = '.vite/build/main.js';
-          await fs.writeJson(pjPath, currentPJ, {
+          const packageJSONPath = path.resolve(directory, 'package.json');
+          const packageJSON = await fs.readJson(packageJSONPath);
+          packageJSON.main = '.vite/build/main.js';
+          packageJSON.scripts.lint = 'eslint .';
+          await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });
         },

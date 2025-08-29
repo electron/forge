@@ -7,14 +7,13 @@ import {
   spawnPackageManager,
 } from '@electron-forge/core-utils';
 import testUtils from '@electron-forge/test-utils';
-import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
 import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
-describe('ViteReactTypeScriptTemplate', () => {
+describe('ViteReactTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
@@ -44,30 +43,22 @@ describe('ViteReactTypeScriptTemplate', () => {
 
     it.each([
       'package.json',
-      'tsconfig.json',
+      'forge.config.js',
       'eslint.config.js',
-      'forge.env.d.ts',
-      'forge.config.ts',
-      'vite.main.config.mts',
-      'vite.preload.config.mts',
-      'vite.renderer.config.mts',
-      path.join('src', 'main.ts'),
-      path.join('src', 'index.tsx'),
-      path.join('src', 'renderer.tsx'),
-      path.join('src', 'preload.ts'),
+      'vite.main.config.mjs',
+      'vite.preload.config.mjs',
+      'vite.renderer.config.mjs',
+      path.join('src', 'main.js'),
+      path.join('src', 'index.jsx'),
+      path.join('src', 'renderer.jsx'),
+      path.join('src', 'preload.js'),
     ])(`%s should exist`, async (filename) => {
       expect(fs.existsSync(path.join(dir, filename))).toBe(true);
-    });
-
-    it('should ensure js source files from base template are removed', async () => {
-      const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
-      expect(jsFiles.length).toEqual(0);
     });
   });
 
   describe('lint', () => {
     it('should initially pass the linting process', async () => {
-      delete process.env.TS_NODE_PROJECT;
       await testUtils.expectLintToPass(dir);
     });
   });
@@ -76,7 +67,6 @@ describe('ViteReactTypeScriptTemplate', () => {
     let cwd: string;
 
     beforeAll(async () => {
-      delete process.env.TS_NODE_PROJECT;
       // Vite resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
