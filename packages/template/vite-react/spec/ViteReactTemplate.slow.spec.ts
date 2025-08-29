@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
 import {
@@ -25,22 +24,19 @@ describe('ViteReactTemplate', () => {
   });
 
   afterAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:remove']);
-    if (os.platform() !== 'win32') {
-      // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
-      await fs.promises.rm(dir, { force: true, recursive: true });
-    }
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['link:remove']);
+    await fs.promises.rm(dir, { recursive: true, force: true });
+  });
+
+  it('should succeed in initializing the template', async () => {
+    await api.init({
+      dir,
+      template: path.join(__dirname, '..'),
+      interactive: false,
+    });
   });
 
   describe('template files are copied to project', () => {
-    it('should succeed in initializing the typescript template', async () => {
-      await api.init({
-        dir,
-        template: path.resolve(__dirname, '..'),
-        interactive: false,
-      });
-    });
-
     it.each([
       'package.json',
       'forge.config.js',
@@ -70,7 +66,19 @@ describe('ViteReactTemplate', () => {
       // Vite resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
-
+      // We need the version of vite to match exactly during development due to a quirk in
+      // typescript type-resolution.  In prod no one has to worry about things like this
+      const packageJson = JSON.parse(
+        await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
+      packageJson.resolutions = {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        vite: `${require('../../../../node_modules/vite/package.json').version}`,
+      };
+      await fs.promises.writeFile(
+        path.resolve(dir, 'package.json'),
+        JSON.stringify(packageJson),
+      );
       await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
         cwd: dir,
       });
