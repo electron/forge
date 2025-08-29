@@ -14,6 +14,7 @@ commands:
     steps:
       - run: git config --global core.autocrlf input
       - node/install:
+          install-yarn: true
           node-version: 20.17.0
       - checkout
   run-lint-and-build:
@@ -40,6 +41,7 @@ commands:
   run-fast-tests:
     steps:
       - node/install-packages:
+          pkg-manager: yarn
           with-cache: false
       - attach_workspace:
           at: .
