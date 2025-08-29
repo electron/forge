@@ -40,7 +40,7 @@ class ViteReactTypeScriptTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
           // Copy eslint config with recommended settings
-          await this.copyTemplateFile(directory, 'eslint.config.js');
+          await this.copyTemplateFile(directory, 'eslint.config.mjs');
 
           // Remove index.js and replace with main.ts
           await fs.remove(filePath('index.js'));

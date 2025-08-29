@@ -44,7 +44,7 @@ describe('ViteReactTemplate', () => {
     it.each([
       'package.json',
       'forge.config.js',
-      'eslint.config.js',
+      'eslint.config.mjs',
       'vite.main.config.mjs',
       'vite.preload.config.mjs',
       'vite.renderer.config.mjs',

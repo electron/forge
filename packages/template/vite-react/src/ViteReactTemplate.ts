@@ -42,7 +42,7 @@ class ViteReactTemplate extends BaseTemplate {
           );
 
           // Copy eslint config with recommended settings
-          await this.copyTemplateFile(directory, 'eslint.config.js');
+          await this.copyTemplateFile(directory, 'eslint.config.mjs');
 
           // Remove index.js and replace with main.js
           await fs.remove(filePath('index.js'));
