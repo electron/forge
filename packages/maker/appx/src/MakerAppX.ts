@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
@@ -11,7 +12,6 @@ import {
 import fs from 'fs-extra';
 
 import { MakerAppXConfig } from './Config';
-import getNameFromAuthor from './util/author-name';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to
