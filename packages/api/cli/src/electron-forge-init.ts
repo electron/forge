@@ -73,6 +73,7 @@ program
               }
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,
               {
@@ -94,9 +95,32 @@ program
               },
             );
 
+            let framework: string | undefined;
+
+            if (bundler == 'vite') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              framework = await prompt.run<Prompt<string | undefined, any>>(
+                select,
+                {
+                  message: 'Select a framework',
+                  choices: [
+                    {
+                      name: 'None',
+                      value: undefined,
+                    },
+                    {
+                      name: 'React',
+                      value: 'react',
+                    },
+                  ],
+                },
+              );
+            }
+
             let language: string | undefined;
 
             if (bundler !== 'base') {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               language = await prompt.run<Prompt<string | undefined, any>>(
                 select,
                 {
@@ -115,7 +139,7 @@ program
               );
             }
 
-            initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
+            initOpts.template = `${bundler}${framework ? `-${framework}` : ''}${language ? `-${language}` : ''}`;
             initOpts.skipGit = !(await prompt.run(confirm, {
               message: `Would you like to initialize Git in your new project?`,
               default: true,
