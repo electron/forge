@@ -301,11 +301,17 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
                   // emits events for subsequent builds.
                   if (isRollupWatcher(result)) {
                     result.on('event', (event) => {
-                      if (event.code === 'ERROR') {
+                      if (
+                        event.code === 'ERROR' &&
+                        userConfig.logLevel !== 'silent'
+                      ) {
                         console.error(
                           `\n${chalk.dim(this.timeFormatter.format(new Date()))} ${event.error.message}`,
                         );
-                      } else if (event.code === 'BUNDLE_END') {
+                      } else if (
+                        event.code === 'BUNDLE_END' &&
+                        (!userConfig.logLevel || userConfig.logLevel === 'info')
+                      ) {
                         console.log(
                           `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
                             'target built',
