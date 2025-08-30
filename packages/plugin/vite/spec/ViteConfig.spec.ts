@@ -41,7 +41,10 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
       'cjs',
     ]);
-    expect(buildConfig.build?.rollupOptions?.external).toEqual(external);
+    expect(buildConfig.build?.rollupOptions?.external).toEqual([
+      ...external,
+      'electron/main',
+    ]);
     expect(buildConfig.clearScreen).toBe(false);
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
@@ -73,7 +76,10 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.outDir).toEqual('.vite/build');
     expect(buildConfig.build?.watch).toBeNull();
     expect(buildConfig.build?.minify).toBe(true);
-    expect(buildConfig.build?.rollupOptions?.external).toEqual(external);
+    expect(buildConfig.build?.rollupOptions?.external).toEqual([
+      ...external,
+      'electron/renderer',
+    ]);
     expect(buildConfig.build?.rollupOptions?.input).toEqual('src/preload.js');
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
