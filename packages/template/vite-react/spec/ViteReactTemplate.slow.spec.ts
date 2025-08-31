@@ -16,6 +16,8 @@ describe('ViteReactTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['build']);
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
       'run',
       'link:prepare',
