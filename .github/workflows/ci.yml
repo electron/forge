@@ -186,8 +186,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          choco install --no-progress -y wixtoolset --version=3.14.1
-          echo "C:/Program Files (x86)/WiX Toolset v3.14/bin" >> $GITHUB_PATH
           cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
           npm install node-gyp@9.4.0
 
