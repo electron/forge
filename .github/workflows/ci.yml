@@ -180,7 +180,7 @@ jobs:
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: dist-files
-          path: .
+          path: packages
 
       - name: Windows setup
         if: runner.os == 'Windows'
@@ -199,7 +199,7 @@ jobs:
             --no-install-recommends \
             xvfb \
             libnss3 \
-            libasound2 \
+            libasound2t64 \
             libatk1.0-0 \
             libatk-bridge2.0-0 \
             libgdk-pixbuf2.0-dev \
