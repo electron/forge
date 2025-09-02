@@ -115,7 +115,7 @@ jobs:
             --no-install-recommends \
             xvfb \
             libnss3 \
-            libasound2t64 \
+            libasound2 \
             libatk1.0-0 \
             libatk-bridge2.0-0 \
             libgdk-pixbuf2.0-dev \
