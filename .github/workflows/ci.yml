@@ -206,3 +206,13 @@ jobs:
         run: |
           mkdir -p ./reports/out
           yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
+
+  required-ci:
+    needs:
+      - lint-and-build
+      - fast-tests
+      - slow-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: We are done
+        run: echo "Hello World"
