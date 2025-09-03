@@ -10396,9 +10396,9 @@ no-case@^3.0.4:
     tslib "^2.0.3"
 
 node-abi@^3.45.0:
-  version "3.75.0"
-  resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.75.0.tgz#2f929a91a90a0d02b325c43731314802357ed764"
-  integrity sha512-OhYaY5sDsIka7H7AtijtI9jwGYLyl29eQn/W623DiN/MIv5sUqc4g7BIDThX+gb7di9f6xK02nkp8sdfFWZLTg==
+  version "3.76.0"
+  resolved "https://registry.yarnpkg.com/node-abi/-/node-abi-3.76.0.tgz#b6113facd47ba4ad41e9f7e320f4d23338039948"
+  integrity sha512-vxPAUdXYJ2Vv8bUWSpbC/A4ltEdMYO4ruzMXrb99BbZz0IMmrt6xLhYirTIhOMk2dpsbjby+PZEhUkHIeMXM4g==
   dependencies:
     semver "^7.3.5"
 
