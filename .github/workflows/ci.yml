@@ -24,6 +24,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           # cache: yarn
 
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -82,6 +83,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           # cache: yarn
 
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -103,7 +105,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          pip install setuptools
           cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
           npm install node-gyp@9.4.0
 
@@ -130,13 +131,6 @@ jobs:
         run: |
           mkdir -p ./reports/out
           yarn test:fast --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
-
-      - name: Upload test results
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: always()
-        with:
-          name: fast-test-results-${{ matrix.os }}-${{ matrix.arch }}
-          path: ./reports/
 
   slow-tests:
     needs: lint-and-build
@@ -165,6 +159,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           # cache: yarn
 
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -211,16 +206,3 @@ jobs:
         run: |
           mkdir -p ./reports/out
           yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
-
-      - name: Make test report paths relative
-        shell: bash
-        run: |
-          if [ -e ./reports/out/test_output.xml ]; then
-            sed -i.bak 's/"[^"]*packages/"packages/' ./reports/out/test_output.xml
-          fi
-
-      - name: Upload test results
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: slow-test-results-${{ matrix.os }}-${{ matrix.arch }}
-          path: ./reports/
