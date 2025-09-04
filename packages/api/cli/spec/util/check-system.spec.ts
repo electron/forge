@@ -87,6 +87,27 @@ describe('checkPackageManager', () => {
     );
   });
 
+  it('should throw if using yarn without node-linker=node-modules', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'yarn',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
+    });
+    vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
+      if (args?.join(' ') === 'config get nodeLinker') {
+        return Promise.resolve('isolated');
+      } else if (args?.join(' ') === '--version') {
+        return Promise.resolve('4.1.0');
+      } else {
+        throw new Error('Unexpected command');
+      }
+    });
+    await expect(checkPackageManager()).rejects.toThrow(
+      'When using Yarn 2+, `nodeLinker` must be set to "node-modules". Run `yarn config set nodeLinker node-modules` to set this config value, or add it to your project\'s `.yarnrc` file.',
+    );
+  });
+
   it.each(['hoist-pattern', 'public-hoist-pattern'])(
     'should pass without validation if user has set %s in their pnpm config',
     async (cfg) => {

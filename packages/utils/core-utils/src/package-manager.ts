@@ -96,18 +96,43 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
-  const installer =
-    process.env.NODE_INSTALLER || executingPM?.name || lockfilePM;
 
-  // TODO(erickzhao): Remove NODE_INSTALLER environment variable for Forge 8
-  if (typeof process.env.NODE_INSTALLER === 'string' && !hasWarned) {
-    console.warn(
-      logSymbols.warning,
-      chalk.yellow(
-        `The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`,
-      ),
+  let installer;
+  let installerVersion;
+
+  if (typeof process.env.NODE_INSTALLER === 'string') {
+    if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
+      installer = process.env.NODE_INSTALLER;
+      installerVersion = await spawnPackageManager(
+        PACKAGE_MANAGERS[installer as SupportedPackageManager],
+        ['--version'],
+      );
+      if (!hasWarned) {
+        console.warn(
+          logSymbols.warning,
+          chalk.yellow(
+            `The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`,
+          ),
+        );
+        hasWarned = true;
+      }
+    } else {
+      console.warn(
+        logSymbols.warning,
+        chalk.yellow(
+          `Package manager ${chalk.red(process.env.NODE_INSTALLER)} is unsupported. Falling back to ${chalk.green('npm')} instead.`,
+        ),
+      );
+    }
+  } else if (executingPM) {
+    installer = executingPM.name;
+    installerVersion = executingPM.version;
+  } else if (lockfilePM) {
+    installer = lockfilePM;
+    installerVersion = await spawnPackageManager(
+      PACKAGE_MANAGERS[installer as SupportedPackageManager],
+      ['--version'],
     );
-    hasWarned = true;
   }
 
   switch (installer) {
@@ -117,19 +142,18 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
       d(
         `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
       );
-      return { ...PACKAGE_MANAGERS[installer], version: executingPM?.version };
+      return {
+        ...PACKAGE_MANAGERS[installer],
+        version: installerVersion,
+      };
     default:
-      if (installer !== undefined) {
-        console.warn(
-          logSymbols.warning,
-          chalk.yellow(
-            `Package manager ${chalk.red(installer)} is unsupported. Falling back to ${chalk.green('npm')} instead.`,
-          ),
-        );
-      } else {
-        d(`No package manager detected. Falling back to npm.`);
-      }
-      return PACKAGE_MANAGERS['npm'];
+      d(`No valid package manager detected. Falling back to npm.`);
+      return {
+        ...PACKAGE_MANAGERS['npm'],
+        version: await spawnPackageManager(PACKAGE_MANAGERS['npm'], [
+          '--version',
+        ]),
+      };
   }
 };
 
