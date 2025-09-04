@@ -4371,7 +4371,7 @@ bl@^4.0.3, bl@^4.1.0:
     inherits "^2.0.4"
     readable-stream "^3.4.0"
 
-bluebird@^3.0.6, bluebird@^3.1.1:
+bluebird@^3.1.1:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -4987,7 +4987,7 @@ commander@^11.1.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-11.1.0.tgz#62fdce76006a68e5c1ab3314dc92e800eb83d906"
   integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
 
-commander@^2.19.0, commander@^2.20.0, commander@^2.9.0:
+commander@^2.19.0, commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
@@ -7493,15 +7493,6 @@ gcp-metadata@^6.0.0:
     gaxios "^6.0.0"
     json-bigint "^1.0.0"
 
-generate-changelog@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/generate-changelog/-/generate-changelog-1.8.0.tgz#1d788cdef5a13a649da7eb2a1f3b02674850e4a8"
-  integrity sha512-msgpxeB75Ziyg3wGsZuPNl7c5RxChMKmYcAX5obnhUow90dBZW3nLic6nxGtst7Bpx453oS6zAIHcX7F3QVasw==
-  dependencies:
-    bluebird "^3.0.6"
-    commander "^2.9.0"
-    github-url-from-git "^1.4.0"
-
 generate-function@^2.0.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/generate-function/-/generate-function-2.3.1.tgz#f069617690c10c868e73b8465746764f97c3479f"
@@ -7704,11 +7695,6 @@ gitconfiglocal@^1.0.0:
   integrity sha512-spLUXeTAVHxDtKsJc8FkFVgFtMdEN9qPGpL23VfSHx4fP4+Ds097IXLvymbnDH8FnmxX5Nr9bPw3A+AQ6mWEaQ==
   dependencies:
     ini "^1.3.2"
-
-github-url-from-git@^1.4.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/github-url-from-git/-/github-url-from-git-1.5.0.tgz#f985fedcc0a9aa579dc88d7aff068d55cc6251a0"
-  integrity sha1-+YX+3MCpqledyI16/waNVcxiUaA=
 
 glob-parent@5.1.2, glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
