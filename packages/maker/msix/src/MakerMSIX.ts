@@ -1,9 +1,8 @@
 import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
+import { packageMSIX } from 'electron-windows-msix';
 
-// eslint-disable-next-line
-import { dynamicImport } from '../../../../packages/api/core/helper/dynamic-import.js';
 import { MakerMsixConfig } from './Config';
 import { toMsixArch } from './util/arch';
 
@@ -22,7 +21,6 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
     packageJSON,
     appName,
   }: MakerOptions): Promise<string[]> {
-    const { packageMSIX } = await dynamicImport('electron-windows-msix');
     const configManifestVariables = this.config.manifestVariables;
     const packageOptions = this.config;
     delete packageOptions.manifestVariables;
