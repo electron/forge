@@ -15,7 +15,7 @@ declare global {
 }
 
 declare module 'vite' {
-  interface ConfigEnv<K extends keyof VitePluginConfig = keyof VitePluginConfig> {
+  interface ConfigEnv<K extends 'build' | 'renderer' = 'build' | 'renderer'> {
     root: string;
     forgeConfig: VitePluginConfig;
     forgeConfigSelf: VitePluginConfig[K][number];

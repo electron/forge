@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { ForgePlatform } from '@electron-forge/shared-types';
 
@@ -8,7 +8,11 @@ type GetElectronExecutablePathParams = {
   platform: ForgePlatform;
 };
 
-export function getElectronExecutablePath({ appName, basePath, platform }: GetElectronExecutablePathParams): string {
+export function getElectronExecutablePath({
+  appName,
+  basePath,
+  platform,
+}: GetElectronExecutablePathParams): string {
   if (['darwin', 'mas'].includes(platform)) {
     return path.join(basePath, 'MacOS', appName);
   }

@@ -1,40 +1,47 @@
-import path from 'path';
-
-import { api, PublishOptions } from '@electron-forge/core';
 import { initializeProxy } from '@electron/get';
-import program from 'commander';
-import fs from 'fs-extra';
+import { api, PublishOptions } from '@electron-forge/core';
+import chalk from 'chalk';
+import { program } from 'commander';
 
 import './util/terminate';
+import packageJSON from '../package.json';
+
 import { getMakeOptions } from './electron-forge-make';
-import workingDir from './util/working-dir';
+import { resolveWorkingDir } from './util/resolve-working-dir';
 
-(async () => {
-  let dir = process.cwd();
-  program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
-    .arguments('[cwd]')
-    .option('--target [target[,target...]]', 'The comma-separated deployment targets, defaults to "github"')
-    .option('--dry-run', "Triggers a publish dry run which saves state and doesn't upload anything")
-    .option('--from-dry-run', 'Attempts to publish artifacts from the last saved dry run')
-    .helpOption('-h, --help', 'Output usage information')
-    .allowUnknownOption(true)
-    .action((cwd) => {
-      dir = workingDir(dir, cwd);
-    })
-    .parse(process.argv);
+program
+  .version(packageJSON.version, '-V, --version', 'Output the current version.')
+  .helpOption('-h, --help', 'Output usage information.')
+  .argument(
+    '[dir]',
+    'Directory to run the command in. (default: current directory)',
+  )
+  .option(
+    '--target [target[,target...]]',
+    'A comma-separated list of deployment targets. (default: all publishers in your Forge config)',
+  )
+  .option(
+    '--dry-run',
+    `Run the ${chalk.green('make')} command and save publish metadata without uploading anything.`,
+  )
+  .option('--from-dry-run', 'Publish artifacts from the last saved dry run.')
+  .allowUnknownOption(true)
+  .action(async (targetDir) => {
+    const dir = resolveWorkingDir(targetDir);
+    const options = program.opts();
 
-  initializeProxy();
+    initializeProxy();
 
-  const publishOpts: PublishOptions = {
-    dir,
-    interactive: true,
-    dryRun: program.dryRun,
-    dryRunResume: program.fromDryRun,
-  };
-  if (program.target) publishOpts.publishTargets = program.target.split(',');
+    const publishOpts: PublishOptions = {
+      dir,
+      interactive: true,
+      dryRun: options.dryRun,
+      dryRunResume: options.fromDryRun,
+    };
+    if (options.target) publishOpts.publishTargets = options.target.split(',');
 
-  publishOpts.makeOptions = await getMakeOptions();
+    publishOpts.makeOptions = await getMakeOptions();
 
-  await api.publish(publishOpts);
-})();
+    await api.publish(publishOpts);
+  })
+  .parse(process.argv);

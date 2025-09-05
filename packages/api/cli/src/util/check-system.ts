@@ -1,8 +1,13 @@
-import { exec } from 'child_process';
-import os from 'os';
-import path from 'path';
+import { exec } from 'node:child_process';
+import os from 'node:os';
+import path from 'node:path';
 
-import { utils as forgeUtils } from '@electron-forge/core';
+import {
+  PACKAGE_MANAGERS,
+  resolvePackageManager,
+  spawnPackageManager,
+  SupportedPackageManager,
+} from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -12,58 +17,100 @@ const d = debug('electron-forge:check-system');
 
 async function getGitVersion(): Promise<string | null> {
   return new Promise<string | null>((resolve) => {
-    exec('git --version', (err, output) => (err ? resolve(null) : resolve(output.toString().trim().split(' ').reverse()[0])));
+    exec('git --version', (err, output) =>
+      err
+        ? resolve(null)
+        : resolve(output.toString().trim().split(' ').reverse()[0]),
+    );
   });
 }
 
-async function checkNodeVersion() {
-  const { engines } = await fs.readJson(path.resolve(__dirname, '..', '..', 'package.json'));
-  const versionSatisfied = semver.satisfies(process.versions.node, engines.node);
+/**
+ * Packaging an app with Electron Forge requires `node_modules` to be on disk.
+ * With `pnpm`, this can be done in a few different ways.
+ *
+ * `node-linker=hoisted` replicates the behaviour of npm and Yarn Classic, while
+ * users may choose to set `public-hoist-pattern` or `hoist-pattern` for advanced
+ * configuration purposes.
+ */
+async function checkPnpmConfig() {
+  const { pnpm } = PACKAGE_MANAGERS;
+  const hoistPattern = await spawnPackageManager(pnpm, [
+    'config',
+    'get',
+    'hoist-pattern',
+  ]);
+  const publicHoistPattern = await spawnPackageManager(pnpm, [
+    'config',
+    'get',
+    'public-hoist-pattern',
+  ]);
 
-  if (!versionSatisfied) {
-    throw new Error(`You are running Node.js version ${process.versions.node}, but Electron Forge requires Node.js ${engines.node}.`);
+  if (hoistPattern !== 'undefined' || publicHoistPattern !== 'undefined') {
+    d(
+      `Custom hoist pattern detected ${JSON.stringify({
+        hoistPattern,
+        publicHoistPattern,
+      })}, assuming that the user has configured pnpm to package dependencies.`,
+    );
+    return;
   }
 
-  return process.versions.node;
+  const nodeLinker = await spawnPackageManager(pnpm, [
+    'config',
+    'get',
+    'node-linker',
+  ]);
+  if (nodeLinker !== 'hoisted') {
+    throw new Error(
+      'When using pnpm, `node-linker` must be set to "hoisted" (or a custom `hoist-pattern` or `public-hoist-pattern` must be defined). Run `pnpm config set node-linker hoisted` to set this config value, or add it to your project\'s `.npmrc` file.',
+    );
+  }
 }
 
-const NPM_ALLOWLISTED_VERSIONS = {
-  all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
-  darwin: '>= 5.4.0',
-  linux: '>= 5.4.0',
-};
-const YARN_ALLOWLISTED_VERSIONS = {
-  all: '>= 1.0.0',
+// TODO(erickzhao): Drop antiquated versions of npm for Forge v8
+const ALLOWLISTED_VERSIONS: Record<
+  SupportedPackageManager,
+  Record<string, string>
+> = {
+  npm: {
+    all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
+    darwin: '>= 5.4.0',
+    linux: '>= 5.4.0',
+  },
+  yarn: {
+    all: '>= 1.0.0',
+  },
+  pnpm: {
+    all: '>= 8.0.0',
+  },
 };
 
-export function checkValidPackageManagerVersion(packageManager: string, version: string, allowlistedVersions: string) {
+export async function checkPackageManager() {
+  const pm = await resolvePackageManager();
+  const version = pm.version ?? (await spawnPackageManager(pm, ['--version']));
+  const versionString = version.toString().trim();
+
+  const range =
+    ALLOWLISTED_VERSIONS[pm.executable][process.platform] ??
+    ALLOWLISTED_VERSIONS[pm.executable].all;
   if (!semver.valid(version)) {
     d(`Invalid semver-string while checking version: ${version}`);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    throw new Error(`Could not check ${packageManager} version "${version}", assuming incompatible`);
+    throw new Error(
+      `Could not check ${pm.executable} version "${version}", assuming incompatible`,
+    );
   }
-  if (!semver.satisfies(version, allowlistedVersions)) {
-    throw new Error(`Incompatible version of ${packageManager} detected "${version}", must be in range ${allowlistedVersions}`);
+  if (!semver.satisfies(version, range)) {
+    throw new Error(
+      `Incompatible version of ${pm.executable} detected: "${version}" must be in range ${range}`,
+    );
   }
-}
 
-function warnIfPackageManagerIsntAKnownGoodVersion(packageManager: string, version: string, allowlistedVersions: { [key: string]: string }) {
-  const osVersions = allowlistedVersions[process.platform];
-  const versions = osVersions ? `${allowlistedVersions.all} || ${osVersions}` : allowlistedVersions.all;
-  const versionString = version.toString();
-  checkValidPackageManagerVersion(packageManager, versionString, versions);
-}
-
-async function checkPackageManagerVersion() {
-  const version = await forgeUtils.yarnOrNpmSpawn(['--version']);
-  const versionString = version.toString().trim();
-  if (forgeUtils.hasYarn()) {
-    warnIfPackageManagerIsntAKnownGoodVersion('Yarn', versionString, YARN_ALLOWLISTED_VERSIONS);
-    return `yarn@${versionString}`;
-  } else {
-    warnIfPackageManagerIsntAKnownGoodVersion('NPM', versionString, NPM_ALLOWLISTED_VERSIONS);
-    return `npm@${versionString}`;
+  if (pm.executable === 'pnpm') {
+    await checkPnpmConfig();
   }
+
+  return `${pm.executable}@${versionString}`;
 }
 
 /**
@@ -75,20 +122,30 @@ async function checkPackageManagerVersion() {
  *
  * This is specifically not documented or everyone would make it.
  */
-const SKIP_SYSTEM_CHECK = path.resolve(os.homedir(), '.skip-forge-system-check');
+const SKIP_SYSTEM_CHECK = path.resolve(
+  os.homedir(),
+  '.skip-forge-system-check',
+);
 
-type SystemCheckContext = {
+export type SystemCheckContext = {
+  command: string;
   git: boolean;
   node: boolean;
   packageManager: boolean;
 };
-export async function checkSystem(task: ForgeListrTask<never>) {
+
+export async function checkSystem(
+  callerTask: ForgeListrTask<SystemCheckContext>,
+) {
   if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
-    return task.newListr<SystemCheckContext>(
+    return callerTask.newListr<SystemCheckContext>(
       [
         {
           title: 'Checking git exists',
+          // We only call the `initGit` helper in the `init` and `import` commands
+          enabled: (ctx): boolean =>
+            (ctx.command === 'init' || ctx.command === 'import') && ctx.git,
           task: async (_, task) => {
             const gitVersion = await getGitVersion();
             if (gitVersion) {
@@ -99,27 +156,20 @@ export async function checkSystem(task: ForgeListrTask<never>) {
           },
         },
         {
-          title: 'Checking node version',
+          title: 'Checking package manager version',
           task: async (_, task) => {
-            const nodeVersion = await checkNodeVersion();
-            task.title = `Found node@${nodeVersion}`;
-          },
-        },
-        {
-          title: 'Checking packageManager version',
-          task: async (_, task) => {
-            const packageManager = await checkPackageManagerVersion();
+            const packageManager = await checkPackageManager();
             task.title = `Found ${packageManager}`;
           },
         },
       ],
       {
         concurrent: true,
-        exitOnError: false,
+        exitOnError: true,
         rendererOptions: {
           collapseSubtasks: true,
         },
-      }
+      },
     );
   }
   d('skipping system check');

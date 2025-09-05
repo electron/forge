@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import glob from 'fast-glob';
 import * as fs from 'fs-extra';
@@ -7,12 +7,22 @@ import { getPackageInfo } from './utils';
 
 const DOCS_PATH = path.resolve(__dirname, '..', 'docs');
 
-async function normalizeLinks(htmlFile: string, subPath: string): Promise<string> {
+async function normalizeLinks(
+  htmlFile: string,
+  subPath: string,
+): Promise<string> {
   const content: string = await fs.readFile(htmlFile, 'utf8');
-  const relative: string = path.relative(path.resolve(DOCS_PATH, subPath), path.dirname(htmlFile));
+  const relative: string = path.relative(
+    path.resolve(DOCS_PATH, subPath),
+    path.dirname(htmlFile),
+  );
   return content
     .replace(/="[^"]*assets\//gi, '="/assets/')
-    .replace(/(<a href="(?!(?:https?:\/\/)|\/|#))(.+?)"/gi, (subString: string, m1: string, m2: string) => `${m1}/${path.posix.join(subPath, relative, m2)}"`);
+    .replace(
+      /(<a href="(?!(?:https?:\/\/)|\/|#))(.+?)"/gi,
+      (subString: string, m1: string, m2: string) =>
+        `${m1}/${path.posix.join(subPath, relative, m2)}"`,
+    );
 }
 
 (async () => {
@@ -23,10 +33,16 @@ async function normalizeLinks(htmlFile: string, subPath: string): Promise<string
   await fs.remove(path.resolve(DOCS_PATH));
   for (const p of packages) {
     const dir = p.path;
-    const subPath = path.posix.join(path.basename(path.dirname(dir)), path.basename(dir));
+    const subPath = path.posix.join(
+      path.basename(path.dirname(dir)),
+      path.basename(dir),
+    );
     const docPath = path.resolve(DOCS_PATH, subPath);
     if (!copiedAssets) {
-      await fs.copy(path.resolve(dir, 'doc', 'assets'), path.resolve(DOCS_PATH, 'assets'));
+      await fs.copy(
+        path.resolve(dir, 'doc', 'assets'),
+        path.resolve(DOCS_PATH, 'assets'),
+      );
       copiedAssets = true;
     }
     await fs.copy(path.resolve(dir, 'doc'), docPath);

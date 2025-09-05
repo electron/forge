@@ -7,6 +7,11 @@ type Deprecation = {
 
 export default (what: string): Deprecation => ({
   replaceWith: (replacement: string): void => {
-    console.warn(logSymbols.warning, chalk.yellow(`WARNING: ${what} is deprecated, please use ${replacement} instead`));
+    console.warn(
+      logSymbols.warning,
+      chalk.yellow(
+        `WARNING: ${what} is deprecated, please use ${replacement} instead`,
+      ),
+    );
   },
 });

@@ -1,5 +1,6 @@
-import path from 'path';
+import path from 'node:path';
 
+import { getHostArch } from '@electron/get';
 import { getElectronVersion } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
@@ -13,7 +14,6 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import { getHostArch } from '@electron/get';
 import chalk from 'chalk';
 import filenamify from 'filenamify';
 import fs from 'fs-extra';
@@ -30,20 +30,25 @@ import resolveDir from '../util/resolve-dir';
 
 import { listrPackage } from './package';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-class MakerImpl extends MakerBase<any> {
-  name = 'impl';
-
-  defaultPlatforms = [];
-}
+type MakerImpl = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): MakerBase<any>;
+};
 
 type MakeTargets = ForgeConfigMaker[] | string[];
 
-function generateTargets(forgeConfig: ResolvedForgeConfig, overrideTargets?: MakeTargets) {
+function generateTargets(
+  forgeConfig: ResolvedForgeConfig,
+  overrideTargets?: MakeTargets,
+) {
   if (overrideTargets) {
     return overrideTargets.map((target) => {
       if (typeof target === 'string') {
-        return forgeConfig.makers.find((maker) => (maker as IForgeResolvableMaker).name === target) || ({ name: target } as IForgeResolvableMaker);
+        return (
+          forgeConfig.makers.find(
+            (maker) => (maker as IForgeResolvableMaker).name === target,
+          ) || ({ name: target } as IForgeResolvableMaker)
+        );
       }
 
       return target;
@@ -53,7 +58,9 @@ function generateTargets(forgeConfig: ResolvedForgeConfig, overrideTargets?: Mak
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isElectronForgeMaker(target: MakerBase<any> | unknown): target is MakerBase<any> {
+function isElectronForgeMaker(
+  target: MakerBase<any> | unknown,
+): target is MakerBase<any> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (target as MakerBase<any>).__isElectronForgeMaker;
 }
@@ -108,7 +115,7 @@ export const listrMake = (
     overrideTargets,
     outDir,
   }: MakeOptions,
-  receiveMakeResults?: (results: ForgeMakeResult[]) => void
+  receiveMakeResults?: (results: ForgeMakeResult[]) => void,
 ) => {
   const listrOptions: ForgeListrOptions<MakeContext> = {
     concurrent: false,
@@ -117,22 +124,28 @@ export const listrMake = (
       collapseErrors: false,
     },
     silentRendererCondition: !interactive,
-    fallbackRendererCondition: Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+    fallbackRendererCondition:
+      Boolean(process.env.DEBUG) || Boolean(process.env.CI),
   };
 
   const runner = new Listr<MakeContext>(
     [
       {
         title: 'Loading configuration',
-        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'load-forge-config', category: '@electron-forge/core' }, async (_, ctx) => {
-          const resolvedDir = await resolveDir(providedDir);
-          if (!resolvedDir) {
-            throw new Error('Failed to locate startable Electron application');
-          }
+        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
+          { name: 'load-forge-config', category: '@electron-forge/core' },
+          async (_, ctx) => {
+            const resolvedDir = await resolveDir(providedDir);
+            if (!resolvedDir) {
+              throw new Error(
+                'Failed to locate startable Electron application',
+              );
+            }
 
-          ctx.dir = resolvedDir;
-          ctx.forgeConfig = await getForgeConfig(resolvedDir);
-        }),
+            ctx.dir = resolvedDir;
+            ctx.forgeConfig = await getForgeConfig(resolvedDir);
+          },
+        ),
       },
       {
         title: 'Resolving make targets',
@@ -143,13 +156,18 @@ export const listrMake = (
             ctx.actualOutDir = outDir || getCurrentOutDir(dir, forgeConfig);
 
             if (!['darwin', 'win32', 'linux', 'mas'].includes(platform)) {
-              throw new Error(`'${platform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'.`);
+              throw new Error(
+                `'${platform}' is an invalid platform. Choices are 'darwin', 'mas', 'win32' or 'linux'.`,
+              );
             }
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const makers: Array<() => MakerBase<any>> = [];
 
-            const possibleMakers = generateTargets(forgeConfig, overrideTargets);
+            const possibleMakers = generateTargets(
+              forgeConfig,
+              overrideTargets,
+            );
 
             for (const possibleMaker of possibleMakers) {
               /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -163,19 +181,28 @@ export const listrMake = (
                 if (resolvableTarget.enabled === false) continue;
 
                 if (!resolvableTarget.name) {
-                  throw new Error(`The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`);
-                } else if (typeof resolvableTarget.name !== 'string') {
-                  throw new Error(`The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`);
-                }
-
-                const MakerClass = await importSearch<typeof MakerImpl>(dir, [resolvableTarget.name]);
-                if (!MakerClass) {
                   throw new Error(
-                    `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`
+                    `The following maker config is missing a maker name: ${JSON.stringify(resolvableTarget)}`,
+                  );
+                } else if (typeof resolvableTarget.name !== 'string') {
+                  throw new Error(
+                    `The following maker config has a maker name that is not a string: ${JSON.stringify(resolvableTarget)}`,
                   );
                 }
 
-                maker = new MakerClass(resolvableTarget.config, resolvableTarget.platforms || undefined);
+                const MakerClass = await importSearch<MakerImpl>(dir, [
+                  resolvableTarget.name,
+                ]);
+                if (!MakerClass) {
+                  throw new Error(
+                    `Could not find module with name '${resolvableTarget.name}'. If this is a package from NPM, make sure it's listed in the devDependencies of your package.json. If this is a local module, make sure you have the correct path to its entry point. Try using the DEBUG="electron-forge:require-search" environment variable for more information.`,
+                  );
+                }
+
+                maker = new MakerClass(
+                  resolvableTarget.config,
+                  resolvableTarget.platforms || undefined,
+                );
                 if (!maker.platforms.includes(platform)) continue;
               }
 
@@ -185,12 +212,14 @@ export const listrMake = (
                     `Maker for target ${maker.name} is incompatible with this version of `,
                     'Electron Forge, please upgrade or contact the maintainer ',
                     "(needs to implement 'isSupportedOnCurrentPlatform)')",
-                  ].join('')
+                  ].join(''),
                 );
               }
 
               if (!maker.isSupportedOnCurrentPlatform()) {
-                throw new Error(`Cannot make for ${platform} and target ${maker.name}: the maker declared that it cannot run on ${process.platform}.`);
+                throw new Error(
+                  `Cannot make for ${platform} and target ${maker.name}: the maker declared that it cannot run on ${process.platform}.`,
+                );
               }
 
               maker.ensureExternalBinariesExist();
@@ -199,13 +228,15 @@ export const listrMake = (
             }
 
             if (makers.length === 0) {
-              throw new Error(`Could not find any make targets configured for the "${platform}" platform.`);
+              throw new Error(
+                `Could not find any make targets configured for the "${platform}" platform.`,
+              );
             }
 
             ctx.makers = makers;
 
             task.output = `Making for the following targets: ${chalk.magenta(`${makers.map((maker) => maker.name).join(', ')}`)}`;
-          }
+          },
         ),
         rendererOptions: {
           persistentOutput: true,
@@ -213,24 +244,29 @@ export const listrMake = (
       },
       {
         title: `Running ${chalk.yellow('package')} command`,
-        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'package()', category: '@electron-forge/core' }, async (childTrace, ctx, task) => {
-          if (!skipPackage) {
-            return delayTraceTillSignal(
-              childTrace,
-              listrPackage(childTrace, {
-                dir: ctx.dir,
-                interactive,
-                arch,
-                outDir: ctx.actualOutDir,
-                platform,
-              }),
-              'run'
-            );
-          } else {
-            task.output = chalk.yellow(`${logSymbols.warning} Skipping could result in an out of date build`);
-            task.skip();
-          }
-        }),
+        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
+          { name: 'package()', category: '@electron-forge/core' },
+          async (childTrace, ctx, task) => {
+            if (!skipPackage) {
+              return delayTraceTillSignal(
+                childTrace,
+                listrPackage(childTrace, {
+                  dir: ctx.dir,
+                  interactive,
+                  arch,
+                  outDir: ctx.actualOutDir,
+                  platform,
+                }),
+                'run',
+              );
+            } else {
+              task.output = chalk.yellow(
+                `${logSymbols.warning} Skipping could result in an out of date build`,
+              );
+              task.skip();
+            }
+          },
+        ),
         rendererOptions: {
           persistentOutput: true,
         },
@@ -240,8 +276,14 @@ export const listrMake = (
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
           { name: 'run-preMake-hook', category: '@electron-forge/core' },
           async (childTrace, ctx, task) => {
-            return delayTraceTillSignal(childTrace, task.newListr(await getHookListrTasks(childTrace, ctx.forgeConfig, 'preMake')), 'run');
-          }
+            return delayTraceTillSignal(
+              childTrace,
+              task.newListr(
+                await getHookListrTasks(childTrace, ctx.forgeConfig, 'preMake'),
+              ),
+              'run',
+            );
+          },
         ),
       },
       {
@@ -251,7 +293,12 @@ export const listrMake = (
           async (childTrace, ctx, task) => {
             const { actualOutDir, dir, forgeConfig, makers } = ctx;
             const packageJSON = await readMutatedPackageJson(dir, forgeConfig);
-            const appName = filenamify(forgeConfig.packagerConfig.name || packageJSON.productName || packageJSON.name, { replacement: '-' });
+            const appName = filenamify(
+              forgeConfig.packagerConfig.name ||
+                packageJSON.productName ||
+                packageJSON.name,
+              { replacement: '-' },
+            );
             const outputs: ForgeMakeResult[] = [];
             ctx.outputs = outputs;
 
@@ -264,8 +311,15 @@ export const listrMake = (
               },
             });
 
-            for (const targetArch of parseArchs(platform, arch, await getElectronVersion(dir, packageJSON))) {
-              const packageDir = path.resolve(actualOutDir, `${appName}-${platform}-${targetArch}`);
+            for (const targetArch of parseArchs(
+              platform,
+              arch,
+              await getElectronVersion(dir, packageJSON),
+            )) {
+              const packageDir = path.resolve(
+                actualOutDir,
+                `${appName}-${platform}-${targetArch}`,
+              );
               if (!(await fs.pathExists(packageDir))) {
                 throw new Error(`Couldn't find packaged app at: ${packageDir}`);
               }
@@ -274,33 +328,46 @@ export const listrMake = (
                 const uniqMaker = maker();
                 subRunner.add({
                   title: `Making a ${chalk.magenta(uniqMaker.name)} distributable for ${chalk.cyan(`${platform}/${targetArch}`)}`,
-                  task: childTrace<[]>({ name: `make-${maker.name}`, category: '@electron-forge/core', newRoot: true }, async () => {
-                    try {
-                      await Promise.resolve(uniqMaker.prepareConfig(targetArch));
-                      const artifacts = await uniqMaker.make({
-                        appName,
-                        forgeConfig,
-                        packageJSON,
-                        targetArch,
-                        dir: packageDir,
-                        makeDir: path.resolve(actualOutDir, 'make'),
-                        targetPlatform: platform,
-                      });
+                  task: childTrace<[]>(
+                    {
+                      name: `make-${maker.name}`,
+                      category: '@electron-forge/core',
+                      newRoot: true,
+                    },
+                    async () => {
+                      try {
+                        await Promise.resolve(
+                          uniqMaker.prepareConfig(targetArch),
+                        );
+                        const artifacts = await uniqMaker.make({
+                          appName,
+                          forgeConfig,
+                          packageJSON,
+                          targetArch,
+                          dir: packageDir,
+                          makeDir: path.resolve(actualOutDir, 'make'),
+                          targetPlatform: platform,
+                        });
 
-                      outputs.push({
-                        artifacts,
-                        packageJSON,
-                        platform,
-                        arch: targetArch,
-                      });
-                    } catch (err) {
-                      if (err) {
-                        throw err;
-                      } else {
-                        throw new Error(`An unknown error occurred while making for target: ${uniqMaker.name}`);
+                        outputs.push({
+                          artifacts,
+                          packageJSON,
+                          platform,
+                          arch: targetArch,
+                        });
+                      } catch (err) {
+                        if (err instanceof Error) {
+                          throw err;
+                        } else if (typeof err === 'string') {
+                          throw new Error(err);
+                        } else {
+                          throw new Error(
+                            `An unknown error occurred while making for target: ${uniqMaker.name}`,
+                          );
+                        }
                       }
-                    }
-                  }),
+                    },
+                  ),
                   rendererOptions: {
                     timer: { ...PRESET_TIMER },
                   },
@@ -309,37 +376,44 @@ export const listrMake = (
             }
 
             return delayTraceTillSignal(childTrace, subRunner, 'run');
-          }
+          },
         ),
       },
       {
         title: `Running ${chalk.yellow('postMake')} hook`,
-        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>({ name: 'run-postMake-hook', category: '@electron-forge/core' }, async (_, ctx, task) => {
-          // If the postMake hooks modifies the locations / names of the outputs it must return
-          // the new locations so that the publish step knows where to look
-          const originalOutputs = JSON.stringify(ctx.outputs);
-          ctx.outputs = await runMutatingHook(ctx.forgeConfig, 'postMake', ctx.outputs);
+        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
+          { name: 'run-postMake-hook', category: '@electron-forge/core' },
+          async (_, ctx, task) => {
+            // If the postMake hooks modifies the locations / names of the outputs it must return
+            // the new locations so that the publish step knows where to look
+            const originalOutputs = JSON.stringify(ctx.outputs);
+            ctx.outputs = await runMutatingHook(
+              ctx.forgeConfig,
+              'postMake',
+              ctx.outputs,
+            );
 
-          let outputLocations = [path.resolve(ctx.actualOutDir, 'make')];
-          if (originalOutputs !== JSON.stringify(ctx.outputs)) {
-            const newDirs = new Set<string>();
-            const artifactPaths = [];
-            for (const result of ctx.outputs) {
-              for (const artifact of result.artifacts) {
-                newDirs.add(path.dirname(artifact));
-                artifactPaths.push(artifact);
+            let outputLocations = [path.resolve(ctx.actualOutDir, 'make')];
+            if (originalOutputs !== JSON.stringify(ctx.outputs)) {
+              const newDirs = new Set<string>();
+              const artifactPaths = [];
+              for (const result of ctx.outputs) {
+                for (const artifact of result.artifacts) {
+                  newDirs.add(path.dirname(artifact));
+                  artifactPaths.push(artifact);
+                }
+              }
+              if (newDirs.size <= ctx.outputs.length) {
+                outputLocations = [...newDirs];
+              } else {
+                outputLocations = artifactPaths;
               }
             }
-            if (newDirs.size <= ctx.outputs.length) {
-              outputLocations = [...newDirs];
-            } else {
-              outputLocations = artifactPaths;
-            }
-          }
-          receiveMakeResults?.(ctx.outputs);
+            receiveMakeResults?.(ctx.outputs);
 
-          task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))})}`;
-        }),
+            task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))}`;
+          },
+        ),
         rendererOptions: {
           persistentOutput: true,
         },
@@ -348,16 +422,19 @@ export const listrMake = (
     {
       ...listrOptions,
       ctx: {} as MakeContext,
-    }
+    },
   );
 
   return runner;
 };
 
-export default autoTrace({ name: 'make()', category: '@electron-forge/core' }, async (childTrace, opts: MakeOptions): Promise<ForgeMakeResult[]> => {
-  const runner = listrMake(childTrace, opts);
+export default autoTrace(
+  { name: 'make()', category: '@electron-forge/core' },
+  async (childTrace, opts: MakeOptions): Promise<ForgeMakeResult[]> => {
+    const runner = listrMake(childTrace, opts);
 
-  await runner.run();
+    await runner.run();
 
-  return runner.ctx.outputs;
-});
+    return runner.ctx.outputs;
+  },
+);

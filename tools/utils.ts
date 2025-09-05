@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import * as fs from 'fs-extra';
 
@@ -21,7 +21,9 @@ export const getPackageInfo = async (): Promise<Package[]> => {
     if (stat.isDirectory()) {
       for (const packageDir of await fs.readdir(subDirPath)) {
         const packagePath = path.resolve(subDirPath, packageDir);
-        const pkg = await fs.readJson(path.resolve(packagePath, 'package.json'));
+        const pkg = await fs.readJson(
+          path.resolve(packagePath, 'package.json'),
+        );
         packages.push({
           path: packagePath,
           name: pkg.name,

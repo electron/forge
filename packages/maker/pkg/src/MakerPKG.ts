@@ -1,8 +1,8 @@
-import path from 'path';
+import path from 'node:path';
 
+import { flatAsync } from '@electron/osx-sign';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import { flatAsync } from '@electron/osx-sign';
 
 import { MakerPKGConfig } from './Config';
 
@@ -15,12 +15,22 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
     return process.platform === 'darwin';
   }
 
-  async make({ dir, makeDir, appName, packageJSON, targetPlatform, targetArch }: MakerOptions): Promise<string[]> {
+  async make({
+    dir,
+    makeDir,
+    appName,
+    packageJSON,
+    targetPlatform,
+    targetArch,
+  }: MakerOptions): Promise<string[]> {
     if (!this.isValidTargetPlatform(targetPlatform)) {
-      throw new Error(`The pkg maker only supports targeting "mas" and "darwin" builds. You provided "${targetPlatform}".`);
+      throw new Error(
+        `The pkg maker only supports targeting "mas" and "darwin" builds. You provided "${targetPlatform}".`,
+      );
     }
 
-    const name = this.config.name || `${appName}-${packageJSON.version}-${targetArch}`;
+    const name =
+      this.config.name || `${appName}-${packageJSON.version}-${targetArch}`;
     const outPath = path.resolve(makeDir, `${name}.pkg`);
 
     await this.ensureFile(outPath);
@@ -36,7 +46,9 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
     return [outPath];
   }
 
-  private isValidTargetPlatform(platform: string): platform is 'darwin' | 'mas' {
+  private isValidTargetPlatform(
+    platform: string,
+  ): platform is 'darwin' | 'mas' {
     return this.defaultPlatforms.includes(platform);
   }
 }

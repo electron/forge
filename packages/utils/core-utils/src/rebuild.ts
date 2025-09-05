@@ -1,8 +1,12 @@
-import * as cp from 'child_process';
-import * as path from 'path';
+import * as cp from 'node:child_process';
+import * as path from 'node:path';
 
-import { ForgeArch, ForgeListrTask, ForgePlatform } from '@electron-forge/shared-types';
 import { RebuildOptions } from '@electron/rebuild';
+import {
+  ForgeArch,
+  ForgeListrTask,
+  ForgePlatform,
+} from '@electron-forge/shared-types';
 
 export const listrCompatibleRebuildHook = async <Ctx = never>(
   buildPath: string,
@@ -11,7 +15,7 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
   arch: ForgeArch,
   config: Partial<RebuildOptions> = {},
   task: ForgeListrTask<Ctx>,
-  taskTitlePrefix = ''
+  taskTitlePrefix = '',
 ): Promise<void> => {
   task.title = `${taskTitlePrefix}Preparing native dependencies`;
 
@@ -22,9 +26,13 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
     arch,
   };
 
-  const child = cp.fork(path.resolve(__dirname, 'remote-rebuild.js'), [JSON.stringify(options)], {
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-  });
+  const child = cp.fork(
+    path.resolve(__dirname, 'remote-rebuild.js'),
+    [JSON.stringify(options)],
+    {
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+    },
+  );
 
   let pendingError: Error;
   let found = 0;
@@ -41,38 +49,46 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
     task.output = chunk.toString();
   });
 
-  child.on('message', (message: { msg: string; err: { message: string; stack: string } }) => {
-    switch (message.msg) {
-      case 'module-found': {
-        found += 1;
-        redraw();
-        break;
-      }
-      case 'module-done': {
-        done += 1;
-        redraw();
-        break;
-      }
-      case 'rebuild-error': {
-        pendingError = new Error(message.err.message);
-        pendingError.stack = message.err.stack;
-        break;
-      }
-      case 'rebuild-done': {
-        if (task.task.rendererTaskOptions && 'persistentOutput' in task.task.rendererTaskOptions) {
-          task.task.rendererTaskOptions.persistentOutput = false;
+  child.on(
+    'message',
+    (message: { msg: string; err: { message: string; stack: string } }) => {
+      switch (message.msg) {
+        case 'module-found': {
+          found += 1;
+          redraw();
+          break;
         }
-        break;
+        case 'module-done': {
+          done += 1;
+          redraw();
+          break;
+        }
+        case 'rebuild-error': {
+          pendingError = new Error(message.err.message);
+          pendingError.stack = message.err.stack;
+          break;
+        }
+        case 'rebuild-done': {
+          if (
+            task.task.rendererTaskOptions &&
+            'persistentOutput' in task.task.rendererTaskOptions
+          ) {
+            task.task.rendererTaskOptions.persistentOutput = false;
+          }
+          break;
+        }
       }
-    }
-  });
+    },
+  );
 
   await new Promise<void>((resolve, reject) => {
     child.on('exit', (code) => {
       if (code === 0 && !pendingError) {
         resolve();
       } else {
-        reject(pendingError || new Error(`Rebuilder failed with exit code: ${code}`));
+        reject(
+          pendingError || new Error(`Rebuilder failed with exit code: ${code}`),
+        );
       }
     });
   });

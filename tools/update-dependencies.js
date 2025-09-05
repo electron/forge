@@ -9,7 +9,6 @@ const DO_NOT_UPGRADE = [
   '@typescript-eslint/eslint-plugin', // special case
   'chalk', // Requires ESM
   'commander', // TODO: convert to yargs
-  'eslint-plugin-mocha', // Requires Node 14
   'find-up', // Requires ESM
   'log-symbols', // Requires ESM
   'node-fetch', // Requires ESM
@@ -74,7 +73,10 @@ class Package {
   }
 
   isMinorVersionBump() {
-    return this.minorVersionLocked && !satisfies(this.latestVersion, `~${this.wantedVersion}`);
+    return (
+      this.minorVersionLocked &&
+      !satisfies(this.latestVersion, `~${this.wantedVersion}`)
+    );
   }
 
   async smoketestAndCommit(packageName = null) {
@@ -82,7 +84,11 @@ class Package {
     await yarn('lint');
     await yarn('build');
     await git('add', 'package.json', 'yarn.lock', ...packageJSONs);
-    await git('commit', '-m', `build(${this.commitType}): upgrade ${packageName || this.name} to ${this.commitVersion}`);
+    await git(
+      'commit',
+      '-m',
+      `build(${this.commitType}): upgrade ${packageName || this.name} to ${this.commitVersion}`,
+    );
   }
 
   async upgrade() {
@@ -94,12 +100,16 @@ class Package {
   }
 
   async yarn_upgrade_and_update_packageJSON() {
-    console.log(`Upgrading ${this.name} from ${this.wantedVersion} to ^${this.latestVersion} (and updating package.json)...`);
+    console.log(
+      `Upgrading ${this.name} from ${this.wantedVersion} to ^${this.latestVersion} (and updating package.json)...`,
+    );
     await yarn('upgrade', `${this.name}@^${this.latestVersion}`);
   }
 
   async yarn_upgrade_in_yarn_lock() {
-    console.log(`Upgrading ${this.name} from ${this.currentVersion} to ${this.latestVersion} in yarn.lock...`);
+    console.log(
+      `Upgrading ${this.name} from ${this.currentVersion} to ${this.latestVersion} in yarn.lock...`,
+    );
     await yarn('upgrade', this.name);
   }
 }
@@ -114,21 +124,43 @@ async function main() {
     console.log('No packages to update.');
   } catch (error) {
     const table = JSON.parse(error.stdout.split('\n')[1]);
-    for (const [packageName, currentVersion, wantedVersion, latestVersion, packageType /*, _url */] of table.data.body) {
+    for (const [
+      packageName,
+      currentVersion,
+      wantedVersion,
+      latestVersion,
+      packageType /*, _url */,
+    ] of table.data.body) {
       if (DO_NOT_UPGRADE.includes(packageName)) {
-        console.log(`Skipping "${packageName} from update as it is in the denylist`);
+        console.log(
+          `Skipping "${packageName} from update as it is in the denylist`,
+        );
         continue;
       }
       if (onlyModules.length > 0 && !onlyModules.includes(packageName)) {
-        console.log(`Skipping "${packageName}" from update as it was not specified on the command line`);
+        console.log(
+          `Skipping "${packageName}" from update as it was not specified on the command line`,
+        );
         continue;
       }
       let commitPackageName = null;
-      const nodePackage = new Package(packageName, currentVersion, wantedVersion, latestVersion, packageType);
+      const nodePackage = new Package(
+        packageName,
+        currentVersion,
+        wantedVersion,
+        latestVersion,
+        packageType,
+      );
       await nodePackage.upgrade();
 
       if (packageName === '@typescript-eslint/parser') {
-        const eslintPlugin = new Package('@typescript-eslint/eslint-plugin', currentVersion, wantedVersion, latestVersion, packageType);
+        const eslintPlugin = new Package(
+          '@typescript-eslint/eslint-plugin',
+          currentVersion,
+          wantedVersion,
+          latestVersion,
+          packageType,
+        );
         await eslintPlugin.upgrade();
         commitPackageName = '@typescript-eslint/{parser,eslint-plugin}';
       }

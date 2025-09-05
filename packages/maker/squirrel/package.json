@@ -1,22 +1,18 @@
 {
   "name": "@electron-forge/maker-squirrel",
-  "version": "7.6.0",
+  "version": "7.8.3",
   "description": "Squirrel maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
   "main": "dist/MakerSquirrel.js",
   "typings": "dist/MakerSquirrel.d.ts",
-  "devDependencies": {
-    "chai": "^4.3.3",
-    "mocha": "^9.0.1"
-  },
   "engines": {
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "7.6.0",
-    "@electron-forge/shared-types": "7.6.0",
+    "@electron-forge/maker-base": "7.8.3",
+    "@electron-forge/shared-types": "7.8.3",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {

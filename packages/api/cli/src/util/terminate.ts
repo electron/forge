@@ -4,19 +4,24 @@ function redConsoleError(msg: string) {
   console.error(chalk.red(msg));
 }
 
-process.on('unhandledRejection', (reason: string, promise: Promise<unknown>) => {
-  redConsoleError('\nAn unhandled rejection has occurred inside Forge:');
-  redConsoleError(reason.toString().trim());
-  promise.catch((err: Error) => {
-    if ('stack' in err) {
-      const usefulStack = err.stack;
-      if (usefulStack?.startsWith(reason.toString().trim())) {
-        redConsoleError(usefulStack.substring(reason.toString().trim().length + 1).trim());
+process.on(
+  'unhandledRejection',
+  (reason: string, promise: Promise<unknown>) => {
+    redConsoleError('\nAn unhandled rejection has occurred inside Forge:');
+    redConsoleError(reason.toString().trim());
+    promise.catch((err: Error) => {
+      if ('stack' in err) {
+        const usefulStack = err.stack;
+        if (usefulStack?.startsWith(reason.toString().trim())) {
+          redConsoleError(
+            usefulStack.substring(reason.toString().trim().length + 1).trim(),
+          );
+        }
       }
-    }
-    process.exit(1);
-  });
-});
+      process.exit(1);
+    });
+  },
+);
 
 process.on('uncaughtException', (err) => {
   if (err && err.message && err.stack) {

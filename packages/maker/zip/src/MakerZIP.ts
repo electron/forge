@@ -1,5 +1,5 @@
-import path from 'path';
-import { promisify } from 'util';
+import path from 'node:path';
+import { promisify } from 'node:util';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
@@ -33,13 +33,28 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     return true;
   }
 
-  async make({ dir, makeDir, appName, packageJSON, targetArch, targetPlatform }: MakerOptions): Promise<string[]> {
+  async make({
+    dir,
+    makeDir,
+    appName,
+    packageJSON,
+    targetArch,
+    targetPlatform,
+  }: MakerOptions): Promise<string[]> {
     const { zip } = require('cross-zip');
 
-    const zipDir = ['darwin', 'mas'].includes(targetPlatform) ? path.resolve(dir, `${appName}.app`) : dir;
+    const zipDir = ['darwin', 'mas'].includes(targetPlatform)
+      ? path.resolve(dir, `${appName}.app`)
+      : dir;
 
     const zipName = `${path.basename(dir)}-${packageJSON.version}.zip`;
-    const zipPath = path.resolve(makeDir, 'zip', targetPlatform, targetArch, zipName);
+    const zipPath = path.resolve(
+      makeDir,
+      'zip',
+      targetPlatform,
+      targetArch,
+      zipName,
+    );
 
     await this.ensureFile(zipPath);
     await promisify(zip)(zipDir, zipPath);
@@ -62,7 +77,9 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
       updateUrl.pathname += `/${zipName}`;
       // Remove existing release if it is already in the manifest
       currentValue.releases = currentValue.releases || [];
-      currentValue.releases = currentValue.releases.filter((release) => release.version !== packageJSON.version);
+      currentValue.releases = currentValue.releases.filter(
+        (release) => release.version !== packageJSON.version,
+      );
       // Add the current version as the current release
       currentValue.currentRelease = packageJSON.version;
       currentValue.releases.push({
@@ -76,7 +93,13 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
         },
       });
 
-      const releasesPath = path.resolve(makeDir, 'zip', targetPlatform, targetArch, 'RELEASES.json');
+      const releasesPath = path.resolve(
+        makeDir,
+        'zip',
+        targetPlatform,
+        targetArch,
+        'RELEASES.json',
+      );
       await this.ensureFile(releasesPath);
       await fs.writeJson(releasesPath, currentValue);
 

@@ -1,6 +1,9 @@
-import path from 'path';
+import path from 'node:path';
 
-import { PublisherBase, PublisherOptions } from '@electron-forge/publisher-base';
+import {
+  PublisherBase,
+  PublisherOptions,
+} from '@electron-forge/publisher-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 interface StaticArtifact {
@@ -17,10 +20,16 @@ interface StaticPublisherConfig {
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
 }
 
-export default abstract class PublisherStatic<C extends StaticPublisherConfig> extends PublisherBase<C> {
+export default abstract class PublisherStatic<
+  C extends StaticPublisherConfig,
+> extends PublisherBase<C> {
   protected keyForArtifact(artifact: StaticArtifact): string {
     if (this.config.keyResolver) {
-      return this.config.keyResolver(path.basename(artifact.path), artifact.platform, artifact.arch);
+      return this.config.keyResolver(
+        path.basename(artifact.path),
+        artifact.platform,
+        artifact.arch,
+      );
     }
 
     return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;

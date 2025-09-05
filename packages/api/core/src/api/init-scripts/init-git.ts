@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { exec } from 'node:child_process';
 
 import debug from 'debug';
 
@@ -15,12 +15,14 @@ export const initGit = async (dir: string): Promise<void> => {
         if (err) {
           // not run within a Git repository
           d('executing "git init" in directory:', dir);
-          exec('git init', { cwd: dir }, (initErr) => (initErr ? reject(initErr) : resolve()));
+          exec('git init', { cwd: dir }, (initErr) =>
+            initErr ? reject(initErr) : resolve(),
+          );
         } else {
           d('.git directory already exists, skipping git initialization');
           resolve();
         }
-      }
+      },
     );
   });
 };

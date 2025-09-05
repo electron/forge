@@ -1,6 +1,11 @@
-import path from 'path';
+import path from 'node:path';
 
-import { ForgeConfig, ForgePlatform, IForgeResolvableMaker, IForgeResolvablePublisher } from '@electron-forge/shared-types';
+import {
+  ForgeConfig,
+  ForgePlatform,
+  IForgeResolvableMaker,
+  IForgeResolvablePublisher,
+} from '@electron-forge/shared-types';
 
 import { siblingDep } from '../api/init-scripts/init-npm';
 
@@ -40,10 +45,14 @@ type ForgePackageJSON = Record<string, unknown> & {
   devDependencies: Record<string, string>;
 };
 
-function mapMakeTargets(forge5Config: Forge5Config): Map<string, ForgePlatform[]> {
+function mapMakeTargets(
+  forge5Config: Forge5Config,
+): Map<string, ForgePlatform[]> {
   const makeTargets = new Map<string, ForgePlatform[]>();
   if (forge5Config.make_targets) {
-    for (const [platform, targets] of Object.entries(forge5Config.make_targets as MakeTargets)) {
+    for (const [platform, targets] of Object.entries(
+      forge5Config.make_targets as MakeTargets,
+    )) {
       for (const target of targets) {
         let platforms = makeTargets.get(target);
         if (platforms === undefined) {
@@ -72,7 +81,9 @@ const forge5MakerMappings = new Map<Forge5ConfigKey, string>([
 /**
  * Converts Forge v5 maker config to v6.
  */
-function generateForgeMakerConfig(forge5Config: Forge5Config): IForgeResolvableMaker[] {
+function generateForgeMakerConfig(
+  forge5Config: Forge5Config,
+): IForgeResolvableMaker[] {
   const makeTargets = mapMakeTargets(forge5Config);
   const makers: IForgeResolvableMaker[] = [];
 
@@ -121,7 +132,9 @@ function transformGitHubPublisherConfig(config: GitHub5Config) {
 /**
  * Converts Forge v5 publisher config to v6.
  */
-function generateForgePublisherConfig(forge5Config: Forge5Config): IForgeResolvablePublisher[] {
+function generateForgePublisherConfig(
+  forge5Config: Forge5Config,
+): IForgeResolvablePublisher[] {
   const publishers: IForgeResolvablePublisher[] = [];
 
   for (const [forge5Key, publisherType] of forge5PublisherMappings) {
@@ -144,7 +157,9 @@ function generateForgePublisherConfig(forge5Config: Forge5Config): IForgeResolva
 /**
  * Upgrades Forge v5 config to v6.
  */
-export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeConfig {
+export default function upgradeForgeConfig(
+  forge5Config: Forge5Config,
+): ForgeConfig {
   const forgeConfig: ForgeConfig = {} as ForgeConfig;
 
   if (forge5Config.electronPackagerConfig) {
@@ -160,12 +175,22 @@ export default function upgradeForgeConfig(forge5Config: Forge5Config): ForgeCon
   return forgeConfig;
 }
 
-export function updateUpgradedForgeDevDeps(packageJSON: ForgePackageJSON, devDeps: string[]): string[] {
+export function updateUpgradedForgeDevDeps(
+  packageJSON: ForgePackageJSON,
+  devDeps: string[],
+): string[] {
   const forgeConfig = packageJSON.config.forge;
   devDeps = devDeps.filter((dep) => !dep.startsWith('@electron-forge/maker-'));
-  devDeps = devDeps.concat((forgeConfig.makers as IForgeResolvableMaker[]).map((maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name))));
   devDeps = devDeps.concat(
-    (forgeConfig.publishers as IForgeResolvablePublisher[]).map((publisher: IForgeResolvablePublisher) => siblingDep(path.basename(publisher.name)))
+    (forgeConfig.makers as IForgeResolvableMaker[]).map(
+      (maker: IForgeResolvableMaker) => siblingDep(path.basename(maker.name)),
+    ),
+  );
+  devDeps = devDeps.concat(
+    (forgeConfig.publishers as IForgeResolvablePublisher[]).map(
+      (publisher: IForgeResolvablePublisher) =>
+        siblingDep(path.basename(publisher.name)),
+    ),
   );
 
   return devDeps;
