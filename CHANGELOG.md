@@ -1,3 +1,9 @@
+# Changelog
+
+The changelog for subsequent updates is available for each release independently on this repo's
+[GitHub Releases](https://github.com/electron/forge/releases) page. This document is preserved
+for historical purposes.
+
 #### [6.0.2](https://github.com/electron/forge/releases/tag/v6.0.2) (2022-11-14)
 
 #### [6.0.1](https://github.com/electron/forge/releases/tag/v6.0.1) (2022-11-08)

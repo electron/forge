@@ -111,7 +111,6 @@
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-tsdoc": "^0.4.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
-    "generate-changelog": "^1.8.0",
     "husky": "^7.0.1",
     "inquirer": "^8.0.0",
     "lerna": "^7.4.2",

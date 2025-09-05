@@ -8,6 +8,7 @@ import {
 } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import semver from 'semver';
 
 import determineAuthor from './determine-author';
 
@@ -71,6 +72,13 @@ export class BaseTemplate implements ForgeTemplate {
 
           if (pm.executable === 'pnpm') {
             rootFiles.push('_npmrc');
+          } else if (
+            // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
+            pm.executable === 'yarn' &&
+            pm.version &&
+            semver.gte(pm.version, '2.0.0')
+          ) {
+            rootFiles.push('_yarnrc');
           }
 
           if (copyCIFiles) {

@@ -5,6 +5,7 @@ import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 
 export const builtins = [
   'electron',
+  'electron/common',
   ...builtinModules.map((m) => [m, `node:${m}`]).flat(),
 ];
 

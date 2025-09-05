@@ -19,8 +19,7 @@ jump right in to Electron development.
 [Docs and Usage](#docs-and-usage) |
 [Configuration](https://www.electronforge.io/configuration) |
 [Support](https://github.com/electron/forge/blob/main/SUPPORT.md) |
-[Contributing](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) |
-[Changelog](https://github.com/electron/forge/blob/main/CHANGELOG.md)
+[Contributing](https://github.com/electron/forge/blob/main/CONTRIBUTING.md)
 
 ---
 
