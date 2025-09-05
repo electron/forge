@@ -43,6 +43,7 @@
     "@electron/packager": "^18.3.5",
     "@electron/rebuild": "^3.7.0",
     "@malept/cross-spawn-promise": "^2.0.0",
+    "@vscode/sudo-prompt": "^9.3.1",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fast-glob": "^3.2.7",
@@ -60,7 +61,6 @@
     "rechoir": "^0.8.0",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
-    "@vscode/sudo-prompt": "^9.3.1",
     "username": "^5.1.0"
   },
   "engines": {
