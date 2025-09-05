@@ -331,7 +331,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
         };
       }),
       {
-        concurrent: true,
+        concurrent: this.config.concurrent ?? true,
         exitOnError: this.isProd,
       },
     );
@@ -351,6 +351,9 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
           subtask.title = `Built target ${chalk.dim(path.basename(userConfig.build?.outDir ?? ''))}`;
         },
       })),
+      {
+        concurrent: this.config.concurrent ?? true,
+      },
     );
   };
 
