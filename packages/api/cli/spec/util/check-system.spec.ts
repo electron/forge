@@ -104,7 +104,7 @@ describe('checkPackageManager', () => {
       }
     });
     await expect(checkPackageManager()).rejects.toThrow(
-      'When using Yarn 2+, `nodeLinker` must be set to "node-modules". Run `yarn config set nodeLinker node-modules` to set this config value, or add it to your project\'s `.yarnrc` file.',
+      'When using Yarn 2+, `nodeLinker` must be set to "node-modules". Run `yarn config set nodeLinker node-modules` to set this config value, or add it to your project\'s `.yarnrc.yml` file.',
     );
   });
 
