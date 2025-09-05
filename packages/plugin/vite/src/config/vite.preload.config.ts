@@ -11,7 +11,7 @@ export function getConfig(
     build: {
       copyPublicDir: false,
       rollupOptions: {
-        external,
+        external: [...external, 'electron/renderer'],
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry,
         output: {
