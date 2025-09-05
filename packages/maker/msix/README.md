@@ -6,6 +6,8 @@ You can only build the MSIX target on Windows machines with the Windows 10 SDK i
 
 Configuration options are documented in [`MakerMSIXConfig`](https://js.electronforge.io/interfaces/_electron_forge_maker_msix.MakerMSIXConfig.html).
 
+maker-msix utilizes @electron/windows-sign via `windowsSignOptions` property, see documentation here [windows-sign](https://github.com/electron/. windows-sign/blob/main/README.md).
+
 ```javascript
 {
   name: '@electron-forge/maker-msix',
@@ -13,7 +15,9 @@ Configuration options are documented in [`MakerMSIXConfig`](https://js.electronf
     manifestVariables: {
       publisher: 'Electron Dev'
     },
-    cert_pass: '12345'
+    windowsSignOptions : {
+      certificatePassword: '12345'
+    }
   }
 }
 ```

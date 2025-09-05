@@ -1025,6 +1025,15 @@
     minimist "^1.2.8"
     postject "^1.0.0-alpha.6"
 
+"@electron/windows-sign@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@electron/windows-sign/-/windows-sign-2.0.2.tgz#7396f18c19e407751ffe8528628e292cba52c634"
+  integrity sha512-9Lldk4pvRBh/BWhwopW4CxCnVoztEAVWdxvVVwpvrFd/3QU3dVn15IRmVB9i46IqpAg1Y42cFtRT0NQKZPpc5A==
+  dependencies:
+    debug "^4.3.4"
+    graceful-fs "^4.2.11"
+    postject "^1.0.0-alpha.6"
+
 "@esbuild/aix-ppc64@0.21.5":
   version "0.21.5"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.21.5.tgz#c7184a326533fcdf1b8ee0733e21c713b975575f"
@@ -5800,11 +5809,12 @@ electron-to-chromium@^1.5.4:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.25.tgz#492ade1cde401332b9b75aa0c55fd5e1550ca66c"
   integrity sha512-kMb204zvK3PsSlgvvwzI3wBIcAw15tRkYk+NQdsjdDtcQWTp2RABbMQ9rUBy8KNEOM+/E6ep+XC3AykiWZld4g==
 
-electron-windows-msix@^1.2.8:
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/electron-windows-msix/-/electron-windows-msix-1.2.8.tgz#c66c037ba57c7b09642c9c649709192d0d918e5b"
-  integrity sha512-1qPt7T0SVEyl0Pj6IXLecy105UXsHt9o6ZBpWK8Jgg9J7ze9QF4BZN8DJOfDKu3BdYRt0Kvd+kHMpYzoJd1drg==
+electron-windows-msix@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/electron-windows-msix/-/electron-windows-msix-2.0.0.tgz#7ca41965c89c502637b5ce7820d7b5c87974195c"
+  integrity sha512-ZOZnCrKorWxgzQ0CfhLUSs+UYowWhxrSu0gd05Zz7kCbZ/51O/NuM9RYtWZouC3j+4RgQEGnd91zlsRcnQrmuQ==
   dependencies:
+    "@electron/windows-sign" "^2.0.2"
     "@malept/cross-spawn-promise" "^2.0.0"
     chalk "^3.0.0"
     debug "^4.4.1"
