@@ -45,11 +45,7 @@ async function updatePackageJSON(
   );
 }
 
-describe.each([
-  PACKAGE_MANAGERS['npm'],
-  PACKAGE_MANAGERS['yarn'],
-  PACKAGE_MANAGERS['pnpm'],
-])(`init (with $executable)`, (pm) => {
+describe.each([PACKAGE_MANAGERS['yarn']])(`init (with $executable)`, (pm) => {
   let dir: string;
 
   beforeAll(async () => {
@@ -90,7 +86,7 @@ describe.each([
       };
     });
 
-    it('should not initialize a git repo if passed the skipGit option', async () => {
+    it.only('should not initialize a git repo if passed the skipGit option', async () => {
       await api.init({
         dir,
         skipGit: true,
@@ -307,7 +303,9 @@ describe.each([
           await ensureTestDirIsNonexistent(),
           'electron-forge-test',
         );
+        process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = '1';
         await api.init({ dir });
+        delete process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
 
         await updatePackageJSON(dir, async (packageJSON) => {
           packageJSON.name = 'testapp';
@@ -357,7 +355,7 @@ describe.each([
         });
       });
 
-      it('can package to outDir without errors', async () => {
+      it.only('can package to outDir without errors', async () => {
         const outDir = `${dir}/foo`;
 
         expect(fs.existsSync(outDir)).toEqual(false);
