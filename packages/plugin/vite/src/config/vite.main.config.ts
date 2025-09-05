@@ -17,7 +17,7 @@ export function getConfig(
     build: {
       copyPublicDir: false,
       rollupOptions: {
-        external,
+        external: [...external, 'electron/main'],
       },
     },
     plugins: [pluginHotRestart('restart')],
