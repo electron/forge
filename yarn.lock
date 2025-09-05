@@ -5821,6 +5821,18 @@ electron-windows-msix@^2.0.0:
     fs-extra "^11.2.0"
     xml-escape "^1.1.0"
 
+electron-windows-msix@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/electron-windows-msix/-/electron-windows-msix-2.0.1.tgz#0f83d6dc63f13b2767295bbcda73277a4ad87163"
+  integrity sha512-WtZx/h7dEvJ5IhdiyCPerElU5qLyeG/FjTUSfOVC4z0Yj00dKwM2Ld+yyVPssCpBadaWZXQiVy9P6jp0rp8R/Q==
+  dependencies:
+    "@electron/windows-sign" "^2.0.2"
+    "@malept/cross-spawn-promise" "^2.0.0"
+    chalk "^3.0.0"
+    debug "^4.4.1"
+    fs-extra "^11.2.0"
+    xml-escape "^1.1.0"
+
 electron-windows-store@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/electron-windows-store/-/electron-windows-store-2.1.0.tgz#c217f0c0617fd70afd2d475c88eb35e8f9bb615e"
