@@ -10,7 +10,6 @@ import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import { default as vite } from 'vite';
 
-import { onBuildDone } from './util/plugins';
 import ViteConfigGenerator from './ViteConfig';
 
 import type { VitePluginConfig } from './Config';
@@ -212,6 +211,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
   // Main process, Preload scripts and Worker process, etc.
   build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
     const configs = await this.configGenerator.getBuildConfigs();
+    /**
+     * Checks if the result of the Vite build is a Rollup watcher.
+     * This should happen iff we're running `electron-forge start`.
+     */
     const isRollupWatcher = (
       x:
         | vite.Rollup.RollupWatcher
@@ -265,23 +268,50 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
                 .build({
                   // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
                   configFile: false,
-                  logLevel: 'silent', // We suppress Vite output and instead log lines using RollupWatcher events
+                  // We suppress Vite output and instead log lines using RollupWatcher events
+                  logLevel: 'silent',
                   ...userConfig,
                   plugins: [
-                    onBuildDone(resolve),
+                    // This plugin controls the output of the first-time Vite build that happens.
+                    // `buildEnd` and `closeBundle` are Rollup output generation hooks.
+                    // See https://rollupjs.org/plugin-development/#output-generation-hooks
+                    {
+                      name: '@electron-forge/plugin-vite:build-done',
+                      buildEnd(err) {
+                        if (err instanceof Error) {
+                          d(
+                            'buildEnd rollup hook called with error so build failed',
+                          );
+                          reject(err);
+                        }
+                      },
+                      closeBundle() {
+                        d(
+                          'no error in buildEnd and reached closeBundle so build succeeded',
+                        );
+                        resolve();
+                      },
+                    },
                     ...(userConfig.plugins ?? []),
                   ],
                   clearScreen: false,
                 })
                 .then((result) => {
+                  // When running `start` and enabling watch mode in Vite, the Rollup watcher
+                  // emits events for subsequent builds.
                   if (isRollupWatcher(result)) {
                     result.on('event', (event) => {
-                      if (event.code === 'ERROR') {
+                      if (
+                        event.code === 'ERROR' &&
+                        userConfig.logLevel !== 'silent'
+                      ) {
                         console.error(
-                          `\n${this.timeFormatter.format(new Date())} ${event.error.message}`,
+                          `\n${chalk.dim(this.timeFormatter.format(new Date()))} ${event.error.message}`,
                         );
-                        reject(event.error);
-                      } else if (event.code === 'BUNDLE_END') {
+                      } else if (
+                        event.code === 'BUNDLE_END' &&
+                        (!userConfig.logLevel || userConfig.logLevel === 'info')
+                      ) {
                         console.log(
                           `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
                             'target built',
@@ -298,14 +328,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
                 .catch(reject);
             });
           },
-          rendererOptions: {
-            persistentOutput: true,
-          },
-          exitOnError: true,
         };
       }),
       {
         concurrent: this.config.concurrent ?? true,
+        exitOnError: this.isProd,
       },
     );
   };
