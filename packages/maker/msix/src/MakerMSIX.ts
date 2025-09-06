@@ -38,7 +38,6 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
       ...packageOptions,
       appDir: dir,
       outputDir: makeDir,
-      logLevel: 'debug',
     });
 
     return [result.msixPackage];
