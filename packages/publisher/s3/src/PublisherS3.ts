@@ -19,6 +19,7 @@ type S3Artifact = {
   keyPrefix: string;
   platform: string;
   arch: string;
+  isReleaseFile: boolean;
 };
 
 export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
@@ -48,6 +49,8 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
             this.config.folder || this.s3KeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
+          isReleaseFile:
+            path.basename(artifact, path.extname(artifact)) === 'RELEASES',
         })),
       );
     }
@@ -78,6 +81,15 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
         };
         if (!this.config.omitAcl) {
           params.ACL = this.config.public ? 'public-read' : 'private';
+        }
+        // Cache-Control must be an integer number of seconds to cache and should not be negative.
+        if (
+          artifact.isReleaseFile &&
+          typeof this.config.releaseFileCacheControlMaxAge !== 'undefined' &&
+          Number.isInteger(this.config.releaseFileCacheControlMaxAge) &&
+          this.config.releaseFileCacheControlMaxAge >= 0
+        ) {
+          params.CacheControl = `max-age=${this.config.releaseFileCacheControlMaxAge}`;
         }
         const uploader = new Upload({
           client: s3Client,
