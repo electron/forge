@@ -49,8 +49,9 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
             this.config.folder || this.s3KeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
-          isReleaseFile: path.basename(artifact, path.extname(artifact)) === 'RELEASES',
-        }))
+          isReleaseFile:
+            path.basename(artifact, path.extname(artifact)) === 'RELEASES',
+        })),
       );
     }
 

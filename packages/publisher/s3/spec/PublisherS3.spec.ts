@@ -4,7 +4,10 @@ import path from 'node:path';
 
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { ForgeMakeResult, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ForgeMakeResult,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PublisherS3, PublisherS3Config } from '../src/PublisherS3';
@@ -27,10 +30,22 @@ describe('PublisherS3', () => {
     tmpDir = await fs.promises.mkdtemp(tmpdir);
 
     // Create test artifact files
-    await fs.promises.writeFile(path.join(tmpDir, 'test-app-1.0.0.dmg'), 'fake-dmg-content');
-    await fs.promises.writeFile(path.join(tmpDir, 'test-app-1.0.0.exe'), 'fake-exe-content');
-    await fs.promises.writeFile(path.join(tmpDir, 'RELEASES'), 'fake-releases-content');
-    await fs.promises.writeFile(path.join(tmpDir, 'RELEASES.json'), 'fake-releases-json-content');
+    await fs.promises.writeFile(
+      path.join(tmpDir, 'test-app-1.0.0.dmg'),
+      'fake-dmg-content',
+    );
+    await fs.promises.writeFile(
+      path.join(tmpDir, 'test-app-1.0.0.exe'),
+      'fake-exe-content',
+    );
+    await fs.promises.writeFile(
+      path.join(tmpDir, 'RELEASES'),
+      'fake-releases-content',
+    );
+    await fs.promises.writeFile(
+      path.join(tmpDir, 'RELEASES.json'),
+      'fake-releases-json-content',
+    );
 
     // Mock S3Client constructor
     mockS3Client = {
@@ -132,8 +147,10 @@ describe('PublisherS3', () => {
           dir: tmpDir,
           forgeConfig: mockForgeConfig,
           setStatusLine: mockSetStatusLine,
-        })
-      ).rejects.toThrow('In order to publish to S3, you must set the "bucket" property');
+        }),
+      ).rejects.toThrow(
+        'In order to publish to S3, you must set the "bucket" property',
+      );
     });
 
     it('should upload artifacts successfully with basic configuration', async () => {
@@ -163,9 +180,15 @@ describe('PublisherS3', () => {
       expect(mockUpload.done).toHaveBeenCalledTimes(2);
 
       // Verify status line updates
-      expect(mockSetStatusLine).toHaveBeenCalledWith('Uploading distributable (0/2)');
-      expect(mockSetStatusLine).toHaveBeenCalledWith('Uploading distributable (1/2)');
-      expect(mockSetStatusLine).toHaveBeenCalledWith('Uploading distributable (2/2)');
+      expect(mockSetStatusLine).toHaveBeenCalledWith(
+        'Uploading distributable (0/2)',
+      );
+      expect(mockSetStatusLine).toHaveBeenCalledWith(
+        'Uploading distributable (1/2)',
+      );
+      expect(mockSetStatusLine).toHaveBeenCalledWith(
+        'Uploading distributable (2/2)',
+      );
     });
 
     it('should upload artifacts with custom folder and credentials', async () => {
@@ -354,7 +377,10 @@ describe('PublisherS3', () => {
 
       const makeResultsWithBothReleases: ForgeMakeResult[] = [
         {
-          artifacts: [path.join(tmpDir, 'RELEASES'), path.join(tmpDir, 'RELEASES.json')],
+          artifacts: [
+            path.join(tmpDir, 'RELEASES'),
+            path.join(tmpDir, 'RELEASES.json'),
+          ],
           packageJSON: {
             name: 'test-app',
             version: '1.0.0',
@@ -423,7 +449,10 @@ describe('PublisherS3', () => {
       });
 
       // Verify progress event handler was set up
-      expect(mockUpload.on).toHaveBeenCalledWith('httpUploadProgress', expect.any(Function));
+      expect(mockUpload.on).toHaveBeenCalledWith(
+        'httpUploadProgress',
+        expect.any(Function),
+      );
     });
 
     it('should handle custom endpoint and forcePathStyle', async () => {
@@ -459,7 +488,9 @@ describe('PublisherS3', () => {
       publisher = new PublisherS3(config);
 
       // Access the private method through the class instance
-      const result = (publisher as any).s3KeySafe('test@example.com/path/to/file');
+      const result = (publisher as any).s3KeySafe(
+        'test@example.com/path/to/file',
+      );
       expect(result).toBe('test_example.com_path_to_file');
     });
   });
