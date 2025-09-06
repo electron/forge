@@ -1,6 +1,6 @@
 ## Electron Forge
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/electron/forge/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/electron/forge/tree/main)
+[![CI](https://github.com/electron/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/electron/forge/actions/workflows/ci.yml)
 [![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
 [![npm version](https://img.shields.io/npm/v/@electron-forge/cli)](https://npm.im/@electron-forge/cli)
 [![license](https://img.shields.io/github/license/electron/forge.svg)](https://github.com/electron/forge/blob/main/LICENSE)

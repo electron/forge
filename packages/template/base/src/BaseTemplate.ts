@@ -78,7 +78,7 @@ export class BaseTemplate implements ForgeTemplate {
             pm.version &&
             semver.gte(pm.version, '2.0.0')
           ) {
-            rootFiles.push('_yarnrc');
+            rootFiles.push('_yarnrc.yml');
           }
 
           if (copyCIFiles) {
