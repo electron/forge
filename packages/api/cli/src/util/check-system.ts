@@ -68,6 +68,25 @@ async function checkPnpmConfig() {
   }
 }
 
+async function checkYarnConfig() {
+  const { yarn } = PACKAGE_MANAGERS;
+  const yarnVersion = await spawnPackageManager(yarn, ['--version']);
+  const nodeLinker = await spawnPackageManager(yarn, [
+    'config',
+    'get',
+    'nodeLinker',
+  ]);
+  if (
+    yarnVersion &&
+    semver.gte(yarnVersion, '2.0.0') &&
+    nodeLinker !== 'node-modules'
+  ) {
+    throw new Error(
+      'When using Yarn 2+, `nodeLinker` must be set to "node-modules". Run `yarn config set nodeLinker node-modules` to set this config value, or add it to your project\'s `.yarnrc.yml` file.',
+    );
+  }
+}
+
 // TODO(erickzhao): Drop antiquated versions of npm for Forge v8
 const ALLOWLISTED_VERSIONS: Record<
   SupportedPackageManager,
@@ -108,6 +127,8 @@ export async function checkPackageManager() {
 
   if (pm.executable === 'pnpm') {
     await checkPnpmConfig();
+  } else if (pm.executable === 'yarn') {
+    await checkYarnConfig();
   }
 
   return `${pm.executable}@${versionString}`;

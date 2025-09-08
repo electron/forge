@@ -17,15 +17,14 @@ vi.mock('find-up', async (importOriginal) => {
 });
 
 describe('package-manager', () => {
+  beforeAll(() => {
+    const originalUa = process.env.npm_config_user_agent;
+
+    return () => {
+      process.env.npm_config_user_agent = originalUa;
+    };
+  });
   describe('npm_config_user_agent', () => {
-    beforeAll(() => {
-      const originalUa = process.env.npm_config_user_agent;
-
-      return () => {
-        process.env.npm_config_user_agent = originalUa;
-      };
-    });
-
     it.each([
       {
         ua: 'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64',
@@ -112,9 +111,14 @@ describe('package-manager', () => {
       'should return $pm if NODE_INSTALLER=$pm',
       async ({ pm }) => {
         process.env.NODE_INSTALLER = pm;
+        vi.mocked(spawn).mockResolvedValue('9.9.9');
         await expect(resolvePackageManager()).resolves.toHaveProperty(
           'executable',
           pm,
+        );
+        await expect(resolvePackageManager()).resolves.toHaveProperty(
+          'version',
+          '9.9.9',
         );
       },
     );
@@ -122,6 +126,7 @@ describe('package-manager', () => {
     it('should return npm if package manager is unsupported', async () => {
       process.env.NODE_INSTALLER = 'bun';
       console.warn = vi.fn();
+      vi.mocked(spawn).mockResolvedValue('1.22.22');
       await expect(resolvePackageManager()).resolves.toHaveProperty(
         'executable',
         'npm',
@@ -131,6 +136,30 @@ describe('package-manager', () => {
         expect.stringContaining('Package manager bun is unsupported'),
       );
     });
+  });
+
+  it('should use the package manager for the nearest ancestor lockfile if detected', async () => {
+    delete process.env.npm_config_user_agent;
+    vi.mocked(findUp).mockResolvedValue('/Users/foo/bar/yarn.lock');
+    vi.mocked(spawn).mockResolvedValue('1.22.22');
+    await expect(resolvePackageManager()).resolves.toHaveProperty(
+      'executable',
+      'yarn',
+    );
+  });
+
+  it('should fall back to npm if no other strategy worked', async () => {
+    delete process.env.npm_config_user_agent;
+    vi.mocked(findUp).mockResolvedValue(undefined);
+    vi.mocked(spawn).mockResolvedValue('9.99.99');
+    await expect(resolvePackageManager()).resolves.toHaveProperty(
+      'executable',
+      'npm',
+    );
+    await expect(resolvePackageManager()).resolves.toHaveProperty(
+      'version',
+      '9.99.99',
+    );
   });
 
   describe('spawnPackageManager', () => {
@@ -144,22 +173,5 @@ describe('package-manager', () => {
       });
       expect(result).toBe('foo');
     });
-  });
-
-  it('should use the package manager for the nearest ancestor lockfile if detected', async () => {
-    vi.mocked(findUp).mockResolvedValue('/Users/foo/bar/yarn.lock');
-    await expect(resolvePackageManager()).resolves.toHaveProperty(
-      'executable',
-      'yarn',
-    );
-  });
-
-  it('should fall back to npm if no other strategy worked', async () => {
-    process.env.npm_config_user_agent = undefined;
-    vi.mocked(findUp).mockResolvedValue(undefined);
-    await expect(resolvePackageManager()).resolves.toHaveProperty(
-      'executable',
-      'npm',
-    );
   });
 });
