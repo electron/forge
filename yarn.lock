@@ -5811,10 +5811,10 @@ electron-to-chromium@^1.5.4:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.25.tgz#492ade1cde401332b9b75aa0c55fd5e1550ca66c"
   integrity sha512-kMb204zvK3PsSlgvvwzI3wBIcAw15tRkYk+NQdsjdDtcQWTp2RABbMQ9rUBy8KNEOM+/E6ep+XC3AykiWZld4g==
 
-electron-windows-msix@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/electron-windows-msix/-/electron-windows-msix-2.0.3.tgz#1595a05df033c0e8be0916988411ef4abb591f5a"
-  integrity sha512-/q0xOh78yLaxqm8RPB7NxgVT9YumBWll0Li0vXdOGyx/udIldliVLWrkhRFVhN5qeifDR0L7Dt+MmwBrl2H+XQ==
+electron-windows-msix@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/electron-windows-msix/-/electron-windows-msix-2.0.4.tgz#7a483d5674755572b182b61d30a65b309fd9f116"
+  integrity sha512-rYRrCWT7Hey52995JNgtmXKwG0saTTVPRd4KymeejOdIgNrSP5hHC5nSmVyClOICGbc5/vL4U5A2Am6L/5t0lw==
   dependencies:
     "@electron/windows-sign" "^1.2.2"
     "@malept/cross-spawn-promise" "^2.0.0"
