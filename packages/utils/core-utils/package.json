@@ -16,6 +16,7 @@
     "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
     "log-symbols": "^4.0.0",
+    "parse-author": "^2.0.0",
     "semver": "^7.2.1"
   },
   "engines": {
