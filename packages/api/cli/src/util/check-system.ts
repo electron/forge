@@ -103,6 +103,9 @@ const ALLOWLISTED_VERSIONS: Record<
   pnpm: {
     all: '>= 8.0.0',
   },
+  bun: {
+    all: '>= 1.2.0',
+  },
 };
 
 export async function checkPackageManager() {
