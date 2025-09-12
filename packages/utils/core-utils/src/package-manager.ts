@@ -85,7 +85,9 @@ function pmFromUserAgent() {
  * Supported package managers are `yarn`, `pnpm`, and `npm`.
  *
  */
-export const resolvePackageManager: () => Promise<PMDetails> = async () => {
+export const resolvePackageManager: (
+  packageManager?: string,
+) => Promise<PMDetails> = async (packageManager) => {
   const executingPM = pmFromUserAgent();
   let lockfilePM;
   const lockfile = await findUp(
@@ -95,6 +97,9 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   if (lockfile) {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
+  }
+  if (packageManager) {
+    process.env.NODE_INSTALLER = packageManager;
   }
 
   let installer;
