@@ -187,3 +187,8 @@ export const spawnPackageManager = async (
 ): Promise<string> => {
   return (await spawn(pm.executable, args, opts)).trim();
 };
+
+// Test-only helper to clear the explicit package manager cache between specs.
+export function __resetExplicitPMCacheForTests() {
+  explicitPMCache = undefined;
+}
