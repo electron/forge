@@ -54,6 +54,10 @@ export interface InitOptions {
    * @defaultValue The `latest` tag on npm.
    */
   electronVersion?: string;
+  /**
+   * Force a package manager to use (npm|yarn|pnpm). Internally sets NODE_INSTALLER (deprecated upstream) to ensure template PM-specific logic runs.
+   */
+  packageManager?: string;
 }
 
 async function validateTemplate(
@@ -84,6 +88,7 @@ export default async ({
   template = 'base',
   skipGit = false,
   electronVersion = 'latest',
+  packageManager,
 }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
@@ -96,7 +101,7 @@ export default async ({
       {
         title: `Resolving package manager`,
         task: async (ctx, task) => {
-          ctx.pm = await resolvePackageManager();
+          ctx.pm = await resolvePackageManager(packageManager);
           task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)} v${ctx.pm.version}`;
         },
       },

@@ -79,6 +79,26 @@ program
               }
             }
 
+            const packageManager: string = await prompt.run<
+              Prompt<string, any>
+            >(select, {
+              message: 'Select a package manager',
+              choices: [
+                {
+                  name: 'npm',
+                  value: 'npm',
+                },
+                {
+                  name: 'Yarn',
+                  value: 'yarn',
+                },
+                {
+                  name: 'pnpm',
+                  value: 'pnpm',
+                },
+              ],
+            });
+
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,
               {
@@ -121,6 +141,7 @@ program
               );
             }
 
+            initOpts.packageManager = packageManager;
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
 
             // TODO: add prompt for passing in an exact version as well
