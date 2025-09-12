@@ -50,12 +50,28 @@ program
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            // only run interactive prompts if no args passed and not in CI environment
+            // If any CLI flags are provided, run only the minimal prompt (package manager).
+            // Otherwise run full interactive initialization.
+            const getPackageManager = async () => {
+              const prompt = task.prompt(ListrInquirerPromptAdapter);
+
+              const pm: string = await prompt.run<Prompt<string, any>>(select, {
+                message: 'Select a package manager',
+                choices: [
+                  { name: 'npm', value: 'npm' },
+                  { name: 'Yarn', value: 'yarn' },
+                  { name: 'pnpm', value: 'pnpm' },
+                ],
+              });
+              return pm;
+            };
+
             if (
               Object.keys(options).length > 0 ||
               process.env.CI ||
               !process.stdout.isTTY
             ) {
+              initOpts.packageManager = await getPackageManager();
               return;
             }
 
@@ -79,25 +95,7 @@ program
               }
             }
 
-            const packageManager: string = await prompt.run<
-              Prompt<string, any>
-            >(select, {
-              message: 'Select a package manager',
-              choices: [
-                {
-                  name: 'npm',
-                  value: 'npm',
-                },
-                {
-                  name: 'Yarn',
-                  value: 'yarn',
-                },
-                {
-                  name: 'pnpm',
-                  value: 'pnpm',
-                },
-              ],
-            });
+            const packageManager: string = await getPackageManager();
 
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,
