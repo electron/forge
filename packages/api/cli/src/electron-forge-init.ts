@@ -45,12 +45,28 @@ program
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            // only run interactive prompts if no args passed and not in CI environment
+            // If any CLI flags are provided, run only the minimal prompt (package manager).
+            // Otherwise run full interactive initialization.
+            const getPackageManager = async () => {
+              const prompt = task.prompt(ListrInquirerPromptAdapter);
+
+              const pm: string = await prompt.run<Prompt<string, any>>(select, {
+                message: 'Select a package manager',
+                choices: [
+                  { name: 'npm', value: 'npm' },
+                  { name: 'Yarn', value: 'yarn' },
+                  { name: 'pnpm', value: 'pnpm' },
+                ],
+              });
+              return pm;
+            };
+
             if (
               Object.keys(options).length > 0 ||
               process.env.CI ||
               !process.stdout.isTTY
             ) {
+              initOpts.packageManager = await getPackageManager();
               return;
             }
 
@@ -72,6 +88,8 @@ program
                 process.exit(0);
               }
             }
+
+            const packageManager: string = await getPackageManager();
 
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,
@@ -115,6 +133,7 @@ program
               );
             }
 
+            initOpts.packageManager = packageManager;
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
             initOpts.skipGit = !(await prompt.run(confirm, {
               message: `Would you like to initialize Git in your new project?`,

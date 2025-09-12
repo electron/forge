@@ -22,6 +22,7 @@ export type PMDetails = {
 };
 
 let hasWarned = false;
+let explicitPMCache: PMDetails | undefined;
 
 /**
  * Supported package managers and the commands and flags they need to install dependencies.
@@ -85,7 +86,9 @@ function pmFromUserAgent() {
  * Supported package managers are `yarn`, `pnpm`, and `npm`.
  *
  */
-export const resolvePackageManager: () => Promise<PMDetails> = async () => {
+export const resolvePackageManager: (
+  packageManager?: string,
+) => Promise<PMDetails> = async (packageManager) => {
   const executingPM = pmFromUserAgent();
   let lockfilePM;
   const lockfile = await findUp(
@@ -97,10 +100,30 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  let installer;
-  let installerVersion;
+  let installer: string | undefined;
+  let installerVersion: string | undefined;
 
-  if (typeof process.env.NODE_INSTALLER === 'string') {
+  if (packageManager) {
+    if (explicitPMCache && explicitPMCache.executable === packageManager) {
+      d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
+      return explicitPMCache;
+    }
+
+    if (Object.keys(PACKAGE_MANAGERS).includes(packageManager)) {
+      const pm = PACKAGE_MANAGERS[packageManager as SupportedPackageManager];
+      installerVersion = await spawnPackageManager(pm, ['--version']);
+      explicitPMCache = { ...pm, version: installerVersion };
+      d(`Resolved and cached explicit package manager: ${pm.executable}`);
+      return explicitPMCache;
+    }
+  }
+
+  if (!packageManager && explicitPMCache) {
+    d(
+      `Returning previously cached explicit package manager: ${explicitPMCache.executable}`,
+    );
+    return explicitPMCache;
+  } else if (typeof process.env.NODE_INSTALLER === 'string') {
     if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
       installer = process.env.NODE_INSTALLER;
       installerVersion = await spawnPackageManager(
@@ -164,3 +187,8 @@ export const spawnPackageManager = async (
 ): Promise<string> => {
   return (await spawn(pm.executable, args, opts)).trim();
 };
+
+// Test-only helper to clear the explicit package manager cache between specs.
+export function __resetExplicitPMCacheForTests() {
+  explicitPMCache = undefined;
+}

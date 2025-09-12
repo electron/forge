@@ -3,6 +3,7 @@ import findUp from 'find-up';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  __resetExplicitPMCacheForTests,
   resolvePackageManager,
   spawnPackageManager,
 } from '../src/package-manager';
@@ -172,6 +173,38 @@ describe('package-manager', () => {
         exact: '--save-exact',
       });
       expect(result).toBe('foo');
+    });
+  });
+
+  describe('explicit argument caching', () => {
+    beforeEach(() => {
+      __resetExplicitPMCacheForTests();
+      delete process.env.NODE_INSTALLER;
+      delete process.env.npm_config_user_agent;
+    });
+
+    it('should cache explicit argument and ignore later env / lockfile', async () => {
+      vi.mocked(spawn).mockResolvedValueOnce('10.0.0');
+      const first = await resolvePackageManager('pnpm');
+      expect(first.executable).toBe('pnpm');
+      expect(first.version).toBe('10.0.0');
+
+      process.env.NODE_INSTALLER = 'yarn';
+      vi.mocked(spawn).mockResolvedValue('9.9.9');
+      const second = await resolvePackageManager();
+      expect(second.executable).toBe('pnpm');
+      expect(second.version).toBe('10.0.0');
+    });
+
+    it('should fallback to npm and cache when explicit argument unsupported', async () => {
+      vi.mocked(spawn).mockResolvedValue('9.99.99');
+      const result = await resolvePackageManager('good coffee');
+      expect(result.executable).toBe('npm');
+      expect(result.version).toBe('9.99.99');
+
+      const again = await resolvePackageManager();
+      expect(again.executable).toBe('npm');
+      expect(again.version).toBe('9.99.99');
     });
   });
 });
