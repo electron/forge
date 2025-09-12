@@ -22,6 +22,7 @@ export type PMDetails = {
 };
 
 let hasWarned = false;
+let explicitPMCache: PMDetails | undefined;
 
 /**
  * Supported package managers and the commands and flags they need to install dependencies.
@@ -98,14 +99,31 @@ export const resolvePackageManager: (
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
+
+  let installer: string | undefined;
+  let installerVersion: string | undefined;
+
   if (packageManager) {
-    process.env.NODE_INSTALLER = packageManager;
+    if (explicitPMCache && explicitPMCache.executable === packageManager) {
+      d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
+      return explicitPMCache;
+    }
+
+    if (Object.keys(PACKAGE_MANAGERS).includes(packageManager)) {
+      const pm = PACKAGE_MANAGERS[packageManager as SupportedPackageManager];
+      installerVersion = await spawnPackageManager(pm, ['--version']);
+      explicitPMCache = { ...pm, version: installerVersion };
+      d(`Resolved and cached explicit package manager: ${pm.executable}`);
+      return explicitPMCache;
+    }
   }
 
-  let installer;
-  let installerVersion;
-
-  if (typeof process.env.NODE_INSTALLER === 'string') {
+  if (!packageManager && explicitPMCache) {
+    d(
+      `Returning previously cached explicit package manager: ${explicitPMCache.executable}`,
+    );
+    return explicitPMCache;
+  } else if (typeof process.env.NODE_INSTALLER === 'string') {
     if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
       installer = process.env.NODE_INSTALLER;
       installerVersion = await spawnPackageManager(
