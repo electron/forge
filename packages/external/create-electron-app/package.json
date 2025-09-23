@@ -9,9 +9,7 @@
   "dependencies": {
     "@electron-forge/cli": "7.10.0"
   },
-  "bin": {
-    "create-electron-app": "dist/index.js"
-  },
+  "bin": "dist/index.js",
   "files": [
     "dist",
     "src"
