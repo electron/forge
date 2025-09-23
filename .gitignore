@@ -30,3 +30,10 @@ reports
 packages/**/typedoc.json
 .eslintcache
 .vscode/settings.json
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
