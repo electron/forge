@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 
 import { api, InitOptions } from '@electron-forge/core';
 import { confirm, select } from '@inquirer/prompts';
@@ -58,7 +58,8 @@ program
 
             if (
               typeof initOpts.dir === 'string' &&
-              (await fs.readdir(initOpts.dir)).length > 0
+              fs.existsSync(initOpts.dir) &&
+              (await fs.promises.readdir(initOpts.dir)).length > 0
             ) {
               const confirmResult = await prompt.run(confirm, {
                 message: `${chalk.cyan(initOpts.dir)} is not empty. Would you like to continue and overwrite existing files?`,
