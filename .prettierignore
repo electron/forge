@@ -12,3 +12,6 @@ packages/*/*/typedoc.json
 packages/api/core/spec/fixture/bad_external_forge_config/bad.js
 packages/plugin/webpack/spec/**/.webpack
 .links
+
+/.nx/cache
+/.nx/workspace-data
