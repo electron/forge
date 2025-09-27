@@ -4,13 +4,13 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": "^20.19.0"
+    "node": "^16.4.0"
   },
   "scripts": {
     "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
     "build": "tsc -b packages && ts-node tools/test-dist",
     "build:watch": "yarn build --watch",
-    "docs": "yarn build && yarn dlx typedoc",
+    "docs": "yarn build && typedoc",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
@@ -18,8 +18,6 @@
     "lint:markdown-links": "electron-lint-markdown-links --root . --ignore-path .markdownlintignore \"**/*.md\"",
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
     "lint:fix": "prettier --write . --experimental-cli && eslint --fix . --cache",
-    "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --link-folder ../../../.links",
-    "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --link-folder ../../../.links",
     "test": "xvfb-maybe vitest run --project fast --project slow",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
