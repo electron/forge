@@ -1119,7 +1119,7 @@ __metadata:
     "@electron-forge/publisher-base": "npm:7.9.0"
     "@electron-forge/shared-types": "npm:7.9.0"
     "@electron-forge/template-base": "npm:7.9.0"
-    "@electron-forge/template-fixture": "file:./spec/fixture/electron-forge-template-fixture"
+    "@electron-forge/template-fixture": "link:./spec/fixture/electron-forge-template-fixture"
     "@electron-forge/template-vite": "npm:7.9.0"
     "@electron-forge/template-vite-typescript": "npm:7.9.0"
     "@electron-forge/template-webpack": "npm:7.9.0"
@@ -1136,7 +1136,7 @@ __metadata:
     "@vscode/sudo-prompt": "npm:^9.3.1"
     chalk: "npm:^4.0.0"
     debug: "npm:^4.3.1"
-    electron-forge-template-fixture-two: "file:./spec/fixture/electron-forge-template-fixture"
+    electron-forge-template-fixture-two: "link:./spec/fixture/electron-forge-template-fixture"
     electron-installer-common: "npm:^0.10.2"
     fast-glob: "npm:^3.2.7"
     filenamify: "npm:^4.1.0"
@@ -1558,12 +1558,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-fixture@file:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore":
-  version: 13.3.7
-  resolution: "@electron-forge/template-fixture@file:./spec/fixture/electron-forge-template-fixture#./spec/fixture/electron-forge-template-fixture::hash=1aaf8d&locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore"
-  checksum: 10c0/1fe8a48bb01714be15ab86101675e52440d7dc6b55d7e3ecc0e7ffd790c64d03355afd452742cf1b89640ca0208cb4761a5c38bbbcb7965eb82953bffea48d1e
+"@electron-forge/template-fixture@link:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore":
+  version: 0.0.0-use.local
+  resolution: "@electron-forge/template-fixture@link:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore"
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@electron-forge/template-vite-typescript@npm:7.9.0, @electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript":
   version: 0.0.0-use.local
@@ -8484,12 +8483,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-forge-template-fixture-two@file:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore":
-  version: 13.3.7
-  resolution: "electron-forge-template-fixture-two@file:./spec/fixture/electron-forge-template-fixture#./spec/fixture/electron-forge-template-fixture::hash=b40bee&locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore"
-  checksum: 10c0/d54e6c7d5c0d060647043f9d704a1a2138248d324d4271b494b06d4ee9d403056b7c33f53065db78989744f7e157f51948c070ccdaf93f23117f1518e71ee08b
+"electron-forge-template-fixture-two@link:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore":
+  version: 0.0.0-use.local
+  resolution: "electron-forge-template-fixture-two@link:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore"
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "electron-forge@workspace:.":
   version: 0.0.0-use.local
