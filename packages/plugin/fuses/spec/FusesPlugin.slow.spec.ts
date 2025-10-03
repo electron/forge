@@ -1,10 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import {
-  PACKAGE_MANAGERS,
-  spawnPackageManager,
-} from '@electron-forge/core-utils';
+import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
 import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -30,10 +27,6 @@ describe('FusesPlugin', () => {
   const outDir = path.join(appPath, 'out', 'fuses-test-app');
 
   beforeAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
-      'run',
-      'link:prepare',
-    ]);
     delete process.env.TS_NODE_PROJECT;
     await fs.promises.copyFile(
       path.join(appPath, 'package.json.tmpl'),
