@@ -15,8 +15,7 @@ const d = debug('electron-forge:init:link');
  * This allows developers working on forge itself to easily init
  * a local template and have it use their local plugins / core / cli packages.
  *
- * Uses the portal: protocol in package.json resolutions
- * to link the dependencies to the local workspace paths
+ * Uses yarn link to create portal: resolutions that point to local workspace paths.
  */
 export async function initLink<T>(
   pm: PMDetails,
@@ -64,30 +63,20 @@ export async function initLink<T>(
       throw new Error(`Unable to determine workspace path for ${packageName}`);
     };
 
-    // populate our packagesToLink map
+    // Collect all @electron-forge packages and their workspace paths
     const packagesToLink: Record<string, string> = {};
     for (const packageName of Object.keys(packageJson.devDependencies)) {
       if (packageName.startsWith('@electron-forge/')) {
         const workspacePath = getWorkspacePath(packageName);
-        packagesToLink[packageName] = `portal:${workspacePath}`;
+        packagesToLink[packageName] = workspacePath;
         d(`Found ${packageName}, will link to ${workspacePath}`);
       }
     }
 
-    // get around link failures by using portal: resolutions
+    // Use yarn link to create portal: resolutions for local packages
     if (Object.keys(packagesToLink).length > 0) {
-      packageJson.resolutions = packageJson.resolutions || {};
-      for (const [packageName, portalPath] of Object.entries(packagesToLink)) {
-        packageJson.resolutions[packageName] = portalPath;
-        d(`Adding resolution: ${packageName} -> ${portalPath}`);
-      }
-
-      await fs.promises.writeFile(
-        path.join(dir, 'package.json'),
-        JSON.stringify(packageJson, null, 2) + '\n',
-      );
-      // copy the root .yarnrc.yml to the target directory
-      // ensure that the yarnPath is not included as it is a relative path
+      // Copy the root .yarnrc.yml to the target directory before linking
+      // This ensures settings like npmMinimalAgeGate are preserved
       if (pm.executable === 'yarn') {
         const rootYarnrc = path.join(forgeRoot, '.yarnrc.yml');
         const targetYarnrc = path.join(dir, '.yarnrc.yml');
@@ -98,6 +87,7 @@ export async function initLink<T>(
           )
         ) {
           const yarnrcContent = await fs.promises.readFile(rootYarnrc, 'utf-8');
+          // Remove yarnPath line to avoid relative path issues
           const filteredContent = yarnrcContent
             .split('\n')
             .filter((line) => !line.trim().startsWith('yarnPath:'))
@@ -109,6 +99,16 @@ export async function initLink<T>(
         }
       }
 
+      // Yarn link all packages in a single call (e.g. yarn link path1 path2 path3)
+      const paths = Object.values(packagesToLink);
+      if (task) task.output = `${pm.executable} link ${paths.length} packages`;
+      d(`Linking ${paths.length} packages in single call`);
+      await spawnPackageManager(pm, ['link', ...paths], {
+        cwd: dir,
+      });
+      d('Linking completed successfully');
+
+      // Run install to resolve any remaining dependencies
       if (task) task.output = `${pm.executable} install`;
       d(`Running: ${pm.executable} install (cwd: ${dir})`);
       await spawnPackageManager(pm, ['install'], {
