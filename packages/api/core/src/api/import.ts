@@ -273,6 +273,25 @@ export default autoTrace(
                     },
                   },
                   {
+                    title: 'Configuring Yarn (if applicable)',
+                    task: async ({ pm }) => {
+                      // Yarn v4 defaults to PnP which doesn't work well with CommonJS requires in our forge config
+                      // lets ensure that nodeLinker is set to node-modules
+                      if (pm.executable === 'yarn') {
+                        const yarnrcPath = path.resolve(dir, '.yarnrc.yml');
+                        if (!(await fs.pathExists(yarnrcPath))) {
+                          d(
+                            'creating .yarnrc.yml with nodeLinker: node-modules',
+                          );
+                          await fs.writeFile(
+                            yarnrcPath,
+                            'nodeLinker: node-modules\n',
+                          );
+                        }
+                      }
+                    },
+                  },
+                  {
                     title: 'Installing dependencies',
                     task: async ({ pm }, task) => {
                       await writeChanges();

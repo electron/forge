@@ -18,15 +18,11 @@ describe('ViteTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
-      'run',
-      'link:prepare',
-    ]);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
   afterAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['run', 'link:remove']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['unlink', '--all']);
     if (os.platform() !== 'win32') {
       // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
       await fs.promises.rm(dir, { force: true, recursive: true });

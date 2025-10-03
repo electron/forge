@@ -17,10 +17,6 @@ describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], [
-      'run',
-      'link:prepare',
-    ]);
     dir = await testUtils.ensureTestDirIsNonexistent();
   });
 
@@ -105,7 +101,7 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   afterAll(async () => {
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['link:remove']);
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['unlink', '--all']);
     await fs.promises.rm(dir, { recursive: true, force: true });
   });
 });

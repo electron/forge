@@ -53,17 +53,41 @@ describe.each([
   let dir: string;
 
   beforeAll(async () => {
-    await spawnPackageManager(pm, ['run', 'link:prepare']);
-
     if (pm.executable === 'pnpm') {
-      await spawnPackageManager(
-        pm,
-        'config set node-linker hoisted'.split(' '),
-      );
+      // temporarily disable corepack to enable pnpm to set links
+      const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
+      process.env.COREPACK_ENABLE_STRICT = '0';
+      try {
+        await spawnPackageManager(
+          pm,
+          'config set node-linker hoisted'.split(' '),
+        );
+      } finally {
+        if (originalCorepackStrict === undefined) {
+          delete process.env.COREPACK_ENABLE_STRICT;
+        } else {
+          process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
+        }
+      }
     }
 
     return async () => {
-      await spawnPackageManager(pm, ['run', 'link:remove']);
+      // temporarily disable corepack to allow pnpm to remove links
+      if (pm.executable === 'pnpm') {
+        const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
+        process.env.COREPACK_ENABLE_STRICT = '0';
+        try {
+          await spawnPackageManager(pm, ['run', 'link:remove']);
+        } finally {
+          if (originalCorepackStrict === undefined) {
+            delete process.env.COREPACK_ENABLE_STRICT;
+          } else {
+            process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
+          }
+        }
+      } else {
+        await spawnPackageManager(pm, ['run', 'link:remove']);
+      }
       delete process.env.NODE_INSTALLER;
     };
   });
@@ -284,8 +308,6 @@ describe.each([
 
       expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
 
-      await spawnPackageManager(pm, ['install'], { cwd: dir });
-
       await api.package({ dir });
 
       const outDirContents = fs.readdirSync(path.join(dir, 'out'));
@@ -379,12 +401,8 @@ describe.each([
 
         await api.make({ dir, skipPackage: true, outDir: `${dir}/foo` });
 
-        // Cleanup here to ensure things dont break in the make tests
+        // Cleanup the custom outDir
         await fs.promises.rm(path.resolve(dir, 'foo'), {
-          recursive: true,
-          force: true,
-        });
-        await fs.promises.rm(path.resolve(dir, 'out'), {
           recursive: true,
           force: true,
         });
