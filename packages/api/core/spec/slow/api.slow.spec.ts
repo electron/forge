@@ -72,12 +72,16 @@ describe.each([
     }
 
     return async () => {
-      // temporarily disable corepack to allow pnpm to remove links
-      if (pm.executable === 'pnpm') {
+      // Unlink packages created during tests (syntax varies by package manager)
+      if (pm.executable === 'yarn') {
+        // yarn unlink --all removes all linked packages
+        await spawnPackageManager(pm, ['unlink', '--all']);
+      } else if (pm.executable === 'pnpm') {
+        // pnpm doesn't support --all, and requires Corepack bypass
         const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
         process.env.COREPACK_ENABLE_STRICT = '0';
         try {
-          await spawnPackageManager(pm, ['run', 'link:remove']);
+          await spawnPackageManager(pm, ['unlink']);
         } finally {
           if (originalCorepackStrict === undefined) {
             delete process.env.COREPACK_ENABLE_STRICT;
@@ -85,8 +89,6 @@ describe.each([
             process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
           }
         }
-      } else {
-        await spawnPackageManager(pm, ['run', 'link:remove']);
       }
       delete process.env.NODE_INSTALLER;
     };
