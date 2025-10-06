@@ -8576,7 +8576,6 @@ __metadata:
     parse-author: "npm:^2.0.0"
     prettier: "npm:^3.6.2"
     rechoir: "npm:^0.8.0"
-    rimraf: "npm:^3.0.1"
     semver: "npm:^7.2.1"
     source-map-support: "npm:^0.5.13"
     syncpack: "npm:^11.2.1"
@@ -17174,7 +17173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^3.0.0, rimraf@npm:^3.0.1, rimraf@npm:^3.0.2":
+"rimraf@npm:^3.0.0, rimraf@npm:^3.0.2":
   version: 3.0.2
   resolution: "rimraf@npm:3.0.2"
   dependencies:
