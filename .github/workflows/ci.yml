@@ -129,6 +129,12 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm@10.0.0
 
+      - name: Rebuild native modules
+        if: runner.os == 'macOS'
+        run: |
+          # Rebuild native modules for macOS to fix macos-alias issue
+          cd node_modules/macos-alias && npm rebuild
+
       - name: Run fast tests
         run: |
           mkdir -p ./reports/out
@@ -203,6 +209,12 @@ jobs:
 
       - name: Install pnpm
         run: npm install -g pnpm@10.0.0
+
+      - name: Rebuild native modules
+        if: runner.os == 'macOS'
+        run: |
+          # Rebuild native modules for macOS to fix macos-alias issue
+          cd node_modules/macos-alias && npm rebuild
 
       - name: Run slow tests
         run: |
