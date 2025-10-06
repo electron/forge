@@ -87,15 +87,33 @@ export async function initLink<T>(
           )
         ) {
           const yarnrcContent = await fs.promises.readFile(rootYarnrc, 'utf-8');
-          // Remove yarnPath line to avoid relative path issues
+          // Remove yarnPath and enableScripts to avoid issues
+          // - yarnPath: relative path issues
+          // - enableScripts: need to allow native module builds in test fixtures
           const filteredContent = yarnrcContent
             .split('\n')
-            .filter((line) => !line.trim().startsWith('yarnPath:'))
+            .filter(
+              (line) =>
+                !line.trim().startsWith('yarnPath:') &&
+                !line.trim().startsWith('enableScripts:'),
+            )
             .join('\n');
           await fs.promises.writeFile(targetYarnrc, filteredContent);
           d(
-            'Copied .yarnrc.yml (without yarnPath) to preserve config settings',
+            'Copied .yarnrc.yml (without yarnPath/enableScripts) to preserve config settings',
           );
+
+          // Create an empty yarn.lock to declare this as a separate project
+          const targetYarnLock = path.join(dir, 'yarn.lock');
+          if (
+            !(await fs.promises.access(targetYarnLock).then(
+              () => true,
+              () => false,
+            ))
+          ) {
+            await fs.promises.writeFile(targetYarnLock, '');
+            d('Created empty yarn.lock to mark as separate project');
+          }
         }
       }
 

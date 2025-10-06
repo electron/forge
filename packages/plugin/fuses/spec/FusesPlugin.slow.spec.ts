@@ -32,11 +32,9 @@ describe('FusesPlugin', () => {
       path.join(appPath, 'package.json.tmpl'),
       path.join(appPath, 'package.json'),
     );
-    await spawn('yarn', ['install'], spawnOptions);
 
-    // Installing deps removes symlinks that were added at the start of this
-    // spec via `api.init`. So we should re-link local forge dependencies
-    // again.
+    // Use initLink to set up dependencies with local forge packages
+    // This will copy .yarnrc.yml, link local packages, and run install
     process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = '1';
     await initLink(PACKAGE_MANAGERS['yarn'], appPath);
     delete process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
