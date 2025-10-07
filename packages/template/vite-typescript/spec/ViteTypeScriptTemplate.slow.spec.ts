@@ -90,6 +90,10 @@ describe('ViteTypeScriptTemplate', () => {
       );
       await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
         cwd: dir,
+        env: {
+          ...process.env,
+          YARN_ENABLE_HARDENED_MODE: '0',
+        },
       });
 
       // Installing deps removes symlinks that were added at the start of this
