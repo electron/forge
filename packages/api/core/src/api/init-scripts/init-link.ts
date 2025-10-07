@@ -87,9 +87,9 @@ export async function initLink<T>(
           )
         ) {
           const yarnrcContent = await fs.promises.readFile(rootYarnrc, 'utf-8');
-          // Remove yarnPath and enableScripts to avoid issues
-          // - yarnPath: relative path issues
-          // - enableScripts: need to allow native module builds in test fixtures
+          // we create a new yarnrc.yml (without yarnPath and enableScripts) and yarn.lock to mark as separate project
+          // this avoids issues with yarnPath and enableScripts in CI
+
           const filteredContent = yarnrcContent
             .split('\n')
             .filter(
@@ -99,11 +99,8 @@ export async function initLink<T>(
             )
             .join('\n');
           await fs.promises.writeFile(targetYarnrc, filteredContent);
-          d(
-            'Copied .yarnrc.yml (without yarnPath/enableScripts) to preserve config settings',
-          );
+          d('Copied .yarnrc.yml (without yarnPath/enableScripts)');
 
-          // Create an empty yarn.lock to declare this as a separate project
           const targetYarnLock = path.join(dir, 'yarn.lock');
           if (
             !(await fs.promises.access(targetYarnLock).then(
@@ -117,16 +114,15 @@ export async function initLink<T>(
         }
       }
 
-      // Yarn link all packages in a single call (e.g. yarn link path1 path2 path3)
       const paths = Object.values(packagesToLink);
       if (task) task.output = `${pm.executable} link ${paths.length} packages`;
-      d(`Linking ${paths.length} packages in single call`);
+      d(`Linking ${paths.length} packages`);
       await spawnPackageManager(pm, ['link', ...paths], {
         cwd: dir,
       });
       d('Linking completed successfully');
 
-      // Run install to resolve any remaining dependencies
+      // an additional install is needed to resolve any remaining dependencies
       if (task) task.output = `${pm.executable} install`;
       d(`Running: ${pm.executable} install (cwd: ${dir})`);
       await spawnPackageManager(pm, ['install'], {
