@@ -93,6 +93,7 @@ describe('ViteTypeScriptTemplate', () => {
         env: {
           ...process.env,
           YARN_ENABLE_HARDENED_MODE: '0',
+          YARN_ENABLE_IMMUTABLE_INSTALLS: '0',
         },
       });
 
