@@ -22,6 +22,7 @@
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:clear": "ts-node tools/test-clear",
+    "update:lockfile-fixtures": "ts-node tools/regenerate-lockfile-fixtures.ts",
     "postinstall": "node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
     "prepare": "husky install",
     "preversion": "yarn build"
