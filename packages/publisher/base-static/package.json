@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-static",
-  "version": "7.9.0",
+  "version": "7.10.0",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -8,8 +8,8 @@
   "main": "dist/PublisherStatic.js",
   "typings": "dist/PublisherStatic.d.ts",
   "dependencies": {
-    "@electron-forge/publisher-base": "7.9.0",
-    "@electron-forge/shared-types": "7.9.0"
+    "@electron-forge/publisher-base": "7.10.0",
+    "@electron-forge/shared-types": "7.10.0"
   },
   "devDependencies": {
     "vitest": "^3.1.3"
