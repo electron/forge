@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import getNameFromAuthor from '../../src/util/author-name';
+import { getNameFromAuthor } from '../src/author-name';
 
 describe('getNameFromAuthor', () => {
   [
