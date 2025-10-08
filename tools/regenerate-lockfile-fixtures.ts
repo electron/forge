@@ -15,37 +15,88 @@
  *   yarn update:lockfile-fixtures (if added to package.json scripts)
  */
 
+import { spawn } from 'node:child_process';
 import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
-
-import { api } from '../packages/api/core/src/api/index';
-import {
-  PACKAGE_MANAGERS,
-  spawnPackageManager,
-} from '../packages/utils/core-utils/src/index';
-import * as testUtils from '../packages/utils/test-utils/src/index';
 
 async function ensureDirectoryExists(dir: string) {
   await fs.mkdir(dir, { recursive: true });
 }
 
+// Helper to create a unique test directory (replaces testUtils.ensureTestDirIsNonexistent)
+async function ensureTestDirIsNonexistent(): Promise<string> {
+  const dir = path.join(
+    os.tmpdir(),
+    `electron-forge-test-${Date.now()}-${process.pid}`,
+  );
+  await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
+  await fs.mkdir(dir, { recursive: true });
+  return dir;
+}
+
+// Helper to spawn package manager commands (replaces spawnPackageManager)
+async function runYarnCommand(args: string[], cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn('yarn', args, {
+      cwd,
+      stdio: 'inherit',
+      shell: process.platform === 'win32',
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`yarn ${args.join(' ')} exited with code ${code}`));
+      }
+    });
+  });
+}
+
+// Helper to run electron-forge init (replaces api.init)
+async function initForgeProject(dir: string, template: string): Promise<void> {
+  const cliPath = path.resolve(
+    __dirname,
+    '..',
+    'packages',
+    'api',
+    'cli',
+    'dist',
+    'electron-forge-init.js',
+  );
+
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', [cliPath, '.', '--template', template], {
+      cwd: dir,
+      stdio: 'inherit',
+      shell: process.platform === 'win32',
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`electron-forge init exited with code ${code}`));
+      }
+    });
+  });
+}
+
 async function regenerateWebpackTypescriptLockfile() {
   console.log('Regenerating webpack-typescript lockfile fixture');
 
-  const dir = await testUtils.ensureTestDirIsNonexistent();
+  const dir = await ensureTestDirIsNonexistent();
 
   try {
-    await api.init({
-      dir,
-      template: path.resolve(
-        __dirname,
-        '..',
-        'packages',
-        'template',
-        'webpack-typescript',
-      ),
-      interactive: false,
-    });
+    const template = path.resolve(
+      __dirname,
+      '..',
+      'packages',
+      'template',
+      'webpack-typescript',
+    );
+    await initForgeProject(dir, template);
 
     const packageJsonPath = path.join(dir, 'package.json');
     const pj = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
@@ -72,9 +123,7 @@ async function regenerateWebpackTypescriptLockfile() {
     console.log(`  Added webpack resolution: ${webpackVersion}`);
 
     console.log('  Running yarn install...');
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
-      cwd: dir,
-    });
+    await runYarnCommand(['install'], dir);
 
     const fixtureDir = path.resolve(
       __dirname,
@@ -103,20 +152,17 @@ async function regenerateWebpackTypescriptLockfile() {
 async function regenerateViteTypescriptLockfile() {
   console.log('Regenerating vite-typescript lockfile fixture...');
 
-  const dir = await testUtils.ensureTestDirIsNonexistent();
+  const dir = await ensureTestDirIsNonexistent();
 
   try {
-    await api.init({
-      dir,
-      template: path.resolve(
-        __dirname,
-        '..',
-        'packages',
-        'template',
-        'vite-typescript',
-      ),
-      interactive: false,
-    });
+    const template = path.resolve(
+      __dirname,
+      '..',
+      'packages',
+      'template',
+      'vite-typescript',
+    );
+    await initForgeProject(dir, template);
 
     const packageJsonPath = path.join(dir, 'package.json');
     const pj = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
@@ -137,9 +183,7 @@ async function regenerateViteTypescriptLockfile() {
     console.log(`  Added vite resolution: ${viteVersion}`);
 
     console.log('  Running yarn install...');
-    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
-      cwd: dir,
-    });
+    await runYarnCommand(['install'], dir);
 
     const fixtureDir = path.resolve(
       __dirname,
