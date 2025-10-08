@@ -8597,6 +8597,8 @@ __metadata:
   peerDependencies:
     "@electron/fuses": ^1.0.0
   dependenciesMeta:
+    "@bitdisaster/exe-icon-extractor":
+      built: true
     "@malept/electron-installer-flatpak":
       optional: true
     electron-installer-debian:
@@ -8610,9 +8612,14 @@ __metadata:
     electron-windows-store:
       optional: true
     electron-winstaller:
+      built: true
       optional: true
     electron-wix-msi:
       optional: true
+    fs-xattr:
+      built: true
+    macos-alias:
+      built: true
   languageName: unknown
   linkType: soft
 
