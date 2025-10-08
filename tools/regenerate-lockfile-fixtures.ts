@@ -74,11 +74,6 @@ async function regenerateWebpackTypescriptLockfile() {
     console.log('  Running yarn install...');
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
       cwd: dir,
-      env: {
-        ...process.env,
-        YARN_ENABLE_HARDENED_MODE: '0',
-        YARN_ENABLE_IMMUTABLE_INSTALLS: '0',
-      },
     });
 
     const fixtureDir = path.resolve(
@@ -144,11 +139,6 @@ async function regenerateViteTypescriptLockfile() {
     console.log('  Running yarn install...');
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['install'], {
       cwd: dir,
-      env: {
-        ...process.env,
-        YARN_ENABLE_HARDENED_MODE: '0',
-        YARN_ENABLE_IMMUTABLE_INSTALLS: '0',
-      },
     });
 
     const fixtureDir = path.resolve(
