@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-msix",
-  "version": "7.10.0",
+  "version": "7.10.1",
   "description": "MSIX maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Jan Hannemann",
@@ -14,9 +14,9 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/core-utils": "7.10.0",
-    "@electron-forge/maker-base": "7.10.0",
-    "@electron-forge/shared-types": "7.10.0",
+    "@electron-forge/core-utils": "7.10.1",
+    "@electron-forge/maker-base": "7.10.1",
+    "@electron-forge/shared-types": "7.10.1",
     "cross-spawn": "^7.0.3",
     "electron-windows-msix": "^2.0.4",
     "fs-extra": "^10.0.0",
