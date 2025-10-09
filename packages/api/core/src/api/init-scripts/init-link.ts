@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -37,30 +38,25 @@ export async function initLink<T>(
     );
 
     const getWorkspacePath = (packageName: string): string => {
-      const shortName = packageName.replace('@electron-forge/', '');
-
-      if (shortName === 'cli' || shortName === 'core') {
-        return path.join(forgeRoot, 'packages', 'api', shortName);
-      }
-
-      // Handle packages such as plugin-*, maker-*, publisher-*, template-*, utils-*
-      const match = shortName.match(
-        /^(plugin|maker|publisher|template|utils)-(.+)$/,
+      const result = spawnSync(
+        'yarn',
+        ['workspace', packageName, 'exec', 'pwd'],
+        {
+          cwd: forgeRoot,
+          encoding: 'utf-8',
+          shell: process.platform === 'win32',
+        },
       );
-      if (match) {
-        const [, category, name] = match;
-        return path.join(forgeRoot, 'packages', category, name);
+
+      if (result.status !== 0) {
+        d(`Failed to get workspace path for ${packageName}: ${result.stderr}`);
+        throw new Error(
+          `Unable to determine workspace path for ${packageName}`,
+        );
       }
 
-      // Handle utils packages with name mismatches
-      if (shortName === 'shared-types') {
-        return path.join(forgeRoot, 'packages', 'utils', 'types');
-      }
-      if (shortName === 'core-utils' || shortName === 'test-utils') {
-        return path.join(forgeRoot, 'packages', 'utils', shortName);
-      }
-
-      throw new Error(`Unable to determine workspace path for ${packageName}`);
+      const workspacePath = result.stdout.trim();
+      return workspacePath;
     };
 
     // Collect all @electron-forge packages and their workspace paths
@@ -80,12 +76,7 @@ export async function initLink<T>(
       if (pm.executable === 'yarn') {
         const rootYarnrc = path.join(forgeRoot, '.yarnrc.yml');
         const targetYarnrc = path.join(dir, '.yarnrc.yml');
-        if (
-          await fs.promises.access(rootYarnrc).then(
-            () => true,
-            () => false,
-          )
-        ) {
+        if (fs.existsSync(rootYarnrc)) {
           const yarnrcContent = await fs.promises.readFile(rootYarnrc, 'utf-8');
           // we create a new yarnrc.yml (without yarnPath and enableScripts) and yarn.lock to mark as separate project
           // this avoids issues with yarnPath and enableScripts in CI
@@ -102,12 +93,7 @@ export async function initLink<T>(
           d('Copied .yarnrc.yml (without yarnPath/enableScripts)');
 
           const targetYarnLock = path.join(dir, 'yarn.lock');
-          if (
-            !(await fs.promises.access(targetYarnLock).then(
-              () => true,
-              () => false,
-            ))
-          ) {
+          if (!fs.existsSync(targetYarnLock)) {
             await fs.promises.writeFile(targetYarnLock, '');
             d('Created empty yarn.lock to mark as separate project');
           }
