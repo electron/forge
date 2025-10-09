@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 
 import { spawn } from '@malept/cross-spawn-promise';
@@ -20,7 +21,17 @@ type Closeable = {
 let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
-const appPath = path.join(__dirname, 'fixtures', 'apps', 'native-modules');
+const fixtureSource = path.join(
+  __dirname,
+  'fixtures',
+  'apps',
+  'native-modules',
+);
+const tempRoot = path.join(
+  os.tmpdir(),
+  `forge-webpack-test-${Date.now()}-${process.pid}`,
+);
+const appPath = path.join(tempRoot, 'native-modules');
 const pmCmd =
   process.platform === 'win32' ? `"${which.sync('npm.cmd')}"` : 'npm';
 
@@ -117,14 +128,41 @@ describe('AssetRelocatorPatch', () => {
   const mainOut = path.join(appPath, '.webpack/main');
 
   beforeAll(async () => {
-    await spawn(pmCmd, ['install'], { cwd: appPath, shell: true });
-  }, 60_000);
+    await fs.promises.mkdir(appPath, { recursive: true });
 
-  afterAll(() => {
+    const filesToCopy = await fs.promises.readdir(fixtureSource);
+    for (const file of filesToCopy) {
+      if (file === 'node_modules' || file === '.webpack') {
+        continue;
+      }
+      const src = path.join(fixtureSource, file);
+      const dest = path.join(appPath, file);
+      const stat = await fs.promises.stat(src);
+      if (stat.isDirectory()) {
+        await fs.promises.cp(src, dest, { recursive: true });
+      } else {
+        await fs.promises.copyFile(src, dest);
+      }
+    }
+
+    await spawn(pmCmd, ['ci'], {
+      cwd: appPath,
+      shell: true,
+    });
+  }, 90_000);
+
+  afterAll(async () => {
     for (const server of servers) {
       server.close();
     }
     servers = [];
+
+    try {
+      await fs.promises.rm(tempRoot, { recursive: true, force: true });
+    } catch (err) {
+      // Ignore cleanup errors (e.g., on Windows where files might be locked)
+      console.warn('Failed to clean up temp directory:', err);
+    }
   });
 
   const config = {

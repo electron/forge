@@ -7,11 +7,10 @@
     "node": ">= 16.4.0"
   },
   "scripts": {
-    "clean": "rimraf dist && lerna exec -- rimraf dist tsconfig.tsbuildinfo",
-    "build": "tsc -b packages",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\"\"",
+    "build": "tsc -b packages && ts-node tools/test-dist",
     "build:watch": "yarn build --watch",
-    "postbuild": "ts-node tools/test-dist",
-    "docs": "yarn build && npx typedoc",
+    "docs": "yarn build && typedoc",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
@@ -19,15 +18,13 @@
     "lint:markdown-links": "electron-lint-markdown-links --root . --ignore-path .markdownlintignore \"**/*.md\"",
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
     "lint:fix": "prettier --write . --experimental-cli && eslint --fix . --cache",
-    "link:prepare": "lerna exec -- node ../../../tools/silent.js yarn link --silent --no-bin-links --link-folder ../../../.links",
-    "link:remove": "lerna exec -- node ../../../tools/silent.js yarn unlink --silent --no-bin-links --link-folder ../../../.links",
     "test": "xvfb-maybe vitest run --project fast --project slow",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:clear": "ts-node tools/test-clear",
-    "postinstall": "rimraf node_modules/.bin/*.ps1 && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
-    "prepare": "husky install",
-    "preversion": "yarn build"
+    "update:lockfile-fixtures": "ts-node tools/regenerate-lockfile-fixtures.ts",
+    "postinstall": "node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
@@ -86,7 +83,7 @@
     "@electron/fuses": "^1.0.0",
     "@electron/lint-roller": "1.10.1",
     "@types/cross-spawn": "^6.0.1",
-    "@types/debug": "^4.1.5",
+    "@types/debug": "^4.1.12",
     "@types/express": "^4.17.9",
     "@types/express-ws": "^3.0.0",
     "@types/fs-extra": "^9.0.6",
@@ -113,12 +110,11 @@
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "husky": "^7.0.1",
     "inquirer": "^8.0.0",
-    "lerna": "^7.4.2",
+    "lerna": "^9.0.0",
     "lint-staged": "^12.1.7",
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
-    "rimraf": "^3.0.1",
     "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
@@ -152,7 +148,21 @@
   "prettier": {
     "singleQuote": true
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f",
+  "dependenciesMeta": {
+    "@bitdisaster/exe-icon-extractor": {
+      "built": true
+    },
+    "electron-winstaller": {
+      "built": true
+    },
+    "fs-xattr": {
+      "built": true
+    },
+    "macos-alias": {
+      "built": true
+    }
+  },
   "workspaces": {
     "packages": [
       "packages/api/*",
