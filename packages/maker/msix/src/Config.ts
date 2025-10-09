@@ -1,4 +1,4 @@
-import { PackagingOptions } from 'electron-windows-msix';
+import { PackagingOptions as MSIXPackagingOptions } from 'electron-windows-msix';
 
 /**
  * The configuration object for the MSIX maker.
@@ -7,4 +7,7 @@ import { PackagingOptions } from 'electron-windows-msix';
  *
  * @see https://github.com/bitdisaster/electron-windows-msix/blob/master/src/types.ts
  */
-export type MakerMsixConfig = Omit<PackagingOptions, 'outputDir' | 'appDir'>;
+export type MakerMSIXConfig = Omit<
+  MSIXPackagingOptions,
+  'outputDir' | 'appDir'
+>;

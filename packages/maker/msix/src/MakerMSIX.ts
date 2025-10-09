@@ -3,14 +3,14 @@ import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
 
-import { MakerMsixConfig } from './Config';
+import { MakerMSIXConfig } from './Config';
 import { toMsixArch } from './util/arch';
 
 /**
  * Creates an MSIX package for your Electron app.
  * @experimental
  */
-export default class MakerMsix extends MakerBase<MakerMsixConfig> {
+export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
   name = 'msix';
   defaultPlatforms: ForgePlatform[] = ['win32'];
 
@@ -47,3 +47,5 @@ export default class MakerMsix extends MakerBase<MakerMsixConfig> {
     return [result.msixPackage];
   }
 }
+
+export { MakerMSIX, MakerMSIXConfig };
