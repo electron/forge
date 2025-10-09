@@ -1,7 +1,11 @@
+import os from 'node:os';
+import path from 'node:path';
+
 import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
+import fs from 'fs-extra';
 
 import { MakerMSIXConfig } from './Config';
 import { toMsixArch } from './util/arch';
@@ -25,26 +29,41 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
     packageJSON,
     appName,
   }: MakerOptions): Promise<string[]> {
-    const configManifestVariables = this.config.manifestVariables;
-    const packageOptions = this.config;
-    delete packageOptions.manifestVariables;
+    const { manifestVariables, ...packageOptions } = this.config;
 
-    const result = await packageMSIX({
-      manifestVariables: {
-        packageDescription: packageJSON.description,
-        appExecutable: `${appName}.exe`,
-        packageVersion: packageJSON.version,
-        publisher: getNameFromAuthor(packageJSON.author),
-        packageIdentity: appName,
-        targetArch: toMsixArch(targetArch),
-        ...configManifestVariables,
-      },
-      ...packageOptions,
-      appDir: dir,
-      outputDir: makeDir,
-    });
+    // Do all the scratch work in a temporary folder
+    const tmpFolder = await fs.mkdtemp(
+      path.resolve(os.tmpdir(), 'msix-maker-'),
+    );
 
-    return [result.msixPackage];
+    try {
+      const result = await packageMSIX({
+        ...packageOptions,
+        manifestVariables: {
+          packageDescription: packageJSON.description,
+          appExecutable: `${appName}.exe`,
+          packageVersion: packageJSON.version,
+          publisher: getNameFromAuthor(packageJSON.author),
+          packageIdentity: appName,
+          targetArch: toMsixArch(targetArch),
+          ...manifestVariables,
+        },
+        appDir: dir,
+        outputDir: tmpFolder,
+      });
+
+      const outputPath = path.resolve(
+        makeDir,
+        'msix',
+        targetArch,
+        `${appName}.msix`,
+      );
+      await fs.mkdirp(path.dirname(outputPath));
+      await fs.move(result.msixPackage, outputPath);
+      return [outputPath];
+    } finally {
+      fs.remove(tmpFolder);
+    }
   }
 }
 
