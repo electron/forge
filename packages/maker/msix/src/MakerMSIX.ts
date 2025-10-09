@@ -49,7 +49,7 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
           ...manifestVariables,
         },
         appDir: dir,
-        outputDir: makeDir,
+        outputDir: tmpFolder,
       });
 
       const outputPath = path.resolve(
