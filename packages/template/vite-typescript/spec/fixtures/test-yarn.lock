@@ -2340,9 +2340,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-forge-test-1759966261279-35405@workspace:.":
+"electron-forge-test-1759982968427@workspace:.":
   version: 0.0.0-use.local
-  resolution: "electron-forge-test-1759966261279-35405@workspace:."
+  resolution: "electron-forge-test-1759982968427@workspace:."
   dependencies:
     "@electron-forge/cli": "npm:^7.10.0"
     "@electron-forge/maker-deb": "npm:^7.10.0"

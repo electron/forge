@@ -149,7 +149,11 @@ describe('AssetRelocatorPatch', () => {
       }
     }
 
-    await spawn(pmCmd, ['install'], { cwd: appPath, shell: true });
+    // Install dependencies
+    await spawn(pmCmd, ['install'], {
+      cwd: appPath,
+      shell: true,
+    });
   }, 90_000);
 
   afterAll(async () => {

@@ -12,7 +12,7 @@
  * Usage:
  *   yarn ts-node tools/regenerate-lockfile-fixtures.ts
  *   or
- *   yarn update:lockfile-fixtures (if added to package.json scripts)
+ *   yarn update:lockfile-fixtures
  */
 
 import { spawn } from 'node:child_process';
@@ -26,10 +26,7 @@ async function ensureDirectoryExists(dir: string) {
 
 // Helper to create a unique test directory (replaces testUtils.ensureTestDirIsNonexistent)
 async function ensureTestDirIsNonexistent(): Promise<string> {
-  const dir = path.join(
-    os.tmpdir(),
-    `electron-forge-test-${Date.now()}-${process.pid}`,
-  );
+  const dir = path.join(os.tmpdir(), `electron-forge-test-${Date.now()}`);
   await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
   await fs.mkdir(dir, { recursive: true });
   return dir;
