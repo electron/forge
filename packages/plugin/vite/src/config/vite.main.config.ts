@@ -1,3 +1,6 @@
+import path from 'node:path';
+
+import fs from 'fs-extra';
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import {
@@ -6,9 +9,6 @@ import {
   getBuildDefine,
   pluginHotRestart,
 } from './vite.base.config';
-
-import fs from 'fs-extra';
-import path from 'node:path';
 
 export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
