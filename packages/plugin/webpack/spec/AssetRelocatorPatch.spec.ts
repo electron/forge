@@ -132,11 +132,7 @@ describe('AssetRelocatorPatch', () => {
 
     const filesToCopy = await fs.promises.readdir(fixtureSource);
     for (const file of filesToCopy) {
-      if (
-        file === 'node_modules' ||
-        file === '.webpack' ||
-        file === 'package-lock.json'
-      ) {
+      if (file === 'node_modules' || file === '.webpack') {
         continue;
       }
       const src = path.join(fixtureSource, file);
@@ -149,8 +145,7 @@ describe('AssetRelocatorPatch', () => {
       }
     }
 
-    // Install dependencies
-    await spawn(pmCmd, ['install'], {
+    await spawn(pmCmd, ['ci'], {
       cwd: appPath,
       shell: true,
     });
