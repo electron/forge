@@ -147,6 +147,14 @@ export class BaseTemplate implements ForgeTemplate {
       };
     }
 
+    if (
+      pm.executable === 'yarn' &&
+      typeof pm.version === 'string' &&
+      semver.gte(pm.version, '2.0.0')
+    ) {
+      packageJSON.packageManager = `yarn@${pm.version}`;
+    }
+
     packageJSON.scripts.lint = 'echo "No linting configured"';
 
     d('writing package.json to:', directory);

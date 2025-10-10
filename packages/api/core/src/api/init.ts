@@ -87,7 +87,7 @@ export default async ({
         title: `Resolving package manager`,
         task: async (ctx, task) => {
           ctx.pm = await resolvePackageManager();
-          task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
+          task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)} v${ctx.pm.version}`;
         },
       },
       {
