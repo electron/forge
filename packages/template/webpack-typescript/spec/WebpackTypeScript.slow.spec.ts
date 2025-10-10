@@ -65,20 +65,6 @@ describe('WebpackTypeScriptTemplate', () => {
       // Webpack resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
-      // We need the version of webpack to match exactly during development due to a quirk in
-      // typescript type-resolution.  In prod no one has to worry about things like this
-      const pj = JSON.parse(
-        await fs.promises.readFile(path.resolve(dir, 'package.json'), 'utf-8'),
-      );
-      pj.resolutions = {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        webpack: `${require('../../../../node_modules/webpack/package.json').version}`,
-      };
-      await fs.promises.writeFile(
-        path.resolve(dir, 'package.json'),
-        JSON.stringify(pj),
-      );
-
       /**
        * LOCKFILE FIXTURE USAGE:
        * We use a pre-generated lockfile to avoid needing to disable Yarn's security features.
