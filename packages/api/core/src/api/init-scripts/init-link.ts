@@ -78,19 +78,33 @@ export async function initLink<T>(
         const targetYarnrc = path.join(dir, '.yarnrc.yml');
         if (fs.existsSync(rootYarnrc)) {
           const yarnrcContent = await fs.promises.readFile(rootYarnrc, 'utf-8');
-          // we create a new yarnrc.yml (without yarnPath and enableScripts) and yarn.lock to mark as separate project
-          // this avoids issues with yarnPath and enableScripts in CI
+          // we create a new yarnrc.yml (without enableScripts) and yarn.lock to mark as separate project
+          // this avoids issues with enableScripts in CI
+          // we keep yarnPath but update it to point to the forge root's yarn binary using an absolute path
 
           const filteredContent = yarnrcContent
             .split('\n')
             .filter(
               (line) =>
-                !line.trim().startsWith('yarnPath:') &&
-                !line.trim().startsWith('enableScripts:'),
+                !line.trim().startsWith('enableScripts:') &&
+                !line.trim().startsWith('npmMinimalAgeGate:') &&
+                !line.trim().startsWith('npmPreapprovedPackages:') &&
+                !line.trim().startsWith('- '),
             )
+            .map((line) => {
+              // Convert relative yarnPath to absolute path pointing to forge root
+              if (line.trim().startsWith('yarnPath:')) {
+                const relativePath = line.split('yarnPath:')[1].trim();
+                const yarnBinaryPath = path.join(forgeRoot, relativePath);
+                return `yarnPath: ${yarnBinaryPath}`;
+              }
+              return line;
+            })
             .join('\n');
           await fs.promises.writeFile(targetYarnrc, filteredContent);
-          d('Copied .yarnrc.yml (without yarnPath/enableScripts)');
+          d(
+            'Copied .yarnrc.yml (without enableScripts, with absolute yarnPath)',
+          );
 
           const targetYarnLock = path.join(dir, 'yarn.lock');
           if (!fs.existsSync(targetYarnLock)) {
