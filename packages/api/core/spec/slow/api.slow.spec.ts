@@ -53,22 +53,15 @@ describe.each([
   let dir: string;
 
   beforeAll(async () => {
+    const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
     if (pm.executable === 'pnpm') {
       // temporarily disable corepack to enable pnpm to set links
-      const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
       process.env.COREPACK_ENABLE_STRICT = '0';
-      try {
-        await spawnPackageManager(
-          pm,
-          'config set node-linker hoisted'.split(' '),
-        );
-      } finally {
-        if (originalCorepackStrict === undefined) {
-          delete process.env.COREPACK_ENABLE_STRICT;
-        } else {
-          process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
-        }
-      }
+
+      await spawnPackageManager(
+        pm,
+        'config set node-linker hoisted'.split(' '),
+      );
     }
 
     return async () => {
@@ -78,19 +71,14 @@ describe.each([
         await spawnPackageManager(pm, ['unlink', '--all']);
       } else if (pm.executable === 'pnpm') {
         // pnpm doesn't support --all, and requires Corepack bypass
-        const originalCorepackStrict = process.env.COREPACK_ENABLE_STRICT;
-        process.env.COREPACK_ENABLE_STRICT = '0';
-        try {
-          await spawnPackageManager(pm, ['unlink']);
-        } finally {
-          if (originalCorepackStrict === undefined) {
-            delete process.env.COREPACK_ENABLE_STRICT;
-          } else {
-            process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
-          }
-        }
+        await spawnPackageManager(pm, ['unlink']);
       }
       delete process.env.NODE_INSTALLER;
+      if (originalCorepackStrict === undefined) {
+        delete process.env.COREPACK_ENABLE_STRICT;
+      } else {
+        process.env.COREPACK_ENABLE_STRICT = originalCorepackStrict;
+      }
     };
   });
 

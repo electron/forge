@@ -3,55 +3,34 @@
 /**
  * Utility script to regenerate lockfile fixtures for template tests.
  *
- * Run this script when:
- * - Webpack or Vite versions are updated in the main Forge package.json
- * - Template dependencies change significantly
- * - Yarn lockfile format changes
- * - Template tests start failing due to outdated lockfiles
+ * Run this script whenever the lockfile changes for any production dependency
+ * in Forge (or when a new version is published).
+ *
+ * This script uses the local version of `electron-forge` to initialize
+ * a new project in a temporary directory using the specified template.
+ * Note that you must run `yarn build` first.
  *
  * Usage:
- *   yarn ts-node tools/regenerate-lockfile-fixtures.ts
- *   or
  *   yarn update:lockfile-fixtures
  */
 
 import { spawn } from 'node:child_process';
-import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
-import * as path from 'node:path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 async function ensureDirectoryExists(dir: string) {
-  await fs.mkdir(dir, { recursive: true });
+  await fs.promises.mkdir(dir, { recursive: true });
 }
 
 // Helper to create a unique test directory (replaces testUtils.ensureTestDirIsNonexistent)
 async function ensureTestDirIsNonexistent(): Promise<string> {
   const dir = path.join(os.tmpdir(), `electron-forge-test-${Date.now()}`);
-  await fs.rm(dir, { recursive: true, force: true }).catch(() => {});
-  await fs.mkdir(dir, { recursive: true });
+  await fs.promises.rm(dir, { recursive: true, force: true }).catch(() => {});
+  await fs.promises.mkdir(dir, { recursive: true });
   return dir;
 }
 
-// Helper to spawn package manager commands (replaces spawnPackageManager)
-async function runYarnCommand(args: string[], cwd: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn('yarn', args, {
-      cwd,
-      stdio: 'inherit',
-      shell: process.platform === 'win32',
-    });
-
-    child.on('close', (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`yarn ${args.join(' ')} exited with code ${code}`));
-      }
-    });
-  });
-}
-
-// Helper to run electron-forge init (replaces api.init)
 async function initForgeProject(dir: string, template: string): Promise<void> {
   const cliPath = path.resolve(
     __dirname,
@@ -62,6 +41,12 @@ async function initForgeProject(dir: string, template: string): Promise<void> {
     'dist',
     'electron-forge-init.js',
   );
+
+  if (!fs.existsSync(cliPath)) {
+    throw new Error(
+      `Cannot find electron-forge CLI at ${cliPath}. Did you run "yarn build"?`,
+    );
+  }
 
   return new Promise((resolve, reject) => {
     const child = spawn('node', [cliPath, '.', '--template', template], {
@@ -95,33 +80,6 @@ async function regenerateWebpackTypescriptLockfile() {
     );
     await initForgeProject(dir, template);
 
-    const packageJsonPath = path.join(dir, 'package.json');
-    const pj = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
-
-    const webpackPackageJson = JSON.parse(
-      await fs.readFile(
-        path.resolve(
-          __dirname,
-          '..',
-          'node_modules',
-          'webpack',
-          'package.json',
-        ),
-        'utf-8',
-      ),
-    );
-    const webpackVersion = webpackPackageJson.version;
-    pj.resolutions = {
-      webpack: webpackVersion,
-    };
-
-    await fs.writeFile(packageJsonPath, JSON.stringify(pj, null, 2));
-
-    console.log(`  Added webpack resolution: ${webpackVersion}`);
-
-    console.log('  Running yarn install...');
-    await runYarnCommand(['install'], dir);
-
     const fixtureDir = path.resolve(
       __dirname,
       '..',
@@ -136,10 +94,10 @@ async function regenerateWebpackTypescriptLockfile() {
     const lockfilePath = path.join(dir, 'yarn.lock');
     const fixturePath = path.join(fixtureDir, 'test-yarn.lock');
 
-    await fs.copyFile(lockfilePath, fixturePath);
+    await fs.promises.copyFile(lockfilePath, fixturePath);
     console.log(`Saved to: ${path.relative(process.cwd(), fixturePath)}`);
 
-    await fs.rm(dir, { recursive: true, force: true });
+    await fs.promises.rm(dir, { recursive: true, force: true });
   } catch (error) {
     console.error('Error regenerating webpack-typescript lockfile:', error);
     throw error;
@@ -161,27 +119,6 @@ async function regenerateViteTypescriptLockfile() {
     );
     await initForgeProject(dir, template);
 
-    const packageJsonPath = path.join(dir, 'package.json');
-    const pj = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
-
-    const vitePackageJson = JSON.parse(
-      await fs.readFile(
-        path.resolve(__dirname, '..', 'node_modules', 'vite', 'package.json'),
-        'utf-8',
-      ),
-    );
-    const viteVersion = vitePackageJson.version;
-    pj.resolutions = {
-      vite: viteVersion,
-    };
-
-    await fs.writeFile(packageJsonPath, JSON.stringify(pj, null, 2));
-
-    console.log(`  Added vite resolution: ${viteVersion}`);
-
-    console.log('  Running yarn install...');
-    await runYarnCommand(['install'], dir);
-
     const fixtureDir = path.resolve(
       __dirname,
       '..',
@@ -196,10 +133,10 @@ async function regenerateViteTypescriptLockfile() {
     const lockfilePath = path.join(dir, 'yarn.lock');
     const fixturePath = path.join(fixtureDir, 'test-yarn.lock');
 
-    await fs.copyFile(lockfilePath, fixturePath);
+    await fs.promises.copyFile(lockfilePath, fixturePath);
     console.log(`Saved to: ${path.relative(process.cwd(), fixturePath)}`);
 
-    await fs.rm(dir, { recursive: true, force: true });
+    await fs.promises.rm(dir, { recursive: true, force: true });
   } catch (error) {
     console.error('Error regenerating vite-typescript lockfile:', error);
     throw error;
@@ -216,8 +153,8 @@ async function main() {
 
     console.log('\n All lockfile fixtures regenerated successfully!');
     console.log('\n Remember to commit the updated fixtures:');
-    console.log('git add packages/template/*/spec/fixtures/test-yarn.lock');
-    console.log('git commit -m "chore: update template lockfile fixtures"');
+    console.log('  git add packages/template/*/spec/fixtures/test-yarn.lock');
+    console.log('  git commit -m "chore: update template lockfile fixtures"');
   } catch {
     console.error('\n Failed to regenerate lockfile fixtures');
     process.exit(1);

@@ -8547,6 +8547,8 @@ __metadata:
     "@electron/packager": "npm:^18.3.5"
     "@electron/rebuild": "npm:^3.7.0"
     "@google-cloud/storage": "npm:^7.5.0"
+    "@inquirer/prompts": "npm:^6.0.1"
+    "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     "@malept/electron-installer-flatpak": "npm:^0.11.4"
     "@octokit/core": "npm:^5.2.1"

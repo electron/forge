@@ -140,11 +140,18 @@ export class BaseTemplate implements ForgeTemplate {
 
     const pm = await resolvePackageManager();
 
-    // As of pnpm v10, no postinstall scripts will run unless allowlisted through `onlyBuiltDependencies`
     if (pm.executable === 'pnpm') {
+      d('Adding Electron dependencies to `onlyBuiltDependencies`');
       packageJSON.pnpm = {
         onlyBuiltDependencies: ['electron', 'electron-winstaller'],
       };
+    } else if (
+      pm.executable === 'yarn' &&
+      typeof pm.version === 'string' &&
+      semver.gte(pm.version, '2.0.0')
+    ) {
+      d('Detected Yarn 2+, adding packageManager field to package.json');
+      packageJSON.packageManager = `yarn@${pm.version}`;
     }
 
     packageJSON.scripts.lint = 'echo "No linting configured"';

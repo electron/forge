@@ -146,7 +146,6 @@ This guide is for maintainers who have:
 - Check that the latest CI run passed on `main` on [GitHub](https://github.com/electron/forge/actions?query=workflow:CI).
 - Remove all untracked files and directories from your checkout with `git clean -fdx`.
 - Install dependencies with `yarn install`.
-- Build packages with `yarn build`.
 
 ### 2. Publish all npm packages
 
