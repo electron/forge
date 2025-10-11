@@ -36,6 +36,8 @@
     "@electron/packager": "^18.3.5",
     "@electron/rebuild": "^3.7.0",
     "@google-cloud/storage": "^7.5.0",
+    "@inquirer/prompts": "^6.0.1",
+    "@listr2/prompt-adapter-inquirer": "^2.0.22",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@octokit/core": "^5.2.1",
     "@octokit/plugin-retry": "^6.1.0",

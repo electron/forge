@@ -2655,9 +2655,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-forge-test-1760136567786@workspace:.":
+"electron-forge-test-1760150187833@workspace:.":
   version: 0.0.0-use.local
-  resolution: "electron-forge-test-1760136567786@workspace:."
+  resolution: "electron-forge-test-1760150187833@workspace:."
   dependencies:
     "@electron-forge/cli": "npm:^7.10.2"
     "@electron-forge/maker-deb": "npm:^7.10.2"
@@ -3286,9 +3286,9 @@ __metadata:
   linkType: hard
 
 "exponential-backoff@npm:^3.1.1":
-  version: 3.1.2
-  resolution: "exponential-backoff@npm:3.1.2"
-  checksum: 10c0/d9d3e1eafa21b78464297df91f1776f7fbaa3d5e3f7f0995648ca5b89c069d17055033817348d9f4a43d1c20b0eab84f75af6991751e839df53e4dfd6f22e844
+  version: 3.1.3
+  resolution: "exponential-backoff@npm:3.1.3"
+  checksum: 10c0/77e3ae682b7b1f4972f563c6dbcd2b0d54ac679e62d5d32f3e5085feba20483cf28bd505543f520e287a56d4d55a28d7874299941faf637e779a1aa5994d1267
   languageName: node
   linkType: hard
 
