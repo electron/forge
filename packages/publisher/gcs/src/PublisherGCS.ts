@@ -73,7 +73,6 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
           metadata: this.config.metadataGenerator
             ? this.config.metadataGenerator(artifact)
             : {},
-          gzip: true,
           destination: this.keyForArtifact(artifact),
           ...uploadOptions,
         });
