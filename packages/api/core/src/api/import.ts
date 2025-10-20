@@ -17,9 +17,10 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash';
 
-import installDepList, {
+import {
   DepType,
   DepVersionRestriction,
+  installDepList,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, {

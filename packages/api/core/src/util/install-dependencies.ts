@@ -14,13 +14,13 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export default async (
+export async function installDepList(
   pm: PMDetails,
   dir: string,
   deps: string[],
   depType = DepType.PROD,
   versionRestriction = DepVersionRestriction.RANGE,
-): Promise<void> => {
+): Promise<void> {
   d(
     'installing',
     JSON.stringify(deps),
@@ -51,4 +51,4 @@ export default async (
       throw err;
     }
   }
-};
+}

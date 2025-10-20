@@ -35,6 +35,7 @@ describe('ViteTypeScriptTemplate', () => {
         dir,
         template: path.resolve(__dirname, '..'),
         interactive: false,
+        electronVersion: '38.2.2',
       });
     });
 

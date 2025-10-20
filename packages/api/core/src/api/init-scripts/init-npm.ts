@@ -5,9 +5,10 @@ import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 
-import installDepList, {
+import {
   DepType,
   DepVersionRestriction,
+  installDepList,
 } from '../../util/install-dependencies';
 
 const d = debug('electron-forge:init:npm');
@@ -35,23 +36,32 @@ export const exactDevDeps = ['electron'];
 export const initNPM = async <T>(
   pm: PMDetails,
   dir: string,
+  electronVersion: string = 'latest',
   task: ForgeListrTask<T>,
 ): Promise<void> => {
   d('installing dependencies');
   task.output = `${pm.executable} ${pm.install} ${deps.join(' ')}`;
   await installDepList(pm, dir, deps);
 
-  d('installing devDependencies');
-  task.output = `${pm.executable} ${pm.install} ${pm.dev} ${deps.join(' ')}`;
+  d(`installing devDependencies`);
+  task.output = `${pm.executable} ${pm.install} ${pm.dev} ${devDeps.join(' ')}`;
   await installDepList(pm, dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
   for (const packageName of exactDevDeps) {
-    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${packageName}`;
+    let packageInstallString = packageName;
+    if (packageName === 'electron') {
+      if (electronVersion === 'nightly') {
+        packageInstallString = `electron-nightly@latest`;
+      } else {
+        packageInstallString += `@${electronVersion}`;
+      }
+    }
+    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${packageInstallString}`;
     await installDepList(
       pm,
       dir,
-      [packageName],
+      [packageInstallString],
       DepType.DEV,
       DepVersionRestriction.EXACT,
     );

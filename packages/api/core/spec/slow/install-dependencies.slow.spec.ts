@@ -5,7 +5,7 @@ import path from 'node:path';
 import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import installDeps from '../../src/util/install-dependencies';
+import { installDepList } from '../../src/util/install-dependencies';
 
 describe.runIf(!(process.platform === 'linux' && process.env.CI))(
   'install-dependencies',
@@ -19,7 +19,9 @@ describe.runIf(!(process.platform === 'linux' && process.env.CI))(
     });
 
     it('should install the latest minor version when the dependency has a caret', async () => {
-      await installDeps(PACKAGE_MANAGERS['npm'], installDir, ['debug@^2.0.0']);
+      await installDepList(PACKAGE_MANAGERS['npm'], installDir, [
+        'debug@^2.0.0',
+      ]);
 
       const packageJSON = await import(
         path.resolve(installDir, 'node_modules', 'debug', 'package.json')

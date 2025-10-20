@@ -7,9 +7,10 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import installDepList, {
+import {
   DepType,
   DepVersionRestriction,
+  installDepList,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
@@ -46,6 +47,13 @@ export interface InitOptions {
    * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
    */
   skipGit?: boolean;
+  /**
+   * Set a specific Electron version for your Forge project.
+   * Can take in version numbers or `latest`, `beta`, or `nightly`.
+   *
+   * @defaultValue The `latest` tag on npm.
+   */
+  electronVersion?: string;
 }
 
 async function validateTemplate(
@@ -75,6 +83,7 @@ export default async ({
   force = false,
   template = 'base',
   skipGit = false,
+  electronVersion,
 }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
@@ -178,7 +187,7 @@ export default async ({
                     {
                       title: 'Installing common dependencies',
                       task: async ({ pm }, task) => {
-                        await initNPM(pm, dir, task);
+                        await initNPM(pm, dir, electronVersion, task);
                       },
                       exitOnError: false,
                     },
