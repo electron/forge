@@ -1,4 +1,4 @@
-import { PredefinedAcl, StorageOptions } from '@google-cloud/storage';
+import { StorageOptions, UploadOptions } from '@google-cloud/storage';
 // eslint-disable-next-line n/no-missing-import
 import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 
@@ -21,23 +21,18 @@ export interface PublisherGCSConfig {
    */
   folder?: string;
   /**
-   * Apply a predefined set of access controls to this object.
+   * Upload options to provide directly to the GCS storage upload method
    */
-  predefinedAcl?: PredefinedAcl;
-  /**
-   * Whether to make uploaded artifacts public to the internet.
-   * Alias for config.predefinedAcl = 'publicRead'.
-   */
-  public?: boolean;
-  /**
-   * Whether to make uploaded artifacts private.
-   * Alias for config.predefinedAcl = 'private'.
-   */
-  private?: boolean;
+  uploadOptions?: UploadOptions;
   /**
    * Custom function to provide the key to upload a given file to
    */
-  keyResolver?: (fileName: string, platform: string, arch: string) => string;
+  keyResolver?: (opts: {
+    fileName: string;
+    platform: string;
+    arch: string;
+    version: string;
+  }) => string;
   /**
    * Generate optional Metadata for GCS Objects
    * See https://cloud.google.com/storage/docs/metadata for more info.
