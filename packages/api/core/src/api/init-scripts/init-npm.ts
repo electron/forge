@@ -36,7 +36,7 @@ export const exactDevDeps = ['electron'];
 export const initNPM = async <T>(
   pm: PMDetails,
   dir: string,
-  electronVersion: string = 'latest',
+  electronVersion: string,
   task: ForgeListrTask<T>,
 ): Promise<void> => {
   d('installing dependencies');

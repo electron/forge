@@ -83,7 +83,7 @@ export default async ({
   force = false,
   template = 'base',
   skipGit = false,
-  electronVersion,
+  electronVersion = 'latest',
 }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
@@ -105,6 +105,25 @@ export default async ({
           const tmpl = await findTemplate(template);
           ctx.templateModule = tmpl.template;
           task.output = `Using ${chalk.green(tmpl.name)} (${tmpl.type} module)`;
+        },
+        rendererOptions: { persistentOutput: true },
+      },
+      {
+        title: `Resolving Electron version: ${chalk.cyan(electronVersion)}`,
+        task: async (_ctx, task) => {
+          if (
+            electronVersion === 'latest' ||
+            electronVersion === 'beta' ||
+            electronVersion === 'nightly'
+          ) {
+            task.output = `Using Electron version tag: ${chalk.cyan(electronVersion)}`;
+          } else if (semver.valid(electronVersion)) {
+            task.output = `Using Electron version: ${chalk.cyan(electronVersion)}`;
+          } else {
+            throw new Error(
+              `Invalid Electron version: ${electronVersion}. Must be a valid semver version or one of 'latest', 'beta', or 'nightly'.`,
+            );
+          }
         },
         rendererOptions: { persistentOutput: true },
       },
