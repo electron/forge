@@ -19,9 +19,8 @@ import {
 import { readMetadata } from 'electron-installer-common';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-// eslint-disable-next-line n/no-missing-import
-import { api, InitOptions } from '../../src/api';
-import installDeps from '../../src/util/install-dependencies';
+import { api, InitOptions } from '../../src/api/index';
+import { installDependencies } from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 type BeforeInitFunction = () => void;
@@ -400,7 +399,7 @@ describe.each([
 
       describe('with prebuilt native module deps installed', () => {
         beforeAll(async () => {
-          await installDeps(pm, dir, ['ref-napi']);
+          await installDependencies(pm, dir, ['ref-napi']);
 
           return async () => {
             await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), {
