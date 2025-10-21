@@ -7,9 +7,10 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import installDepList, {
+import {
   DepType,
   DepVersionRestriction,
+  installDependencies,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
@@ -46,6 +47,13 @@ export interface InitOptions {
    * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
    */
   skipGit?: boolean;
+  /**
+   * Set a specific Electron version for your Forge project.
+   * Can take in version numbers or `latest`, `beta`, or `nightly`.
+   *
+   * @defaultValue The `latest` tag on npm.
+   */
+  electronVersion?: string;
 }
 
 async function validateTemplate(
@@ -75,12 +83,14 @@ export default async ({
   force = false,
   template = 'base',
   skipGit = false,
+  electronVersion = 'latest',
 }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;
     pm: PMDetails;
+    parsedElectronVersion: string;
   }>(
     [
       {
@@ -96,6 +106,32 @@ export default async ({
           const tmpl = await findTemplate(template);
           ctx.templateModule = tmpl.template;
           task.output = `Using ${chalk.green(tmpl.name)} (${tmpl.type} module)`;
+        },
+        rendererOptions: { persistentOutput: true },
+      },
+      {
+        title: `Resolving Electron version: ${chalk.cyan(electronVersion)}`,
+        task: async (ctx, task) => {
+          if (
+            electronVersion === 'latest' ||
+            electronVersion === 'beta' ||
+            electronVersion === 'nightly'
+          ) {
+            task.output = `Using Electron version tag: ${chalk.cyan(electronVersion)}`;
+            ctx.parsedElectronVersion = electronVersion;
+          } else {
+            // semver.clean allows us to accept `v` versions and trims whitespace
+            const maybeVersion = semver.clean(electronVersion);
+
+            if (maybeVersion) {
+              task.output = `Using Electron version: ${chalk.cyan(maybeVersion)}`;
+              ctx.parsedElectronVersion = maybeVersion;
+            } else {
+              throw new Error(
+                `Invalid Electron version: ${electronVersion}. Must be a valid semver version or one of 'latest', 'beta', or 'nightly'.`,
+              );
+            }
+          }
         },
         rendererOptions: { persistentOutput: true },
       },
@@ -145,7 +181,7 @@ export default async ({
                   if (templateModule.dependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.dependencies.join(' ')}`;
                   }
-                  return await installDepList(
+                  return await installDependencies(
                     pm,
                     dir,
                     templateModule.dependencies || [],
@@ -162,7 +198,7 @@ export default async ({
                   if (templateModule.devDependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
                   }
-                  await installDepList(
+                  await installDependencies(
                     pm,
                     dir,
                     templateModule.devDependencies || [],
@@ -173,12 +209,12 @@ export default async ({
               },
               {
                 title: 'Finalizing dependencies',
-                task: async (_, task) => {
+                task: async (ctx, task) => {
                   return task.newListr([
                     {
                       title: 'Installing common dependencies',
                       task: async ({ pm }, task) => {
-                        await initNPM(pm, dir, task);
+                        await initNPM(pm, dir, ctx.parsedElectronVersion, task);
                       },
                       exitOnError: false,
                     },
