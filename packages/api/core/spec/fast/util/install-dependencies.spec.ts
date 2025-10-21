@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   DepType,
   DepVersionRestriction,
-  installDepList as installDependencies,
+  installDependencies,
 } from '../../../src/util/install-dependencies';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {

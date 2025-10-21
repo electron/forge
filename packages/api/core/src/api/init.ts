@@ -10,7 +10,7 @@ import semver from 'semver';
 import {
   DepType,
   DepVersionRestriction,
-  installDepList,
+  installDependencies,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
@@ -154,7 +154,7 @@ export default async ({
                   if (templateModule.dependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.dependencies.join(' ')}`;
                   }
-                  return await installDepList(
+                  return await installDependencies(
                     pm,
                     dir,
                     templateModule.dependencies || [],
@@ -171,7 +171,7 @@ export default async ({
                   if (templateModule.devDependencies?.length) {
                     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
                   }
-                  await installDepList(
+                  await installDependencies(
                     pm,
                     dir,
                     templateModule.devDependencies || [],

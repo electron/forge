@@ -8,7 +8,7 @@ import fs from 'fs-extra';
 import {
   DepType,
   DepVersionRestriction,
-  installDepList,
+  installDependencies,
 } from '../../util/install-dependencies';
 
 const d = debug('electron-forge:init:npm');
@@ -41,11 +41,11 @@ export const initNPM = async <T>(
 ): Promise<void> => {
   d('installing dependencies');
   task.output = `${pm.executable} ${pm.install} ${deps.join(' ')}`;
-  await installDepList(pm, dir, deps);
+  await installDependencies(pm, dir, deps);
 
   d(`installing devDependencies`);
   task.output = `${pm.executable} ${pm.install} ${pm.dev} ${devDeps.join(' ')}`;
-  await installDepList(pm, dir, devDeps, DepType.DEV);
+  await installDependencies(pm, dir, devDeps, DepType.DEV);
 
   d('installing exact devDependencies');
   for (const packageName of exactDevDeps) {
@@ -58,7 +58,7 @@ export const initNPM = async <T>(
       }
     }
     task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${packageInstallString}`;
-    await installDepList(
+    await installDependencies(
       pm,
       dir,
       [packageInstallString],

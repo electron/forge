@@ -14,7 +14,7 @@ export enum DepVersionRestriction {
   RANGE = 'RANGE',
 }
 
-export async function installDepList(
+export async function installDependencies(
   pm: PMDetails,
   dir: string,
   deps: string[],
