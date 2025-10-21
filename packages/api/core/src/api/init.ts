@@ -90,6 +90,7 @@ export default async ({
   const runner = new Listr<{
     templateModule: ForgeTemplate;
     pm: PMDetails;
+    parsedElectronVersion: string;
   }>(
     [
       {
@@ -110,19 +111,26 @@ export default async ({
       },
       {
         title: `Resolving Electron version: ${chalk.cyan(electronVersion)}`,
-        task: async (_ctx, task) => {
+        task: async (ctx, task) => {
           if (
             electronVersion === 'latest' ||
             electronVersion === 'beta' ||
             electronVersion === 'nightly'
           ) {
             task.output = `Using Electron version tag: ${chalk.cyan(electronVersion)}`;
-          } else if (semver.valid(electronVersion)) {
-            task.output = `Using Electron version: ${chalk.cyan(electronVersion)}`;
+            ctx.parsedElectronVersion = electronVersion;
           } else {
-            throw new Error(
-              `Invalid Electron version: ${electronVersion}. Must be a valid semver version or one of 'latest', 'beta', or 'nightly'.`,
-            );
+            // semver.clean allows us to accept `v` versions and trims whitespace
+            const maybeVersion = semver.clean(electronVersion);
+
+            if (maybeVersion) {
+              task.output = `Using Electron version: ${chalk.cyan(maybeVersion)}`;
+              ctx.parsedElectronVersion = maybeVersion;
+            } else {
+              throw new Error(
+                `Invalid Electron version: ${electronVersion}. Must be a valid semver version or one of 'latest', 'beta', or 'nightly'.`,
+              );
+            }
           }
         },
         rendererOptions: { persistentOutput: true },
@@ -201,12 +209,12 @@ export default async ({
               },
               {
                 title: 'Finalizing dependencies',
-                task: async (_, task) => {
+                task: async (ctx, task) => {
                   return task.newListr([
                     {
                       title: 'Installing common dependencies',
                       task: async ({ pm }, task) => {
-                        await initNPM(pm, dir, electronVersion, task);
+                        await initNPM(pm, dir, ctx.parsedElectronVersion, task);
                       },
                       exitOnError: false,
                     },

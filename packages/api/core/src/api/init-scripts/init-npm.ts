@@ -4,6 +4,7 @@ import { PMDetails } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import semver from 'semver';
 
 import {
   DepType,
@@ -53,6 +54,8 @@ export const initNPM = async <T>(
     if (packageName === 'electron') {
       if (electronVersion === 'nightly') {
         packageInstallString = `electron-nightly@latest`;
+      } else if (semver.prerelease(electronVersion)?.includes('nightly')) {
+        packageInstallString = `electron-nightly@${electronVersion}`;
       } else {
         packageInstallString += `@${electronVersion}`;
       }

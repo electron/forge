@@ -31,7 +31,7 @@ program
   )
   .option(
     '--electron-version [version]',
-    'Set a specific Electron version for your Forge project. Can take in a version string (e.g. `38.3.0`) or `latest`, `beta`, or `nightly`.',
+    'Set a specific Electron version for your Forge project. Can take in a version string (e.g. `38.3.0`) or `latest`, `beta`, or `nightly` tags.',
   )
   .action(async (dir) => {
     const options = program.opts();
@@ -45,6 +45,7 @@ program
             initOpts.force = Boolean(options.force);
             initOpts.skipGit = Boolean(options.skipGit);
             initOpts.dir = resolveWorkingDir(dir, false);
+            initOpts.electronVersion = options.electronVersion ?? 'latest';
           },
         },
         {
