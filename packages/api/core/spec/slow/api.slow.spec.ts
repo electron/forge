@@ -17,11 +17,11 @@ import {
   expectLintToPass,
 } from '@electron-forge/test-utils';
 import { readMetadata } from 'electron-installer-common';
+import semver from 'semver';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-// eslint-disable-next-line n/no-missing-import
-import { api, InitOptions } from '../../src/api';
-import installDeps from '../../src/util/install-dependencies';
+import { api, InitOptions } from '../../src/api/index';
+import { installDependencies } from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 type BeforeInitFunction = () => void;
@@ -44,6 +44,68 @@ async function updatePackageJSON(
     'utf-8',
   );
 }
+
+// TODO: move more tests outside of the describe.each block
+// if the actual package manager doesn't matter for the test
+describe('init params', () => {
+  let dir: string;
+  describe('init (with electronVersion)', () => {
+    beforeEach(async () => {
+      dir = await ensureTestDirIsNonexistent();
+
+      return async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      };
+    });
+
+    it('can define a specific Electron version with a version number', async () => {
+      await api.init({
+        dir,
+        electronVersion: 'v38.0.0',
+      });
+      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      expect(packageJSON.devDependencies.electron).toEqual('38.0.0');
+    });
+
+    it('can define a specific Electron nightly version with a version number', async () => {
+      await api.init({
+        dir,
+        electronVersion: '40.0.0-nightly.20251020',
+      });
+      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      expect(
+        semver.valid(packageJSON.devDependencies['electron-nightly']),
+      ).not.toBeNull();
+      expect(packageJSON.devDependencies.electron).not.toBeDefined();
+    });
+
+    it('can define a specific Electron prerelease version with the beta tag', async () => {
+      await api.init({
+        dir,
+        electronVersion: 'beta',
+      });
+      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      const prereleaseTag = semver.prerelease(
+        packageJSON.devDependencies.electron,
+      );
+      expect(prereleaseTag).toEqual(
+        expect.arrayContaining([expect.stringMatching(/alpha|beta/)]),
+      );
+    });
+
+    it('can define a specific Electron nightly version with the nightly tag', async () => {
+      await api.init({
+        dir,
+        electronVersion: 'nightly',
+      });
+      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      expect(
+        semver.valid(packageJSON.devDependencies['electron-nightly']),
+      ).not.toBeNull();
+      expect(packageJSON.devDependencies.electron).not.toBeDefined();
+    });
+  });
+});
 
 describe.each([
   PACKAGE_MANAGERS['npm'],
@@ -400,7 +462,7 @@ describe.each([
 
       describe('with prebuilt native module deps installed', () => {
         beforeAll(async () => {
-          await installDeps(pm, dir, ['ref-napi']);
+          await installDependencies(pm, dir, ['ref-napi']);
 
           return async () => {
             await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), {
