@@ -14,6 +14,7 @@ export type GCSArtifact = {
   keyPrefix: string;
   platform: string;
   arch: string;
+  version: string;
 };
 
 export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
@@ -33,7 +34,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
       storageOptions,
       bucket: configBucket,
       folder,
-      ...uploadOptions
+      uploadOptions,
     } = this.config;
 
     if (!configBucket) {
@@ -49,6 +50,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
           keyPrefix: folder || this.GCSKeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
+          version: makeResult.packageJSON.version,
         })),
       );
     }
@@ -75,7 +77,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
             : {},
           gzip: true,
           destination: this.keyForArtifact(artifact),
-          ...uploadOptions,
+          ...(uploadOptions || {}),
         });
 
         uploaded += 1;
