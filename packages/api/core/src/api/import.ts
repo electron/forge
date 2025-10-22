@@ -17,9 +17,10 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash';
 
-import installDepList, {
+import {
   DepType,
   DepVersionRestriction,
+  installDependencies,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 import upgradeForgeConfig, {
@@ -306,15 +307,20 @@ export default autoTrace(
 
                       d('installing dependencies');
                       task.output = `${pm.executable} ${pm.install} ${importDeps.join(' ')}`;
-                      await installDepList(pm, dir, importDeps);
+                      await installDependencies(pm, dir, importDeps);
 
                       d('installing devDependencies');
                       task.output = `${pm.executable} ${pm.install} ${pm.dev} ${importDevDeps.join(' ')}`;
-                      await installDepList(pm, dir, importDevDeps, DepType.DEV);
+                      await installDependencies(
+                        pm,
+                        dir,
+                        importDevDeps,
+                        DepType.DEV,
+                      );
 
                       d('installing devDependencies with exact versions');
                       task.output = `${pm.executable} ${pm.install} ${pm.dev} ${pm.exact} ${importExactDevDeps.join(' ')}`;
-                      await installDepList(
+                      await installDependencies(
                         pm,
                         dir,
                         importExactDevDeps,
