@@ -41,6 +41,11 @@ describe('package-manager', () => {
         pm: 'npm',
         version: '10.9.2',
       },
+      {
+        ua: 'bun/1.2.21 npm/? node/v24.3.0 linux x64',
+        pm: 'bun',
+        version: '1.2.21',
+      },
     ])('with $ua', async ({ ua, pm, version }) => {
       process.env.npm_config_user_agent = ua;
       await expect(resolvePackageManager()).resolves.toHaveProperty(
@@ -83,6 +88,15 @@ describe('package-manager', () => {
         'npm',
       );
     });
+
+    it('should return bun if npm_config_user_agent=bun', async () => {
+      process.env.npm_config_user_agent =
+        'bun/1.2.21 npm/? node/v24.3.0 linux x64';
+      await expect(resolvePackageManager()).resolves.toHaveProperty(
+        'executable',
+        'bun',
+      );
+    });
   });
 
   describe('NODE_INSTALLER', () => {
@@ -107,7 +121,7 @@ describe('package-manager', () => {
       };
     });
 
-    it.each([{ pm: 'yarn' }, { pm: 'npm' }, { pm: 'pnpm' }])(
+    it.each([{ pm: 'yarn' }, { pm: 'npm' }, { pm: 'pnpm' }, { pm: 'bun' }])(
       'should return $pm if NODE_INSTALLER=$pm',
       async ({ pm }) => {
         process.env.NODE_INSTALLER = pm;
@@ -124,7 +138,7 @@ describe('package-manager', () => {
     );
 
     it('should return npm if package manager is unsupported', async () => {
-      process.env.NODE_INSTALLER = 'bun';
+      process.env.NODE_INSTALLER = 'nosupppm';
       console.warn = vi.fn();
       vi.mocked(spawn).mockResolvedValue('1.22.22');
       await expect(resolvePackageManager()).resolves.toHaveProperty(
@@ -133,7 +147,7 @@ describe('package-manager', () => {
       );
       expect(console.warn).toHaveBeenCalledWith(
         '⚠',
-        expect.stringContaining('Package manager bun is unsupported'),
+        expect.stringContaining('Package manager nosupppm is unsupported'),
       );
     });
   });
