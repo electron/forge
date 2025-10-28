@@ -102,7 +102,9 @@ jobs:
       - name: Set TEMP for Windows
         if: runner.os == 'Windows'
         shell: bash
-        run: echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
+        run: |
+          mkdir -p /d/fast-temp
+          echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -188,7 +190,9 @@ jobs:
       - name: Set TEMP for Windows
         if: runner.os == 'Windows'
         shell: bash
-        run: echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
+        run: |
+          mkdir -p /d/fast-temp
+          echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --immutable
