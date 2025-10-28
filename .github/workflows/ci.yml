@@ -94,6 +94,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
+      - name: Set Yarn global folder for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: yarn config set globalFolder "D:\\yarn-data"
+
+      - name: Set TEMP for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -169,6 +179,16 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set Yarn global folder for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: yarn config set globalFolder "D:\\yarn-data"
+
+      - name: Set TEMP for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --immutable
