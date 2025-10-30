@@ -25,6 +25,7 @@ describe('WebpackTypeScriptTemplate', () => {
       dir,
       template: path.join(__dirname, '..'),
       interactive: false,
+      electronVersion: '38.2.2',
     });
   });
 

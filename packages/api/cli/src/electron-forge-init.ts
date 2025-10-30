@@ -29,6 +29,10 @@ program
     '--skip-git',
     'Skip initializing a git repository in the initialized project.',
   )
+  .option(
+    '--electron-version [version]',
+    'Set a specific Electron version for your Forge project. Can take in a version string (e.g. `38.3.0`) or `latest`, `beta`, or `nightly` tags.',
+  )
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
@@ -41,6 +45,7 @@ program
             initOpts.force = Boolean(options.force);
             initOpts.skipGit = Boolean(options.skipGit);
             initOpts.dir = resolveWorkingDir(dir, false);
+            initOpts.electronVersion = options.electronVersion ?? 'latest';
           },
         },
         {
@@ -117,6 +122,29 @@ program
             }
 
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
+
+            // TODO: add prompt for passing in an exact version as well
+            initOpts.electronVersion = await prompt.run<Prompt<string, any>>(
+              select,
+              {
+                message: 'Select an Electron release',
+                choices: [
+                  {
+                    name: 'electron@latest',
+                    value: 'latest',
+                  },
+                  {
+                    name: 'electron@beta',
+                    value: 'beta',
+                  },
+                  {
+                    name: 'electron-nightly@latest',
+                    value: 'nightly',
+                  },
+                ],
+              },
+            );
+
             initOpts.skipGit = !(await prompt.run(confirm, {
               message: `Would you like to initialize Git in your new project?`,
               default: true,
