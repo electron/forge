@@ -5110,11 +5110,11 @@ __metadata:
   linkType: hard
 
 "node-abi@npm:^3.45.0":
-  version: 3.78.0
-  resolution: "node-abi@npm:3.78.0"
+  version: 3.80.0
+  resolution: "node-abi@npm:3.80.0"
   dependencies:
     semver: "npm:^7.3.5"
-  checksum: 10c0/aa5e2ac5283934b1175248a0cbe0106faeccebbc1d8e288c3b166f44da8d3665df661f0a63b232bcacab3e2d94c5c450a7f5c85bb70b6f54fbb4cc45cb62a9fb
+  checksum: 10c0/f98534a2d063e85b6b51c5e6f2abebd1d1d313855e29138d493cf178ce5c2ead18e562c3093a758654fd941c9353b8154a79acd10540d553726c4f690c31c44e
   languageName: node
   linkType: hard
 

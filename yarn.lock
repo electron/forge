@@ -15170,11 +15170,11 @@ __metadata:
   linkType: hard
 
 "node-abi@npm:^3.45.0":
-  version: 3.76.0
-  resolution: "node-abi@npm:3.76.0"
+  version: 3.80.0
+  resolution: "node-abi@npm:3.80.0"
   dependencies:
     semver: "npm:^7.3.5"
-  checksum: 10c0/f92489e5229ec62b4c9fc3a1690743ddf17b406afd12d5fa2742a3c95bdc06bdc97144882f8c145eebf263c89541de0780266f777a1943e3273b57ebdbf503c8
+  checksum: 10c0/f98534a2d063e85b6b51c5e6f2abebd1d1d313855e29138d493cf178ce5c2ead18e562c3093a758654fd941c9353b8154a79acd10540d553726c4f690c31c44e
   languageName: node
   linkType: hard
 
