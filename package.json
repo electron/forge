@@ -101,6 +101,7 @@
     "@types/which": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@yarnpkg/types": "^4.0.1",
     "electron-installer-common": "^0.10.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.0.1",
@@ -116,7 +117,6 @@
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
-    "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
     "typescript": "~5.4.5",
@@ -143,8 +143,7 @@
     "*.{js,ts}": [
       "prettier --write --experimental-cli",
       "eslint --fix --cache"
-    ],
-    "*.{json,lock}": "syncpack"
+    ]
   },
   "prettier": {
     "singleQuote": true
