@@ -29,7 +29,7 @@ function enforceConsistentDependenciesAcrossTheProject({ Yarn }) {
   for (const dependency of Yarn.dependencies()) {
     if (dependency.type === `peerDependencies`) continue;
     // HACK: the `Dependency` type doesn't contain information about optionalDependencies
-		// so skip them for now
+    // so skip them for now
     if (OPTIONAL_DEPS.includes(dependency.ident)) continue;
 
     for (const otherDependency of Yarn.dependencies({

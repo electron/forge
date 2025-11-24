@@ -140,7 +140,7 @@
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write --experimental-cli",
-    "*.{js,ts}": [
+    "*.{js,ts, cjs, mjs, cts, mts}": [
       "prettier --write --experimental-cli",
       "eslint --fix --cache"
     ]
