@@ -1,59 +1,43 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
-import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { spawn } from '@malept/cross-spawn-promise';
+import { afterAll, describe, expect, it } from 'vitest';
 
-import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
+import packageAPI from '../../../api/core/src/api/package';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
-  const appPath = path.join(__dirname, 'fixture', 'app');
-
-  const spawnOptions: CrossSpawnOptions = {
-    cwd: appPath,
-    shell: true,
-  };
+  const appPath = path.join(__dirname, 'fixture');
 
   const packageJSON = JSON.parse(
-    fs.readFileSync(path.join(appPath, 'package.json.tmpl'), {
+    fs.readFileSync(path.join(appPath, 'package.json'), {
       encoding: 'utf-8',
     }),
   );
 
   const { name: appName } = packageJSON;
 
-  const outDir = path.join(appPath, 'out', 'fuses-test-app');
-
-  beforeAll(async () => {
-    delete process.env.TS_NODE_PROJECT;
-    await fs.promises.copyFile(
-      path.join(appPath, 'package.json.tmpl'),
-      path.join(appPath, 'package.json'),
-    );
-
-    // Use initLink to set up dependencies with local forge packages
-    // This will copy .yarnrc.yml, link local packages, and run install
-    process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = '1';
-    await initLink(PACKAGE_MANAGERS['yarn'], appPath);
-    delete process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
-  });
+  const outDir = path.join(appPath, 'out');
 
   afterAll(async () => {
-    await fs.promises.rm(path.resolve(outDir, '../'), {
+    await fs.promises.rm(outDir, {
       recursive: true,
       force: true,
     });
   });
 
   it('should flip Fuses', async () => {
-    await spawn('yarn', ['package'], spawnOptions);
+    await packageAPI({
+      dir: appPath,
+      interactive: false,
+    });
 
     const electronExecutablePath = getElectronExecutablePath({
       appName,
       basePath: path.join(
         outDir,
+        'fuses-test-app',
         ...(process.platform === 'darwin'
           ? [`${appName}.app`, 'Contents']
           : []),
