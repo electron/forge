@@ -1,0 +1,15 @@
+{
+  "name": "fuses-test-app",
+  "version": "1.0.0",
+  "main": "./src/main.js",
+  "dependencies": {
+    "@electron/fuses": "^1.6.1",
+    "fs-extra": "^10.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "portal:../../../../api/cli",
+    "@electron-forge/plugin-fuses": "portal:../..",
+    "@electron-forge/shared-types": "portal:../../../../utils/types",
+    "electron": "39.2.3"
+  }
+}
