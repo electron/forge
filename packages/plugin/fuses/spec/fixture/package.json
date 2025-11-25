@@ -7,6 +7,7 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "electron": "39.2.3"
+    "electron": "39.2.3",
+    "@electron-forge/core": "portal:../../../../api/core"
   }
 }
