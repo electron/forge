@@ -8,7 +8,7 @@ import { packageMSIX } from 'electron-windows-msix';
 import fs from 'fs-extra';
 
 import { MakerMSIXConfig } from './Config.js';
-import { toMsixArch } from './util/arch';
+import { toMsixArch } from './util/arch.js';
 
 /**
  * Creates an MSIX package for your Electron app.

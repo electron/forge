@@ -2,7 +2,7 @@ import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 import globalDirs from 'global-dirs';
 
-import { PossibleModule } from '../../util/import-search';
+import { PossibleModule } from '../../util/import-search.js';
 
 const d = debug('electron-forge:init:find-template');
 

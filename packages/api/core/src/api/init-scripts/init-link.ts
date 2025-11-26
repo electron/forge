@@ -6,7 +6,7 @@ import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 
-import { readRawPackageJson } from '../../util/read-package-json';
+import { readRawPackageJson } from '../../util/read-package-json.js';
 
 const d = debug('electron-forge:init:link');
 

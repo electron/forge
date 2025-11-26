@@ -10,7 +10,7 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../util/install-dependencies';
+} from '../../util/install-dependencies.js';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(

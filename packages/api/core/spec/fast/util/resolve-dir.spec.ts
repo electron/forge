@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest';
 import {
   registerForgeConfigForDirectory,
   unregisterForgeConfigForDirectory,
-} from '../../../src/util/forge-config';
-import resolveDir from '../../../src/util/resolve-dir';
+} from '../../../src/util/forge-config.js';
+import resolveDir from '../../../src/util/resolve-dir.js';
 
 describe('resolve-dir', () => {
   it('should return null if a valid dir can not be found', async () => {

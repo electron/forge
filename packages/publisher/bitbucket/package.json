@@ -14,8 +14,7 @@
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",
     "form-data": "^4.0.0",
-    "fs-extra": "^10.0.0",
-    "node-fetch": "^2.6.7"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

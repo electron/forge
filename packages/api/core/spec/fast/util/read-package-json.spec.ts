@@ -7,7 +7,7 @@ import packageJSON from '../../../package.json';
 import {
   readMutatedPackageJson,
   readRawPackageJson,
-} from '../../../src/util/read-package-json';
+} from '../../../src/util/read-package-json.js';
 
 describe('readRawPackageJson', () => {
   it('should find a package.json file from the given directory', async () => {

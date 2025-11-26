@@ -8,7 +8,7 @@ import findConfig, {
   registerForgeConfigForDirectory,
   renderConfigTemplate,
   unregisterForgeConfigForDirectory,
-} from '../../../src/util/forge-config';
+} from '../../../src/util/forge-config.js';
 
 const DEFAULTS = {
   packagerConfig: {},

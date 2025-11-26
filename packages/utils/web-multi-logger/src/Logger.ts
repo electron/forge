@@ -4,7 +4,7 @@ import path from 'node:path';
 import express from 'express';
 import ews from 'express-ws';
 
-import Tab from './Tab';
+import Tab from './Tab.js';
 
 export { Tab };
 

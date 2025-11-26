@@ -24,10 +24,10 @@ import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config.js';
-import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
-import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
-import once from './util/once';
-import WebpackConfigGenerator from './WebpackConfig';
+import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging.js';
+import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin.js';
+import once from './util/once.js';
+import WebpackConfigGenerator from './WebpackConfig.js';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;

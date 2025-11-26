@@ -10,9 +10,9 @@ import * as rechoir from 'rechoir';
 // eslint-disable-next-line n/no-missing-import
 import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
-import { runMutatingHook } from './hook';
-import PluginInterface from './plugin-interface';
-import { readRawPackageJson } from './read-package-json';
+import { runMutatingHook } from './hook.js';
+import PluginInterface from './plugin-interface.js';
+import { readRawPackageJson } from './read-package-json.js';
 
 const underscoreCase = (str: string) =>
   str

@@ -2,7 +2,6 @@ import * as path from 'node:path';
 
 import * as fs from 'fs-extra';
 import { Listr } from 'listr2';
-import fetch from 'node-fetch';
 
 const workspaceMappings: {
   [space: string]: { [packageName: string]: string | undefined };

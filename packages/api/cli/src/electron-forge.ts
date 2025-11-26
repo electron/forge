@@ -6,10 +6,10 @@ import { program } from 'commander';
 import logSymbols from 'log-symbols';
 import semver from 'semver';
 
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 import './util/terminate';
 
-import { checkSystem, SystemCheckContext } from './util/check-system';
+import { checkSystem, SystemCheckContext } from './util/check-system.js';
 
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error(
@@ -19,7 +19,6 @@ if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   process.exit(1);
 }
 
-/* eslint-disable-next-line import/order -- Listr2 import contains JS syntax that fails as early as Node 14 */
 import { Listr } from 'listr2';
 
 program

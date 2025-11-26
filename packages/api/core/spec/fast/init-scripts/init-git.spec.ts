@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { initGit } from '../../../src/api/init-scripts/init-git';
+import { initGit } from '../../../src/api/init-scripts/init-git.js';
 
 let dir: string;
 let dirID = Date.now();

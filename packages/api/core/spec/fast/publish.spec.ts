@@ -10,8 +10,8 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { listrMake } from '../../src/api/make';
 import publish from '../../src/api/publish';
-import findConfig from '../../src/util/forge-config';
-import importSearch from '../../src/util/import-search';
+import findConfig from '../../src/util/forge-config.js';
+import importSearch from '../../src/util/import-search.js';
 
 vi.mock(import('../../src/api/make'), async (importOriginal) => {
   const mod = await importOriginal();

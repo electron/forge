@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import findConfig from '../../../src/util/forge-config';
-import importSearch from '../../../src/util/import-search';
+import findConfig from '../../../src/util/forge-config.js';
+import importSearch from '../../../src/util/import-search.js';
 
 describe('import-search', () => {
   it('should resolve null if no file exists', async () => {

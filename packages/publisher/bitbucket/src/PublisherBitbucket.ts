@@ -6,7 +6,6 @@ import {
 } from '@electron-forge/publisher-base';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import fetch from 'node-fetch';
 
 import { PublisherBitbucketConfig } from './Config.js';
 

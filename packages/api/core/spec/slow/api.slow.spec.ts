@@ -21,8 +21,8 @@ import semver from 'semver';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { api, InitOptions } from '../../src/api/index';
-import { installDependencies } from '../../src/util/install-dependencies';
-import { readRawPackageJson } from '../../src/util/read-package-json';
+import { installDependencies } from '../../src/util/install-dependencies.js';
+import { readRawPackageJson } from '../../src/util/read-package-json.js';
 
 type BeforeInitFunction = () => void;
 type PackageJSON = Record<string, unknown> & {

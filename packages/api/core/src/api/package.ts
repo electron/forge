@@ -28,13 +28,13 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 
-import getForgeConfig from '../util/forge-config';
-import { getHookListrTasks, runHook } from '../util/hook';
-import importSearch from '../util/import-search';
-import { warn } from '../util/messages';
-import getCurrentOutDir from '../util/out-dir';
-import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
+import getForgeConfig from '../util/forge-config.js';
+import { getHookListrTasks, runHook } from '../util/hook.js';
+import importSearch from '../util/import-search.js';
+import { warn } from '../util/messages.js';
+import getCurrentOutDir from '../util/out-dir.js';
+import { readMutatedPackageJson } from '../util/read-package-json.js';
+import resolveDir from '../util/resolve-dir.js';
 
 const d = debug('electron-forge:packager');
 

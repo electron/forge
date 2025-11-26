@@ -20,7 +20,7 @@
     "@electron-forge/shared-types": "workspace:*",
     "cross-zip": "^4.0.0",
     "fs-extra": "^10.0.0",
-    "got": "^11.8.5"
+    "got": "^14.0.0"
   },
   "publishConfig": {
     "access": "public"

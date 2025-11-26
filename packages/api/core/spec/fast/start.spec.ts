@@ -4,9 +4,9 @@ import { ElectronProcess } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
-import findConfig from '../../src/util/forge-config';
-import { readMutatedPackageJson } from '../../src/util/read-package-json';
-import resolveDir from '../../src/util/resolve-dir';
+import findConfig from '../../src/util/forge-config.js';
+import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
+import resolveDir from '../../src/util/resolve-dir.js';
 
 vi.mock(import('node:child_process'), async (importOriginal) => {
   const mod = await importOriginal();

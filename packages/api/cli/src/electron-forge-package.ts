@@ -3,9 +3,9 @@ import { api, PackageOptions } from '@electron-forge/core';
 import { program } from 'commander';
 
 import './util/terminate';
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version')

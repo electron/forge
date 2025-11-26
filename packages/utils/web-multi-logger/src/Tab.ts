@@ -1,6 +1,6 @@
 import ews from 'express-ws';
 
-import Log from './Log';
+import Log from './Log.js';
 
 let idCounter = 1;
 

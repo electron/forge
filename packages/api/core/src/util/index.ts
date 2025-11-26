@@ -9,7 +9,7 @@ import {
   fromBuildIdentifier,
   registerForgeConfigForDirectory,
   unregisterForgeConfigForDirectory,
-} from './forge-config';
+} from './forge-config.js';
 
 import type { ForgeConfig } from '@electron-forge/shared-types';
 

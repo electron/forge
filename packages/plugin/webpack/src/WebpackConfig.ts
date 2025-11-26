@@ -12,15 +12,15 @@ import {
   WebpackPluginEntryPointPreloadOnly,
   WebpackPluginRendererConfig,
 } from './Config.js';
-import AssetRelocatorPatch from './util/AssetRelocatorPatch';
-import processConfig from './util/processConfig';
+import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
+import processConfig from './util/processConfig.js';
 import {
   isLocalOrNoWindowEntries,
   isLocalWindow,
   isNoWindow,
   isPreloadOnly,
   isPreloadOnlyEntries,
-} from './util/rendererTypeUtils';
+} from './util/rendererTypeUtils.js';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';

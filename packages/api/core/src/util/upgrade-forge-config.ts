@@ -7,7 +7,7 @@ import {
   IForgeResolvablePublisher,
 } from '@electron-forge/shared-types';
 
-import { siblingDep } from '../api/init-scripts/init-npm';
+import { siblingDep } from '../api/init-scripts/init-npm.js';
 
 type MakeTargets = { string: string[] };
 

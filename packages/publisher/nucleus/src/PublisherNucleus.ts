@@ -7,7 +7,6 @@ import {
 } from '@electron-forge/publisher-base';
 import debug from 'debug';
 import FormData from 'form-data';
-import fetch from 'node-fetch';
 
 import { PublisherNucleusConfig } from './Config.js';
 
