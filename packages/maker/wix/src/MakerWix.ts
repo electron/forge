@@ -1,10 +1,10 @@
 import path from 'node:path';
 
 import { getNameFromAuthor } from '@electron-forge/core-utils';
-import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, type MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import chalk from 'chalk';
-import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
+import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';
 import logSymbols from 'log-symbols';
 import semver from 'semver';
 

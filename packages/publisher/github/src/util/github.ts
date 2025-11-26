@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { OctokitOptions } from '@octokit/core/dist-types/types.d';
+import type { OctokitOptions } from '@octokit/core';
 import { retry } from '@octokit/plugin-retry';
 import { Octokit } from '@octokit/rest';
 import debug from 'debug';

@@ -1,4 +1,4 @@
-import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
+import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';
 
 export type MakerWixConfig = Omit<
   MSICreatorOptions,
