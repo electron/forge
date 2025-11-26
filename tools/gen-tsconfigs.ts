@@ -13,7 +13,7 @@ function filterDupes<T>(arr: readonly T[]): T[] {
 (async () => {
   const BASE_TS_CONFIG = JSON.parse(
     await fs.readFile(
-      path.resolve(__dirname, '../tsconfig.base.json'),
+      path.resolve(import.meta.dirname, '../tsconfig.base.json'),
       'utf-8',
     ),
   );
@@ -34,7 +34,7 @@ function filterDupes<T>(arr: readonly T[]): T[] {
   };
 
   fs.writeFile(
-    path.resolve(__dirname, '../packages/tsconfig.json'),
+    path.resolve(import.meta.dirname, '../packages/tsconfig.json'),
     JSON.stringify(rootPackagesConfig, null, 2),
   );
 
@@ -72,10 +72,13 @@ function filterDupes<T>(arr: readonly T[]): T[] {
       });
       Object.assign(tsConfig.compilerOptions, {
         typeRoots: [
-          path.relative(pkg.path, path.resolve(__dirname, '..', 'typings')),
           path.relative(
             pkg.path,
-            path.resolve(__dirname, '..', 'node_modules', '@types'),
+            path.resolve(import.meta.dirname, '..', 'typings'),
+          ),
+          path.relative(
+            pkg.path,
+            path.resolve(import.meta.dirname, '..', 'node_modules', '@types'),
           ),
         ],
       });

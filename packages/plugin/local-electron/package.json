@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/plugin-local-electron",
   "version": "7.10.2",
+  "type": "module",
   "description": "Local Electron plugin for Electron Forge, let's you use a local build of Electron",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

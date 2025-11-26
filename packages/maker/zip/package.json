@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/maker-zip",
   "version": "7.10.2",
+  "type": "module",
   "description": "ZIP maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

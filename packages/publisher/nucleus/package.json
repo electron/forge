@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/publisher-nucleus",
   "version": "7.10.2",
+  "type": "module",
   "description": "Nucleus publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

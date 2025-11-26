@@ -3,12 +3,13 @@
   "version": "0.0.0-development",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "engines": {
     "node": ">= 22.12.0"
   },
   "scripts": {
     "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\"\"",
-    "build": "tsc -b packages && ts-node tools/test-dist",
+    "build": "tsc -b packages && tsx tools/test-dist",
     "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
     "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
@@ -22,9 +23,9 @@
     "test": "xvfb-maybe vitest run --project fast --project slow",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
-    "test:clear": "ts-node tools/test-clear",
-    "update:lockfile-fixtures": "ts-node tools/regenerate-lockfile-fixtures.ts",
-    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts"
+    "test:clear": "tsx tools/test-clear",
+    "update:lockfile-fixtures": "tsx tools/regenerate-lockfile-fixtures.ts",
+    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
@@ -70,6 +71,7 @@
     "rechoir": "^0.8.0",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
+    "tsx": "^4.20.6",
     "username": "^5.1.0",
     "vite": "^5.0.12",
     "webpack": "^5.69.1",
@@ -83,6 +85,7 @@
   "devDependencies": {
     "@electron/fuses": "^1.0.0",
     "@electron/lint-roller": "1.10.1",
+    "@tsconfig/node22": "^22.0.5",
     "@types/cross-spawn": "^6.0.1",
     "@types/debug": "^4.1.12",
     "@types/express": "^4.17.9",
@@ -94,7 +97,7 @@
     "@types/lodash": "^4.14.166",
     "@types/mime-types": "^2.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^18.0.3",
+    "@types/node": "~22.10.7",
     "@types/node-fetch": "^2.5.5",
     "@types/rechoir": "^0.6.1",
     "@types/semver": "^7.3.4",
@@ -117,9 +120,8 @@
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
-    "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
-    "typescript": "~5.4.5",
+    "typescript": "5.9.3",
     "vitest": "^3.1.3",
     "xvfb-maybe": "^0.2.1",
     "yaml-hook": "^1.0.0"

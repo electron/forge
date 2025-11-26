@@ -1,6 +1,10 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { external, getBuildConfig, pluginHotRestart } from './vite.base.config';
+import {
+  external,
+  getBuildConfig,
+  pluginHotRestart,
+} from './vite.base.config.js';
 
 export function getConfig(
   forgeEnv: ConfigEnv<'build'>,

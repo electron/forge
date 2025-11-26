@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/cli",
   "version": "7.10.2",
+  "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

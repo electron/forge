@@ -5,7 +5,7 @@ import {
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
-import { PublisherGCSConfig } from './Config';
+import { PublisherGCSConfig } from './Config.js';
 
 const d = debug('electron-forge:publish:gcs');
 
