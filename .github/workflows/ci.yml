@@ -10,9 +10,6 @@ on:
   merge_group:
     types: [checks_requested]
 
-env:
-  NODE_VERSION: 20.17.0
-
 jobs:
   lint-and-build:
     runs-on: ubuntu-22.04
@@ -23,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           # cache: yarn
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
@@ -158,7 +155,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version-file: .nvmrc
           # cache: yarn
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4

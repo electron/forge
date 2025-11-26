@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "scripts": {
     "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\"\"",
