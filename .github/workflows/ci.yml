@@ -50,7 +50,7 @@ jobs:
       - name: Lint codebase
         run: |
           yarn lint
-          yarn syncpack
+          yarn constraints
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0

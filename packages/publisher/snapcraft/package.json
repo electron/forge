@@ -11,7 +11,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.10.2",
+    "@electron-forge/publisher-base": "workspace:*",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {

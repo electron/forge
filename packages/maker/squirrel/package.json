@@ -11,8 +11,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "7.10.2",
-    "@electron-forge/shared-types": "7.10.2",
+    "@electron-forge/maker-base": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*",
     "fs-extra": "^10.0.0"
   },
   "optionalDependencies": {

@@ -12,8 +12,8 @@
   "main": "dist/VitePlugin.js",
   "typings": "dist/VitePlugin.d.ts",
   "dependencies": {
-    "@electron-forge/plugin-base": "7.10.2",
-    "@electron-forge/shared-types": "7.10.2",
+    "@electron-forge/plugin-base": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
