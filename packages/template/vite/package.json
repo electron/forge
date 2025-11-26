@@ -15,12 +15,12 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.10.2",
-    "@electron-forge/template-base": "7.10.2",
+    "@electron-forge/shared-types": "workspace:*",
+    "@electron-forge/template-base": "workspace:*",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
-    "@electron-forge/test-utils": "7.10.2",
+    "@electron-forge/test-utils": "workspace:*",
     "listr2": "^7.0.2",
     "vitest": "^3.1.3"
   },

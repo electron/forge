@@ -14,7 +14,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.10.2",
+    "@electron-forge/shared-types": "workspace:*",
     "fs-extra": "^10.0.0",
     "which": "^2.0.2"
   },

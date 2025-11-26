@@ -8,7 +8,7 @@
   "main": "dist/Publisher.js",
   "typings": "dist/Publisher.d.ts",
   "dependencies": {
-    "@electron-forge/shared-types": "7.10.2"
+    "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^3.1.3"

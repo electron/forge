@@ -8,8 +8,8 @@
   "main": "dist/PublisherStatic.js",
   "typings": "dist/PublisherStatic.d.ts",
   "dependencies": {
-    "@electron-forge/publisher-base": "7.10.2",
-    "@electron-forge/shared-types": "7.10.2"
+    "@electron-forge/publisher-base": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^3.1.3"

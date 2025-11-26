@@ -14,8 +14,8 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/publisher-base": "7.10.2",
-    "@electron-forge/shared-types": "7.10.2",
+    "@electron-forge/publisher-base": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*",
     "@octokit/core": "^5.2.1",
     "@octokit/plugin-retry": "^6.1.0",
     "@octokit/request-error": "^5.1.1",
