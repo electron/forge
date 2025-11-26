@@ -9,6 +9,7 @@ import {
 } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
+  ForgeArch,
   ForgeMultiHookMap,
   ListrTask,
   ResolvedForgeConfig,
@@ -241,15 +242,18 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             await fs.remove(this.baseDir);
 
             // TODO: Figure out how to get matrix from packager
-            const arches: string[] = Array.from(
-              new Set(
-                arch
-                  .split(',')
-                  .reduce<
-                    string[]
-                  >((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []),
-              ),
+            const archStrings = arch.split(',');
+            const archSet = new Set<ForgeArch>(
+              archStrings.reduce<ForgeArch[]>((acc, val) => {
+                if (val === 'universal') {
+                  return acc.concat('arm64', 'x64');
+                } else {
+                  return acc.concat(val as ForgeArch);
+                }
+              }, []),
             );
+
+            const arches = Array.from(archSet);
 
             const firstArch = arches[0];
             const otherArches = arches.slice(1);

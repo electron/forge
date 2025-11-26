@@ -13,8 +13,6 @@ export function debianArch(nodeArch: ForgeArch): string {
       return 'amd64';
     case 'armv7l':
       return 'armhf';
-    case 'arm':
-      return 'armel';
     default:
       return nodeArch;
   }

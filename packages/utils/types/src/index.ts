@@ -1,9 +1,9 @@
 import { ChildProcess } from 'node:child_process';
 
-import {
-  ArchOption,
+import type {
   Options as ElectronPackagerOptions,
-  TargetPlatform,
+  OfficialArch,
+  OfficialPlatform,
 } from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
 import { autoTrace } from '@electron-forge/tracer';
@@ -34,8 +34,8 @@ export type ForgeListrTaskFn<Ctx = any> = ListrTask<
 >['task'];
 export type ElectronProcess = ChildProcess & { restarted: boolean };
 
-export type ForgePlatform = TargetPlatform;
-export type ForgeArch = ArchOption;
+export type ForgePlatform = OfficialPlatform;
+export type ForgeArch = OfficialArch | 'all';
 export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;

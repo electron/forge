@@ -6,14 +6,15 @@ import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
 import { PublisherGCSConfig } from './Config.js';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:publish:gcs');
 
 export type GCSArtifact = {
   path: string;
   keyPrefix: string;
-  platform: string;
-  arch: string;
+  platform: ForgePlatform;
+  arch: ForgeArch;
   version: string;
 };
 

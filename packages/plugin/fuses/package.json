@@ -15,12 +15,12 @@
   ],
   "typings": "dist/FusesPlugin.d.ts",
   "devDependencies": {
-    "@electron/fuses": "^1.0.0",
+    "@electron/fuses": "^2.0.0",
     "@malept/cross-spawn-promise": "^2.0.0",
     "xvfb-maybe": "^0.2.1"
   },
   "peerDependencies": {
-    "@electron/fuses": "^1.0.0"
+    "@electron/fuses": "^2.0.0"
   },
   "engines": {
     "node": ">= 22.12.0"

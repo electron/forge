@@ -17,7 +17,7 @@
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@electron/osx-sign": "^1.0.5"
+    "@electron/osx-sign": "^2.3.0"
   },
   "publishConfig": {
     "access": "public"

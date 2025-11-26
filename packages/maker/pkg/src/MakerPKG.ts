@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { flatAsync } from '@electron/osx-sign';
+import { flat } from '@electron/osx-sign';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
@@ -41,7 +41,7 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
       pkg: outPath,
       platform: targetPlatform,
     };
-    await flatAsync(pkgConfig);
+    await flat(pkgConfig);
 
     return [outPath];
   }
@@ -49,7 +49,7 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
   private isValidTargetPlatform(
     platform: string,
   ): platform is 'darwin' | 'mas' {
-    return this.defaultPlatforms.includes(platform);
+    return (this.defaultPlatforms as string[]).includes(platform);
   }
 }
 

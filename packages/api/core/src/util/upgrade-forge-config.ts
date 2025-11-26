@@ -51,7 +51,7 @@ function mapMakeTargets(
   const makeTargets = new Map<string, ForgePlatform[]>();
   if (forge5Config.make_targets) {
     for (const [platform, targets] of Object.entries(
-      forge5Config.make_targets as MakeTargets,
+      forge5Config.make_targets as unknown as MakeTargets,
     )) {
       for (const target of targets) {
         let platforms = makeTargets.get(target);

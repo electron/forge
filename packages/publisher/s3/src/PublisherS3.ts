@@ -11,14 +11,15 @@ import {
 import debug from 'debug';
 
 import { PublisherS3Config } from './Config.js';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:publish:s3');
 
 type S3Artifact = {
   path: string;
   keyPrefix: string;
-  platform: string;
-  arch: string;
+  platform: ForgePlatform;
+  arch: ForgeArch;
   isReleaseFile: boolean;
   version: string;
 };

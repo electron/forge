@@ -19,7 +19,7 @@
     "@electron-forge/core": "workspace:*",
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@electron/get": "^3.0.0",
+    "@electron/get": "^4.0.2",
     "@inquirer/prompts": "^6.0.1",
     "@listr2/prompt-adapter-inquirer": "^2.0.22",
     "chalk": "^4.0.0",

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/main.js",
   "dependencies": {
-    "@electron/fuses": "^1.6.1",
+    "@electron/fuses": "^2.0.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {

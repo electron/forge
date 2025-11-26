@@ -22,8 +22,6 @@ export function rpmArch(nodeArch: ForgeArch): string {
       return 'aarch64';
     case 'armv7l':
       return 'armv7hl';
-    case 'arm':
-      return 'armv6hl';
     default:
       return nodeArch;
   }
