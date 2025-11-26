@@ -10,7 +10,7 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
-import { PublisherERSConfig } from './Config';
+import { PublisherERSConfig } from './Config.js';
 
 const d = debug('electron-forge:publish:ers');
 

@@ -23,7 +23,7 @@
     "@electron/fuses": "^1.0.0"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/plugin-base": "workspace:*",

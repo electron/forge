@@ -3,7 +3,7 @@ import path from 'node:path';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerDebConfig } from './Config';
+import { MakerDebConfig } from './Config.js';
 
 export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {

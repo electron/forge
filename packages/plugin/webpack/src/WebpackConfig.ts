@@ -11,7 +11,7 @@ import {
   WebpackPluginEntryPointLocalWindow,
   WebpackPluginEntryPointPreloadOnly,
   WebpackPluginRendererConfig,
-} from './Config';
+} from './Config.js';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch';
 import processConfig from './util/processConfig';
 import {

@@ -9,7 +9,7 @@
   "main": "dist/MakerSquirrel.js",
   "typings": "dist/MakerSquirrel.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",

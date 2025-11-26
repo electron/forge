@@ -10,7 +10,7 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import determineAuthor from './determine-author';
+import determineAuthor from './determine-author.js';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const currentForgeVersion = require('../package.json').version;

@@ -12,7 +12,7 @@ import fs from 'fs-extra';
 import logSymbols from 'log-symbols';
 import mime from 'mime-types';
 
-import { PublisherGitHubConfig } from './Config';
+import { PublisherGitHubConfig } from './Config.js';
 import GitHub from './util/github';
 import NoReleaseError from './util/no-release-error';
 

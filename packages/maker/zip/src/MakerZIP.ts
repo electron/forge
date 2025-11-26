@@ -6,7 +6,7 @@ import { ForgePlatform } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import got from 'got';
 
-import { MakerZIPConfig } from './Config';
+import { MakerZIPConfig } from './Config.js';
 
 type SquirrelMacRelease = {
   version: string;

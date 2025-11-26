@@ -23,7 +23,7 @@ import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config.js';
 import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
 import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
 import once from './util/once';

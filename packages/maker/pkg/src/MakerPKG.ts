@@ -4,7 +4,7 @@ import { flatAsync } from '@electron/osx-sign';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerPKGConfig } from './Config';
+import { MakerPKGConfig } from './Config.js';
 
 export default class MakerPKG extends MakerBase<MakerPKGConfig> {
   name = 'pkg';

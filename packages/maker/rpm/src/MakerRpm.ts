@@ -3,7 +3,7 @@ import path from 'node:path';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerRpmConfig } from './Config';
+import { MakerRpmConfig } from './Config.js';
 
 function renameRpm(dest: string, _src: string): string {
   return path.join(

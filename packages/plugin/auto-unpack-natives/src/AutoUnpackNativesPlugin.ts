@@ -1,7 +1,7 @@
 import { PluginBase } from '@electron-forge/plugin-base';
 import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 
-import { AutoUnpackNativesConfig } from './Config';
+import { AutoUnpackNativesConfig } from './Config.js';
 
 export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNativesConfig> {
   name = 'auto-unpack-natives';

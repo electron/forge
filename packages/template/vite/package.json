@@ -13,7 +13,7 @@
   "main": "dist/ViteTemplate.js",
   "typings": "dist/ViteTemplate.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",

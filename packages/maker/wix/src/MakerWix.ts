@@ -8,7 +8,7 @@ import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
 import logSymbols from 'log-symbols';
 import semver from 'semver';
 
-import { MakerWixConfig } from './Config';
+import { MakerWixConfig } from './Config.js';
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';

@@ -10,7 +10,7 @@ import {
 } from '@electron-forge/publisher-static';
 import debug from 'debug';
 
-import { PublisherS3Config } from './Config';
+import { PublisherS3Config } from './Config.js';
 
 const d = debug('electron-forge:publish:s3');
 

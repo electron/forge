@@ -7,7 +7,7 @@ import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
 import fs from 'fs-extra';
 
-import { MakerMSIXConfig } from './Config';
+import { MakerMSIXConfig } from './Config.js';
 import { toMsixArch } from './util/arch';
 
 /**
