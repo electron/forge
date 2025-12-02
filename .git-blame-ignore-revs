@@ -1,2 +1,4 @@
 # Prettier 3.6 (https://github.com/electron/forge/pull/3977)
 717faf963b103b55f7041dc26e4fd825215aaf1d
+# ESLint config swap (https://github.com/electron/forge/pull/2520)
+0deb74b16aac8f69e973a34598357daa711c688c
