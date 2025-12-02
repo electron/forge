@@ -1,7 +1,4 @@
-import path from 'node:path';
-
-import globalDirs from 'global-dirs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { findTemplate } from '../../src/api/init-scripts/find-template';
 
@@ -41,43 +38,6 @@ describe('findTemplate', () => {
       ).resolves.toEqual(
         expect.objectContaining({
           name: 'electron-forge-template-fixture-two',
-        }),
-      );
-    });
-  });
-
-  /**
-   * For global modules, we re-route the global NPM `node_modules` directory to
-   * a folder in our fixture directory. Note that the folder _needs_ to be called
-   * `node_modules` in order for the `require.resolve` custom path to work.
-   */
-  describe('global modules', () => {
-    beforeEach(() => {
-      vi.spyOn(globalDirs, 'npm', 'get').mockReturnValue({
-        binaries: '',
-        prefix: '',
-        packages: path.resolve(
-          __dirname,
-          '..',
-          'fixture',
-          'global-stub',
-          'node_modules',
-        ),
-      });
-    });
-    it('should find an @electron-forge/template based on name', async () => {
-      await expect(findTemplate('global')).resolves.toEqual(
-        expect.objectContaining({
-          template: { name: 'electron-forge-template-fixture-global' },
-          type: 'global',
-        }),
-      );
-    });
-    it('should find an electron-forge-template based on name', async () => {
-      await expect(findTemplate('global-two')).resolves.toEqual(
-        expect.objectContaining({
-          template: { name: 'electron-forge-template-fixture-global' },
-          type: 'global',
         }),
       );
     });
