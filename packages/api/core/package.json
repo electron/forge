@@ -22,11 +22,9 @@
     "@electron-forge/test-utils": "workspace:*",
     "@types/interpret": "^1.1.1",
     "@types/progress": "^2.0.5",
-    "@types/rechoir": "^0.6.1",
     "electron-forge-template-fixture-two": "link:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^3.1.3",
-    "yaml-hook": "^1.0.0"
+    "vitest": "^3.1.3"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
@@ -53,12 +51,10 @@
     "fs-extra": "^10.0.0",
     "global-dirs": "^3.0.0",
     "got": "^14.0.0",
-    "interpret": "^3.1.1",
     "jiti": "^2.4.2",
     "listr2": "^7.0.2",
-    "lodash": "^4.17.20",
+    "lodash-es": "^4.17.21",
     "log-symbols": "^4.0.0",
-    "rechoir": "^0.8.0",
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
     "username": "^5.1.0"

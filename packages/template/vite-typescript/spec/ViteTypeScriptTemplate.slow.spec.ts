@@ -33,7 +33,7 @@ describe('ViteTypeScriptTemplate', () => {
     it('should succeed in initializing the typescript template', async () => {
       await api.init({
         dir,
-        template: path.resolve(__dirname, '..'),
+        template: path.resolve(import.meta.dirname, '..'),
         interactive: false,
         electronVersion: '38.2.2',
       });
@@ -93,7 +93,7 @@ describe('ViteTypeScriptTemplate', () => {
        */
       // Copy pre-generated lockfile and update the project name
       const fixtureLockfile = path.join(
-        __dirname,
+        import.meta.dirname,
         'fixtures',
         'test-yarn.lock',
       );

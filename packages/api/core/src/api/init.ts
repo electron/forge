@@ -67,7 +67,7 @@ async function validateTemplate(
   }
 
   const forgeVersion = (
-    await readRawPackageJson(path.join(__dirname, '..', '..'))
+    await readRawPackageJson(path.join(import.meta.dirname, '..', '..'))
   ).version;
   if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
     throw new Error(

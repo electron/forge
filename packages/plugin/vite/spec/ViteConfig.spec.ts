@@ -8,7 +8,7 @@ import ViteConfigGenerator from '../src/ViteConfig';
 import type { VitePluginConfig } from '../src/Config';
 import type { Plugin } from 'vite';
 
-const configRoot = path.join(__dirname, 'fixtures/vite-configs');
+const configRoot = path.join(import.meta.dirname, 'fixtures/vite-configs');
 
 describe('ViteConfigGenerator', () => {
   it('getBuildConfigs:main', async () => {

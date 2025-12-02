@@ -57,7 +57,7 @@ describe('findTemplate', () => {
         binaries: '',
         prefix: '',
         packages: path.resolve(
-          __dirname,
+          import.meta.dirname,
           '..',
           'fixture',
           'global-stub',

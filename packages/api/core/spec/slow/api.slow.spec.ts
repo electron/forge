@@ -230,7 +230,7 @@ describe.each([
 
   describe('init (with custom templater)', () => {
     beforeInitTest({
-      template: path.resolve(__dirname, '../fixture/custom_init'),
+      template: path.resolve(import.meta.dirname, '../fixture/custom_init'),
     });
 
     it('should add custom dependencies', async () => {
@@ -264,7 +264,7 @@ describe.each([
     afterAll(async () => {
       await fs.promises.rm(dir, { recursive: true, force: true });
       execSync('npm unlink -g', {
-        cwd: path.resolve(__dirname, '../fixture/custom_init'),
+        cwd: path.resolve(import.meta.dirname, '../fixture/custom_init'),
       });
     });
   });
@@ -283,7 +283,7 @@ describe.each([
         api.init({
           dir,
           template: path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../fixture/template-sans-forge-version',
           ),
         }),
@@ -305,7 +305,7 @@ describe.each([
         api.init({
           dir,
           template: path.resolve(
-            __dirname,
+            import.meta.dirname,
             '../fixture/template-nonmatching-forge-version',
           ),
         }),
@@ -396,7 +396,12 @@ describe.each([
           };
           if (process.platform === 'win32') {
             await fs.promises.copyFile(
-              path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
+              path.join(
+                import.meta.dirname,
+                '..',
+                'fixture',
+                'bogus-private-key.pvk',
+              ),
               path.join(dir, 'default.pvk'),
             );
             devCert = await createDefaultCertificate('CN=Test Author', {
@@ -605,6 +610,7 @@ describe.each([
 
         describe('make', () => {
           it('throws an error when given an unrecognized platform', async () => {
+            // @ts-expect-error - testing invalid platform handling
             await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(
               /invalid platform/,
             );
@@ -612,7 +618,7 @@ describe.each([
 
           it("throws an error when the specified maker doesn't support the current platform", async () => {
             const makerPath = path.resolve(
-              __dirname,
+              import.meta.dirname,
               '../fixture/maker-unsupported',
             );
             await expect(
@@ -630,7 +636,7 @@ describe.each([
 
           it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
             const makerPath = path.resolve(
-              __dirname,
+              import.meta.dirname,
               '../fixture/maker-incompatible',
             );
             await expect(
@@ -653,7 +659,7 @@ describe.each([
                 overrideTargets: [
                   {
                     name: path.resolve(
-                      __dirname,
+                      import.meta.dirname,
                       '../fixture/maker-wrong-platform',
                     ),
                   } as IForgeResolvableMaker,

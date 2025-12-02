@@ -18,7 +18,7 @@ const workspaceMappings: {
   },
 };
 
-const BASE_DIR = path.resolve(__dirname, '..');
+const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const DOCS_BASE =
   'https://raw.githubusercontent.com/electron-forge/electron-forge-docs/v6';
 

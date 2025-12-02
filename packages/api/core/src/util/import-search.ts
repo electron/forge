@@ -2,9 +2,6 @@ import path from 'node:path';
 
 import debug from 'debug';
 
-// eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
-
 const d = debug('electron-forge:import-search');
 
 // https://github.com/nodejs/node/blob/da0ede1ad55a502a25b4139f58aab3fb1ee3bf3f/lib/internal/modules/cjs/loader.js#L353-L359
@@ -20,14 +17,14 @@ export async function importSearchRaw<T>(
 ): Promise<T | null> {
   // Attempt to locally short-circuit if we're running from a checkout of forge
   if (
-    __dirname.includes('forge/packages/api/core/') &&
+    import.meta.dirname.includes('forge/packages/api/core/') &&
     paths.length === 1 &&
     paths[0].startsWith('@electron-forge/')
   ) {
     const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
     try {
       const localPath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '..',
         '..',
         '..',
@@ -36,7 +33,7 @@ export async function importSearchRaw<T>(
         moduleName,
       );
       d('testing local forge build', { moduleType, moduleName, localPath });
-      return await dynamicImportMaybe(localPath);
+      return await import(localPath);
     } catch {
       // Ignore
     }
@@ -52,7 +49,7 @@ export async function importSearchRaw<T>(
   for (const testPath of testPaths) {
     try {
       d('testing', testPath);
-      return await dynamicImportMaybe(testPath);
+      return await import(testPath);
     } catch (err) {
       if (err instanceof Error) {
         const requireErr = err as RequireError;

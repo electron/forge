@@ -15,7 +15,7 @@ describe('resolve-dir', () => {
 
   it('should return a directory if a forge config is found, but no package.json.forge.config', async () => {
     const dir = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../../fixture/forge-config-no-package-json-config/',
     );
     const resolved = await resolveDir(dir);
@@ -24,12 +24,17 @@ describe('resolve-dir', () => {
   });
 
   it('should return a directory if it finds a node module', async () => {
-    const dir = path.resolve(__dirname, '../../fixture/dummy_app/foo');
+    const dir = path.resolve(
+      import.meta.dirname,
+      '../../fixture/dummy_app/foo',
+    );
     const resolved = await resolveDir(dir);
     expect(resolved).not.toBeNull();
     expect(
-      await resolveDir(path.resolve(__dirname, '../../fixture/dummy_app/foo')),
-    ).toEqual(path.resolve(__dirname, '../../fixture/dummy_app'));
+      await resolveDir(
+        path.resolve(import.meta.dirname, '../../fixture/dummy_app/foo'),
+      ),
+    ).toEqual(path.resolve(import.meta.dirname, '../../fixture/dummy_app'));
   });
 
   it('should return a directory if it finds a virtual config', async () => {
@@ -37,8 +42,8 @@ describe('resolve-dir', () => {
       registerForgeConfigForDirectory('/foo/var/virtual', {});
       expect(await resolveDir('/foo/var/virtual')).not.toEqual(null);
       expect(
-        await resolveDir(path.resolve(__dirname, '/foo/var/virtual')),
-      ).toEqual(path.resolve(__dirname, '/foo/var/virtual'));
+        await resolveDir(path.resolve(import.meta.dirname, '/foo/var/virtual')),
+      ).toEqual(path.resolve(import.meta.dirname, '/foo/var/virtual'));
     } finally {
       unregisterForgeConfigForDirectory('/foo/var/virtual');
     }

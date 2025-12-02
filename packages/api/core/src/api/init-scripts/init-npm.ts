@@ -14,7 +14,7 @@ import {
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(
-  path.resolve(__dirname, '../../../package.json'),
+  path.resolve(import.meta.dirname, '../../../package.json'),
 );
 
 export function siblingDep(name: string): string {

@@ -23,7 +23,7 @@ describe('WebpackTypeScriptTemplate', () => {
   it('should succeed in initializing the typescript template', async () => {
     await api.init({
       dir,
-      template: path.join(__dirname, '..'),
+      template: path.join(import.meta.dirname, '..'),
       interactive: false,
       electronVersion: '38.2.2',
     });
@@ -83,7 +83,7 @@ describe('WebpackTypeScriptTemplate', () => {
        */
       // Copy pre-generated lockfile, update the project name, and install with immutable lockfile
       const fixtureLockfile = path.join(
-        __dirname,
+        import.meta.dirname,
         'fixtures',
         'test-yarn.lock',
       );

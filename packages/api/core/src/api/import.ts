@@ -15,7 +15,7 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 
 import {
   DepType,

@@ -21,7 +21,7 @@ const DEFAULTS = {
 describe('findConfig', () => {
   it('falls back to default if no config exists', async () => {
     const fixturePath = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '../../fixture/no_forge_config',
     );
     const config = await findConfig(fixturePath);
@@ -32,7 +32,10 @@ describe('findConfig', () => {
   });
 
   it('sets a pluginInterface property', async () => {
-    const fixturePath = path.resolve(__dirname, '../../fixture/dummy_app');
+    const fixturePath = path.resolve(
+      import.meta.dirname,
+      '../../fixture/dummy_app',
+    );
     const config = await findConfig(fixturePath);
     expect(config).toEqual(
       expect.objectContaining({ pluginInterface: expect.objectContaining({}) }),
@@ -42,7 +45,7 @@ describe('findConfig', () => {
   it('should resolve undefined from fromBuildIdentifier if no value is provided', async () => {
     type ResolveUndefConfig = ResolvedForgeConfig & { topLevelUndef?: string };
     const conf = (await findConfig(
-      path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+      path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
     )) as ResolveUndefConfig;
     expect(conf.topLevelUndef).toEqual(undefined);
   });
@@ -56,7 +59,7 @@ describe('findConfig', () => {
       };
     };
     const conf = (await findConfig(
-      path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+      path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
     )) as NestedConfig;
     expect(Array.isArray(conf.sub.prop.inArray)).toEqual(true);
   });
@@ -64,7 +67,7 @@ describe('findConfig', () => {
   it('should leave regexps intact', async () => {
     type RegExpConfig = ResolvedForgeConfig & { regexp: RegExp };
     const conf = (await findConfig(
-      path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+      path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
     )) as RegExpConfig;
     expect(conf.regexp).toBeInstanceOf(RegExp);
     expect(conf.regexp.test('foo')).toEqual(true);
@@ -74,11 +77,11 @@ describe('findConfig', () => {
   describe('from package.json', () => {
     it('throws if the "config.forge" property is not an object or requirable path', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/bad_forge_config',
       );
       const err =
-        'Expected packageJSON.config.forge to be an object or point to a requirable JS file';
+        'Expected `config.forge` in package.json to be an object or point to a Forge config file';
       await expect(findConfig(fixturePath)).rejects.toThrow(err);
     });
 
@@ -87,16 +90,19 @@ describe('findConfig', () => {
         .spyOn(console, 'error')
         .mockImplementation(() => undefined);
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/bad_external_forge_config',
       );
-      const err = /Unexpected token/;
+      const err = /Failed to parse/;
       await expect(findConfig(fixturePath)).rejects.toThrow(err);
       spy.mockRestore();
     });
 
     it('should resolve the "config.forge" object', async () => {
-      const fixturePath = path.resolve(__dirname, '../../fixture/dummy_app');
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_app',
+      );
       const config = await findConfig(fixturePath);
       expect(config).toEqual({
         ...DEFAULTS,
@@ -112,7 +118,7 @@ describe('findConfig', () => {
   describe('from forge.config.js', () => {
     it('resolves when "config.forge" points to a JS file', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/dummy_js_conf',
       );
       const config = await findConfig(fixturePath);
@@ -129,7 +135,7 @@ describe('findConfig', () => {
 
     it('falls back to forge.config.js if "config.forge" does not exist', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/dummy_default_js_conf',
       );
       const conf = await findConfig(fixturePath);
@@ -138,7 +144,7 @@ describe('findConfig', () => {
 
     it('maintains functions from the JS export', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/dummy_js_conf',
       );
       const conf = await findConfig(fixturePath);
@@ -150,7 +156,7 @@ describe('findConfig', () => {
 
     it('should support async configs', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/async_forge_config',
       );
       const config = await findConfig(fixturePath);
@@ -172,7 +178,10 @@ describe('findConfig', () => {
         defaultResolved: boolean;
       };
       const conf = (await findConfig(
-        path.resolve(__dirname, '../../fixture/dummy_default_esm_conf'),
+        path.resolve(
+          import.meta.dirname,
+          '../../fixture/dummy_default_esm_conf',
+        ),
       )) as DefaultResolvedConfig;
       expect(conf.buildIdentifier).toEqual('esm');
       expect(conf.defaultResolved).toEqual(true);
@@ -182,7 +191,10 @@ describe('findConfig', () => {
   describe('proxied objects', () => {
     it('allows access to built-ins', async () => {
       // Why: This needs to get refactored anyway.
-      const fixture = path.resolve(__dirname, '../../fixture/dummy_js_conf');
+      const fixture = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_js_conf',
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const conf: any = await findConfig(fixture);
       expect(conf.packagerConfig.baz.hasOwnProperty).toBeTypeOf('function');
@@ -196,7 +208,7 @@ describe('findConfig', () => {
       // Why: This needs to get refactored anyway.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const conf: any = await findConfig(
-        path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+        path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
       );
       expect(conf.packagerConfig.baz.hasOwnProperty).toBeTypeOf('function');
       expect(() => {
@@ -230,7 +242,7 @@ describe('findConfig', () => {
         };
       };
       const conf = (await findConfig(
-        path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+        path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
       )) as MappedConfig;
       expect(conf.s3.secretAccessKey).toBe(undefined);
 
@@ -246,7 +258,10 @@ describe('findConfig', () => {
 
   describe('virtual config', () => {
     it('should resolve to the virtual config if present', async () => {
-      const fixture = path.resolve(__dirname, '../../fixture/no_forge_config');
+      const fixture = path.resolve(
+        import.meta.dirname,
+        '../../fixture/no_forge_config',
+      );
       try {
         registerForgeConfigForDirectory(fixture, { outDir: 'magic' });
         const config = await findConfig(fixture);
@@ -261,7 +276,10 @@ describe('findConfig', () => {
     });
 
     it('should prioritize virtual config over package.json', async () => {
-      const fixturePath = path.resolve(__dirname, '../../fixture/dummy_app');
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_app',
+      );
       try {
         registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
         const config = await findConfig(fixturePath);
@@ -277,7 +295,7 @@ describe('findConfig', () => {
 
     it('should prioritize virtual config over forge.config.js', async () => {
       const fixturePath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '../../fixture/async_forge_config',
       );
       try {
@@ -295,37 +313,28 @@ describe('findConfig', () => {
   });
 
   describe('alternate config formats', () => {
-    it('should resolve the yml config from forge.config.yml specified in config.forge', async () => {
-      const fixturePath = path.resolve(
-        __dirname,
-        '../../fixture/dummy_ts_conf',
-      );
-      const conf = await findConfig(fixturePath);
-      expect(conf.buildIdentifier).toEqual('yml');
-    });
-
     describe('TypeScript', () => {
-      it('should resolve forge.config.ts', async () => {
+      it('should resolve a default forge.config.ts file', async () => {
         const fixturePath = path.resolve(
-          __dirname,
+          import.meta.dirname,
           '../../fixture/dummy_default_ts_conf',
         );
         const conf = await findConfig(fixturePath);
         expect(conf.buildIdentifier).toEqual('typescript');
       });
 
-      it('should resolve forge.config.cts', async () => {
+      it('should resolve a default forge.config.cts file', async () => {
         const fixturePath = path.resolve(
-          __dirname,
+          import.meta.dirname,
           '../../fixture/dummy_default_cts_conf',
         );
         const conf = await findConfig(fixturePath);
         expect(conf.buildIdentifier).toEqual('typescript-commonjs');
       });
 
-      it('should resolve forge.config.mts', async () => {
+      it('should resolve a default forge.config.mts file', async () => {
         const fixturePath = path.resolve(
-          __dirname,
+          import.meta.dirname,
           '../../fixture/dummy_default_mts_conf',
         );
         const conf = await findConfig(fixturePath);
@@ -348,7 +357,7 @@ it('should resolve values fromBuildIdentifier', async () => {
     };
   };
   const conf = (await findConfig(
-    path.resolve(__dirname, '../../fixture/dummy_js_conf'),
+    path.resolve(import.meta.dirname, '../../fixture/dummy_js_conf'),
   )) as ResolveBIConfig;
   expect(conf.topLevelProp).toEqual('foo');
   expect(conf.sub).toEqual({
@@ -363,23 +372,32 @@ it('should resolve values fromBuildIdentifier', async () => {
 
 describe('forgeConfigIsValidFilePath', () => {
   it('succeeds for a file extension-less path', async () => {
-    const fixturePath = path.resolve(__dirname, '../../fixture/dummy_js_conf/');
-    await expect(
-      forgeConfigIsValidFilePath(fixturePath, 'forge.different.config'),
-    ).resolves.toEqual(true);
+    const fixturePath = path.resolve(
+      import.meta.dirname,
+      '../../fixture/dummy_js_conf/',
+    );
+    expect(
+      forgeConfigIsValidFilePath(fixturePath, 'forge.different.config.cjs'),
+    ).toEqual(true);
   });
 
   it('fails when a file is nonexistent', async () => {
-    const fixturePath = path.resolve(__dirname, '../../fixture/dummy_js_conf/');
-    await expect(
+    const fixturePath = path.resolve(
+      import.meta.dirname,
+      '../../fixture/dummy_js_conf/',
+    );
+    expect(
       forgeConfigIsValidFilePath(fixturePath, 'forge.nonexistent.config'),
-    ).resolves.toEqual(false);
+    ).toEqual(false);
   });
 });
 
 describe('renderConfigTemplate', () => {
   it('should import a JS file when a string starts with "require:"', () => {
-    const dir = path.resolve(__dirname, '../../fixture/dummy_js_conf');
+    const dir = path.resolve(
+      import.meta.dirname,
+      '../../fixture/dummy_js_conf',
+    );
     const config = {
       foo: 'require:foo',
     };

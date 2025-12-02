@@ -9,7 +9,7 @@ API as a number of simple JS functions.
 import { api } from '@electron-forge/core';
 
 // Package the current directory as an Electron app
-api.package(__dirname);
+api.package(import.meta.dirname);
 ```
 
 The named export `api` has it's methods documented over at [ForgeAPI](https://js.electronforge.io/classes/_electron_forge_core.ForgeAPI.html).

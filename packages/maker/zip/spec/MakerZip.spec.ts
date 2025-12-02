@@ -2,21 +2,23 @@ import os from 'node:os';
 import path from 'node:path';
 
 import fs from 'fs-extra';
-import got from 'got';
+import { got } from 'got';
 import { describe, expect, it, vi } from 'vitest';
+import { zip } from 'cross-zip';
 
 import { MakerZIP } from '../src/MakerZIP';
+import { ForgeArch } from '@electron-forge/shared-types';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { zip } = require('cross-zip');
-
-vi.hoisted(async () => {
-  const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('cross-zip', {
-    zip: vi.fn().mockImplementation((_zipDir, _zipPath, callback) => {
+vi.mock(import('cross-zip'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    // We pass the cross-zip functions through util.promisify, so we need to implement
+    // a dummy callback call so that the promise resolves.
+    zip: vi.fn().mockImplementation((_in, _out, callback) => {
       callback();
     }),
-  });
+  };
 });
 
 vi.mock(import('fs-extra'), async (importOriginal) => {
@@ -30,26 +32,31 @@ vi.mock(import('fs-extra'), async (importOriginal) => {
   };
 });
 
+// @ts-expect-error - This mock works but vi.mock isn't happy.
 vi.mock(import('got'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
-    default: {
-      ...mod,
+    got: {
+      ...mod.got,
       get: vi.fn(),
     },
   };
 });
 
 describe('MakerZip', () => {
-  const dir = path.resolve(__dirname, 'fixture', 'fake-app');
-  const darwinDir = path.resolve(__dirname, 'fixture', 'fake-darwin-app');
+  const dir = path.resolve(import.meta.dirname, 'fixture', 'fake-app');
+  const darwinDir = path.resolve(
+    import.meta.dirname,
+    'fixture',
+    'fake-darwin-app',
+  );
   const makeDir = path.resolve(os.tmpdir(), 'forge-zip-test');
   const appName = 'My Test App';
-  const targetArch = process.arch;
+  const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
 
-  it.each([['win32', 'linux']])(
+  it.each([['win32', 'linux'] as const])(
     `should generate a zip file for a %s app`,
     async (platform) => {
       const maker = new MakerZIP({}, []);
@@ -74,7 +81,7 @@ describe('MakerZip', () => {
     },
   );
 
-  it.each([['darwin', 'mas']])(
+  it.each([['darwin', 'mas'] as const])(
     `should generate a zip file for a %s app`,
     async (platform) => {
       const maker = new MakerZIP(
@@ -112,7 +119,7 @@ describe('MakerZip', () => {
   );
 
   describe('macUpdateManifestBaseUrl', () => {
-    it.each([['win32', 'mas', 'linux']])(
+    it.each([['win32', 'mas', 'linux'] as const])(
       'should not make a network request on $platform',
       async (platform) => {
         const maker = new MakerZIP(

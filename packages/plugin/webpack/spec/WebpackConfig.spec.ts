@@ -159,7 +159,7 @@ describe('WebpackConfigGenerator', () => {
       const defines = generator.getDefines();
 
       expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
-        "`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.js')}`",
+        "`file://${require('path').resolve(import.meta.dirname, '..', 'renderer', 'hello', 'index.js')}`",
       );
     });
 
@@ -230,7 +230,7 @@ describe('WebpackConfigGenerator', () => {
         );
         const defines = generator.getDefines();
         expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
-          "require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')",
+          "require('path').resolve(import.meta.dirname, '../renderer', 'window', 'preload.js')",
         );
       });
     });
@@ -346,12 +346,15 @@ describe('WebpackConfigGenerator', () => {
 
     it('generates a config from a requirable file', async () => {
       const config = {
-        mainConfig: 'mainConfig.js',
+        mainConfig: 'mainConfig.cjs',
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const baseDir = path.resolve(
+        import.meta.dirname,
+        'fixtures/main_config_external',
+      );
       const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.entry).toEqual(path.resolve(baseDir, 'foo/main.js'));
@@ -359,12 +362,15 @@ describe('WebpackConfigGenerator', () => {
 
     it('generates a config from a requirable transpiled module file', async () => {
       const config = {
-        mainConfig: 'mainConfig.module.js',
+        mainConfig: 'mainConfig.module.cjs',
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
       } as WebpackPluginConfig;
-      const baseDir = path.resolve(__dirname, 'fixtures/main_config_external');
+      const baseDir = path.resolve(
+        import.meta.dirname,
+        'fixtures/main_config_external',
+      );
       const generator = new WebpackConfigGenerator(config, baseDir, true, 3000);
       const webpackConfig = await generator.getMainConfig();
       expect(webpackConfig.entry).toEqual(path.resolve(baseDir, 'foo/main.js'));

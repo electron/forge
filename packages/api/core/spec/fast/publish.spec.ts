@@ -48,7 +48,7 @@ vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
 describe('publish', () => {
   it('calls "make"', async () => {
     await publish({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
     expect(vi.mocked(listrMake)).toHaveBeenCalledOnce();
@@ -80,7 +80,7 @@ describe('publish', () => {
     });
 
     await publish({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
 
@@ -110,7 +110,7 @@ describe('publish', () => {
     );
 
     await publish({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       publishTargets: [new MockPublisher()],
     });
@@ -135,7 +135,7 @@ describe('publish', () => {
     vi.mocked(importSearch).mockResolvedValue(MockPublisher);
 
     await publish({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
 
@@ -173,7 +173,7 @@ describe('publish', () => {
 
     it('dryRun creates hash JSON files', async () => {
       await publish({
-        dir: __dirname,
+        dir: import.meta.dirname,
         outDir: tmpDir,
         interactive: false,
         dryRun: true,
@@ -204,7 +204,7 @@ describe('publish', () => {
       MockPublisher.prototype.__isElectronForgePublisher = true;
 
       await publish({
-        dir: __dirname,
+        dir: import.meta.dirname,
         outDir: tmpDir,
         interactive: false,
         dryRunResume: true,

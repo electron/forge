@@ -14,7 +14,7 @@ import {
   updateElectronDependency,
 } from '../src/electron-version';
 
-const fixturePath = path.resolve(__dirname, 'fixture');
+const fixturePath = path.resolve(import.meta.dirname, 'fixture');
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {

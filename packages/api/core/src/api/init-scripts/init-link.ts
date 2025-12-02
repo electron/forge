@@ -28,7 +28,7 @@ export async function initLink<T>(
     d('Linking forge dependencies');
     const packageJson = await readRawPackageJson(dir);
     const forgeRoot = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '..',
       '..',
       '..',

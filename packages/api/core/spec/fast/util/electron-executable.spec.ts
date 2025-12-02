@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import locateElectronExecutable from '../../../src/util/electron-executable';
 
 const fixtureDir = path.resolve(
-  __dirname,
+  import.meta.dirname,
   '..',
   '..',
   'fixture',

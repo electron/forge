@@ -855,7 +855,6 @@ __metadata:
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     "@types/interpret": "npm:^1.1.1"
     "@types/progress": "npm:^2.0.5"
-    "@types/rechoir": "npm:^0.6.1"
     "@vscode/sudo-prompt": "npm:^9.3.1"
     chalk: "npm:^4.0.0"
     debug: "npm:^4.3.1"
@@ -867,17 +866,14 @@ __metadata:
     fs-extra: "npm:^10.0.0"
     global-dirs: "npm:^3.0.0"
     got: "npm:^14.0.0"
-    interpret: "npm:^3.1.1"
     jiti: "npm:^2.4.2"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.20"
+    lodash-es: "npm:^4.17.21"
     log-symbols: "npm:^4.0.0"
-    rechoir: "npm:^0.8.0"
     semver: "npm:^7.2.1"
     source-map-support: "npm:^0.5.13"
     username: "npm:^5.1.0"
     vitest: "npm:^3.1.3"
-    yaml-hook: "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4901,6 +4897,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cross-zip@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@types/cross-zip@npm:4.0.2"
+  checksum: 10c0/8ffc935e6b4164d2c706c0182fd17787fb985933c671d9cced5c3edb28738c3df09c0f2487cc38fa1f1372045558b8f9814b58ab0cee6ecd16eaeb6c8810513e
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.0.0":
   version: 4.1.8
   resolution: "@types/debug@npm:4.1.8"
@@ -5037,7 +5040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/interpret@npm:*, @types/interpret@npm:^1.1.1":
+"@types/interpret@npm:^1.1.1":
   version: 1.1.1
   resolution: "@types/interpret@npm:1.1.1"
   dependencies:
@@ -5095,10 +5098,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.166":
-  version: 4.14.178
-  resolution: "@types/lodash@npm:4.14.178"
-  checksum: 10c0/820e33578a084aba2ca66fc83728c14d82813b91f3f14f281621b36904533c3d1681992b5e2719579b8beb52e1a77cfa914283a145f66dfa71b5e02a7cec5a37
+"@types/lodash-es@npm:^4.17.12":
+  version: 4.17.12
+  resolution: "@types/lodash-es@npm:4.17.12"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/5d12d2cede07f07ab067541371ed1b838a33edb3c35cb81b73284e93c6fd0c4bbeaefee984e69294bffb53f62d7272c5d679fdba8e595ff71e11d00f2601dde0
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.17.21
+  resolution: "@types/lodash@npm:4.17.21"
+  checksum: 10c0/73cb006e047d8871e9d63f3a165543bf16c44a5b6fe3f9f6299e37cb8d67a7b1d55ac730959a81f9def510fd07232ff7e30e05413e5d5a12793baad84ebe36c3
   languageName: node
   linkType: hard
 
@@ -5223,15 +5235,6 @@ __metadata:
   version: 1.2.4
   resolution: "@types/range-parser@npm:1.2.4"
   checksum: 10c0/8e3c3cda88675efd9145241bcb454449715b7d015a7fb80d018dcb3d441fa1938b302242cc0dfa6b02c5d014dd8bc082ae90091e62b1e816cae3ec36c2a7dbcb
-  languageName: node
-  linkType: hard
-
-"@types/rechoir@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "@types/rechoir@npm:0.6.1"
-  dependencies:
-    "@types/interpret": "npm:*"
-  checksum: 10c0/df324ef37c93a139189e2f7d0edc1b0430e81775da6b211c6cfdb247621fabfb2e979f909bb085f3aef445b675b263af3ea5ec919656b4555b3e51d53a02beb4
   languageName: node
   linkType: hard
 
@@ -8218,6 +8221,7 @@ __metadata:
     "@octokit/types": "npm:^6.1.2"
     "@tsconfig/node22": "npm:^22.0.5"
     "@types/cross-spawn": "npm:^6.0.1"
+    "@types/cross-zip": "npm:^4.0.2"
     "@types/debug": "npm:^4.1.12"
     "@types/express": "npm:^4.17.9"
     "@types/express-ws": "npm:^3.0.0"
@@ -8225,11 +8229,10 @@ __metadata:
     "@types/interpret": "npm:^1.1.1"
     "@types/keyv": "npm:^3.1.4"
     "@types/listr": "npm:^0.14.2"
-    "@types/lodash": "npm:^4.14.166"
+    "@types/lodash-es": "npm:^4.17.12"
     "@types/mime-types": "npm:^2.1.0"
     "@types/minimist": "npm:^1.2.0"
     "@types/node": "npm:~22.10.7"
-    "@types/rechoir": "npm:^0.6.1"
     "@types/semver": "npm:^7.3.4"
     "@types/which": "npm:^2.0.0"
     "@typescript-eslint/eslint-plugin": "npm:^8.0.0"
@@ -8269,19 +8272,17 @@ __metadata:
     html-webpack-plugin: "npm:^5.5.3"
     husky: "npm:^7.0.1"
     inquirer: "npm:^8.0.0"
-    interpret: "npm:^3.1.1"
     jiti: "npm:^2.4.2"
     lerna: "npm:^9.0.0"
     lint-staged: "npm:^12.1.7"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.20"
+    lodash-es: "npm:^4.17.21"
     log-symbols: "npm:^4.0.0"
     mime-types: "npm:^2.1.25"
     minimist: "npm:^1.2.6"
     msw: "npm:^2.7.0"
     parse-author: "npm:^2.0.0"
     prettier: "npm:^3.6.2"
-    rechoir: "npm:^0.8.0"
     semver: "npm:^7.2.1"
     source-map-support: "npm:^0.5.13"
     tsx: "npm:^4.20.6"
@@ -8298,7 +8299,6 @@ __metadata:
     xterm-addon-fit: "npm:^0.5.0"
     xterm-addon-search: "npm:^0.8.0"
     xvfb-maybe: "npm:^0.2.1"
-    yaml-hook: "npm:^1.0.0"
   dependenciesMeta:
     "@bitdisaster/exe-icon-extractor":
       built: true
@@ -11854,13 +11854,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"interpret@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "interpret@npm:3.1.1"
-  checksum: 10c0/6f3c4d0aa6ec1b43a8862375588a249e3c917739895cbe67fe12f0a76260ea632af51e8e2431b50fbcd0145356dc28ca147be08dbe6a523739fd55c0f91dc2a5
-  languageName: node
-  linkType: hard
-
 "ip-address@npm:^10.0.1":
   version: 10.0.1
   resolution: "ip-address@npm:10.0.1"
@@ -12593,7 +12586,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.10.0, js-yaml@npm:^3.12.2, js-yaml@npm:^3.13.1":
+"js-yaml@npm:^3.10.0, js-yaml@npm:^3.13.1":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -13147,6 +13140,13 @@ __metadata:
   dependencies:
     p-locate: "npm:^5.0.0"
   checksum: 10c0/d3972ab70dfe58ce620e64265f90162d247e87159b6126b01314dd67be43d50e96a50b517bce2d9452a79409c7614054c277b5232377de50416564a77ac7aad3
+  languageName: node
+  linkType: hard
+
+"lodash-es@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash-es@npm:4.17.21"
+  checksum: 10c0/fb407355f7e6cd523a9383e76e6b455321f0f153a6c9625e21a8827d10c54c2a2341bd2ae8d034358b60e07325e1330c14c224ff582d04612a46a4f0479ff2f2
   languageName: node
   linkType: hard
 
@@ -15587,13 +15587,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pirates@npm:^4.0.1":
-  version: 4.0.5
-  resolution: "pirates@npm:4.0.5"
-  checksum: 10c0/58b6ff0f137a3d70ff34ac4802fd19819cdc19b53e9c95adecae6c7cfc77719a11f561ad85d46e79e520ef57c31145a564c8bc3bee8cfee75d441fab2928a51d
-  languageName: node
-  linkType: hard
-
 "pkg-conf@npm:^3.1.0":
   version: 3.1.0
   resolution: "pkg-conf@npm:3.1.0"
@@ -16103,15 +16096,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rechoir@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "rechoir@npm:0.8.0"
-  dependencies:
-    resolve: "npm:^1.20.0"
-  checksum: 10c0/1a30074124a22abbd5d44d802dac26407fa72a0a95f162aa5504ba8246bc5452f8b1a027b154d9bdbabcd8764920ff9333d934c46a8f17479c8912e92332f3ff
-  languageName: node
-  linkType: hard
-
 "redent@npm:^3.0.0":
   version: 3.0.0
   resolution: "redent@npm:3.0.0"
@@ -16269,7 +16253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.10.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1":
+"resolve@npm:^1.10.0, resolve@npm:^1.22.1":
   version: 1.22.1
   resolution: "resolve@npm:1.22.1"
   dependencies:
@@ -16334,7 +16318,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>":
   version: 1.22.1
   resolution: "resolve@patch:resolve@npm%3A1.22.1#optional!builtin<compat/resolve>::version=1.22.1&hash=c3c19d"
   dependencies:
@@ -19610,16 +19594,6 @@ __metadata:
   version: 5.0.0
   resolution: "yallist@npm:5.0.0"
   checksum: 10c0/a499c81ce6d4a1d260d4ea0f6d49ab4da09681e32c3f0472dee16667ed69d01dae63a3b81745a24bd78476ec4fcf856114cb4896ace738e01da34b2c42235416
-  languageName: node
-  linkType: hard
-
-"yaml-hook@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "yaml-hook@npm:1.0.0"
-  dependencies:
-    js-yaml: "npm:^3.12.2"
-    pirates: "npm:^4.0.1"
-  checksum: 10c0/cc4e60e802c32ff961354c1c35ed04f685e1f5e80b52f138f5e82ab4efad5b868e4b9647b87c0125e5411bd0f043bfd620c55ed6ee2914d08bd76188f86e1548
   languageName: node
   linkType: hard
 
