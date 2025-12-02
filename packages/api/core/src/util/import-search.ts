@@ -4,14 +4,14 @@ import debug from 'debug';
 
 const d = debug('electron-forge:import-search');
 
-// https://github.com/nodejs/node/blob/da0ede1ad55a502a25b4139f58aab3fb1ee3bf3f/lib/internal/modules/cjs/loader.js#L353-L359
-type RequireError = Error & {
+/**
+ * @see https://github.com/nodejs/node/blob/4ea921bdbf94c11e86ef6b53aa7425c6df42876a/lib/internal/errors.js#L1611-L1617C1
+ */
+type ResolutionError = Error & {
   code: string;
-  path: string;
-  requestPath: string | undefined;
 };
 
-export async function importSearchRaw<T>(
+async function importSearchRaw<T>(
   relativeTo: string,
   paths: string[],
 ): Promise<T | null> {
@@ -52,12 +52,8 @@ export async function importSearchRaw<T>(
       return await import(testPath);
     } catch (err) {
       if (err instanceof Error) {
-        const requireErr = err as RequireError;
-        // Ignore require-related errors
-        if (
-          requireErr.code !== 'MODULE_NOT_FOUND' ||
-          ![undefined, testPath].includes(requireErr.requestPath)
-        ) {
+        const resolutionError = err as ResolutionError;
+        if (resolutionError.code !== 'ERR_MODULE_NOT_FOUND') {
           throw err;
         }
       }
