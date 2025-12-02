@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 const { app } = require('electron');
 
 console.log('The Fuses plugin is working');

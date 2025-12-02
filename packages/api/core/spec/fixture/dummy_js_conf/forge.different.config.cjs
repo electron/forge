@@ -1,5 +1,6 @@
 const {
   utils: { fromBuildIdentifier },
+  // eslint-disable-next-line n/no-unpublished-require
 } = require('@electron-forge/core');
 
 module.exports = {

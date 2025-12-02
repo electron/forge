@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@electron-forge/template-base": "100.0.0",
+    "fs-extra": "11.3.2"
+  }
 }

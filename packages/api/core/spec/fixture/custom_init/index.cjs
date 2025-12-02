@@ -15,11 +15,11 @@ module.exports = {
         title: 'Adding custom template files',
         task: async () => {
           await fs.copy(
-            path.resolve(import.meta.dirname, 'tmpl', '_bar'),
+            path.resolve(__dirname, 'tmpl', '_bar'),
             path.resolve(directory, '.bar'),
           );
           await fs.copy(
-            path.resolve(import.meta.dirname, 'tmpl', 'src'),
+            path.resolve(__dirname, 'tmpl', 'src'),
             path.resolve(directory, 'src'),
           );
         },

@@ -3,6 +3,7 @@
   "productName": "",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start"
