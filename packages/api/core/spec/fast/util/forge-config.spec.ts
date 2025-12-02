@@ -6,7 +6,6 @@ import { describe, expect, it, vi } from 'vitest';
 import findConfig, {
   forgeConfigIsValidFilePath,
   registerForgeConfigForDirectory,
-  renderConfigTemplate,
   unregisterForgeConfigForDirectory,
 } from '../../../src/util/forge-config.js';
 
@@ -389,23 +388,5 @@ describe('forgeConfigIsValidFilePath', () => {
     expect(
       forgeConfigIsValidFilePath(fixturePath, 'forge.nonexistent.config'),
     ).toEqual(false);
-  });
-});
-
-describe('renderConfigTemplate', () => {
-  it('should import a JS file when a string starts with "require:"', () => {
-    const dir = path.resolve(
-      import.meta.dirname,
-      '../../fixture/dummy_js_conf',
-    );
-    const config = {
-      foo: 'require:foo',
-    };
-    renderConfigTemplate(dir, {}, config);
-    expect(config.foo).toEqual({
-      bar: {
-        baz: 'quux',
-      },
-    });
   });
 });

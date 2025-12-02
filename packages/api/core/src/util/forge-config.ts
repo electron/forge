@@ -3,7 +3,6 @@ import path from 'node:path';
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import { createJiti } from 'jiti';
-import { template } from 'lodash-es';
 
 import { runMutatingHook } from './hook.js';
 import PluginInterface from './plugin-interface.js';
@@ -132,25 +131,6 @@ export function forgeConfigIsValidFilePath(
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function renderConfigTemplate(
-  dir: string,
-  templateObj: any,
-  obj: any,
-): void {
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'object' && value !== null) {
-      renderConfigTemplate(dir, templateObj, value);
-    } else if (typeof value === 'string') {
-      obj[key] = template(value)(templateObj);
-      if (obj[key].startsWith('require:')) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        obj[key] = require(path.resolve(dir, obj[key].substr(8)));
-      }
-    }
-  }
-}
-
 type MaybeESM<T> = T | { default: T };
 type AsyncForgeConfigGenerator = () => Promise<ForgeConfig>;
 
@@ -222,9 +202,6 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pluginInterface: null as any,
   };
-
-  const templateObj = { ...packageJSON, year: new Date().getFullYear() };
-  renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
   resolvedForgeConfig.pluginInterface = await PluginInterface.create(
     dir,
