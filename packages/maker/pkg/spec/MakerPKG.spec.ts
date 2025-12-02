@@ -1,10 +1,11 @@
 import path from 'node:path';
 
-import { flatAsync } from '@electron/osx-sign';
+import { flat } from '@electron/osx-sign';
 import { MakerOptions } from '@electron-forge/maker-base';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerPKG } from '../src/MakerPKG';
+import { ForgeArch } from '@electron-forge/shared-types';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
@@ -12,7 +13,7 @@ vi.mock(import('@electron/osx-sign'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
-    flatAsync: vi.fn(),
+    flat: vi.fn(),
   };
 });
 
@@ -20,7 +21,7 @@ describe('MakerPKG', () => {
   const dir = '/my/test/dir/out';
   const makeDir = '/my/test/dir/make';
   const appName = 'My Test App';
-  const targetArch = process.arch;
+  const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
 
   it('should pass through correct defaults', async () => {
@@ -35,9 +36,9 @@ describe('MakerPKG', () => {
       targetArch,
       targetPlatform: 'mas',
     });
-    expect(vi.mocked(flatAsync)).toHaveBeenCalledOnce();
+    expect(vi.mocked(flat)).toHaveBeenCalledOnce();
 
-    expect(vi.mocked(flatAsync)).toHaveBeenCalledWith({
+    expect(vi.mocked(flat)).toHaveBeenCalledWith({
       app: path.resolve(`${dir}/My Test App.app`),
       pkg: expect.stringContaining(`My Test App-1.2.3-${targetArch}.pkg`),
       platform: 'mas',
