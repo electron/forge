@@ -4,16 +4,15 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MakerDMG } from '../src/MakerDMG';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { createDMG } = require('electron-installer-dmg');
+import { createDMG } from 'electron-installer-dmg';
+import { ForgeArch } from '@electron-forge/shared-types';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
-vi.hoisted(async () => {
-  const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('electron-installer-dmg', {
+vi.mock(import('electron-installer-dmg'), () => {
+  return {
     createDMG: vi.fn(),
-  });
+  };
 });
 
 vi.mock(import('fs-extra'), async (importOriginal) => {
@@ -31,7 +30,7 @@ describe('MakerDMG', () => {
   const dir = '/my/test/dir/out';
   const makeDir = '/my/test/dir/make';
   const appName = 'My Test App';
-  const targetArch = process.arch;
+  const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
 
   it('should pass through correct defaults', async () => {

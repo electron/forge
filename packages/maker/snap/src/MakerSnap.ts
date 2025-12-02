@@ -17,7 +17,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    const installer = require('electron-installer-snap');
+    const { default: installer } = await import('electron-installer-snap');
 
     const outPath = path.resolve(makeDir, 'snap', targetArch);
 

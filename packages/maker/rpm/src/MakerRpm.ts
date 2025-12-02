@@ -39,8 +39,8 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line n/no-missing-require
-    const installer = require('electron-installer-redhat');
+    // @ts-expect-error - this package has no types
+    const { default: installer } = await import('electron-installer-redhat');
 
     const outDir = path.resolve(makeDir, 'rpm', targetArch);
 
