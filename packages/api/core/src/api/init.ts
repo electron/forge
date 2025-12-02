@@ -105,7 +105,7 @@ export default async ({
         task: async (ctx, task) => {
           const tmpl = await findTemplate(template);
           ctx.templateModule = tmpl.template;
-          task.output = `Using ${chalk.green(tmpl.name)} (${tmpl.type} module)`;
+          task.output = `Using ${chalk.green(tmpl.name)}`;
         },
         rendererOptions: { persistentOutput: true },
       },
