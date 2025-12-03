@@ -9,14 +9,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
-    uses: ./.github/workflows/ci.yml
+  # Disable until the first publish job actually works
+  # test:
+  #   uses: ./.github/workflows/ci.yml
 
   release:
     name: Publish Next Release
     environment: npm-trusted-publisher
     runs-on: ubuntu-latest
-    needs: test
+    # needs: test
     # Run this in the `next` branch only
     if: github.repository == 'electron/forge' && github.ref == 'refs/heads/next'
     permissions:
