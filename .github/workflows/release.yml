@@ -1,0 +1,63 @@
+name: Release (Forge 8)
+
+on:
+  workflow_dispatch:
+
+# Ensure only one release workflow runs at a time
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish Next Release
+    environment: npm-trusted-publisher
+    runs-on: ubuntu-latest
+    # Run this in the `next` branch only
+    if: github.repository == 'electron/forge' && github.ref == 'refs/heads/next'
+    permissions:
+      contents: write
+      id-token: write # Required for trusted publishing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          # We need the full history for version calculation
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.0.1
+        with:
+          node-version-file: '.nvmrc'
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build Electron Forge
+        run: yarn build
+
+      - name: Cache ESLint
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: .eslintcache
+          key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
+
+      - name: Lint codebase
+        run: |
+          yarn lint
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        with:
+          name: dist-files
+          path: packages/*/*/dist/*
+
+      - name: Get GitHub app token
+        id: secret-service
+        uses: electron/secret-service-action@3476425e8b30555aac15b1b7096938e254b0e155 # v1.0.0
+
+      - name: Publish prerelease (using OIDC trusted publishing)
+        env:
+          GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
+        run: lerna publish prerelease --force-publish --preid=alpha --pre-dist-tag=alpha --no-changelog --exact
