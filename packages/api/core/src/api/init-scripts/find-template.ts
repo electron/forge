@@ -1,21 +1,14 @@
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
-import globalDirs from 'global-dirs';
 
 import { PossibleModule } from '../../util/import-search.js';
 
 const d = debug('electron-forge:init:find-template');
 
-enum TemplateType {
-  global = 'global',
-  local = 'local',
-}
-
 export interface ForgeTemplateDetails {
   name: string;
   path: string;
   template: ForgeTemplate;
-  type: TemplateType;
 }
 
 export const findTemplate = async (
@@ -24,27 +17,15 @@ export const findTemplate = async (
   let foundTemplate: Omit<ForgeTemplateDetails, 'template'> | null = null;
 
   const resolveTemplateTypes = [
-    [TemplateType.global, `electron-forge-template-${template}`],
-    [TemplateType.global, `@electron-forge/template-${template}`],
-    [TemplateType.local, `electron-forge-template-${template}`],
-    [TemplateType.local, `@electron-forge/template-${template}`],
-    [TemplateType.global, template],
-    [TemplateType.local, template],
+    `electron-forge-template-${template}`,
+    `@electron-forge/template-${template}`,
+    template,
   ] as const;
-  for (const [templateType, moduleName] of resolveTemplateTypes) {
+  for (const moduleName of resolveTemplateTypes) {
     try {
-      d(`Trying ${templateType} template: ${moduleName}`);
-      let templateModulePath: string;
-      if (templateType === TemplateType.global) {
-        templateModulePath = require.resolve(moduleName, {
-          paths: [globalDirs.npm.packages, globalDirs.yarn.packages],
-        });
-      } else {
-        templateModulePath = require.resolve(moduleName);
-      }
+      d(`Trying template: ${moduleName}`);
       foundTemplate = {
-        path: templateModulePath,
-        type: templateType,
+        path: require.resolve(moduleName),
         name: moduleName,
       };
       break;
