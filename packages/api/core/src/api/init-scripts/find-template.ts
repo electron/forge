@@ -25,7 +25,7 @@ export const findTemplate = async (
     try {
       d(`Trying template: ${moduleName}`);
       foundTemplate = {
-        path: require.resolve(moduleName),
+        path: import.meta.resolve(moduleName),
         name: moduleName,
       };
       break;

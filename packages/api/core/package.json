@@ -18,13 +18,13 @@
     "@electron-forge/maker-squirrel": "workspace:*",
     "@electron-forge/maker-wix": "workspace:*",
     "@electron-forge/maker-zip": "workspace:*",
-    "@electron-forge/template-fixture": "link:./spec/fixture/electron-forge-template-fixture",
+    "@electron-forge/template-fixture": "portal:./spec/fixture/electron-forge-template-fixture",
     "@electron-forge/test-utils": "workspace:*",
     "@types/interpret": "^1.1.1",
     "@types/progress": "^2.0.5",
-    "electron-forge-template-fixture-two": "link:./spec/fixture/electron-forge-template-fixture",
+    "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^3.1.3"
+    "vitest": "^4.0.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

@@ -1,5 +1,5 @@
 {
-  "main": "index.js",
+  "main": "index.cjs",
   "type": "commonjs",
   "version": "13.3.7"
 }
