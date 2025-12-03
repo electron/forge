@@ -2,10 +2,7 @@ import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import * as interpret from 'interpret';
 import { createJiti } from 'jiti';
-import { template } from 'lodash';
-import * as rechoir from 'rechoir';
 
 // eslint-disable-next-line n/no-missing-import
 import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
@@ -126,34 +123,15 @@ export function fromBuildIdentifier<T>(
   };
 }
 
-export async function forgeConfigIsValidFilePath(
+export function forgeConfigIsValidFilePath(
   dir: string,
   forgeConfig: string | ForgeConfig,
-): Promise<boolean> {
+): boolean {
   return (
     typeof forgeConfig === 'string' &&
-    ((await fs.pathExists(path.resolve(dir, forgeConfig))) ||
-      fs.pathExists(path.resolve(dir, `${forgeConfig}.js`)))
+    (fs.existsSync(path.resolve(dir, forgeConfig)) ||
+      fs.existsSync(path.resolve(dir, `${forgeConfig}.js`)))
   );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function renderConfigTemplate(
-  dir: string,
-  templateObj: any,
-  obj: any,
-): void {
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'object' && value !== null) {
-      renderConfigTemplate(dir, templateObj, value);
-    } else if (typeof value === 'string') {
-      obj[key] = template(value)(templateObj);
-      if (obj[key].startsWith('require:')) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        obj[key] = require(path.resolve(dir, obj[key].substr(8)));
-      }
-    }
-  }
 }
 
 type MaybeESM<T> = T | { default: T };
@@ -172,18 +150,9 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
 
   if (!forgeConfig || typeof forgeConfig === 'string') {
-    // interpret.extensions doesn't support `.mts` files
-    for (const extension of [
-      '.js',
-      '.mts',
-      ...Object.keys(interpret.extensions),
-    ]) {
+    for (const extension of ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts']) {
       const pathToConfig = path.resolve(dir, `forge.config${extension}`);
-      if (await fs.pathExists(pathToConfig)) {
-        // Use rechoir to parse alternative syntaxes (except for TypeScript where we use jiti)
-        if (!['.cts', '.mts', '.ts'].includes(extension)) {
-          rechoir.prepare(interpret.extensions, pathToConfig, dir);
-        }
+      if (fs.existsSync(pathToConfig)) {
         forgeConfig = `forge.config${extension}`;
         break;
       }
@@ -191,8 +160,11 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   }
   forgeConfig = forgeConfig || ({} as ForgeConfig);
 
-  if (await forgeConfigIsValidFilePath(dir, forgeConfig)) {
-    const forgeConfigPath = path.resolve(dir, forgeConfig as string);
+  if (
+    typeof forgeConfig === 'string' &&
+    forgeConfigIsValidFilePath(dir, forgeConfig)
+  ) {
+    const forgeConfigPath = path.resolve(dir, forgeConfig);
     try {
       let loadFn;
       if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
@@ -216,7 +188,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     }
   } else if (typeof forgeConfig !== 'object') {
     throw new Error(
-      'Expected packageJSON.config.forge to be an object or point to a requirable JS file',
+      'Expected `config.forge` in package.json to be an object or point to a Forge config file',
     );
   }
   const defaultForgeConfig = {
@@ -232,9 +204,6 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pluginInterface: null as any,
   };
-
-  const templateObj = { ...packageJSON, year: new Date().getFullYear() };
-  renderConfigTemplate(dir, templateObj, resolvedForgeConfig);
 
   resolvedForgeConfig.pluginInterface = await PluginInterface.create(
     dir,
