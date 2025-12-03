@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-vite",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.0",
   "description": "Vite template for Electron Forge, gets you started with Vite really quickly",
   "repository": {
     "type": "git",

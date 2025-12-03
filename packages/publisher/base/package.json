@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-base",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.0",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

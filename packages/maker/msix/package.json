@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-msix",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.0",
   "description": "MSIX maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Jan Hannemann",
