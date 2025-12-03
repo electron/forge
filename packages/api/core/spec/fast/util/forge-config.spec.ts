@@ -354,13 +354,13 @@ describe('forgeConfigIsValidFilePath', () => {
     const fixturePath = path.resolve(__dirname, '../../fixture/dummy_js_conf/');
     await expect(
       forgeConfigIsValidFilePath(fixturePath, 'forge.different.config'),
-    ).resolves.toEqual(true);
+    ).toEqual(true);
   });
 
   it('fails when a file is nonexistent', async () => {
     const fixturePath = path.resolve(__dirname, '../../fixture/dummy_js_conf/');
     await expect(
       forgeConfigIsValidFilePath(fixturePath, 'forge.nonexistent.config'),
-    ).resolves.toEqual(false);
+    ).toEqual(false);
   });
 });
