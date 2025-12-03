@@ -11,7 +11,6 @@
     "build": "tsc -b packages && ts-node tools/test-dist",
     "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
-    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
