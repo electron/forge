@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-vite-typescript",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.2",
   "description": "Vite-TypeScript template for Electron Forge, gets you started with Vite really quickly",
   "repository": {
     "type": "git",

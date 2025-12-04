@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-webpack",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.2",
   "description": "Webpack plugin for Electron Forge, lets you use Webpack directly in your tooling",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
