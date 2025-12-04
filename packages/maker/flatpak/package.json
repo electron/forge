@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-flatpak",
-  "version": "8.0.0-alpha.2",
+  "version": "8.0.0-alpha.3",
   "description": "Flatpak maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
