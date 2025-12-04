@@ -65,4 +65,4 @@ jobs:
       - name: Publish prerelease (using OIDC trusted publishing)
         env:
           GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
-        run: lerna publish prerelease --force-publish --preid=alpha --pre-dist-tag=alpha --no-changelog --exact
+        run: lerna publish prerelease --force-publish --preid=alpha --pre-dist-tag=alpha --no-changelog --exact --yes
