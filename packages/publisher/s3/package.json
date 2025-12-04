@@ -18,6 +18,9 @@
     "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1"
   },
+  "devDependencies": {
+    "vitest": "^4.0.14"
+  },
   "publishConfig": {
     "access": "public"
   },

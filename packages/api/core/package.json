@@ -24,7 +24,7 @@
     "@types/rechoir": "^0.6.1",
     "electron-forge-template-fixture-two": "link:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^3.1.3",
+    "vitest": "^4.0.14",
     "yaml-hook": "^1.0.0"
   },
   "dependencies": {
