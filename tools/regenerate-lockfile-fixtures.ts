@@ -19,6 +19,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+const ELECTRON_VERSION = '38.2.2';
+
 async function ensureDirectoryExists(dir: string) {
   await fs.promises.mkdir(dir, { recursive: true });
 }
@@ -49,11 +51,22 @@ async function initForgeProject(dir: string, template: string): Promise<void> {
   }
 
   return new Promise((resolve, reject) => {
-    const child = spawn('node', [cliPath, '.', '--template', template], {
-      cwd: dir,
-      stdio: 'inherit',
-      shell: process.platform === 'win32',
-    });
+    const child = spawn(
+      'node',
+      [
+        cliPath,
+        '.',
+        '--template',
+        template,
+        '--electron-version',
+        ELECTRON_VERSION,
+      ],
+      {
+        cwd: dir,
+        stdio: 'inherit',
+        shell: process.platform === 'win32',
+      },
+    );
 
     child.on('close', (code) => {
       if (code === 0) {
