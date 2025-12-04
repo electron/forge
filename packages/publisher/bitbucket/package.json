@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-bitbucket",
-  "version": "8.0.0-alpha.2",
+  "version": "8.0.0-alpha.3",
   "description": "Bitbucket publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Luke Batchelor",
