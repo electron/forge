@@ -134,39 +134,47 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 
 ## Release process
 
-This guide is for maintainers who have:
+This guide is for maintainers who have access to the [Forgers](https://github.com/orgs/electron/teams/forgers)
+GitHub team.
 
-- Push access to the `electron/forge` repository.
-- Collaborator access to the `@electron-forge` packages on npm.
+> [!IMPORTANT]
+> These instructions are strictly for Electron Forge 8 pre-release versions.
+> Do not use against `main`!
 
-### 1. Prepare your local code checkout
+### 1. Run the version bump script
 
-- Switch to the tip of the `main` branch with `git switch main && git pull`.
-- Run tests locally with `yarn test`.
-- Check that the latest CI run passed on `main` on [GitHub](https://github.com/electron/forge/actions?query=workflow:CI).
-- Remove all untracked files and directories from your checkout with `git clean -fdx`.
-- Install dependencies with `yarn install`.
+Run the `yarn lerna:version` script from the root of this monorepo. This script will:
 
-### 2. Publish all npm packages
+1. Reset your current git state to `HEAD`.
+1. Run Lerna's [`version`](https://github.com/lerna/lerna/tree/main/libs/commands/version#readme)
+   command, which increments all packages to the next alpha pre-release version.
+   (You'll need to accept the version bump before proceeding.)
+1. Check out a new branch called `alpha-release/YYMMDD-hh-mm`.
+1. Commit your changes with the appropriate commit title and message.
 
-- Log into npm with `npm login`.
-- Run the `yarn lerna:publish` command.
-- Enter your npm account's time-based one-time password (TOTP).
+### 2. Merge the change into `next`
 
-The `lerna:publish` script will automatically increment the next package version based on the
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) standard. From there, it does two things:
+Push your changes up and create a new PR. **When your PR is merged, ensure that you keep the original
+commit message and extended description from the original script.**
 
-1. It creates a tagged commit that bumps the version number in `package.json` at the root and package levels
-   and pushes the commit and tag to GitHub.
-1. It publishes every `@electron-forge/` package to npm.
+> [!NOTE]
+> Branch protection is configured so that only Forgers are allowed to push up commits that can
+> trigger a release.
 
-### 3. Publish release to GitHub
+Once your PR is merged, the [`release.yml`](.github/workflows/release.yml) workflow should run.
 
-- Go to the repo's [New Release](https://github.com/electron/forge/releases/new) page.
-- Select tag you just published.
-- Target the `main` branch.
-- [Automatically generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)
-  against the previous Forge release.
+### 3. Approve the release job
+
+Look for a pending [Publish](https://github.com/electron/forge/actions?query=event%3Apush+branch%3Anext)
+job in the Actions tab on the Forge repository. You need to get another Forger member to approve
+the job before the publish happens.
+
+Once the job is completed, all `@electron-forge/` packages and `create-electron-app` should have
+new published versions under the `alpha` dist-tag.
+
+> [!NOTE]
+> If the Publish job fails for whatever reason, feel free to start over at step 1. Version numbers
+> aren't sacred, so we can just re-increment the release number and try again.
 
 ### Adding a new `@electron-forge` package
 
