@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-webpack",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.2",
   "description": "Webpack template for Electron Forge, gets you started with Webpack really quickly",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
