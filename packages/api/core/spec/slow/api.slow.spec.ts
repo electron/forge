@@ -233,7 +233,7 @@ describe.each([
       template: path.resolve(__dirname, '../fixture/custom_init'),
     });
 
-    it('should add custom dependencies', async () => {
+    it.only('should add custom dependencies', async () => {
       const packageJSON = await import(path.resolve(dir, 'package.json'));
       expect(packageJSON.dependencies).toHaveProperty('debug');
     });

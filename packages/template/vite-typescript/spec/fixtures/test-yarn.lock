@@ -2648,9 +2648,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-forge-test-1764815467755@workspace:.":
+"electron-forge-test-1764816509855@workspace:.":
   version: 0.0.0-use.local
-  resolution: "electron-forge-test-1764815467755@workspace:."
+  resolution: "electron-forge-test-1764816509855@workspace:."
   dependencies:
     "@electron-forge/cli": "npm:^8.0.0-alpha.3"
     "@electron-forge/maker-deb": "npm:^8.0.0-alpha.3"
@@ -2664,7 +2664,7 @@ __metadata:
     "@types/electron-squirrel-startup": "npm:^1.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^5.0.0"
     "@typescript-eslint/parser": "npm:^5.0.0"
-    electron: "npm:39.2.5"
+    electron: "npm:38.2.2"
     electron-squirrel-startup: "npm:^1.0.1"
     eslint: "npm:^8.0.1"
     eslint-plugin-import: "npm:^2.25.0"
@@ -2762,16 +2762,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:39.2.5":
-  version: 39.2.5
-  resolution: "electron@npm:39.2.5"
+"electron@npm:38.2.2":
+  version: 38.2.2
+  resolution: "electron@npm:38.2.2"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/d2c396cdbbd06c56c7a55264d485421501fcd65ffb1d88f6865766ffabd9c6ad912be75225c148f6087fe773c25537f5d870d79eba7a599136756c10b20cf38f
+  checksum: 10c0/35b9e70745b65c9b35ebb481864323fcbc99be49aed74b67859de2aca4c2a40290661962c5ce631f83a7571952c69eb57979ef938999caebcabc9fe1de5a75c4
   languageName: node
   linkType: hard
 
