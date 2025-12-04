@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-snap",
-  "version": "8.0.0-alpha.1",
+  "version": "8.0.0-alpha.0",
   "description": "Snap maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
