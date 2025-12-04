@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-gcs",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.3",
   "type": "module",
   "description": "Google Cloud Storage publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",

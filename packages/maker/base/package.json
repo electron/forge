@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-base",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.3",
   "type": "module",
   "description": "Base maker for Electron Forge",
   "repository": "https://github.com/electron/forge",

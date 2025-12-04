@@ -12,7 +12,7 @@
     "build": "tsc -b packages && tsx tools/test-dist",
     "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
-    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
+    "lerna:version": "lerna version prerelease --force-publish --preid=alpha --no-changelog --exact --no-git-tag-version --no-push",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "markdownlint-cli2 \"**/*.md\"",
     "lint:markdown-js": "lint-roller-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
