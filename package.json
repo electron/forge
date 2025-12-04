@@ -11,7 +11,7 @@
     "build": "tsc -b packages && ts-node tools/test-dist",
     "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
-    "lerna:version": "git reset HEAD --hard && lerna version prerelease --force-publish --preid=alpha --no-changelog --exact --no-git-tag-version --no-push && git checkout -b alpha-release && git commit -a -m 'chore: version bump' -m '<trigger_release>'",
+    "lerna:version": "git reset HEAD --hard && lerna version prerelease --force-publish --preid=alpha --no-changelog --exact --no-git-tag-version --no-push && git checkout -b $(date +\"%d-%m-%y\")-alpha-release-$(date +\"%I\")` && git commit -a -m 'chore: version bump' -m '<trigger_release>'",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
