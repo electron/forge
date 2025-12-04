@@ -4,9 +4,9 @@ import chalk from 'chalk';
 import { program } from 'commander';
 
 import './util/terminate';
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 export async function getMakeOptions(): Promise<MakeOptions> {
   let workingDir: string;

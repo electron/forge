@@ -5,12 +5,12 @@ import {
   IForgeResolvableMaker,
   IForgeResolvablePublisher,
 } from '@electron-forge/shared-types';
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 import { describe, expect, it } from 'vitest';
 
 import upgradeForgeConfig, {
   updateUpgradedForgeDevDeps,
-} from '../../../src/util/upgrade-forge-config';
+} from '../../../src/util/upgrade-forge-config.js';
 
 describe('upgradeForgeConfig', () => {
   it('converts Electron Packager config', () => {

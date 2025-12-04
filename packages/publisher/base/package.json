@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/publisher-base",
   "version": "8.0.0-alpha.3",
+  "type": "module",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -11,10 +12,10 @@
     "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
-    "vitest": "^3.1.3"
+    "vitest": "^4.0.0"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "publishConfig": {
     "access": "public"

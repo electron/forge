@@ -32,6 +32,9 @@ function enforceConsistentDependenciesAcrossTheProject({ Yarn }) {
     // so skip them for now
     if (OPTIONAL_DEPS.includes(dependency.ident)) continue;
 
+    // HACK: For now, we're using a different major version of Vite specifically for Vitest
+    if (dependency.ident === 'vite') continue;
+
     for (const otherDependency of Yarn.dependencies({
       ident: dependency.ident,
     })) {

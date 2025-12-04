@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import getCurrentOutDir from '../../../src/util/out-dir';
 
-const DIR = __dirname;
+const DIR = import.meta.dirname;
 
 describe('getCurrentOutDir', () => {
   it('resolves to the default out directory when nothing extra is declared', () => {

@@ -5,7 +5,7 @@ import {
   getBuildConfig,
   getBuildDefine,
   pluginHotRestart,
-} from './vite.base.config';
+} from './vite.base.config.js';
 
 export function getConfig(
   forgeEnv: ConfigEnv<'build'>,

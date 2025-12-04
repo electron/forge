@@ -8,65 +8,81 @@ import {
   ForgeMakeResult,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  vi,
+} from 'vitest';
 
 import { PublisherS3, PublisherS3Config } from '../src/PublisherS3';
 
-// Mock AWS SDK modules
+// Get the actual fs module for test fixtures (before mocking)
+const actualFs = await vi.importActual<typeof import('node:fs')>('node:fs');
+
 vi.mock('@aws-sdk/client-s3');
 vi.mock('@aws-sdk/lib-storage');
 vi.mock('node:fs');
 
 describe('PublisherS3', () => {
   let publisher: PublisherS3;
-  let mockS3Client: vi.Mocked<S3Client>;
-  let mockUpload: vi.Mocked<Upload>;
+  let mockS3Client: S3Client;
+  let mockUploadOn: Mock;
+  let mockUploadDone: Mock;
   let tmpDir: string;
 
   beforeEach(async () => {
-    // Create temporary directory for test artifacts
     const tmp = os.tmpdir();
     const tmpdir = path.join(tmp, 'electron-forge-test-');
-    tmpDir = await fs.promises.mkdtemp(tmpdir);
+    tmpDir = await actualFs.promises.mkdtemp(tmpdir);
 
-    // Create test artifact files
-    await fs.promises.writeFile(
+    await actualFs.promises.writeFile(
       path.join(tmpDir, 'test-app-1.0.0.dmg'),
       'fake-dmg-content',
     );
-    await fs.promises.writeFile(
+    await actualFs.promises.writeFile(
       path.join(tmpDir, 'test-app-1.0.0.exe'),
       'fake-exe-content',
     );
-    await fs.promises.writeFile(
+    await actualFs.promises.writeFile(
       path.join(tmpDir, 'RELEASES'),
       'fake-releases-content',
     );
-    await fs.promises.writeFile(
+    await actualFs.promises.writeFile(
       path.join(tmpDir, 'RELEASES.json'),
       'fake-releases-json-content',
     );
 
-    // Mock S3Client constructor
     mockS3Client = {
       send: vi.fn(),
     } as any;
-    vi.mocked(S3Client).mockImplementation(() => mockS3Client);
 
-    // Mock Upload class
-    mockUpload = {
-      on: vi.fn().mockReturnThis(),
-      done: vi.fn().mockResolvedValue(undefined),
-    } as any;
-    vi.mocked(Upload).mockImplementation(() => mockUpload);
+    vi.mocked(S3Client).mockImplementation(function (this: S3Client) {
+      return mockS3Client;
+    } as unknown as typeof S3Client);
 
-    // Mock fs.createReadStream
+    mockUploadDone = vi.fn().mockImplementation(() => Promise.resolve());
+    mockUploadOn = vi.fn().mockImplementation(function (this: unknown) {
+      return this;
+    });
+
+    vi.mocked(Upload).mockImplementation(function (this: Upload) {
+      const instance = {
+        on: mockUploadOn,
+        done: mockUploadDone,
+      };
+      mockUploadOn.mockReturnValue(instance);
+      return instance as unknown as Upload;
+    } as unknown as typeof Upload);
+
     vi.mocked(fs.createReadStream).mockReturnValue('fake-stream' as any);
   });
 
   afterEach(async () => {
-    // Clean up temporary directory
-    await fs.promises.rm(tmpDir, { recursive: true, force: true });
+    await actualFs.promises.rm(tmpDir, { recursive: true, force: true });
     vi.clearAllMocks();
   });
 
@@ -167,7 +183,6 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify S3Client was created with correct options
       expect(S3Client).toHaveBeenCalledWith({
         credentials: undefined,
         region: 'us-east-1',
@@ -177,7 +192,7 @@ describe('PublisherS3', () => {
 
       // Verify Upload was called for each artifact
       expect(Upload).toHaveBeenCalledTimes(2);
-      expect(mockUpload.done).toHaveBeenCalledTimes(2);
+      expect(mockUploadDone).toHaveBeenCalledTimes(2);
 
       // Verify status line updates
       expect(mockSetStatusLine).toHaveBeenCalledWith(
@@ -208,7 +223,6 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify S3Client was created with credentials
       expect(S3Client).toHaveBeenCalledWith({
         credentials: {
           accessKeyId: 'test-key',
@@ -220,7 +234,6 @@ describe('PublisherS3', () => {
         forcePathStyle: false,
       });
 
-      // Verify Upload parameters
       expect(Upload).toHaveBeenCalledWith({
         client: mockS3Client,
         leavePartsOnError: true,
@@ -283,7 +296,6 @@ describe('PublisherS3', () => {
           Body: 'fake-stream',
           Bucket: 'test-bucket',
           Key: expect.any(String),
-          // ACL should not be present
         },
       });
     });
@@ -397,9 +409,12 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify Upload was called twice (once for each RELEASES file)
-      expect(Upload).toHaveBeenCalledTimes(2);
-      expect(mockUpload.done).toHaveBeenCalledTimes(2);
+      expect(Upload).toHaveBeenCalledTimes(
+        makeResultsWithBothReleases[0].artifacts.length,
+      );
+      expect(mockUploadDone).toHaveBeenCalledTimes(
+        makeResultsWithBothReleases[0].artifacts.length,
+      );
 
       // Verify both uploads include Cache-Control header
       const uploadCalls = vi.mocked(Upload).mock.calls;
@@ -421,7 +436,6 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify Upload parameters don't include Cache-Control metadata for non-RELEASES files
       expect(Upload).toHaveBeenCalledWith({
         client: mockS3Client,
         leavePartsOnError: true,
@@ -448,8 +462,7 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify progress event handler was set up
-      expect(mockUpload.on).toHaveBeenCalledWith(
+      expect(mockUploadOn).toHaveBeenCalledWith(
         'httpUploadProgress',
         expect.any(Function),
       );
@@ -470,7 +483,6 @@ describe('PublisherS3', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify S3Client was created with custom endpoint and forcePathStyle
       expect(S3Client).toHaveBeenCalledWith({
         credentials: undefined,
         region: undefined,

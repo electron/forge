@@ -32,7 +32,10 @@ function convertMainToSrc(main: string): string {
 }
 
 (async () => {
-  const baseTypedocJson = path.resolve(__dirname, '../typedoc.base.json');
+  const baseTypedocJson = path.resolve(
+    import.meta.dirname,
+    '../typedoc.base.json',
+  );
   const pkgs = await getPackageInfo();
 
   // Run each package in parallel

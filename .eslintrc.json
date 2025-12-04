@@ -11,8 +11,8 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
+    // "plugin:import/errors",
+    // "plugin:import/warnings",
     "plugin:n/recommended",
     "plugin:promise/recommended",
     "prettier"
@@ -27,26 +27,26 @@
         "vars": "all"
       }
     ],
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index",
-          "object",
-          "type"
-        ],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ],
+    // "import/order": [
+    //   "error",
+    //   {
+    //     "groups": [
+    //       "builtin",
+    //       "external",
+    //       "internal",
+    //       "parent",
+    //       "sibling",
+    //       "index",
+    //       "object",
+    //       "type"
+    //     ],
+    //     "newlines-between": "always",
+    //     "alphabetize": {
+    //       "order": "asc",
+    //       "caseInsensitive": true
+    //     }
+    //   }
+    // ],
     "sort-imports": [
       "error",
       {
@@ -55,7 +55,7 @@
         "ignoreCase": true
       }
     ],
-    "import/no-named-as-default": "error",
+    // "import/no-named-as-default": "error",
     "n/no-process-exit": "off"
   },
   "overrides": [
@@ -70,8 +70,8 @@
         "project": ["./tsconfig.base.json"]
       },
       "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:import/typescript"
+        "plugin:@typescript-eslint/recommended"
+        // "plugin:import/typescript"
       ],
       "rules": {
         // There is no "recommended" ruleset for tsdoc yet.
@@ -111,7 +111,7 @@
       ],
       "rules": {
         "global-require": "off",
-        "import/no-dynamic-require": "off",
+        // "import/no-dynamic-require": "off",
         "n/no-extraneous-import": "off",
         "n/no-unpublished-import": "off",
         "n/no-unpublished-require": "off",
@@ -161,7 +161,7 @@
       "rules": {
         "no-process-exit": "off",
         "no-undef": "off",
-        "import/no-unresolved": "off",
+        // "import/no-unresolved": "off",
         "n/no-missing-import": "off",
         "n/no-unpublished-import": "off",
         "n/no-unsupported-features/es-syntax": "off"

@@ -2,7 +2,6 @@ import * as path from 'node:path';
 
 import * as fs from 'fs-extra';
 import { Listr } from 'listr2';
-import fetch from 'node-fetch';
 
 const workspaceMappings: {
   [space: string]: { [packageName: string]: string | undefined };
@@ -19,7 +18,7 @@ const workspaceMappings: {
   },
 };
 
-const BASE_DIR = path.resolve(__dirname, '..');
+const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const DOCS_BASE =
   'https://raw.githubusercontent.com/electron-forge/electron-forge-docs/v6';
 

@@ -22,7 +22,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const fixtureSource = path.join(
-  __dirname,
+  import.meta.dirname,
   'fixtures',
   'apps',
   'native-modules',
@@ -193,7 +193,7 @@ describe('AssetRelocatorPatch', () => {
         outDir: mainOut,
         jsPath: path.join(mainOut, 'index.js'),
         nativeModulesString:
-          '__webpack_require__.ab = __dirname + "/native_modules/"',
+          '__webpack_require__.ab = import.meta.dirname + "/native_modules/"',
         nativePathString: `require(__webpack_require__.ab + "${nativePathSuffix}")`,
       });
     });
@@ -255,7 +255,7 @@ describe('AssetRelocatorPatch', () => {
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: mainOut,
         jsPath: path.join(mainOut, 'index.js'),
-        nativeModulesString: '.ab=__dirname+"/native_modules/"',
+        nativeModulesString: '.ab=import.meta.dirname+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -273,7 +273,7 @@ describe('AssetRelocatorPatch', () => {
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
         nativeModulesString:
-          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
+          '.ab=require("path").resolve(import.meta.dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -290,7 +290,7 @@ describe('AssetRelocatorPatch', () => {
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/index.js'),
         nativeModulesString:
-          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
+          '.ab=require("path").resolve(import.meta.dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });

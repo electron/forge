@@ -33,7 +33,7 @@ async function ensureTestDirIsNonexistent(): Promise<string> {
 
 async function initForgeProject(dir: string, template: string): Promise<void> {
   const cliPath = path.resolve(
-    __dirname,
+    import.meta.dirname,
     '..',
     'packages',
     'api',
@@ -72,7 +72,7 @@ async function regenerateWebpackTypescriptLockfile() {
 
   try {
     const template = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '..',
       'packages',
       'template',
@@ -81,7 +81,7 @@ async function regenerateWebpackTypescriptLockfile() {
     await initForgeProject(dir, template);
 
     const fixtureDir = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '..',
       'packages',
       'template',
@@ -111,7 +111,7 @@ async function regenerateViteTypescriptLockfile() {
 
   try {
     const template = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '..',
       'packages',
       'template',
@@ -120,7 +120,7 @@ async function regenerateViteTypescriptLockfile() {
     await initForgeProject(dir, template);
 
     const fixtureDir = path.resolve(
-      __dirname,
+      import.meta.dirname,
       '..',
       'packages',
       'template',
