@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/template-base",
   "version": "8.0.0-alpha.3",
+  "type": "module",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
