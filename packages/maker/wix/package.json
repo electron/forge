@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-wix",
-  "version": "8.0.0-alpha.0",
+  "version": "8.0.0-alpha.1",
   "description": "Wix maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
