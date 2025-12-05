@@ -11,9 +11,6 @@ on:
     types: [checks_requested]
   workflow_call:
 
-env:
-  NODE_VERSION: 20.17.0
-
 jobs:
   lint-and-build:
     runs-on: ubuntu-22.04
@@ -21,20 +18,19 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
+          node-version-file: .nvmrc
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.11
-
-      - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -80,20 +76,19 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
+          node-version-file: .nvmrc
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.11
-
-      - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Set Yarn global folder for Windows
         if: runner.os == 'Windows'
@@ -168,20 +163,19 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
+          node-version-file: .nvmrc
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: 3.11
-
-      - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Set Yarn global folder for Windows
         if: runner.os == 'Windows'
