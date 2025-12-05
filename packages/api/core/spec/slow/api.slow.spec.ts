@@ -111,6 +111,7 @@ describe.each([
   PACKAGE_MANAGERS['npm'],
   PACKAGE_MANAGERS['yarn'],
   PACKAGE_MANAGERS['pnpm'],
+  PACKAGE_MANAGERS['bun'],
 ])(`init (with $executable)`, (pm) => {
   let dir: string;
 
