@@ -1,0 +1,126 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - next
+
+jobs:
+  check-release-criteria:
+    name: Check Release Criteria
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          fetch-depth: 2
+
+      - name: Check release criteria
+        id: check
+        run: |
+          set -e
+
+          # Get commit message title and body
+          COMMIT_TITLE=$(git log -1 --pretty=%s)
+          COMMIT_BODY=$(git log -1 --pretty=%b)
+
+          echo "Commit title: $COMMIT_TITLE"
+          echo "Commit body: $COMMIT_BODY"
+
+          # Check 1: Commit title matches "chore: bump version to ..."
+          if ! echo "$COMMIT_TITLE" | grep -qE '^chore: bump version to .+$'; then
+            echo "Commit title does not match 'chore: bump version to ...'"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "✓ Commit title matches pattern"
+
+          # Check 2: Commit body contains "<trigger_release>"
+          if ! echo "$COMMIT_BODY" | grep -qF '<trigger_release>'; then
+            echo "Commit body does not contain '<trigger_release>'"
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "✓ Commit body contains trigger"
+
+          # Check 3: Only package.json or lerna.json files were changed
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          for file in $CHANGED_FILES; do
+            if [[ ! "$file" =~ ^(.*/)?package\.json$ ]] && [[ ! "$file" =~ ^(.*/)?lerna\.json$ ]]; then
+              echo "File '$file' is not a package.json or lerna.json"
+              echo "should_release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "✓ Only package.json and lerna.json files changed"
+
+          # Check 4: Only "version" field was changed in each file
+          for file in $CHANGED_FILES; do
+            # Get the old and new versions of the file
+            OLD_CONTENT=$(git show HEAD~1:"$file" 2>/dev/null || echo '{}')
+            NEW_CONTENT=$(git show HEAD:"$file")
+
+            # Remove the "version" field from both and compare
+            OLD_WITHOUT_VERSION=$(echo "$OLD_CONTENT" | jq 'del(.version)')
+            NEW_WITHOUT_VERSION=$(echo "$NEW_CONTENT" | jq 'del(.version)')
+
+            if [ "$OLD_WITHOUT_VERSION" != "$NEW_WITHOUT_VERSION" ]; then
+              echo "File '$file' has changes other than the version field"
+              echo "Diff (excluding version):"
+              diff <(echo "$OLD_WITHOUT_VERSION" | jq -S .) <(echo "$NEW_WITHOUT_VERSION" | jq -S .) || true
+              echo "should_release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "✓ Only version fields were changed"
+
+          echo "All criteria met - proceeding with release"
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: check-release-criteria
+    if: needs.check-release-criteria.outputs.should_release == 'true'
+    environment: npm-trusted-publisher
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+
+      - name: Install Node.js
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.0.1
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish
+        run: lerna publish from-package --force-publish --pre-dist-tag alpha --yes
+
+      - name: Get version from lerna.json
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' lerna.json)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Get GitHub app token
+        id: secret-service
+        uses: electron/secret-service-action@3476425e8b30555aac15b1b7096938e254b0e155 # v1.0.0
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
+        run: gh release create "v${{ steps.version.outputs.version }}" --target ${{ github.sha }} --generate-notes --prerelease

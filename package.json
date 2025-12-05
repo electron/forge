@@ -11,7 +11,7 @@
     "build": "tsc -b packages && ts-node tools/test-dist",
     "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
-    "lerna:publish": "lerna publish --force-publish --conventional-commits --no-changelog --exact",
+    "lerna:version": "./tools/version.sh",
     "lint:js": "prettier --check . --experimental-cli && eslint . --cache",
     "lint:markdown": "electron-markdownlint \"**/*.md\"",
     "lint:markdown-js": "electron-lint-markdown-standard --root . --ignore-path .markdownlintignore --semi \"**/*.md\"",
@@ -30,7 +30,6 @@
     "@aws-sdk/client-s3": "^3.654.0",
     "@aws-sdk/lib-storage": "^3.654.0",
     "@aws-sdk/types": "^3.654.0",
-    "@doyensec/electronegativity": "^1.9.1",
     "@electron/get": "^3.0.0",
     "@electron/osx-sign": "^1.0.5",
     "@electron/packager": "^18.3.5",
@@ -57,7 +56,6 @@
     "find-up": "^5.0.0",
     "form-data": "^4.0.0",
     "fs-extra": "^10.0.0",
-    "global-dirs": "^3.0.0",
     "got": "^11.8.5",
     "html-webpack-plugin": "^5.5.3",
     "interpret": "^3.1.1",
@@ -102,6 +100,7 @@
     "@types/which": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@yarnpkg/types": "^4.0.1",
     "electron-installer-common": "^0.10.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.0.1",
@@ -117,7 +116,6 @@
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
-    "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
     "typescript": "~5.4.5",
@@ -141,11 +139,10 @@
   },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write --experimental-cli",
-    "*.{js,ts}": [
+    "*.{js,ts, cjs, mjs, cts, mts}": [
       "prettier --write --experimental-cli",
       "eslint --fix --cache"
-    ],
-    "*.{json,lock}": "syncpack"
+    ]
   },
   "prettier": {
     "singleQuote": true

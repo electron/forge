@@ -20,6 +20,7 @@ type S3Artifact = {
   platform: string;
   arch: string;
   isReleaseFile: boolean;
+  version: string;
 };
 
 export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
@@ -51,6 +52,7 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
           arch: makeResult.arch,
           isReleaseFile:
             path.basename(artifact, path.extname(artifact)) === 'RELEASES',
+          version: makeResult.packageJSON.version,
         })),
       );
     }

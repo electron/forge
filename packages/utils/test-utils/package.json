@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/test-utils",
-  "version": "7.10.2",
+  "version": "8.0.0-alpha.3",
   "description": "Helper utilities for the Electron Forge testsuite",
   "repository": "https://github.com/electron/forge",
   "author": "Mark Lee",
