@@ -23,9 +23,6 @@ import {
   installDependencies,
 } from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
-import upgradeForgeConfig, {
-  updateUpgradedForgeDevDeps,
-} from '../util/upgrade-forge-config';
 
 import { initGit } from './init-scripts/init-git';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
@@ -168,15 +165,6 @@ export default autoTrace(
                 } else if (!(typeof packageJSON.config.forge === 'object')) {
                   task.output = chalk.yellow(
                     "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway",
-                  );
-                } else {
-                  d('Upgrading an Electron Forge < 6 project');
-                  packageJSON.config.forge = upgradeForgeConfig(
-                    packageJSON.config.forge,
-                  );
-                  importDevDeps = updateUpgradedForgeDevDeps(
-                    packageJSON,
-                    importDevDeps,
                   );
                 }
               }
