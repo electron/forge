@@ -75,8 +75,8 @@ describe('PublisherS3', () => {
         done: mockUploadDone,
       };
       mockUploadOn.mockReturnValue(instance);
-      return instance as unknown as Upload;
-    } as unknown as typeof Upload);
+      return instance;
+    });
 
     vi.mocked(fs.createReadStream).mockReturnValue('fake-stream' as any);
   });
