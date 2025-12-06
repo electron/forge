@@ -77,6 +77,41 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     ));
   }
 
+  /**
+   * Scans node_modules to find packages containing native .node files.
+   * This is used to selectively include only native module packages in the asar,
+   * enabling AutoUnpackNativesPlugin to work correctly while keeping the asar size minimal.
+   */
+  private findNativePackages(): Set<string> {
+    const nativePackages = new Set<string>();
+    const nodeModulesPath = path.join(this.projectDir, 'node_modules');
+
+    const scanDir = (dir: string, depth = 0): void => {
+      // Limit recursion depth to avoid scanning too deep
+      if (depth > 5) return;
+
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory() && !entry.name.startsWith('.')) {
+            scanDir(fullPath, depth + 1);
+          } else if (entry.isFile() && entry.name.endsWith('.node')) {
+            // Found a .node file, extract the package name
+            const relativePath = path.relative(nodeModulesPath, fullPath);
+            const pkgName = relativePath.split(path.sep)[0];
+            nativePackages.add(pkgName);
+          }
+        }
+      } catch {
+        // Ignore errors (e.g., permission denied)
+      }
+    };
+
+    scanDir(nodeModulesPath);
+    return nativePackages;
+  }
+
   getHooks = (): ForgeMultiHookMap => {
     return {
       preStart: [
@@ -175,15 +210,37 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       return forgeConfig;
     }
 
+    // Find packages containing native modules (.node files)
+    // These need to be included in the asar for AutoUnpackNativesPlugin to work
+    const nativePackages = this.findNativePackages();
+    d('Found native packages:', Array.from(nativePackages));
+
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
       // `file` always starts with `/`
       // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      // Include files built by Vite
+      if (file.startsWith('/.vite')) return false;
+
+      // Include node_modules folder itself (required for the ignore function to work)
+      if (file === '/node_modules') return false;
+
+      // For files inside node_modules, only include packages with native modules
+      if (file.startsWith('/node_modules/')) {
+        // Extract the package name (first segment after /node_modules/)
+        const parts = file.split('/');
+        const pkgName = parts[2];
+
+        // Include if this package contains native modules
+        if (nativePackages.has(pkgName)) return false;
+      }
+
+      // Exclude everything else
+      return true;
     };
+
     return forgeConfig;
   };
 

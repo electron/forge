@@ -19,6 +19,10 @@ describe('VitePlugin', async () => {
   const tmpdir = path.join(tmp, 'electron-forge-test-');
   const viteTestDir = await fs.promises.mkdtemp(tmpdir);
 
+  afterAll(async () => {
+    await fs.promises.rm(viteTestDir, { recursive: true });
+  });
+
   describe('packageAfterCopy', () => {
     const packageJSONPath = path.join(viteTestDir, 'package.json');
     const packagedPath = path.join(viteTestDir, 'packaged');
@@ -88,10 +92,6 @@ describe('VitePlugin', async () => {
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(viteTestDir, { recursive: true });
-    });
   });
 
   describe('resolveForgeConfig', () => {
@@ -99,6 +99,7 @@ describe('VitePlugin', async () => {
 
     beforeAll(() => {
       plugin = new VitePlugin(baseConfig);
+      plugin.setDirectories(viteTestDir);
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
@@ -133,6 +134,7 @@ describe('VitePlugin', async () => {
       it('ignores source map files by default', async () => {
         const viteConfig = { ...baseConfig };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -171,6 +173,7 @@ describe('VitePlugin', async () => {
       it('includes source map files when specified by config', async () => {
         const viteConfig = { ...baseConfig, packageSourceMaps: true };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -204,6 +207,92 @@ describe('VitePlugin', async () => {
             ),
           ),
         ).toEqual(false);
+      });
+
+      it('includes /node_modules directory', async () => {
+        plugin = new VitePlugin(baseConfig);
+        plugin.setDirectories(viteTestDir);
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/node_modules')).toEqual(false);
+      });
+
+      it('excludes packages without native modules from node_modules', async () => {
+        plugin = new VitePlugin(baseConfig);
+        plugin.setDirectories(viteTestDir);
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        // Non-native packages should be excluded
+        expect(ignore('/node_modules/lodash')).toEqual(true);
+        expect(ignore('/node_modules/lodash/index.js')).toEqual(true);
+      });
+
+      describe('with native modules', () => {
+        const nativeModulesTestDir = path.join(viteTestDir, 'native-test');
+
+        beforeAll(async () => {
+          // Create a fake node_modules structure with a native module
+          const nativePackagePath = path.join(
+            nativeModulesTestDir,
+            'node_modules',
+            'native-package',
+            'build',
+            'Release',
+          );
+          await fs.promises.mkdir(nativePackagePath, { recursive: true });
+          await fs.promises.writeFile(
+            path.join(nativePackagePath, 'binding.node'),
+            'fake native module',
+          );
+
+          // Create a non-native package
+          const nonNativePackagePath = path.join(
+            nativeModulesTestDir,
+            'node_modules',
+            'non-native-package',
+          );
+          await fs.promises.mkdir(nonNativePackagePath, { recursive: true });
+          await fs.promises.writeFile(
+            path.join(nonNativePackagePath, 'index.js'),
+            'module.exports = {}',
+          );
+        });
+
+        it('includes packages containing .node files', async () => {
+          plugin = new VitePlugin(baseConfig);
+          plugin.setDirectories(nativeModulesTestDir);
+          const config = await plugin.resolveForgeConfig(
+            {} as ResolvedForgeConfig,
+          );
+          const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+          // Native package should be included (not ignored)
+          expect(ignore('/node_modules/native-package')).toEqual(false);
+          expect(
+            ignore('/node_modules/native-package/build/Release/binding.node'),
+          ).toEqual(false);
+        });
+
+        it('excludes packages without .node files', async () => {
+          plugin = new VitePlugin(baseConfig);
+          plugin.setDirectories(nativeModulesTestDir);
+          const config = await plugin.resolveForgeConfig(
+            {} as ResolvedForgeConfig,
+          );
+          const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+          // Non-native package should be excluded (ignored)
+          expect(ignore('/node_modules/non-native-package')).toEqual(true);
+          expect(ignore('/node_modules/non-native-package/index.js')).toEqual(
+            true,
+          );
+        });
       });
     });
   });
