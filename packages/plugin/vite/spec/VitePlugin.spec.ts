@@ -99,6 +99,7 @@ describe('VitePlugin', async () => {
 
     beforeAll(() => {
       plugin = new VitePlugin(baseConfig);
+      plugin.setDirectories(viteTestDir);
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
@@ -133,6 +134,7 @@ describe('VitePlugin', async () => {
       it('ignores source map files by default', async () => {
         const viteConfig = { ...baseConfig };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -171,6 +173,7 @@ describe('VitePlugin', async () => {
       it('includes source map files when specified by config', async () => {
         const viteConfig = { ...baseConfig, packageSourceMaps: true };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
