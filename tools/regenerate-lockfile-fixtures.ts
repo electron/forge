@@ -1,5 +1,3 @@
-#!/usr/bin/env ts-node
-
 /**
  * Utility script to regenerate lockfile fixtures for template tests.
  *

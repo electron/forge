@@ -87,7 +87,7 @@ describe('ViteTypeScriptTemplate', () => {
        * - When this test starts failing due to dependency resolution issues
        *
        * How to regenerate:
-       * Run: yarn ts-node tools/regenerate-lockfile-fixtures.ts
+       * Run: yarn update:lockfile-fixtures
        *
        * This will create a new lockfile with the correct vite resolution and dependencies.
        */
