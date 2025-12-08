@@ -114,6 +114,7 @@
     "inquirer": "^8.0.0",
     "lerna": "^9.0.0",
     "lint-staged": "^12.1.7",
+    "markdownlint-cli2": "^0.19.1",
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
