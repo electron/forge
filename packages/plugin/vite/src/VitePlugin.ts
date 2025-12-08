@@ -6,6 +6,7 @@ import path from 'node:path';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
+import { DepType, Module, Walker } from 'flora-colossus';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import { default as vite } from 'vite';
@@ -78,38 +79,15 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   }
 
   /**
-   * Scans node_modules to find packages containing native .node files.
-   * This is used to selectively include only native module packages in the asar,
-   * enabling AutoUnpackNativesPlugin to work correctly while keeping the asar size minimal.
+   * Scans node_modules to find packages in production dependencies
    */
-  private findNativePackages(): Set<string> {
-    const nativePackages = new Set<string>();
+  private async getFlatDependencies(): Promise<Module[]> {
     const nodeModulesPath = path.join(this.projectDir, 'node_modules');
 
-    const scanDir = (dir: string, depth = 0): void => {
-      // Limit recursion depth to avoid scanning too deep
-      if (depth > 5) return;
+    const walker = new Walker(nodeModulesPath);
+    const deps = await walker.walkTree();
 
-      try {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory() && !entry.name.startsWith('.')) {
-            scanDir(fullPath, depth + 1);
-          } else if (entry.isFile() && entry.name.endsWith('.node')) {
-            // Found a .node file, extract the package name
-            const relativePath = path.relative(nodeModulesPath, fullPath);
-            const pkgName = relativePath.split(path.sep)[0];
-            nativePackages.add(pkgName);
-          }
-        }
-      } catch {
-        // Ignore errors (e.g., permission denied)
-      }
-    };
-
-    scanDir(nodeModulesPath);
-    return nativePackages;
+    return deps.filter((dep) => dep.depType === DepType.PROD);
   }
 
   getHooks = (): ForgeMultiHookMap => {
@@ -212,8 +190,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
     // Find packages containing native modules (.node files)
     // These need to be included in the asar for AutoUnpackNativesPlugin to work
-    const nativePackages = this.findNativePackages();
-    d('Found native packages:', Array.from(nativePackages));
+    const flatDeps = await this.getFlatDependencies();
 
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
@@ -229,12 +206,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 
       // For files inside node_modules, only include packages with native modules
       if (file.startsWith('/node_modules/')) {
-        // Extract the package name (first segment after /node_modules/)
-        const parts = file.split('/');
-        const pkgName = parts[2];
-
-        // Include if this package contains native modules
-        if (nativePackages.has(pkgName)) return false;
+        // Collect dependencies from package.json
+        const [, , name] = file.split('/');
+        return flatDeps.some((dep) => dep.name === name);
       }
 
       // Exclude everything else
