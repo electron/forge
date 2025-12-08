@@ -1,5 +1,3 @@
-#!/usr/bin/env ts-node
-
 import path from 'node:path';
 
 import { readJsonSync, writeJsonSync } from 'fs-extra';
