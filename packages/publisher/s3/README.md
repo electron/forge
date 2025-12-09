@@ -4,7 +4,9 @@
 
 By default, all files are positioned at the following key:
 
+```text
 ${config.folder || appVersion}/${artifactName}
+```
 
 Configuration options are documented in [PublisherS3Config](https://js.electronforge.io/interfaces/_electron_forge_publisher_s3.PublisherS3Config.html).
 
