@@ -101,6 +101,8 @@
     "@types/which": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@yarnpkg/types": "^4.0.1",
+    "electron": "^39.2.6",
     "electron-installer-common": "^0.10.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.0.1",
@@ -116,6 +118,7 @@
     "minimist": "^1.2.6",
     "msw": "^2.7.0",
     "prettier": "^3.6.2",
+    "ref-napi": "^3.0.3",
     "syncpack": "^11.2.1",
     "ts-node": "^10.0.0",
     "typedoc": "0.25.13",
@@ -152,6 +155,9 @@
   "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f",
   "dependenciesMeta": {
     "@bitdisaster/exe-icon-extractor": {
+      "built": true
+    },
+    "electron": {
       "built": true
     },
     "electron-winstaller": {
