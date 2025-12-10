@@ -40,14 +40,14 @@ describe('Make', () => {
   it('makes from a custom outDir without errors', async () => {
     await api.make({ dir, skipPackage: true, outDir });
 
-    // out/make/zip/darwin/arm64/Test-App-darwin-arm64-1.0.0.zip
+    // out/make/zip/darwin/arm64/default-app-darwin-arm64-1.0.0.zip
     const artifactPath = path.join(
       outDir,
       'make',
       'zip',
       process.platform,
       process.arch,
-      `Test-App-${process.platform}-${process.arch}-1.0.0.zip`,
+      `default-app-${process.platform}-${process.arch}-1.0.0.zip`,
     );
 
     expect(fs.existsSync(artifactPath)).toBe(true);
