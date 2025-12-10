@@ -15,7 +15,10 @@ export default class AutoUnpackNativesPlugin extends PluginBase<AutoUnpackNative
   resolveForgeConfig: ForgeHookFn<'resolveForgeConfig'> = async (
     forgeConfig,
   ) => {
-    if (forgeConfig.packagerConfig.asar === false) {
+    if (!forgeConfig.packagerConfig) {
+      forgeConfig.packagerConfig = {};
+    }
+    if (!forgeConfig.packagerConfig.asar) {
       throw new Error(
         'The AutoUnpackNatives plugin requires asar to be truthy or an object',
       );
