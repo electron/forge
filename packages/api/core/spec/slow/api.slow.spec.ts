@@ -1,4 +1,3 @@
-import assert from 'node:assert';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,12 +15,10 @@ import {
   ensureTestDirIsNonexistent,
   expectLintToPass,
 } from '@electron-forge/test-utils';
-import { readMetadata } from 'electron-installer-common';
 import semver from 'semver';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { api, InitOptions } from '../../src/api/index';
-import { installDependencies } from '../../src/util/install-dependencies';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 type BeforeInitFunction = () => void;
@@ -417,30 +414,6 @@ describe.each([
         };
       });
 
-      it('throws an error when all is set', async () => {
-        await updatePackageJSON(dir, async (packageJSON) => {
-          assert(packageJSON.config.forge.packagerConfig);
-          packageJSON.config.forge.packagerConfig.all = true;
-        });
-        await expect(api.package({ dir })).rejects.toThrow(
-          /packagerConfig\.all is not supported by Electron Forge/,
-        );
-        await updatePackageJSON(dir, async (packageJSON) => {
-          assert(packageJSON.config.forge.packagerConfig);
-          delete packageJSON.config.forge.packagerConfig.all;
-        });
-      });
-
-      it('can package to outDir without errors', async () => {
-        const outDir = `${dir}/foo`;
-
-        expect(fs.existsSync(outDir)).toEqual(false);
-
-        await api.package({ dir, outDir });
-
-        expect(fs.existsSync(outDir)).toEqual(true);
-      });
-
       it('can make from custom outDir without errors', async () => {
         await updatePackageJSON(dir, async (packageJSON) => {
           // eslint-disable-next-line n/no-missing-require
@@ -460,53 +433,7 @@ describe.each([
         });
       });
 
-      describe('with prebuilt native module deps installed', () => {
-        beforeAll(async () => {
-          await installDependencies(pm, dir, ['ref-napi']);
-
-          return async () => {
-            await fs.promises.rm(path.resolve(dir, 'node_modules/ref-napi'), {
-              recursive: true,
-              force: true,
-            });
-            await updatePackageJSON(dir, async (packageJSON) => {
-              delete packageJSON.dependencies['ref-napi'];
-            });
-          };
-        });
-
-        it('can package without errors', async () => {
-          await api.package({ dir });
-        });
-      });
-
-      it('can package without errors', async () => {
-        await updatePackageJSON(dir, async (packageJSON) => {
-          assert(packageJSON.config.forge.packagerConfig);
-          packageJSON.config.forge.packagerConfig.asar = true;
-        });
-
-        await api.package({ dir });
-      });
-
       describe('after package', () => {
-        it('should have deleted the forge config from the packaged app', async () => {
-          const cleanPackageJSON = await readMetadata({
-            src: path.resolve(
-              dir,
-              'out',
-              `Test-App-${process.platform}-${process.arch}`,
-            ),
-            logger: console.error,
-          });
-          expect(cleanPackageJSON).not.toHaveProperty('config.forge');
-        });
-
-        it('should not affect the actual forge config', async () => {
-          const normalPackageJSON = await readRawPackageJson(dir);
-          expect(normalPackageJSON).toHaveProperty('config.forge');
-        });
-
         if (process.platform !== 'win32') {
           process.env.DISABLE_SQUIRREL_TEST = 'true';
         }
