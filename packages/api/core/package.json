@@ -24,7 +24,8 @@
     "@types/progress": "^2.0.5",
     "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.14",
+    "yaml-hook": "^1.0.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

@@ -311,34 +311,32 @@ describe('findConfig', () => {
     });
   });
 
-  describe('alternate config formats', () => {
-    describe('TypeScript', () => {
-      it('should resolve a default forge.config.ts file', async () => {
-        const fixturePath = path.resolve(
-          import.meta.dirname,
-          '../../fixture/dummy_default_ts_conf',
-        );
-        const conf = await findConfig(fixturePath);
-        expect(conf.buildIdentifier).toEqual('typescript');
-      });
+  describe('TypeScript', () => {
+    it('should resolve forge.config.ts', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_default_ts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('typescript');
+    });
 
-      it('should resolve a default forge.config.cts file', async () => {
-        const fixturePath = path.resolve(
-          import.meta.dirname,
-          '../../fixture/dummy_default_cts_conf',
-        );
-        const conf = await findConfig(fixturePath);
-        expect(conf.buildIdentifier).toEqual('typescript-commonjs');
-      });
+    it('should resolve forge.config.cts', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_default_cts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('typescript-commonjs');
+    });
 
-      it('should resolve a default forge.config.mts file', async () => {
-        const fixturePath = path.resolve(
-          import.meta.dirname,
-          '../../fixture/dummy_default_mts_conf',
-        );
-        const conf = await findConfig(fixturePath);
-        expect(conf.buildIdentifier).toEqual('typescript-esm');
-      });
+    it('should resolve forge.config.mts', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_default_mts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('typescript-esm');
     });
   });
 });

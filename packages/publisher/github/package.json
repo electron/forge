@@ -9,7 +9,7 @@
   "main": "dist/PublisherGithub.js",
   "typings": "dist/PublisherGithub.d.ts",
   "devDependencies": {
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.14"
   },
   "engines": {
     "node": ">= 22.12.0"

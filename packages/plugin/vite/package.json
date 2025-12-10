@@ -25,7 +25,7 @@
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "~22.10.7",
     "vite": "^5.0.12",
-    "vitest": "^4.0.0",
+    "vitest": "^4.0.14",
     "which": "^2.0.2",
     "xvfb-maybe": "^0.2.1"
   },

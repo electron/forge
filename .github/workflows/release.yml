@@ -123,4 +123,4 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
-        run: gh release create "v${{ steps.version.outputs.version }}" --target next --generate-notes --prerelease
+        run: gh release create "v${{ steps.version.outputs.version }}" --target ${{ github.sha }} --generate-notes --prerelease

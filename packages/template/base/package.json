@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.14"
   },
   "publishConfig": {
     "access": "public"

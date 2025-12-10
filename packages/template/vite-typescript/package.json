@@ -24,7 +24,7 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/test-utils": "workspace:*",
     "fast-glob": "^3.2.7",
-    "vitest": "^4.0.0"
+    "vitest": "^4.0.14"
   },
   "files": [
     "dist",

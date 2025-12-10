@@ -62,7 +62,7 @@ describe('PublisherS3', () => {
 
     vi.mocked(S3Client).mockImplementation(function (this: S3Client) {
       return mockS3Client;
-    } as unknown as typeof S3Client);
+    });
 
     mockUploadDone = vi.fn().mockImplementation(() => Promise.resolve());
     mockUploadOn = vi.fn().mockImplementation(function (this: unknown) {
@@ -75,8 +75,8 @@ describe('PublisherS3', () => {
         done: mockUploadDone,
       };
       mockUploadOn.mockReturnValue(instance);
-      return instance as unknown as Upload;
-    } as unknown as typeof Upload);
+      return instance;
+    });
 
     vi.mocked(fs.createReadStream).mockReturnValue('fake-stream' as any);
   });
