@@ -287,7 +287,11 @@ export default autoTrace(
 
     if (interactive) {
       process.stdin.on('data', (data) => {
-        if (data.toString().trim() === 'rs' && lastSpawned && !lastSpawned.restarted) {
+        if (
+          data.toString().trim() === 'rs' &&
+          lastSpawned &&
+          !lastSpawned.restarted
+        ) {
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
