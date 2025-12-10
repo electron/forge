@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-base",
-  "version": "7.10.2",
+  "version": "7.10.3",
   "description": "Base plugin for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -11,7 +11,7 @@
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/shared-types": "7.10.2"
+    "@electron-forge/shared-types": "7.10.3"
   },
   "publishConfig": {
     "access": "public"
