@@ -7,7 +7,7 @@ import {
   ensureTestDirIsNonexistent,
   updatePackageJSON,
 } from '@electron-forge/test-utils';
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { api } from '../../src/api/index';
 
@@ -112,7 +112,7 @@ describe('Make', () => {
     },
   );
 
-  describe('targets', () => {
+  describe('with Makers', () => {
     if (process.platform !== 'win32') {
       process.env.DISABLE_SQUIRREL_TEST = 'true';
     }
@@ -167,7 +167,7 @@ describe('Make', () => {
       shouldPass: boolean,
     ) {
       describe(`${path.basename(target().name)}`, async () => {
-        beforeEach(async () => {
+        beforeAll(async () => {
           const original = await updatePackageJSON(dir, async (packageJSON) => {
             return {
               ...packageJSON,
@@ -187,7 +187,7 @@ describe('Make', () => {
         });
 
         if (shouldPass) {
-          it(`makes`, async () => {
+          it(`makes the correct artifact`, async () => {
             const outputs = await api.make({ dir, outDir, skipPackage: true });
             for (const outputResult of outputs) {
               for (const output of outputResult.artifacts) {
