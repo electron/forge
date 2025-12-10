@@ -33,7 +33,10 @@ describe('Package', () => {
 
     // should remove Forge config from packaged app's package.json
     const cleanPackageJSON = await readMetadata({
-      src: path.resolve(outDir, `Test-App-${process.platform}-${process.arch}`),
+      src: path.resolve(
+        outDir,
+        `default-app-${process.platform}-${process.arch}`,
+      ),
       logger: console.error,
     });
     expect(cleanPackageJSON).not.toHaveProperty('config.forge');
