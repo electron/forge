@@ -39,18 +39,5 @@
     "@electron-forge/shared-types": "file:../../../../../utils/types",
     "@electron/fuses": "file:../../../../../../node_modules/@electron/fuses",
     "electron": "file:../../../../../../node_modules/electron"
-  },
-  "config": {
-    "forge": {
-      "makers": [
-        {
-          "name": "/Users/erick.zhao/Developer/electron/forge/packages/maker/snap/dist/MakerSnap.js",
-          "platforms": [
-            "darwin"
-          ],
-          "config": {}
-        }
-      ]
-    }
   }
 }

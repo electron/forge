@@ -7,7 +7,7 @@ import {
   ensureTestDirIsNonexistent,
   updatePackageJSON,
 } from '@electron-forge/test-utils';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { api } from '../../src/api/index';
 
@@ -165,11 +165,9 @@ describe('Make', () => {
     const testMakeTarget = function (
       target: () => { name: string },
       shouldPass: boolean,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...options: any[]
     ) {
-      describe(`${target().name}`, async () => {
-        beforeAll(async () => {
+      describe(`${path.basename(target().name)}`, async () => {
+        beforeEach(async () => {
           const original = await updatePackageJSON(dir, async (packageJSON) => {
             return {
               ...packageJSON,
@@ -182,39 +180,38 @@ describe('Make', () => {
           });
 
           return async () => {
-            await updatePackageJSON(dir, original);
+            await updatePackageJSON(dir, (_packageJSON) => {
+              return original;
+            });
           };
         });
 
-        for (const optionsFetcher of options) {
-          if (shouldPass) {
-            it(`makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-              const outputs = await api.make(optionsFetcher());
-              for (const outputResult of outputs) {
-                for (const output of outputResult.artifacts) {
-                  expect(fs.existsSync(output)).toEqual(true);
-                  expect(
-                    output.startsWith(path.resolve(outDir, 'make')),
-                  ).toEqual(true);
-                }
+        if (shouldPass) {
+          it(`makes`, async () => {
+            const outputs = await api.make({ dir, outDir, skipPackage: true });
+            for (const outputResult of outputs) {
+              for (const output of outputResult.artifacts) {
+                expect(fs.existsSync(output)).toEqual(true);
+                expect(output).toContain(path.resolve(outDir, 'make'));
               }
-            });
-          } else {
-            it(`fails for config: ${JSON.stringify(optionsFetcher())}`, async () => {
-              await expect(api.make(optionsFetcher())).rejects.toThrow();
-            });
-          }
+            }
+          });
+        } else {
+          it(`fails`, async () => {
+            await expect(
+              api.make({ dir, outDir, skipPackage: true }),
+            ).rejects.toThrow();
+          });
         }
       });
     };
 
-    const targetOptionFetcher = () => ({ dir, outDir, skipPackage: true });
     for (const maker of goodMakers) {
-      testMakeTarget(maker, true, targetOptionFetcher);
+      testMakeTarget(maker, true);
     }
 
     for (const maker of badMakers) {
-      testMakeTarget(maker, false, targetOptionFetcher);
+      testMakeTarget(maker, false);
     }
   });
 });
