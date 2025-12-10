@@ -173,6 +173,9 @@ describe('Make', () => {
               ...packageJSON,
               config: {
                 forge: {
+                  packagerConfig: {
+                    executableName: 'default-app',
+                  },
                   makers: [target() as IForgeResolvableMaker],
                 },
               },

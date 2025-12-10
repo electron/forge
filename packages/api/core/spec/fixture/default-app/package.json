@@ -1,6 +1,6 @@
 {
   "name": "default-app",
-  "productName": "Test-App",
+  "productName": "default-app",
   "version": "1.0.0",
   "description": "Test Electron application for Forge API tests",
   "main": "src/index.js",
