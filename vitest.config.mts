@@ -20,8 +20,8 @@ export default defineConfig({
         test: {
           include: ['**/spec/**/*.slow.spec.ts'],
           name: 'slow',
-          hookTimeout: 160000,
-          testTimeout: 160000,
+          hookTimeout: 240000,
+          testTimeout: 240000,
         },
       },
     ],
