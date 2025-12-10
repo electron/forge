@@ -1,7 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
+import { createDefaultCertificate } from '@electron-forge/maker-appx';
+import { IForgeResolvableMaker } from '@electron-forge/shared-types';
+import {
+  ensureTestDirIsNonexistent,
+  updatePackageJSON,
+} from '@electron-forge/test-utils';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { api } from '../../src/api/index';
@@ -10,10 +15,18 @@ describe('Make', () => {
   const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
   let outDir: string;
   let makeDir: string;
+  let devCert: string;
+
   beforeAll(async () => {
     outDir = await ensureTestDirIsNonexistent();
     makeDir = path.join(outDir, 'make');
     await api.package({ dir, outDir });
+
+    if (process.platform === 'win32') {
+      devCert = await createDefaultCertificate('CN=Test Author', {
+        certFilePath: dir,
+      });
+    }
 
     return async () => {
       await fs.promises.rm(outDir, { recursive: true, force: true });
@@ -24,7 +37,7 @@ describe('Make', () => {
     await fs.promises.rm(makeDir, { recursive: true, force: true });
   });
 
-  it('can make from custom outDir without errors', async () => {
+  it('makes from a custom outDir without errors', async () => {
     await api.make({ dir, skipPackage: true, outDir });
 
     // out/make/zip/darwin/arm64/Test-App-darwin-arm64-1.0.0.zip
@@ -44,5 +57,164 @@ describe('Make', () => {
     expect(size).toBeGreaterThan(50 * 1024 * 1024);
   });
 
-  describe.todo('make with different targets');
+  it('throws an error when given an unrecognized platform', async () => {
+    await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(
+      /invalid platform/,
+    );
+  });
+
+  it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
+    const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
+    await expect(
+      api.make({
+        dir,
+        overrideTargets: [
+          {
+            name: makerPath,
+          } as IForgeResolvableMaker,
+        ],
+        skipPackage: true,
+      }),
+    ).rejects.toThrow(/incompatible with this version/);
+  });
+
+  it('throws an error when no makers are configured for the given platform', async () => {
+    await expect(
+      api.make({
+        dir,
+        overrideTargets: [
+          {
+            name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
+          } as IForgeResolvableMaker,
+        ],
+        platform: 'linux',
+        skipPackage: true,
+      }),
+    ).rejects.toThrow(
+      'Could not find any make targets configured for the "linux" platform.',
+    );
+  });
+
+  it.runIf(process.platform === 'darwin')(
+    'makes Mac App Store targets',
+    async () => {
+      await expect(
+        api.make({
+          dir,
+          outDir,
+          overrideTargets: [
+            require.resolve('@electron-forge/maker-zip'),
+            require.resolve('@electron-forge/maker-dmg'),
+          ],
+          platform: 'mas',
+        }),
+      ).resolves.toHaveLength(2);
+    },
+  );
+
+  describe('targets', () => {
+    if (process.platform !== 'win32') {
+      process.env.DISABLE_SQUIRREL_TEST = 'true';
+    }
+
+    function getMakers(good: boolean) {
+      const allMakers = [
+        '@electron-forge/maker-appx',
+        '@electron-forge/maker-deb',
+        '@electron-forge/maker-dmg',
+        '@electron-forge/maker-flatpak',
+        '@electron-forge/maker-msix',
+        '@electron-forge/maker-rpm',
+        '@electron-forge/maker-snap',
+        '@electron-forge/maker-squirrel',
+        '@electron-forge/maker-wix',
+        '@electron-forge/maker-zip',
+      ];
+      return allMakers
+        .map((maker) => require.resolve(maker))
+        .filter((makerPath) => {
+          const MakerClass = require(makerPath).default;
+          const maker = new MakerClass();
+          return (
+            maker.isSupportedOnCurrentPlatform() === good &&
+            maker.externalBinariesExist() === good
+          );
+        })
+        .map((makerPath) => () => {
+          const makerDefinition = {
+            name: makerPath,
+            platforms: [process.platform],
+            config: {
+              devCert,
+            },
+          };
+
+          if (process.platform === 'win32') {
+            (
+              makerDefinition.config as Record<string, unknown>
+            ).makeVersionWinStoreCompatible = true;
+          }
+
+          return makerDefinition;
+        });
+    }
+
+    const goodMakers = getMakers(true);
+    const badMakers = getMakers(false);
+
+    const testMakeTarget = function (
+      target: () => { name: string },
+      shouldPass: boolean,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...options: any[]
+    ) {
+      describe(`${target().name}`, async () => {
+        beforeAll(async () => {
+          const original = await updatePackageJSON(dir, async (packageJSON) => {
+            return {
+              ...packageJSON,
+              config: {
+                forge: {
+                  makers: [target() as IForgeResolvableMaker],
+                },
+              },
+            };
+          });
+
+          return async () => {
+            await updatePackageJSON(dir, original);
+          };
+        });
+
+        for (const optionsFetcher of options) {
+          if (shouldPass) {
+            it(`makes for config: ${JSON.stringify(optionsFetcher())}`, async () => {
+              const outputs = await api.make(optionsFetcher());
+              for (const outputResult of outputs) {
+                for (const output of outputResult.artifacts) {
+                  expect(fs.existsSync(output)).toEqual(true);
+                  expect(
+                    output.startsWith(path.resolve(outDir, 'make')),
+                  ).toEqual(true);
+                }
+              }
+            });
+          } else {
+            it(`fails for config: ${JSON.stringify(optionsFetcher())}`, async () => {
+              await expect(api.make(optionsFetcher())).rejects.toThrow();
+            });
+          }
+        }
+      });
+    };
+
+    const targetOptionFetcher = () => ({ dir, outDir, skipPackage: true });
+    for (const maker of goodMakers) {
+      testMakeTarget(maker, true, targetOptionFetcher);
+    }
+
+    for (const maker of badMakers) {
+      testMakeTarget(maker, false, targetOptionFetcher);
+    }
+  });
 });
