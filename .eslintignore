@@ -7,4 +7,4 @@ packages/*/*/index.ts
 packages/**/bad.js
 tmpl
 packages/api/core/helper/dynamic-import.js
-packages/api/core/spec/fixture/default-app/
+packages/api/core/spec/fixture/api-tester/

@@ -12,7 +12,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { api } from '../../src/api/index';
 
 describe('Make', () => {
-  const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
+  const dir = path.resolve(__dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   let makeDir: string;
   let devCert: string;
@@ -44,14 +44,14 @@ describe('Make', () => {
   it('makes from a custom outDir without errors', async () => {
     await api.make({ dir, skipPackage: true, outDir });
 
-    // out/make/zip/darwin/arm64/default-app-darwin-arm64-1.0.0.zip
+    // out/make/zip/darwin/arm64/api-tester-darwin-arm64-1.0.0.zip
     const artifactPath = path.join(
       outDir,
       'make',
       'zip',
       process.platform,
       process.arch,
-      `default-app-${process.platform}-${process.arch}-1.0.0.zip`,
+      `api-tester-${process.platform}-${process.arch}-1.0.0.zip`,
     );
 
     expect(fs.existsSync(artifactPath)).toBe(true);
@@ -178,7 +178,7 @@ describe('Make', () => {
               config: {
                 forge: {
                   packagerConfig: {
-                    executableName: 'default-app',
+                    executableName: 'api-tester',
                   },
                   makers: [target() as IForgeResolvableMaker],
                 },

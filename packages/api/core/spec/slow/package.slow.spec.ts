@@ -12,6 +12,7 @@ import { api } from '../../src/api/index';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 describe('Package', () => {
+  const dir = path.resolve(__dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   beforeEach(async () => {
     outDir = await ensureTestDirIsNonexistent();
@@ -22,8 +23,6 @@ describe('Package', () => {
   });
 
   it('can package an Electron app', async () => {
-    const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
-
     expect(fs.existsSync(outDir)).toEqual(false);
 
     await api.package({ dir, outDir });
@@ -35,7 +34,7 @@ describe('Package', () => {
     const cleanPackageJSON = await readMetadata({
       src: path.resolve(
         outDir,
-        `default-app-${process.platform}-${process.arch}`,
+        `api-tester-${process.platform}-${process.arch}`,
       ),
       logger: console.error,
     });
@@ -47,8 +46,6 @@ describe('Package', () => {
   });
 
   describe('with packagerConfig.all', () => {
-    const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
-
     beforeAll(async () => {
       const original = await updatePackageJSON(dir, async (packageJSON) => {
         packageJSON.config = {
@@ -69,7 +66,6 @@ describe('Package', () => {
     });
 
     it('throws an error when packagerConfig.all is set', async () => {
-      const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
       await expect(api.package({ dir })).rejects.toThrow(
         /packagerConfig\.all is not supported by Electron Forge/,
       );
@@ -77,8 +73,6 @@ describe('Package', () => {
   });
 
   describe('with prebuilt native module dependencies', () => {
-    const dir = path.resolve(__dirname, '..', 'fixture', 'default-app');
-
     beforeAll(async () => {
       const original = await updatePackageJSON(dir, async (packageJSON) => {
         // add ref-napi from root workspace
