@@ -2,7 +2,7 @@ import { PluginBase } from '@electron-forge/plugin-base';
 import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
-import { LocalElectronPluginConfig } from './Config';
+import { LocalElectronPluginConfig } from './Config.js';
 
 export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginConfig> {
   name = 'local-electron';

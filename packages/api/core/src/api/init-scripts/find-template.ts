@@ -1,7 +1,7 @@
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 
-import { PossibleModule } from '../../util/import-search';
+import { PossibleModule } from '../../util/import-search.js';
 
 const d = debug('electron-forge:init:find-template');
 
@@ -25,7 +25,7 @@ export const findTemplate = async (
     try {
       d(`Trying template: ${moduleName}`);
       foundTemplate = {
-        path: require.resolve(moduleName),
+        path: import.meta.resolve(moduleName),
         name: moduleName,
       };
       break;

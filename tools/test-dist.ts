@@ -1,9 +1,9 @@
 import * as path from 'node:path';
 
 import chalk from 'chalk';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
-const BASE_DIR = path.resolve(__dirname, '..');
+const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
 (async () => {

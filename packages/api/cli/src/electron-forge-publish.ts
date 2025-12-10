@@ -4,10 +4,10 @@ import chalk from 'chalk';
 import { program } from 'commander';
 
 import './util/terminate';
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 
-import { getMakeOptions } from './electron-forge-make';
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { getMakeOptions } from './electron-forge-make.js';
+import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
