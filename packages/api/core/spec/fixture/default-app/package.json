@@ -7,16 +7,12 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
-    "lint": "echo \"No linting configured\""
+    "make": "electron-forge make"
   },
   "keywords": [],
   "author": "Test Author",
   "license": "MIT",
-  "homepage": "http://www.example.com/",
-  "dependencies": {
-    "electron-squirrel-startup": "file:../../../../../../node_modules/electron-squirrel-startup"
-  },
+  "homepage": "http://www.electronjs.org/",
   "devDependencies": {
     "@electron-forge/cli": "file:../../../../../api/cli",
     "@electron-forge/core": "file:../../../../../api/core",

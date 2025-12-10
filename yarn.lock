@@ -8145,7 +8145,6 @@ __metadata:
     electron-installer-dmg: "npm:^5.0.1"
     electron-installer-redhat: "npm:^3.2.0"
     electron-installer-snap: "npm:^5.2.0"
-    electron-squirrel-startup: "npm:^1.0.1"
     electron-windows-msix: "npm:^2.0.4"
     electron-windows-store: "npm:^2.1.0"
     electron-winstaller: "npm:^5.3.0"
@@ -8323,15 +8322,6 @@ __metadata:
   bin:
     electron-installer-snap: src/cli.js
   checksum: 10c0/f550d47f3dc9228f66b5cea9b69f740c8750b9a175425c66d46cffec770dc6e8adca59bf0e309e259936cc75e46f7a0a90f3443e8b2babb9557c096685553b4f
-  languageName: node
-  linkType: hard
-
-"electron-squirrel-startup@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "electron-squirrel-startup@npm:1.0.1"
-  dependencies:
-    debug: "npm:^2.2.0"
-  checksum: 10c0/eaff42844702321237b23f68ae2bff2eae17cb1251189e9a5397d94d1598a607e3cbedc60e130a0641798739019db44c37b2a8801e7a60f9261810bb8d07e9bf
   languageName: node
   linkType: hard
 

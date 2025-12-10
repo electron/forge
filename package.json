@@ -104,7 +104,6 @@
     "@yarnpkg/types": "^4.0.1",
     "electron": "^39.2.6",
     "electron-installer-common": "^0.10.2",
-    "electron-squirrel-startup": "^1.0.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
