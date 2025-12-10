@@ -1,43 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
+import {
+  ensureTestDirIsNonexistent,
+  updatePackageJSON,
+} from '@electron-forge/test-utils';
 import { readMetadata } from 'electron-installer-common';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { api } from '../../src/api/index';
 import { readRawPackageJson } from '../../src/util/read-package-json';
-
-type PackageJSON = Record<string, unknown> & {
-  config?: {
-    forge?: Record<string, unknown>;
-  };
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-};
-
-/**
- * Mutates the `package.json` file in a directory.
- * Use the return value to later restore the original `package.json` value
- * in a subsequent call of this function.
- *
- * @param dir - The target directory containing the `package.json` file
- * @param callback - A callback function that returns the value of the new `package.json` to be applied
- * @returns The original `package.json` prior to mutation
- */
-async function updatePackageJSON(
-  dir: string,
-  callback: (packageJSON: PackageJSON) => Promise<PackageJSON>,
-) {
-  const packageJSON = await readRawPackageJson(dir);
-  const mutated = await callback(JSON.parse(JSON.stringify(packageJSON)));
-  await fs.promises.writeFile(
-    path.resolve(dir, 'package.json'),
-    JSON.stringify(mutated, null, 2),
-    'utf-8',
-  );
-  return packageJSON;
-}
 
 describe('Package', () => {
   let outDir: string;
