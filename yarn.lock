@@ -1362,6 +1362,7 @@ __metadata:
   resolution: "@electron-forge/test-utils@workspace:packages/utils/test-utils"
   dependencies:
     "@malept/cross-spawn-promise": "npm:^2.0.0"
+    fs-extra: "npm:^10.0.0"
   languageName: unknown
   linkType: soft
 
