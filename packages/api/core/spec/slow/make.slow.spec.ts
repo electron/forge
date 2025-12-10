@@ -23,8 +23,12 @@ describe('Make', () => {
     await api.package({ dir, outDir });
 
     if (process.platform === 'win32') {
+      await fs.promises.copyFile(
+        path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
+        path.join(outDir, 'default.pvk'),
+      );
       devCert = await createDefaultCertificate('CN=Test Author', {
-        certFilePath: dir,
+        certFilePath: outDir,
       });
     }
 
