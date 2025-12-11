@@ -1,21 +1,21 @@
 {
   "name": "@electron-forge/maker-pkg",
-  "version": "7.10.2",
+  "version": "7.11.0",
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
   "main": "dist/MakerPKG.js",
   "typings": "dist/MakerPKG.d.ts",
   "devDependencies": {
-    "@electron-forge/test-utils": "7.10.2",
+    "@electron-forge/test-utils": "7.11.0",
     "vitest": "^3.1.3"
   },
   "engines": {
     "node": ">= 16.4.0"
   },
   "dependencies": {
-    "@electron-forge/maker-base": "7.10.2",
-    "@electron-forge/shared-types": "7.10.2",
+    "@electron-forge/maker-base": "7.11.0",
+    "@electron-forge/shared-types": "7.11.0",
     "@electron/osx-sign": "^1.0.5"
   },
   "publishConfig": {
