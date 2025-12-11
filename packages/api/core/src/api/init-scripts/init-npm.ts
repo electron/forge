@@ -21,7 +21,7 @@ export function siblingDep(name: string): string {
   return `@electron-forge/${name}@^${corePackage.version}`;
 }
 
-export const deps = ['electron-squirrel-startup'];
+export const deps = ['electron-squirrel-startup@^1.0.1'];
 export const devDeps = [
   '@electron/fuses@^1.0.0',
   siblingDep('cli'),

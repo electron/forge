@@ -170,7 +170,16 @@ export default async ({
         },
       },
       {
+        title: 'Linking dependencies from local electron/forge checkout',
+        enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
+        task: async ({ pm, templateModule }, task) => {
+          await initLink(templateModule, pm, dir, task);
+        },
+        exitOnError: true,
+      },
+      {
         title: 'Installing template dependencies',
+        enabled: !process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
         task: async ({ templateModule }, task) => {
           return task.newListr(
             [
@@ -209,7 +218,6 @@ export default async ({
               },
               {
                 title: 'Finalizing dependencies',
-                enabled: !process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
                 task: async (ctx, task) => {
                   return task.newListr([
                     {
@@ -221,14 +229,6 @@ export default async ({
                     },
                   ]);
                 },
-              },
-              {
-                title: 'Linking Forge dependencies to local build',
-                enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
-                task: async (ctx, task) => {
-                  await initLink(ctx.pm, dir, task);
-                },
-                exitOnError: true,
               },
             ],
             {
