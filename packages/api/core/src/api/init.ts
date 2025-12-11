@@ -209,6 +209,7 @@ export default async ({
               },
               {
                 title: 'Finalizing dependencies',
+                enabled: !process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
                 task: async (ctx, task) => {
                   return task.newListr([
                     {
@@ -218,16 +219,16 @@ export default async ({
                       },
                       exitOnError: false,
                     },
-                    {
-                      title: 'Linking Forge dependencies to local build',
-                      enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
-                      task: async ({ pm }, task) => {
-                        await initLink(pm, dir, task);
-                      },
-                      exitOnError: true,
-                    },
                   ]);
                 },
+              },
+              {
+                title: 'Linking Forge dependencies to local build',
+                enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
+                task: async (ctx, task) => {
+                  await initLink(ctx.pm, dir, task);
+                },
+                exitOnError: true,
               },
             ],
             {
