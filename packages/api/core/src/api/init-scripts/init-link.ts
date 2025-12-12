@@ -44,7 +44,10 @@ const getWorkspacePath = (forgeRoot: string, packageName: string): string => {
  * This allows developers working on Forge itself to easily init
  * a local template and have it use their local build.
  *
- * Uses the `file:` protocol to point dependencies to the correct local checkout.
+ * This uses different strategies depending on the package manager:
+ * - npm: `file:` protocol
+ * - yarn: `resolutions` for `@electron-forge/` packages, and `file:` protocol otherwise
+ * - pnpm: `overrides` for `@electron-forge/` packages, and `file:` protocol otherwise
  */
 export async function initLink<T>(
   forgeRootPath: string,
@@ -58,8 +61,7 @@ export async function initLink<T>(
     const packageJsonPath = path.join(dir, 'package.json');
     const packageJson = await readRawPackageJson(dir);
 
-    // Use realpathSync to resolve symlinks (e.g., /tmp -> /private/tmp on macOS)
-    // This ensures relative paths work correctly across symlinked directories
+    // Resolve symlinks to ensure that relative paths work correctly (for pnpm)
     const forgeRoot = fs.realpathSync(
       path.resolve(process.cwd(), forgeRootPath),
     );
@@ -101,6 +103,7 @@ export async function initLink<T>(
     const linkPackage = (packageName: string, isDevDep: boolean): string => {
       // 1. @electron-forge packages -> link to workspace in `electron/forge` monorepo
       if (packageName.startsWith('@electron-forge/')) {
+        // For npm, we need the full file: protocol path
         const workspacePath = getWorkspacePath(forgeRoot, packageName);
         const relativePath = path.relative(realDir, workspacePath);
         const value = `${workspaceProtocol}${relativePath}`;
@@ -114,6 +117,13 @@ export async function initLink<T>(
         forgePackageJson.devDependencies?.[packageName];
 
       if (typeof versionInForgeRoot === 'string') {
+        // HACK: using the `file:` protocol for `electron` doesn't work with pnpm
+        // so just install it from scratch.
+        if (pm.executable === 'pnpm' && packageName === 'electron') {
+          d(`Using version for ${packageName} (pnpm): ${versionInForgeRoot}`);
+          return versionInForgeRoot;
+        }
+
         const pathInNodeModules = path.join(forgeNodeModules, packageName);
         if (fs.existsSync(pathInNodeModules)) {
           const relativePath = path.relative(realDir, pathInNodeModules);
