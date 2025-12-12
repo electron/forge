@@ -207,22 +207,30 @@ export async function initLink<T>(
 
     // Add template-specific dependencies
     if (Array.isArray(templateModule.dependencies)) {
-      for (const packageName of templateModule.dependencies) {
-        if (!packageJson.dependencies[packageName]) {
-          packageJson.dependencies[packageName] = linkPackage(
-            packageName,
-            false,
-          );
+      for (const dep of templateModule.dependencies) {
+        const match = dep.match(/^(@?[^@]+)@(.+)$/);
+        if (match) {
+          const [, packageName] = match;
+          if (!packageJson.dependencies[packageName]) {
+            packageJson.dependencies[packageName] = linkPackage(
+              packageName,
+              false,
+            );
+          }
         }
       }
     }
     if (Array.isArray(templateModule.devDependencies)) {
-      for (const packageName of templateModule.devDependencies) {
-        if (!packageJson.devDependencies[packageName]) {
-          packageJson.devDependencies[packageName] = linkPackage(
-            packageName,
-            true,
-          );
+      for (const dep of templateModule.devDependencies) {
+        const match = dep.match(/^(@?[^@]+)@(.+)$/);
+        if (match) {
+          const [, packageName] = match;
+          if (!packageJson.devDependencies[packageName]) {
+            packageJson.devDependencies[packageName] = linkPackage(
+              packageName,
+              true,
+            );
+          }
         }
       }
     }
