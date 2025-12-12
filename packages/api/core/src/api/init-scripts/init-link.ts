@@ -17,6 +17,11 @@ import {
 const d = debug('electron-forge:init:link');
 
 /**
+ * Regex to parse a dependency string like `name@version` into [name, version]
+ */
+const DEP_NAME_VERSION_REGEX = /^(@?[^@]+)@(.+)$/;
+
+/**
  * Fetches the workspace path for each `@electron-forge/` package in the monorepo
  * @param forgeRoot - Absolute path to the local `electron/forge` checkout
  * @param packageName - Name of the `@electron-forge/` package
@@ -153,7 +158,7 @@ export async function initLink<T>(
       // TODO: this would be easier to work with if we made template deps a Record<string, string> instead of an array?
       if (templateDepList) {
         for (const dep of templateDepList) {
-          const match = dep.match(/^(@?[^@]+)@(.+)$/);
+          const match = dep.match(DEP_NAME_VERSION_REGEX);
           if (match) {
             const [, depName, version] = match;
             if (depName === packageName) {
@@ -169,7 +174,7 @@ export async function initLink<T>(
       // 4. Otherwise, use version from init-npm arrays
       const depList = isDevDep ? commonDevDeps : commonDeps;
       for (const dep of depList) {
-        const match = dep.match(/^(@?[^@]+)@(.+)$/);
+        const match = dep.match(DEP_NAME_VERSION_REGEX);
         if (match) {
           const [, depName, version] = match;
           if (depName === packageName) {
@@ -208,7 +213,7 @@ export async function initLink<T>(
     // Add template-specific dependencies
     if (Array.isArray(templateModule.dependencies)) {
       for (const dep of templateModule.dependencies) {
-        const match = dep.match(/^(@?[^@]+)@(.+)$/);
+        const match = dep.match(DEP_NAME_VERSION_REGEX);
         if (match) {
           const [, packageName] = match;
           if (!packageJson.dependencies[packageName]) {
@@ -222,7 +227,7 @@ export async function initLink<T>(
     }
     if (Array.isArray(templateModule.devDependencies)) {
       for (const dep of templateModule.devDependencies) {
-        const match = dep.match(/^(@?[^@]+)@(.+)$/);
+        const match = dep.match(DEP_NAME_VERSION_REGEX);
         if (match) {
           const [, packageName] = match;
           if (!packageJson.devDependencies[packageName]) {
@@ -249,7 +254,7 @@ export async function initLink<T>(
       }
     }
     for (const dep of commonDevDeps) {
-      const match = dep.match(/^(@?[^@]+)@(.+)$/);
+      const match = dep.match(DEP_NAME_VERSION_REGEX);
       if (match) {
         const [, packageName] = match;
         if (!packageName.startsWith('@electron-forge/')) {
