@@ -24,7 +24,13 @@ async function findAncestorNodeModulesPath(
 ): Promise<string | undefined> {
   d('Looking for a lock file to indicate the root of the repo');
   const lockPath = await findUp(
-    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'],
+    [
+      'package-lock.json',
+      'yarn.lock',
+      'pnpm-lock.yaml',
+      'bun.lock',
+      'bun.lockb',
+    ],
     { cwd: dir, type: 'file' },
   );
   if (lockPath) {
