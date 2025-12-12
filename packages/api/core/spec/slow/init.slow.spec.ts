@@ -110,7 +110,11 @@ describe('init', () => {
       // folder exists
       expect(fs.existsSync(dir)).toEqual(true);
 
-      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      // check package.json
+      expect(fs.existsSync(path.join(dir, 'package.json'))).toEqual(true);
+      const packageJSON = JSON.parse(
+        fs.readFileSync(path.join(dir, 'package.json'), 'utf-8'),
+      );
 
       // dependencies installed
       expect(packageJSON.dependencies).toHaveProperty('semver');
@@ -127,7 +131,7 @@ describe('init', () => {
       expect(fs.existsSync(path.join(dir, 'src/index.html'))).toBe(true);
 
       // should pass linting
-      expectLintToPass(dir);
+      await expectLintToPass(dir);
     });
 
     describe('without a required Forge version)', () => {
