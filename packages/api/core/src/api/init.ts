@@ -177,8 +177,15 @@ export default async ({
       {
         title: 'Linking dependencies from local electron/forge checkout',
         enabled: typeof localForgePath === 'string',
-        task: async ({ pm, templateModule }, task) => {
-          await initLink(localForgePath!, templateModule, pm, dir, task);
+        task: async ({ pm, templateModule, parsedElectronVersion }, task) => {
+          await initLink(
+            localForgePath!,
+            templateModule,
+            pm,
+            dir,
+            parsedElectronVersion,
+            task,
+          );
         },
         exitOnError: true,
       },

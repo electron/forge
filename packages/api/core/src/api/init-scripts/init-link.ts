@@ -54,6 +54,7 @@ export async function initLink<T>(
   templateModule: ForgeTemplate,
   pm: PMDetails,
   dir: string,
+  electronVersion: string,
   task?: ForgeListrTask<T>,
 ) {
   if (forgeRootPath) {
@@ -117,6 +118,14 @@ export async function initLink<T>(
         forgePackageJson.devDependencies?.[packageName];
 
       if (typeof versionInForgeRoot === 'string') {
+        // Don't link to local Electron if a specific version was requested
+        if (packageName === 'electron' && electronVersion !== 'latest') {
+          d(
+            `Using specified Electron version instead of local: ${electronVersion}`,
+          );
+          return electronVersion;
+        }
+
         // HACK: using the `file:` protocol for `electron` doesn't work with pnpm
         // so just install it from scratch.
         if (pm.executable === 'pnpm' && packageName === 'electron') {
