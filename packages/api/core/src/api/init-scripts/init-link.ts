@@ -94,17 +94,21 @@ export async function initLink<T>(
      * @param isDevDep - if the dependency belongs in `devDependencies` (or `dependencies`)
      * @returns the version to install
      */
+    // Use portal: protocol for Yarn workspace packages (resolves transitive deps properly)
+    // Use file: protocol for everything else (npm/pnpm, and node_modules packages)
+    const workspaceProtocol = pm.executable === 'yarn' ? 'portal:' : 'file:';
+
     const linkPackage = (packageName: string, isDevDep: boolean): string => {
       // 1. @electron-forge packages -> link to workspace in `electron/forge` monorepo
       if (packageName.startsWith('@electron-forge/')) {
         const workspacePath = getWorkspacePath(forgeRoot, packageName);
         const relativePath = path.relative(realDir, workspacePath);
-        const value = `file:${relativePath}`;
+        const value = `${workspaceProtocol}${relativePath}`;
         d(`Linking ${packageName} via monorepo workspace: ${value}`);
         return value;
       }
 
-      // 2. link to Forge's `node_modules` if possible
+      // 2. link to Forge's `node_modules` if possible (always use file: protocol)
       const versionInForgeRoot: string | undefined =
         forgePackageJson.dependencies?.[packageName] ||
         forgePackageJson.devDependencies?.[packageName];
@@ -241,9 +245,46 @@ export async function initLink<T>(
       }
     }
 
-    // Add pnpm-specific configuration for proper dependency resolution
+    // Add yarn resolutions to ensure workspace:* references resolve correctly
+    if (pm.executable === 'yarn') {
+      const workspacesResult = spawnSync(
+        'yarn',
+        ['workspaces', 'list', '--json'],
+        {
+          cwd: forgeRoot,
+          encoding: 'utf-8',
+          shell: process.platform === 'win32',
+        },
+      );
+
+      if (workspacesResult.status !== 0) {
+        throw new Error(
+          `Failed to list yarn workspaces: ${workspacesResult.stderr}`,
+        );
+      }
+
+      // Parse NDJSON output (one JSON object per line)
+      const workspacePackages = workspacesResult.stdout
+        .trim()
+        .split('\n')
+        .map((line) => JSON.parse(line) as { name: string; location: string })
+        .filter((ws) => ws.name.startsWith('@electron-forge/'));
+
+      const resolutions: Record<string, string> = {};
+      for (const ws of workspacePackages) {
+        const workspacePath = path.join(forgeRoot, ws.location);
+        const relativePath = path.relative(realDir, workspacePath);
+        resolutions[ws.name] = `${workspaceProtocol}${relativePath}`;
+      }
+
+      packageJson.resolutions = resolutions;
+      d(
+        `Added yarn resolutions for ${workspacePackages.length} Forge packages`,
+      );
+    }
+
+    // Add pnpm overrides to ensure workspace:* references resolve correctly
     if (pm.executable === 'pnpm') {
-      // Get all workspace packages from the monorepo
       const workspacesResult = spawnSync(
         'yarn',
         ['workspaces', 'list', '--json'],
@@ -271,7 +312,7 @@ export async function initLink<T>(
       for (const ws of workspacePackages) {
         const workspacePath = path.join(forgeRoot, ws.location);
         const relativePath = path.relative(realDir, workspacePath);
-        overrides[ws.name] = `file:${relativePath}`;
+        overrides[ws.name] = `${workspaceProtocol}${relativePath}`;
       }
 
       packageJson.pnpm = {
