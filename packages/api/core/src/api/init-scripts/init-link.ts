@@ -8,7 +8,11 @@ import debug from 'debug';
 
 import { readRawPackageJson } from '../../util/read-package-json';
 
-import { deps as commonDeps, devDeps as commonDevDeps } from './init-npm';
+import {
+  deps as commonDeps,
+  devDeps as commonDevDeps,
+  exactDevDeps as commonExactDevDeps,
+} from './init-npm';
 
 const d = debug('electron-forge:init:link');
 
@@ -43,19 +47,25 @@ const getWorkspacePath = (forgeRoot: string, packageName: string): string => {
  * Uses the `file:` protocol to point dependencies to the correct local checkout.
  */
 export async function initLink<T>(
+  forgeRootPath: string,
   templateModule: ForgeTemplate,
   pm: PMDetails,
   dir: string,
   task?: ForgeListrTask<T>,
 ) {
-  const forgeRootPath = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
   if (forgeRootPath) {
     d('Linking local Forge dependencies');
     const packageJsonPath = path.join(dir, 'package.json');
     const packageJson = await readRawPackageJson(dir);
 
-    const forgeRoot = path.resolve(process.cwd(), forgeRootPath);
+    // Use realpathSync to resolve symlinks (e.g., /tmp -> /private/tmp on macOS)
+    // This ensures relative paths work correctly across symlinked directories
+    const forgeRoot = fs.realpathSync(
+      path.resolve(process.cwd(), forgeRootPath),
+    );
+    const realDir = fs.realpathSync(dir);
     d(`Forge root resolved to: ${forgeRoot}`);
+    d(`Target dir resolved to: ${realDir}`);
 
     // Read the Forge root's package.json to check what's available
     const forgePackageJson = await readRawPackageJson(forgeRoot);
@@ -88,7 +98,7 @@ export async function initLink<T>(
       // 1. @electron-forge packages -> link to workspace in `electron/forge` monorepo
       if (packageName.startsWith('@electron-forge/')) {
         const workspacePath = getWorkspacePath(forgeRoot, packageName);
-        const relativePath = path.relative(dir, workspacePath);
+        const relativePath = path.relative(realDir, workspacePath);
         const value = `file:${relativePath}`;
         d(`Linking ${packageName} via monorepo workspace: ${value}`);
         return value;
@@ -102,7 +112,7 @@ export async function initLink<T>(
       if (typeof versionInForgeRoot === 'string') {
         const pathInNodeModules = path.join(forgeNodeModules, packageName);
         if (fs.existsSync(pathInNodeModules)) {
-          const relativePath = path.relative(dir, pathInNodeModules);
+          const relativePath = path.relative(realDir, pathInNodeModules);
           const value = `file:${relativePath}`;
           d(`Linking ${packageName} via Forge's local node_modules: ${value}`);
           return value;
@@ -222,6 +232,55 @@ export async function initLink<T>(
       }
     }
 
+    for (const packageName of commonExactDevDeps) {
+      if (!packageJson.devDependencies[packageName]) {
+        packageJson.devDependencies[packageName] = linkPackage(
+          packageName,
+          true,
+        );
+      }
+    }
+
+    // Add pnpm-specific configuration for proper dependency resolution
+    if (pm.executable === 'pnpm') {
+      // Get all workspace packages from the monorepo
+      const workspacesResult = spawnSync(
+        'yarn',
+        ['workspaces', 'list', '--json'],
+        {
+          cwd: forgeRoot,
+          encoding: 'utf-8',
+          shell: process.platform === 'win32',
+        },
+      );
+
+      if (workspacesResult.status !== 0) {
+        throw new Error(
+          `Failed to list yarn workspaces: ${workspacesResult.stderr}`,
+        );
+      }
+
+      // Parse NDJSON output (one JSON object per line)
+      const workspacePackages = workspacesResult.stdout
+        .trim()
+        .split('\n')
+        .map((line) => JSON.parse(line) as { name: string; location: string })
+        .filter((ws) => ws.name.startsWith('@electron-forge/'));
+
+      const overrides: Record<string, string> = {};
+      for (const ws of workspacePackages) {
+        const workspacePath = path.join(forgeRoot, ws.location);
+        const relativePath = path.relative(realDir, workspacePath);
+        overrides[ws.name] = `file:${relativePath}`;
+      }
+
+      packageJson.pnpm = {
+        onlyBuiltDependencies: ['electron', 'electron-winstaller'],
+        overrides,
+      };
+      d(`Added pnpm.overrides for ${workspacePackages.length} Forge packages`);
+    }
+
     d(
       'Updating package.json with file: protocol dependencies wherever possible',
     );
@@ -263,7 +322,11 @@ export async function initLink<T>(
     if (task) task.output = `${pm.executable} install`;
     d(`Installing all dependencies (Running: ${pm.executable} install)`);
     // FIXME: this fails without `--ignore-scripts` because `@electron/fuses` because there's a `prepare` script
-    await spawnPackageManager(pm, ['install', '--ignore-scripts'], {
+    const args = ['install'];
+    if (pm.executable === 'npm') {
+      args.push('--ignore-scripts');
+    }
+    await spawnPackageManager(pm, args, {
       cwd: dir,
     });
     await fs.promises.chmod(

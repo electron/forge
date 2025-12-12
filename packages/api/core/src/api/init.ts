@@ -54,6 +54,10 @@ export interface InitOptions {
    * @defaultValue The `latest` tag on npm.
    */
   electronVersion?: string;
+  /**
+   * Path to a local checkout of Electron Forge. Used to link dependencies.
+   */
+  localForgePath?: string;
 }
 
 async function validateTemplate(
@@ -84,6 +88,7 @@ export default async ({
   template = 'base',
   skipGit = false,
   electronVersion = 'latest',
+  localForgePath = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
 }: InitOptions): Promise<void> => {
   d(`Initializing in: ${dir}`);
 
@@ -171,15 +176,15 @@ export default async ({
       },
       {
         title: 'Linking dependencies from local electron/forge checkout',
-        enabled: !!process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
+        enabled: typeof localForgePath === 'string',
         task: async ({ pm, templateModule }, task) => {
-          await initLink(templateModule, pm, dir, task);
+          await initLink(localForgePath!, templateModule, pm, dir, task);
         },
         exitOnError: true,
       },
       {
         title: 'Installing template dependencies',
-        enabled: !process.env.LINK_FORGE_DEPENDENCIES_ON_INIT,
+        enabled: !localForgePath,
         task: async ({ templateModule }, task) => {
           return task.newListr(
             [
