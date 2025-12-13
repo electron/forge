@@ -22,6 +22,8 @@ import { initNPM } from './init-scripts/init-npm';
 
 const d = debug('electron-forge:init');
 
+console.log('erick test 123');
+
 export interface InitOptions {
   /**
    * The path to the app to be initialized
