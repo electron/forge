@@ -28,8 +28,9 @@ const FORGE_ROOT_DIR = path.resolve(__dirname, '../..');
  */
 const CONFIG_PATH = path.resolve(__dirname, 'config.yaml');
 
+const LOCALHOST = '127.0.0.1';
 const VERDACCIO_PORT = 4873;
-const VERDACCIO_URL = `http://127.0.0.1:${VERDACCIO_PORT}`;
+const VERDACCIO_URL = `http://${LOCALHOST}:${VERDACCIO_PORT}`;
 const STORAGE_PATH = path.resolve(__dirname, 'storage');
 
 const d = debug('electron-forge:verdaccio');
@@ -128,6 +129,8 @@ async function runCommand(args: string[]) {
       NPM_CONFIG_REGISTRY: VERDACCIO_URL,
       // https://yarnpkg.com/configuration/yarnrc#npmRegistryServer
       YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
+      // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
+      YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
     },
   });
 }
