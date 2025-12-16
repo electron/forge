@@ -1,24 +1,38 @@
 /**
- * This script runs tests with a local Verdaccio npm registry.
- * It publishes all \@electron-forge/* packages to Verdaccio so that
- * api.init tests can install packages that haven't been published to npm yet.
+ * This script runs any command with a local Verdaccio instance that
+ * publishes local builds of all `@electron-forge/` packages to the
+ * proxy registry.
+ *
+ * This is useful to test the local build of Electron Forge prior
+ * to publishing the monorepo, and to wire up `init` tests against
+ * the latest and greatest.
  *
  * Usage:
- *   tsx tools/verdaccio/run-with-verdaccio.ts <command> [args...]
+ *   tsx tools/verdaccio/spawn-verdaccio.ts <command> [args...]
  *
  * Example:
- *   tsx tools/verdaccio/run-with-verdaccio.ts yarn test:slow
+ *   tsx tools/verdaccio-spawn-verdaccio.ts yarn test:slow
  */
 
-import { ChildProcess, execSync, spawn } from 'node:child_process';
+import { ChildProcess, spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { spawn as spawnPromise } from '@malept/cross-spawn-promise';
+import debug from 'debug';
+
+const FORGE_ROOT_DIR = path.resolve(__dirname, '../..');
+/**
+ * Path to the Verdaccio configuration file.
+ * The below constants are derived from settings in the YAML.
+ */
+const CONFIG_PATH = path.resolve(__dirname, 'config.yaml');
+
 const VERDACCIO_PORT = 4873;
 const VERDACCIO_URL = `http://127.0.0.1:${VERDACCIO_PORT}`;
-const CONFIG_PATH = path.resolve(__dirname, 'config.yaml');
 const STORAGE_PATH = path.resolve(__dirname, 'storage');
-const ROOT_DIR = path.resolve(__dirname, '../..');
+
+const d = debug('electron-forge:verdaccio');
 
 let verdaccioProcess: ChildProcess | null = null;
 
@@ -31,17 +45,14 @@ async function startVerdaccio(): Promise<void> {
 
   return new Promise((resolve, reject) => {
     verdaccioProcess = spawn('yarn', ['verdaccio', '--config', CONFIG_PATH], {
-      cwd: ROOT_DIR,
-      stdio: ['ignore', 'pipe', 'pipe'],
+      cwd: FORGE_ROOT_DIR,
     });
 
     let started = false;
 
     verdaccioProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString();
-      if (process.env.DEBUG) {
-        console.log('[verdaccio]', output);
-      }
+      d(output);
       if (output.includes('http address') && !started) {
         started = true;
         // Give it a moment to be fully ready
@@ -51,25 +62,15 @@ async function startVerdaccio(): Promise<void> {
 
     verdaccioProcess.stderr?.on('data', (data: Buffer) => {
       const output = data.toString();
-      // Ignore some noisy warnings
-      if (!output.includes('ExperimentalWarning')) {
-        console.error('[verdaccio]', output);
-      }
+      console.error('[verdaccio]', output);
     });
 
     verdaccioProcess.on('error', reject);
     verdaccioProcess.on('close', (code) => {
-      if (!started) {
+      if (!started || code !== 0) {
         reject(new Error(`Verdaccio exited with code ${code}`));
       }
     });
-
-    // Timeout if Verdaccio doesn't start
-    setTimeout(() => {
-      if (!started) {
-        reject(new Error('Verdaccio failed to start within 30 seconds'));
-      }
-    }, 30000);
   });
 }
 
@@ -81,22 +82,31 @@ function stopVerdaccio(): void {
   }
 }
 
+/**
+ * Publishes all `@electron-forge/` packages to the localhost Verdaccio registry.
+ */
 async function publishPackages(): Promise<void> {
-  console.log('📦 Publishing packages to Verdaccio...');
+  console.log('📦 Publishing monorepo packages to Verdaccio registry...');
 
   try {
-    execSync(
-      `yarn lerna publish from-package --registry ${VERDACCIO_URL} --yes --no-git-tag-version --no-push`,
+    await spawnPromise(
+      `yarn`,
+      [
+        'lerna',
+        'publish',
+        'from-package',
+        '--registry',
+        VERDACCIO_URL,
+        '--yes',
+        '--no-git-tag-version',
+        '--no-push',
+      ],
       {
-        cwd: ROOT_DIR,
+        cwd: FORGE_ROOT_DIR,
         stdio: 'inherit',
-        env: {
-          ...process.env,
-          npm_config_registry: VERDACCIO_URL,
-        },
       },
     );
-    console.log('✅ All packages published to Verdaccio');
+    console.log('✅ All packages published to Verdaccio registry');
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('❌ Failed to publish packages:', errorMessage);
@@ -104,26 +114,21 @@ async function publishPackages(): Promise<void> {
   }
 }
 
-async function runCommand(args: string[]): Promise<number> {
+async function runCommand(args: string[]) {
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
-  return new Promise((resolve) => {
-    const child = spawn(args[0], args.slice(1), {
-      cwd: ROOT_DIR,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        npm_config_registry: VERDACCIO_URL,
-        YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
-        // For pnpm
-        NPM_CONFIG_REGISTRY: VERDACCIO_URL,
-      },
-    });
-
-    child.on('close', (code) => {
-      resolve(code ?? 1);
-    });
+  await spawnPromise(args[0], args.slice(1), {
+    cwd: FORGE_ROOT_DIR,
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      // https://docs.npmjs.com/cli/v9/using-npm/config#registry
+      // https://pnpm.io/settings#registry
+      NPM_CONFIG_REGISTRY: VERDACCIO_URL,
+      // https://yarnpkg.com/configuration/yarnrc#npmRegistryServer
+      YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
+    },
   });
 }
 
@@ -132,10 +137,10 @@ async function main(): Promise<void> {
 
   if (args.length === 0) {
     console.error(
-      'Usage: tsx tools/verdaccio/run-with-verdaccio.ts <command> [args...]',
+      'Usage: tsx tools/verdaccio/spawn-verdaccio.ts <command> [args...]',
     );
     console.error(
-      'Example: tsx tools/verdaccio/run-with-verdaccio.ts yarn test:slow',
+      'Example: tsx tools/verdaccio/spawn-verdaccio.ts yarn test:slow',
     );
     process.exit(1);
   }
@@ -153,9 +158,9 @@ async function main(): Promise<void> {
   try {
     await startVerdaccio();
     await publishPackages();
-    const exitCode = await runCommand(args);
+    await runCommand(args);
     stopVerdaccio();
-    process.exit(exitCode);
+    process.exit(0);
   } catch (error) {
     console.error('❌ Error:', error);
     stopVerdaccio();
