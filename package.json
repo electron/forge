@@ -22,8 +22,7 @@
     "test": "xvfb-maybe vitest run --project fast --project slow",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
-    "test:slow:verdaccio": "tsx tools/verdaccio/run-with-verdaccio.ts xvfb-maybe vitest run --project slow",
-    "test:verdaccio": "tsx tools/verdaccio/run-with-verdaccio.ts xvfb-maybe vitest run --project fast --project slow",
+    "test:verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
     "test:clear": "tsx tools/test-clear",
     "update:lockfile-fixtures": "tsx tools/regenerate-lockfile-fixtures.ts",
     "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts"

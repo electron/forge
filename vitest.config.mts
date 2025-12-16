@@ -24,6 +24,15 @@ export default defineConfig({
           testTimeout: 240000,
         },
       },
+      {
+        extends: './vitest.config.mts',
+        test: {
+          include: ['**/spec/**/*.slow.verdaccio.spec.ts'],
+          name: 'slow-verdaccio',
+          hookTimeout: 240000,
+          testTimeout: 240000,
+        },
+      },
     ],
   },
 });
