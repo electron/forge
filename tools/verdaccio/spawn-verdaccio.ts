@@ -37,6 +37,9 @@ const d = debug('electron-forge:verdaccio');
 
 let verdaccioProcess: ChildProcess | null = null;
 
+/**
+ * Starts the Verdaccio server.
+ */
 async function startVerdaccio(): Promise<void> {
   console.log('🚀 Starting Verdaccio...');
 
@@ -47,6 +50,7 @@ async function startVerdaccio(): Promise<void> {
   return new Promise((resolve, reject) => {
     verdaccioProcess = spawn('yarn', ['verdaccio', '--config', CONFIG_PATH], {
       cwd: FORGE_ROOT_DIR,
+      detached: true,
     });
 
     let started = false;
@@ -75,10 +79,19 @@ async function startVerdaccio(): Promise<void> {
   });
 }
 
+/**
+ * Kills the local Verdaccio instance.
+ */
 function stopVerdaccio(): void {
-  if (verdaccioProcess) {
+  if (verdaccioProcess && verdaccioProcess.pid) {
     console.log('🛑 Stopping Verdaccio...');
-    verdaccioProcess.kill('SIGTERM');
+    // Kill the entire process group (negative PID) to ensure all child processes are terminated
+    try {
+      process.kill(-verdaccioProcess.pid, 'SIGTERM');
+    } catch {
+      // Process may have already exited
+      verdaccioProcess.kill('SIGTERM');
+    }
     verdaccioProcess = null;
   }
 }
