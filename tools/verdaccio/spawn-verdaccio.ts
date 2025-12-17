@@ -50,7 +50,9 @@ async function startVerdaccio(): Promise<void> {
   return new Promise((resolve, reject) => {
     verdaccioProcess = spawn('yarn', ['verdaccio', '--config', CONFIG_PATH], {
       cwd: FORGE_ROOT_DIR,
-      detached: true,
+      // On Windows, detaching the child process will cause the Promise to hang
+      // On UNIX-based platforms, detatching it is necessary to successfully kill the Verdaccio server
+      detached: process.platform !== 'win32',
       shell: process.platform === 'win32',
     });
 
