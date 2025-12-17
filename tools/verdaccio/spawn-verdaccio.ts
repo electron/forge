@@ -51,6 +51,7 @@ async function startVerdaccio(): Promise<void> {
     verdaccioProcess = spawn('yarn', ['verdaccio', '--config', CONFIG_PATH], {
       cwd: FORGE_ROOT_DIR,
       detached: true,
+      shell: process.platform === 'win32',
     });
 
     let started = false;
