@@ -174,16 +174,12 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Set Yarn global folder for Windows
-        if: runner.os == 'Windows'
-        shell: bash
-        run: yarn config set globalFolder "D:\\yarn-data"
-
-      - name: Set TEMP for Windows
+      - name: Use D:\\ drive for Windows
         if: runner.os == 'Windows'
         shell: bash
         run: |
           mkdir -p /d/fast-temp
+          echo "YARN_GLOBAL_FOLDER=D:\\yarn-data" >> $GITHUB_ENV
           echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
