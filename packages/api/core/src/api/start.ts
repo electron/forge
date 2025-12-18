@@ -277,6 +277,11 @@ export default autoTrace(
             process.stdin.pause();
           }
         });
+
+        // On close, reset lastSpawned, it's dead
+        spawned.on('close', () => {
+          lastSpawned = null;
+        });
       } else if (interactive && !process.stdin.isPaused()) {
         process.stdin.pause();
       }
@@ -306,6 +311,16 @@ export default autoTrace(
         }
       });
       process.stdin.resume();
+
+      const handleTerminationSignal = function (signal: NodeJS.Signals) {
+        process.on(signal, function signalHandler() {
+          lastSpawned?.kill(signal);
+        });
+      };
+
+      handleTerminationSignal('SIGINT');
+      handleTerminationSignal('SIGTERM');
+      handleTerminationSignal('SIGUSR2');
     }
 
     const spawned = await forgeSpawnWrapper();
