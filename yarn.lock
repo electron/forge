@@ -1130,7 +1130,7 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@electron/packager": "npm:^19.0.1"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
-    "@types/node": "npm:~22.10.7"
+    "@types/node": "npm:^22.10.7"
     chalk: "npm:^4.0.0"
     debug: "npm:^4.3.1"
     fs-extra: "npm:^10.0.0"
@@ -1152,7 +1152,7 @@ __metadata:
     "@electron-forge/web-multi-logger": "workspace:*"
     "@electron/packager": "npm:^19.0.1"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
-    "@types/node": "npm:~22.10.7"
+    "@types/node": "npm:^22.10.7"
     chalk: "npm:^4.0.0"
     debug: "npm:^4.3.1"
     fast-glob: "npm:^3.2.7"
@@ -5012,15 +5012,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.21.0"
   checksum: 10c0/6edd93aea86da740cb7872626839cd6f4a67a049d3a3a6639cb592c620ec591408a30989ab7410008d1a0b2d4985ce50f1e488e79c033e4476d3bec6833b0a2f
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:~22.10.7":
-  version: 22.10.10
-  resolution: "@types/node@npm:22.10.10"
-  dependencies:
-    undici-types: "npm:~6.20.0"
-  checksum: 10c0/3425772d4513cd5dbdd87c00acda088113c03a97445f84f6a89744c60a66990b56c9d3a7213d09d57b6b944ae8ff45f985565e0c1846726112588e33a22dd12b
   languageName: node
   linkType: hard
 
