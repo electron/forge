@@ -39,6 +39,14 @@ describe('init', () => {
       fs.existsSync(path.resolve(dir, 'node_modules/@electron-forge/cli')),
     ).toEqual(true);
     expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
+
+    // init should create a `private: true` npm package
+    const packageJSONString = await fs.promises.readFile(
+      path.join(dir, 'package.json'),
+      'utf-8',
+    );
+    const packageJSON = JSON.parse(packageJSONString);
+    expect(packageJSON).toHaveProperty('private', true);
   });
 
   describe('with electronVersion', () => {
