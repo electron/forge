@@ -88,6 +88,8 @@ async function regenerateWebpackTypescriptLockfile() {
       'packages',
       'template',
       'webpack-typescript',
+      'dist',
+      'WebpackTypeScriptTemplate.js',
     );
     await initForgeProject(dir, template);
 
@@ -127,6 +129,8 @@ async function regenerateViteTypescriptLockfile() {
       'packages',
       'template',
       'vite-typescript',
+      'dist',
+      'ViteTypeScriptTemplate.js',
     );
     await initForgeProject(dir, template);
 
@@ -172,7 +176,7 @@ async function main() {
   }
 }
 
-if (require.main === module) {
+if (import.meta.main) {
   main().catch(() => {
     process.exit(1);
   });

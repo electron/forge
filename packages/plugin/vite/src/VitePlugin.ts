@@ -1,6 +1,3 @@
-// TODO(erickzhao): Remove this when upgrading to Vite 6 and converting to ESM
-process.env.VITE_CJS_IGNORE_WARNING = 'true';
-
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';

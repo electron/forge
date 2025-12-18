@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
-import './util/terminate';
+import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
 
 import { resolveWorkingDir } from './util/resolve-working-dir.js';

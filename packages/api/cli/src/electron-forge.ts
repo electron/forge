@@ -7,7 +7,7 @@ import logSymbols from 'log-symbols';
 import semver from 'semver';
 
 import packageJSON from '../package.json' with { type: 'json' };
-import './util/terminate';
+import './util/terminate.js';
 
 import { checkSystem, SystemCheckContext } from './util/check-system.js';
 

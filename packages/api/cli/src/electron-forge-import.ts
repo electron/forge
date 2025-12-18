@@ -1,7 +1,7 @@
 import { api } from '@electron-forge/core';
 import { program } from 'commander';
 
-import './util/terminate';
+import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
 
 import { resolveWorkingDir } from './util/resolve-working-dir.js';
