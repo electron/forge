@@ -59,6 +59,15 @@ describe('ViteTypeScriptTemplate', () => {
       const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
       expect(jsFiles.length).toEqual(0);
     });
+
+    it('should contain `private:true` in package.json', async () => {
+      const packageJSONString = await fs.promises.readFile(
+        path.join(dir, 'package.json'),
+        'utf-8',
+      );
+      const packageJSON = JSON.parse(packageJSONString);
+      expect(packageJSON).toHaveProperty('private', true);
+    });
   });
 
   describe('lint', () => {
