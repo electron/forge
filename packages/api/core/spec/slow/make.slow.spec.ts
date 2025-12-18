@@ -67,6 +67,7 @@ describe('Make', () => {
   });
 
   it('throws an error when given an unrecognized platform', async () => {
+    // @ts-expect-error - we're testing an unrecognized platform
     await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(
       /invalid platform/,
     );
