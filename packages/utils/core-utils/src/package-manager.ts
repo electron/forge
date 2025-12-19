@@ -12,7 +12,7 @@ import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:package-manager');
 
-export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm';
+export type SupportedPackageManager = 'yarn' | 'npm' | 'pnpm' | 'bun';
 export type PMDetails = {
   executable: SupportedPackageManager;
   version?: string;
@@ -45,12 +45,20 @@ export const PACKAGE_MANAGERS: Record<SupportedPackageManager, PMDetails> = {
     dev: '--save-dev',
     exact: '--save-exact',
   },
+  bun: {
+    executable: 'bun',
+    install: 'add',
+    dev: '--save-dev',
+    exact: '--exact',
+  },
 };
 
 const PM_FROM_LOCKFILE: Record<string, SupportedPackageManager> = {
   'package-lock.json': 'npm',
   'yarn.lock': 'yarn',
   'pnpm-lock.yaml': 'pnpm',
+  'bun.lock': 'bun',
+  'bun.lockb': 'bun',
 };
 
 /**
@@ -82,14 +90,21 @@ function pmFromUserAgent() {
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
  *
- * Supported package managers are `yarn`, `pnpm`, and `npm`.
+ * Supported package managers are `yarn`, `pnpm`, `npm` and `bun`.
  *
  */
 export const resolvePackageManager: () => Promise<PMDetails> = async () => {
   const executingPM = pmFromUserAgent();
   let lockfilePM;
   const lockfile = await findUp(
-    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
+    [
+      'package-lock.json',
+      'yarn.lock',
+      'pnpm-lock.yaml',
+      'pnpm-workspace.yaml',
+      'bun.lock',
+      'bun.lockb',
+    ],
     { type: 'file' },
   );
   if (lockfile) {
@@ -139,6 +154,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     case 'yarn':
     case 'npm':
     case 'pnpm':
+    case 'bun':
       d(
         `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
       );
