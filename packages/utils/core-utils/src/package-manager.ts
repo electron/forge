@@ -89,11 +89,8 @@ export const resolvePackageManager: (
   let installer: string | undefined;
   let installerVersion: string | undefined;
 
-  if (explicitPMCache) {
-    d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
-    return explicitPMCache;
-  }
-
+  // Check explicit packageManager argument FIRST, before cache
+  // This ensures explicit args always take precedence
   if (packageManager) {
     const match = packageManager.match(
       /^(npm|pnpm|yarn)(?:@(latest|\d+(?:\.\d+)?(?:\.\d+)?(?:-.+)?))?$/,
@@ -109,6 +106,11 @@ export const resolvePackageManager: (
         return explicitPMCache;
       }
     }
+  }
+
+  if (explicitPMCache) {
+    d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
+    return explicitPMCache;
   }
 
   const executingPM = pmFromUserAgent();
