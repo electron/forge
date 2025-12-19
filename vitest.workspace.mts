@@ -25,7 +25,7 @@ export default defineWorkspace([
     extends: './vitest.config.mts',
     test: {
       include: ['**/spec/**/*.slow.verdaccio.spec.ts'],
-      name: 'verdaccio',
+      name: 'slow-verdaccio',
       hookTimeout: 160000,
       testTimeout: 160000,
     },
