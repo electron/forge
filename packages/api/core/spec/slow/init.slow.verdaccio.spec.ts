@@ -230,7 +230,7 @@ describe('init', () => {
     // due to the `packageManager` entry in this monorepo.
     describe('with yarn (berry)', () => {
       it('initializes with correct nodeLinker value', async () => {
-        await api.init({ dir, packageManager: 'yarn' });
+        await api.init({ dir, packageManager: 'yarn@4.10.3' });
 
         expect(
           fs.readFileSync(path.join(dir, '.yarnrc.yml'), 'utf-8'),
