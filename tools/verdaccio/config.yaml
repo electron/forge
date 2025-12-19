@@ -1,0 +1,53 @@
+# Verdaccio configuration for testing with local packages
+# This allows tests to install @electron-forge/* packages from the monorepo
+# while proxying everything else to the real npm registry.
+
+storage: ./storage
+
+web:
+  enable: false
+
+auth:
+  htpasswd:
+    file: ./htpasswd
+    # Allow unlimited users for testing
+    max_users: -1
+
+# Upstream npm registry
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: true
+
+packages:
+  # @electron-forge packages are served locally (no proxy)
+  '@electron-forge/*':
+    access: $all
+    publish: $all
+    # Don't proxy to npm - only serve local packages
+    # This ensures we use local versions during tests
+
+  # All other scoped packages proxy to npm
+  '@*/*':
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+  # Non-scoped packages proxy to npm
+  '**':
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+# Server settings
+server:
+  keepAliveTimeout: 60
+
+# Logging
+log:
+  type: stdout
+  format: pretty
+  level: warn
+
+# Listen on localhost only
+listen: 127.0.0.1:4873

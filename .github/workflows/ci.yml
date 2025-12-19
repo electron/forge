@@ -208,6 +208,7 @@ jobs:
         run: |
           mkdir -p ./reports/out
           yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
+          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml"
 
   required-ci:
     needs:

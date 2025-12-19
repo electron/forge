@@ -45,6 +45,8 @@ describe('FusesPlugin', () => {
       recursive: true,
       force: true,
     });
+
+    await fs.promises.rm(path.join(appPath, 'package.json'));
   });
 
   it('should flip Fuses', async () => {

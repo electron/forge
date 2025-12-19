@@ -1,0 +1,42 @@
+{
+  "name": "api-tester",
+  "productName": "api-tester",
+  "version": "1.0.0",
+  "description": "Test Electron application for Forge API tests",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [],
+  "author": "Test Author",
+  "license": "MIT",
+  "homepage": "http://www.electronjs.org/",
+  "devDependencies": {
+    "@electron-forge/cli": "file:../../../../../api/cli",
+    "@electron-forge/core": "file:../../../../../api/core",
+    "@electron-forge/core-utils": "file:../../../../../utils/core-utils",
+    "@electron-forge/maker-appx": "file:../../../../../maker/appx",
+    "@electron-forge/maker-base": "file:../../../../../maker/base",
+    "@electron-forge/maker-deb": "file:../../../../../maker/deb",
+    "@electron-forge/maker-dmg": "file:../../../../../maker/dmg",
+    "@electron-forge/maker-flatpak": "file:../../../../../maker/flatpak",
+    "@electron-forge/maker-msix": "file:../../../../../maker/msix",
+    "@electron-forge/maker-pkg": "file:../../../../../maker/pkg",
+    "@electron-forge/maker-rpm": "file:../../../../../maker/rpm",
+    "@electron-forge/maker-snap": "file:../../../../../maker/snap",
+    "@electron-forge/maker-squirrel": "file:../../../../../maker/squirrel",
+    "@electron-forge/maker-wix": "file:../../../../../maker/wix",
+    "@electron-forge/maker-zip": "file:../../../../../maker/zip",
+    "@electron-forge/plugin-auto-unpack-natives": "file:../../../../../plugin/auto-unpack-natives",
+    "@electron-forge/plugin-base": "file:../../../../../plugin/base",
+    "@electron-forge/plugin-fuses": "file:../../../../../plugin/fuses",
+    "@electron-forge/shared-types": "file:../../../../../utils/types",
+    "@electron/fuses": "file:../../../../../../node_modules/@electron/fuses",
+    "electron": "file:../../../../../../node_modules/electron"
+  },
+  "config": {
+    "forge": "./forge.config.js"
+  }
+}
