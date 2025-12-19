@@ -3,7 +3,6 @@ import findUp from 'find-up';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  __resetExplicitPMCacheForTests,
   resolvePackageManager,
   spawnPackageManager,
 } from '../src/package-manager';
@@ -113,41 +112,59 @@ describe('package-manager', () => {
 
     describe('with an explicit package manager passed in', () => {
       beforeEach(() => {
-        __resetExplicitPMCacheForTests();
+        vi.resetModules();
         delete process.env.npm_config_user_agent;
       });
 
       it('should accept a string with only the package manager anme', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('pnpm');
         expect(first.executable).toBe('pnpm');
         expect(first.version).toBe('latest');
       });
 
       it('should accept the @latest tag', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('yarn@latest');
         expect(first.executable).toBe('yarn');
         expect(first.version).toBe('latest');
       });
 
       it('should accept a full version', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('yarn@1.22.22');
         expect(first.executable).toBe('yarn');
         expect(first.version).toBe('1.22.22');
       });
 
       it('should accept a major.minor version', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('yarn@1.22');
         expect(first.executable).toBe('yarn');
         expect(first.version).toBe('1.22');
       });
 
       it('should accept a major version', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('yarn@1');
         expect(first.executable).toBe('yarn');
         expect(first.version).toBe('1');
       });
 
       it('should cache explicit argument and ignore later env / lockfile', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         const first = await resolvePackageManager('pnpm@10.0.0');
         expect(first.executable).toBe('pnpm');
         expect(first.version).toBe('10.0.0');
@@ -161,6 +178,9 @@ describe('package-manager', () => {
       });
 
       it('should fallback to npm and cache when explicit argument unsupported', async () => {
+        const { resolvePackageManager } = await import(
+          '../src/package-manager'
+        );
         vi.mocked(spawn).mockResolvedValue('9.99.99');
         const result = await resolvePackageManager('good coffee');
         expect(result.executable).toBe('npm');
