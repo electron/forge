@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { PMDetails, resolvePackageManager } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
+import { spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
@@ -102,7 +103,7 @@ export default async ({
         title: `Resolving package manager`,
         task: async (ctx, task) => {
           ctx.pm = await resolvePackageManager(packageManager);
-          task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)} v${ctx.pm.version}`;
+          task.title = `Resolved package manager: ${chalk.cyan(`${ctx.pm.executable}@${ctx.pm.version}`)}`;
         },
       },
       {
@@ -171,6 +172,21 @@ export default async ({
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });
             }
+          }
+        },
+      },
+      {
+        title: `Setting package manager with Corepack`,
+        task: async ({ pm }, task) => {
+          const pmString = `${pm.executable}@${pm.version}`;
+          try {
+            await spawn('corepack', ['use', pmString], {
+              cwd: dir,
+            });
+            task.title = `Set ${chalk.cyan(pmString)} via Corepack`;
+          } catch (e) {
+            d('corepack failed to run with error', e);
+            task.title = `Forge was unable to set ${chalk.cyan(pmString)} via Corepack and will fall back to ${chalk.cyan('npm')}. If you are using Node.js >= 25, you will need to install corepack via ${chalk.green('npm install -g corepack')}. Otherwise, you may need to enable Corepack shims via ${chalk.green('corepack enable')}.`;
           }
         },
       },

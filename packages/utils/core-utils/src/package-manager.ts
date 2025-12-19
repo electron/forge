@@ -76,10 +76,11 @@ function pmFromUserAgent() {
 /**
  * Resolves the package manager to use. In order, it checks the following:
  *
- * 1. The value of the `NODE_INSTALLER` environment variable.
- * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
- * 3. The presence of a lockfile in an ancestor directory.
- * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
+ * 1. An explicit arg being passed into the function.
+ * 2. The value of the `NODE_INSTALLER` environment variable.
+ * 3. The `process.env.npm_config_user_agent` value set by the executing package manager.
+ * 4. The presence of a lockfile in an ancestor directory.
+ * 5. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
  *
@@ -89,6 +90,31 @@ function pmFromUserAgent() {
 export const resolvePackageManager: (
   packageManager?: string,
 ) => Promise<PMDetails> = async (packageManager) => {
+  let installer: string | undefined;
+  let installerVersion: string | undefined;
+
+  if (explicitPMCache) {
+    d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
+    return explicitPMCache;
+  }
+
+  if (packageManager) {
+    const match = packageManager.match(
+      /^(npm|pnpm|yarn)(?:@(latest|\d+(?:\.\d+)?(?:\.\d+)?(?:-.+)?))?$/,
+    );
+
+    if (match) {
+      const [, executable, version] = match;
+      if (Object.keys(PACKAGE_MANAGERS).includes(executable)) {
+        const pm = PACKAGE_MANAGERS[executable as SupportedPackageManager];
+        installerVersion = version ?? 'latest';
+        explicitPMCache = { ...pm, version: installerVersion };
+        d(`Resolved and cached explicit package manager: ${pm.executable}`);
+        return explicitPMCache;
+      }
+    }
+  }
+
   const executingPM = pmFromUserAgent();
   let lockfilePM;
   const lockfile = await findUp(
@@ -100,30 +126,7 @@ export const resolvePackageManager: (
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  let installer: string | undefined;
-  let installerVersion: string | undefined;
-
-  if (packageManager) {
-    if (explicitPMCache && explicitPMCache.executable === packageManager) {
-      d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
-      return explicitPMCache;
-    }
-
-    if (Object.keys(PACKAGE_MANAGERS).includes(packageManager)) {
-      const pm = PACKAGE_MANAGERS[packageManager as SupportedPackageManager];
-      installerVersion = await spawnPackageManager(pm, ['--version']);
-      explicitPMCache = { ...pm, version: installerVersion };
-      d(`Resolved and cached explicit package manager: ${pm.executable}`);
-      return explicitPMCache;
-    }
-  }
-
-  if (!packageManager && explicitPMCache) {
-    d(
-      `Returning previously cached explicit package manager: ${explicitPMCache.executable}`,
-    );
-    return explicitPMCache;
-  } else if (typeof process.env.NODE_INSTALLER === 'string') {
+  if (typeof process.env.NODE_INSTALLER === 'string') {
     if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
       installer = process.env.NODE_INSTALLER;
       installerVersion = await spawnPackageManager(

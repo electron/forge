@@ -33,6 +33,10 @@ program
     '--electron-version [version]',
     'Set a specific Electron version for your Forge project. Can take in a version string (e.g. `38.3.0`) or `latest`, `beta`, or `nightly` tags.',
   )
+  .option(
+    '--package-manager [name]',
+    'Set a specific package manager to use for your Forge project. Supported package managers are `npm`, `pnpm`, and `yarn`. You can also specify an exact version to use (e.g. `yarn@1.22.22`).',
+  )
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
@@ -46,32 +50,16 @@ program
             initOpts.skipGit = Boolean(options.skipGit);
             initOpts.dir = resolveWorkingDir(dir, false);
             initOpts.electronVersion = options.electronVersion ?? 'latest';
+            initOpts.packageManager = options.packageManager ?? 'npm@latest';
           },
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            // If any CLI flags are provided, run only the minimal prompt (package manager).
-            // Otherwise run full interactive initialization.
-            const getPackageManager = async () => {
-              const prompt = task.prompt(ListrInquirerPromptAdapter);
-
-              const pm: string = await prompt.run<Prompt<string, any>>(select, {
-                message: 'Select a package manager',
-                choices: [
-                  { name: 'npm', value: 'npm' },
-                  { name: 'Yarn', value: 'yarn' },
-                  { name: 'pnpm', value: 'pnpm' },
-                ],
-              });
-              return pm;
-            };
-
             if (
               Object.keys(options).length > 0 ||
               process.env.CI ||
               !process.stdout.isTTY
             ) {
-              initOpts.packageManager = await getPackageManager();
               return;
             }
 
@@ -95,7 +83,17 @@ program
               }
             }
 
-            const packageManager: string = await getPackageManager();
+            const packageManager: string = await prompt.run<
+              Prompt<string, any>
+            >(select, {
+              message: 'Select a package manager',
+              choices: [
+                { name: 'npm', value: 'npm@latest' },
+                { name: 'pnpm', value: 'pnpm@latest' },
+                { name: 'Yarn (Berry)', value: 'yarn@latest' },
+                { name: 'Yarn (Classic)', value: 'yarn@1' },
+              ],
+            });
 
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,

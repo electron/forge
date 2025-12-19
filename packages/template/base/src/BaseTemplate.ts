@@ -76,7 +76,7 @@ export class BaseTemplate implements ForgeTemplate {
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
             pm.executable === 'yarn' &&
             pm.version &&
-            semver.gte(pm.version, '2.0.0')
+            (pm.version === 'latest' || semver.gte(pm.version, '2.0.0'))
           ) {
             rootFiles.push('_yarnrc.yml');
           }
@@ -145,13 +145,6 @@ export class BaseTemplate implements ForgeTemplate {
       packageJSON.pnpm = {
         onlyBuiltDependencies: ['electron', 'electron-winstaller'],
       };
-    } else if (
-      pm.executable === 'yarn' &&
-      typeof pm.version === 'string' &&
-      semver.gte(pm.version, '2.0.0')
-    ) {
-      d('Detected Yarn 2+, adding packageManager field to package.json');
-      packageJSON.packageManager = `yarn@${pm.version}`;
     }
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
