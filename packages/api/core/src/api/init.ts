@@ -56,7 +56,7 @@ export interface InitOptions {
    */
   electronVersion?: string;
   /**
-   * Force a package manager to use (npm|yarn|pnpm). Internally sets NODE_INSTALLER (deprecated upstream) to ensure template PM-specific logic runs.
+   * Force a package manager to use (npm|yarn|pnpm).
    */
   packageManager?: string;
 }

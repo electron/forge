@@ -5,10 +5,8 @@ import {
   CrossSpawnOptions,
   spawn,
 } from '@malept/cross-spawn-promise';
-import chalk from 'chalk';
 import debug from 'debug';
 import findUp from 'find-up';
-import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:package-manager');
 
@@ -21,7 +19,6 @@ export type PMDetails = {
   exact: string;
 };
 
-let hasWarned = false;
 let explicitPMCache: PMDetails | undefined;
 
 /**
@@ -77,10 +74,9 @@ function pmFromUserAgent() {
  * Resolves the package manager to use. In order, it checks the following:
  *
  * 1. An explicit arg being passed into the function.
- * 2. The value of the `NODE_INSTALLER` environment variable.
- * 3. The `process.env.npm_config_user_agent` value set by the executing package manager.
- * 4. The presence of a lockfile in an ancestor directory.
- * 5. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
+ * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
+ * 3. The presence of a lockfile in an ancestor directory.
+ * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
  *
@@ -126,31 +122,7 @@ export const resolvePackageManager: (
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  if (typeof process.env.NODE_INSTALLER === 'string') {
-    if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
-      installer = process.env.NODE_INSTALLER;
-      installerVersion = await spawnPackageManager(
-        PACKAGE_MANAGERS[installer as SupportedPackageManager],
-        ['--version'],
-      );
-      if (!hasWarned) {
-        console.warn(
-          logSymbols.warning,
-          chalk.yellow(
-            `The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`,
-          ),
-        );
-        hasWarned = true;
-      }
-    } else {
-      console.warn(
-        logSymbols.warning,
-        chalk.yellow(
-          `Package manager ${chalk.red(process.env.NODE_INSTALLER)} is unsupported. Falling back to ${chalk.green('npm')} instead.`,
-        ),
-      );
-    }
-  } else if (executingPM) {
+  if (executingPM) {
     installer = executingPM.name;
     installerVersion = executingPM.version;
   } else if (lockfilePM) {
@@ -166,7 +138,7 @@ export const resolvePackageManager: (
     case 'npm':
     case 'pnpm':
       d(
-        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
+        `Resolved package manager to ${installer}. (Derived from npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
       );
       return {
         ...PACKAGE_MANAGERS[installer],

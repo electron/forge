@@ -87,59 +87,6 @@ describe('package-manager', () => {
       });
     });
 
-    describe('NODE_INSTALLER', () => {
-      let initialNodeInstallerValue: string | undefined;
-
-      beforeEach(() => {
-        initialNodeInstallerValue = process.env.NODE_INSTALLER;
-        delete process.env.NODE_INSTALLER;
-        // NODE_INSTALLER is deprecated for Electron Forge 8 and throws a console.warn that we want to silence in tests
-        vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-
-        return () => {
-          // For cleanup, we want to restore process.env.NODE_INSTALLER.
-          // If it wasn't explicitly set before, we delete the value set during the test.
-          // Otherwise, we restore the initial value.
-          if (!initialNodeInstallerValue) {
-            delete process.env.NODE_INSTALLER;
-          } else {
-            process.env.NODE_INSTALLER = initialNodeInstallerValue;
-          }
-          vi.restoreAllMocks();
-        };
-      });
-
-      it.each([{ pm: 'yarn' }, { pm: 'npm' }, { pm: 'pnpm' }])(
-        'should return $pm if NODE_INSTALLER=$pm',
-        async ({ pm }) => {
-          process.env.NODE_INSTALLER = pm;
-          vi.mocked(spawn).mockResolvedValue('9.9.9');
-          await expect(resolvePackageManager()).resolves.toHaveProperty(
-            'executable',
-            pm,
-          );
-          await expect(resolvePackageManager()).resolves.toHaveProperty(
-            'version',
-            '9.9.9',
-          );
-        },
-      );
-
-      it('should return npm if package manager is unsupported', async () => {
-        process.env.NODE_INSTALLER = 'bun';
-        console.warn = vi.fn();
-        vi.mocked(spawn).mockResolvedValue('1.22.22');
-        await expect(resolvePackageManager()).resolves.toHaveProperty(
-          'executable',
-          'npm',
-        );
-        expect(console.warn).toHaveBeenCalledWith(
-          '⚠',
-          expect.stringContaining('Package manager bun is unsupported'),
-        );
-      });
-    });
-
     it('should use the package manager for the nearest ancestor lockfile if detected', async () => {
       delete process.env.npm_config_user_agent;
       vi.mocked(findUp).mockResolvedValue('/Users/foo/bar/yarn.lock');
@@ -167,7 +114,6 @@ describe('package-manager', () => {
     describe('with an explicit package manager passed in', () => {
       beforeEach(() => {
         __resetExplicitPMCacheForTests();
-        delete process.env.NODE_INSTALLER;
         delete process.env.npm_config_user_agent;
       });
 
@@ -206,7 +152,8 @@ describe('package-manager', () => {
         expect(first.executable).toBe('pnpm');
         expect(first.version).toBe('10.0.0');
 
-        process.env.NODE_INSTALLER = 'yarn';
+        process.env.npm_config_user_agent =
+          'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
         vi.mocked(spawn).mockResolvedValue('9.9.9');
         const second = await resolvePackageManager();
         expect(second.executable).toBe('pnpm');
