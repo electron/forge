@@ -25,6 +25,7 @@ packages/**/.swc
 packages/api/core/spec/fixture/app-with-scoped-name/out/make
 packages/plugin/webpack/spec/fixtures/apps/native-modules/package-lock.json
 packages/plugin/fuses/spec/fixture/app
+!packages/plugin/fuses/spec/fixture/app/package.json.tmpl
 .links
 reports
 packages/**/typedoc.json
