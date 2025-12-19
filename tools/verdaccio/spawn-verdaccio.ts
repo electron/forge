@@ -133,6 +133,9 @@ async function publishPackages(): Promise<void> {
 }
 
 async function runCommand(args: string[]) {
+  console.log('🗑️  Pruning pnpm store before running command');
+  await spawnPromise('pnpm', ['store', 'prune']);
+
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
