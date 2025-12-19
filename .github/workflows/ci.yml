@@ -131,6 +131,9 @@ jobs:
             libgbm1
           sudo add-apt-repository -y ppa:alexlarsson/flatpak
 
+      - name: Install pnpm
+        run: npm install -g pnpm@10.0.0
+
       - name: Run fast tests
         run: |
           mkdir -p ./reports/out
@@ -209,6 +212,9 @@ jobs:
             libgdk-pixbuf2.0-dev \
             libgtk-3-0 \
             libgbm1
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.0.0
 
       - name: Run slow tests
         run: |
