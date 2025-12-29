@@ -177,7 +177,6 @@ export default async ({
       },
       {
         title: `Setting package manager with Corepack`,
-        enabled: ({ pm }) => pm.executable !== 'npm',
         task: async ({ pm }, task) => {
           const pmString = `${pm.executable}@${pm.version}`;
           try {
