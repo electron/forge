@@ -33,7 +33,7 @@ describe('VitePlugin', async () => {
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = {
-        main: './.vite/build/main.js',
+        main: './.vite/build/main.cjs',
         config: { forge: 'config.js' },
       };
       await fs.promises.writeFile(
@@ -50,7 +50,7 @@ describe('VitePlugin', async () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { main: '.vite/build/main.js' };
+      const packageJSON = { main: '.vite/build/main.cjs' };
       await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(packageJSON),
@@ -138,11 +138,11 @@ describe('VitePlugin', async () => {
         );
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).toEqual(
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.cjs'))).toEqual(
           false,
         );
         expect(
-          ignore(path.posix.join('/.vite', 'build', 'main.js.map')),
+          ignore(path.posix.join('/.vite', 'build', 'main.cjs.map')),
         ).toEqual(false);
         expect(
           ignore(
@@ -176,11 +176,11 @@ describe('VitePlugin', async () => {
         );
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.posix.join('/.vite', 'build', 'main.js'))).toEqual(
+        expect(ignore(path.posix.join('/.vite', 'build', 'main.cjs'))).toEqual(
           false,
         );
         expect(
-          ignore(path.posix.join('/.vite', 'build', 'main.js.map')),
+          ignore(path.posix.join('/.vite', 'build', 'main.cjs.map')),
         ).toEqual(false);
         expect(
           ignore(

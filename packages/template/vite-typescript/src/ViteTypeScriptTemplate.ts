@@ -78,7 +78,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           // update package.json
           const packageJSONPath = path.resolve(directory, 'package.json');
           const packageJSON = await fs.readJson(packageJSONPath);
-          packageJSON.main = '.vite/build/main.js';
+          packageJSON.main = '.vite/build/main.cjs';
           // Configure scripts for TS template
           packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
           await fs.writeJson(packageJSONPath, packageJSON, {
