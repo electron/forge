@@ -24,7 +24,6 @@
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:verdaccio": "ts-node tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
     "test:clear": "ts-node tools/test-clear",
-    "update:lockfile-fixtures": "ts-node tools/regenerate-lockfile-fixtures.ts",
     "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && ts-node ./tools/gen-tsconfigs.ts && ts-node ./tools/gen-ts-glue.ts"
   },
   "dependencies": {
