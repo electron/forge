@@ -116,7 +116,7 @@ describe('package-manager', () => {
         delete process.env.npm_config_user_agent;
       });
 
-      it('should accept a string with only the package manager anme', async () => {
+      it('should accept a string with only the package manager name', async () => {
         const { resolvePackageManager } = await import(
           '../src/package-manager'
         );
