@@ -113,7 +113,6 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "husky": "^7.0.1",
-    "inquirer": "^8.0.0",
     "lerna": "^9.0.0",
     "lint-staged": "^12.1.7",
     "markdownlint-cli2": "^0.19.1",
