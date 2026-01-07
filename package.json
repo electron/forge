@@ -24,7 +24,6 @@
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
     "test:clear": "tsx tools/test-clear",
-    "update:lockfile-fixtures": "tsx tools/regenerate-lockfile-fixtures.ts",
     "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts",
     "spawn-verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts"
   },
@@ -114,7 +113,6 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "husky": "^7.0.1",
-    "inquirer": "^8.0.0",
     "lerna": "^9.0.0",
     "lint-staged": "^12.1.7",
     "markdownlint-cli2": "^0.19.1",
