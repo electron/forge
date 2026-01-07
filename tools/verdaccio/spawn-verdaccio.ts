@@ -21,17 +21,17 @@ import path from 'node:path';
 import { spawn as spawnPromise } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
-const FORGE_ROOT_DIR = path.resolve(__dirname, '../..');
+const FORGE_ROOT_DIR = path.resolve(import.meta.dirname, '../..');
 /**
  * Path to the Verdaccio configuration file.
  * The below constants are derived from settings in the YAML.
  */
-const CONFIG_PATH = path.resolve(__dirname, 'config.yaml');
+const CONFIG_PATH = path.resolve(import.meta.dirname, 'config.yaml');
 
 const LOCALHOST = '127.0.0.1';
 const VERDACCIO_PORT = 4873;
 const VERDACCIO_URL = `http://${LOCALHOST}:${VERDACCIO_PORT}`;
-const STORAGE_PATH = path.resolve(__dirname, 'storage');
+const STORAGE_PATH = path.resolve(import.meta.dirname, 'storage');
 
 const d = debug('electron-forge:verdaccio');
 
