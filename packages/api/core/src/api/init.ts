@@ -177,6 +177,9 @@ export default async ({
       },
       {
         title: `Setting package manager with Corepack`,
+        // pm.executable needs to be optional here because the code gets evaluated twice (on init and on execution)
+        // @see https://listr2.kilic.dev/task/enable.html
+        enabled: ({ pm }) => pm?.executable !== 'npm',
         task: async ({ pm }, task) => {
           const pmString = `${pm.executable}@${pm.version}`;
           try {
