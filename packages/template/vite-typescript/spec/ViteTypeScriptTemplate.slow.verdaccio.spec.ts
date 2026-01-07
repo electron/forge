@@ -12,7 +12,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
-import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 
 describe('ViteTypeScriptTemplate', () => {
   let dir: string;
@@ -85,59 +84,6 @@ describe('ViteTypeScriptTemplate', () => {
       // Vite resolves plugins via cwd
       cwd = process.cwd();
       process.chdir(dir);
-      /**
-       * LOCKFILE FIXTURE USAGE:
-       * We use a pre-generated lockfile to avoid needing to disable Yarn's security features.
-       *
-       * When to regenerate the fixture:
-       * - When vite version is updated in Forge's package.json
-       * - When template dependencies change significantly
-       * - When Yarn lockfile format changes
-       * - When this test starts failing due to dependency resolution issues
-       *
-       * How to regenerate:
-       * Run: yarn update:lockfile-fixtures
-       *
-       * This will create a new lockfile with the correct vite resolution and dependencies.
-       */
-      // Copy pre-generated lockfile and update the project name
-      const fixtureLockfile = path.join(
-        import.meta.dirname,
-        'fixtures',
-        'test-yarn.lock',
-      );
-      const targetLockfile = path.join(dir, 'yarn.lock');
-      let lockfileContent = await fs.promises.readFile(
-        fixtureLockfile,
-        'utf-8',
-      );
-
-      // Get the current project name from package.json
-      const currentPackageJson = JSON.parse(
-        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
-      );
-      const projectName = currentPackageJson.name;
-
-      // Replace the fixture project name with the actual project name
-      lockfileContent = lockfileContent.replace(
-        /electron-forge-test-\d+/g,
-        projectName,
-      );
-      await fs.promises.writeFile(targetLockfile, lockfileContent);
-
-      // Install with immutable lockfile (no modifications needed)
-      await spawnPackageManager(
-        PACKAGE_MANAGERS['yarn'],
-        ['install', '--immutable'],
-        {
-          cwd: dir,
-        },
-      );
-
-      // Installing deps removes symlinks that were added at the start of this
-      // spec via `api.init`. So we should re-link local forge dependencies
-      // again.
-      await initLink(PACKAGE_MANAGERS['yarn'], dir);
     });
 
     afterAll(() => {

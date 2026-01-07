@@ -6065,7 +6065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-escapes@npm:^4.2.1, ansi-escapes@npm:^4.3.0, ansi-escapes@npm:^4.3.2":
+"ansi-escapes@npm:^4.3.0, ansi-escapes@npm:^4.3.2":
   version: 4.3.2
   resolution: "ansi-escapes@npm:4.3.2"
   dependencies:
@@ -7129,7 +7129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.0.0, chalk@npm:^4.0.2, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2":
+"chalk@npm:^4.0.0, chalk@npm:^4.0.2, chalk@npm:^4.1.0, chalk@npm:^4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -7309,13 +7309,6 @@ __metadata:
   version: 2.2.1
   resolution: "cli-width@npm:2.2.1"
   checksum: 10c0/e3a6d422d657ca111c630f69ee0f1a499e8f114eea158ccb2cdbedd19711edffa217093bbd43dafb34b68d1b1a3b5334126e51d059b9ec1d19afa53b42b3ef86
-  languageName: node
-  linkType: hard
-
-"cli-width@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "cli-width@npm:3.0.0"
-  checksum: 10c0/125a62810e59a2564268c80fdff56c23159a7690c003e34aeb2e68497dccff26911998ff49c33916fcfdf71e824322cc3953e3f7b48b27267c7a062c81348a9a
   languageName: node
   linkType: hard
 
@@ -8528,7 +8521,6 @@ __metadata:
     got: "npm:^14.0.0"
     html-webpack-plugin: "npm:^5.5.3"
     husky: "npm:^7.0.1"
-    inquirer: "npm:^8.0.0"
     jiti: "npm:^2.4.2"
     lerna: "npm:^9.0.0"
     lint-staged: "npm:^12.1.7"
@@ -10255,7 +10247,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"figures@npm:3.2.0, figures@npm:^3.0.0":
+"figures@npm:3.2.0":
   version: 3.2.0
   resolution: "figures@npm:3.2.0"
   dependencies:
@@ -12177,29 +12169,6 @@ __metadata:
     strip-ansi: "npm:^5.1.0"
     through: "npm:^2.3.6"
   checksum: 10c0/a5aa53a8f88405cf1cff63111493f87a5b3b5deb5ea4a0dbcd73ccc06a51a6bba0c3f1a0747f8880e9e3ec2437c69f90417be16368abf636b1d29eebe35db0ac
-  languageName: node
-  linkType: hard
-
-"inquirer@npm:^8.0.0":
-  version: 8.2.5
-  resolution: "inquirer@npm:8.2.5"
-  dependencies:
-    ansi-escapes: "npm:^4.2.1"
-    chalk: "npm:^4.1.1"
-    cli-cursor: "npm:^3.1.0"
-    cli-width: "npm:^3.0.0"
-    external-editor: "npm:^3.0.3"
-    figures: "npm:^3.0.0"
-    lodash: "npm:^4.17.21"
-    mute-stream: "npm:0.0.8"
-    ora: "npm:^5.4.1"
-    run-async: "npm:^2.4.0"
-    rxjs: "npm:^7.5.5"
-    string-width: "npm:^4.1.0"
-    strip-ansi: "npm:^6.0.0"
-    through: "npm:^2.3.6"
-    wrap-ansi: "npm:^7.0.0"
-  checksum: 10c0/e3e64e10f5daeeb8f770f1310acceb4aab593c10d693e7676ecd4a5b023d5b865b484fec7ead516e5e394db70eff687ef85459f75890f11a99ceadc0f4adce18
   languageName: node
   linkType: hard
 
@@ -14956,13 +14925,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mute-stream@npm:0.0.8":
-  version: 0.0.8
-  resolution: "mute-stream@npm:0.0.8"
-  checksum: 10c0/18d06d92e5d6d45e2b63c0e1b8f25376af71748ac36f53c059baa8b76ffac31c5ab225480494e7d35d30215ecdb18fed26ec23cafcd2f7733f2f14406bcd19e2
-  languageName: node
-  linkType: hard
-
 "mute-stream@npm:^1.0.0":
   version: 1.0.0
   resolution: "mute-stream@npm:1.0.0"
@@ -15745,7 +15707,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ora@npm:^5.1.0, ora@npm:^5.4.1":
+"ora@npm:^5.1.0":
   version: 5.4.1
   resolution: "ora@npm:5.4.1"
   dependencies:
@@ -17569,7 +17531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"run-async@npm:^2.2.0, run-async@npm:^2.4.0":
+"run-async@npm:^2.2.0":
   version: 2.4.1
   resolution: "run-async@npm:2.4.1"
   checksum: 10c0/35a68c8f1d9664f6c7c2e153877ca1d6e4f886e5ca067c25cdd895a6891ff3a1466ee07c63d6a9be306e9619ff7d509494e6d9c129516a36b9fd82263d579ee1
