@@ -2,17 +2,18 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { Upload } from '@aws-sdk/lib-storage';
 import {
   ForgeMakeResult,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
-import { execa } from 'execa';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PublisherR2, PublisherR2Config } from '../src/PublisherR2';
 
-// Mock execa
-vi.mock('execa');
+// Mock AWS SDK
+vi.mock('@aws-sdk/client-s3');
+vi.mock('@aws-sdk/lib-storage');
 vi.mock('node:fs');
 
 describe('PublisherR2', () => {
@@ -39,23 +40,12 @@ describe('PublisherR2', () => {
       'fake-releases-content',
     );
 
-    // Mock execa to return successful responses
-    vi.mocked(execa).mockResolvedValue({
-      stdout: '',
-      stderr: '',
-      exitCode: 0,
-      failed: false,
-      killed: false,
-      signal: undefined,
-      signalDescription: undefined,
-      command: '',
-      escapedCommand: '',
-      isCanceled: false,
-      isTerminated: false,
-      isMaxBuffer: false,
-      isForcefullyTerminated: false,
-      pipedFrom: [],
-    } as never);
+    // Mock Upload class
+    const mockUpload = {
+      done: vi.fn().mockResolvedValue({}),
+      on: vi.fn().mockReturnThis(),
+    };
+    vi.mocked(Upload).mockImplementation(() => mockUpload as unknown as Upload);
   });
 
   afterEach(async () => {
@@ -69,7 +59,8 @@ describe('PublisherR2', () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config);
       expect(publisher.name).toBe('r2');
@@ -107,7 +98,8 @@ describe('PublisherR2', () => {
     it('should throw error when bucket is not configured', async () => {
       const config = {
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config as PublisherR2Config);
 
@@ -126,7 +118,8 @@ describe('PublisherR2', () => {
     it('should throw error when accountId is not configured', async () => {
       const config = {
         bucket: 'test-bucket',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config as PublisherR2Config);
 
@@ -142,10 +135,11 @@ describe('PublisherR2', () => {
       );
     });
 
-    it('should throw error when apiToken is not configured', async () => {
+    it('should throw error when accessKeyId is not configured', async () => {
       const config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config as PublisherR2Config);
 
@@ -157,7 +151,27 @@ describe('PublisherR2', () => {
           setStatusLine: mockSetStatusLine,
         }),
       ).rejects.toThrow(
-        'In order to publish to R2, you must set the "apiToken" property',
+        'In order to publish to R2, you must set the "accessKeyId" property',
+      );
+    });
+
+    it('should throw error when secretAccessKey is not configured', async () => {
+      const config = {
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+        accessKeyId: 'test-access-key',
+      };
+      publisher = new PublisherR2(config as PublisherR2Config);
+
+      await expect(
+        publisher.publish({
+          makeResults: mockMakeResults,
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        }),
+      ).rejects.toThrow(
+        'In order to publish to R2, you must set the "secretAccessKey" property',
       );
     });
 
@@ -165,7 +179,8 @@ describe('PublisherR2', () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config);
 
@@ -176,30 +191,8 @@ describe('PublisherR2', () => {
         setStatusLine: mockSetStatusLine,
       });
 
-      // Verify wrangler was called for each artifact
-      expect(execa).toHaveBeenCalledTimes(2);
-
-      // Verify wrangler command structure
-      const calls = vi.mocked(execa).mock.calls;
-      const firstCall = calls[0];
-
-      expect(firstCall[0]).toBe('npx');
-
-      // Type assertion for the arguments array
-      const wranglerArgs = firstCall[1] as string[];
-      expect(wranglerArgs).toContain('wrangler');
-      expect(wranglerArgs).toContain('r2');
-      expect(wranglerArgs).toContain('object');
-      expect(wranglerArgs).toContain('put');
-      expect(wranglerArgs).toContain('--file');
-      expect(wranglerArgs).toContain('--content-type');
-      expect(wranglerArgs).toContain('--remote');
-
-      // Verify bucket is in the command
-      const bucketArg = wranglerArgs.find((arg: string) =>
-        arg.includes('test-bucket'),
-      );
-      expect(bucketArg).toBeDefined();
+      // Verify Upload was called for each artifact
+      expect(Upload).toHaveBeenCalledTimes(2);
 
       // Verify status line updates
       expect(mockSetStatusLine).toHaveBeenCalledWith(
@@ -215,7 +208,8 @@ describe('PublisherR2', () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
         folder: 'custom-folder',
       };
       publisher = new PublisherR2(config);
@@ -228,20 +222,18 @@ describe('PublisherR2', () => {
       });
 
       // Verify the key includes custom folder
-      const calls = vi.mocked(execa).mock.calls;
+      const calls = vi.mocked(Upload).mock.calls;
       const firstCall = calls[0];
-      const wranglerArgs = firstCall[1] as string[];
-      const bucketKeyArg = wranglerArgs.find((arg) =>
-        arg.includes('test-bucket/'),
-      );
-      expect(bucketKeyArg).toContain('custom-folder/');
+      const params = firstCall[0] as { params: { Key: string } };
+      expect(params.params.Key).toContain('custom-folder/');
     });
 
     it('should use correct content-type for different file types', async () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config);
 
@@ -253,36 +245,27 @@ describe('PublisherR2', () => {
       });
 
       // Check DMG file content-type
-      const calls = vi.mocked(execa).mock.calls;
-      const dmgCall = calls.find((call: unknown) => {
-        const args = (call as unknown[])[1] as string[];
-        return args.some((arg) => arg.includes('.dmg'));
+      const calls = vi.mocked(Upload).mock.calls;
+      type UploadParams = { params: { Key: string; ContentType: string } };
+      const dmgCall = calls.find((call: unknown[]) => {
+        const params = call[0] as UploadParams;
+        return params.params.Key.includes('.dmg');
       });
 
       if (dmgCall) {
-        const args = dmgCall[1] as string[];
-        const dmgContentTypeIndex = args.indexOf('--content-type');
-        if (dmgContentTypeIndex >= 0) {
-          expect(args[dmgContentTypeIndex + 1]).toBe(
-            'application/x-apple-diskimage',
-          );
-        }
+        const params = dmgCall[0] as UploadParams;
+        expect(params.params.ContentType).toBe('application/x-apple-diskimage');
       }
 
       // Check EXE file content-type
-      const exeCall = calls.find((call: unknown) => {
-        const args = (call as unknown[])[1] as string[];
-        return args.some((arg) => arg.includes('.exe'));
+      const exeCall = calls.find((call: unknown[]) => {
+        const params = call[0] as UploadParams;
+        return params.params.Key.includes('.exe');
       });
 
       if (exeCall) {
-        const args = exeCall[1] as string[];
-        const exeContentTypeIndex = args.indexOf('--content-type');
-        if (exeContentTypeIndex >= 0) {
-          expect(args[exeContentTypeIndex + 1]).toBe(
-            'application/x-msdos-program',
-          );
-        }
+        const params = exeCall[0] as UploadParams;
+        expect(params.params.ContentType).toBe('application/x-msdos-program');
       }
     });
 
@@ -290,17 +273,18 @@ describe('PublisherR2', () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
       };
       publisher = new PublisherR2(config);
 
-      // Mock execa to fail
-      vi.mocked(execa).mockRejectedValueOnce(
-        Object.assign(new Error('Upload failed'), {
-          stderr: 'Network error',
-          stdout: '',
-          exitCode: 1,
-        }),
+      // Mock Upload to fail
+      const mockUpload = {
+        done: vi.fn().mockRejectedValue(new Error('Upload failed')),
+        on: vi.fn().mockReturnThis(),
+      };
+      vi.mocked(Upload).mockImplementation(
+        () => mockUpload as unknown as Upload,
       );
 
       await expect(
@@ -310,7 +294,7 @@ describe('PublisherR2', () => {
           forgeConfig: mockForgeConfig,
           setStatusLine: mockSetStatusLine,
         }),
-      ).rejects.toThrow('Failed to upload');
+      ).rejects.toThrow('Upload failed');
     });
 
     it('should use custom keyResolver when provided', async () => {
@@ -322,7 +306,8 @@ describe('PublisherR2', () => {
       const config: PublisherR2Config = {
         bucket: 'test-bucket',
         accountId: 'test-account-id',
-        apiToken: 'test-api-token',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
         keyResolver: customKeyResolver,
       };
       publisher = new PublisherR2(config);
@@ -342,13 +327,10 @@ describe('PublisherR2', () => {
       );
 
       // Verify the custom key was used in the upload
-      const calls = vi.mocked(execa).mock.calls;
+      const calls = vi.mocked(Upload).mock.calls;
       const firstCall = calls[0];
-      const wranglerArgs = firstCall[1] as string[];
-      const bucketKeyArg = wranglerArgs.find((arg) =>
-        arg.includes('test-bucket/'),
-      );
-      expect(bucketKeyArg).toContain('releases/darwin/x64/test-app-1.0.0.dmg');
+      const params = firstCall[0] as { params: { Key: string } };
+      expect(params.params.Key).toBe('releases/darwin/x64/test-app-1.0.0.dmg');
     });
   });
 });
