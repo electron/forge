@@ -27,6 +27,7 @@ echo "Creating branch: $BRANCH_NAME"
 git checkout -b "$BRANCH_NAME"
 
 echo "Committing changes..."
-git commit -a -m 'chore: version bump' -m '<trigger_release>'
+VERSION=$(jq -r '.version' lerna.json)
+git commit -a -m "chore: bump version to $VERSION" -m '<trigger_release>'
 
 echo "Version bump complete! Branch $BRANCH_NAME created and changes committed."
