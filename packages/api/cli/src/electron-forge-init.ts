@@ -33,6 +33,10 @@ program
     '--electron-version [version]',
     'Set a specific Electron version for your Forge project. Can take in a version string (e.g. `38.3.0`) or `latest`, `beta`, or `nightly` tags.',
   )
+  .option(
+    '--package-manager [name]',
+    'Set a specific package manager to use for your Forge project. Supported package managers are `npm`, `pnpm`, and `yarn`. You can also specify an exact version to use (e.g. `yarn@1.22.22`).',
+  )
   .action(async (dir) => {
     const options = program.opts();
     const tasks = new Listr<InitOptions>(
@@ -46,11 +50,11 @@ program
             initOpts.skipGit = Boolean(options.skipGit);
             initOpts.dir = resolveWorkingDir(dir, false);
             initOpts.electronVersion = options.electronVersion ?? 'latest';
+            initOpts.packageManager = options.packageManager ?? 'npm@latest';
           },
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            // only run interactive prompts if no args passed and not in CI environment
             if (
               Object.keys(options).length > 0 ||
               process.env.CI ||
@@ -78,6 +82,18 @@ program
                 process.exit(0);
               }
             }
+
+            const packageManager: string = await prompt.run<
+              Prompt<string, any>
+            >(select, {
+              message: 'Select a package manager',
+              choices: [
+                { name: 'npm', value: 'npm@latest' },
+                { name: 'pnpm', value: 'pnpm@latest' },
+                { name: 'Yarn (Berry)', value: 'yarn@latest' },
+                { name: 'Yarn (Classic)', value: 'yarn@1' },
+              ],
+            });
 
             const bundler: string = await prompt.run<Prompt<string, any>>(
               select,
@@ -121,6 +137,7 @@ program
               );
             }
 
+            initOpts.packageManager = packageManager;
             initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
 
             // TODO: add prompt for passing in an exact version as well

@@ -214,18 +214,11 @@ describe('init', () => {
   describe('package managers', () => {
     describe('with npm', () => {
       beforeAll(() => {
-        const originalPM = process.env.NODE_INSTALLER;
-        process.env.NODE_INSTALLER = 'npm';
-
         process.env.COREPACK_ENABLE_STRICT = '0';
-
-        return () => {
-          process.env.NODE_INSTALLER = originalPM;
-        };
       });
 
       it('initializes with package-lock.json', async () => {
-        await api.init({ dir });
+        await api.init({ dir, packageManager: 'npm' });
 
         expect(fs.existsSync(path.join(dir, 'package-lock.json'))).toBe(true);
         expect(fs.existsSync(path.join(dir, 'yarn.lock'))).toBe(false);
@@ -236,15 +229,8 @@ describe('init', () => {
     // NOTE: we basically run all tests via Yarn Berry anyways
     // due to the `packageManager` entry in this monorepo.
     describe('with yarn (berry)', () => {
-      beforeAll(() => {
-        const originalPM = process.env.NODE_INSTALLER;
-        process.env.NODE_INSTALLER = 'yarn';
-        return () => {
-          process.env.NODE_INSTALLER = originalPM;
-        };
-      });
       it('initializes with correct nodeLinker value', async () => {
-        await api.init({ dir });
+        await api.init({ dir, packageManager: 'yarn@4.10.3' });
 
         expect(
           fs.readFileSync(path.join(dir, '.yarnrc.yml'), 'utf-8'),
@@ -270,19 +256,12 @@ describe('init', () => {
 
     describe('with pnpm', () => {
       beforeAll(() => {
-        const originalPM = process.env.NODE_INSTALLER;
-        process.env.NODE_INSTALLER = 'pnpm';
-
         // disable corepack strict to allow pnpm to be used
         process.env.COREPACK_ENABLE_STRICT = '0';
-
-        return () => {
-          process.env.NODE_INSTALLER = originalPM;
-        };
       });
 
       it('initializes with correct node-linker value', async () => {
-        await api.init({ dir });
+        await api.init({ dir, packageManager: 'pnpm' });
 
         expect(fs.readFileSync(path.join(dir, '.npmrc'), 'utf-8')).toContain(
           'node-linker = hoisted',

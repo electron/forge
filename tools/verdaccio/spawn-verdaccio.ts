@@ -8,10 +8,11 @@
  * the latest and greatest.
  *
  * Usage:
- *   tsx tools/verdaccio/spawn-verdaccio.ts <command> [args...]
+ *   tsx tools/verdaccio/spawn-verdaccio.ts [command] [args...]
  *
- * Example:
- *   tsx tools/verdaccio-spawn-verdaccio.ts yarn test:slow
+ * Examples:
+ *   tsx tools/verdaccio/spawn-verdaccio.ts yarn test:slow
+ *   tsx tools/verdaccio/spawn-verdaccio.ts  # Keeps Verdaccio running for manual testing
  */
 
 import { ChildProcess, spawn } from 'node:child_process';
@@ -132,6 +133,9 @@ async function publishPackages(): Promise<void> {
 }
 
 async function runCommand(args: string[]) {
+  console.log('🗑️  Pruning pnpm store before running command');
+  await spawnPromise('pnpm', ['store', 'prune']);
+
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
@@ -154,32 +158,31 @@ async function runCommand(args: string[]) {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
-  if (args.length === 0) {
-    console.error(
-      'Usage: tsx tools/verdaccio/spawn-verdaccio.ts <command> [args...]',
-    );
-    console.error(
-      'Example: tsx tools/verdaccio/spawn-verdaccio.ts yarn test:slow',
-    );
-    process.exit(1);
-  }
-
   // Handle signals
   process.on('SIGINT', () => {
     stopVerdaccio();
-    process.exit(1);
+    process.exit(0);
   });
   process.on('SIGTERM', () => {
     stopVerdaccio();
-    process.exit(1);
+    process.exit(0);
   });
 
   try {
     await startVerdaccio();
     await publishPackages();
-    await runCommand(args);
-    stopVerdaccio();
-    process.exit(0);
+
+    if (args.length === 0) {
+      // No command provided - keep Verdaccio running for manual testing
+      console.log(`\n✅ Verdaccio is running at ${VERDACCIO_URL}`);
+      console.log('   Press Ctrl+C to stop.\n');
+      // Keep the process alive
+      await new Promise(() => {});
+    } else {
+      await runCommand(args);
+      stopVerdaccio();
+      process.exit(0);
+    }
   } catch (error) {
     console.error('❌ Error:', error);
     stopVerdaccio();

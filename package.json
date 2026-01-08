@@ -19,12 +19,13 @@
     "lint": "npm run lint:js && npm run lint:markdown && npm run lint:markdown-js && npm run lint:markdown-links",
     "lint:fix": "prettier --write . --experimental-cli && eslint --fix . --cache",
     "prepack": "yarn build",
-    "test": "xvfb-maybe vitest run --project fast --project slow",
+    "test": "xvfb-maybe vitest run --project fast --project slow --project slow-verdaccio",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
     "test:clear": "tsx tools/test-clear",
-    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts"
+    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts",
+    "spawn-verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
