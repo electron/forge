@@ -104,6 +104,10 @@ export const resolvePackageManager: (
         explicitPMCache = { ...pm, version: installerVersion };
         d(`Resolved and cached explicit package manager: ${pm.executable}`);
         return explicitPMCache;
+      } else {
+        d(
+          `Attempted to parse ${packageManager} to regex but failed. Falling back!`,
+        );
       }
     }
   }
