@@ -859,13 +859,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/cli@npm:7.10.2, @electron-forge/cli@workspace:packages/api/cli":
+"@electron-forge/cli@npm:7.11.0, @electron-forge/cli@workspace:packages/api/cli":
   version: 0.0.0-use.local
   resolution: "@electron-forge/cli@workspace:packages/api/cli"
   dependencies:
-    "@electron-forge/core": "npm:7.10.2"
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/core": "npm:7.11.0"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@electron/get": "npm:^3.0.0"
     "@inquirer/prompts": "npm:^6.0.1"
     "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"
@@ -885,11 +885,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/core-utils@npm:7.10.2, @electron-forge/core-utils@workspace:packages/utils/core-utils":
+"@electron-forge/core-utils@npm:7.11.0, @electron-forge/core-utils@workspace:packages/utils/core-utils":
   version: 0.0.0-use.local
   resolution: "@electron-forge/core-utils@workspace:packages/utils/core-utils"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@electron/rebuild": "npm:^3.7.0"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     chalk: "npm:^4.0.0"
@@ -903,32 +903,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/core@npm:7.10.2, @electron-forge/core@workspace:packages/api/core":
+"@electron-forge/core@npm:7.11.0, @electron-forge/core@workspace:packages/api/core":
   version: 0.0.0-use.local
   resolution: "@electron-forge/core@workspace:packages/api/core"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/maker-appx": "npm:7.10.2"
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/maker-deb": "npm:7.10.2"
-    "@electron-forge/maker-dmg": "npm:7.10.2"
-    "@electron-forge/maker-flatpak": "npm:7.10.2"
-    "@electron-forge/maker-rpm": "npm:7.10.2"
-    "@electron-forge/maker-snap": "npm:7.10.2"
-    "@electron-forge/maker-squirrel": "npm:7.10.2"
-    "@electron-forge/maker-wix": "npm:7.10.2"
-    "@electron-forge/maker-zip": "npm:7.10.2"
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/publisher-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/template-base": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/maker-appx": "npm:7.11.0"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/maker-deb": "npm:7.11.0"
+    "@electron-forge/maker-dmg": "npm:7.11.0"
+    "@electron-forge/maker-flatpak": "npm:7.11.0"
+    "@electron-forge/maker-rpm": "npm:7.11.0"
+    "@electron-forge/maker-snap": "npm:7.11.0"
+    "@electron-forge/maker-squirrel": "npm:7.11.0"
+    "@electron-forge/maker-wix": "npm:7.11.0"
+    "@electron-forge/maker-zip": "npm:7.11.0"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/publisher-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/template-base": "npm:7.11.0"
     "@electron-forge/template-fixture": "link:./spec/fixture/electron-forge-template-fixture"
-    "@electron-forge/template-vite": "npm:7.10.2"
-    "@electron-forge/template-vite-typescript": "npm:7.10.2"
-    "@electron-forge/template-webpack": "npm:7.10.2"
-    "@electron-forge/template-webpack-typescript": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
-    "@electron-forge/tracer": "npm:7.10.2"
+    "@electron-forge/template-vite": "npm:7.11.0"
+    "@electron-forge/template-vite-typescript": "npm:7.11.0"
+    "@electron-forge/template-webpack": "npm:7.11.0"
+    "@electron-forge/template-webpack-typescript": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
+    "@electron-forge/tracer": "npm:7.11.0"
     "@electron/get": "npm:^3.0.0"
     "@electron/packager": "npm:^18.3.5"
     "@electron/rebuild": "npm:^3.7.0"
@@ -962,13 +962,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-appx@npm:7.10.2, @electron-forge/maker-appx@workspace:packages/maker/appx":
+"@electron-forge/maker-appx@npm:7.11.0, @electron-forge/maker-appx@workspace:packages/maker/appx":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-appx@workspace:packages/maker/appx"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     cross-spawn: "npm:^7.0.3"
     electron-windows-store: "npm:^2.1.0"
     fs-extra: "npm:^10.0.0"
@@ -980,24 +980,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-base@npm:7.10.2, @electron-forge/maker-base@workspace:packages/maker/base":
+"@electron-forge/maker-base@npm:7.11.0, @electron-forge/maker-base@workspace:packages/maker/base":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-base@workspace:packages/maker/base"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
     fs-extra: "npm:^10.0.0"
     vitest: "npm:^3.1.3"
     which: "npm:^2.0.2"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-deb@npm:7.10.2, @electron-forge/maker-deb@workspace:packages/maker/deb":
+"@electron-forge/maker-deb@npm:7.11.0, @electron-forge/maker-deb@workspace:packages/maker/deb":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-deb@workspace:packages/maker/deb"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     electron-installer-debian: "npm:^3.2.0"
     vitest: "npm:^3.1.3"
   dependenciesMeta:
@@ -1006,13 +1006,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-dmg@npm:7.10.2, @electron-forge/maker-dmg@workspace:packages/maker/dmg":
+"@electron-forge/maker-dmg@npm:7.11.0, @electron-forge/maker-dmg@workspace:packages/maker/dmg":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-dmg@workspace:packages/maker/dmg"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     electron-installer-dmg: "npm:^5.0.1"
     fs-extra: "npm:^10.0.0"
     vitest: "npm:^3.1.3"
@@ -1022,13 +1022,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-flatpak@npm:7.10.2, @electron-forge/maker-flatpak@workspace:packages/maker/flatpak":
+"@electron-forge/maker-flatpak@npm:7.11.0, @electron-forge/maker-flatpak@workspace:packages/maker/flatpak":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-flatpak@workspace:packages/maker/flatpak"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     "@malept/electron-installer-flatpak": "npm:^0.11.4"
     fs-extra: "npm:^10.0.0"
     vitest: "npm:^3.1.3"
@@ -1042,9 +1042,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-msix@workspace:packages/maker/msix"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     cross-spawn: "npm:^7.0.3"
     electron-windows-msix: "npm:^2.0.4"
     fs-extra: "npm:^10.0.0"
@@ -1057,21 +1057,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-pkg@workspace:packages/maker/pkg"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     "@electron/osx-sign": "npm:^1.0.5"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-rpm@npm:7.10.2, @electron-forge/maker-rpm@workspace:packages/maker/rpm":
+"@electron-forge/maker-rpm@npm:7.11.0, @electron-forge/maker-rpm@workspace:packages/maker/rpm":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-rpm@workspace:packages/maker/rpm"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     electron-installer-redhat: "npm:^3.2.0"
     vitest: "npm:^3.1.3"
   dependenciesMeta:
@@ -1080,13 +1080,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-snap@npm:7.10.2, @electron-forge/maker-snap@workspace:packages/maker/snap":
+"@electron-forge/maker-snap@npm:7.11.0, @electron-forge/maker-snap@workspace:packages/maker/snap":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-snap@workspace:packages/maker/snap"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     electron-installer-snap: "npm:^5.2.0"
     vitest: "npm:^3.1.3"
   dependenciesMeta:
@@ -1095,12 +1095,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-squirrel@npm:7.10.2, @electron-forge/maker-squirrel@workspace:packages/maker/squirrel":
+"@electron-forge/maker-squirrel@npm:7.11.0, @electron-forge/maker-squirrel@workspace:packages/maker/squirrel":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-squirrel@workspace:packages/maker/squirrel"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     electron-winstaller: "npm:^5.3.0"
     fs-extra: "npm:^10.0.0"
   dependenciesMeta:
@@ -1109,13 +1109,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-wix@npm:7.10.2, @electron-forge/maker-wix@workspace:packages/maker/wix":
+"@electron-forge/maker-wix@npm:7.11.0, @electron-forge/maker-wix@workspace:packages/maker/wix":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-wix@workspace:packages/maker/wix"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     chalk: "npm:^4.0.0"
     electron-wix-msi: "npm:^5.1.3"
     log-symbols: "npm:^4.0.0"
@@ -1125,13 +1125,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/maker-zip@npm:7.10.2, @electron-forge/maker-zip@workspace:packages/maker/zip":
+"@electron-forge/maker-zip@npm:7.11.0, @electron-forge/maker-zip@workspace:packages/maker/zip":
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-zip@workspace:packages/maker/zip"
   dependencies:
-    "@electron-forge/maker-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/maker-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     cross-zip: "npm:^4.0.0"
     fs-extra: "npm:^10.0.0"
     got: "npm:^11.8.5"
@@ -1143,16 +1143,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-auto-unpack-natives@workspace:packages/plugin/auto-unpack-natives"
   dependencies:
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/plugin-base@npm:7.10.2, @electron-forge/plugin-base@workspace:packages/plugin/base":
+"@electron-forge/plugin-base@npm:7.11.0, @electron-forge/plugin-base@workspace:packages/plugin/base":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-base@workspace:packages/plugin/base"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
   languageName: unknown
   linkType: soft
 
@@ -1160,8 +1160,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-fuses@workspace:packages/plugin/fuses"
   dependencies:
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@electron/fuses": "npm:^1.0.0"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     xvfb-maybe: "npm:^0.2.1"
@@ -1174,8 +1174,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-local-electron@workspace:packages/plugin/local-electron"
   dependencies:
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     fs-extra: "npm:^10.0.0"
     vitest: "npm:^3.1.3"
   languageName: unknown
@@ -1185,8 +1185,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-vite@workspace:packages/plugin/vite"
   dependencies:
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@electron/packager": "npm:^18.3.5"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     "@types/node": "npm:^18.0.3"
@@ -1201,14 +1201,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/plugin-webpack@npm:7.10.2, @electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
+"@electron-forge/plugin-webpack@npm:7.11.0, @electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-webpack@workspace:packages/plugin/webpack"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/plugin-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/web-multi-logger": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/plugin-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/web-multi-logger": "npm:7.11.0"
     "@electron/packager": "npm:^18.3.5"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     "@types/node": "npm:^18.0.3"
@@ -1227,11 +1227,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/publisher-base@npm:7.10.2, @electron-forge/publisher-base@workspace:packages/publisher/base":
+"@electron-forge/publisher-base@npm:7.11.0, @electron-forge/publisher-base@workspace:packages/publisher/base":
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-base@workspace:packages/publisher/base"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
@@ -1240,7 +1240,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-bitbucket@workspace:packages/publisher/bitbucket"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
     form-data: "npm:^4.0.0"
     fs-extra: "npm:^10.0.0"
     node-fetch: "npm:^2.6.7"
@@ -1251,8 +1251,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-electron-release-server@workspace:packages/publisher/electron-release-server"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     debug: "npm:^4.3.1"
     form-data: "npm:^4.0.0"
     fs-extra: "npm:^10.0.0"
@@ -1266,8 +1266,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-gcs@workspace:packages/publisher/gcs"
   dependencies:
-    "@electron-forge/publisher-static": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-static": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@google-cloud/storage": "npm:^7.5.0"
     debug: "npm:^4.3.1"
   languageName: unknown
@@ -1277,8 +1277,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-github@workspace:packages/publisher/github"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     "@octokit/core": "npm:^5.2.1"
     "@octokit/plugin-retry": "npm:^6.1.0"
     "@octokit/request-error": "npm:^5.1.1"
@@ -1297,8 +1297,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-nucleus@workspace:packages/publisher/nucleus"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     debug: "npm:^4.3.1"
     form-data: "npm:^4.0.0"
     node-fetch: "npm:^2.6.7"
@@ -1312,8 +1312,8 @@ __metadata:
     "@aws-sdk/client-s3": "npm:^3.654.0"
     "@aws-sdk/lib-storage": "npm:^3.654.0"
     "@aws-sdk/types": "npm:^3.654.0"
-    "@electron-forge/publisher-static": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-static": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     debug: "npm:^4.3.1"
   languageName: unknown
   linkType: soft
@@ -1322,7 +1322,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-snapcraft@workspace:packages/publisher/snapcraft"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
     electron-installer-snap: "npm:^5.2.0"
     fs-extra: "npm:^10.0.0"
   dependenciesMeta:
@@ -1331,34 +1331,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/publisher-static@npm:7.10.2, @electron-forge/publisher-static@workspace:packages/publisher/base-static":
+"@electron-forge/publisher-static@npm:7.11.0, @electron-forge/publisher-static@workspace:packages/publisher/base-static":
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-static@workspace:packages/publisher/base-static"
   dependencies:
-    "@electron-forge/publisher-base": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
+    "@electron-forge/publisher-base": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/shared-types@npm:7.10.2, @electron-forge/shared-types@workspace:packages/utils/types":
+"@electron-forge/shared-types@npm:7.11.0, @electron-forge/shared-types@workspace:packages/utils/types":
   version: 0.0.0-use.local
   resolution: "@electron-forge/shared-types@workspace:packages/utils/types"
   dependencies:
-    "@electron-forge/tracer": "npm:7.10.2"
+    "@electron-forge/tracer": "npm:7.11.0"
     "@electron/packager": "npm:^18.3.5"
     "@electron/rebuild": "npm:^3.7.0"
     listr2: "npm:^7.0.2"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-base@npm:7.10.2, @electron-forge/template-base@workspace:packages/template/base":
+"@electron-forge/template-base@npm:7.11.0, @electron-forge/template-base@workspace:packages/template/base":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-base@workspace:packages/template/base"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     debug: "npm:^4.3.1"
     fs-extra: "npm:^10.0.0"
@@ -1374,46 +1374,46 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@electron-forge/template-vite-typescript@npm:7.10.2, @electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript":
+"@electron-forge/template-vite-typescript@npm:7.11.0, @electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/template-base": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/template-base": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     fast-glob: "npm:^3.2.7"
     fs-extra: "npm:^10.0.0"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-vite@npm:7.10.2, @electron-forge/template-vite@workspace:packages/template/vite":
+"@electron-forge/template-vite@npm:7.11.0, @electron-forge/template-vite@workspace:packages/template/vite":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-vite@workspace:packages/template/vite"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/template-base": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/template-base": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     fs-extra: "npm:^10.0.0"
     listr2: "npm:^7.0.2"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-webpack-typescript@npm:7.10.2, @electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript":
+"@electron-forge/template-webpack-typescript@npm:7.11.0, @electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript"
   dependencies:
-    "@electron-forge/core-utils": "npm:7.10.2"
-    "@electron-forge/maker-deb": "npm:7.10.2"
-    "@electron-forge/maker-rpm": "npm:7.10.2"
-    "@electron-forge/maker-squirrel": "npm:7.10.2"
-    "@electron-forge/maker-zip": "npm:7.10.2"
-    "@electron-forge/plugin-webpack": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/template-base": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/core-utils": "npm:7.11.0"
+    "@electron-forge/maker-deb": "npm:7.11.0"
+    "@electron-forge/maker-rpm": "npm:7.11.0"
+    "@electron-forge/maker-squirrel": "npm:7.11.0"
+    "@electron-forge/maker-zip": "npm:7.11.0"
+    "@electron-forge/plugin-webpack": "npm:7.11.0"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/template-base": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     fast-glob: "npm:^3.2.7"
     fork-ts-checker-webpack-plugin: "npm:^7.2.13"
     fs-extra: "npm:^10.0.0"
@@ -1424,20 +1424,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-webpack@npm:7.10.2, @electron-forge/template-webpack@workspace:packages/template/webpack":
+"@electron-forge/template-webpack@npm:7.11.0, @electron-forge/template-webpack@workspace:packages/template/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-webpack@workspace:packages/template/webpack"
   dependencies:
-    "@electron-forge/shared-types": "npm:7.10.2"
-    "@electron-forge/template-base": "npm:7.10.2"
-    "@electron-forge/test-utils": "npm:7.10.2"
+    "@electron-forge/shared-types": "npm:7.11.0"
+    "@electron-forge/template-base": "npm:7.11.0"
+    "@electron-forge/test-utils": "npm:7.11.0"
     fs-extra: "npm:^10.0.0"
     listr2: "npm:^7.0.2"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft
 
-"@electron-forge/test-utils@npm:7.10.2, @electron-forge/test-utils@workspace:packages/utils/test-utils":
+"@electron-forge/test-utils@npm:7.11.0, @electron-forge/test-utils@workspace:packages/utils/test-utils":
   version: 0.0.0-use.local
   resolution: "@electron-forge/test-utils@workspace:packages/utils/test-utils"
   dependencies:
@@ -1446,7 +1446,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/tracer@npm:7.10.2, @electron-forge/tracer@workspace:packages/utils/tracer":
+"@electron-forge/tracer@npm:7.11.0, @electron-forge/tracer@workspace:packages/utils/tracer":
   version: 0.0.0-use.local
   resolution: "@electron-forge/tracer@workspace:packages/utils/tracer"
   dependencies:
@@ -1454,7 +1454,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/web-multi-logger@npm:7.10.2, @electron-forge/web-multi-logger@workspace:packages/utils/web-multi-logger":
+"@electron-forge/web-multi-logger@npm:7.11.0, @electron-forge/web-multi-logger@workspace:packages/utils/web-multi-logger":
   version: 0.0.0-use.local
   resolution: "@electron-forge/web-multi-logger@workspace:packages/utils/web-multi-logger"
   dependencies:
@@ -8045,7 +8045,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-electron-app@workspace:packages/external/create-electron-app"
   dependencies:
-    "@electron-forge/cli": "npm:7.10.2"
+    "@electron-forge/cli": "npm:7.11.0"
   bin:
     create-electron-app: dist/index.js
   languageName: unknown
