@@ -6,11 +6,17 @@ export interface PublisherR2Config {
    */
   accountId: string;
   /**
-   * The Cloudflare API Token
+   * The R2 Access Key ID
    *
-   * Required. Create a token with R2 read and write permissions.
+   * Required. Create an API token from the R2 dashboard.
    */
-  apiToken: string;
+  accessKeyId: string;
+  /**
+   * The R2 Secret Access Key
+   *
+   * Required. Provided when creating an R2 API token.
+   */
+  secretAccessKey: string;
   /**
    * The name of the R2 bucket to upload artifacts to
    */
@@ -30,7 +36,13 @@ export interface PublisherR2Config {
   /**
    * Custom R2 endpoint (optional)
    *
-   * Default: Auto-generated from accountId
+   * Default: Auto-generated from accountId as https://{accountId}.r2.cloudflarestorage.com
    */
   endpoint?: string;
+  /**
+   * The region to send service requests to.
+   *
+   * Default: 'auto'
+   */
+  region?: string;
 }
