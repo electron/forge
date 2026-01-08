@@ -17,7 +17,8 @@ module.exports = {
       config: {
         bucket: 'my-bucket',
         accountId: 'your-cloudflare-account-id',
-        apiToken: 'your-cloudflare-api-token'
+        accessKeyId: 'your-r2-access-key-id',
+        secretAccessKey: 'your-r2-secret-access-key'
       }
     }
   ]
@@ -28,12 +29,13 @@ If you run publish twice with the same version on the same platform, it is possi
 
 ### Authentication
 
-This publisher uses the wrangler npm package to interact with Cloudflare R2. You need to provide your Cloudflare API credentials in the configuration:
+This publisher uses Cloudflare R2's S3-compatible API. You need to provide R2 API credentials:
 
 ```javascript
 config: {
   accountId: 'your-cloudflare-account-id',
-  apiToken: 'your-cloudflare-api-token',
+  accessKeyId: 'your-r2-access-key-id',
+  secretAccessKey: 'your-r2-secret-access-key',
   bucket: 'my-bucket',
   // ...
 }
@@ -41,22 +43,26 @@ config: {
 
 #### Getting Your Credentials
 
-- **Account ID**: Found in the Cloudflare dashboard URL or on the R2 overview page
-- **API Token**: Create a token with R2 read and write permissions from the [Cloudflare API Tokens page](https://dash.cloudflare.com/profile/api-tokens). Make sure the token has "Account.R2 Storage" permissions.
+1. **Account ID**: Found in the Cloudflare dashboard URL or on the R2 overview page
+2. **API Tokens**: Create R2 API tokens from the R2 dashboard:
+   - Go to R2 → Manage R2 API Tokens
+   - Click "Create API token"
+   - Select permissions (Read & Write)
+   - Copy the `Access Key ID` and `Secret Access Key`
 
 ### Public Access
 
-To make your artifacts publicly accessible, configure a custom domain for your R2 bucket in the Cloudflare dashboard. Public access is managed entirely through Cloudflare's R2 bucket settings, not through this publisher.
+To make your artifacts publicly accessible, configure a custom domain for your R2 bucket in the Cloudflare dashboard under R2 → Settings → Public Access.
 
 ### Custom Key Resolver
 
-You can provide a custom function to determine the key (path) for each artifact:
+You can customize the S3 key for uploaded artifacts by providing a `keyResolver` function:
 
 ```javascript
 config: {
   bucket: 'my-bucket',
   keyResolver: (fileName, platform, arch) => {
-    return `releases/v1.0.0/${platform}/${fileName}`;
+    return `releases/${platform}/${arch}/${fileName}`;
   }
 }
 ```
