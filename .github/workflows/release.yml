@@ -45,14 +45,14 @@ jobs:
           fi
           echo "✓ Commit body contains trigger"
 
-          # Check 3: Only package.json or lerna.json files were changed
+          # Check 3: Only package.json, lerna.json, yarn.lock files were changed
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
           for file in $CHANGED_FILES; do
-            if [[ ! "$file" =~ ^(.*/)?package\.json$ ]] && [[ ! "$file" =~ ^(.*/)?lerna\.json$ ]]; then
-              echo "File '$file' is not a package.json or lerna.json"
+            if [[ ! "$file" =~ ^(.*/)?package\.json$ ]] && [[ ! "$file" =~ ^lerna\.json$ ]] && [[ ! "$file" =~ ^yarn\.lock$ ]]; then
+              echo "File '$file' is not a package.json, lerna.json, or yarn.lock"
               echo "should_release=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
