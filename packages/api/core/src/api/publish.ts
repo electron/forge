@@ -10,7 +10,6 @@ import {
   IForgePublisher,
   IForgeResolvablePublisher,
   ResolvedForgeConfig,
-  // ForgePlatform,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
@@ -18,13 +17,13 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
-import getForgeConfig from '../util/forge-config';
-import importSearch from '../util/import-search';
-import getCurrentOutDir from '../util/out-dir';
-import PublishState from '../util/publish-state';
-import resolveDir from '../util/resolve-dir';
+import getForgeConfig from '../util/forge-config.js';
+import importSearch from '../util/import-search.js';
+import getCurrentOutDir from '../util/out-dir.js';
+import PublishState from '../util/publish-state.js';
+import resolveDir from '../util/resolve-dir.js';
 
-import { listrMake, MakeOptions } from './make';
+import { listrMake, MakeOptions } from './make.js';
 
 const d = debug('electron-forge:publish');
 

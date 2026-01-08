@@ -11,7 +11,7 @@ import {
 } from 'electron-windows-store/lib/sign';
 import fs from 'fs-extra';
 
-import { MakerAppXConfig } from './Config';
+import { MakerAppXConfig } from './Config.js';
 
 // NB: This is not a typo, we require AppXs to be built on 64-bit
 // but if we're running in a 32-bit node.js process, we're going to

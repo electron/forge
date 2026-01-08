@@ -8,7 +8,7 @@ import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class WebpackTypeScriptTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   async initializeTemplate(
     directory: string,

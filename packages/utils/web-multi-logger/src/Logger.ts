@@ -4,7 +4,7 @@ import path from 'node:path';
 import express from 'express';
 import ews from 'express-ws';
 
-import Tab from './Tab';
+import Tab from './Tab.js';
 
 export { Tab };
 
@@ -37,7 +37,9 @@ export default class Logger {
       '/xterm',
       express.static(path.resolve(require.resolve('xterm'), '../..')),
     );
-    this.app.use(express.static(path.resolve(__dirname, '..', 'static')));
+    this.app.use(
+      express.static(path.resolve(import.meta.dirname, '..', 'static')),
+    );
     this.ws.app.ws('/sub', () => {
       // I assume this endpoint is just a no-op needed for some reason.
     });
