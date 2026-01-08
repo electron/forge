@@ -1,11 +1,13 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
+import { PutObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
 import debug from 'debug';
-import { execa, ExecaError, Result } from 'execa';
 import mime from 'mime-types';
 
 import { PublisherR2Config } from './Config';
@@ -26,22 +28,6 @@ export default class PublisherR2 extends PublisherStatic<PublisherR2Config> {
     return key.replace(/@/g, '_').replace(/\//g, '_');
   };
 
-  private createWranglerExecutor(accountId: string, apiToken: string) {
-    return async (...args: string[]) => {
-      const env = {
-        CLOUDFLARE_ACCOUNT_ID: accountId,
-        CLOUDFLARE_API_TOKEN: apiToken,
-      };
-
-      d(`executing: npx wrangler ${args.join(' ')}`);
-
-      return execa('npx', ['wrangler', ...args], {
-        env,
-        stdio: 'pipe',
-      });
-    };
-  }
-
   async publish({
     makeResults,
     setStatusLine,
@@ -60,13 +46,17 @@ export default class PublisherR2 extends PublisherStatic<PublisherR2Config> {
       );
     }
 
-    if (!this.config.apiToken) {
+    if (!this.config.accessKeyId) {
       throw new Error(
-        'In order to publish to R2, you must set the "apiToken" property in your Forge publisher config.',
+        'In order to publish to R2, you must set the "accessKeyId" property in your Forge publisher config.',
       );
     }
 
-    const { accountId, apiToken } = this.config;
+    if (!this.config.secretAccessKey) {
+      throw new Error(
+        'In order to publish to R2, you must set the "secretAccessKey" property in your Forge publisher config.',
+      );
+    }
 
     for (const makeResult of makeResults) {
       artifacts.push(
@@ -80,7 +70,21 @@ export default class PublisherR2 extends PublisherStatic<PublisherR2Config> {
       );
     }
 
-    d('uploading to R2 bucket:', this.config.bucket);
+    // Create R2 S3-compatible client
+    const endpoint =
+      this.config.endpoint ||
+      `https://${this.config.accountId}.r2.cloudflarestorage.com`;
+
+    const s3Client = new S3Client({
+      region: this.config.region || 'auto',
+      endpoint,
+      credentials: {
+        accessKeyId: this.config.accessKeyId,
+        secretAccessKey: this.config.secretAccessKey,
+      },
+    });
+
+    d('creating r2 client with endpoint:', endpoint);
 
     let uploaded = 0;
     const updateStatusLine = () =>
@@ -90,65 +94,56 @@ export default class PublisherR2 extends PublisherStatic<PublisherR2Config> {
 
     updateStatusLine();
 
-    const wrangler = this.createWranglerExecutor(accountId, apiToken);
-
     await Promise.all(
       artifacts.map(async (artifact) => {
         d('uploading:', artifact.path);
-        await this.uploadFile(artifact, wrangler);
+
+        const key = this.keyForArtifact(artifact);
+        const contentType =
+          mime.lookup(artifact.path) || 'application/octet-stream';
+
+        const params: PutObjectCommandInput = {
+          Body: fs.createReadStream(artifact.path),
+          Bucket: this.config.bucket,
+          Key: key,
+          ContentType: contentType,
+        };
+
+        const upload = new Upload({
+          client: s3Client,
+          params,
+        });
+
+        upload.on('httpUploadProgress', (progress) => {
+          d(
+            `upload progress for ${path.basename(artifact.path)}:`,
+            progress.loaded,
+            '/',
+            progress.total,
+          );
+        });
+
+        await upload.done();
+
+        d(`successfully uploaded: ${path.basename(artifact.path)}`);
         uploaded += 1;
         updateStatusLine();
       }),
     );
   }
 
-  private async uploadFile(
-    artifact: R2Artifact,
-    wrangler: (...args: string[]) => Promise<
-      Result<{
-        env: { [key: string]: string };
-        stdio: 'pipe';
-      }>
-    >,
-  ): Promise<void> {
-    const key = this.keyForArtifact(artifact);
-    const contentType =
-      mime.lookup(artifact.path) || 'application/octet-stream';
+  protected keyForArtifact(artifact: R2Artifact): string {
+    const { keyPrefix, platform, arch, path: artifactPath } = artifact;
 
-    d(
-      `uploading ${path.basename(artifact.path)} with content-type: ${contentType}`,
-    );
-
-    try {
-      const { stderr, exitCode } = await wrangler(
-        'r2',
-        'object',
-        'put',
-        `${this.config.bucket}/${key}`,
-        '--file',
-        artifact.path,
-        '--content-type',
-        contentType,
-        '--remote',
-      );
-
-      if (exitCode !== 0 && stderr) {
-        throw new Error(stderr);
-      }
-
-      d(`successfully uploaded: ${path.basename(artifact.path)}`);
-    } catch (error) {
-      if (error instanceof ExecaError) {
-        const errorMessage = error.stderr || error.stdout || error.message;
-        d(`upload failed for ${path.basename(artifact.path)}: ${errorMessage}`);
-        throw new Error(
-          `Failed to upload ${path.basename(artifact.path)} to R2: ${errorMessage}`,
-        );
-      }
-      throw new Error(
-        `Failed to upload ${path.basename(artifact.path)} to R2: ${error instanceof Error ? error.message : String(error)}`,
+    if (this.config.keyResolver) {
+      return this.config.keyResolver(
+        path.basename(artifactPath),
+        platform,
+        arch,
       );
     }
+
+    return `${keyPrefix}/${platform}/${arch}/${path.basename(artifactPath)}`;
   }
 }
 
