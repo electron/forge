@@ -1,0 +1,28 @@
+{
+  "name": "@electron-forge/publisher-r2",
+  "version": "7.10.2",
+  "description": "Cloudflare R2 publisher for Electron Forge",
+  "repository": "https://github.com/electron/forge",
+  "author": "Electron Forge",
+  "license": "MIT",
+  "main": "dist/PublisherR2.js",
+  "typings": "dist/PublisherR2.d.ts",
+  "engines": {
+    "node": ">= 16.4.0"
+  },
+  "dependencies": {
+    "@electron-forge/publisher-static": "7.10.2",
+    "@electron-forge/shared-types": "7.10.2",
+    "debug": "^4.3.1",
+    "execa": "^9.0.0",
+    "mime-types": "^2.1.25",
+    "wrangler": "^4.54.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
