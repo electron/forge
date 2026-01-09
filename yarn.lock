@@ -1305,19 +1305,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/publisher-r2@workspace:packages/publisher/r2":
-  version: 0.0.0-use.local
-  resolution: "@electron-forge/publisher-r2@workspace:packages/publisher/r2"
-  dependencies:
-    "@aws-sdk/client-s3": "npm:^3.654.0"
-    "@aws-sdk/lib-storage": "npm:^3.654.0"
-    "@electron-forge/publisher-static": "npm:7.10.2"
-    "@electron-forge/shared-types": "npm:7.10.2"
-    debug: "npm:^4.3.1"
-    mime-types: "npm:^2.1.25"
-  languageName: unknown
-  linkType: soft
-
 "@electron-forge/publisher-s3@workspace:packages/publisher/s3":
   version: 0.0.0-use.local
   resolution: "@electron-forge/publisher-s3@workspace:packages/publisher/s3"
@@ -1328,6 +1315,7 @@ __metadata:
     "@electron-forge/publisher-static": "npm:7.10.2"
     "@electron-forge/shared-types": "npm:7.10.2"
     debug: "npm:^4.3.1"
+    mime-types: "npm:^2.1.25"
   languageName: unknown
   linkType: soft
 
