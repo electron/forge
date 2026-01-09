@@ -1,11 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
 import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
@@ -32,12 +30,6 @@ describe('FusesPlugin', () => {
       path.join(appPath, 'package.json.tmpl'),
       path.join(appPath, 'package.json'),
     );
-
-    // Use initLink to set up dependencies with local forge packages
-    // This will copy .yarnrc.yml, link local packages, and run install
-    process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = '1';
-    await initLink(PACKAGE_MANAGERS['yarn'], appPath);
-    delete process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
   });
 
   afterAll(async () => {
