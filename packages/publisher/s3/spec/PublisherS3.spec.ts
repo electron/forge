@@ -16,6 +16,20 @@ import { PublisherS3, PublisherS3Config } from '../src/PublisherS3';
 vi.mock('@aws-sdk/client-s3');
 vi.mock('@aws-sdk/lib-storage');
 vi.mock('node:fs');
+vi.mock('mime-types', () => ({
+  default: {
+    lookup: vi.fn((filePath: string) => {
+      if (filePath.endsWith('.dmg')) return 'application/x-apple-diskimage';
+      if (filePath.endsWith('.exe')) return 'application/x-msdownload';
+      return 'application/octet-stream';
+    }),
+  },
+  lookup: vi.fn((filePath: string) => {
+    if (filePath.endsWith('.dmg')) return 'application/x-apple-diskimage';
+    if (filePath.endsWith('.exe')) return 'application/x-msdownload';
+    return 'application/octet-stream';
+  }),
+}));
 
 describe('PublisherS3', () => {
   let publisher: PublisherS3;
@@ -492,6 +506,174 @@ describe('PublisherS3', () => {
         'test@example.com/path/to/file',
       );
       expect(result).toBe('test_example.com_path_to_file');
+    });
+  });
+
+  describe('R2 Provider', () => {
+    let mockMakeResults: ForgeMakeResult[];
+    const mockForgeConfig = {} as ResolvedForgeConfig;
+    const mockSetStatusLine = vi.fn();
+
+    beforeEach(() => {
+      mockMakeResults = [
+        {
+          artifacts: [path.join(tmpDir, 'test-app-1.0.0.dmg')],
+          packageJSON: {
+            name: 'test-app',
+            version: '1.0.0',
+          },
+          platform: 'darwin',
+          arch: 'arm64',
+        },
+      ];
+    });
+
+    it('should throw error when accountId is not provided for R2', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+      };
+      publisher = new PublisherS3(config);
+
+      await expect(
+        publisher.publish({
+          makeResults: mockMakeResults,
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        }),
+      ).rejects.toThrow(
+        'In order to publish to R2, you must set the "accountId" property',
+      );
+    });
+
+    it('should throw error when accessKeyId is not provided for R2', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+      };
+      publisher = new PublisherS3(config);
+
+      await expect(
+        publisher.publish({
+          makeResults: mockMakeResults,
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        }),
+      ).rejects.toThrow(
+        'In order to publish to R2, you must set the "accessKeyId" property',
+      );
+    });
+
+    it('should throw error when secretAccessKey is not provided for R2', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+        accessKeyId: 'test-access-key',
+      };
+      publisher = new PublisherS3(config);
+
+      await expect(
+        publisher.publish({
+          makeResults: mockMakeResults,
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        }),
+      ).rejects.toThrow(
+        'In order to publish to R2, you must set the "secretAccessKey" property',
+      );
+    });
+
+    it('should successfully publish to R2 with all required config', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
+      };
+      publisher = new PublisherS3(config);
+
+      await publisher.publish({
+        makeResults: mockMakeResults,
+        dir: tmpDir,
+        forgeConfig: mockForgeConfig,
+        setStatusLine: mockSetStatusLine,
+      });
+
+      // Verify S3Client was called with R2 endpoint
+      expect(S3Client).toHaveBeenCalledWith(
+        expect.objectContaining({
+          endpoint: 'https://test-account-id.r2.cloudflarestorage.com',
+          region: 'auto',
+          credentials: {
+            accessKeyId: 'test-access-key',
+            secretAccessKey: 'test-secret-key',
+          },
+        }),
+      );
+
+      // Verify Upload was called with ContentType for R2
+      expect(Upload).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: expect.objectContaining({
+            ContentType: expect.any(String),
+          }),
+        }),
+      );
+    });
+
+    it('should use custom endpoint for R2 if provided', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
+        endpoint: 'https://custom-r2-endpoint.com',
+      };
+      publisher = new PublisherS3(config);
+
+      await publisher.publish({
+        makeResults: mockMakeResults,
+        dir: tmpDir,
+        forgeConfig: mockForgeConfig,
+        setStatusLine: mockSetStatusLine,
+      });
+
+      // Verify S3Client was called with custom endpoint
+      expect(S3Client).toHaveBeenCalledWith(
+        expect.objectContaining({
+          endpoint: 'https://custom-r2-endpoint.com',
+        }),
+      );
+    });
+
+    it('should not set ACL for R2 provider', async () => {
+      const config: PublisherS3Config = {
+        provider: 'r2',
+        bucket: 'test-bucket',
+        accountId: 'test-account-id',
+        accessKeyId: 'test-access-key',
+        secretAccessKey: 'test-secret-key',
+        public: true, // This should be ignored for R2
+      };
+      publisher = new PublisherS3(config);
+
+      await publisher.publish({
+        makeResults: mockMakeResults,
+        dir: tmpDir,
+        forgeConfig: mockForgeConfig,
+        setStatusLine: mockSetStatusLine,
+      });
+
+      // Verify Upload params do not contain ACL
+      const uploadCall = vi.mocked(Upload).mock.calls[0][0];
+      expect(uploadCall.params).not.toHaveProperty('ACL');
     });
   });
 });

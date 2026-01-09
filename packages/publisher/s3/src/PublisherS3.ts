@@ -9,6 +9,7 @@ import {
   PublisherStatic,
 } from '@electron-forge/publisher-static';
 import debug from 'debug';
+import mime from 'mime-types';
 
 import { PublisherS3Config } from './Config';
 
@@ -34,11 +35,33 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
     setStatusLine,
   }: PublisherOptions): Promise<void> {
     const artifacts: S3Artifact[] = [];
+    const provider = this.config.provider || 's3';
 
     if (!this.config.bucket) {
       throw new Error(
-        'In order to publish to S3, you must set the "bucket" property in your Forge publisher config. See the docs for more info',
+        `In order to publish to ${provider.toUpperCase()}, you must set the "bucket" property in your Forge publisher config. See the docs for more info`,
       );
+    }
+
+    // R2-specific validation
+    if (provider === 'r2') {
+      if (!this.config.accountId) {
+        throw new Error(
+          'In order to publish to R2, you must set the "accountId" property in your Forge publisher config.',
+        );
+      }
+
+      if (!this.config.accessKeyId) {
+        throw new Error(
+          'In order to publish to R2, you must set the "accessKeyId" property in your Forge publisher config.',
+        );
+      }
+
+      if (!this.config.secretAccessKey) {
+        throw new Error(
+          'In order to publish to R2, you must set the "secretAccessKey" property in your Forge publisher config.',
+        );
+      }
     }
 
     for (const makeResult of makeResults) {
@@ -55,14 +78,31 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
       );
     }
 
+    // Configure endpoint based on provider
+    let endpoint = this.config.endpoint;
+    if (provider === 'r2' && !endpoint) {
+      endpoint = `https://${this.config.accountId}.r2.cloudflarestorage.com`;
+    }
+
+    const region =
+      this.config.region || (provider === 'r2' ? 'auto' : undefined);
+
     const s3Client = new S3Client({
-      credentials: this.generateCredentials(),
-      region: this.config.region,
-      endpoint: this.config.endpoint,
+      credentials:
+        provider === 'r2'
+          ? {
+              accessKeyId: this.config.accessKeyId!,
+              secretAccessKey: this.config.secretAccessKey!,
+            }
+          : this.generateCredentials(),
+      region,
+      endpoint,
       forcePathStyle: !!this.config.s3ForcePathStyle,
     });
 
-    d('creating s3 client with options:', this.config);
+    d(
+      `creating ${provider} client with ${endpoint ? `endpoint: ${endpoint}` : 'default endpoint'}`,
+    );
 
     let uploaded = 0;
     const updateStatusLine = () =>
@@ -79,11 +119,15 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
           Bucket: this.config.bucket,
           Key: this.keyForArtifact(artifact),
         };
-        if (!this.config.omitAcl) {
+
+        // S3-specific: Set ACL if not omitted
+        if (provider === 's3' && !this.config.omitAcl) {
           params.ACL = this.config.public ? 'public-read' : 'private';
         }
-        // Cache-Control must be an integer number of seconds to cache and should not be negative.
+
+        // S3-specific: Cache-Control for RELEASES file
         if (
+          provider === 's3' &&
           artifact.isReleaseFile &&
           typeof this.config.releaseFileCacheControlMaxAge !== 'undefined' &&
           Number.isInteger(this.config.releaseFileCacheControlMaxAge) &&
@@ -91,6 +135,13 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
         ) {
           params.CacheControl = `max-age=${this.config.releaseFileCacheControlMaxAge}`;
         }
+
+        // R2-specific: Set ContentType
+        if (provider === 'r2') {
+          params.ContentType =
+            mime.lookup(artifact.path) || 'application/octet-stream';
+        }
+
         const uploader = new Upload({
           client: s3Client,
           leavePartsOnError: true,

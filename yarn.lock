@@ -1315,6 +1315,7 @@ __metadata:
     "@electron-forge/publisher-static": "npm:7.11.0"
     "@electron-forge/shared-types": "npm:7.11.0"
     debug: "npm:^4.3.1"
+    mime-types: "npm:^2.1.25"
   languageName: unknown
   linkType: soft
 
