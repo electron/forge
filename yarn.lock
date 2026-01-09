@@ -1122,6 +1122,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-fuses@workspace:packages/plugin/fuses"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/fuses": "npm:^1.0.0"
