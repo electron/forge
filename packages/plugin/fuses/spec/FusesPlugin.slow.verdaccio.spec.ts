@@ -1,48 +1,44 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import {
-  PACKAGE_MANAGERS,
-  spawnPackageManager,
-} from '@electron-forge/core-utils';
 import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
-import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
+import { spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+// eslint-disable-next-line n/no-missing-import
+import { api } from '../../../api/core/dist/api';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
   const fixtureDir = path.join(__dirname, 'fixture', 'app');
-  const forgeVersion = JSON.parse(
-    fs.readFileSync(
-      path.resolve(__dirname, '..', '..', '..', '..', 'lerna.json'),
-      'utf-8',
-    ),
-  ).version;
   let appPath: string;
-
-  const packageJSON = JSON.parse(
-    fs.readFileSync(path.join(fixtureDir, 'package.json.tmpl'), 'utf-8'),
-  );
-
-  const { name: appName } = packageJSON;
+  let appName: string;
 
   beforeAll(async () => {
     delete process.env.TS_NODE_PROJECT;
     appPath = await ensureTestDirIsNonexistent();
-    await fs.promises.cp(fixtureDir, appPath, { recursive: true });
-    const packageJSONTemplate = await fs.promises.readFile(
-      path.join(appPath, 'package.json.tmpl'),
+
+    // Initialize a new Forge project (base template includes plugin-fuses)
+    await api.init({
+      dir: appPath,
+      interactive: false,
+    });
+
+    // Read the app name from the generated package.json
+    const packageJSON = JSON.parse(
+      await fs.promises.readFile(path.join(appPath, 'package.json'), 'utf-8'),
+    );
+    appName = packageJSON.name;
+
+    // Replace the main entry file with our test fixture
+    const fixtureMainJs = await fs.promises.readFile(
+      path.join(fixtureDir, 'src', 'main.js'),
       'utf-8',
     );
     await fs.promises.writeFile(
-      path.join(appPath, 'package.json'),
-      packageJSONTemplate.replace(/ELECTRON_FORGE\/VERSION/g, forgeVersion),
+      path.join(appPath, 'src', 'index.js'),
+      fixtureMainJs,
     );
-    await fs.promises.rm(path.join(appPath, 'package.json.tmpl'));
-    await spawnPackageManager(PACKAGE_MANAGERS.yarn, ['install'], {
-      cwd: appPath,
-    });
   });
 
   afterAll(async () => {
@@ -50,13 +46,16 @@ describe('FusesPlugin', () => {
   });
 
   it('should flip Fuses', async () => {
-    const spawnOptions: CrossSpawnOptions = {
-      cwd: appPath,
-      shell: true,
-    };
-    await spawn('yarn', ['package'], spawnOptions);
+    await api.package({
+      dir: appPath,
+      interactive: false,
+    });
 
-    const outDir = path.join(appPath, 'out', appName);
+    const outDir = path.join(
+      appPath,
+      'out',
+      `${appName}-${process.platform}-${process.arch}`,
+    );
     const electronExecutablePath = getElectronExecutablePath({
       appName,
       basePath: path.join(
