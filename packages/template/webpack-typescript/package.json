@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-webpack-typescript",
-  "version": "7.10.2",
+  "version": "7.11.0",
   "description": "Webpack-TypeScript template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Shelley Vohr <shelley.vohr@gmail.com>",
