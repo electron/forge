@@ -2,6 +2,7 @@
   "name": "create-electron-app",
   "version": "7.11.0",
   "description": "Create Electron App",
+  "repository": "https://github.com/electron/forge",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "author": "Samuel Attard",
