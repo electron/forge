@@ -1,6 +1,6 @@
 {
   "name": "create-electron-app",
-  "version": "7.11.0",
+  "version": "7.11.1",
   "description": "Create Electron App",
   "repository": "https://github.com/electron/forge",
   "main": "dist/index.js",

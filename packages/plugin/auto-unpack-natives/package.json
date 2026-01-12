@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-auto-unpack-natives",
-  "version": "7.11.0",
+  "version": "7.11.1",
   "description": "Auto Unpack Natives plugin for Electron Forge, automatically adds native node modules to asar.unpacked",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",

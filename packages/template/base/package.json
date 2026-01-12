@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-base",
-  "version": "7.11.0",
+  "version": "7.11.1",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
