@@ -1,57 +1,61 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
-import { CrossSpawnOptions, spawn } from '@malept/cross-spawn-promise';
+import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
+import { spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { initLink } from '../../../api/core/src/api/init-scripts/init-link';
+// eslint-disable-next-line n/no-missing-import
+import { api } from '../../../api/core/dist/api';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
-  const appPath = path.join(__dirname, 'fixture', 'app');
-
-  const spawnOptions: CrossSpawnOptions = {
-    cwd: appPath,
-    shell: true,
-  };
-
-  const packageJSON = JSON.parse(
-    fs.readFileSync(path.join(appPath, 'package.json.tmpl'), {
-      encoding: 'utf-8',
-    }),
-  );
-
-  const { name: appName } = packageJSON;
-
-  const outDir = path.join(appPath, 'out', 'fuses-test-app');
+  const fixtureDir = path.join(__dirname, 'fixture', 'app');
+  let appPath: string;
+  let appName: string;
 
   beforeAll(async () => {
     delete process.env.TS_NODE_PROJECT;
-    await fs.promises.copyFile(
-      path.join(appPath, 'package.json.tmpl'),
-      path.join(appPath, 'package.json'),
-    );
+    appPath = await ensureTestDirIsNonexistent();
 
-    // Use initLink to set up dependencies with local forge packages
-    // This will copy .yarnrc.yml, link local packages, and run install
-    process.env.LINK_FORGE_DEPENDENCIES_ON_INIT = '1';
-    await initLink(PACKAGE_MANAGERS['yarn'], appPath);
-    delete process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
+    // Initialize a new Forge project (base template includes plugin-fuses)
+    await api.init({
+      dir: appPath,
+      interactive: false,
+    });
+
+    // Read the app name from the generated package.json
+    const packageJSON = JSON.parse(
+      await fs.promises.readFile(path.join(appPath, 'package.json'), 'utf-8'),
+    );
+    appName = packageJSON.name;
+
+    // Replace the main entry file with our test fixture
+    const fixtureMainJs = await fs.promises.readFile(
+      path.join(fixtureDir, 'src', 'main.js'),
+      'utf-8',
+    );
+    await fs.promises.writeFile(
+      path.join(appPath, 'src', 'index.js'),
+      fixtureMainJs,
+    );
   });
 
   afterAll(async () => {
-    await fs.promises.rm(path.resolve(outDir, '../'), {
-      recursive: true,
-      force: true,
-    });
-
-    await fs.promises.rm(path.join(appPath, 'package.json'));
+    await fs.promises.rm(appPath, { recursive: true, force: true });
   });
 
   it('should flip Fuses', async () => {
-    await spawn('yarn', ['package'], spawnOptions);
+    await api.package({
+      dir: appPath,
+      interactive: false,
+    });
 
+    const outDir = path.join(
+      appPath,
+      'out',
+      `${appName}-${process.platform}-${process.arch}`,
+    );
     const electronExecutablePath = getElectronExecutablePath({
       appName,
       basePath: path.join(
