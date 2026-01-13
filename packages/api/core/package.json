@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/core",
-  "version": "8.0.0-alpha.3",
+  "version": "8.0.0-alpha.4",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
   "main": "dist/api/index.js",
