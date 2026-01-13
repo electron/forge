@@ -65,8 +65,8 @@ import { resolveWorkingDir } from './util/resolve-working-dir';
     interactive: true,
     enableLogging: !!options.enableLogging,
     runAsNode: !!options.runAsNode,
-    inspect: !!options.inspectElectron,
-    inspectBrk: !!options.inspectBrkElectron,
+    inspect: Boolean(options.inspectElectron),
+    inspectBrk: Boolean(options.inspectBrkElectron),
   };
 
   if (options.vscode && appArgs) {
