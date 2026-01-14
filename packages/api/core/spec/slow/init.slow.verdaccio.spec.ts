@@ -163,7 +163,7 @@ describe('init', () => {
             dir,
             template: path.resolve(
               import.meta.dirname,
-              '../fixture/template-nonmatching-forge-version',
+              '../fixture/template-stale-forge-version',
             ),
           }),
         ).rejects.toThrow(

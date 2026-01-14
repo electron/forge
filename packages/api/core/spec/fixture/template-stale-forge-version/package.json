@@ -1,0 +1,16 @@
+{
+  "name": "electron-forge-template-dummy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.cjs",
+  "scripts": {
+    "start": "electron-forge start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@electron-forge/template-base": "100.0.0",
+    "fs-extra": "11.3.2"
+  }
+}
