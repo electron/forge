@@ -117,8 +117,11 @@ describe('getElectronVersion', () => {
   });
 
   describe('with yarn workspaces', () => {
+    let originalUserAgent: string | undefined;
     beforeAll(() => {
-      process.env.NODE_INSTALLER = 'yarn';
+      originalUserAgent = process.env.npm_config_user_agent;
+      process.env.npm_config_user_agent =
+        'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
     });
 
     it('works with a non-exact version', async () => {
@@ -139,7 +142,7 @@ describe('getElectronVersion', () => {
     });
 
     afterAll(() => {
-      delete process.env.NODE_INSTALLER;
+      process.env.npm_config_user_agent = originalUserAgent;
     });
   });
 });
@@ -213,12 +216,15 @@ describe('getElectronModulePath', () => {
   });
 
   describe('with yarn workspaces', () => {
+    let originalUserAgent: string | undefined;
     beforeAll(() => {
-      process.env.NODE_INSTALLER = 'yarn';
+      originalUserAgent = process.env.npm_config_user_agent;
+      process.env.npm_config_user_agent =
+        'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
     });
 
     afterAll(() => {
-      delete process.env.NODE_INSTALLER;
+      process.env.npm_config_user_agent = originalUserAgent;
     });
 
     it('finds the top-level electron module', async () => {

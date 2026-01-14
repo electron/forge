@@ -5,10 +5,8 @@ import {
   CrossSpawnOptions,
   spawn,
 } from '@malept/cross-spawn-promise';
-import chalk from 'chalk';
 import debug from 'debug';
 import findUp from 'find-up';
-import logSymbols from 'log-symbols';
 
 const d = debug('electron-forge:package-manager');
 
@@ -21,7 +19,7 @@ export type PMDetails = {
   exact: string;
 };
 
-let hasWarned = false;
+let explicitPMCache: PMDetails | undefined;
 
 /**
  * Supported package managers and the commands and flags they need to install dependencies.
@@ -75,7 +73,7 @@ function pmFromUserAgent() {
 /**
  * Resolves the package manager to use. In order, it checks the following:
  *
- * 1. The value of the `NODE_INSTALLER` environment variable.
+ * 1. An explicit arg being passed into the function.
  * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
  * 3. The presence of a lockfile in an ancestor directory.
  * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
@@ -85,7 +83,40 @@ function pmFromUserAgent() {
  * Supported package managers are `yarn`, `pnpm`, and `npm`.
  *
  */
-export const resolvePackageManager: () => Promise<PMDetails> = async () => {
+export const resolvePackageManager: (
+  packageManager?: string,
+) => Promise<PMDetails> = async (packageManager) => {
+  let installer: string | undefined;
+  let installerVersion: string | undefined;
+
+  // Check explicit packageManager argument FIRST, before cache
+  // This ensures explicit args always take precedence
+  if (packageManager) {
+    const match = packageManager.match(
+      /^(npm|pnpm|yarn)(?:@(latest|\d+(?:\.\d+)?(?:\.\d+)?(?:-.+)?))?$/,
+    );
+
+    if (match) {
+      const [, executable, version] = match;
+      if (Object.keys(PACKAGE_MANAGERS).includes(executable)) {
+        const pm = PACKAGE_MANAGERS[executable as SupportedPackageManager];
+        installerVersion = version ?? 'latest';
+        explicitPMCache = { ...pm, version: installerVersion };
+        d(`Resolved and cached explicit package manager: ${pm.executable}`);
+        return explicitPMCache;
+      } else {
+        d(
+          `Attempted to parse ${packageManager} to regex but failed. Falling back!`,
+        );
+      }
+    }
+  }
+
+  if (explicitPMCache) {
+    d(`Using cached explicit package manager: ${explicitPMCache.executable}`);
+    return explicitPMCache;
+  }
+
   const executingPM = pmFromUserAgent();
   let lockfilePM;
   const lockfile = await findUp(
@@ -97,34 +128,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  let installer;
-  let installerVersion;
-
-  if (typeof process.env.NODE_INSTALLER === 'string') {
-    if (Object.keys(PACKAGE_MANAGERS).includes(process.env.NODE_INSTALLER)) {
-      installer = process.env.NODE_INSTALLER;
-      installerVersion = await spawnPackageManager(
-        PACKAGE_MANAGERS[installer as SupportedPackageManager],
-        ['--version'],
-      );
-      if (!hasWarned) {
-        console.warn(
-          logSymbols.warning,
-          chalk.yellow(
-            `The NODE_INSTALLER environment variable is deprecated and will be removed in Electron Forge v8`,
-          ),
-        );
-        hasWarned = true;
-      }
-    } else {
-      console.warn(
-        logSymbols.warning,
-        chalk.yellow(
-          `Package manager ${chalk.red(process.env.NODE_INSTALLER)} is unsupported. Falling back to ${chalk.green('npm')} instead.`,
-        ),
-      );
-    }
-  } else if (executingPM) {
+  if (executingPM) {
     installer = executingPM.name;
     installerVersion = executingPM.version;
   } else if (lockfilePM) {
@@ -140,7 +144,7 @@ export const resolvePackageManager: () => Promise<PMDetails> = async () => {
     case 'npm':
     case 'pnpm':
       d(
-        `Resolved package manager to ${installer}. (Derived from NODE_INSTALLER: ${process.env.NODE_INSTALLER}, npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
+        `Resolved package manager to ${installer}. (Derived from npm_config_user_agent: ${process.env.npm_config_user_agent}, lockfile: ${lockfilePM})`,
       );
       return {
         ...PACKAGE_MANAGERS[installer],
