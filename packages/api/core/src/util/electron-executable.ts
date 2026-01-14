@@ -20,9 +20,10 @@ export default async function locateElectronExecutable(
     packageJSON,
   );
 
-  const { default: electronExecPath } = await import(
-    electronModulePath || path.resolve(dir, 'node_modules/electron')
-  );
+  const electronModuleEntryPoint = electronModulePath
+    ? path.join(electronModulePath, 'index.js')
+    : path.resolve(dir, 'node_modules/electron/index.js');
+  const { default: electronExecPath } = await import(electronModuleEntryPoint);
 
   if (typeof electronExecPath === 'string') {
     return electronExecPath;
@@ -31,6 +32,6 @@ export default async function locateElectronExecutable(
       logSymbols.warning,
       `Returned Electron executable path (${electronExecPath}) is not a string. Defaulting to node_modules/electron.`,
     );
-    return await import(path.resolve(dir, 'node_modules/electron'));
+    return await import(path.resolve(dir, 'node_modules/electron/index.js'));
   }
 }
