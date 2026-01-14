@@ -165,7 +165,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     try {
       let loadFn;
       if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
-        const jiti = createJiti(__filename);
+        const jiti = createJiti(import.meta.filename);
         loadFn = jiti.import;
       }
       // The loaded "config" could potentially be a static forge config, ESM module or async function
