@@ -87,15 +87,12 @@ async function checkYarnConfig() {
   }
 }
 
-// TODO(erickzhao): Drop antiquated versions of npm for Forge v8
 const ALLOWLISTED_VERSIONS: Record<
   SupportedPackageManager,
   Record<string, string>
 > = {
   npm: {
-    all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
-    darwin: '>= 5.4.0',
-    linux: '>= 5.4.0',
+    all: '>= 5.4.2',
   },
   yarn: {
     all: '>= 1.0.0',
