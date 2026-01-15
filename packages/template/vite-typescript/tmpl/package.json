@@ -2,11 +2,12 @@
   "devDependencies": {
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
     "@types/electron-squirrel-startup": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.25.0",
-    "typescript": "5.9.3",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "typescript": "^5.9.2",
     "vite": "^5.0.12"
   }
 }
