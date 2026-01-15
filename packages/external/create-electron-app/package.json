@@ -1,6 +1,6 @@
 {
   "name": "create-electron-app",
-  "version": "8.0.0-alpha.3",
+  "version": "8.0.0-alpha.4",
   "type": "module",
   "description": "Create Electron App",
   "repository": "https://github.com/electron/forge",

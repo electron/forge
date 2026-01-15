@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "8.0.0-alpha.3",
+  "version": "8.0.0-alpha.4",
   "type": "module",
   "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron/forge",

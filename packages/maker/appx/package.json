@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-appx",
-  "version": "8.0.0-alpha.3",
+  "version": "8.0.0-alpha.4",
   "type": "module",
   "description": "AppX maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
