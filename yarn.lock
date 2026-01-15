@@ -4679,12 +4679,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cross-spawn@npm:^6.0.1":
-  version: 6.0.2
-  resolution: "@types/cross-spawn@npm:6.0.2"
+"@types/cross-spawn@npm:^6.0.6":
+  version: 6.0.6
+  resolution: "@types/cross-spawn@npm:6.0.6"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10c0/658bd49267a7200e87e67c48ef1e58ee7418bbd4417fb191393b7051d47f590023090cad7b69eb3821d1907b82392b764e1114b1ec6000b01e98126926c8b06f
+  checksum: 10c0/e3d476bb6b3a54a8934a97fe6ee4bd13e2e5eb29073929a4be76a52466602ffaea420b20774ffe8503f9fa24f3ae34817e95e7f625689fb0d1c10404f5b2889c
   languageName: node
   linkType: hard
 
@@ -8470,7 +8470,7 @@ __metadata:
     "@octokit/rest": "npm:^20.1.2"
     "@octokit/types": "npm:^6.1.2"
     "@tsconfig/node22": "npm:^22.0.5"
-    "@types/cross-spawn": "npm:^6.0.1"
+    "@types/cross-spawn": "npm:^6.0.6"
     "@types/cross-zip": "npm:^4.0.2"
     "@types/debug": "npm:^4.1.12"
     "@types/express": "npm:^4.17.9"

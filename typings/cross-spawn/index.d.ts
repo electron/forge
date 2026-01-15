@@ -1,1 +1,1 @@
-declare module 'cross-spawn/lib/util/resolveCommand';
+declare module 'cross-spawn/lib/util/resolveCommand.js';

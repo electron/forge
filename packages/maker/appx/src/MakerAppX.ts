@@ -3,12 +3,14 @@ import path from 'node:path';
 import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import resolveCommand from 'cross-spawn/lib/util/resolveCommand';
+// eslint-disable-next-line n/no-missing-import
+import resolveCommand from 'cross-spawn/lib/util/resolveCommand.js';
 import windowsStore from 'electron-windows-store';
 import {
   isValidPublisherName,
   makeCert,
-} from 'electron-windows-store/lib/sign';
+  // eslint-disable-next-line n/no-missing-import
+} from 'electron-windows-store/lib/sign.js';
 import fs from 'fs-extra';
 
 import { MakerAppXConfig } from './Config.js';
