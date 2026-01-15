@@ -37,6 +37,18 @@ import resolveDir from '../util/resolve-dir.js';
 
 const d = debug('electron-forge:packager');
 
+export function serialHooks<T extends (...args: any[]) => any>(
+  hooks: T[] = [],
+): [T] {
+  return [
+    async function (opts: Parameters<T>[0]): Promise<void> {
+      for (const hook of hooks) {
+        await hook(opts);
+      }
+    } as T,
+  ];
+}
+
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
  */
@@ -393,11 +405,13 @@ export const listrPackage = (
               arch: arch,
               platform,
               // TODO: Make these hooks serial again
-              afterFinalizePackageTargets: afterFinalizePackageTargetsHooks,
-              afterComplete: afterCompleteHooks,
-              afterCopy: afterCopyHooks,
-              afterExtract: afterExtractHooks,
-              afterPrune: afterPruneHooks,
+              afterFinalizePackageTargets: serialHooks(
+                afterFinalizePackageTargetsHooks,
+              ),
+              afterComplete: serialHooks(afterCompleteHooks),
+              afterCopy: serialHooks(afterCopyHooks),
+              afterExtract: serialHooks(afterExtractHooks),
+              afterPrune: serialHooks(afterPruneHooks),
               out: calculatedOutDir,
               electronVersion: await getElectronVersion(ctx.dir, packageJSON),
             };
