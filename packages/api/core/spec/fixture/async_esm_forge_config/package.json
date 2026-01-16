@@ -1,0 +1,7 @@
+{
+  "name": "async-esm-test",
+  "version": "1.0.0",
+  "devDependencies": {
+    "electron": "99.99.99"
+  }
+}

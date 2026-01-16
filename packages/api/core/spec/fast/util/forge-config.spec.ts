@@ -338,6 +338,52 @@ describe('findConfig', () => {
       const conf = await findConfig(fixturePath);
       expect(conf.buildIdentifier).toEqual('typescript-esm');
     });
+
+    it('should resolve forge.config.mts (async)', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/async_mts_forge_config',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('async-typescript-esm');
+    });
+  });
+
+  describe('ESM and CJS module formats', () => {
+    it('should resolve explicit .mjs config files', async () => {
+      type MjsConfig = ResolvedForgeConfig & { explicitMjs: boolean };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_default_mjs_conf',
+      );
+      const conf = (await findConfig(fixturePath)) as MjsConfig;
+      expect(conf.buildIdentifier).toEqual('explicit-esm');
+      expect(conf.explicitMjs).toEqual(true);
+    });
+
+    it('should resolve .cjs config in ESM package (type: module)', async () => {
+      type CjsInEsmConfig = ResolvedForgeConfig & { cjsInEsmPackage: boolean };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/dummy_cjs_in_esm_conf',
+      );
+      const conf = (await findConfig(fixturePath)) as CjsInEsmConfig;
+      expect(conf.buildIdentifier).toEqual('cjs-in-esm-package');
+      expect(conf.cjsInEsmPackage).toEqual(true);
+    });
+
+    it('should support async ESM configs (.mjs)', async () => {
+      type AsyncEsmConfig = ResolvedForgeConfig & {
+        packagerConfig: { asyncEsm: boolean };
+      };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/async_esm_forge_config',
+      );
+      const conf = (await findConfig(fixturePath)) as AsyncEsmConfig;
+      expect(conf.buildIdentifier).toEqual('async-esm');
+      expect(conf.packagerConfig.asyncEsm).toEqual(true);
+    });
   });
 });
 
