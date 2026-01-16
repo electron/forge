@@ -1,5 +1,3 @@
-
-
 import type { ForgeConfig } from '@electron-forge/shared-types';
 
 export default async function (): Promise<ForgeConfig> {
@@ -10,7 +8,7 @@ export default async function (): Promise<ForgeConfig> {
       {
         name: '@electron-forge/maker-zip',
         platforms: ['darwin'],
-        config: {}
+        config: {},
       },
     ],
   };
