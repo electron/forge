@@ -124,7 +124,7 @@ const safeFirstRendererConfig = (renderer: WebpackPluginConfig['renderer']) => {
 };
 
 // FIXME
-describe.skip('AssetRelocatorPatch', () => {
+describe('AssetRelocatorPatch', () => {
   const rendererOut = path.join(appPath, '.webpack/renderer');
   const mainOut = path.join(appPath, '.webpack/main');
 
@@ -194,7 +194,7 @@ describe.skip('AssetRelocatorPatch', () => {
         outDir: mainOut,
         jsPath: path.join(mainOut, 'index.js'),
         nativeModulesString:
-          '__webpack_require__.ab = import.meta.dirname + "/native_modules/"',
+          '__webpack_require__.ab = __dirname + "/native_modules/"',
         nativePathString: `require(__webpack_require__.ab + "${nativePathSuffix}")`,
       });
     });
@@ -256,7 +256,7 @@ describe.skip('AssetRelocatorPatch', () => {
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: mainOut,
         jsPath: path.join(mainOut, 'index.js'),
-        nativeModulesString: '.ab=import.meta.dirname+"/native_modules/"',
+        nativeModulesString: '.ab=__dirname+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -274,7 +274,7 @@ describe.skip('AssetRelocatorPatch', () => {
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/preload.js'),
         nativeModulesString:
-          '.ab=require("path").resolve(import.meta.dirname,"..")+"/native_modules/"',
+          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
@@ -291,7 +291,7 @@ describe.skip('AssetRelocatorPatch', () => {
         outDir: rendererOut,
         jsPath: path.join(rendererOut, 'main_window/index.js'),
         nativeModulesString:
-          '.ab=require("path").resolve(import.meta.dirname,"..")+"/native_modules/"',
+          '.ab=require("path").resolve(__dirname,"..")+"/native_modules/"',
         nativePathString: `.ab+"${nativePathSuffix}"`,
       });
     });
