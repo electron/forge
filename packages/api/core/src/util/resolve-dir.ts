@@ -4,8 +4,8 @@ import { getElectronVersion } from '@electron-forge/core-utils';
 import debug from 'debug';
 import fs from 'fs-extra';
 
-import { registeredForgeConfigs } from './forge-config';
-import { readRawPackageJson } from './read-package-json';
+import { registeredForgeConfigs } from './forge-config.js';
+import { readRawPackageJson } from './read-package-json.js';
 
 const d = debug('electron-forge:project-resolver');
 

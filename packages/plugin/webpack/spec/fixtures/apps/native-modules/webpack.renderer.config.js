@@ -1,7 +1,7 @@
 const rules = require('./webpack.rules');
 
 module.exports = {
-  context: __dirname,
+  context: import.meta.dirname,
   target: 'electron-renderer',
   performance: {
     hints: false,

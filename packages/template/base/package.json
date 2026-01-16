@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/template-base",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -8,7 +9,7 @@
   "main": "dist/BaseTemplate.js",
   "typings": "dist/BaseTemplate.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

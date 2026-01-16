@@ -2,18 +2,19 @@ import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
-import { PublisherGCSConfig } from './Config';
+import { PublisherGCSConfig } from './Config.js';
 
 const d = debug('electron-forge:publish:gcs');
 
 export type GCSArtifact = {
   path: string;
   keyPrefix: string;
-  platform: string;
-  arch: string;
+  platform: ForgePlatform;
+  arch: ForgeArch;
   version: string;
 };
 

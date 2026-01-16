@@ -11,16 +11,16 @@ import {
   WebpackPluginEntryPointLocalWindow,
   WebpackPluginEntryPointPreloadOnly,
   WebpackPluginRendererConfig,
-} from './Config';
-import AssetRelocatorPatch from './util/AssetRelocatorPatch';
-import processConfig from './util/processConfig';
+} from './Config.js';
+import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
+import processConfig from './util/processConfig.js';
 import {
   isLocalOrNoWindowEntries,
   isLocalWindow,
   isNoWindow,
   isPreloadOnly,
   isPreloadOnlyEntries,
-} from './util/rendererTypeUtils';
+} from './util/rendererTypeUtils.js';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
@@ -94,8 +94,7 @@ export default class WebpackConfigGenerator {
 
     let rawConfig =
       typeof config === 'string'
-        ? // eslint-disable-next-line @typescript-eslint/no-require-imports
-          (require(path.resolve(this.projectDir, config)) as MaybeESM<
+        ? ((await import(path.resolve(this.projectDir, config))) as MaybeESM<
             Configuration | ConfigurationFactory
           >)
         : config;

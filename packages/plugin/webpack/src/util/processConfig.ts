@@ -1,6 +1,6 @@
 import { Configuration } from 'webpack';
 
-import { ConfigurationFactory } from '../WebpackConfig';
+import { ConfigurationFactory } from '../WebpackConfig.js';
 
 const trivialConfigurationFactory =
   (config: Configuration): ConfigurationFactory =>

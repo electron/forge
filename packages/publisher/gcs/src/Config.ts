@@ -1,8 +1,7 @@
 import { StorageOptions, UploadOptions } from '@google-cloud/storage';
-// eslint-disable-next-line n/no-missing-import
-import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
+// import { ConfigMetadata } from '@google-cloud/storage/build';
 
-import { GCSArtifact } from './PublisherGCS';
+import { GCSArtifact } from './PublisherGCS.js';
 
 export interface PublisherGCSConfig {
   /**
@@ -38,5 +37,5 @@ export interface PublisherGCSConfig {
    * See https://cloud.google.com/storage/docs/metadata for more info.
    * Expects a function that takes a GCSArtifact object and returns a `ConfigMetadata` object.
    */
-  metadataGenerator?: (artifact: GCSArtifact) => ConfigMetadata;
+  metadataGenerator?: (artifact: GCSArtifact) => any; // FIXME: ADD CONFIGMETADATA TYPE BACK
 }

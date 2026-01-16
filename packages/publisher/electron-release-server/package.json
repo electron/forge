@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/publisher-electron-release-server",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Electron release server publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
@@ -12,15 +13,14 @@
     "vitest": "^4.0.14"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1",
     "form-data": "^4.0.0",
-    "fs-extra": "^10.0.0",
-    "node-fetch": "^2.6.7"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

@@ -7,10 +7,10 @@ import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
-import './util/terminate';
-import packageJSON from '../package.json';
+import './util/terminate.js';
+import packageJSON from '../package.json' with { type: 'json' };
 
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 // eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
 import type { Prompt } from '@inquirer/type';
