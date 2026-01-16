@@ -2,12 +2,11 @@ import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+// @ts-expect-error - this package has no types
+import installer from 'electron-installer-redhat';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerRpm, rpmArch } from '../src/MakerRpm';
-
-// @ts-expect-error - this package has no types
-import installer from 'electron-installer-redhat';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

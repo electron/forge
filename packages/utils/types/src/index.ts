@@ -1,10 +1,5 @@
 import { ChildProcess } from 'node:child_process';
 
-import type {
-  Options as ElectronPackagerOptions,
-  OfficialArch,
-  OfficialPlatform,
-} from '@electron/packager';
 import { RebuildOptions } from '@electron/rebuild';
 import { autoTrace } from '@electron-forge/tracer';
 import {
@@ -17,6 +12,12 @@ import {
   ListrTask,
   ListrTaskWrapper,
 } from 'listr2';
+
+import type {
+  Options as ElectronPackagerOptions,
+  OfficialArch,
+  OfficialPlatform,
+} from '@electron/packager';
 
 export type ForgeListrOptions<T> = ListrBaseClassOptions<
   T,

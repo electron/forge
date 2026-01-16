@@ -1,11 +1,10 @@
 import { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import { createDMG } from 'electron-installer-dmg';
 import fs from 'fs-extra';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerDMG } from '../src/MakerDMG';
-
-import { createDMG } from 'electron-installer-dmg';
-import { ForgeArch } from '@electron-forge/shared-types';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

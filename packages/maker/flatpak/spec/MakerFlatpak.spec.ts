@@ -2,12 +2,11 @@ import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+// @ts-expect-error - this package has no types
+import installer from '@malept/electron-installer-flatpak';
 import { describe, expect, it, vi } from 'vitest';
 
 import { flatpakArch, MakerFlatpak } from '../src/MakerFlatpak';
-
-// @ts-expect-error - this package has no types
-import installer from '@malept/electron-installer-flatpak';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

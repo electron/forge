@@ -2,10 +2,10 @@ import path from 'node:path';
 
 import { flat } from '@electron/osx-sign';
 import { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerPKG } from '../src/MakerPKG';
-import { ForgeArch } from '@electron-forge/shared-types';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

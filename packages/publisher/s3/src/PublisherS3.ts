@@ -8,10 +8,10 @@ import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 import { PublisherS3Config } from './Config.js';
-import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:publish:s3');
 

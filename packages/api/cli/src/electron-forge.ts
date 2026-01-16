@@ -19,6 +19,8 @@ if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   process.exit(1);
 }
 
+// Listr2 might be unsupported in certain versions, so import it after the Node version check.
+// eslint-disable-next-line import/order
 import { Listr } from 'listr2';
 
 program

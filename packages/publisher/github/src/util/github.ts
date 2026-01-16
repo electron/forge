@@ -1,9 +1,10 @@
 import path from 'node:path';
 
-import type { OctokitOptions } from '@octokit/core';
 import { retry } from '@octokit/plugin-retry';
 import { Octokit } from '@octokit/rest';
 import debug from 'debug';
+
+import type { OctokitOptions } from '@octokit/core';
 
 const logInfo = debug('electron-forge:publisher:github:info');
 const logDebug = debug('electron-forge:publisher:github:debug');

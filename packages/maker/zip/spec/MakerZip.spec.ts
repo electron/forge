@@ -1,13 +1,13 @@
 import os from 'node:os';
 import path from 'node:path';
 
+import { ForgeArch } from '@electron-forge/shared-types';
+import { zip } from 'cross-zip';
 import fs from 'fs-extra';
 import { got } from 'got';
 import { describe, expect, it, vi } from 'vitest';
-import { zip } from 'cross-zip';
 
 import { MakerZIP } from '../src/MakerZIP';
-import { ForgeArch } from '@electron-forge/shared-types';
 
 vi.mock(import('cross-zip'), async (importOriginal) => {
   const mod = await importOriginal();

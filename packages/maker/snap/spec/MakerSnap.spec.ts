@@ -1,12 +1,11 @@
 import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import installer from 'electron-installer-snap';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerSnap } from '../src/MakerSnap';
-
-import installer from 'electron-installer-snap';
-import { ForgeArch } from '@electron-forge/shared-types';
 
 vi.mock('electron-installer-snap', () => {
   return {

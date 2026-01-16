@@ -2,11 +2,11 @@ import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
 import { PublisherGCSConfig } from './Config.js';
-import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 const d = debug('electron-forge:publish:gcs');
 

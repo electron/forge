@@ -2,12 +2,11 @@ import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+// @ts-expect-error - this package has no types
+import installer from 'electron-installer-debian';
 import { describe, expect, it, vi } from 'vitest';
 
 import { debianArch, MakerDeb } from '../src/MakerDeb';
-
-// @ts-expect-error - this package has no types
-import installer from 'electron-installer-debian';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 

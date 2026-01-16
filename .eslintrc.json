@@ -11,8 +11,8 @@
   },
   "extends": [
     "eslint:recommended",
-    // "plugin:import/errors",
-    // "plugin:import/warnings",
+    "plugin:import/errors",
+    "plugin:import/warnings",
     "plugin:n/recommended",
     "plugin:promise/recommended",
     "prettier"
@@ -27,26 +27,26 @@
         "vars": "all"
       }
     ],
-    // "import/order": [
-    //   "error",
-    //   {
-    //     "groups": [
-    //       "builtin",
-    //       "external",
-    //       "internal",
-    //       "parent",
-    //       "sibling",
-    //       "index",
-    //       "object",
-    //       "type"
-    //     ],
-    //     "newlines-between": "always",
-    //     "alphabetize": {
-    //       "order": "asc",
-    //       "caseInsensitive": true
-    //     }
-    //   }
-    // ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+          "object",
+          "type"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
     "sort-imports": [
       "error",
       {
@@ -70,9 +70,14 @@
         "project": ["./tsconfig.base.json"]
       },
       "extends": [
-        "plugin:@typescript-eslint/recommended"
-        // "plugin:import/typescript"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript"
       ],
+      "settings": {
+        "import/resolver": {
+          "typescript": true
+        }
+      },
       "rules": {
         // There is no "recommended" ruleset for tsdoc yet.
         "tsdoc/syntax": "warn",
@@ -95,7 +100,9 @@
             "vars": "all"
           }
         ],
-        "@typescript-eslint/only-throw-error": "error"
+        "@typescript-eslint/only-throw-error": "error",
+        "import/default": "off",
+        "import/no-named-as-default-member": "off"
       }
     },
     {
@@ -161,7 +168,7 @@
       "rules": {
         "no-process-exit": "off",
         "no-undef": "off",
-        // "import/no-unresolved": "off",
+        "import/no-unresolved": "off",
         "n/no-missing-import": "off",
         "n/no-unpublished-import": "off",
         "n/no-unsupported-features/es-syntax": "off"
