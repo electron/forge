@@ -62,7 +62,7 @@
     "interpret": "^3.1.1",
     "jiti": "^2.4.2",
     "listr2": "^7.0.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.23",
     "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25",
     "node-fetch": "^2.6.7",
