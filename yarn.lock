@@ -8770,7 +8770,6 @@ __metadata:
     lerna: "npm:^9.0.0"
     lint-staged: "npm:^12.1.7"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.20"
     log-symbols: "npm:^4.0.0"
     mime-types: "npm:^2.1.25"
     minimist: "npm:^1.2.6"
