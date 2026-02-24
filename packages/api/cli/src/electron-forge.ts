@@ -26,7 +26,6 @@ program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
   .command('init', 'Initialize a new Electron application.')
-  .command('import', 'Import an existing Electron project to Forge.')
   .command(
     'start',
     'Start the current Electron application in development mode.',

@@ -7,7 +7,7 @@ import {
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { deps, devDeps, initNPM } from '../../../src/api/init-scripts/init-npm';
+import { deps, devDeps, initNPM } from '../../../src/init-scripts/init-npm';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => ({
   ...(await importOriginal()),

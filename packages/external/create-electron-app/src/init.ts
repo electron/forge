@@ -1,16 +1,37 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
-import { api, InitOptions } from '@electron-forge/core';
 import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
-import './util/terminate';
 import packageJSON from '../package.json';
 
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { init, InitOptions } from './core';
+
+/**
+ * Resolves the directory in which to use a CLI command.
+ * @param dir - The directory specified by the user (can be relative or absolute)
+ * @param checkExisting - Checks if the directory exists. If true and directory is non-existent, it will fall back to the current working directory
+ * @returns
+ */
+export function resolveWorkingDir(dir: string, checkExisting = true): string {
+  if (!dir) {
+    return process.cwd();
+  }
+
+  const resolved = path.isAbsolute(dir)
+    ? dir
+    : path.resolve(process.cwd(), dir);
+
+  if (checkExisting && !fs.existsSync(resolved)) {
+    return process.cwd();
+  } else {
+    return resolved;
+  }
+}
 
 // eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
 import type { Prompt } from '@inquirer/type';
@@ -173,7 +194,7 @@ program
     );
 
     const initOpts: InitOptions = await tasks.run();
-    await api.init(initOpts);
+    await init(initOpts);
   });
 
 program.parse(process.argv);

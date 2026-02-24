@@ -2,13 +2,14 @@ import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { api } from '@electron-forge/core';
 import {
   ensureTestDirIsNonexistent,
   updatePackageJSON,
 } from '@electron-forge/test-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { api } from '../../src/api/index';
+import { forgeImport } from '../../src/import-core';
 
 describe('import', () => {
   let dir: string;
@@ -37,7 +38,7 @@ describe('import', () => {
 
     // FIXME: the install here will use the production version of Electron Forge
     // instead of the contents of this monorepo.
-    await api.import({ dir });
+    await forgeImport({ dir });
 
     expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toEqual(true);
 

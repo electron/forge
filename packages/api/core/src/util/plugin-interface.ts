@@ -1,3 +1,4 @@
+import { importSearch } from '@electron-forge/core-utils';
 import { PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeListrTaskDefinition,
@@ -16,8 +17,6 @@ import debug from 'debug';
 
 // eslint-disable-next-line n/no-missing-import
 import { StartOptions } from '../api';
-
-import importSearch from './import-search';
 
 const d = debug('electron-forge:plugins');
 

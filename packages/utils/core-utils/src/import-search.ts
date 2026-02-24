@@ -3,7 +3,7 @@ import path from 'node:path';
 import debug from 'debug';
 
 // eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../helper/dynamic-import.js';
 
 const d = debug('electron-forge:import-search');
 
@@ -20,15 +20,15 @@ export async function importSearchRaw<T>(
 ): Promise<T | null> {
   // Attempt to locally short-circuit if we're running from a checkout of forge
   if (
-    __dirname.includes('forge/packages/api/core/') &&
+    __dirname.includes('forge/packages/') &&
     paths.length === 1 &&
     paths[0].startsWith('@electron-forge/')
   ) {
     const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
     try {
+      // From packages/utils/core-utils/dist (or src), resolve up to packages/
       const localPath = path.resolve(
         __dirname,
-        '..',
         '..',
         '..',
         '..',
@@ -74,12 +74,12 @@ export type PossibleModule<T> = {
   default?: T;
 } & T;
 
-export default async <T>(
+export async function importSearch<T>(
   relativeTo: string,
   paths: string[],
-): Promise<T | null> => {
+): Promise<T | null> {
   const result = await importSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default
     ? result.default
     : (result as T | null);
-};
+}

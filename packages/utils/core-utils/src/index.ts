@@ -3,3 +3,4 @@ export * from './electron-version';
 export * from './package-manager';
 export * from './author-name';
 export * from './install-dependencies';
+export * from './import-search';

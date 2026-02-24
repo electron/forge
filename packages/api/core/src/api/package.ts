@@ -11,6 +11,7 @@ import {
 } from '@electron/packager';
 import {
   getElectronVersion,
+  importSearch,
   listrCompatibleRebuildHook,
 } from '@electron-forge/core-utils';
 import {
@@ -30,7 +31,6 @@ import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runHook } from '../util/hook';
-import importSearch from '../util/import-search';
 import { warn } from '../util/messages';
 import getCurrentOutDir from '../util/out-dir';
 import { readMutatedPackageJson } from '../util/read-package-json';

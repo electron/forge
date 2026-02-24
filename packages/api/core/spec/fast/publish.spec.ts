@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import { importSearch } from '@electron-forge/core-utils';
 import {
   ForgeMakeResult,
   ResolvedForgeConfig,
@@ -11,7 +12,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { listrMake } from '../../src/api/make';
 import publish from '../../src/api/publish';
 import findConfig from '../../src/util/forge-config';
-import importSearch from '../../src/util/import-search';
 
 vi.mock(import('../../src/api/make'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -37,11 +37,11 @@ vi.mock(import('../../src/util/resolve-dir'), async (importOriginal) => {
   };
 });
 
-vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
-    default: vi.fn(),
+    importSearch: vi.fn(),
   };
 });
 
