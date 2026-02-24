@@ -1,5 +1,4 @@
-import { PossibleModule } from '@electron-forge/core-utils';
-import { ForgeTemplate } from '@electron-forge/shared-types';
+import { ForgeTemplate, PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 const d = debug('electron-forge:init:find-template');

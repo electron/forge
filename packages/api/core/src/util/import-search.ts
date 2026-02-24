@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 // eslint-disable-next-line n/no-missing-import
@@ -69,10 +70,6 @@ export async function importSearchRaw<T>(
   d('failed to find a module in', testPaths);
   return null;
 }
-
-export type PossibleModule<T> = {
-  default?: T;
-} & T;
 
 export async function importSearch<T>(
   relativeTo: string,

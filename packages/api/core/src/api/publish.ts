@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import { importSearch } from '@electron-forge/core-utils';
 import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
@@ -20,6 +19,7 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
+import { importSearch } from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import PublishState from '../util/publish-state';
 import resolveDir from '../util/resolve-dir';
