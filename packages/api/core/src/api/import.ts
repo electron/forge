@@ -1,6 +1,9 @@
 import path from 'node:path';
 
 import {
+  DepType,
+  DepVersionRestriction,
+  installDependencies,
   PMDetails,
   resolvePackageManager,
   updateElectronDependency,
@@ -17,11 +20,6 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash';
 
-import {
-  DepType,
-  DepVersionRestriction,
-  installDependencies,
-} from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
 import { initGit } from './init-scripts/init-git';

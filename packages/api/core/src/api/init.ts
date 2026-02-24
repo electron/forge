@@ -1,6 +1,12 @@
 import path from 'node:path';
 
-import { PMDetails, resolvePackageManager } from '@electron-forge/core-utils';
+import {
+  DepType,
+  DepVersionRestriction,
+  installDependencies,
+  PMDetails,
+  resolvePackageManager,
+} from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import { spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
@@ -8,11 +14,6 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import {
-  DepType,
-  DepVersionRestriction,
-  installDependencies,
-} from '../util/install-dependencies';
 import { readRawPackageJson } from '../util/read-package-json';
 
 import { findTemplate } from './init-scripts/find-template';

@@ -1,16 +1,15 @@
 import path from 'node:path';
 
-import { PMDetails } from '@electron-forge/core-utils';
-import { ForgeListrTask } from '@electron-forge/shared-types';
-import debug from 'debug';
-import fs from 'fs-extra';
-import semver from 'semver';
-
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../util/install-dependencies';
+  PMDetails,
+} from '@electron-forge/core-utils';
+import { ForgeListrTask } from '@electron-forge/shared-types';
+import debug from 'debug';
+import fs from 'fs-extra';
+import semver from 'semver';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(

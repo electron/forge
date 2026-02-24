@@ -1,15 +1,15 @@
-import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
-import { ForgeListrTask } from '@electron-forge/shared-types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { deps, devDeps, initNPM } from '../../../src/api/init-scripts/init-npm';
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../../src/util/install-dependencies';
+  PACKAGE_MANAGERS,
+} from '@electron-forge/core-utils';
+import { ForgeListrTask } from '@electron-forge/shared-types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../../src/util/install-dependencies', async (importOriginal) => ({
+import { deps, devDeps, initNPM } from '../../../src/api/init-scripts/init-npm';
+
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => ({
   ...(await importOriginal()),
   installDependencies: vi.fn(),
 }));
