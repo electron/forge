@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { getHostArch } from '@electron/get';
-import { getElectronVersion, importSearch } from '@electron-forge/core-utils';
+import { getElectronVersion } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
   ForgeArch,
@@ -22,6 +22,7 @@ import logSymbols from 'log-symbols';
 
 import getForgeConfig from '../util/forge-config';
 import { getHookListrTasks, runMutatingHook } from '../util/hook';
+import { importSearch } from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';

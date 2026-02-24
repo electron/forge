@@ -3,7 +3,7 @@ import path from 'node:path';
 import debug from 'debug';
 
 // eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../helper/dynamic-import.js';
+import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 const d = debug('electron-forge:import-search');
 

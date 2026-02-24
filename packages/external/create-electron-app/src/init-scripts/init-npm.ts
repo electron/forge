@@ -12,12 +12,12 @@ import fs from 'fs-extra';
 import semver from 'semver';
 
 const d = debug('electron-forge:init:npm');
-const corePackage = fs.readJsonSync(
-  path.resolve(__dirname, '../../../package.json'),
+const packageJSON = fs.readJsonSync(
+  path.resolve(__dirname, '../../package.json'),
 );
 
 export function siblingDep(name: string): string {
-  return `@electron-forge/${name}@^${corePackage.version}`;
+  return `@electron-forge/${name}@^${packageJSON.version}`;
 }
 
 export const deps = ['electron-squirrel-startup'];

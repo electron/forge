@@ -8,7 +8,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   devDeps,
   exactDevDeps,
-} from '../../../api/core/src/api/init-scripts/init-npm';
+} from '../../../external/create-electron-app/src/init-scripts/init-npm';
 import {
   getElectronModulePath,
   getElectronVersion,
