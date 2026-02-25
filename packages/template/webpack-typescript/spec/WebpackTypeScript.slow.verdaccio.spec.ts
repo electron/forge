@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
+import { init } from '../../../external/create-electron-app/src/core';
 
 describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
@@ -20,7 +21,7 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   it('should succeed in initializing the typescript template', async () => {
-    await api.init({
+    await init({
       dir,
       template: path.join(__dirname, '..'),
       interactive: false,

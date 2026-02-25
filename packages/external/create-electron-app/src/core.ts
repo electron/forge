@@ -71,7 +71,7 @@ async function validateTemplate(
     );
   }
 
-  const dir = path.join(__dirname, '..', '..');
+  const dir = path.join(__dirname, '..');
   const raw = await fs.promises.readFile(
     path.join(dir, 'package.json'),
     'utf-8',
