@@ -11,6 +11,9 @@ import packageJSON from '../package.json';
 
 import { init, InitOptions } from './core';
 
+// eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
+import type { Prompt } from '@inquirer/type';
+
 /**
  * Resolves the directory in which to use a CLI command.
  * @param dir - The directory specified by the user (can be relative or absolute)
@@ -32,9 +35,6 @@ export function resolveWorkingDir(dir: string, checkExisting = true): string {
     return resolved;
   }
 }
-
-// eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
-import type { Prompt } from '@inquirer/type';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')

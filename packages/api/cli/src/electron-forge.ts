@@ -25,7 +25,6 @@ import { Listr } from 'listr2';
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
   .helpOption('-h, --help', 'Output usage information.')
-  .command('init', 'Initialize a new Electron application.')
   .command(
     'start',
     'Start the current Electron application in development mode.',
