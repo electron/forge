@@ -1,5 +1,6 @@
 import http from 'node:http';
 import path from 'node:path';
+import url from 'node:url';
 
 import express from 'express';
 import ews from 'express-ws';
@@ -27,15 +28,23 @@ export default class Logger {
 
     this.app.use(
       '/xterm/addons/fit',
-      express.static(path.dirname(import.meta.resolve('xterm-addon-fit'))),
+      express.static(
+        path.dirname(url.fileURLToPath(import.meta.resolve('xterm-addon-fit'))),
+      ),
     );
     this.app.use(
       '/xterm/addons/search',
-      express.static(path.dirname(import.meta.resolve('xterm-addon-search'))),
+      express.static(
+        path.dirname(
+          url.fileURLToPath(import.meta.resolve('xterm-addon-search')),
+        ),
+      ),
     );
     this.app.use(
       '/xterm',
-      express.static(path.resolve(import.meta.resolve('xterm'), '../..')),
+      express.static(
+        path.resolve(url.fileURLToPath(import.meta.resolve('xterm')), '../..'),
+      ),
     );
     this.app.use(
       express.static(path.resolve(import.meta.dirname, '..', 'static')),
