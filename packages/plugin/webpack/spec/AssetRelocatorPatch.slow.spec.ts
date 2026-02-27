@@ -123,7 +123,6 @@ const safeFirstRendererConfig = (renderer: WebpackPluginConfig['renderer']) => {
   return renderer;
 };
 
-// FIXME
 describe('AssetRelocatorPatch', () => {
   const rendererOut = path.join(appPath, '.webpack/renderer');
   const mainOut = path.join(appPath, '.webpack/main');

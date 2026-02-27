@@ -404,7 +404,6 @@ export const listrPackage = (
               dir: ctx.dir,
               arch: arch,
               platform,
-              // TODO: Make these hooks serial again
               afterFinalizePackageTargets: serialHooks(
                 afterFinalizePackageTargetsHooks,
               ),
