@@ -22,7 +22,7 @@ let servers: Closeable[] = [];
 
 const nativePathSuffix = 'build/Release/hello_world.node';
 const fixtureSource = path.join(
-  __dirname,
+  import.meta.dirname,
   'fixtures',
   'apps',
   'native-modules',

@@ -8,7 +8,7 @@ import { getPackageInfo } from './utils';
   const packages = await getPackageInfo();
 
   const baseJson = await fs.readJson(
-    path.resolve(__dirname, '..', 'package.json'),
+    path.resolve(import.meta.dirname, '..', 'package.json'),
   );
 
   const allDeps = {

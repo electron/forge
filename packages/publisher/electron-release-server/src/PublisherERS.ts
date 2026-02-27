@@ -8,9 +8,8 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
-import { PublisherERSConfig } from './Config';
+import { PublisherERSConfig } from './Config.js';
 
 const d = debug('electron-forge:publish:ers');
 
@@ -37,17 +36,18 @@ interface ERSVersionSorted {
 }
 
 const fetchAndCheckStatus = async (
-  url: RequestInfo,
+  url: Parameters<typeof fetch>[0],
   init?: RequestInit,
 ): Promise<Response> => {
   const result = await fetch(url, init);
   if (result.ok) {
     // res.status >= 200 && res.status < 300
     return result;
+  } else {
+    throw new Error(
+      `ERS publish failed with status code: ${result.status} (${result.url})`,
+    );
   }
-  throw new Error(
-    `ERS publish failed with status code: ${result.status} (${result.url})`,
-  );
 };
 
 export const ersPlatform = (
@@ -85,7 +85,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
 
     const api = (apiPath: string) => `${config.baseUrl}/${apiPath}`;
 
-    const { token } = await (
+    const { token } = (await (
       await fetchAndCheckStatus(api('api/auth/login'), {
         method: 'POST',
         body: JSON.stringify({
@@ -96,7 +96,7 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           'Content-Type': 'application/json',
         },
       })
-    ).json();
+    ).json()) as { token: string };
 
     const authFetch = (apiPath: string, options?: RequestInit) =>
       fetchAndCheckStatus(api(apiPath), {
@@ -116,9 +116,9 @@ export default class PublisherERS extends PublisherBase<PublisherERSConfig> {
           path.basename(artifactPath).toLowerCase() !== 'releases',
       );
 
-      const versions: ERSVersionSorted = await (
+      const versions = (await (
         await authFetch('versions/sorted')
-      ).json();
+      ).json()) as ERSVersionSorted;
 
       // Find the version with the same name and flavor
       const existingVersion = versions['items'].find(

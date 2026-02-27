@@ -4,7 +4,7 @@ import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 
-import { MakerFlatpakConfig } from './Config';
+import { MakerFlatpakConfig } from './Config.js';
 
 export function flatpakArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
@@ -34,8 +34,10 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line n/no-missing-require
-    const installer = require('@malept/electron-installer-flatpak');
+    const { default: installer } = await import(
+      // @ts-expect-error - this package has no types
+      '@malept/electron-installer-flatpak'
+    );
 
     const arch = flatpakArch(targetArch);
     const outDir = path.resolve(makeDir, 'flatpak', arch);

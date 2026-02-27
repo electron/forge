@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/publisher-bitbucket",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Bitbucket publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Luke Batchelor",
@@ -8,13 +9,12 @@
   "main": "dist/PublisherBitbucket.js",
   "typings": "dist/PublisherBitbucket.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",
     "form-data": "^4.0.0",
-    "fs-extra": "^10.0.0",
-    "node-fetch": "^2.6.7"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

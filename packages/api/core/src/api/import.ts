@@ -15,17 +15,17 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../util/install-dependencies';
-import { readRawPackageJson } from '../util/read-package-json';
+} from '../util/install-dependencies.js';
+import { readRawPackageJson } from '../util/read-package-json.js';
 
-import { initGit } from './init-scripts/init-git';
-import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
+import { initGit } from './init-scripts/init-git.js';
+import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm.js';
 
 const d = debug('electron-forge:import');
 

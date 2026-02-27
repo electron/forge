@@ -5,7 +5,7 @@ import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
 } from '@electron-forge/core-utils';
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -22,7 +22,7 @@ describe('WebpackTypeScriptTemplate', () => {
   it('should succeed in initializing the typescript template', async () => {
     await api.init({
       dir,
-      template: path.join(__dirname, '..'),
+      template: path.join(import.meta.dirname, '..'),
       interactive: false,
       electronVersion: '38.2.2',
     });

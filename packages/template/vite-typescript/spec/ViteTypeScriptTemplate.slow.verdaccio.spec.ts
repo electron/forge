@@ -6,7 +6,7 @@ import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
 } from '@electron-forge/core-utils';
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -32,7 +32,7 @@ describe('ViteTypeScriptTemplate', () => {
     it('should succeed in initializing the typescript template', async () => {
       await api.init({
         dir,
-        template: path.resolve(__dirname, '..'),
+        template: path.resolve(import.meta.dirname, '..'),
         interactive: false,
         electronVersion: '38.2.2',
       });

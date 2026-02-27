@@ -6,7 +6,7 @@ import {
 } from '@electron-forge/publisher-base';
 import fs from 'fs-extra';
 
-import { PublisherSnapcraftConfig } from './Config';
+import { PublisherSnapcraftConfig } from './Config.js';
 
 // TODO: convert to import statement once electron-installer-snap imports Snapcraft properly.
 // eslint-disable-next-line @typescript-eslint/no-require-imports

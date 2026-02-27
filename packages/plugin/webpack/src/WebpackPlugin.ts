@@ -9,6 +9,7 @@ import {
 } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
+  ForgeArch,
   ForgeMultiHookMap,
   ListrTask,
   ResolvedForgeConfig,
@@ -23,11 +24,11 @@ import webpack, { Configuration, Watching } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
-import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config';
-import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging';
-import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin';
-import once from './util/once';
-import WebpackConfigGenerator from './WebpackConfig';
+import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config.js';
+import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging.js';
+import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin.js';
+import once from './util/once.js';
+import WebpackConfigGenerator from './WebpackConfig.js';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
@@ -241,15 +242,18 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             await fs.remove(this.baseDir);
 
             // TODO: Figure out how to get matrix from packager
-            const arches: string[] = Array.from(
-              new Set(
-                arch
-                  .split(',')
-                  .reduce<
-                    string[]
-                  >((all, pArch) => (pArch === 'universal' ? all.concat(['arm64', 'x64']) : all.concat([pArch])), []),
-              ),
+            const archStrings = arch.split(',');
+            const archSet = new Set<ForgeArch>(
+              archStrings.reduce<ForgeArch[]>((acc, val) => {
+                if (val === 'universal') {
+                  return acc.concat('arm64', 'x64');
+                } else {
+                  return acc.concat(val as ForgeArch);
+                }
+              }, []),
             );
+
+            const arches = Array.from(archSet);
 
             const firstArch = arches[0];
             const otherArches = arches.slice(1);

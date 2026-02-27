@@ -25,7 +25,7 @@ describe.runIf(process.platform === 'win32')('MakerAppX', function () {
     def('should create a .pfx file', async () => {
       await fs.copyFile(
         path.join(
-          __dirname,
+          import.meta.dirname,
           '../../../api/core/spec/fixture',
           'bogus-private-key.pvk',
         ),

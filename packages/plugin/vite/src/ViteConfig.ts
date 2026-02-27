@@ -1,15 +1,15 @@
 import debug from 'debug';
 import { loadConfigFromFile } from 'vite';
 
-import { getConfig as getMainViteConfig } from './config/vite.main.config';
-import { getConfig as getPreloadViteConfig } from './config/vite.preload.config';
-import { getConfig as getRendererViteConfig } from './config/vite.renderer.config';
+import { getConfig as getMainViteConfig } from './config/vite.main.config.js';
+import { getConfig as getPreloadViteConfig } from './config/vite.preload.config.js';
+import { getConfig as getRendererViteConfig } from './config/vite.renderer.config.js';
 
 import type {
   VitePluginBuildConfig,
   VitePluginConfig,
   VitePluginRendererConfig,
-} from './Config';
+} from './Config.js';
 import type { ConfigEnv, UserConfig } from 'vite';
 
 const d = debug('@electron-forge/plugin-vite:ViteConfig');

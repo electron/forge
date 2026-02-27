@@ -3,6 +3,7 @@
   "productName": "",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start"
@@ -11,9 +12,10 @@
   "author": "",
   "license": "MIT",
   "config": {
-    "forge": "./forge.different.config.js"
+    "forge": "./forge.different.config.cjs"
   },
   "devDependencies": {
-    "electron": "99.99.99"
+    "electron": "99.99.99",
+    "@electron-forge/core": "9.9.9"
   }
 }

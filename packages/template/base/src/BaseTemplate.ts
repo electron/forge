@@ -10,13 +10,14 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import determineAuthor from './determine-author';
+import determineAuthor from './determine-author.js';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const currentForgeVersion = require('../package.json').version;
+const currentForgeVersion = fs.readJSONSync(
+  path.resolve(import.meta.dirname, '../package.json'),
+).version;
 
 const d = debug('electron-forge:template:base');
-const tmplDir = path.resolve(__dirname, '../tmpl');
+const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
@@ -131,7 +132,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   async initializePackageJSON(directory: string): Promise<void> {
     const packageJSON = await fs.readJson(
-      path.resolve(__dirname, '../tmpl/package.json'),
+      path.resolve(import.meta.dirname, '../tmpl/package.json'),
     );
     packageJSON.productName = packageJSON.name = path
       .basename(directory)

@@ -8,7 +8,7 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../../src/util/install-dependencies';
+} from '../../../src/util/install-dependencies.js';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();

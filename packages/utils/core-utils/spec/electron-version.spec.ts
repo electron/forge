@@ -8,14 +8,14 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   devDeps,
   exactDevDeps,
-} from '../../../api/core/src/api/init-scripts/init-npm';
+} from '../../../api/core/src/api/init-scripts/init-npm.js';
 import {
   getElectronModulePath,
   getElectronVersion,
   updateElectronDependency,
 } from '../src/electron-version';
 
-const fixturePath = path.resolve(__dirname, 'fixture');
+const fixturePath = path.resolve(import.meta.dirname, 'fixture');
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {

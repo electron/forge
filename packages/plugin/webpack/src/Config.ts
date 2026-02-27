@@ -1,7 +1,7 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
-import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';
+import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig.js';
 
 export interface WebpackPluginEntryPointBase {
   /**

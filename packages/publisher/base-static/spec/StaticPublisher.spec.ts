@@ -19,7 +19,7 @@ describe('PublisherStatic', () => {
           platform: 'plat',
           arch: 'arch',
           keyPrefix: 'stuff',
-          path: __filename,
+          path: import.meta.filename,
         }),
       ).toEqual('stuff/plat/arch/StaticPublisher.spec.ts');
     });
@@ -33,7 +33,7 @@ describe('PublisherStatic', () => {
           platform: 'plat',
           arch: 'arch',
           keyPrefix: 'stuff',
-          path: __filename,
+          path: import.meta.filename,
         }),
       ).toEqual('lololol');
     });

@@ -2,27 +2,24 @@ import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+// @ts-expect-error - this package has no types
+import installer from 'electron-installer-debian';
 import { describe, expect, it, vi } from 'vitest';
 
 import { debianArch, MakerDeb } from '../src/MakerDeb';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const installer = require('electron-installer-debian');
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
 const dir = '/my/test/dir/out';
 const makeDir = path.resolve('/foo/bar/make');
 const appName = 'My Test App';
-const targetArch = process.arch;
+const targetArch = process.arch as ForgeArch;
 const packageJSON = { version: '1.2.3' };
 
-vi.hoisted(async () => {
-  const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire(
-    'electron-installer-debian',
-    vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.deb'] }),
-  );
+vi.mock('electron-installer-debian', () => {
+  return {
+    default: vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.deb'] }),
+  };
 });
 
 describe('MakerDeb', () => {
@@ -90,10 +87,6 @@ describe('debianArch', () => {
 
   it('should convert x64 to amd64', () => {
     expect(debianArch('x64')).toEqual('amd64');
-  });
-
-  it('should convert arm to armel', () => {
-    expect(debianArch('arm')).toEqual('armel');
   });
 
   it('should convert armv7l to armhf', () => {

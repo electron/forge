@@ -8,7 +8,7 @@ import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class ViteTypeScriptTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   public async initializeTemplate(
     directory: string,

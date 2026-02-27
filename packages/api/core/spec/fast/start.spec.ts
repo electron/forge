@@ -4,9 +4,9 @@ import { ElectronProcess } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
-import findConfig from '../../src/util/forge-config';
-import { readMutatedPackageJson } from '../../src/util/read-package-json';
-import resolveDir from '../../src/util/resolve-dir';
+import findConfig from '../../src/util/forge-config.js';
+import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
+import resolveDir from '../../src/util/resolve-dir.js';
 
 vi.mock(import('node:child_process'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -73,7 +73,7 @@ vi.mock(import('../../src/util/hook'), async (importOriginal) => {
 describe('start', () => {
   it('spawns electron in the correct dir', async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
@@ -98,7 +98,7 @@ describe('start', () => {
     } as any);
 
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
 
@@ -107,7 +107,7 @@ describe('start', () => {
 
   it("should pass electron '.' as the app path if not specified", async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
@@ -118,7 +118,7 @@ describe('start', () => {
 
   it('should pass electron the app path if specified', async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       appPath: './path/to/app.js',
     });
@@ -133,7 +133,7 @@ describe('start', () => {
 
   it('should enable electron logging if enableLogging=true', async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       enableLogging: true,
     });
@@ -146,7 +146,7 @@ describe('start', () => {
 
   it('should enable RUN_AS_NODE if runAsNode=true', async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       runAsNode: true,
     });
@@ -159,7 +159,7 @@ describe('start', () => {
 
   it('should disable RUN_AS_NODE if runAsNode=false', async () => {
     await start({
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       runAsNode: false,
     });
@@ -173,7 +173,7 @@ describe('start', () => {
     const args = ['magic_arg', 123, 'thingy'];
     await start({
       args,
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
     });
     expect(vi.mocked(spawn)).toHaveBeenCalledOnce();
@@ -184,7 +184,7 @@ describe('start', () => {
     const args = ['magic_arg', 123, 'thingy'];
     await start({
       args,
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       inspect: true,
     });
@@ -200,7 +200,7 @@ describe('start', () => {
     const args = ['magic_arg', 123, 'thingy'];
     await start({
       args,
-      dir: __dirname,
+      dir: import.meta.dirname,
       interactive: false,
       inspectBrk: true,
     });
@@ -217,7 +217,7 @@ describe('start', () => {
     vi.mocked(spawn).mockResolvedValueOnce(child);
     await expect(
       start({
-        dir: __dirname,
+        dir: import.meta.dirname,
         interactive: false,
       }),
     ).resolves.toEqual(child);
@@ -227,7 +227,7 @@ describe('start', () => {
     vi.mocked(resolveDir).mockResolvedValueOnce(null);
     await expect(
       start({
-        dir: __dirname,
+        dir: import.meta.dirname,
         interactive: false,
       }),
     ).rejects.toThrowError('Failed to locate startable Electron application');
@@ -237,7 +237,7 @@ describe('start', () => {
     vi.mocked(readMutatedPackageJson).mockResolvedValueOnce({});
     await expect(
       start({
-        dir: __dirname,
+        dir: import.meta.dirname,
         interactive: false,
       }),
     ).rejects.toThrowError("Please set your application's 'version' in");

@@ -11,7 +11,7 @@ import {
 
 import type { VitePluginConfig } from '../../src/Config';
 
-const configRoot = path.join(__dirname, 'fixtures/vite-configs');
+const configRoot = path.join(import.meta.dirname, 'fixtures/vite-configs');
 const forgeConfig: VitePluginConfig = {
   build: [
     {

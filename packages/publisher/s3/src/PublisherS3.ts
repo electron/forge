@@ -8,17 +8,18 @@ import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 
-import { PublisherS3Config } from './Config';
+import { PublisherS3Config } from './Config.js';
 
 const d = debug('electron-forge:publish:s3');
 
 type S3Artifact = {
   path: string;
   keyPrefix: string;
-  platform: string;
-  arch: string;
+  platform: ForgePlatform;
+  arch: ForgeArch;
   isReleaseFile: boolean;
   version: string;
 };

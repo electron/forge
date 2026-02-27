@@ -5,7 +5,7 @@ import path from 'node:path';
 import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { installDependencies } from '../../src/util/install-dependencies';
+import { installDependencies } from '../../src/util/install-dependencies.js';
 
 describe.runIf(!(process.platform === 'linux' && process.env.CI))(
   'install-dependencies',

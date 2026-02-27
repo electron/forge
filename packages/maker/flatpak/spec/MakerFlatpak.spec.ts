@@ -2,18 +2,18 @@ import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
+// @ts-expect-error - this package has no types
+import installer from '@malept/electron-installer-flatpak';
 import { describe, expect, it, vi } from 'vitest';
 
 import { flatpakArch, MakerFlatpak } from '../src/MakerFlatpak';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const installer = require('@malept/electron-installer-flatpak');
-
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
-vi.hoisted(async () => {
-  const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('@malept/electron-installer-flatpak', vi.fn());
+vi.mock('@malept/electron-installer-flatpak', () => {
+  return {
+    default: vi.fn().mockResolvedValue({ packagePaths: ['/foo/bar.flatpak'] }),
+  };
 });
 
 vi.mock(import('fs-extra'), async (importOriginal) => {
@@ -31,7 +31,7 @@ describe('MakerFlatpak', () => {
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
-  const targetArch = process.arch;
+  const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
 
   it('should pass through correct defaults', async () => {

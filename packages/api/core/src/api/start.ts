@@ -19,11 +19,11 @@ import chalk from 'chalk';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 
-import locateElectronExecutable from '../util/electron-executable';
-import getForgeConfig from '../util/forge-config';
-import { getHookListrTasks, runHook } from '../util/hook';
-import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
+import locateElectronExecutable from '../util/electron-executable.js';
+import getForgeConfig from '../util/forge-config.js';
+import { getHookListrTasks, runHook } from '../util/hook.js';
+import { readMutatedPackageJson } from '../util/read-package-json.js';
+import resolveDir from '../util/resolve-dir.js';
 
 const d = debug('electron-forge:start');
 
@@ -141,8 +141,8 @@ export default autoTrace(
                     childTrace,
                     forgeConfig,
                     'generateAssets',
-                    platform,
-                    arch,
+                    platform as ForgePlatform,
+                    arch as ForgeArch,
                   ),
                 ),
                 'run',

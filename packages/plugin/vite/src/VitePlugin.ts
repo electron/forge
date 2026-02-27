@@ -1,6 +1,3 @@
-// TODO(erickzhao): Remove this when upgrading to Vite 6 and converting to ESM
-process.env.VITE_CJS_IGNORE_WARNING = 'true';
-
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
@@ -8,11 +5,11 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
-import { default as vite } from 'vite';
+import * as vite from 'vite';
 
-import ViteConfigGenerator from './ViteConfig';
+import ViteConfigGenerator from './ViteConfig.js';
 
-import type { VitePluginConfig } from './Config';
+import type { VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,

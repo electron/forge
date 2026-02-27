@@ -1,6 +1,6 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { pluginExposeRenderer } from './vite.base.config';
+import { pluginExposeRenderer } from './vite.base.config.js';
 
 // https://vitejs.dev/config
 export function getConfig(

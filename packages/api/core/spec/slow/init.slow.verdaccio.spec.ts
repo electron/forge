@@ -112,7 +112,7 @@ describe('init', () => {
     it('adds all files correctly', async () => {
       await api.init({
         dir,
-        template: path.resolve(__dirname, '../fixture/custom_init'),
+        template: path.resolve(import.meta.dirname, '../fixture/custom_init'),
       });
 
       // folder exists
@@ -148,7 +148,7 @@ describe('init', () => {
           api.init({
             dir,
             template: path.resolve(
-              __dirname,
+              import.meta.dirname,
               '../fixture/template-sans-forge-version',
             ),
           }),
@@ -162,8 +162,8 @@ describe('init', () => {
           api.init({
             dir,
             template: path.resolve(
-              __dirname,
-              '../fixture/template-nonmatching-forge-version',
+              import.meta.dirname,
+              '../fixture/template-stale-forge-version',
             ),
           }),
         ).rejects.toThrow(

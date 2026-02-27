@@ -3,10 +3,11 @@ import { promisify } from 'node:util';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
+import { zip } from 'cross-zip';
 import fs from 'fs-extra';
-import got from 'got';
+import { got } from 'got';
 
-import { MakerZIPConfig } from './Config';
+import { MakerZIPConfig } from './Config.js';
 
 type SquirrelMacRelease = {
   version: string;
@@ -41,8 +42,6 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     targetArch,
     targetPlatform,
   }: MakerOptions): Promise<string[]> {
-    const { zip } = require('cross-zip');
-
     const zipDir = ['darwin', 'mas'].includes(targetPlatform)
       ? path.resolve(dir, `${appName}.app`)
       : dir;

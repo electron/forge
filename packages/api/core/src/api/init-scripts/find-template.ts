@@ -1,7 +1,10 @@
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import debug from 'debug';
 
-import { PossibleModule } from '../../util/import-search';
+import { PossibleModule } from '../../util/import-search.js';
 
 const d = debug('electron-forge:init:find-template');
 
@@ -16,16 +19,25 @@ export const findTemplate = async (
 ): Promise<ForgeTemplateDetails> => {
   let foundTemplate: Omit<ForgeTemplateDetails, 'template'> | null = null;
 
-  const resolveTemplateTypes = [
-    `electron-forge-template-${template}`,
-    `@electron-forge/template-${template}`,
-    template,
-  ] as const;
+  // Convert absolute paths to file URLs for cross-platform compatibility.
+  // import.meta.resolve() doesn't recognize Windows-style paths like "D:\..."
+  // and needs them as file URLs (e.g., "file:///D:/...").
+  // When a path is absolute, we skip the prefixed package name lookups.
+  const isAbsolutePath = path.isAbsolute(template);
+  const templatePath = isAbsolutePath ? pathToFileURL(template).href : template;
+
+  const resolveTemplateTypes = isAbsolutePath
+    ? [templatePath]
+    : ([
+        `electron-forge-template-${template}`,
+        `@electron-forge/template-${template}`,
+        template,
+      ] as const);
   for (const moduleName of resolveTemplateTypes) {
     try {
       d(`Trying template: ${moduleName}`);
       foundTemplate = {
-        path: require.resolve(moduleName),
+        path: import.meta.resolve(moduleName),
         name: moduleName,
       };
       break;

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerSnapConfig } from './Config';
+import { MakerSnapConfig } from './Config.js';
 
 export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   name = 'snap';
@@ -17,7 +17,7 @@ export default class MakerSnap extends MakerBase<MakerSnapConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    const installer = require('electron-installer-snap');
+    const { default: installer } = await import('electron-installer-snap');
 
     const outPath = path.resolve(makeDir, 'snap', targetArch);
 

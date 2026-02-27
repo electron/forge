@@ -55,7 +55,7 @@
         "ignoreCase": true
       }
     ],
-    "import/no-named-as-default": "error",
+    // "import/no-named-as-default": "error",
     "n/no-process-exit": "off"
   },
   "overrides": [
@@ -73,6 +73,11 @@
         "plugin:@typescript-eslint/recommended",
         "plugin:import/typescript"
       ],
+      "settings": {
+        "import/resolver": {
+          "typescript": true
+        }
+      },
       "rules": {
         // There is no "recommended" ruleset for tsdoc yet.
         "tsdoc/syntax": "warn",
@@ -95,7 +100,9 @@
             "vars": "all"
           }
         ],
-        "@typescript-eslint/only-throw-error": "error"
+        "@typescript-eslint/only-throw-error": "error",
+        "import/default": "off",
+        "import/no-named-as-default-member": "off"
       }
     },
     {
@@ -107,11 +114,10 @@
     {
       "files": [
         "packages/*/*/spec/**/*.spec.ts",
-        "packages/*/*/spec/fixture/**/*.ts"
+        "packages/*/*/spec/fixture/**/*.{ts,js,cjs}"
       ],
       "rules": {
         "global-require": "off",
-        "import/no-dynamic-require": "off",
         "n/no-extraneous-import": "off",
         "n/no-unpublished-import": "off",
         "n/no-unpublished-require": "off",

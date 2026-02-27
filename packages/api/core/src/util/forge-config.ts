@@ -4,12 +4,9 @@ import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import { createJiti } from 'jiti';
 
-// eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
-
-import { runMutatingHook } from './hook';
-import PluginInterface from './plugin-interface';
-import { readRawPackageJson } from './read-package-json';
+import { runMutatingHook } from './hook.js';
+import PluginInterface from './plugin-interface.js';
+import { readRawPackageJson } from './read-package-json.js';
 
 const underscoreCase = (str: string) =>
   str
@@ -168,15 +165,16 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
     try {
       let loadFn;
       if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
-        const jiti = createJiti(__filename);
+        const jiti = createJiti(import.meta.filename);
         loadFn = jiti.import;
-      } else {
-        loadFn = dynamicImportMaybe;
       }
       // The loaded "config" could potentially be a static forge config, ESM module or async function
-      const loaded = (await loadFn(forgeConfigPath)) as MaybeESM<
-        ForgeConfig | AsyncForgeConfigGenerator
-      >;
+      let loaded: MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
+      if (loadFn) {
+        loaded = await loadFn(forgeConfigPath);
+      } else {
+        loaded = await import(forgeConfigPath);
+      }
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig =
         typeof maybeForgeConfig === 'function'

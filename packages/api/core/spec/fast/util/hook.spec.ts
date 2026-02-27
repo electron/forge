@@ -1,7 +1,7 @@
 import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
-import { runHook, runMutatingHook } from '../../../src/util/hook';
+import { runHook, runMutatingHook } from '../../../src/util/hook.js';
 
 const fakeConfig = {
   pluginInterface: {

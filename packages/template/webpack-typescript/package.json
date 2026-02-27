@@ -1,6 +1,7 @@
 {
   "name": "@electron-forge/template-webpack-typescript",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Webpack-TypeScript template for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Shelley Vohr <shelley.vohr@gmail.com>",
@@ -8,13 +9,13 @@
   "main": "dist/WebpackTypeScriptTemplate.js",
   "typings": "dist/WebpackTypeScriptTemplate.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/template-base": "workspace:*",
     "fs-extra": "^10.0.0",
-    "typescript": "~5.4.5",
+    "typescript": "5.9.3",
     "webpack": "^5.69.1"
   },
   "devDependencies": {
@@ -28,7 +29,7 @@
     "fast-glob": "^3.2.7",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "listr2": "^7.0.2",
-    "typescript": "~5.4.5",
+    "typescript": "5.9.3",
     "vitest": "^4.0.14",
     "webpack": "^5.69.1"
   },

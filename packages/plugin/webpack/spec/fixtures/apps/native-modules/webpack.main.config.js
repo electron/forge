@@ -1,5 +1,5 @@
 module.exports = {
-  context: __dirname,
+  context: import.meta.dirname,
   entry: './src/index.js',
   performance: {
     hints: false,
