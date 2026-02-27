@@ -114,11 +114,10 @@
     {
       "files": [
         "packages/*/*/spec/**/*.spec.ts",
-        "packages/*/*/spec/fixture/**/*.ts"
+        "packages/*/*/spec/fixture/**/*.{ts,js,cjs}"
       ],
       "rules": {
         "global-require": "off",
-        // "import/no-dynamic-require": "off",
         "n/no-extraneous-import": "off",
         "n/no-unpublished-import": "off",
         "n/no-unpublished-require": "off",
