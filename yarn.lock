@@ -813,8 +813,6 @@ __metadata:
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/get": "npm:^3.0.0"
-    "@inquirer/prompts": "npm:^6.0.1"
-    "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^11.1.0"

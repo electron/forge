@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
-import { init } from '../../../external/create-electron-app/src/core';
+import { init } from '../../../external/create-electron-app/src/init';
 
 describe('WebpackTypeScriptTemplate', () => {
   let dir: string;

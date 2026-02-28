@@ -8,7 +8,7 @@ import {
 import semver from 'semver';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { init } from '../../../../external/create-electron-app/src/core';
+import { init } from '../../../../external/create-electron-app/src/init';
 
 describe('init', () => {
   let dir: string;
