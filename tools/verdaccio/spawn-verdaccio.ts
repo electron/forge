@@ -133,6 +133,7 @@ async function publishPackages(): Promise<void> {
 }
 
 async function runCommand(args: string[]) {
+  process.env.COREPACK_ENABLE_STRICT = '0';
   console.log('🗑️  Pruning pnpm store before running command');
   await spawnPromise('pnpm', ['store', 'prune']);
 

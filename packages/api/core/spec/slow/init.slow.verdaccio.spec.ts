@@ -8,7 +8,7 @@ import {
 import semver from 'semver';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import { api } from '../../src/api/index';
+import { init } from '../../../../external/create-electron-app/src/init';
 
 describe('init', () => {
   let dir: string;
@@ -21,7 +21,7 @@ describe('init', () => {
   });
 
   it('works (base case)', async () => {
-    await api.init({
+    await init({
       dir,
     });
     expect(fs.existsSync(dir)).toEqual(true);
@@ -51,7 +51,7 @@ describe('init', () => {
 
   describe('with electronVersion', () => {
     it('can define a specific Electron version with a version number', async () => {
-      await api.init({
+      await init({
         dir,
         electronVersion: 'v38.0.0',
       });
@@ -60,7 +60,7 @@ describe('init', () => {
     });
 
     it('can define a specific Electron nightly version with a version number', async () => {
-      await api.init({
+      await init({
         dir,
         electronVersion: '40.0.0-nightly.20251020',
       });
@@ -72,7 +72,7 @@ describe('init', () => {
     });
 
     it('can define a specific Electron prerelease version with the beta tag', async () => {
-      await api.init({
+      await init({
         dir,
         electronVersion: 'beta',
       });
@@ -86,7 +86,7 @@ describe('init', () => {
     });
 
     it('can define a specific Electron nightly version with the nightly tag', async () => {
-      await api.init({
+      await init({
         dir,
         electronVersion: 'nightly',
       });
@@ -100,7 +100,7 @@ describe('init', () => {
 
   describe('with skipGit', () => {
     it('should not initialize a git repo if passed the skipGit option', async () => {
-      await api.init({
+      await init({
         dir,
         skipGit: true,
       });
@@ -110,7 +110,7 @@ describe('init', () => {
 
   describe('with custom template', () => {
     it('adds all files correctly', async () => {
-      await api.init({
+      await init({
         dir,
         template: path.resolve(__dirname, '../fixture/custom_init'),
       });
@@ -145,7 +145,7 @@ describe('init', () => {
     describe('without a required Forge version)', () => {
       it('should fail in initializing', async () => {
         await expect(
-          api.init({
+          init({
             dir,
             template: path.resolve(
               __dirname,
@@ -159,7 +159,7 @@ describe('init', () => {
     describe('with a non-matching Forge version', () => {
       it('should fail in initializing', async () => {
         await expect(
-          api.init({
+          init({
             dir,
             template: path.resolve(
               __dirname,
@@ -175,7 +175,7 @@ describe('init', () => {
     describe('with a nonexistent template', () => {
       it('should fail in initializing', async () => {
         await expect(
-          api.init({
+          init({
             dir,
             template: 'does-not-exist',
           }),
@@ -189,20 +189,20 @@ describe('init', () => {
     let persistentDir: string;
     beforeAll(async () => {
       persistentDir = await ensureTestDirIsNonexistent();
-      await api.init({ dir: persistentDir });
+      await init({ dir: persistentDir });
       return async () => {
         await fs.promises.rm(persistentDir, { recursive: true, force: true });
       };
     });
 
     it('should fail without the force flag', async () => {
-      await expect(api.init({ dir: persistentDir })).rejects.toThrow(
+      await expect(init({ dir: persistentDir })).rejects.toThrow(
         `The specified path: "${persistentDir}" is not empty.  Please ensure it is empty before initializing a new project`,
       );
     });
 
     it('should pass with the force flag', async () => {
-      await api.init({
+      await init({
         dir: persistentDir,
         force: true,
       });
@@ -218,7 +218,7 @@ describe('init', () => {
       });
 
       it('initializes with package-lock.json', async () => {
-        await api.init({ dir, packageManager: 'npm' });
+        await init({ dir, packageManager: 'npm' });
 
         expect(fs.existsSync(path.join(dir, 'package-lock.json'))).toBe(true);
         expect(fs.existsSync(path.join(dir, 'yarn.lock'))).toBe(false);
@@ -230,7 +230,7 @@ describe('init', () => {
     // due to the `packageManager` entry in this monorepo.
     describe('with yarn (berry)', () => {
       it('initializes with correct nodeLinker value', async () => {
-        await api.init({ dir, packageManager: 'yarn@4.10.3' });
+        await init({ dir, packageManager: 'yarn@4.10.3' });
 
         expect(
           fs.readFileSync(path.join(dir, '.yarnrc.yml'), 'utf-8'),
@@ -261,7 +261,7 @@ describe('init', () => {
       });
 
       it('initializes with correct node-linker value', async () => {
-        await api.init({ dir, packageManager: 'pnpm' });
+        await init({ dir, packageManager: 'pnpm' });
 
         expect(fs.readFileSync(path.join(dir, '.npmrc'), 'utf-8')).toContain(
           'node-linker = hoisted',

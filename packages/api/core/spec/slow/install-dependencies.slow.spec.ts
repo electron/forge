@@ -2,10 +2,11 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { PACKAGE_MANAGERS } from '@electron-forge/core-utils';
+import {
+  installDependencies,
+  PACKAGE_MANAGERS,
+} from '@electron-forge/core-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-
-import { installDependencies } from '../../src/util/install-dependencies';
 
 describe.runIf(!(process.platform === 'linux' && process.env.CI))(
   'install-dependencies',

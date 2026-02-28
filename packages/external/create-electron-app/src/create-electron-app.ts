@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 
-import { api, InitOptions } from '@electron-forge/core';
 import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
-import './util/terminate';
 import packageJSON from '../package.json';
 
+import { forgeImport } from './import';
+import { init, InitOptions } from './init';
 import { resolveWorkingDir } from './util/resolve-working-dir';
 
 // eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
@@ -17,7 +17,11 @@ import type { Prompt } from '@inquirer/type';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')
-  .helpOption('-h, --help', 'Output usage information.')
+  .helpOption('-h, --help', 'Output usage information.');
+
+const initCommand = program
+  .command('init', { isDefault: true })
+  .description('Initialize a new Electron Forge project.')
   .argument(
     '[dir]',
     'Directory to initialize the project in. Defaults to the current directory.',
@@ -38,7 +42,7 @@ program
     'Set a specific package manager to use for your Forge project. Supported package managers are `npm`, `pnpm`, and `yarn`. You can also specify an exact version to use (e.g. `yarn@1.22.22`).',
   )
   .action(async (dir) => {
-    const options = program.opts();
+    const options = initCommand.opts();
     const tasks = new Listr<InitOptions>(
       [
         {
@@ -173,7 +177,27 @@ program
     );
 
     const initOpts: InitOptions = await tasks.run();
-    await api.init(initOpts);
+    await init(initOpts);
+  });
+
+program
+  .command('import')
+  .description('Import an existing Electron project to use Electron Forge.')
+  .argument(
+    '[dir]',
+    'Directory of the project to import. Defaults to the current directory.',
+  )
+  .option(
+    '--skip-git',
+    'Skip initializing a git repository in the imported project.',
+  )
+  .action(async (dir, options) => {
+    const workingDir = resolveWorkingDir(dir);
+    await forgeImport({
+      dir: workingDir,
+      interactive: true,
+      skipGit: Boolean(options.skipGit),
+    });
   });
 
 program.parse(process.argv);

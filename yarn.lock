@@ -805,7 +805,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron-forge/cli@workspace:*, @electron-forge/cli@workspace:packages/api/cli":
+"@electron-forge/cli@workspace:packages/api/cli":
   version: 0.0.0-use.local
   resolution: "@electron-forge/cli@workspace:packages/api/cli"
   dependencies:
@@ -813,8 +813,6 @@ __metadata:
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/get": "npm:^3.0.0"
-    "@inquirer/prompts": "npm:^6.0.1"
-    "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     chalk: "npm:^4.0.0"
     commander: "npm:^11.1.0"
@@ -867,12 +865,7 @@ __metadata:
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/publisher-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
-    "@electron-forge/template-base": "workspace:*"
     "@electron-forge/template-fixture": "link:./spec/fixture/electron-forge-template-fixture"
-    "@electron-forge/template-vite": "workspace:*"
-    "@electron-forge/template-vite-typescript": "workspace:*"
-    "@electron-forge/template-webpack": "workspace:*"
-    "@electron-forge/template-webpack-typescript": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
     "@electron-forge/tracer": "workspace:*"
     "@electron/get": "npm:^3.0.0"
@@ -8007,7 +8000,24 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-electron-app@workspace:packages/external/create-electron-app"
   dependencies:
-    "@electron-forge/cli": "workspace:*"
+    "@electron-forge/core-utils": "workspace:*"
+    "@electron-forge/shared-types": "workspace:*"
+    "@electron-forge/template-base": "workspace:*"
+    "@electron-forge/template-vite": "workspace:*"
+    "@electron-forge/template-vite-typescript": "workspace:*"
+    "@electron-forge/template-webpack": "workspace:*"
+    "@electron-forge/template-webpack-typescript": "workspace:*"
+    "@inquirer/prompts": "npm:^6.0.1"
+    "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"
+    "@malept/cross-spawn-promise": "npm:^2.0.0"
+    chalk: "npm:^4.0.0"
+    commander: "npm:^11.1.0"
+    debug: "npm:^4.3.1"
+    fs-extra: "npm:^10.0.0"
+    listr2: "npm:^7.0.2"
+    lodash: "npm:^4.17.20"
+    log-symbols: "npm:^4.0.0"
+    semver: "npm:^7.2.1"
   bin:
     create-electron-app: dist/index.js
   languageName: unknown

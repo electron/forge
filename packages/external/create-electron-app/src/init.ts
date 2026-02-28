@@ -1,19 +1,19 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
-import { PMDetails, resolvePackageManager } from '@electron-forge/core-utils';
+import {
+  DepType,
+  DepVersionRestriction,
+  installDependencies,
+  PMDetails,
+  resolvePackageManager,
+} from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import { spawn } from '@malept/cross-spawn-promise';
 import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
-
-import {
-  DepType,
-  DepVersionRestriction,
-  installDependencies,
-} from '../util/install-dependencies';
-import { readRawPackageJson } from '../util/read-package-json';
 
 import { findTemplate } from './init-scripts/find-template';
 import { initDirectory } from './init-scripts/init-directory';
@@ -71,9 +71,14 @@ async function validateTemplate(
     );
   }
 
-  const forgeVersion = (
-    await readRawPackageJson(path.join(__dirname, '..', '..'))
-  ).version;
+  const dir = path.join(__dirname, '..');
+  const raw = await fs.promises.readFile(
+    path.join(dir, 'package.json'),
+    'utf-8',
+  );
+  const packageJSON = JSON.parse(raw);
+
+  const forgeVersion = packageJSON.version;
   if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
     throw new Error(
       `Template (${template}) is not compatible with this version of Electron Forge (${forgeVersion}), it requires ${templateModule.requiredForgeVersion}`,
@@ -81,7 +86,7 @@ async function validateTemplate(
   }
 }
 
-export default async ({
+export async function init({
   dir = process.cwd(),
   interactive = false,
   copyCIFiles = false,
@@ -90,7 +95,7 @@ export default async ({
   skipGit = false,
   electronVersion = 'latest',
   packageManager,
-}: InitOptions): Promise<void> => {
+}: InitOptions): Promise<void> {
   d(`Initializing in: ${dir}`);
 
   const runner = new Listr<{
@@ -270,4 +275,4 @@ export default async ({
   );
 
   await runner.run();
-};
+}

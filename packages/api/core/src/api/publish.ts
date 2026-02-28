@@ -19,7 +19,7 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config';
-import importSearch from '../util/import-search';
+import { importSearch } from '../util/import-search';
 import getCurrentOutDir from '../util/out-dir';
 import PublishState from '../util/publish-state';
 import resolveDir from '../util/resolve-dir';

@@ -1,6 +1,7 @@
-import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
 import { ExitError } from '@malept/cross-spawn-promise';
 import debug from 'debug';
+
+import { PMDetails, spawnPackageManager } from './package-manager';
 
 const d = debug('electron-forge:dependency-installer');
 
