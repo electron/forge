@@ -9,7 +9,7 @@ import {
 } from '@electron-forge/test-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { forgeImport } from '../../src/import-core';
+import { forgeImport } from '../../src/import';
 
 describe('import', () => {
   let dir: string;
