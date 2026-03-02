@@ -333,12 +333,11 @@ export default autoTrace(
                         d(
                           'detected existing Forge config in package.json, merging with base template Forge config',
                         );
-                        // eslint-disable-next-line @typescript-eslint/no-require-imports
-                        const templateConfig = require(
+                        const templateConfig = await import(
                           path.resolve(
                             baseTemplate.templateDir,
                             'forge.config.js',
-                          ),
+                          )
                         );
                         packageJSON = await readRawPackageJson(dir);
                         merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
