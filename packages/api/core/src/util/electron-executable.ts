@@ -32,6 +32,9 @@ export default async function locateElectronExecutable(
       logSymbols.warning,
       `Returned Electron executable path (${electronExecPath}) is not a string. Defaulting to node_modules/electron.`,
     );
-    return await import(path.resolve(dir, 'node_modules/electron/index.js'));
+    const { default: fallbackExecPath } = await import(
+      path.resolve(dir, 'node_modules/electron/index.js')
+    );
+    return fallbackExecPath;
   }
 }
