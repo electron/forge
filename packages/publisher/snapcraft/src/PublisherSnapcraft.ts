@@ -8,10 +8,6 @@ import fs from 'fs-extra';
 
 import { PublisherSnapcraftConfig } from './Config.js';
 
-// TODO: convert to import statement once electron-installer-snap imports Snapcraft properly.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const Snapcraft = require('electron-installer-snap/src/snapcraft');
-
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {
   name = 'snapcraft';
 
@@ -45,6 +41,12 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
     }
 
     setStatusLine('Pushing snap to the snap store');
+    /* eslint-disable n/no-missing-import */
+    const { default: Snapcraft } = await import(
+      // @ts-expect-error -- this package has no types
+      'electron-installer-snap/src/snapcraft.js'
+    );
+    /* eslint-enable n/no-missing-import */
     const snapcraft = new Snapcraft();
     await snapcraft.run(dir, 'push', this.config, snapArtifacts);
   }
