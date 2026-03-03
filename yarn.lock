@@ -1432,11 +1432,11 @@ __metadata:
   linkType: hard
 
 "@electron/fuses@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@electron/fuses@npm:2.0.0"
+  version: 2.1.0
+  resolution: "@electron/fuses@npm:2.1.0"
   bin:
     electron-fuses: dist/bin.js
-  checksum: 10c0/f735e589d9f785ea59bf156b8b8c579d61e145958fe67f6c555b6e1b65581fefd150a53ef355079922be7d2a19fb5f4fa4262bce067badb00a3d3f7a66aa4410
+  checksum: 10c0/a88f3ada0e93678589107d5782219dee2a6543b5889ce890fe5b33f443952f58670a679f337a65826553e9d937f430f751b9396240d1d0a6189e744816ad0ac9
   languageName: node
   linkType: hard
 
@@ -1479,8 +1479,8 @@ __metadata:
   linkType: hard
 
 "@electron/lint-roller@npm:^3.1.3":
-  version: 3.1.3
-  resolution: "@electron/lint-roller@npm:3.1.3"
+  version: 3.2.0
+  resolution: "@electron/lint-roller@npm:3.2.0"
   dependencies:
     "@dsanders11/vscode-markdown-languageservice": "npm:^0.3.0"
     ajv: "npm:^8.16.0"
@@ -1505,7 +1505,7 @@ __metadata:
     lint-roller-markdown-links: dist/bin/lint-markdown-links.js
     lint-roller-markdown-standard: dist/bin/lint-markdown-standard.js
     lint-roller-markdown-ts-check: dist/bin/lint-markdown-ts-check.js
-  checksum: 10c0/657b17b4921a8887334287e245dde85022704c673e1bba867e2a79abb643392b4e4e3962b8745074e78811938b28c4653c37b0c07a76a298a2a00ab3276f475e
+  checksum: 10c0/5331163518f41c1ea8ac302891d808891b5570f657587194717e3a8214c0d99e04949cf500ff138b02b77a373e317c3e77042b19c7fbda186d5c970b6b81df80
   languageName: node
   linkType: hard
 
@@ -1535,8 +1535,8 @@ __metadata:
   linkType: hard
 
 "@electron/packager@npm:^19.0.1":
-  version: 19.0.1
-  resolution: "@electron/packager@npm:19.0.1"
+  version: 19.0.5
+  resolution: "@electron/packager@npm:19.0.5"
   dependencies:
     "@electron/asar": "npm:^4.0.1"
     "@electron/get": "npm:^4.0.2"
@@ -1560,16 +1560,15 @@ __metadata:
     yargs-parser: "npm:^22.0.0"
   bin:
     electron-packager: bin/electron-packager.mjs
-  checksum: 10c0/f7e44a3124640eff674b7cf6d53b15e00df0ec4fe00365ffde4453c43e789d786869d8e395c6fbbd62410cb7f5ce9913e3644272c1eed4325548ac00d3e2d77b
+  checksum: 10c0/065749f34ffcc33a265221ee14c712fad25d2cffd85c65931809123fcd70fd6cd2afb0de9ce7a88384e0db44751c632fc772c18d1dfe4094dd2779153b7fd85c
   languageName: node
   linkType: hard
 
 "@electron/rebuild@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@electron/rebuild@npm:4.0.1"
+  version: 4.0.3
+  resolution: "@electron/rebuild@npm:4.0.3"
   dependencies:
     "@malept/cross-spawn-promise": "npm:^2.0.0"
-    chalk: "npm:^4.0.0"
     debug: "npm:^4.1.1"
     detect-libc: "npm:^2.0.1"
     got: "npm:^11.7.0"
@@ -1580,11 +1579,14 @@ __metadata:
     ora: "npm:^5.1.0"
     read-binary-file-arch: "npm:^1.0.6"
     semver: "npm:^7.3.5"
-    tar: "npm:^6.0.5"
+    tar: "npm:^7.5.6"
     yargs: "npm:^17.0.1"
+  dependenciesMeta:
+    electron:
+      built: true
   bin:
     electron-rebuild: lib/cli.js
-  checksum: 10c0/4863d39c34515f3fb521ce5e976e25db20e89920574ca353efd0c3272d5f4d14546ba15ce28cee4299187160b2af02e3e130100ba8dc53f313b6eb685dc54928
+  checksum: 10c0/43bdbf85cde13874a2185c161d1943c3c4f12323f25cc3534890b1b0ec451b5bb940aa80e2c42476fe0d8c854d2e62b0e56f0d98c482c03b0715305bf9688171
   languageName: node
   linkType: hard
 
@@ -1602,22 +1604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/windows-sign@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@electron/windows-sign@npm:1.1.2"
-  dependencies:
-    cross-dirname: "npm:^0.1.0"
-    debug: "npm:^4.3.4"
-    fs-extra: "npm:^11.1.1"
-    minimist: "npm:^1.2.8"
-    postject: "npm:^1.0.0-alpha.6"
-  bin:
-    electron-windows-sign: bin/electron-windows-sign.js
-  checksum: 10c0/eb8dd7e4908b67b5893e53a70a079fd8717feb1895682cad0c1aabe174bb4f1a1441f75945452e8c7622552e18623e2f468114a2bc06c225c5a08bd599169e60
-  languageName: node
-  linkType: hard
-
-"@electron/windows-sign@npm:^1.2.2":
+"@electron/windows-sign@npm:^1.1.2, @electron/windows-sign@npm:^1.2.2":
   version: 1.2.2
   resolution: "@electron/windows-sign@npm:1.2.2"
   dependencies:
@@ -19027,7 +19014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:6.2.1, tar@npm:^6.0.5":
+"tar@npm:6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:
@@ -19051,6 +19038,19 @@ __metadata:
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
   checksum: 10c0/2db46a140095488ed3244ac748f8e4f9362223b212bcae7859840dd9fd9891bc713f243d122906ce2f28eb64b49fa8cefc13cbdda24e66e8f2a5936a7c392b06
+  languageName: node
+  linkType: hard
+
+"tar@npm:^7.5.6":
+  version: 7.5.9
+  resolution: "tar@npm:7.5.9"
+  dependencies:
+    "@isaacs/fs-minipass": "npm:^4.0.0"
+    chownr: "npm:^3.0.0"
+    minipass: "npm:^7.1.2"
+    minizlib: "npm:^3.1.0"
+    yallist: "npm:^5.0.0"
+  checksum: 10c0/e870beb1b2477135ca2abe86b2d18f7b35d0a4e3a37bbc523d3b8f7adca268dfab543f26528a431d569897f8c53a7cac745cdfbc4411c2f89aeeacc652b81b0a
   languageName: node
   linkType: hard
 
