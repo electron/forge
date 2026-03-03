@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/Plugin.js",
+  "exports": "./dist/Plugin.js",
   "typings": "dist/Plugin.d.ts",
   "engines": {
     "node": ">= 22.12.0"

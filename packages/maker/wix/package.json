@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerWix.js",
+  "exports": "./dist/MakerWix.js",
   "typings": "dist/MakerWix.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"

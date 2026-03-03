@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",

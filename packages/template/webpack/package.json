@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/WebpackTemplate.js",
+  "exports": "./dist/WebpackTemplate.js",
   "typings": "dist/WebpackTemplate.d.ts",
   "engines": {
     "node": ">= 22.12.0"

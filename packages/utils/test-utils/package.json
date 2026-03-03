@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Mark Lee",
   "license": "MIT",
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",

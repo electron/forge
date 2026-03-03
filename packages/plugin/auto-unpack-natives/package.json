@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/AutoUnpackNativesPlugin.js",
+  "exports": "./dist/AutoUnpackNativesPlugin.js",
   "typings": "dist/AutoUnpackNativesPlugin.d.ts",
   "engines": {
     "node": ">= 22.12.0"

@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerFlatpak.js",
+  "exports": "./dist/MakerFlatpak.js",
   "typings": "dist/MakerFlatpak.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

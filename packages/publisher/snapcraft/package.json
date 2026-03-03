@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherSnapcraft.js",
+  "exports": "./dist/PublisherSnapcraft.js",
   "typings": "dist/PublisherSnapcraft.d.ts",
   "engines": {
     "node": ">= 22.12.0"

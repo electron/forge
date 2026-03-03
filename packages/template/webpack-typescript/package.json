@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Shelley Vohr <shelley.vohr@gmail.com>",
   "license": "MIT",
-  "main": "dist/WebpackTypeScriptTemplate.js",
+  "exports": "./dist/WebpackTypeScriptTemplate.js",
   "typings": "dist/WebpackTypeScriptTemplate.d.ts",
   "engines": {
     "node": ">= 22.12.0"

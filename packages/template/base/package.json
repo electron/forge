@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/BaseTemplate.js",
+  "exports": "./dist/BaseTemplate.js",
   "typings": "dist/BaseTemplate.d.ts",
   "engines": {
     "node": ">= 22.12.0"

@@ -4,7 +4,7 @@
   "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
-  "main": "dist/api/index.js",
+  "exports": "./dist/api/index.js",
   "typings": "dist/api/index.d.ts",
   "author": "Samuel Attard",
   "license": "MIT",

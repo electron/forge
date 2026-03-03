@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerDeb.js",
+  "exports": "./dist/MakerDeb.js",
   "typings": "dist/MakerDeb.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

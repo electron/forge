@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherS3.js",
+  "exports": "./dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
   "engines": {
     "node": ">= 22.12.0"

@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/Logger.js",
+  "exports": "./dist/Logger.js",
   "typings": "dist/Logger.d.ts",
   "dependencies": {
     "express": "^4.17.1",

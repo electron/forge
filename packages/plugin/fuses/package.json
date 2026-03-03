@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Erik Moura <erikian@erikian.dev>",
   "license": "MIT",
-  "main": "dist/FusesPlugin.js",
+  "exports": "./dist/FusesPlugin.js",
   "files": [
     "dist",
     "src",

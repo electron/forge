@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerRpm.js",
+  "exports": "./dist/MakerRpm.js",
   "typings": "dist/MakerRpm.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

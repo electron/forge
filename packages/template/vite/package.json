@@ -10,7 +10,7 @@
   },
   "author": "caoxiemeihao",
   "license": "MIT",
-  "main": "dist/ViteTemplate.js",
+  "exports": "./dist/ViteTemplate.js",
   "typings": "dist/ViteTemplate.d.ts",
   "engines": {
     "node": ">= 22.12.0"

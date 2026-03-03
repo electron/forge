@@ -10,7 +10,7 @@
   },
   "author": "caoxiemeihao",
   "license": "MIT",
-  "main": "dist/VitePlugin.js",
+  "exports": "./dist/VitePlugin.js",
   "typings": "dist/VitePlugin.d.ts",
   "dependencies": {
     "@electron-forge/plugin-base": "workspace:*",

@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Create Electron App",
   "repository": "https://github.com/electron/forge",
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "author": "Samuel Attard",
   "license": "MIT",

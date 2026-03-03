@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/WebpackPlugin.js",
+  "exports": "./dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "devDependencies": {
     "@electron/packager": "^19.0.1",

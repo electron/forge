@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherStatic.js",
+  "exports": "./dist/PublisherStatic.js",
   "typings": "dist/PublisherStatic.d.ts",
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",

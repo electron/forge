@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Jan Hannemann",
   "license": "MIT",
-  "main": "dist/MakerMSIX.js",
+  "exports": "./dist/MakerMSIX.js",
   "typings": "dist/MakerMSIX.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"

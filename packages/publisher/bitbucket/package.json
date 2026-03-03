@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Luke Batchelor",
   "license": "MIT",
-  "main": "dist/PublisherBitbucket.js",
+  "exports": "./dist/PublisherBitbucket.js",
   "typings": "dist/PublisherBitbucket.d.ts",
   "engines": {
     "node": ">= 22.12.0"

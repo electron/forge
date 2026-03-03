@@ -5,7 +5,7 @@
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
-  "main": "dist/MakerPKG.js",
+  "exports": "./dist/MakerPKG.js",
   "typings": "dist/MakerPKG.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

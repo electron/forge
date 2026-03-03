@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerAppX.js",
+  "exports": "./dist/MakerAppX.js",
   "typings": "dist/MakerAppX.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"

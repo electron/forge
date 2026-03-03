@@ -5,7 +5,7 @@
   "description": "Snap maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
-  "main": "dist/MakerSnap.js",
+  "exports": "./dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

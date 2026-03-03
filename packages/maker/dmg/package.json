@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerDMG.js",
+  "exports": "./dist/MakerDMG.js",
   "typings": "dist/MakerDMG.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",

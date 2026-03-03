@@ -6,7 +6,7 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherERS.js",
+  "exports": "./dist/PublisherERS.js",
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
     "msw": "^2.7.0",
