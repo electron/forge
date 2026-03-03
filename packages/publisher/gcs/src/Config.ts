@@ -1,7 +1,12 @@
-import { StorageOptions, UploadOptions } from '@google-cloud/storage';
-// import { ConfigMetadata } from '@google-cloud/storage/build';
+import {
+  CreateResumableUploadOptions,
+  StorageOptions,
+  UploadOptions,
+} from '@google-cloud/storage';
 
 import { GCSArtifact } from './PublisherGCS.js';
+
+type ConfigMetadata = NonNullable<CreateResumableUploadOptions['metadata']>;
 
 export interface PublisherGCSConfig {
   /**
@@ -37,5 +42,5 @@ export interface PublisherGCSConfig {
    * See https://cloud.google.com/storage/docs/metadata for more info.
    * Expects a function that takes a GCSArtifact object and returns a `ConfigMetadata` object.
    */
-  metadataGenerator?: (artifact: GCSArtifact) => any; // FIXME: ADD CONFIGMETADATA TYPE BACK
+  metadataGenerator?: (artifact: GCSArtifact) => ConfigMetadata;
 }
