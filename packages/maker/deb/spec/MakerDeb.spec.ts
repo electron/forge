@@ -89,11 +89,17 @@ describe('debianArch', () => {
     expect(debianArch('x64')).toEqual('amd64');
   });
 
+  it('should convert arm64 to arm64', () => {
+    expect(debianArch('arm64')).toEqual('arm64');
+  });
+
   it('should convert armv7l to armhf', () => {
     expect(debianArch('armv7l')).toEqual('armhf');
   });
 
-  it('should leave unknown values alone', () => {
-    expect(debianArch('foo' as ForgeArch)).toEqual('foo');
+  it('throws for unknown values', () => {
+    expect(() => debianArch('foo' as ForgeArch)).toThrow(
+      'Unsupported architecture foo',
+    );
   });
 });

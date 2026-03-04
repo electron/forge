@@ -93,7 +93,9 @@ describe('rpmArch', () => {
     expect(rpmArch('armv7l')).toEqual('armv7hl');
   });
 
-  it('should leave unknown values alone', () => {
-    expect(rpmArch('foo' as ForgeArch)).toEqual('foo');
+  it('throws for unknown values', () => {
+    expect(() => rpmArch('foo' as ForgeArch)).toThrowError(
+      'Unsupported architecture foo',
+    );
   });
 });

@@ -5,16 +5,27 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
 import { MakerDebConfig } from './Config.js';
 
+/**
+ * Converts the Node.js architecture value of the processor architecture
+ * into a string accepted by `electron-installer-debian`.
+ *
+ * @param nodeArch - Node.js architecture string
+ * @returns - electron-installer-debian architecture string
+ */
 export function debianArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
       return 'i386';
     case 'x64':
       return 'amd64';
+    case 'arm64':
+      return 'arm64';
     case 'armv7l':
       return 'armhf';
+    case 'mips64el':
+      return 'mips64el';
     default:
-      return nodeArch;
+      throw new Error(`Unsupported architecture ${nodeArch}`);
   }
 }
 

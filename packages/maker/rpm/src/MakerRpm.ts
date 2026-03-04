@@ -12,6 +12,13 @@ function renameRpm(dest: string, _src: string): string {
   );
 }
 
+/**
+ * Converts the Node.js architecture value of the processor architecture
+ * into a string accepted by `electron-installer-redhat`.
+ *
+ * @param nodeArch - Node.js architecture string
+ * @returns - electron-installer-redhat architecture string
+ */
 export function rpmArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
@@ -23,7 +30,7 @@ export function rpmArch(nodeArch: ForgeArch): string {
     case 'armv7l':
       return 'armv7hl';
     default:
-      return nodeArch;
+      throw new Error(`Unsupported architecture ${nodeArch}`);
   }
 }
 
