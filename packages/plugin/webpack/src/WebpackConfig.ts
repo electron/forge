@@ -2,7 +2,8 @@ import path from 'node:path';
 
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import webpack, { Configuration, WebpackPluginInstance } from 'webpack';
+import * as webpack from 'webpack';
+import { DefinePlugin, ExternalsPlugin, WebpackPluginInstance } from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -30,7 +31,7 @@ const d = debug('electron-forge:plugin:webpack:webpackconfig');
 export type ConfigurationFactory = (
   env: string | Record<string, string | boolean | number> | unknown,
   args: Record<string, unknown>,
-) => Configuration | Promise<Configuration>;
+) => webpack.Configuration | Promise<webpack.Configuration>;
 
 enum RendererTarget {
   Web,
@@ -88,14 +89,14 @@ export default class WebpackConfigGenerator {
   }
 
   async resolveConfig(
-    config: Configuration | ConfigurationFactory | string,
-  ): Promise<Configuration> {
+    config: webpack.Configuration | ConfigurationFactory | string,
+  ): Promise<webpack.Configuration> {
     type MaybeESM<T> = T | { default: T };
 
     let rawConfig =
       typeof config === 'string'
         ? ((await import(path.resolve(this.projectDir, config))) as MaybeESM<
-            Configuration | ConfigurationFactory
+            webpack.Configuration | ConfigurationFactory
           >)
         : config;
 
@@ -110,7 +111,7 @@ export default class WebpackConfigGenerator {
   // configuration parameters.
   preprocessConfig = async (
     config: ConfigurationFactory,
-  ): Promise<Configuration> =>
+  ): Promise<webpack.Configuration> =>
     config(
       {},
       {
@@ -196,7 +197,7 @@ export default class WebpackConfigGenerator {
     return defines;
   }
 
-  async getMainConfig(): Promise<Configuration> {
+  async getMainConfig(): Promise<webpack.Configuration> {
     const mainConfig = await this.resolveConfig(this.pluginConfig.mainConfig);
 
     if (!mainConfig.entry) {
@@ -229,7 +230,7 @@ export default class WebpackConfigGenerator {
           filename: 'index.js',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new webpack.DefinePlugin(this.getDefines())],
+        plugins: [new DefinePlugin(this.getDefines())],
         node: {
           __dirname: false,
           __filename: false,
@@ -241,7 +242,7 @@ export default class WebpackConfigGenerator {
 
   async getRendererConfig(
     rendererOptions: WebpackPluginRendererConfig,
-  ): Promise<Configuration[]> {
+  ): Promise<webpack.Configuration[]> {
     const entryPointsForTarget = {
       web: [] as (
         | WebpackPluginEntryPointLocalWindow
@@ -335,7 +336,7 @@ export default class WebpackConfigGenerator {
     rendererOptions: WebpackPluginRendererConfig,
     entryPoints: WebpackPluginEntryPoint[],
     target: RendererTarget.Web | RendererTarget.ElectronRenderer,
-  ): Promise<Configuration | null> {
+  ): Promise<webpack.Configuration | null> {
     if (!isLocalOrNoWindowEntries(entryPoints)) {
       throw new Error('Invalid renderer entry point detected.');
     }
@@ -380,7 +381,7 @@ export default class WebpackConfigGenerator {
     rendererOptions: WebpackPluginRendererConfig,
     entryPoints: WebpackPluginEntryPointPreloadOnly[],
     target: RendererTarget.ElectronPreload | RendererTarget.SandboxedPreload,
-  ): Promise<Configuration | null> {
+  ): Promise<webpack.Configuration | null> {
     if (entryPoints.length === 0) {
       return null;
     }
@@ -406,7 +407,7 @@ export default class WebpackConfigGenerator {
         entryPoint.preload.js,
       ]);
     }
-    const config: Configuration = {
+    const config: webpack.Configuration = {
       target: rendererTargetToWebpackTarget(target),
       entry,
       output: {
@@ -418,7 +419,7 @@ export default class WebpackConfigGenerator {
       plugins:
         target === RendererTarget.ElectronPreload
           ? []
-          : [new webpack.ExternalsPlugin('commonjs2', externals)],
+          : [new ExternalsPlugin('commonjs2', externals)],
     };
     return webpackMerge(baseConfig, rendererConfig || {}, config);
   }

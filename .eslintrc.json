@@ -55,7 +55,7 @@
         "ignoreCase": true
       }
     ],
-    // "import/no-named-as-default": "error",
+    "import/no-named-as-default": "error",
     "n/no-process-exit": "off"
   },
   "overrides": [

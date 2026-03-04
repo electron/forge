@@ -20,7 +20,7 @@ import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
-import webpack, { Configuration, Watching } from 'webpack';
+import * as webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -54,7 +54,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private _configGenerator!: WebpackConfigGenerator;
 
-  private watchers: Watching[] = [];
+  private watchers: webpack.Watching[] = [];
 
   private servers: http.Server[] = [];
 
@@ -141,11 +141,11 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   }
 
   private runWebpack = async (
-    options: Configuration[],
+    options: webpack.Configuration[],
     rendererOptions: WebpackPluginRendererConfig | null,
   ): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
-      webpack(options).run(async (err, stats) => {
+      webpack.webpack(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
             const name = rendererOptions.entryPoints[index].name;
@@ -639,7 +639,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const mainConfig = await this.configGenerator.getMainConfig();
     await new Promise((resolve, reject) => {
-      const compiler = webpack(mainConfig);
+      const compiler = webpack.webpack(mainConfig);
       const [onceResolve, onceReject] = once(resolve, reject);
       const cb: WebpackWatchHandler = async (err, stats) => {
         if (tab && stats) {
@@ -692,7 +692,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
   };
 
   launchRendererDevServers = async (logger: Logger): Promise<void> => {
-    const configs: Configuration[] = [];
+    const configs: webpack.Configuration[] = [];
     const rollingDependencies: string[] = [];
     for (const [i, rendererOptions] of this.allRendererOptions.entries()) {
       const groupName = `group_${i}`;
@@ -738,7 +738,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       entryConfig.stats = 'none';
     }
 
-    const compiler = webpack(configs);
+    const compiler = webpack.webpack(configs);
 
     const promises = preloadPlugins.map((preloadPlugin) => {
       return new Promise((resolve, reject) => {
