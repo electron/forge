@@ -6,6 +6,7 @@ import {
   packager,
   HookFunction as PackagerHookFunction,
   Options as PackagerOptions,
+  serialHooks,
   TargetDefinition,
 } from '@electron/packager';
 import {
@@ -36,18 +37,6 @@ import { readMutatedPackageJson } from '../util/read-package-json.js';
 import resolveDir from '../util/resolve-dir.js';
 
 const d = debug('electron-forge:packager');
-
-export function serialHooks<T extends (...args: any[]) => any>(
-  hooks: T[] = [],
-): [T] {
-  return [
-    async function (opts: Parameters<T>[0]): Promise<void> {
-      for (const hook of hooks) {
-        await hook(opts);
-      }
-    } as T,
-  ];
-}
 
 /**
  * Resolves hooks if they are a path to a file (instead of a `Function`).
