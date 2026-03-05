@@ -44,15 +44,14 @@ const d = debug('electron-forge:packager');
 async function resolveHooks<F = PackagerHookFunction>(
   hooks: (string | F)[] | undefined,
   dir: string,
-) {
+): Promise<Awaited<F>[]> {
   if (hooks) {
-    return await Promise.all(
+    const hooksOrNull = await Promise.all(
       hooks.map(async (hook) =>
-        typeof hook === 'string'
-          ? ((await importSearch<F>(dir, [hook])) as F)
-          : hook,
+        typeof hook === 'string' ? await importSearch<F>(dir, [hook]) : hook,
       ),
     );
+    return hooksOrNull.filter((hook): hook is Awaited<F> => hook !== null);
   }
 
   return [];
