@@ -1,9 +1,10 @@
 {
   "name": "fuses-test-app",
   "version": "1.0.0",
-  "main": "./src/main.js",
+  "main": "./src/main.cjs",
+  "type": "commonjs",
   "dependencies": {
-    "@electron/fuses": "^1.6.1",
+    "@electron/fuses": "^2.0.0",
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {

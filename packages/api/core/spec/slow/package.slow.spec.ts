@@ -12,7 +12,7 @@ import { api } from '../../src/api/index';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 describe('Package', () => {
-  const dir = path.resolve(__dirname, '..', 'fixture', 'api-tester');
+  const dir = path.resolve(import.meta.dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   beforeEach(async () => {
     outDir = await ensureTestDirIsNonexistent();

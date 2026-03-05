@@ -4,8 +4,11 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../src/install-dependencies';
-import { PACKAGE_MANAGERS, spawnPackageManager } from '../src/package-manager';
+} from '../src/install-dependencies.js';
+import {
+  PACKAGE_MANAGERS,
+  spawnPackageManager,
+} from '../src/package-manager.js';
 
 vi.mock('../src/package-manager', async (importOriginal) => {
   const mod = await importOriginal<object>();

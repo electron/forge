@@ -1,27 +1,39 @@
 import path from 'node:path';
 
-import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
-
-// eslint-disable-next-line n/no-missing-import
-import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 const d = debug('electron-forge:import-search');
 
-// https://github.com/nodejs/node/blob/da0ede1ad55a502a25b4139f58aab3fb1ee3bf3f/lib/internal/modules/cjs/loader.js#L353-L359
-type RequireError = Error & {
+/**
+ * @see https://github.com/nodejs/node/blob/4ea921bdbf94c11e86ef6b53aa7425c6df42876a/lib/internal/errors.js#L1611-L1617C1
+ */
+type ResolutionError = Error & {
   code: string;
-  path: string;
-  requestPath: string | undefined;
 };
 
-export async function importSearchRaw<T>(
+/**
+ * Dynamically `import()` the first resolvable module from a list of candidate paths.
+ *
+ * Resolution order for each entry in {@link paths}:
+ *
+ * 1. Local monorepo short-circuit: when running from a Forge checkout and the
+ *    path is a single `@electron-forge/*` specifier, derives the package location
+ *    within the monorepo and attempts a direct import (skips node_modules).
+ * 2. The raw path as-is (relies on Node's own resolution).
+ * 3. `path.resolve(relativeTo, path)` — resolved against the given directory.
+ * 4. `path.resolve(relativeTo, 'node_modules', path)` — explicit node_modules lookup.
+ *
+ * Only `ERR_MODULE_NOT_FOUND` errors are swallowed; any other error is re-thrown.
+ *
+ * @returns The raw module namespace object of the first successful import, or `null` if no module is found.
+ */
+async function importSearchRaw<T>(
   relativeTo: string,
   paths: string[],
 ): Promise<T | null> {
   // Attempt to locally short-circuit if we're running from a checkout of forge
   if (
-    __dirname.includes('forge/packages/') &&
+    import.meta.dirname.includes('forge/packages/') &&
     paths.length === 1 &&
     paths[0].startsWith('@electron-forge/')
   ) {
@@ -29,7 +41,7 @@ export async function importSearchRaw<T>(
     try {
       // From packages/utils/core-utils/dist (or src), resolve up to packages/
       const localPath = path.resolve(
-        __dirname,
+        import.meta.dirname,
         '..',
         '..',
         '..',
@@ -37,7 +49,7 @@ export async function importSearchRaw<T>(
         moduleName,
       );
       d('testing local forge build', { moduleType, moduleName, localPath });
-      return await dynamicImportMaybe(localPath);
+      return await import(localPath);
     } catch {
       // Ignore
     }
@@ -53,15 +65,11 @@ export async function importSearchRaw<T>(
   for (const testPath of testPaths) {
     try {
       d('testing', testPath);
-      return await dynamicImportMaybe(testPath);
+      return await import(testPath);
     } catch (err) {
       if (err instanceof Error) {
-        const requireErr = err as RequireError;
-        // Ignore require-related errors
-        if (
-          requireErr.code !== 'MODULE_NOT_FOUND' ||
-          ![undefined, testPath].includes(requireErr.requestPath)
-        ) {
+        const resolutionError = err as ResolutionError;
+        if (resolutionError.code !== 'ERR_MODULE_NOT_FOUND') {
           throw err;
         }
       }
@@ -70,6 +78,11 @@ export async function importSearchRaw<T>(
   d('failed to find a module in', testPaths);
   return null;
 }
+
+/** A module namespace that may or may not have a default export. */
+export type PossibleModule<T> = {
+  default?: T;
+} & T;
 
 export async function importSearch<T>(
   relativeTo: string,

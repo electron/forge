@@ -1,17 +1,18 @@
 {
   "name": "@electron-forge/maker-wix",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Wix maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/MakerWix.js",
+  "exports": "./dist/MakerWix.js",
   "typings": "dist/MakerWix.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

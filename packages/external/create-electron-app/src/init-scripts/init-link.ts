@@ -29,7 +29,14 @@ export async function initLink<T>(
       'utf-8',
     );
     const packageJson = JSON.parse(raw);
-    const forgeRoot = path.resolve(__dirname, '..', '..', '..', '..', '..');
+    const forgeRoot = path.resolve(
+      import.meta.dirname,
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+    );
 
     const getWorkspacePath = (packageName: string): string => {
       const result = spawnSync(

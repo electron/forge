@@ -10,23 +10,11 @@ const forgeConfig: ForgeConfig = {
   packagerConfig: {
     afterComplete: [
       // makes tests a bit simpler by having a single output directory in every platform/arch
-      async (
-        packagedAppLocation,
-        _electronVersion,
-        _targetPlatform,
-        _targetArch,
-        done,
-      ) => {
-        const parentDir = path.resolve(packagedAppLocation, '..');
-        await fsExtra.move(
-          packagedAppLocation,
-          path.join(parentDir, 'fuses-test-app'),
-          {
-            overwrite: true,
-          },
-        );
-
-        done();
+      async ({ buildPath }) => {
+        const parentDir = path.resolve(buildPath, '..');
+        await fsExtra.move(buildPath, path.join(parentDir, 'fuses-test-app'), {
+          overwrite: true,
+        });
       },
     ],
   },

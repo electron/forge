@@ -8,6 +8,6 @@
     "eslint-plugin-import": "^2.25.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "typescript": "^5.9.2",
-    "vite": "^5.0.12"
+    "vite": "^7.2.4"
   }
 }

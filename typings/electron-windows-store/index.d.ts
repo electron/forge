@@ -3,7 +3,7 @@ declare module 'electron-windows-store' {
   export default run;
 }
 
-declare module 'electron-windows-store/lib/sign' {
+declare module 'electron-windows-store/lib/sign.js' {
   export const isValidPublisherName: (name: string) => boolean;
   export const makeCert: (opts: MakerCertOptions) => Promise<string>;
 

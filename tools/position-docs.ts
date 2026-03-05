@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 
 import { getPackageInfo } from './utils';
 
-const DOCS_PATH = path.resolve(__dirname, '..', 'docs');
+const DOCS_PATH = path.resolve(import.meta.dirname, '..', 'docs');
 
 async function normalizeLinks(
   htmlFile: string,

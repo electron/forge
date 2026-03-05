@@ -6,11 +6,11 @@ import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
-import packageJSON from '../package.json';
+import packageJSON from '../package.json' with { type: 'json' };
 
-import { forgeImport } from './import';
-import { init, InitOptions } from './init';
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import { forgeImport } from './import.js';
+import { init, InitOptions } from './init.js';
+import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 // eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
 import type { Prompt } from '@inquirer/type';

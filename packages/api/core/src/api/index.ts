@@ -1,12 +1,11 @@
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
-// eslint-disable-next-line n/no-missing-import
-import ForgeUtils from '../util';
+import ForgeUtils from '../util/index.js';
 
-import make, { MakeOptions } from './make';
-import _package, { PackageOptions } from './package';
-import publish, { PublishOptions } from './publish';
-import start, { StartOptions } from './start';
+import make, { MakeOptions } from './make.js';
+import _package, { PackageOptions } from './package.js';
+import publish, { PublishOptions } from './publish.js';
+import start, { StartOptions } from './start.js';
 
 export class ForgeAPI {
   /**

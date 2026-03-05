@@ -15,11 +15,11 @@ import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
 
-import { findTemplate } from './init-scripts/find-template';
-import { initDirectory } from './init-scripts/init-directory';
-import { initGit } from './init-scripts/init-git';
-import { initLink } from './init-scripts/init-link';
-import { initNPM } from './init-scripts/init-npm';
+import { findTemplate } from './init-scripts/find-template.js';
+import { initDirectory } from './init-scripts/init-directory.js';
+import { initGit } from './init-scripts/init-git.js';
+import { initLink } from './init-scripts/init-link.js';
+import { initNPM } from './init-scripts/init-npm.js';
 
 const d = debug('electron-forge:init');
 
@@ -71,7 +71,7 @@ async function validateTemplate(
     );
   }
 
-  const dir = path.join(__dirname, '..');
+  const dir = path.join(import.meta.dirname, '..');
   const raw = await fs.promises.readFile(
     path.join(dir, 'package.json'),
     'utf-8',
