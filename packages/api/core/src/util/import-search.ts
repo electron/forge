@@ -11,6 +11,22 @@ type ResolutionError = Error & {
   code: string;
 };
 
+/**
+ * Dynamically `import()` the first resolvable module from a list of candidate paths.
+ *
+ * Resolution order for each entry in {@link paths}:
+ *
+ * 1. Local monorepo short-circuit: when running from a Forge checkout and the
+ *    path is a single `@electron-forge/*` specifier, derives the package location
+ *    within the monorepo and attempts a direct import (skips node_modules).
+ * 2. The raw path as-is (relies on Node's own resolution).
+ * 3. `path.resolve(relativeTo, path)` — resolved against the given directory.
+ * 4. `path.resolve(relativeTo, 'node_modules', path)` — explicit node_modules lookup.
+ *
+ * Only `ERR_MODULE_NOT_FOUND` errors are swallowed; any other error is re-thrown.
+ *
+ * @returns The raw module namespace object of the first successful import, or `null` if no module is found.
+ */
 async function importSearchRaw<T>(
   relativeTo: string,
   paths: string[],
@@ -63,10 +79,20 @@ async function importSearchRaw<T>(
   return null;
 }
 
+/** A module namespace that may or may not have a default export. */
 export type PossibleModule<T> = {
   default?: T;
 } & T;
 
+/**
+ * Used throughout `@electron-forge` to dynamically load makers, publishers,
+ * plugins, and lifecycle hooks by package name. Only accepts default exports.
+ *
+ * @param relativeTo - Directory to resolve relative paths against (typically the project root).
+ * @param paths - Module specifiers to attempt (e.g. `['@electron-forge/maker-zip']`).
+ * @returns The module's default export, or `null` if the module was not found
+ *          or has no default export.
+ */
 export default async <T>(
   relativeTo: string,
   paths: string[],
@@ -74,5 +100,5 @@ export default async <T>(
   const result = await importSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default
     ? result.default
-    : (result as T | null);
+    : null;
 };

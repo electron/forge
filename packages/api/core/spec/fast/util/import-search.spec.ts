@@ -18,10 +18,16 @@ describe('import-search', () => {
     expect(resolved).toEqual(findConfig);
   });
 
+  it('should return null if no default export', async () => {
+    await expect(
+      importSearch(import.meta.dirname, ['../../fixture/import-search/erick']),
+    ).resolves.toBeNull();
+  });
+
   it('should throw if file exists but fails to load', async () => {
     await expect(
       importSearch(import.meta.dirname, [
-        '../../fixture/require-search/throw-error',
+        '../../fixture/import-search/throw-error',
       ]),
     ).rejects.toThrowError('test');
   });
