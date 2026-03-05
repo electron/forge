@@ -20,15 +20,15 @@ import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import logSymbols from 'log-symbols';
 
-import getForgeConfig from '../util/forge-config';
-import { getHookListrTasks, runMutatingHook } from '../util/hook';
-import importSearch from '../util/import-search';
-import getCurrentOutDir from '../util/out-dir';
-import parseArchs from '../util/parse-archs';
-import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
+import getForgeConfig from '../util/forge-config.js';
+import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
+import importSearch from '../util/import-search.js';
+import getCurrentOutDir from '../util/out-dir.js';
+import parseArchs from '../util/parse-archs.js';
+import { readMutatedPackageJson } from '../util/read-package-json.js';
+import resolveDir from '../util/resolve-dir.js';
 
-import { listrPackage } from './package';
+import { listrPackage } from './package.js';
 
 type MakerImpl = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

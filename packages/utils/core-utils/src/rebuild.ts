@@ -27,7 +27,7 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
   };
 
   const child = cp.fork(
-    path.resolve(__dirname, 'remote-rebuild.js'),
+    path.resolve(import.meta.dirname, 'remote-rebuild.js'),
     [JSON.stringify(options)],
     {
       stdio: ['pipe', 'pipe', 'pipe', 'ipc'],

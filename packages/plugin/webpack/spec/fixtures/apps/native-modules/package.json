@@ -1,5 +1,6 @@
 {
   "name": "native-app",
+  "type": "commonjs",
   "version": "1.0.0",
   "main": "./.webpack/main/index.js",
   "license": "MIT",

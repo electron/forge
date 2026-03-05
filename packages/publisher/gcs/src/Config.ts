@@ -1,8 +1,12 @@
-import { StorageOptions, UploadOptions } from '@google-cloud/storage';
-// eslint-disable-next-line n/no-missing-import
-import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
+import {
+  CreateResumableUploadOptions,
+  StorageOptions,
+  UploadOptions,
+} from '@google-cloud/storage';
 
-import { GCSArtifact } from './PublisherGCS';
+import { GCSArtifact } from './PublisherGCS.js';
+
+type ConfigMetadata = NonNullable<CreateResumableUploadOptions['metadata']>;
 
 export interface PublisherGCSConfig {
   /**

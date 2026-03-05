@@ -1,16 +1,16 @@
 import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
+import { ForgeArch } from '@electron-forge/shared-types';
+import installer from 'electron-installer-snap';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerSnap } from '../src/MakerSnap';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const installer = require('electron-installer-snap');
-
-vi.hoisted(async () => {
-  const { mockRequire } = await import('@electron-forge/test-utils');
-  void mockRequire('electron-installer-snap', vi.fn());
+vi.mock('electron-installer-snap', () => {
+  return {
+    default: vi.fn(),
+  };
 });
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
@@ -19,7 +19,7 @@ describe('MakerSnap', () => {
   const dir = '/my/test/dir/out/foo-linux-x64';
   const makeDir = path.resolve('/make/dir');
   const appName = 'My Test App';
-  const targetArch = process.arch;
+  const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
 
   it('should pass through correct defaults', async () => {

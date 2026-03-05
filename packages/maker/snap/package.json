@@ -1,17 +1,18 @@
 {
   "name": "@electron-forge/maker-snap",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Snap maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "license": "MIT",
-  "main": "dist/MakerSnap.js",
+  "exports": "./dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
     "vitest": "^4.0.14"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",

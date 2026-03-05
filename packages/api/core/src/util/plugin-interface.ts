@@ -14,10 +14,9 @@ import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
 
-// eslint-disable-next-line n/no-missing-import
-import { StartOptions } from '../api';
+import { StartOptions } from '../api/start.js';
 
-import importSearch from './import-search';
+import importSearch from './import-search.js';
 
 const d = debug('electron-forge:plugins');
 

@@ -1,17 +1,18 @@
 {
   "name": "@electron-forge/maker-base",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Base maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/Maker.js",
+  "exports": "./dist/Maker.js",
   "typings": "dist/Maker.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",

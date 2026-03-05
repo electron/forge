@@ -10,11 +10,11 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../util/install-dependencies';
+} from '../../util/install-dependencies.js';
 
 const d = debug('electron-forge:init:npm');
 const corePackage = fs.readJsonSync(
-  path.resolve(__dirname, '../../../package.json'),
+  path.resolve(import.meta.dirname, '../../../package.json'),
 );
 
 export function siblingDep(name: string): string {
@@ -23,7 +23,7 @@ export function siblingDep(name: string): string {
 
 export const deps = ['electron-squirrel-startup'];
 export const devDeps = [
-  '@electron/fuses@^1.0.0',
+  '@electron/fuses@^2.0.0',
   siblingDep('cli'),
   siblingDep('maker-squirrel'),
   siblingDep('maker-zip'),

@@ -8,7 +8,7 @@ import packageAPI from '../../../api/core/src/api/package';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
-  const appPath = path.join(__dirname, 'fixture');
+  const appPath = path.join(import.meta.dirname, 'fixture');
 
   const packageJSON = JSON.parse(
     fs.readFileSync(path.join(appPath, 'package.json'), {

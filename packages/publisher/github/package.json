@@ -1,17 +1,18 @@
 {
   "name": "@electron-forge/publisher-github",
   "version": "8.0.0-alpha.4",
+  "type": "module",
   "description": "Github publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherGithub.js",
+  "exports": "./dist/PublisherGithub.js",
   "typings": "dist/PublisherGithub.d.ts",
   "devDependencies": {
     "vitest": "^4.0.14"
   },
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",

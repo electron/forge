@@ -12,14 +12,14 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../util/install-dependencies';
-import { readRawPackageJson } from '../util/read-package-json';
+} from '../util/install-dependencies.js';
+import { readRawPackageJson } from '../util/read-package-json.js';
 
-import { findTemplate } from './init-scripts/find-template';
-import { initDirectory } from './init-scripts/init-directory';
-import { initGit } from './init-scripts/init-git';
-import { initLink } from './init-scripts/init-link';
-import { initNPM } from './init-scripts/init-npm';
+import { findTemplate } from './init-scripts/find-template.js';
+import { initDirectory } from './init-scripts/init-directory.js';
+import { initGit } from './init-scripts/init-git.js';
+import { initLink } from './init-scripts/init-link.js';
+import { initNPM } from './init-scripts/init-npm.js';
 
 const d = debug('electron-forge:init');
 
@@ -72,7 +72,7 @@ async function validateTemplate(
   }
 
   const forgeVersion = (
-    await readRawPackageJson(path.join(__dirname, '..', '..'))
+    await readRawPackageJson(path.join(import.meta.dirname, '..', '..'))
   ).version;
   if (!semver.satisfies(forgeVersion, templateModule.requiredForgeVersion)) {
     throw new Error(

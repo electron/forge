@@ -1,10 +1,11 @@
 import http from 'node:http';
 import path from 'node:path';
+import url from 'node:url';
 
 import express from 'express';
 import ews from 'express-ws';
 
-import Tab from './Tab';
+import Tab from './Tab.js';
 
 export { Tab };
 
@@ -27,17 +28,27 @@ export default class Logger {
 
     this.app.use(
       '/xterm/addons/fit',
-      express.static(path.dirname(require.resolve('xterm-addon-fit'))),
+      express.static(
+        path.dirname(url.fileURLToPath(import.meta.resolve('xterm-addon-fit'))),
+      ),
     );
     this.app.use(
       '/xterm/addons/search',
-      express.static(path.dirname(require.resolve('xterm-addon-search'))),
+      express.static(
+        path.dirname(
+          url.fileURLToPath(import.meta.resolve('xterm-addon-search')),
+        ),
+      ),
     );
     this.app.use(
       '/xterm',
-      express.static(path.resolve(require.resolve('xterm'), '../..')),
+      express.static(
+        path.resolve(url.fileURLToPath(import.meta.resolve('xterm')), '../..'),
+      ),
     );
-    this.app.use(express.static(path.resolve(__dirname, '..', 'static')));
+    this.app.use(
+      express.static(path.resolve(import.meta.dirname, '..', 'static')),
+    );
     this.ws.app.ws('/sub', () => {
       // I assume this endpoint is just a no-op needed for some reason.
     });

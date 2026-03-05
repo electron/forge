@@ -15,17 +15,17 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../util/install-dependencies';
-import { readRawPackageJson } from '../util/read-package-json';
+} from '../util/install-dependencies.js';
+import { readRawPackageJson } from '../util/read-package-json.js';
 
-import { initGit } from './init-scripts/init-git';
-import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm';
+import { initGit } from './init-scripts/init-git.js';
+import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm.js';
 
 const d = debug('electron-forge:import');
 
@@ -333,12 +333,11 @@ export default autoTrace(
                         d(
                           'detected existing Forge config in package.json, merging with base template Forge config',
                         );
-                        // eslint-disable-next-line @typescript-eslint/no-require-imports
-                        const templateConfig = require(
+                        const templateConfig = await import(
                           path.resolve(
                             baseTemplate.templateDir,
                             'forge.config.js',
-                          ),
+                          )
                         );
                         packageJSON = await readRawPackageJson(dir);
                         merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
