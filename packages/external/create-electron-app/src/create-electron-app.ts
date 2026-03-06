@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 
+import { resolveWorkingDir } from '@electron-forge/core-utils';
 import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import chalk from 'chalk';
@@ -10,7 +11,6 @@ import packageJSON from '../package.json' with { type: 'json' };
 
 import { forgeImport } from './import.js';
 import { init, InitOptions } from './init.js';
-import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 // eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
 import type { Prompt } from '@inquirer/type';

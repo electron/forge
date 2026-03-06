@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { resolveWorkingDir } from '../../src/util/resolve-working-dir';
+import { resolveWorkingDir } from '../src/resolve-working-dir';
 
 describe('resolveWorkingDir', () => {
   it('resolves relative paths according to the current working directory', () => {
