@@ -192,7 +192,7 @@ program
     'Skip initializing a git repository in the imported project.',
   )
   .action(async (dir, options) => {
-    const workingDir = resolveWorkingDir(dir);
+    const workingDir = resolveWorkingDir(dir, false);
     await forgeImport({
       dir: workingDir,
       interactive: true,
