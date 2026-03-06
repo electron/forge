@@ -7967,6 +7967,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "create-electron-app@workspace:packages/external/create-electron-app"
   dependencies:
+    "@electron-forge/core": "workspace:*"
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
