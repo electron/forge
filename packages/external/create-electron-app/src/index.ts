@@ -36,4 +36,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-import './create-electron-app';
+import './create-electron-app.js';
