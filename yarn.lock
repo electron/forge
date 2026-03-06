@@ -886,7 +886,6 @@ __metadata:
     got: "npm:^14.0.0"
     jiti: "npm:^2.4.2"
     listr2: "npm:^7.0.2"
-    lodash-es: "npm:^4.17.21"
     log-symbols: "npm:^4.0.0"
     semver: "npm:^7.2.1"
     source-map-support: "npm:^0.5.13"
@@ -7983,7 +7982,7 @@ __metadata:
     debug: "npm:^4.3.1"
     fs-extra: "npm:^10.0.0"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.20"
+    lodash-es: "npm:^4.17.21"
     log-symbols: "npm:^4.0.0"
     semver: "npm:^7.2.1"
   bin:
