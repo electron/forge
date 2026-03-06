@@ -84,6 +84,15 @@ export type PossibleModule<T> = {
   default?: T;
 } & T;
 
+/**
+ * Used throughout `@electron-forge` to dynamically load makers, publishers,
+ * plugins, and lifecycle hooks by package name. Only accepts default exports.
+ *
+ * @param relativeTo - Directory to resolve relative paths against (typically the project root).
+ * @param paths - Module specifiers to attempt (e.g. `['@electron-forge/maker-zip']`).
+ * @returns The module's default export, or `null` if the module was not found
+ *          or has no default export.
+ */
 export async function importSearch<T>(
   relativeTo: string,
   paths: string[],
@@ -91,5 +100,5 @@ export async function importSearch<T>(
   const result = await importSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default
     ? result.default
-    : (result as T | null);
+    : null;
 }
