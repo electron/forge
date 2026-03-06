@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 const d = debug('electron-forge:import-search');
@@ -78,11 +79,6 @@ async function importSearchRaw<T>(
   d('failed to find a module in', testPaths);
   return null;
 }
-
-/** A module namespace that may or may not have a default export. */
-export type PossibleModule<T> = {
-  default?: T;
-} & T;
 
 /**
  * Used throughout `@electron-forge` to dynamically load makers, publishers,
