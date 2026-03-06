@@ -123,7 +123,7 @@ export async function forgeImport({
           persistentOutput: true,
           bottomBar: Infinity,
         },
-        task: async (_ctx: any, task: any) => {
+        task: async (_ctx, task) => {
           const calculatedOutDir = outDir || 'out';
 
           const importDeps = ([] as string[]).concat(deps);
@@ -240,14 +240,14 @@ export async function forgeImport({
             [
               {
                 title: `Resolving package manager`,
-                task: async (ctx: { pm: PMDetails }, task: any) => {
+                task: async (ctx, task) => {
                   ctx.pm = await resolvePackageManager();
                   task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
                 },
               },
               {
                 title: 'Configuring Yarn (if applicable)',
-                task: async ({ pm }: { pm: PMDetails }) => {
+                task: async ({ pm }) => {
                   // Yarn v4 defaults to PnP which doesn't work well with CommonJS requires in our forge config
                   // lets ensure that nodeLinker is set to node-modules
                   if (pm.executable === 'yarn') {
@@ -264,7 +264,7 @@ export async function forgeImport({
               },
               {
                 title: 'Installing dependencies',
-                task: async ({ pm }: { pm: PMDetails }, task: any) => {
+                task: async ({ pm }, task) => {
                   await writeChanges();
 
                   d('deleting old dependencies forcefully');
@@ -315,9 +315,8 @@ export async function forgeImport({
                     d(
                       'detected existing Forge config in package.json, merging with base template Forge config',
                     );
-                    // eslint-disable-next-line @typescript-eslint/no-require-imports
-                    const templateConfig = require(
-                      path.resolve(baseTemplate.templateDir, 'forge.config.js'),
+                    const templateConfig = await import(
+                      path.resolve(baseTemplate.templateDir, 'forge.config.js')
                     );
                     packageJSON = await readRawPackageJson(dir);
                     merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
@@ -349,7 +348,7 @@ export async function forgeImport({
                 },
               },
             ],
-            listrOptions,
+            { concurrent: listrOptions.concurrent },
           );
         },
       },
@@ -359,7 +358,7 @@ export async function forgeImport({
           persistentOutput: true,
           bottomBar: Infinity,
         },
-        task: (_: any, task: any) => {
+        task: (_ctx, task) => {
           task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
 
           Thanks for using ${chalk.green('Electron Forge')}!`;

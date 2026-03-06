@@ -33,15 +33,15 @@ async function importSearchRaw<T>(
 ): Promise<T | null> {
   // Attempt to locally short-circuit if we're running from a checkout of forge
   if (
-    import.meta.dirname.includes('forge/packages/') &&
+    import.meta.dirname.includes('forge/packages/api/core/') &&
     paths.length === 1 &&
     paths[0].startsWith('@electron-forge/')
   ) {
     const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
     try {
-      // From packages/utils/core-utils/dist (or src), resolve up to packages/
       const localPath = path.resolve(
         import.meta.dirname,
+        '..',
         '..',
         '..',
         '..',
