@@ -45,3 +45,5 @@ packages/**/typedoc.json
 
 tools/verdaccio/storage
 tools/verdaccio/htpasswd
+
+.claude/*.local.*
