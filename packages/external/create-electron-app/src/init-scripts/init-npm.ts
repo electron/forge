@@ -1,24 +1,23 @@
 import path from 'node:path';
 
-import { PMDetails } from '@electron-forge/core-utils';
+import {
+  DepType,
+  DepVersionRestriction,
+  installDependencies,
+  PMDetails,
+} from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import {
-  DepType,
-  DepVersionRestriction,
-  installDependencies,
-} from '../../util/install-dependencies.js';
-
 const d = debug('electron-forge:init:npm');
-const corePackage = fs.readJsonSync(
-  path.resolve(import.meta.dirname, '../../../package.json'),
+const packageJSON = fs.readJsonSync(
+  path.resolve(import.meta.dirname, '../../package.json'),
 );
 
 export function siblingDep(name: string): string {
-  return `@electron-forge/${name}@^${corePackage.version}`;
+  return `@electron-forge/${name}@^${packageJSON.version}`;
 }
 
 export const deps = ['electron-squirrel-startup'];

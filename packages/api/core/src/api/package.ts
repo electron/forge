@@ -30,7 +30,7 @@ import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runHook } from '../util/hook.js';
-import importSearch from '../util/import-search.js';
+import { importSearch } from '../util/import-search.js';
 import { warn } from '../util/messages.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';

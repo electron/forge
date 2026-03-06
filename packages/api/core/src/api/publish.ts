@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
-import importSearch from '../util/import-search.js';
+import { importSearch } from '../util/import-search.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import PublishState from '../util/publish-state.js';
 import resolveDir from '../util/resolve-dir.js';

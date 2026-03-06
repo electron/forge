@@ -1,17 +1,17 @@
-import {
-  PACKAGE_MANAGERS,
-  spawnPackageManager,
-} from '@electron-forge/core-utils';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-} from '../../../src/util/install-dependencies.js';
+} from '../src/install-dependencies.js';
+import {
+  PACKAGE_MANAGERS,
+  spawnPackageManager,
+} from '../src/package-manager.js';
 
-vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
-  const mod = await importOriginal();
+vi.mock('../src/package-manager', async (importOriginal) => {
+  const mod = await importOriginal<object>();
   return {
     ...mod,
     spawnPackageManager: vi.fn(),

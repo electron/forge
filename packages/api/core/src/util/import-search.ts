@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
 
 const d = debug('electron-forge:import-search');
@@ -79,11 +80,6 @@ async function importSearchRaw<T>(
   return null;
 }
 
-/** A module namespace that may or may not have a default export. */
-export type PossibleModule<T> = {
-  default?: T;
-} & T;
-
 /**
  * Used throughout `@electron-forge` to dynamically load makers, publishers,
  * plugins, and lifecycle hooks by package name. Only accepts default exports.
@@ -93,12 +89,12 @@ export type PossibleModule<T> = {
  * @returns The module's default export, or `null` if the module was not found
  *          or has no default export.
  */
-export default async <T>(
+export async function importSearch<T>(
   relativeTo: string,
   paths: string[],
-): Promise<T | null> => {
+): Promise<T | null> {
   const result = await importSearchRaw<PossibleModule<T>>(relativeTo, paths);
   return typeof result === 'object' && result && result.default
     ? result.default
     : null;
-};
+}

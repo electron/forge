@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findTemplate } from '../../src/api/init-scripts/find-template';
+import { findTemplate } from '../../../src/init-scripts/find-template';
 
 describe('findTemplate', () => {
   /**
