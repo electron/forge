@@ -12,6 +12,7 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/template-base": "workspace:*",
+    "@electron-forge/tracer": "workspace:*",
     "@electron-forge/template-vite": "workspace:*",
     "@electron-forge/template-vite-typescript": "workspace:*",
     "@electron-forge/template-webpack": "workspace:*",
