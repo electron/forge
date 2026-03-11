@@ -8,6 +8,9 @@
   "typings": "dist/index.d.ts",
   "author": "Samuel Attard",
   "license": "MIT",
+  "engines": {
+    "node": ">= 22.12.0"
+  },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
