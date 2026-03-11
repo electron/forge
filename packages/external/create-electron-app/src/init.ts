@@ -208,7 +208,7 @@ export async function init({
                 task: async ({ pm }, task) => {
                   d('installing dependencies');
                   if (templateModule.dependencies?.length) {
-                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.dependencies.join(' ')}`;
+                    task.output = `${pm.executable} ${pm.install} ${templateModule.dependencies.join(' ')}`;
                   }
                   return await installDependencies(
                     pm,
