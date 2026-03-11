@@ -137,6 +137,12 @@ async function runCommand(args: string[]) {
   console.log('🗑️  Pruning pnpm store before running command');
   await spawnPromise('pnpm', ['store', 'prune']);
 
+  /**
+   * Avoid polluting the global yarn cache.
+   */
+  const tempYarnGlobal = path.join(STORAGE_PATH, '.yarn-global');
+  fs.promises.mkdir(tempYarnGlobal, { recursive: true });
+
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
@@ -152,6 +158,13 @@ async function runCommand(args: string[]) {
       YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
       // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
       YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
+      // Isolate package manager caches so Verdaccio packages
+      // don't corrupt the global caches. These directories live
+      // under STORAGE_PATH and get cleaned up on next run.
+      // https://yarnpkg.com/configuration/yarnrc#globalFolder
+      YARN_GLOBAL_FOLDER: tempYarnGlobal,
+      // https://yarnpkg.com/configuration/yarnrc#enableGlobalCache
+      YARN_ENABLE_GLOBAL_CACHE: 'false',
     },
   });
 }
