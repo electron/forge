@@ -5,6 +5,7 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
+  PACKAGE_MANAGERS,
   PMDetails,
   resolvePackageManager,
 } from '@electron-forge/core-utils';
@@ -185,8 +186,8 @@ export async function init({
         // pm.executable needs to be optional here because the code gets evaluated twice (on init and on execution)
         // @see https://listr2.kilic.dev/task/enable.html
         enabled: ({ pm }) => pm?.executable !== 'npm',
-        task: async ({ pm }, task) => {
-          const pmString = `${pm.executable}@${pm.version}`;
+        task: async (ctx, task) => {
+          const pmString = `${ctx.pm.executable}@${ctx.pm.version}`;
           try {
             await spawn('corepack', ['use', pmString], {
               cwd: dir,
@@ -194,6 +195,7 @@ export async function init({
             task.title = `Set ${chalk.cyan(pmString)} via Corepack`;
           } catch (e) {
             d('corepack failed to run with error', e);
+            ctx.pm = { ...PACKAGE_MANAGERS['npm'] };
             task.title = `Forge was unable to set ${chalk.cyan(pmString)} via Corepack and will fall back to ${chalk.cyan('npm')}. If you are using Node.js >= 25, you will need to install corepack via ${chalk.green('npm install -g corepack')}. Otherwise, you may need to enable Corepack shims via ${chalk.green('corepack enable')}.`;
           }
         },
@@ -218,7 +220,6 @@ export async function init({
                     DepVersionRestriction.RANGE,
                   );
                 },
-                exitOnError: false,
               },
               {
                 title: 'Installing development dependencies',
@@ -234,7 +235,6 @@ export async function init({
                     DepType.DEV,
                   );
                 },
-                exitOnError: false,
               },
               {
                 title: 'Finalizing dependencies',
@@ -245,7 +245,6 @@ export async function init({
                       task: async ({ pm }, task) => {
                         await initNPM(pm, dir, ctx.parsedElectronVersion, task);
                       },
-                      exitOnError: false,
                     },
                     {
                       title: 'Linking Forge dependencies to local build',
