@@ -6,8 +6,6 @@ import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 
-import { readRawPackageJson } from '../../util/read-package-json.js';
-
 const d = debug('electron-forge:init:link');
 
 /**
@@ -26,10 +24,13 @@ export async function initLink<T>(
   const shouldLink = process.env.LINK_FORGE_DEPENDENCIES_ON_INIT;
   if (shouldLink) {
     d('Linking forge dependencies');
-    const packageJson = await readRawPackageJson(dir);
+    const raw = await fs.promises.readFile(
+      path.join(dir, 'package.json'),
+      'utf-8',
+    );
+    const packageJson = JSON.parse(raw);
     const forgeRoot = path.resolve(
       import.meta.dirname,
-      '..',
       '..',
       '..',
       '..',

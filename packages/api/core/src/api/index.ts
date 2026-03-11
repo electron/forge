@@ -2,31 +2,12 @@ import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
 import ForgeUtils from '../util/index.js';
 
-import _import, { ImportOptions } from './import.js';
-import init, { InitOptions } from './init.js';
 import make, { MakeOptions } from './make.js';
 import _package, { PackageOptions } from './package.js';
 import publish, { PublishOptions } from './publish.js';
 import start, { StartOptions } from './start.js';
 
 export class ForgeAPI {
-  /**
-   * Attempt to import a given module directory to the Electron Forge standard.
-   *
-   * * Sets up `git` and the correct NPM dependencies
-   * * Adds a template forge config to `package.json`
-   */
-  import(opts: ImportOptions): Promise<void> {
-    return _import(opts);
-  }
-
-  /**
-   * Initialize a new Electron Forge template project in the given directory.
-   */
-  init(opts: InitOptions): Promise<void> {
-    return init(opts);
-  }
-
   /**
    * Make distributables for an Electron application
    */
@@ -65,8 +46,6 @@ export {
   ForgeMakeResult,
   ElectronProcess,
   ForgeUtils,
-  ImportOptions,
-  InitOptions,
   MakeOptions,
   PackageOptions,
   PublishOptions,

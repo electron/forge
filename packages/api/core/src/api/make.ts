@@ -22,7 +22,7 @@ import logSymbols from 'log-symbols';
 
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
-import importSearch from '../util/import-search.js';
+import { importSearch } from '../util/import-search.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import parseArchs from '../util/parse-archs.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';

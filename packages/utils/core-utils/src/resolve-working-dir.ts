@@ -1,6 +1,5 @@
+import fs from 'node:fs';
 import path from 'node:path';
-
-import fs from 'fs-extra';
 
 /**
  * Resolves the directory in which to use a CLI command.

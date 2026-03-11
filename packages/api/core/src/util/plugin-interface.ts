@@ -16,7 +16,7 @@ import debug from 'debug';
 
 import { StartOptions } from '../api/start.js';
 
-import importSearch from './import-search.js';
+import { importSearch } from './import-search.js';
 
 const d = debug('electron-forge:plugins');
 

@@ -1,12 +1,11 @@
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
+import { resolveWorkingDir } from '@electron-forge/core-utils';
 import chalk from 'chalk';
 import { program } from 'commander';
 
 import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
-
-import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 export async function getMakeOptions(): Promise<MakeOptions> {
   let workingDir: string;

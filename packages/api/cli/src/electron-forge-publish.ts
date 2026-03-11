@@ -1,5 +1,6 @@
 import { initializeProxy } from '@electron/get';
 import { api, PublishOptions } from '@electron-forge/core';
+import { resolveWorkingDir } from '@electron-forge/core-utils';
 import chalk from 'chalk';
 import { program } from 'commander';
 
@@ -7,7 +8,6 @@ import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
 
 import { getMakeOptions } from './electron-forge-make.js';
-import { resolveWorkingDir } from './util/resolve-working-dir.js';
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version.')

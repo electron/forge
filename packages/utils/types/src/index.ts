@@ -286,3 +286,7 @@ export type PackagePerson =
       email?: string;
       url?: string;
     };
+
+export type PossibleModule<T> = {
+  default?: T;
+} & T;
