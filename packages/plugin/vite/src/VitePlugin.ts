@@ -42,7 +42,13 @@ function spawnViteBuild(
         FORGE_VITE_INDEX: String(index),
         FORGE_VITE_CONFIG: JSON.stringify(pluginConfig),
       },
-      stdio: ['ignore', 'ignore', 'pipe'],
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stdout = '';
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
     });
 
     let stderr = '';
@@ -52,15 +58,17 @@ function spawnViteBuild(
     });
 
     child.on('error', reject);
-    child.on('close', (code) => {
+    child.on('close', (code, signal) => {
       if (code === 0) {
         resolve();
       } else {
+        const output = [stdout, stderr].filter(Boolean).join('\n');
+        const reason = signal
+          ? `killed by signal ${signal}`
+          : `exited with code ${code}`;
         reject(
           new Error(
-            `Vite build subprocess exited with code ${code}${
-              stderr ? `:\n${stderr}` : ''
-            }`,
+            `Vite build subprocess ${reason}${output ? `:\n${output}` : ''}`,
           ),
         );
       }
