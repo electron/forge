@@ -19,7 +19,7 @@
   "dependencies": {
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@electron/asar": "4.1.0"
+    "@electron/asar": "^4.1.0"
   },
   "publishConfig": {
     "access": "public"
