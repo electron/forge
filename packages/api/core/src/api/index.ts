@@ -3,6 +3,7 @@ import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 // eslint-disable-next-line n/no-missing-import
 import ForgeUtils from '../util';
 
+import bundle, { BundleOptions } from './bundle';
 import _import, { ImportOptions } from './import';
 import init, { InitOptions } from './init';
 import make, { MakeOptions } from './make';
@@ -11,6 +12,15 @@ import publish, { PublishOptions } from './publish';
 import start, { StartOptions } from './start';
 
 export class ForgeAPI {
+  /**
+   * Bundle the current Electron application source code using the configured
+   * bundler plugin (e.g. webpack, vite). Runs generateAssets and prePackage
+   * hooks without running @electron/packager.
+   */
+  bundle(opts: BundleOptions): Promise<void> {
+    return bundle(opts);
+  }
+
   /**
    * Attempt to import a given module directory to the Electron Forge standard.
    *
@@ -63,6 +73,7 @@ const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
 export {
+  BundleOptions,
   ForgeMakeResult,
   ElectronProcess,
   ForgeUtils,
