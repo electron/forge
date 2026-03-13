@@ -1,0 +1,1 @@
+globalThis.preloadMarker = 'from-preload';

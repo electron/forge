@@ -1,0 +1,1 @@
+globalThis.secondaryMarker = 'from-secondary';
