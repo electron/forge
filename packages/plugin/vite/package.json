@@ -18,6 +18,7 @@
     "./forge-vite-env": "./forge-vite-env.d.ts"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "chalk": "^4.0.0",

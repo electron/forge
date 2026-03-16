@@ -4,6 +4,7 @@ import readline from 'node:readline';
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
+  onAppRestart,
 } from '@electron-forge/core-utils';
 import {
   ElectronProcess,
@@ -289,6 +290,19 @@ export default autoTrace(
       lastSpawned = spawned;
       return lastSpawned;
     };
+
+    onAppRestart(() => {
+      if (lastSpawned && !lastSpawned.restarted) {
+        console.info(
+          `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
+        );
+        lastSpawned.restarted = true;
+        lastSpawned.on('exit', async () => {
+          lastSpawned!.emit('restarted', await forgeSpawnWrapper());
+        });
+        lastSpawned.kill('SIGTERM');
+      }
+    });
 
     if (interactive) {
       process.stdin.on('data', (data) => {
