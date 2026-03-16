@@ -666,7 +666,10 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
         return onceResolve(undefined);
       };
       if (watch) {
-        this.watchers.push(compiler.watch({}, cb));
+        const watcher = compiler.watch({}, cb);
+        if (watcher) {
+          this.watchers.push(watcher);
+        }
       } else {
         compiler.run(cb);
       }
