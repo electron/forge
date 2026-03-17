@@ -35,8 +35,7 @@ export interface WebpackPluginEntryPointBase {
   nodeIntegration?: boolean;
 }
 
-export interface WebpackPluginEntryPointLocalWindow
-  extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointLocalWindow extends WebpackPluginEntryPointBase {
   /**
    * Relative or absolute path to the HTML template file for this entry point.
    */
@@ -52,16 +51,14 @@ export interface WebpackPluginEntryPointLocalWindow
   preload?: WebpackPreloadEntryPoint;
 }
 
-export interface WebpackPluginEntryPointPreloadOnly
-  extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointPreloadOnly extends WebpackPluginEntryPointBase {
   /**
    * Information about the preload script for this entry point.
    */
   preload: WebpackPreloadEntryPoint;
 }
 
-export interface WebpackPluginEntryPointNoWindow
-  extends WebpackPluginEntryPointBase {
+export interface WebpackPluginEntryPointNoWindow extends WebpackPluginEntryPointBase {
   /**
    * Relative or absolute path to the main JS file for this entry point.
    */
@@ -91,8 +88,7 @@ export interface WebpackPreloadEntryPoint {
   config?: WebpackConfiguration | string;
 }
 
-export interface StandaloneWebpackPreloadEntryPoint
-  extends WebpackPreloadEntryPoint {
+export interface StandaloneWebpackPreloadEntryPoint extends WebpackPreloadEntryPoint {
   name: string;
 }
 

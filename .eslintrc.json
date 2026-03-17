@@ -14,8 +14,7 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:n/recommended",
-    "plugin:promise/recommended",
-    "prettier"
+    "plugin:promise/recommended"
   ],
   "rules": {
     "no-unused-vars": [
