@@ -103,7 +103,7 @@ export default class PluginInterface implements IForgePluginInterface {
         if (hooks) {
           if (typeof hooks === 'function') hooks = [hooks];
           for (const hook of hooks) {
-            await hook(this.config, ...hookArgs);
+            await hook(this.config, ...hookArgs, null);
           }
         }
       }
@@ -142,7 +142,7 @@ export default class PluginInterface implements IForgePluginInterface {
                       ...(hookArgs as any[]),
                     );
                   } else {
-                    await hook(this.config, ...hookArgs);
+                    await hook(this.config, ...hookArgs, task);
                   }
                 },
               ),
