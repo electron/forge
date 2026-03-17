@@ -1,4 +1,8 @@
-import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
+import {
+  ElectronProcess,
+  ForgeMakeResult,
+  ForgePackageResult,
+} from '@electron-forge/shared-types';
 
 import ForgeUtils from '../util/index.js';
 
@@ -16,10 +20,10 @@ export class ForgeAPI {
   }
 
   /**
-   * Resolves hooks if they are a path to a file (instead of a `Function`)
+   * Package an Electron application
    */
-  async package(opts: PackageOptions): Promise<void> {
-    await _package(opts);
+  package(opts: PackageOptions): Promise<ForgePackageResult[]> {
+    return _package(opts);
   }
 
   /**
@@ -44,6 +48,7 @@ const utils = new ForgeUtils();
 
 export {
   ForgeMakeResult,
+  ForgePackageResult,
   ElectronProcess,
   ForgeUtils,
   MakeOptions,

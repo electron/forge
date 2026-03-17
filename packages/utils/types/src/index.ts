@@ -159,6 +159,25 @@ export interface ResolvedForgeConfig {
   publishers: ForgeConfigPublisher[];
 }
 export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
+
+/**
+ * Return result for the Package command
+ */
+export interface ForgePackageResult {
+  /**
+   * The platform for this packaged app
+   */
+  platform: ForgePlatform;
+  /**
+   * The arch for this packaged app
+   */
+  arch: ForgeArch;
+  /**
+   * The path to the packaged app
+   */
+  packagedPath: string;
+}
+
 export interface ForgeMakeResult {
   /**
    * An array of paths to artifacts generated for this make run
