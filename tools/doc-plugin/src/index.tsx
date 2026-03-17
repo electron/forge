@@ -1,14 +1,14 @@
 import {
   Application,
   DeclarationReflection,
-  DefaultThemeRenderContext,
   DefaultTheme,
-  Options,
+  DefaultThemeRenderContext,
   JSX,
+  Options,
   PageEvent,
   Reflection,
-  ReflectionKind,
   ReflectionGroup,
+  ReflectionKind,
 } from 'typedoc';
 
 export class NavigationOverrideThemeContext extends DefaultThemeRenderContext {
@@ -31,20 +31,6 @@ export class NavigationOverrideTheme extends DefaultTheme {
     );
     return this._contextCache;
   }
-}
-
-// Replicated from the TypeDoc codebase. This should be exported by TypeDoc.
-function classNames(
-  names: Record<string, boolean | null | undefined>,
-  extraCss?: string,
-) {
-  const css = Object.keys(names)
-    .filter((key) => names[key])
-    .concat(extraCss || '')
-    .join(' ')
-    .trim()
-    .replace(/\s+/g, ' ');
-  return css.length ? css : undefined;
 }
 
 function overridePrimaryNavigation(
