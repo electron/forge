@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "promise", "oxc"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all"
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreDeclarationSort": true,
+        "allowSeparatedGroups": true,
+        "ignoreCase": true
+      }
+    ],
+    "import/no-named-as-default": "error",
+    "typescript/no-explicit-any": "warn",
+    "typescript/only-throw-error": "error",
+    "typescript/no-require-imports": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-undef": "off"
+      }
+    },
+    {
+      "files": ["**/*.cjs", "**/*.js"],
+      "rules": {
+        "typescript/no-require-imports": "off"
+      }
+    },
+    {
+      "files": [
+        "packages/api/core/spec/**/*.ts",
+        "packages/maker/*/src/Maker*.ts"
+      ],
+      "rules": {
+        "typescript/no-require-imports": "off"
+      }
+    },
+    {
+      "files": ["packages/plugin/webpack/spec/fixtures/**/*.js"],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "dist",
+    "docs/",
+    "node_modules",
+    "*.d.ts",
+    "packages/*/*/doc",
+    "packages/*/*/index.ts",
+    "packages/**/bad.js",
+    "tmpl",
+    "packages/api/core/spec/fixture/api-tester/"
+  ]
+}
