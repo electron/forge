@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "commonjs",
+    "module": "node20",
     "moduleResolution": "bundler",
     "allowJs": true,
     "skipLibCheck": true,
