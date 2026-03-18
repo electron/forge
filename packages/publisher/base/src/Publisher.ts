@@ -45,7 +45,6 @@ export default abstract class Publisher<C> implements IForgePublisher {
     public config: C,
     protected platformsToPublishOn?: ForgePlatform[],
   ) {
-    this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
       writable: false,
