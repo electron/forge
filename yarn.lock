@@ -4911,16 +4911,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/listr@npm:^0.14.2":
-  version: 0.14.4
-  resolution: "@types/listr@npm:0.14.4"
-  dependencies:
-    "@types/node": "npm:*"
-    rxjs: "npm:^6.5.1"
-  checksum: 10c0/4ab81b0bd6f79b22b9dcd88a3dd72a8cc9aae9e8d316daa93a32b3a0048c18720a183ffc087b02935175910c178aa27bc0152aa8801c3f7d8315f5391f96ec97
-  languageName: node
-  linkType: hard
-
 "@types/lodash-es@npm:^4.17.12":
   version: 4.17.12
   resolution: "@types/lodash-es@npm:4.17.12"
@@ -8647,9 +8637,7 @@ __metadata:
     "@types/express": "npm:^4.17.9"
     "@types/express-ws": "npm:^3.0.0"
     "@types/fs-extra": "npm:^9.0.6"
-    "@types/interpret": "npm:^1.1.1"
     "@types/keyv": "npm:^3.1.4"
-    "@types/listr": "npm:^0.14.2"
     "@types/lodash-es": "npm:^4.17.12"
     "@types/mime-types": "npm:^2.1.0"
     "@types/node": "npm:^22.10.7"
@@ -17781,7 +17769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^6.4.0, rxjs@npm:^6.5.1":
+"rxjs@npm:^6.4.0":
   version: 6.6.7
   resolution: "rxjs@npm:6.6.7"
   dependencies:
