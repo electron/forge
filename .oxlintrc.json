@@ -41,15 +41,6 @@
       }
     },
     {
-      "files": [
-        "packages/api/core/spec/**/*.ts",
-        "packages/maker/*/src/Maker*.ts"
-      ],
-      "rules": {
-        "typescript/no-require-imports": "off"
-      }
-    },
-    {
       "files": ["packages/plugin/webpack/spec/fixtures/**/*.js"],
       "rules": {
         "no-undef": "off"
