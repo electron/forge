@@ -18,6 +18,7 @@ import {
   ForgeListrTask,
   ForgeListrTaskDefinition,
   ForgeListrTaskFn,
+  ForgePackageResult,
   ForgePlatform,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
@@ -70,9 +71,7 @@ type InternalTargetDefinition = TargetDefinition & {
   forUniversal?: boolean;
 };
 
-type PackageResult = TargetDefinition & {
-  packagedPath: string;
-};
+type PackageResult = ForgePackageResult;
 
 export interface PackageOptions {
   /**
@@ -657,7 +656,7 @@ export default autoTrace(
     return runner.ctx.targets.map((target, index) => ({
       platform: target.platform,
       arch: target.arch,
-      packagedPath: outputPaths[index],
+      packagedPath: path.resolve(outputPaths[index]),
     }));
   },
 );
