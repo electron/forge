@@ -180,7 +180,7 @@ export default abstract class Maker<C> implements IForgeMaker {
    */
   isInstalled(module: string): boolean {
     try {
-      require(module);
+      import.meta.resolve(module);
       return true;
     } catch {
       // Package doesn't exist -- must not be installable on this platform

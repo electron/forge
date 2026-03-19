@@ -1,3 +1,5 @@
+import url from 'node:url';
+
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
@@ -54,12 +56,19 @@ export async function getMakeOptions(): Promise<MakeOptions> {
   return makeOpts;
 }
 
-if (require.main === module) {
-  (async () => {
-    const makeOpts = await getMakeOptions();
+// NOTE: this is a hack that exists because Node.js didn't add import.meta.main
+// support until 22.18.0. We should bump up the engines and get that fix before
+// we go to stable.
+// ref https://2ality.com/2022/07/nodejs-esm-main.html
+if (import.meta.url.startsWith('file:')) {
+  const modulePath = url.fileURLToPath(import.meta.url);
+  if (process.argv[1] === modulePath) {
+    (async () => {
+      const makeOpts = await getMakeOptions();
 
-    initializeProxy();
+      initializeProxy();
 
-    await api.make(makeOpts);
-  })();
+      await api.make(makeOpts);
+    })();
+  }
 }
