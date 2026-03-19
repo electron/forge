@@ -1,17 +1,16 @@
 import url from 'node:url';
 
-import { initializeProxy } from '@electron/get';
-import { api, MakeOptions } from '@electron-forge/core';
+import type { MakeOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
 import chalk from 'chalk';
-import { program } from 'commander';
+import { createCommand } from 'commander';
 
-import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
 
-export async function getMakeOptions(): Promise<MakeOptions> {
+export function getMakeOptions(argv: string[]): MakeOptions {
   let workingDir: string;
-  program
+  const cmd = createCommand();
+  cmd
     .version(
       packageJSON.version,
       '-V, --version',
@@ -40,9 +39,9 @@ export async function getMakeOptions(): Promise<MakeOptions> {
     .action((dir) => {
       workingDir = resolveWorkingDir(dir, false);
     })
-    .parse(process.argv);
+    .parse(argv);
 
-  const options = program.opts();
+  const options = cmd.opts();
 
   const makeOpts: MakeOptions = {
     dir: workingDir!,
@@ -64,7 +63,11 @@ if (import.meta.url.startsWith('file:')) {
   const modulePath = url.fileURLToPath(import.meta.url);
   if (process.argv[1] === modulePath) {
     (async () => {
-      const makeOpts = await getMakeOptions();
+      await import('./util/terminate.js');
+      const { initializeProxy } = await import('@electron/get');
+      const { api } = await import('@electron-forge/core');
+
+      const makeOpts = getMakeOptions(process.argv);
 
       initializeProxy();
 
