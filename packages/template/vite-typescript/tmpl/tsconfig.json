@@ -10,6 +10,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "outDir": "dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["@electron-forge/plugin-vite/forge-vite-env"]
   }
 }
