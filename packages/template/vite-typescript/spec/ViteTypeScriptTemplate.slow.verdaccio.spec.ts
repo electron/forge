@@ -77,6 +77,12 @@ describe('ViteTypeScriptTemplate', () => {
     });
   });
 
+  describe('typecheck', () => {
+    it('should initially pass the typechecking process', async () => {
+      await testUtils.expectTypecheckToPass(dir);
+    });
+  });
+
   describe('package', () => {
     let cwd: string;
 
