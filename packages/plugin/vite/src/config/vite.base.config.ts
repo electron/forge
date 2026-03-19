@@ -1,5 +1,7 @@
 import { builtinModules } from 'node:module';
 
+import { restartApp } from '@electron-forge/core-utils';
+
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 
@@ -103,10 +105,7 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
           server.ws.send({ type: 'full-reload' });
         }
       } else if (command === 'restart') {
-        // Main process hot restart.
-        // https://github.com/electron/forge/blob/v7.2.0/packages/api/core/src/api/start.ts#L216-L223
-        // TODO: blocked in #3380
-        // process.stdin.emit('data', 'rs');
+        restartApp();
       }
     },
   };
