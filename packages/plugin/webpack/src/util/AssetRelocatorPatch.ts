@@ -1,4 +1,4 @@
-import { Chunk, Compiler } from 'webpack';
+import type { Chunk, Compiler } from 'webpack';
 
 export default class AssetRelocatorPatch {
   private readonly isProd: boolean;

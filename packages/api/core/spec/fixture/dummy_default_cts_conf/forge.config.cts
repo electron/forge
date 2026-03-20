@@ -1,7 +1,5 @@
-import type { ForgeConfig } from '@electron-forge/shared-types';
-
-const config: ForgeConfig = {
+const config = {
   buildIdentifier: 'typescript-commonjs',
 };
 
-export default config;
+module.exports = config;

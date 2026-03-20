@@ -9,7 +9,7 @@
   "exports": "./dist/Plugin.js",
   "typings": "dist/Plugin.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.18.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*"

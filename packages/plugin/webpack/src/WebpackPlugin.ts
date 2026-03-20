@@ -20,7 +20,7 @@ import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 

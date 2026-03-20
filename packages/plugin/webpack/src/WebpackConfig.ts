@@ -2,8 +2,8 @@ import path from 'node:path';
 
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as webpack from 'webpack';
-import { DefinePlugin, ExternalsPlugin, WebpackPluginInstance } from 'webpack';
+import type { WebpackPluginInstance } from 'webpack';
+import webpack from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -230,7 +230,7 @@ export default class WebpackConfigGenerator {
           filename: 'index.js',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins: [new webpack.DefinePlugin(this.getDefines())],
         node: {
           __dirname: false,
           __filename: false,
@@ -419,7 +419,7 @@ export default class WebpackConfigGenerator {
       plugins:
         target === RendererTarget.ElectronPreload
           ? []
-          : [new ExternalsPlugin('commonjs2', externals)],
+          : [new webpack.ExternalsPlugin('commonjs2', externals)],
     };
     return webpackMerge(baseConfig, rendererConfig || {}, config);
   }

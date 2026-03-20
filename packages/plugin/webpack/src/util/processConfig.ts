@@ -1,4 +1,4 @@
-import { Configuration } from 'webpack';
+import type { Configuration } from 'webpack';
 
 import { ConfigurationFactory } from '../WebpackConfig.js';
 

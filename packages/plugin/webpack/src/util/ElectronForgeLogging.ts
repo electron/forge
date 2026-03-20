@@ -1,5 +1,5 @@
 import { Tab } from '@electron-forge/web-multi-logger';
-import { Compiler } from 'webpack';
+import type { Compiler } from 'webpack';
 
 const pluginName = 'ElectronForgeLogging';
 
