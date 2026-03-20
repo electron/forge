@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 
-import { getPackageInfo } from './utils';
+import { getPackageInfo } from './utils.ts';
 
 /**
  * Filters out non-unique items in an array.

@@ -15,7 +15,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { getPackageInfo } from './utils';
+import { getPackageInfo } from './utils.ts';
 
 // NOTE: this interface only defines the fields in the package.json that are
 // used in this script

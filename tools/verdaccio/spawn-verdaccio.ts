@@ -8,11 +8,11 @@
  * the latest and greatest.
  *
  * Usage:
- *   tsx tools/verdaccio/spawn-verdaccio.ts [command] [args...]
+ *   node tools/verdaccio/spawn-verdaccio.ts [command] [args...]
  *
  * Examples:
- *   tsx tools/verdaccio/spawn-verdaccio.ts yarn test:slow
- *   tsx tools/verdaccio/spawn-verdaccio.ts  # Keeps Verdaccio running for manual testing
+ *   node tools/verdaccio/spawn-verdaccio.ts yarn test:slow
+ *   node tools/verdaccio/spawn-verdaccio.ts  # Keeps Verdaccio running for manual testing
  */
 
 import { ChildProcess, spawn } from 'node:child_process';
