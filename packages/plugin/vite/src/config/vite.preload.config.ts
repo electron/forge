@@ -10,7 +10,8 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
+  const { forgeConfigSelf, forgeConfig } = forgeEnv;
+  const isEsm = forgeConfig.type === 'module';
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
@@ -19,7 +20,7 @@ export function getConfig(
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry,
         output: {
-          format: 'cjs',
+          format: isEsm ? 'es' : 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
           entryFileNames: '[name].js',

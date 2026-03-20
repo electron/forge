@@ -27,7 +27,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'type'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -275,11 +275,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'type'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      type: this.config.type,
     };
   }
 
