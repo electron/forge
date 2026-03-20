@@ -9,7 +9,7 @@
   "exports": "./dist/BaseTemplate.js",
   "typings": "dist/BaseTemplate.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.18.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

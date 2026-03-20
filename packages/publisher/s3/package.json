@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherS3.js",
   "typings": "dist/PublisherS3.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.18.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.654.0",
