@@ -1,4 +1,5 @@
 {
+  "main": ".webpack/main",
   "devDependencies": {
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
