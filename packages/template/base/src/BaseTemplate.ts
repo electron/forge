@@ -26,7 +26,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.pathExistsSync(packageJSONPath)) {
+    if (fs.existsSync(packageJSONPath)) {
       const deps = fs.readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
@@ -43,7 +43,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.pathExistsSync(packageJSONPath)) {
+    if (fs.existsSync(packageJSONPath)) {
       const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
@@ -134,6 +134,23 @@ export class BaseTemplate implements ForgeTemplate {
     const packageJSON = await fs.readJson(
       path.resolve(import.meta.dirname, '../tmpl/package.json'),
     );
+
+    // Merge fields from the subclass template's package.json
+    if (this.templateDir !== tmplDir) {
+      const templatePackageJSONPath = path.join(
+        this.templateDir,
+        'package.json',
+      );
+      if (fs.existsSync(templatePackageJSONPath)) {
+        const templatePackageJSON = await fs.readJson(templatePackageJSONPath);
+        const { dependencies, devDependencies, ...rest } = templatePackageJSON;
+        Object.assign(packageJSON, rest);
+        if (rest.scripts) {
+          packageJSON.scripts = { ...packageJSON.scripts, ...rest.scripts };
+        }
+      }
+    }
+
     packageJSON.productName = packageJSON.name = path
       .basename(directory)
       .toLowerCase();
@@ -148,7 +165,9 @@ export class BaseTemplate implements ForgeTemplate {
       };
     }
 
-    packageJSON.scripts.lint = 'echo "No linting configured"';
+    if (!packageJSON.scripts.lint) {
+      packageJSON.scripts.lint = 'echo "No linting configured"';
+    }
 
     d('writing package.json to:', directory);
     await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
