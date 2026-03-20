@@ -36,4 +36,6 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-import './create-electron-app.js';
+import { createCLI } from './create-electron-app.js';
+
+createCLI(process.argv);
