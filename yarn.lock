@@ -12536,7 +12536,7 @@ __metadata:
 
 "lerna@patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch":
   version: 9.0.6
-  resolution: "lerna@patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch::version=9.0.6&hash=afbfac"
+  resolution: "lerna@patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch::version=9.0.6&hash=39199f"
   dependencies:
     "@npmcli/arborist": "npm:9.1.6"
     "@npmcli/package-json": "npm:7.0.2"
@@ -12617,7 +12617,7 @@ __metadata:
     yargs-parser: "npm:21.1.1"
   bin:
     lerna: dist/cli.js
-  checksum: 10c0/6b0dba62f7482dd5ecc689dd893d5384e109802cf0e7dd31d5e7a71dd9a59a06fc4249aaebc41d73e53f56bf494fad478c8622fd1f49a6981408bfb8b4361b04
+  checksum: 10c0/a05a0fc59adb5a2a7eaef150c85b62561203e853bbc9d714e52b5015acf1fbb217ab92e3e5a713fbb5d8cdb661d73cb71ca118896e14b17c15f2acc76bbcdabf
   languageName: node
   linkType: hard
 
