@@ -42,7 +42,7 @@ describe('ViteTypeScriptTemplate', () => {
     it.each([
       'package.json',
       'tsconfig.json',
-      '.eslintrc.json',
+      '.oxlintrc.json',
       'forge.env.d.ts',
       'forge.config.ts',
       'vite.main.config.ts',

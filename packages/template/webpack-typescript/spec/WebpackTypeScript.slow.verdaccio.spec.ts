@@ -32,7 +32,7 @@ describe('WebpackTypeScriptTemplate', () => {
   describe('template files are copied to project', () => {
     it.each([
       'tsconfig.json',
-      '.eslintrc.json',
+      '.oxlintrc.json',
       'forge.config.ts',
       'webpack.main.config.ts',
       'webpack.renderer.config.ts',
