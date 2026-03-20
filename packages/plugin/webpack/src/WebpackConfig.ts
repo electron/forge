@@ -3,7 +3,7 @@ import path from 'node:path';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type { WebpackPluginInstance } from 'webpack';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
