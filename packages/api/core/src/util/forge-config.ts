@@ -1,8 +1,9 @@
 import path from 'node:path';
 
+import { createRequire } from 'node:module';
+
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
-import { createJiti } from 'jiti';
 
 import { runMutatingHook } from './hook.js';
 import PluginInterface from './plugin-interface.js';
@@ -163,15 +164,14 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   ) {
     const forgeConfigPath = path.resolve(dir, forgeConfig);
     try {
-      let loadFn;
-      if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
-        const jiti = createJiti(import.meta.filename);
-        loadFn = jiti.import;
-      }
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       let loaded: MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      if (loadFn) {
-        loaded = await loadFn(forgeConfigPath);
+
+      // Node.js >= 22.18 supports type stripping natively for .ts and .mts files.
+      // .cts files must be loaded via require() since they are CommonJS.
+      if (path.extname(forgeConfigPath) === '.cts') {
+        const cjsRequire = createRequire(import.meta.url);
+        loaded = cjsRequire(forgeConfigPath);
       } else {
         loaded = await import(forgeConfigPath);
       }
