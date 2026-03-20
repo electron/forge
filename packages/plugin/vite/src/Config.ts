@@ -49,4 +49,15 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * The module type to use for the main process and preload script builds.
+   *
+   * - `'commonjs'` outputs CJS bundles (the default, matching Electron's traditional module system).
+   * - `'module'` outputs ES module bundles. When using this option, make sure your `package.json`
+   *    has `"type": "module"` and that your Electron version supports ESM (Electron >= 28).
+   *
+   * @defaultValue `'commonjs'`
+   */
+  type?: 'commonjs' | 'module';
 }
