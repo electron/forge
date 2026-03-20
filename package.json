@@ -95,7 +95,7 @@
     "electron-installer-common": "^0.10.2",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "husky": "^7.0.1",
-    "lerna": "^9.0.0",
+    "lerna": "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch",
     "lint-staged": "^12.1.7",
     "lodash-es": "^4.17.21",
     "markdownlint-cli2": "^0.19.1",
