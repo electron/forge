@@ -307,7 +307,7 @@ export default autoTrace(
 
     if (interactive) {
       process.stdin.on('data', (data) => {
-        if (data.toString().trim() === 'rs') {
+        if (data.toString().trim() === 'rs' && lastSpawned) {
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
