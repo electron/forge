@@ -91,11 +91,6 @@ export interface WebpackPreloadEntryPoint {
   config?: WebpackConfiguration | string;
 }
 
-export interface StandaloneWebpackPreloadEntryPoint
-  extends WebpackPreloadEntryPoint {
-  name: string;
-}
-
 export interface WebpackPluginRendererConfig {
   /**
    * The webpack config for your renderer process

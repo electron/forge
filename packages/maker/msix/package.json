@@ -18,10 +18,8 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "cross-spawn": "^7.0.3",
     "electron-windows-msix": "^2.0.4",
-    "fs-extra": "^10.0.0",
-    "parse-author": "^2.0.0"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

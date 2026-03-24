@@ -3,13 +3,11 @@ import { builtinModules } from 'node:module';
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 
-export const builtins = [
+export const external = [
   'electron',
   'electron/common',
   ...builtinModules.map((m) => [m, `node:${m}`]).flat(),
 ];
-
-export const external = [...builtins];
 
 // Used for hot reload after preload scripts.
 const viteDevServers: Record<string, ViteDevServer> = {};
