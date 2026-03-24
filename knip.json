@@ -1,0 +1,185 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreBinaries": ["xvfb-maybe"],
+  "ignoreDependencies": ["xvfb-maybe"],
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    ".": {
+      "entry": ["tools/*.ts", "tools/verdaccio/*.ts"],
+      "project": ["tools/**/*.ts"],
+      "ignoreDependencies": [
+        "@electron/fuses",
+        "@types/keyv",
+        "electron",
+        "electron-installer-common",
+        "fork-ts-checker-webpack-plugin",
+        "lodash-es",
+        "msw",
+        "ref-napi",
+        "verdaccio"
+      ]
+    },
+    "packages/api/cli": {
+      "entry": ["src/electron-forge-*.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/api/core": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"],
+      "ignore": ["spec/fixture/**"],
+      "ignoreDependencies": [
+        "@electron-forge/template-fixture",
+        "electron-forge-template-fixture-two",
+        "@electron-forge/maker-.*"
+      ]
+    },
+    "packages/external/create-electron-app": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"],
+      "ignoreDependencies": ["@electron-forge/template-.*", "@inquirer/type"]
+    },
+    "packages/maker/appx": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/base": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/deb": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/dmg": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/flatpak": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/msix": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/pkg": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/rpm": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/snap": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/maker/squirrel": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/maker/wix": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/maker/zip": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/plugin/auto-unpack-natives": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/plugin/base": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/plugin/fuses": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"],
+      "ignore": ["spec/fixture/**"]
+    },
+    "packages/plugin/local-electron": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/plugin/vite": {
+      "entry": ["src/subprocess-worker.ts!", "spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/plugin/webpack": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/base": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/base-static": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/bitbucket": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/publisher/electron-release-server": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/gcs": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/publisher/github": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/nucleus": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/publisher/s3": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/publisher/snapcraft": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/template/base": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/template/vite": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/template/vite-typescript": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/template/webpack": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/template/webpack-typescript": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"],
+      "ignoreDependencies": [
+        "@electron-forge/maker-.*",
+        "@electron-forge/plugin-webpack",
+        "webpack",
+        "listr2"
+      ]
+    },
+    "packages/utils/core-utils": {
+      "entry": ["src/remote-rebuild.ts!", "spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts", "spec/**/*.ts"]
+    },
+    "packages/utils/test-utils": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/utils/tracer": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/utils/types": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/utils/web-multi-logger": {
+      "project": ["src/**/*.ts"]
+    }
+  }
+}
