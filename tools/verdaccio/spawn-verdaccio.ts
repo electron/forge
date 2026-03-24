@@ -118,6 +118,7 @@ async function publishPackages(): Promise<void> {
         '--yes',
         '--no-git-tag-version',
         '--no-push',
+        '--skip-check-working-tree',
       ],
       {
         cwd: FORGE_ROOT_DIR,

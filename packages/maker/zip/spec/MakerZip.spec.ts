@@ -4,8 +4,7 @@ import path from 'node:path';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { zip } from 'cross-zip';
 import fs from 'fs-extra';
-import { got } from 'got';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MakerZIP } from '../src/MakerZIP';
 
@@ -32,19 +31,17 @@ vi.mock(import('fs-extra'), async (importOriginal) => {
   };
 });
 
-// @ts-expect-error - This mock works but vi.mock isn't happy.
-vi.mock(import('got'), async (importOriginal) => {
-  const mod = await importOriginal();
-  return {
-    ...mod,
-    got: {
-      ...mod.got,
-      get: vi.fn(),
-    },
-  };
-});
-
 describe('MakerZip', () => {
+  const mockFetch = vi.fn();
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   const dir = path.resolve(import.meta.dirname, 'fixture', 'fake-app');
   const darwinDir = path.resolve(
     import.meta.dirname,
@@ -141,7 +138,7 @@ describe('MakerZip', () => {
         });
 
         expect(output).toHaveLength(1);
-        expect(got.get).not.toHaveBeenCalled();
+        expect(mockFetch).not.toHaveBeenCalled();
       },
     );
 
@@ -155,7 +152,7 @@ describe('MakerZip', () => {
         );
         maker.prepareConfig(targetArch);
         maker.ensureFile = vi.fn();
-        vi.mocked(got.get).mockResolvedValue({ statusCode: 200, body: '{}' });
+        mockFetch.mockResolvedValue(new Response('{}', { status: 200 }));
         await maker.make({
           dir: darwinDir,
           makeDir,
@@ -166,7 +163,7 @@ describe('MakerZip', () => {
           forgeConfig: null as any,
         });
 
-        expect(got.get).toHaveBeenCalledOnce();
+        expect(mockFetch).toHaveBeenCalledOnce();
         expect(fs.writeJson).toHaveBeenCalledWith(expect.anything(), {
           currentRelease: '1.2.3',
           releases: [
@@ -193,10 +190,7 @@ describe('MakerZip', () => {
         );
         maker.prepareConfig(targetArch);
         maker.ensureFile = vi.fn();
-        vi.mocked(got.get).mockResolvedValue({
-          statusCode: 404,
-          body: undefined,
-        });
+        mockFetch.mockResolvedValue(new Response(null, { status: 404 }));
         await maker.make({
           dir: darwinDir,
           makeDir,
@@ -207,7 +201,7 @@ describe('MakerZip', () => {
           forgeConfig: null as any,
         });
 
-        expect(got.get).toHaveBeenCalledOnce();
+        expect(mockFetch).toHaveBeenCalledOnce();
         expect(fs.writeJson).toHaveBeenCalledWith(expect.anything(), {
           currentRelease: '1.2.3',
           releases: [
@@ -243,13 +237,15 @@ describe('MakerZip', () => {
             url: 'fake://test/bar',
           },
         };
-        vi.mocked(got.get).mockResolvedValue({
-          statusCode: 200,
-          body: JSON.stringify({
-            currentRelease: '1.1.1',
-            releases: [oneOneOneRelease],
-          }),
-        });
+        mockFetch.mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              currentRelease: '1.1.1',
+              releases: [oneOneOneRelease],
+            }),
+            { status: 200 },
+          ),
+        );
         await maker.make({
           dir: darwinDir,
           makeDir,

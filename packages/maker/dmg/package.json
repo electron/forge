@@ -9,7 +9,6 @@
   "exports": "./dist/MakerDMG.js",
   "typings": "dist/MakerDMG.d.ts",
   "devDependencies": {
-    "@electron-forge/test-utils": "workspace:*",
     "vitest": "^4.0.14"
   },
   "engines": {
