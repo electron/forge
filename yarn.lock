@@ -10846,7 +10846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"got@npm:^14.0.0, got@npm:^14.4.5":
+"got@npm:^14.4.5":
   version: 14.6.4
   resolution: "got@npm:14.6.4"
   dependencies:
