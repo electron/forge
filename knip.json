@@ -7,13 +7,9 @@
       "entry": ["tools/*.ts", "tools/verdaccio/*.ts"],
       "project": ["tools/**/*.ts"],
       "ignoreDependencies": [
-        "@electron/fuses",
         "@types/keyv",
         "electron",
-        "electron-installer-common",
         "fork-ts-checker-webpack-plugin",
-        "lodash-es",
-        "msw",
         "ref-napi",
         "verdaccio"
       ]
