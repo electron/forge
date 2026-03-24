@@ -1043,7 +1043,6 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     cross-zip: "npm:^4.0.0"
     fs-extra: "npm:^10.0.0"
-    got: "npm:^14.0.0"
     vitest: "npm:^4.0.14"
   languageName: unknown
   linkType: soft
