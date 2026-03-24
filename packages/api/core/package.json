@@ -60,7 +60,6 @@
   },
   "files": [
     "dist",
-    "src",
-    "helper"
+    "src"
   ]
 }
