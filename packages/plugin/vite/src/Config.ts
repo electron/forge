@@ -58,6 +58,7 @@ export interface VitePluginConfig {
    *    has `"type": "module"` and that your Electron version supports ESM (Electron >= 28).
    *
    * @defaultValue `'commonjs'`
+   * @see https://www.electronjs.org/docs/latest/tutorial/esm
    */
   type?: 'commonjs' | 'module';
 }

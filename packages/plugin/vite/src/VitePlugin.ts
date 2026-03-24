@@ -222,6 +222,19 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
+    if (this.config.type === 'module') {
+      const pj = await fs.readJson(
+        path.resolve(this.projectDir, 'package.json'),
+      );
+      if (pj.type !== 'module' && !pj.main?.endsWith('.mjs')) {
+        throw new Error(
+          `The Vite plugin is configured with type: "module", but your package.json does not have "type": "module" ` +
+            `and the main entry point does not use an .mjs extension. Electron requires one of these for ESM support in the main process. ` +
+            `See https://www.electronjs.org/docs/latest/tutorial/esm for more details.`,
+        );
+      }
+    }
+
     forgeConfig.packagerConfig ??= {};
 
     if (forgeConfig.packagerConfig.ignore) {

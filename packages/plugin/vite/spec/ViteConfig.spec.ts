@@ -132,8 +132,8 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'es',
       inlineDynamicImports: true,
-      entryFileNames: '[name].js',
-      chunkFileNames: '[name].js',
+      entryFileNames: '[name].mjs',
+      chunkFileNames: '[name].mjs',
       assetFileNames: '[name].[ext]',
     });
   });

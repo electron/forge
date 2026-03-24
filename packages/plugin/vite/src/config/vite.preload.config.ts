@@ -23,8 +23,8 @@ export function getConfig(
           format: isEsm ? 'es' : 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
+          entryFileNames: isEsm ? '[name].mjs' : '[name].js',
+          chunkFileNames: isEsm ? '[name].mjs' : '[name].js',
           assetFileNames: '[name].[ext]',
         },
       },
