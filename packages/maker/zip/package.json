@@ -9,7 +9,6 @@
   "exports": "./dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
   "devDependencies": {
-    "@electron-forge/test-utils": "workspace:*",
     "vitest": "^4.0.14"
   },
   "engines": {
@@ -19,8 +18,7 @@
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "cross-zip": "^4.0.0",
-    "fs-extra": "^10.0.0",
-    "got": "^14.0.0"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"
