@@ -177,12 +177,13 @@ export class BaseTemplate implements ForgeTemplate {
 
   async updateFileByLine(
     inputPath: string,
-    lineHandler: (line: string) => string,
+    lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
+      .filter((line): line is string => line !== null)
       .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {

@@ -63,7 +63,7 @@ class ViteTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.join(directory, 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               if (line.includes('</body>'))
                 return '    <script type="module" src="/src/renderer.js"></script>\n  </body>';
               return line;

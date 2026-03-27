@@ -1,13 +1,13 @@
 {
   "main": ".vite/build/main.js",
   "scripts": {
-    "lint": "eslint --ext .ts,.tsx .",
+    "lint": "oxlint && oxfmt --check .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
     "@types/electron-squirrel-startup": "^1.0.2",
-    "oxfmt": "^0.1.0",
+    "oxfmt": "^0.41.0",
     "oxlint": "^1.0.0",
     "typescript": "^5.9.2",
     "vite": "^7.2.4"

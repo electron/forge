@@ -18,9 +18,6 @@ describe('WebpackTypeScriptTemplate', () => {
 
   beforeAll(async () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
-  });
-
-  it('should succeed in initializing the typescript template', async () => {
     await init({
       dir,
       template: path.join(import.meta.dirname, '..'),

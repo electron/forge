@@ -39,7 +39,7 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.resolve(directory, 'src', 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               return line;
             },
           );
@@ -47,8 +47,9 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
-          // Copy oxlint config with recommended settings
+          // Copy oxc.rs config with recommended settings
           await this.copyTemplateFile(directory, '.oxlintrc.json');
+          await this.copyTemplateFile(directory, '.oxfmtrc.json');
 
           // Remove index.js and replace with index.ts
           await fs.remove(filePath('index.js'));
@@ -70,8 +71,6 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           const packageJSONPath = path.resolve(directory, 'package.json');
           const packageJSON = await fs.readJson(packageJSONPath);
           packageJSON.main = '.webpack/main';
-          // Configure scripts for TS template
-          packageJSON.scripts.lint = 'oxlint && oxfmt --check .';
           await fs.writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });

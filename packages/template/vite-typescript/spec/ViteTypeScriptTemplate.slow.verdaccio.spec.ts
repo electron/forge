@@ -19,6 +19,12 @@ describe('ViteTypeScriptTemplate', () => {
 
   beforeAll(async () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
+    await init({
+      dir,
+      template: path.resolve(import.meta.dirname, '..'),
+      interactive: false,
+      electronVersion: '38.2.2',
+    });
   });
 
   afterAll(async () => {
@@ -30,20 +36,10 @@ describe('ViteTypeScriptTemplate', () => {
   });
 
   describe('template files are copied to project', () => {
-    it('should succeed in initializing the typescript template', async () => {
-      await init({
-        dir,
-        template: path.resolve(import.meta.dirname, '..'),
-        interactive: false,
-        electronVersion: '38.2.2',
-      });
-    });
-
     it.each([
       'package.json',
       'tsconfig.json',
       '.oxlintrc.json',
-      'forge.env.d.ts',
       'forge.config.ts',
       'vite.main.config.ts',
       'vite.preload.config.ts',
