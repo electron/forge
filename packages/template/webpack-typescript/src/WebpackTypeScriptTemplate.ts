@@ -49,7 +49,6 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
 
           // Copy oxc.rs config with recommended settings
           await this.copyTemplateFile(directory, '.oxlintrc.json');
-          await this.copyTemplateFile(directory, '.oxfmtrc.json');
 
           // Remove index.js and replace with index.ts
           await fs.remove(filePath('index.js'));
