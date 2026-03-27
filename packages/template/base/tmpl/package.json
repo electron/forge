@@ -1,17 +1,17 @@
 {
   "name": "",
-  "productName": "",
   "version": "1.0.0",
-  "description": "My Electron application description",
-  "exports": "./src/index.js",
   "private": true,
+  "description": "My Electron application description",
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
+  "exports": "./src/index.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT"
+  "productName": ""
 }

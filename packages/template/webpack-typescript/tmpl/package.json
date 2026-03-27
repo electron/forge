@@ -6,12 +6,12 @@
   },
   "devDependencies": {
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
-    "oxlint": "^1.0.0",
-    "oxfmt": "^0.1.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "node-loader": "^2.0.0",
+    "oxfmt": "^0.1.0",
+    "oxlint": "^1.0.0",
     "style-loader": "^3.0.0",
     "ts-loader": "^9.2.2",
     "typescript": "^5.9.2"
