@@ -104,8 +104,8 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
       inlineDynamicImports: true,
-      entryFileNames: '[name].js',
-      chunkFileNames: '[name].js',
+      entryFileNames: '[name].cjs',
+      chunkFileNames: '[name].cjs',
       assetFileNames: '[name].[ext]',
     });
     expect(buildConfig.clearScreen).toBe(false);
