@@ -52,7 +52,7 @@ class WebpackTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.resolve(directory, 'src', 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               return line;
             },
           );

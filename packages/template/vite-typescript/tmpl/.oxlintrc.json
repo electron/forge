@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "no-unused-vars": "warn",
+    "unicorn/no-empty-file": "off"
+  }
+}

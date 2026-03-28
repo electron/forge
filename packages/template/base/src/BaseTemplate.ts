@@ -18,6 +18,10 @@ const currentForgeVersion = fs.readJSONSync(
 
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
+const rootOxfmtrcPath = path.resolve(
+  import.meta.dirname,
+  '../../../../.oxfmtrc.json',
+);
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
@@ -107,6 +111,15 @@ export class BaseTemplate implements ForgeTemplate {
               path.resolve(directory, 'src', file),
             );
           }
+
+          // Dynamically write .oxfmtrc.json from root config, excluding ignorePatterns
+          const oxfmtrc = await fs.readJson(rootOxfmtrcPath);
+          delete oxfmtrc.ignorePatterns;
+          await fs.writeJson(
+            path.resolve(directory, '.oxfmtrc.json'),
+            oxfmtrc,
+            { spaces: 2 },
+          );
         },
       },
       {
@@ -177,12 +190,13 @@ export class BaseTemplate implements ForgeTemplate {
 
   async updateFileByLine(
     inputPath: string,
-    lineHandler: (line: string) => string,
+    lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
+      .filter((line): line is string => line !== null)
       .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {
