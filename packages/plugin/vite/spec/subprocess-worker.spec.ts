@@ -149,7 +149,7 @@ describe('subprocess-worker', () => {
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code, stderr).toBe(0);
 
-    const outFile = path.join(viteOutDir, 'build', 'preload.js');
+    const outFile = path.join(viteOutDir, 'build', 'preload.cjs');
     expect(fs.existsSync(outFile)).toBe(true);
     const contents = fs.readFileSync(outFile, 'utf8');
     expect(contents).toContain('from-preload');
