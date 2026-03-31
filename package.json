@@ -141,6 +141,9 @@
   "peerDependencies": {
     "@electron/fuses": "^1.0.0"
   },
+  "resolutions": {
+    "axios": "portal:./tools/noop-package"
+  },
   "lint-staged": {
     "*.{html,json,md,yml}": "prettier --write --experimental-cli",
     "*.{js,ts, cjs, mjs, cts, mts}": [
