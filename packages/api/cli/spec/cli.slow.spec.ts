@@ -9,7 +9,7 @@ function runForgeCLI(...extraArgs: string[]): Promise<string> {
     path.resolve(__dirname, '../src/electron-forge.ts'),
     ...extraArgs,
   ];
-  return spawn('npx', args);
+  return spawn('yarn', args);
 }
 
 describe('cli', () => {
