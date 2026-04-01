@@ -56,6 +56,7 @@ export interface VitePluginConfig {
    * - `'cjs'` outputs CommonJS bundles (the default, matching Electron's traditional module system).
    * - `'es'` outputs ES module bundles. When using this option, make sure your `package.json`
    *    has `"type": "module"` and that your Electron version supports ESM (Electron >= 28).
+   *    **Note: ESM preload scripts only work with unsandboxed renderers.**
    *
    * @defaultValue `'cjs'`
    * @see https://www.electronjs.org/docs/latest/tutorial/esm
