@@ -111,8 +111,8 @@ describe('VitePlugin', async () => {
       expect(config.packagerConfig.ignore).toBeTypeOf('function');
     });
 
-    it('should fail if plugin type is "module" but package.json has no "type": "module" and main is not .mjs', async () => {
-      const esmPlugin = new VitePlugin({ ...baseConfig, type: 'module' });
+    it('should fail if outputFormat is "es" but package.json has no "type": "module" and main is not .mjs', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
       esmPlugin.setDirectories(viteTestDir);
 
       await fs.promises.writeFile(
@@ -122,11 +122,11 @@ describe('VitePlugin', async () => {
       );
       await expect(
         esmPlugin.resolveForgeConfig({} as ResolvedForgeConfig),
-      ).rejects.toThrow(/type: "module"/);
+      ).rejects.toThrow(/outputFormat: "es"/);
     });
 
-    it('should succeed if plugin type is "module" and package.json has "type": "module"', async () => {
-      const esmPlugin = new VitePlugin({ ...baseConfig, type: 'module' });
+    it('should succeed if outputFormat is "es" and package.json has "type": "module"', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
       esmPlugin.setDirectories(viteTestDir);
 
       await fs.promises.writeFile(
@@ -139,8 +139,8 @@ describe('VitePlugin', async () => {
       ).resolves.toBeDefined();
     });
 
-    it('should succeed if plugin type is "module" and main entry uses .mjs extension', async () => {
-      const esmPlugin = new VitePlugin({ ...baseConfig, type: 'module' });
+    it('should succeed if outputFormat is "es" and main entry uses .mjs extension', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
       esmPlugin.setDirectories(viteTestDir);
 
       await fs.promises.writeFile(

@@ -12,7 +12,7 @@ export function getConfig(
   userConfig: UserConfig = {},
 ): UserConfig {
   const { forgeConfigSelf, forgeConfig } = forgeEnv;
-  const isEsm = forgeConfig.type === 'module';
+  const isEsm = forgeConfig.outputFormat === 'es';
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {

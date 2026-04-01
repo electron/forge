@@ -27,7 +27,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'type'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'outputFormat'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -222,13 +222,13 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
-    if (this.config.type === 'module') {
+    if (this.config.outputFormat === 'es') {
       const pj = await fs.readJson(
         path.resolve(this.projectDir, 'package.json'),
       );
       if (pj.type !== 'module' && !pj.main?.endsWith('.mjs')) {
         throw new Error(
-          `The Vite plugin is configured with type: "module", but your package.json does not have "type": "module" ` +
+          `The Vite plugin is configured with outputFormat: "es", but your package.json does not have "type": "module" ` +
             `and the main entry point does not use an .mjs extension. Electron requires one of these for ESM support in the main process. ` +
             `See https://www.electronjs.org/docs/latest/tutorial/esm for more details.`,
         );
@@ -288,12 +288,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer' | 'type'
+    'build' | 'renderer' | 'outputFormat'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
-      type: this.config.type,
+      outputFormat: this.config.outputFormat,
     };
   }
 

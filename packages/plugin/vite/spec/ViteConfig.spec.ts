@@ -66,7 +66,7 @@ describe('ViteConfigGenerator', () => {
         },
       ],
       renderer: [],
-      type: 'module',
+      outputFormat: 'es',
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
     const buildConfig = (await generator.getBuildConfigs())[0];
@@ -124,7 +124,7 @@ describe('ViteConfigGenerator', () => {
         },
       ],
       renderer: [],
-      type: 'module',
+      outputFormat: 'es',
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
     const buildConfig = (await generator.getBuildConfigs())[0];

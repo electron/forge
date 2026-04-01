@@ -11,7 +11,7 @@ export function getConfig(
   userConfig: UserConfig = {},
 ): UserConfig {
   const { forgeConfigSelf, forgeConfig } = forgeEnv;
-  const isEsm = forgeConfig.type === 'module';
+  const isEsm = forgeConfig.outputFormat === 'es';
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
