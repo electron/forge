@@ -72,7 +72,7 @@ describe('subprocess-worker', () => {
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code, stderr).toBe(0);
 
-    const outFile = path.join(viteOutDir, 'build', 'main.js');
+    const outFile = path.join(viteOutDir, 'build', 'main.cjs');
     expect(fs.existsSync(outFile)).toBe(true);
     // getBuildDefine should have injected the renderer name define.
     const contents = fs.readFileSync(outFile, 'utf8');
@@ -127,7 +127,7 @@ describe('subprocess-worker', () => {
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code, stderr).toBe(0);
 
-    const outFile = path.join(viteOutDir, 'build', 'main-with-define.js');
+    const outFile = path.join(viteOutDir, 'build', 'main-with-define.cjs');
     const contents = fs.readFileSync(outFile, 'utf8');
     // MAIN_WINDOW_VITE_NAME should be statically replaced with "main_window"
     expect(contents).toContain('"main_window"');
@@ -176,8 +176,8 @@ describe('subprocess-worker', () => {
     expect(code, stderr).toBe(0);
 
     // Only secondary should be built, not main.
-    const secondaryOut = path.join(viteOutDir, 'build', 'secondary.js');
-    const mainOut = path.join(viteOutDir, 'build', 'main.js');
+    const secondaryOut = path.join(viteOutDir, 'build', 'secondary.cjs');
+    const mainOut = path.join(viteOutDir, 'build', 'main.cjs');
     expect(fs.existsSync(secondaryOut)).toBe(true);
     expect(fs.existsSync(mainOut)).toBe(false);
     const contents = fs.readFileSync(secondaryOut, 'utf8');

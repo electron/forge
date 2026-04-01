@@ -37,7 +37,7 @@ describe('ViteConfigGenerator', () => {
     expect(
       buildConfig.build?.lib &&
         (buildConfig.build.lib.fileName as () => string)(),
-    ).toEqual('[name].js');
+    ).toEqual('[name].cjs');
     expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
       'cjs',
     ]);
@@ -74,6 +74,10 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
       'es',
     ]);
+    expect(
+      buildConfig.build?.lib &&
+        (buildConfig.build.lib.fileName as () => string)(),
+    ).toEqual('[name].mjs');
   });
 
   it('getBuildConfigs:preload', async () => {
