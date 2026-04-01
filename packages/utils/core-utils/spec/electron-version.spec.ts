@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   devDeps,
@@ -58,21 +59,30 @@ describe('updateElectronDependency', () => {
 });
 
 describe('getElectronVersion', () => {
+  let dir: string;
+  beforeEach(async () => {
+    dir = await ensureTestDirIsNonexistent();
+
+    return async () => {
+      await fs.rm(dir, { recursive: true, force: true });
+    };
+  });
   it('fails without devDependencies', async () => {
-    await expect(getElectronVersion('', {})).rejects.toThrow(
+    await expect(getElectronVersion(dir, {})).rejects.toThrow(
       'does not have any devDependencies',
     );
   });
 
   it('fails without electron devDependencies', async () =>
-    expect(getElectronVersion('', { devDependencies: {} })).rejects.toThrow(
+    expect(getElectronVersion(dir, { devDependencies: {} })).rejects.toThrow(
       'Electron packages in devDependencies',
     ));
 
   it('fails with a non-exact version and no electron installed', async () => {
     const fixtureDir = path.resolve(fixturePath, 'dummy_app');
+    await fs.cp(fixtureDir, dir, { recursive: true });
     await expect(
-      getElectronVersion(fixtureDir, {
+      getElectronVersion(dir, {
         devDependencies: { electron: '^4.0.2' },
       }),
     ).rejects.toThrow('Cannot find the package');
@@ -80,6 +90,7 @@ describe('getElectronVersion', () => {
 
   it('works with a non-exact version with electron installed', async () => {
     const fixtureDir = path.resolve(fixturePath, 'non-exact');
+    await fs.cp(fixtureDir, dir, { recursive: true });
     await expect(
       getElectronVersion(fixtureDir, {
         devDependencies: { electron: '^4.0.2' },
@@ -91,7 +102,7 @@ describe('getElectronVersion', () => {
     const packageJSON = {
       devDependencies: { 'electron-nightly': '5.0.0-nightly.20190107' },
     };
-    await expect(getElectronVersion('', packageJSON)).resolves.toEqual(
+    await expect(getElectronVersion(dir, packageJSON)).resolves.toEqual(
       '5.0.0-nightly.20190107',
     );
   });
@@ -100,7 +111,9 @@ describe('getElectronVersion', () => {
     const packageJSON = {
       devDependencies: { electron: '1.0.0' },
     };
-    await expect(getElectronVersion('', packageJSON)).resolves.toEqual('1.0.0');
+    await expect(getElectronVersion(dir, packageJSON)).resolves.toEqual(
+      '1.0.0',
+    );
   });
 
   describe('with yarn workspaces', () => {
@@ -115,6 +128,7 @@ describe('getElectronVersion', () => {
         'packages',
         'subpackage',
       );
+      await fs.cp(fixtureDir, dir, { recursive: true });
       const packageJSON = {
         devDependencies: { electron: '^4.0.4' },
       };
