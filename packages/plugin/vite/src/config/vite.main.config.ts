@@ -11,7 +11,8 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
+  const { forgeConfigSelf, forgeConfig } = forgeEnv;
+  const isEsm = forgeConfig.outputFormat === 'es';
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {
@@ -33,8 +34,8 @@ export function getConfig(
   if (userConfig.build?.lib == null) {
     config.build!.lib = {
       entry: forgeConfigSelf.entry,
-      fileName: () => '[name].js',
-      formats: ['cjs'],
+      fileName: () => (isEsm ? '[name].mjs' : '[name].cjs'),
+      formats: [isEsm ? 'es' : 'cjs'],
     };
   }
 
