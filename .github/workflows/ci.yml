@@ -26,7 +26,6 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
@@ -88,7 +87,6 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
@@ -166,7 +164,6 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
 
       # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
       - name: Set up Python 3.11 (with distutils)
