@@ -33,7 +33,7 @@ describe('VitePlugin', async () => {
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = {
-        main: './.vite/build/main.js',
+        main: './.vite/build/main.cjs',
         config: { forge: 'config.js' },
       };
       await fs.promises.writeFile(
@@ -50,7 +50,7 @@ describe('VitePlugin', async () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { main: '.vite/build/main.js' };
+      const packageJSON = { main: '.vite/build/main.cjs' };
       await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(packageJSON),
@@ -100,7 +100,7 @@ describe('VitePlugin', async () => {
       // Write a default package.json for tests that don't care about its contents
       await fs.promises.writeFile(
         packageJSONPath,
-        JSON.stringify({ main: '.vite/build/main.js' }),
+        JSON.stringify({ main: '.vite/build/main.cjs' }),
         'utf-8',
       );
     });
