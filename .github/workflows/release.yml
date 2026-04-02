@@ -5,10 +5,14 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   check-release-criteria:
     name: Check Release Criteria
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       should_release: ${{ steps.check.outputs.should_release }}
     steps:
@@ -16,6 +20,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Check release criteria
         id: check
@@ -94,6 +99,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.0.1
@@ -123,4 +130,5 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
-        run: gh release create "v${{ steps.version.outputs.version }}" --target ${{ github.sha }} --generate-notes --prerelease
+          STEPS_VERSION_OUTPUTS_VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "v${STEPS_VERSION_OUTPUTS_VERSION}" --target ${{ github.sha }} --generate-notes --prerelease

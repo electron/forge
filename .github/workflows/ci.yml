@@ -10,6 +10,8 @@ on:
   merge_group:
     types: [checks_requested]
 
+permissions: {}
+
 env:
   NODE_VERSION: 20.17.0
 
@@ -34,6 +36,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -46,6 +50,7 @@ jobs:
         with:
           path: .eslintcache
           key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
+          lookup-only: true
 
       - name: Lint codebase
         run: |
@@ -93,6 +98,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -169,6 +176,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         run: yarn install --immutable
