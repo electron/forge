@@ -51,7 +51,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Commit docs
-        uses: dsanders11/github-app-commit-action@43de6da2f4d927e997c0784c7a0b61bd19ad6aac # v1.5.0
+        uses: dsanders11/github-app-commit-action@2bbcd331016d8c950b05a24b56e7eb9cb50d545e # v2.1.0
         with:
           fail-on-no-changes: false
           message: 'deploy: ${{ steps.get-short-sha.outputs.sha }}'
