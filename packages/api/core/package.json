@@ -68,8 +68,8 @@
   },
   "funding": [
     {
-      "type": "individual",
-      "url": "https://github.com/sponsors/malept"
+      "type": "opencollective",
+      "url": "https://opencollective.com/electron"
     }
   ],
   "publishConfig": {
