@@ -28,7 +28,6 @@ packages/plugin/fuses/spec/fixture/out
 .links
 reports
 packages/**/typedoc.json
-.eslintcache
 .vscode/settings.json
 .pnp.*
 .yarn/*

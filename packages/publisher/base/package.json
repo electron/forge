@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-base",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "Base publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -12,7 +12,7 @@
     "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"

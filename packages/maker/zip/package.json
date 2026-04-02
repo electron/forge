@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-zip",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "ZIP maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -9,8 +9,7 @@
   "exports": "./dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
   "devDependencies": {
-    "@electron-forge/test-utils": "workspace:*",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"
@@ -19,8 +18,7 @@
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "cross-zip": "^4.0.0",
-    "fs-extra": "^10.0.0",
-    "got": "^14.0.0"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

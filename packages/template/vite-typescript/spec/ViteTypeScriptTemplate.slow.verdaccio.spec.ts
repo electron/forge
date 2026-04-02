@@ -43,7 +43,6 @@ describe('ViteTypeScriptTemplate', () => {
       'package.json',
       'tsconfig.json',
       '.eslintrc.json',
-      'forge.env.d.ts',
       'forge.config.ts',
       'vite.main.config.ts',
       'vite.preload.config.ts',
@@ -74,6 +73,12 @@ describe('ViteTypeScriptTemplate', () => {
     it('should initially pass the linting process', async () => {
       delete process.env.TS_NODE_PROJECT;
       await testUtils.expectLintToPass(dir);
+    });
+  });
+
+  describe('typecheck', () => {
+    it('should initially pass the typechecking process', async () => {
+      await testUtils.expectTypecheckToPass(dir);
     });
   });
 

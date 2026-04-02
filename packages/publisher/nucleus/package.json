@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-nucleus",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "Nucleus publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",
-    "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1",
     "form-data": "^4.0.0"
   },

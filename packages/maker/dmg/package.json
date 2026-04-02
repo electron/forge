@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-dmg",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "DMG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -9,8 +9,7 @@
   "exports": "./dist/MakerDMG.js",
   "typings": "dist/MakerDMG.d.ts",
   "devDependencies": {
-    "@electron-forge/test-utils": "workspace:*",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"

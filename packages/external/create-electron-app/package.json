@@ -1,6 +1,6 @@
 {
   "name": "create-electron-app",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "Create Electron App",
   "repository": "https://github.com/electron/forge",
@@ -32,7 +32,8 @@
     "semver": "^7.2.1"
   },
   "devDependencies": {
-    "@electron-forge/core": "workspace:*"
+    "@electron-forge/core": "workspace:*",
+    "@electron-forge/test-utils": "workspace:*"
   },
   "bin": "dist/index.js",
   "files": [

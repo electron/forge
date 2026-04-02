@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-msix",
-  "version": "8.0.0-alpha.4",
+  "version": "8.0.0-alpha.6",
   "type": "module",
   "description": "MSIX maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -9,7 +9,7 @@
   "exports": "./dist/MakerMSIX.js",
   "typings": "dist/MakerMSIX.d.ts",
   "devDependencies": {
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"
@@ -18,10 +18,8 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "cross-spawn": "^7.0.3",
     "electron-windows-msix": "^2.0.4",
-    "fs-extra": "^10.0.0",
-    "parse-author": "^2.0.0"
+    "fs-extra": "^10.0.0"
   },
   "publishConfig": {
     "access": "public"

@@ -51,6 +51,18 @@ export async function expectLintToPass(dir: string): Promise<void> {
   }
 }
 
+export async function expectTypecheckToPass(dir: string): Promise<void> {
+  try {
+    await runNPM(dir, 'run', 'typecheck');
+  } catch (err) {
+    if (err instanceof ExitError) {
+      console.error('STDOUT:', err.stdout.toString());
+      console.error('STDERR:', err.stderr.toString());
+    }
+    throw err;
+  }
+}
+
 /**
  * Mutates the `package.json` file in a directory.
  * Use the return value to later restore the original `package.json` value
