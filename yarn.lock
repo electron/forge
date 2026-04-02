@@ -1145,6 +1145,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-vite@workspace:packages/plugin/vite"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/packager": "npm:^18.3.5"
