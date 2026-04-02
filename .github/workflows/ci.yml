@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    tags:
+    tags: # zizmor: ignore[cache-poisoning] this isn't used in a release workflow
       - v[0-9]+.[0-9]+.[0-9]+*
   pull_request:
   merge_group:
@@ -49,7 +49,6 @@ jobs:
         with:
           path: .eslintcache
           key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
-          lookup-only: true
 
       - name: Lint codebase
         run: |
