@@ -65,7 +65,7 @@
     "typedoc": "0.25.13",
     "typescript": "5.9.3",
     "verdaccio": "^6.2.4",
-    "vitest": "^4.0.14",
+    "vitest": "catalog:",
     "xvfb-maybe": "^0.2.1"
   },
   "optionalDependencies": {
@@ -106,6 +106,9 @@
     "macos-alias": {
       "built": true
     }
+  },
+  "catalog": {
+    "vitest": "^4.1.2"
   },
   "workspaces": {
     "packages": [
