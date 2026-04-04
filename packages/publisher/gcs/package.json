@@ -13,7 +13,7 @@
   "dependencies": {
     "@electron-forge/publisher-static": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@google-cloud/storage": "^7.5.0",
+    "@google-cloud/storage": "^7.19.0",
     "debug": "^4.3.1"
   },
   "publishConfig": {
