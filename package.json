@@ -34,7 +34,7 @@
     "@electron/osx-sign": "^1.0.5",
     "@electron/packager": "^18.3.5",
     "@electron/rebuild": "^3.7.0",
-    "@google-cloud/storage": "^7.19.0",
+    "@google-cloud/storage": "^7.5.0",
     "@inquirer/prompts": "^6.0.1",
     "@listr2/prompt-adapter-inquirer": "^2.0.22",
     "@malept/cross-spawn-promise": "^2.0.0",
@@ -170,6 +170,7 @@
     }
   },
   "resolutions": {
+    "@google-cloud/storage@^7.5.0": "7.14.0",
     "handlebars@4.7.8": "4.7.9",
     "minimatch@7.4.6": "7.4.9",
     "ajv@8.17.1": "8.18.0",
