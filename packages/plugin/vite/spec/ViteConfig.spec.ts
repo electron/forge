@@ -21,6 +21,7 @@ describe('ViteConfigGenerator', () => {
         },
       ],
       renderer: [],
+      hotRestart: true,
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
     const buildConfig = (await generator.getBuildConfigs())[0];
