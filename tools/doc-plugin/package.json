@@ -1,7 +1,7 @@
 {
   "name": "typedoc-forge-custom-sidebar-theme",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "repository": "",
   "license": "MIT",
   "keywords": [
@@ -9,10 +9,10 @@
     "custom-sidebar"
   ],
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "devDependencies": {
-    "typescript": "^4.6.3"
+    "typescript": "5.9.3"
   },
   "peerDependencies": {
     "typedoc": "^0.22.15"

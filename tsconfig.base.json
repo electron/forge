@@ -1,14 +1,10 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2021",
     "outDir": "dist",
-    "lib": ["dom", "ES2021"],
     "inlineSourceMap": true,
     "rootDir": "src",
     "experimentalDecorators": true,
-    "strict": true,
-    "esModuleInterop": true,
     "declaration": true,
     "composite": true,
     "declarationMap": true,

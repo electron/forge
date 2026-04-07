@@ -1,9 +1,9 @@
-name: Publish (Forge 7)
+name: Publish
 
 on:
   push:
     branches:
-      - main
+      - next
 
 jobs:
   check-release-criteria:
@@ -12,7 +12,7 @@ jobs:
     outputs:
       should_release: ${{ steps.check.outputs.should_release }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
@@ -92,11 +92,11 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.0.1
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
@@ -108,7 +108,7 @@ jobs:
         run: yarn build
 
       - name: Publish
-        run: lerna publish from-package --force-publish --no-changelog --exact --yes
+        run: lerna publish from-package --force-publish --pre-dist-tag alpha --yes
 
       - name: Get version from lerna.json
         id: version

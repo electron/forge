@@ -6,12 +6,13 @@ import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
 } from '@electron-forge/core-utils';
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
+import { init } from '../../../external/create-electron-app/src/init';
 
 describe('ViteTypeScriptTemplate', () => {
   let dir: string;
@@ -30,9 +31,9 @@ describe('ViteTypeScriptTemplate', () => {
 
   describe('template files are copied to project', () => {
     it('should succeed in initializing the typescript template', async () => {
-      await api.init({
+      await init({
         dir,
-        template: path.resolve(__dirname, '..'),
+        template: path.resolve(import.meta.dirname, '..'),
         interactive: false,
         electronVersion: '38.2.2',
       });
@@ -42,7 +43,6 @@ describe('ViteTypeScriptTemplate', () => {
       'package.json',
       'tsconfig.json',
       '.eslintrc.json',
-      'forge.env.d.ts',
       'forge.config.ts',
       'vite.main.config.ts',
       'vite.preload.config.ts',
@@ -73,6 +73,12 @@ describe('ViteTypeScriptTemplate', () => {
     it('should initially pass the linting process', async () => {
       delete process.env.TS_NODE_PROJECT;
       await testUtils.expectLintToPass(dir);
+    });
+  });
+
+  describe('typecheck', () => {
+    it('should initially pass the typechecking process', async () => {
+      await testUtils.expectTypecheckToPass(dir);
     });
   });
 

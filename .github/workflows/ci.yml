@@ -4,14 +4,13 @@ on:
   push:
     branches:
       - main
+      - next
     tags:
       - v[0-9]+.[0-9]+.[0-9]+*
   pull_request:
   merge_group:
     types: [checks_requested]
-
-env:
-  NODE_VERSION: 20.17.0
+  workflow_call:
 
 jobs:
   lint-and-build:
@@ -20,20 +19,13 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
-
-      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
-      - name: Set up Python 3.11 (with distutils)
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: 3.11
-
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -41,16 +33,11 @@ jobs:
       - name: Build Electron Forge
         run: yarn build
 
-      - name: Cache ESLint
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: .eslintcache
-          key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
-
       - name: Lint codebase
         run: |
           yarn lint
           yarn constraints
+          yarn knip
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -79,26 +66,27 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
-
-      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
-      - name: Set up Python 3.11 (with distutils)
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: 3.11
-
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Use D:\\ drive for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          mkdir -p /d/fast-temp
+          echo "YARN_GLOBAL_FOLDER=D:\\yarn-data" >> $GITHUB_ENV
+          echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Download build artifacts
-        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: dist-files
           path: packages
@@ -155,26 +143,27 @@ jobs:
       - name: Configure git
         run: git config --global core.autocrlf input
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          # cache: yarn
-
-      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
-      - name: Set up Python 3.11 (with distutils)
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: 3.11
-
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Use D:\\ drive for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          mkdir -p /d/fast-temp
+          echo "YARN_GLOBAL_FOLDER=D:\\yarn-data" >> $GITHUB_ENV
+          echo "TEMP=D:\\fast-temp" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Download build artifacts
-        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: dist-files
           path: packages

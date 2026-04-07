@@ -11,13 +11,19 @@ interface StaticArtifact {
   platform: ForgePlatform;
   arch: ForgeArch;
   keyPrefix: string;
+  version: string;
 }
 
 interface StaticPublisherConfig {
   /**
    * Custom function to provide the key to upload a given file to
    */
-  keyResolver?: (fileName: string, platform: string, arch: string) => string;
+  keyResolver?: (opts: {
+    fileName: string;
+    platform: string;
+    arch: string;
+    version: string;
+  }) => string;
 }
 
 export default abstract class PublisherStatic<
@@ -25,14 +31,17 @@ export default abstract class PublisherStatic<
 > extends PublisherBase<C> {
   protected keyForArtifact(artifact: StaticArtifact): string {
     if (this.config.keyResolver) {
-      return this.config.keyResolver(
-        path.basename(artifact.path),
-        artifact.platform,
-        artifact.arch,
-      );
+      return this.config.keyResolver({
+        fileName: path.basename(artifact.path),
+        platform: artifact.platform,
+        arch: artifact.arch,
+        version: artifact.version,
+      });
     }
 
-    return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(artifact.path)}`;
+    return `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}/${path.basename(
+      artifact.path,
+    )}`;
   }
 }
 

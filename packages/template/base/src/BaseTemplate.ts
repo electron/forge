@@ -10,13 +10,14 @@ import debug from 'debug';
 import fs from 'fs-extra';
 import semver from 'semver';
 
-import determineAuthor from './determine-author';
+import determineAuthor from './determine-author.js';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const currentForgeVersion = require('../package.json').version;
+const currentForgeVersion = fs.readJSONSync(
+  path.resolve(import.meta.dirname, '../package.json'),
+).version;
 
 const d = debug('electron-forge:template:base');
-const tmplDir = path.resolve(__dirname, '../tmpl');
+const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
@@ -25,7 +26,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.pathExistsSync(packageJSONPath)) {
+    if (fs.existsSync(packageJSONPath)) {
       const deps = fs.readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
@@ -42,7 +43,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.pathExistsSync(packageJSONPath)) {
+    if (fs.existsSync(packageJSONPath)) {
       const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
@@ -76,7 +77,7 @@ export class BaseTemplate implements ForgeTemplate {
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
             pm.executable === 'yarn' &&
             pm.version &&
-            semver.gte(pm.version, '2.0.0')
+            (pm.version === 'latest' || semver.gte(pm.version, '2.0.0'))
           ) {
             rootFiles.push('_yarnrc.yml');
           }
@@ -131,8 +132,25 @@ export class BaseTemplate implements ForgeTemplate {
 
   async initializePackageJSON(directory: string): Promise<void> {
     const packageJSON = await fs.readJson(
-      path.resolve(__dirname, '../tmpl/package.json'),
+      path.resolve(import.meta.dirname, '../tmpl/package.json'),
     );
+
+    // Merge fields from the subclass template's package.json
+    if (this.templateDir !== tmplDir) {
+      const templatePackageJSONPath = path.join(
+        this.templateDir,
+        'package.json',
+      );
+      if (fs.existsSync(templatePackageJSONPath)) {
+        const templatePackageJSON = await fs.readJson(templatePackageJSONPath);
+        const { dependencies, devDependencies, ...rest } = templatePackageJSON;
+        Object.assign(packageJSON, rest);
+        if (rest.scripts) {
+          packageJSON.scripts = { ...packageJSON.scripts, ...rest.scripts };
+        }
+      }
+    }
+
     packageJSON.productName = packageJSON.name = path
       .basename(directory)
       .toLowerCase();
@@ -145,16 +163,11 @@ export class BaseTemplate implements ForgeTemplate {
       packageJSON.pnpm = {
         onlyBuiltDependencies: ['electron', 'electron-winstaller'],
       };
-    } else if (
-      pm.executable === 'yarn' &&
-      typeof pm.version === 'string' &&
-      semver.gte(pm.version, '2.0.0')
-    ) {
-      d('Detected Yarn 2+, adding packageManager field to package.json');
-      packageJSON.packageManager = `yarn@${pm.version}`;
     }
 
-    packageJSON.scripts.lint = 'echo "No linting configured"';
+    if (!packageJSON.scripts.lint) {
+      packageJSON.scripts.lint = 'echo "No linting configured"';
+    }
 
     d('writing package.json to:', directory);
     await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {

@@ -8,7 +8,7 @@ import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class ViteTypeScriptTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   public async initializeTemplate(
     directory: string,
@@ -20,7 +20,6 @@ class ViteTypeScriptTemplate extends BaseTemplate {
       {
         title: 'Setting up Forge configuration',
         task: async () => {
-          await this.copyTemplateFile(directory, 'forge.env.d.ts');
           await this.copyTemplateFile(directory, 'forge.config.ts');
           await fs.remove(path.resolve(directory, 'forge.config.js'));
         },
@@ -74,16 +73,6 @@ class ViteTypeScriptTemplate extends BaseTemplate {
               return line;
             },
           );
-
-          // update package.json
-          const packageJSONPath = path.resolve(directory, 'package.json');
-          const packageJSON = await fs.readJson(packageJSONPath);
-          packageJSON.main = '.vite/build/main.js';
-          // Configure scripts for TS template
-          packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
-          await fs.writeJson(packageJSONPath, packageJSON, {
-            spaces: 2,
-          });
         },
       },
     ];

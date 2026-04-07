@@ -1,6 +1,4 @@
-// TODO(erickzhao): Remove this when upgrading to Vite 6 and converting to ESM
-process.env.VITE_CJS_IGNORE_WARNING = 'true';
-
+import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
@@ -8,19 +6,81 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
-import { default as vite } from 'vite';
+import * as vite from 'vite';
 
-import ViteConfigGenerator from './ViteConfig';
+import ViteConfigGenerator from './ViteConfig.js';
 
-import type { VitePluginConfig } from './Config';
+import type { VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import type { AddressInfo } from 'node:net';
+import type { LibraryOptions } from 'vite';
 
 const d = debug('electron-forge:plugin:vite');
+
+const subprocessWorkerPath = path.resolve(
+  import.meta.dirname,
+  'subprocess-worker.js',
+);
+
+function spawnViteBuild(
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  kind: 'build' | 'renderer',
+  index: number,
+  projectDir: string,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const child = spawn(process.execPath, [subprocessWorkerPath], {
+      cwd: projectDir,
+      env: {
+        ...process.env,
+        FORGE_VITE_PROJECT_DIR: projectDir,
+        FORGE_VITE_KIND: kind,
+        FORGE_VITE_INDEX: String(index),
+        FORGE_VITE_CONFIG: JSON.stringify(pluginConfig),
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stdout = '';
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
+    });
+
+    let stderr = '';
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk;
+    });
+
+    child.on('error', reject);
+    child.on('close', (code, signal) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        const output = [stdout, stderr].filter(Boolean).join('\n');
+        const reason = signal
+          ? `killed by signal ${signal}`
+          : `exited with code ${code}`;
+        reject(
+          new Error(
+            `Vite build subprocess ${reason}${output ? `:\n${output}` : ''}`,
+          ),
+        );
+      }
+    });
+  });
+}
+
+function entryToDisplay(entry: LibraryOptions['entry']): string {
+  if (typeof entry === 'string') return entry;
+  if (Array.isArray(entry)) return entry.join(' ');
+  return Object.keys(entry).join(' ');
+}
 
 export default class VitePlugin extends PluginBase<VitePluginConfig> {
   private static alreadyStarted = false;
@@ -208,8 +268,47 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     });
   };
 
+  /**
+   * Serializable snapshot of the plugin config to pass to subprocess workers.
+   * We only include build[] and renderer[] — the worker needs the full renderer
+   * list for defines even when building a single main target.
+   */
+  private get serializableConfig(): Pick<
+    VitePluginConfig,
+    'build' | 'renderer'
+  > {
+    return {
+      build: this.config.build,
+      renderer: this.config.renderer,
+    };
+  }
+
   // Main process, Preload scripts and Worker process, etc.
   build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
+    if (this.isProd) {
+      const targets = this.config.build
+        .map((spec, index) => ({ spec, index }))
+        .filter(({ spec }) => spec.config);
+      return task?.newListr(
+        targets.map(({ spec, index }) => ({
+          title: `Building ${chalk.green(entryToDisplay(spec.entry))}`,
+          task: async (_ctx, subtask) => {
+            await spawnViteBuild(
+              this.serializableConfig,
+              'build',
+              index,
+              this.projectDir,
+            );
+            subtask.title = `Built target ${chalk.dim(entryToDisplay(spec.entry))}`;
+          },
+        })),
+        {
+          concurrent: this.config.concurrent ?? true,
+          exitOnError: true,
+        },
+      );
+    }
+
     const configs = await this.configGenerator.getBuildConfigs();
     /**
      * Checks if the result of the Vite build is a Rollup watcher.
@@ -339,6 +438,30 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   // Renderer process
   buildRenderer = async (task?: ForgeListrTask<null>) => {
+    if (this.isProd) {
+      const targets = this.config.renderer
+        .map((spec, index) => ({ spec, index }))
+        .filter(({ spec }) => spec.config);
+      return task?.newListr(
+        targets.map(({ spec, index }) => ({
+          title: `Building ${chalk.green(spec.name)}`,
+          task: async (_ctx, subtask) => {
+            await spawnViteBuild(
+              this.serializableConfig,
+              'renderer',
+              index,
+              this.projectDir,
+            );
+            subtask.title = `Built target ${chalk.dim(spec.name)}`;
+          },
+        })),
+        {
+          concurrent: this.config.concurrent ?? true,
+          exitOnError: true,
+        },
+      );
+    }
+
     const rendererConfigs = await this.configGenerator.getRendererConfig();
     return task?.newListr(
       rendererConfigs.map((userConfig) => ({

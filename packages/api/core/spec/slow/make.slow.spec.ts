@@ -12,7 +12,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { api } from '../../src/api/index';
 
 describe('Make', () => {
-  const dir = path.resolve(__dirname, '..', 'fixture', 'api-tester');
+  const dir = path.resolve(import.meta.dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   let makeDir: string;
   let devCert: string;
@@ -24,7 +24,12 @@ describe('Make', () => {
 
     if (process.platform === 'win32') {
       await fs.promises.copyFile(
-        path.join(__dirname, '..', 'fixture', 'bogus-private-key.pvk'),
+        path.join(
+          import.meta.dirname,
+          '..',
+          'fixture',
+          'bogus-private-key.pvk',
+        ),
         path.join(outDir, 'default.pvk'),
       );
       devCert = await createDefaultCertificate('CN=Test Author', {
@@ -62,13 +67,17 @@ describe('Make', () => {
   });
 
   it('throws an error when given an unrecognized platform', async () => {
+    // @ts-expect-error - we're testing an unrecognized platform
     await expect(api.make({ dir, platform: 'dos' })).rejects.toThrow(
       /invalid platform/,
     );
   });
 
   it("throws an error when the specified maker doesn't implement isSupportedOnCurrentPlatform()", async () => {
-    const makerPath = path.resolve(__dirname, '../fixture/maker-incompatible');
+    const makerPath = path.resolve(
+      import.meta.dirname,
+      '../fixture/maker-incompatible',
+    );
     await expect(
       api.make({
         dir,
@@ -88,7 +97,10 @@ describe('Make', () => {
         dir,
         overrideTargets: [
           {
-            name: path.resolve(__dirname, '../fixture/maker-wrong-platform'),
+            name: path.resolve(
+              import.meta.dirname,
+              '../fixture/maker-wrong-platform',
+            ),
           } as IForgeResolvableMaker,
         ],
         platform: 'linux',
@@ -107,8 +119,8 @@ describe('Make', () => {
           dir,
           outDir,
           overrideTargets: [
-            require.resolve('@electron-forge/maker-zip'),
-            require.resolve('@electron-forge/maker-dmg'),
+            import.meta.resolve('@electron-forge/maker-zip'),
+            import.meta.resolve('@electron-forge/maker-dmg'),
           ],
           platform: 'mas',
         }),
@@ -116,35 +128,41 @@ describe('Make', () => {
     },
   );
 
-  describe('with Makers', () => {
+  describe('with Makers', async () => {
     if (process.platform !== 'win32') {
       process.env.DISABLE_SQUIRREL_TEST = 'true';
     }
 
+    const allMakerNames = [
+      '@electron-forge/maker-appx',
+      '@electron-forge/maker-deb',
+      '@electron-forge/maker-dmg',
+      '@electron-forge/maker-flatpak',
+      '@electron-forge/maker-msix',
+      '@electron-forge/maker-rpm',
+      '@electron-forge/maker-snap',
+      '@electron-forge/maker-squirrel',
+      '@electron-forge/maker-wix',
+      '@electron-forge/maker-zip',
+    ];
+
+    const allMakers = await Promise.all(
+      allMakerNames.map(async (name) => ({
+        path: import.meta.resolve(name),
+        module: await import(name),
+      })),
+    );
+
     function getMakers(good: boolean) {
-      const allMakers = [
-        '@electron-forge/maker-appx',
-        '@electron-forge/maker-deb',
-        '@electron-forge/maker-dmg',
-        '@electron-forge/maker-flatpak',
-        '@electron-forge/maker-msix',
-        '@electron-forge/maker-rpm',
-        '@electron-forge/maker-snap',
-        '@electron-forge/maker-squirrel',
-        '@electron-forge/maker-wix',
-        '@electron-forge/maker-zip',
-      ];
       return allMakers
-        .map((maker) => require.resolve(maker))
-        .filter((makerPath) => {
-          const MakerClass = require(makerPath).default;
-          const maker = new MakerClass();
+        .filter(({ module }) => {
+          const maker = new module.default();
           return (
             maker.isSupportedOnCurrentPlatform() === good &&
             maker.externalBinariesExist() === good
           );
         })
-        .map((makerPath) => () => {
+        .map(({ path: makerPath }) => () => {
           const makerDefinition = {
             name: makerPath,
             platforms: [process.platform],

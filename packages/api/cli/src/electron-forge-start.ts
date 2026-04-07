@@ -1,11 +1,10 @@
 import { api, StartOptions } from '@electron-forge/core';
+import { resolveWorkingDir } from '@electron-forge/core-utils';
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { Option, program } from 'commander';
 
-import './util/terminate';
-import packageJSON from '../package.json';
-
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import './util/terminate.js';
+import packageJSON from '../package.json' with { type: 'json' };
 
 (async () => {
   let commandArgs = process.argv;

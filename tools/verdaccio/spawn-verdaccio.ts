@@ -8,10 +8,11 @@
  * the latest and greatest.
  *
  * Usage:
- *   ts-node tools/verdaccio/spawn-verdaccio.ts <command> [args...]
+ *   tsx tools/verdaccio/spawn-verdaccio.ts [command] [args...]
  *
- * Example:
- *   ts-node tools/verdaccio-spawn-verdaccio.ts yarn test:slow
+ * Examples:
+ *   tsx tools/verdaccio/spawn-verdaccio.ts yarn test:slow
+ *   tsx tools/verdaccio/spawn-verdaccio.ts  # Keeps Verdaccio running for manual testing
  */
 
 import { ChildProcess, spawn } from 'node:child_process';
@@ -21,17 +22,17 @@ import path from 'node:path';
 import { spawn as spawnPromise } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
-const FORGE_ROOT_DIR = path.resolve(__dirname, '../..');
+const FORGE_ROOT_DIR = path.resolve(import.meta.dirname, '../..');
 /**
  * Path to the Verdaccio configuration file.
  * The below constants are derived from settings in the YAML.
  */
-const CONFIG_PATH = path.resolve(__dirname, 'config.yaml');
+const CONFIG_PATH = path.resolve(import.meta.dirname, 'config.yaml');
 
 const LOCALHOST = '127.0.0.1';
 const VERDACCIO_PORT = 4873;
 const VERDACCIO_URL = `http://${LOCALHOST}:${VERDACCIO_PORT}`;
-const STORAGE_PATH = path.resolve(__dirname, 'storage');
+const STORAGE_PATH = path.resolve(import.meta.dirname, 'storage');
 
 const d = debug('electron-forge:verdaccio');
 
@@ -117,6 +118,7 @@ async function publishPackages(): Promise<void> {
         '--yes',
         '--no-git-tag-version',
         '--no-push',
+        '--skip-check-working-tree',
       ],
       {
         cwd: FORGE_ROOT_DIR,
@@ -171,32 +173,31 @@ async function runCommand(args: string[]) {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
-  if (args.length === 0) {
-    console.error(
-      'Usage: ts-node tools/verdaccio/spawn-verdaccio.ts <command> [args...]',
-    );
-    console.error(
-      'Example: ts-node tools/verdaccio/spawn-verdaccio.ts yarn test:slow',
-    );
-    process.exit(1);
-  }
-
   // Handle signals
   process.on('SIGINT', () => {
     stopVerdaccio();
-    process.exit(1);
+    process.exit(0);
   });
   process.on('SIGTERM', () => {
     stopVerdaccio();
-    process.exit(1);
+    process.exit(0);
   });
 
   try {
     await startVerdaccio();
     await publishPackages();
-    await runCommand(args);
-    stopVerdaccio();
-    process.exit(0);
+
+    if (args.length === 0) {
+      // No command provided - keep Verdaccio running for manual testing
+      console.log(`\n✅ Verdaccio is running at ${VERDACCIO_URL}`);
+      console.log('   Press Ctrl+C to stop.\n');
+      // Keep the process alive
+      await new Promise(() => {});
+    } else {
+      await runCommand(args);
+      stopVerdaccio();
+      process.exit(0);
+    }
   } catch (error) {
     console.error('❌ Error:', error);
     stopVerdaccio();

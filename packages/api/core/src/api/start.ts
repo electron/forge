@@ -21,11 +21,11 @@ import chalk from 'chalk';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 
-import locateElectronExecutable from '../util/electron-executable';
-import getForgeConfig from '../util/forge-config';
-import { getHookListrTasks, runHook } from '../util/hook';
-import { readMutatedPackageJson } from '../util/read-package-json';
-import resolveDir from '../util/resolve-dir';
+import locateElectronExecutable from '../util/electron-executable.js';
+import getForgeConfig from '../util/forge-config.js';
+import { getHookListrTasks, runHook } from '../util/hook.js';
+import { readMutatedPackageJson } from '../util/read-package-json.js';
+import resolveDir from '../util/resolve-dir.js';
 
 const d = debug('electron-forge:start');
 
@@ -143,8 +143,8 @@ export default autoTrace(
                     childTrace,
                     forgeConfig,
                     'generateAssets',
-                    platform,
-                    arch,
+                    platform as ForgePlatform,
+                    arch as ForgeArch,
                   ),
                 ),
                 'run',
@@ -279,6 +279,11 @@ export default autoTrace(
             process.stdin.pause();
           }
         });
+
+        // On close, reset lastSpawned, it's dead
+        spawned.on('close', () => {
+          lastSpawned = null;
+        });
       } else if (interactive && !process.stdin.isPaused()) {
         process.stdin.pause();
       }
@@ -302,7 +307,11 @@ export default autoTrace(
 
     if (interactive) {
       process.stdin.on('data', (data) => {
-        if (data.toString().trim() === 'rs' && lastSpawned) {
+        if (
+          data.toString().trim() === 'rs' &&
+          lastSpawned &&
+          !lastSpawned.restarted
+        ) {
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
@@ -310,6 +319,16 @@ export default autoTrace(
         }
       });
       process.stdin.resume();
+
+      const handleTerminationSignal = function (signal: NodeJS.Signals) {
+        process.on(signal, function signalHandler() {
+          lastSpawned?.kill(signal);
+        });
+      };
+
+      handleTerminationSignal('SIGINT');
+      handleTerminationSignal('SIGTERM');
+      handleTerminationSignal('SIGUSR2');
     }
 
     const spawned = await forgeSpawnWrapper();

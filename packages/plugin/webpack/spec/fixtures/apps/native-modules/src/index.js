@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+const { app, BrowserWindow, ipcMain } = require('electron');
+const helloWorld = require('native-hello-world');
 
 let count = 0;
 ipcMain.on('stdout', (_, line) => {
@@ -25,7 +26,6 @@ app.on('ready', () => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 });
 
-const helloWorld = require('native-hello-world');
 console.log(`${helloWorld()} from the main`);
 
 setTimeout(() => {

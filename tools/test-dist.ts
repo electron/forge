@@ -1,9 +1,9 @@
 import * as path from 'node:path';
 
 import chalk from 'chalk';
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
-const BASE_DIR = path.resolve(__dirname, '..');
+const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
 
 (async () => {
@@ -27,17 +27,30 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
   for (const dir of dirsToCheck) {
     const pj = await fs.readJson(path.resolve(dir, 'package.json'));
     if (pj.name === '@electron-forge/cli') continue;
-    if (!(await fs.pathExists(path.resolve(dir, pj.main)))) {
+    // The entrypoint can be defined under `exports` or `main` in package.json now!
+    // `exports` can be a string or an exports map object (e.g. { ".": { "default": "...", "types": "..." } })
+    let main: string | undefined;
+    let typings: string | undefined = pj.typings;
+    if (typeof pj.exports === 'string') {
+      main = pj.exports;
+    } else if (typeof pj.exports === 'object' && pj.exports['.']) {
+      const dotExport = pj.exports['.'];
+      main = typeof dotExport === 'string' ? dotExport : dotExport.default;
+      typings ??= typeof dotExport === 'object' ? dotExport.types : undefined;
+    } else {
+      main = pj.main;
+    }
+    if (!main || !(await fs.pathExists(path.resolve(dir, main)))) {
       console.error(
         `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Main entry not found (${pj.main})`),
+        chalk.red(`Main entry not found (${main})`),
       );
       bad = true;
     }
-    if (!pj.typings || !(await fs.pathExists(path.resolve(dir, pj.typings)))) {
+    if (!typings || !(await fs.pathExists(path.resolve(dir, typings)))) {
       console.error(
         `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Typings entry not found (${pj.typings})`),
+        chalk.red(`Typings entry not found (${typings})`),
       );
       bad = true;
     }

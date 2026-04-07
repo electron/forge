@@ -1,11 +1,10 @@
 import { initializeProxy } from '@electron/get';
 import { api, PackageOptions } from '@electron-forge/core';
+import { resolveWorkingDir } from '@electron-forge/core-utils';
 import { program } from 'commander';
 
-import './util/terminate';
-import packageJSON from '../package.json';
-
-import { resolveWorkingDir } from './util/resolve-working-dir';
+import './util/terminate.js';
+import packageJSON from '../package.json' with { type: 'json' };
 
 program
   .version(packageJSON.version, '-V, --version', 'Output the current version')

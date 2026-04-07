@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import { Listr } from 'listr2';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -60,5 +60,14 @@ describe('WebpackTemplate', () => {
         await fs.promises.readFile(path.join(dir, 'src', 'index.html'))
       ).toString(),
     ).not.toMatch(/link rel="stylesheet"/);
+  });
+
+  it('should contain `private:true` in package.json', async () => {
+    const packageJSONString = await fs.promises.readFile(
+      path.join(dir, 'package.json'),
+      'utf-8',
+    );
+    const packageJSON = JSON.parse(packageJSONString);
+    expect(packageJSON).toHaveProperty('private', true);
   });
 });

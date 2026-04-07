@@ -35,7 +35,7 @@ export default abstract class Publisher<C> implements IForgePublisher {
   public defaultPlatforms?: ForgePlatform[];
 
   /** @internal */
-  __isElectronForgePublisher!: true;
+  readonly __isElectronForgePublisher!: true;
 
   /**
    * @param config - A configuration object for this publisher
@@ -45,9 +45,9 @@ export default abstract class Publisher<C> implements IForgePublisher {
     public config: C,
     protected platformsToPublishOn?: ForgePlatform[],
   ) {
-    this.config = config;
     Object.defineProperty(this, '__isElectronForgePublisher', {
       value: true,
+      writable: false,
       enumerable: false,
       configurable: false,
     });

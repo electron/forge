@@ -8,7 +8,7 @@ import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class WebpackTypeScriptTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   async initializeTemplate(
     directory: string,
@@ -65,16 +65,6 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
             path.join(directory, 'src'),
             'preload.ts',
           );
-
-          // update package.json
-          const packageJSONPath = path.resolve(directory, 'package.json');
-          const packageJSON = await fs.readJson(packageJSONPath);
-          packageJSON.main = '.webpack/main';
-          // Configure scripts for TS template
-          packageJSON.scripts.lint = 'eslint --ext .ts,.tsx .';
-          await fs.writeJson(packageJSONPath, packageJSON, {
-            spaces: 2,
-          });
         },
       },
     ];

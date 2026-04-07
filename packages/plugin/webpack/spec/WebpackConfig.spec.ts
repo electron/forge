@@ -346,7 +346,7 @@ describe('WebpackConfigGenerator', () => {
 
     it('generates a config from a requirable file', async () => {
       const config = {
-        mainConfig: 'mainConfig.js',
+        mainConfig: 'mainConfig.cjs',
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
@@ -359,7 +359,7 @@ describe('WebpackConfigGenerator', () => {
 
     it('generates a config from a requirable transpiled module file', async () => {
       const config = {
-        mainConfig: 'mainConfig.module.js',
+        mainConfig: 'mainConfig.module.cjs',
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },

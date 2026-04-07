@@ -12,9 +12,9 @@ import fs from 'fs-extra';
 import logSymbols from 'log-symbols';
 import mime from 'mime-types';
 
-import { PublisherGitHubConfig } from './Config';
-import GitHub from './util/github';
-import NoReleaseError from './util/no-release-error';
+import { PublisherGitHubConfig } from './Config.js';
+import GitHub from './util/github.js';
+import NoReleaseError from './util/no-release-error.js';
 
 import type { Octokit } from '@octokit/rest';
 

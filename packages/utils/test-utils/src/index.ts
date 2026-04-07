@@ -51,25 +51,39 @@ export async function expectLintToPass(dir: string): Promise<void> {
   }
 }
 
-/**
- * Helper function to mock CommonJS `require` calls with Vitest.
- *
- * @see https://github.com/vitest-dev/vitest/discussions/3134
- * @param mockedUri - mocked module URI
- * @param stub - stub function to assign to mock
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function mockRequire(mockedUri: string, stub: any) {
-  const { Module } = await import('module');
+export async function expectTypecheckToPass(dir: string): Promise<void> {
+  try {
+    await runNPM(dir, 'run', 'typecheck');
+  } catch (err) {
+    if (err instanceof ExitError) {
+      console.error('STDOUT:', err.stdout.toString());
+      console.error('STDERR:', err.stderr.toString());
+    }
+    throw err;
+  }
+}
 
-  //@ts-expect-error undocumented functions
-  Module._load_original = Module._load;
-  //@ts-expect-error undocumented functions
-  Module._load = (uri, parent) => {
-    if (uri === mockedUri) return stub;
-    //@ts-expect-error undocumented functions
-    return Module._load_original(uri, parent);
-  };
+/**
+ * Mutates the `package.json` file in a directory.
+ * Use the return value to later restore the original `package.json` value
+ * in a subsequent call of this function.
+ *
+ * @param dir - The target directory containing the `package.json` file
+ * @param callback - A callback function that returns the value of the new `package.json` to be applied
+ * @returns The original `package.json` prior to mutation
+ */
+export async function updatePackageJSON(
+  dir: string,
+  callback: (packageJSON: PackageJSON) => Promise<PackageJSON>,
+) {
+  const packageJSON = await fs.readJson(path.resolve(dir, 'package.json'));
+  const mutated = await callback(JSON.parse(JSON.stringify(packageJSON)));
+  await fs.promises.writeFile(
+    path.resolve(dir, 'package.json'),
+    JSON.stringify(mutated, null, 2),
+    'utf-8',
+  );
+  return packageJSON;
 }
 
 /**

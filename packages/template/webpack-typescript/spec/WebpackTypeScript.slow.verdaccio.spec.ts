@@ -5,12 +5,13 @@ import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
 } from '@electron-forge/core-utils';
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
+import { init } from '../../../external/create-electron-app/src/init';
 
 describe('WebpackTypeScriptTemplate', () => {
   let dir: string;
@@ -20,9 +21,9 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   it('should succeed in initializing the typescript template', async () => {
-    await api.init({
+    await init({
       dir,
-      template: path.join(__dirname, '..'),
+      template: path.join(import.meta.dirname, '..'),
       interactive: false,
       electronVersion: '38.2.2',
     });
@@ -63,6 +64,12 @@ describe('WebpackTypeScriptTemplate', () => {
     it('should initially pass the linting process', async () => {
       delete process.env.TS_NODE_PROJECT;
       await testUtils.expectLintToPass(dir);
+    });
+  });
+
+  describe('typecheck', () => {
+    it('should initially pass the typechecking process', async () => {
+      await testUtils.expectTypecheckToPass(dir);
     });
   });
 

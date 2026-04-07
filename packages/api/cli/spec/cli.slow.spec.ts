@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest';
 
 function runForgeCLI(...extraArgs: string[]): Promise<string> {
   const args = [
-    'ts-node',
-    path.resolve(__dirname, '../src/electron-forge.ts'),
+    'tsx',
+    path.resolve(import.meta.dirname, '../src/electron-forge.ts'),
     ...extraArgs,
   ];
   return spawn('npx', args);

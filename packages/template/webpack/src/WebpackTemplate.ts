@@ -5,10 +5,9 @@ import {
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 class WebpackTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   public async initializeTemplate(
     directory: string,
@@ -57,14 +56,6 @@ class WebpackTemplate extends BaseTemplate {
               return line;
             },
           );
-
-          // update package.json entry point
-          const pjPath = path.resolve(directory, 'package.json');
-          const currentPJ = await fs.readJson(pjPath);
-          currentPJ.main = '.webpack/main';
-          await fs.writeJson(pjPath, currentPJ, {
-            spaces: 2,
-          });
         },
       },
     ];

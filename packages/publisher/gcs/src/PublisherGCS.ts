@@ -2,18 +2,20 @@ import {
   PublisherOptions,
   PublisherStatic,
 } from '@electron-forge/publisher-static';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
-import { PublisherGCSConfig } from './Config';
+import { PublisherGCSConfig } from './Config.js';
 
 const d = debug('electron-forge:publish:gcs');
 
 export type GCSArtifact = {
   path: string;
   keyPrefix: string;
-  platform: string;
-  arch: string;
+  platform: ForgePlatform;
+  arch: ForgeArch;
+  version: string;
 };
 
 export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
@@ -33,7 +35,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
       storageOptions,
       bucket: configBucket,
       folder,
-      ...uploadOptions
+      uploadOptions,
     } = this.config;
 
     if (!configBucket) {
@@ -49,6 +51,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
           keyPrefix: folder || this.GCSKeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
+          version: makeResult.packageJSON.version,
         })),
       );
     }
@@ -73,9 +76,8 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
           metadata: this.config.metadataGenerator
             ? this.config.metadataGenerator(artifact)
             : {},
-          gzip: true,
           destination: this.keyForArtifact(artifact),
-          ...uploadOptions,
+          ...(uploadOptions || {}),
         });
 
         uploaded += 1;

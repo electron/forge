@@ -12,7 +12,7 @@ import { api } from '../../src/api/index';
 import { readRawPackageJson } from '../../src/util/read-package-json';
 
 describe('Package', () => {
-  const dir = path.resolve(__dirname, '..', 'fixture', 'api-tester');
+  const dir = path.resolve(import.meta.dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   beforeEach(async () => {
     outDir = await ensureTestDirIsNonexistent();
@@ -25,9 +25,20 @@ describe('Package', () => {
   it('can package an Electron app', async () => {
     expect(fs.existsSync(outDir)).toEqual(false);
 
-    await api.package({ dir, outDir });
+    const results = await api.package({ dir, outDir });
 
-    // should respect outDir
+    expect(results).toHaveLength(1);
+    expect(results[0]).toEqual(
+      expect.objectContaining({
+        platform: process.platform,
+        arch: process.arch,
+        packagedPath: expect.any(String),
+      }),
+    );
+
+    // sanity check: absolute path exists and respects outDir
+    expect(path.isAbsolute(results[0].packagedPath)).toBe(true);
+    expect(fs.existsSync(results[0].packagedPath)).toBe(true);
     expect(fs.existsSync(outDir)).toEqual(true);
 
     // should remove Forge config from packaged app's package.json

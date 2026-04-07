@@ -1,14 +1,39 @@
 {
   "name": "create-electron-app",
-  "version": "7.11.1",
+  "version": "8.0.0-alpha.6",
+  "type": "module",
   "description": "Create Electron App",
   "repository": "https://github.com/electron/forge",
-  "main": "dist/index.js",
+  "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "author": "Samuel Attard",
   "license": "MIT",
+  "engines": {
+    "node": ">= 22.12.0"
+  },
   "dependencies": {
-    "@electron-forge/cli": "workspace:*"
+    "@electron-forge/core-utils": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*",
+    "@electron-forge/template-base": "workspace:*",
+    "@electron-forge/template-vite": "workspace:*",
+    "@electron-forge/template-vite-typescript": "workspace:*",
+    "@electron-forge/template-webpack": "workspace:*",
+    "@electron-forge/template-webpack-typescript": "workspace:*",
+    "@inquirer/prompts": "^6.0.1",
+    "@listr2/prompt-adapter-inquirer": "^2.0.22",
+    "@malept/cross-spawn-promise": "^2.0.0",
+    "chalk": "^4.0.0",
+    "commander": "^11.1.0",
+    "debug": "^4.3.1",
+    "fs-extra": "^10.0.0",
+    "listr2": "^7.0.2",
+    "lodash-es": "^4.17.21",
+    "log-symbols": "^4.0.0",
+    "semver": "^7.2.1"
+  },
+  "devDependencies": {
+    "@electron-forge/core": "workspace:*",
+    "@electron-forge/test-utils": "workspace:*"
   },
   "bin": "dist/index.js",
   "files": [

@@ -1,7 +1,8 @@
 {
+  "main": ".vite/build/main.js",
   "devDependencies": {
-    "@electron/fuses": "^1.7.0",
+    "@electron/fuses": "^2.0.0",
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
-    "vite": "^5.0.12"
+    "vite": "^7.2.4"
   }
 }

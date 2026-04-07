@@ -1,65 +1,43 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
 import { spawn } from '@malept/cross-spawn-promise';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 
-// eslint-disable-next-line n/no-missing-import
-import { api } from '../../../api/core/dist/api';
+import packageAPI from '../../../api/core/src/api/package';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 
 describe('FusesPlugin', () => {
-  const fixtureDir = path.join(__dirname, 'fixture', 'app');
-  let appPath: string;
-  let appName: string;
+  const appPath = path.join(import.meta.dirname, 'fixture');
 
-  beforeAll(async () => {
-    delete process.env.TS_NODE_PROJECT;
-    appPath = await ensureTestDirIsNonexistent();
+  const packageJSON = JSON.parse(
+    fs.readFileSync(path.join(appPath, 'package.json'), {
+      encoding: 'utf-8',
+    }),
+  );
 
-    // Initialize a new Forge project (base template includes plugin-fuses)
-    await api.init({
-      dir: appPath,
-      interactive: false,
-    });
+  const { name: appName } = packageJSON;
 
-    // Read the app name from the generated package.json
-    const packageJSON = JSON.parse(
-      await fs.promises.readFile(path.join(appPath, 'package.json'), 'utf-8'),
-    );
-    appName = packageJSON.name;
-
-    // Replace the main entry file with our test fixture
-    const fixtureMainJs = await fs.promises.readFile(
-      path.join(fixtureDir, 'src', 'main.js'),
-      'utf-8',
-    );
-    await fs.promises.writeFile(
-      path.join(appPath, 'src', 'index.js'),
-      fixtureMainJs,
-    );
-  });
+  const outDir = path.join(appPath, 'out');
 
   afterAll(async () => {
-    await fs.promises.rm(appPath, { recursive: true, force: true });
+    await fs.promises.rm(outDir, {
+      recursive: true,
+      force: true,
+    });
   });
 
   it('should flip Fuses', async () => {
-    await api.package({
+    await packageAPI({
       dir: appPath,
       interactive: false,
     });
 
-    const outDir = path.join(
-      appPath,
-      'out',
-      `${appName}-${process.platform}-${process.arch}`,
-    );
     const electronExecutablePath = getElectronExecutablePath({
       appName,
       basePath: path.join(
         outDir,
+        'fuses-test-app',
         ...(process.platform === 'darwin'
           ? [`${appName}.app`, 'Contents']
           : []),

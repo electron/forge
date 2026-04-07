@@ -5,7 +5,7 @@ import {
   WebpackPluginEntryPointLocalWindow,
   WebpackPluginEntryPointNoWindow,
   WebpackPluginEntryPointPreloadOnly,
-} from '../Config';
+} from '../Config.js';
 
 /**
  * Reusable type predicate functions to narrow down the type of the WebpackPluginEntryPoint

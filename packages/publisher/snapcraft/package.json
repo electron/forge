@@ -1,14 +1,15 @@
 {
   "name": "@electron-forge/publisher-snapcraft",
-  "version": "7.11.1",
+  "version": "8.0.0-alpha.6",
+  "type": "module",
   "description": "Snapcraft publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "main": "dist/PublisherSnapcraft.js",
+  "exports": "./dist/PublisherSnapcraft.js",
   "typings": "dist/PublisherSnapcraft.d.ts",
   "engines": {
-    "node": ">= 16.4.0"
+    "node": ">= 22.12.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",

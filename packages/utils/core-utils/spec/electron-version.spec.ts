@@ -8,14 +8,14 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import {
   devDeps,
   exactDevDeps,
-} from '../../../api/core/src/api/init-scripts/init-npm';
+} from '../../../external/create-electron-app/src/init-scripts/init-npm.js';
 import {
   getElectronModulePath,
   getElectronVersion,
   updateElectronDependency,
 } from '../src/electron-version';
 
-const fixturePath = path.resolve(__dirname, 'fixture');
+const fixturePath = path.resolve(import.meta.dirname, 'fixture');
 
 describe('updateElectronDependency', () => {
   it('adds an Electron dep if one does not already exist', () => {
@@ -117,8 +117,11 @@ describe('getElectronVersion', () => {
   });
 
   describe('with yarn workspaces', () => {
+    let originalUserAgent: string | undefined;
     beforeAll(() => {
-      process.env.NODE_INSTALLER = 'yarn';
+      originalUserAgent = process.env.npm_config_user_agent;
+      process.env.npm_config_user_agent =
+        'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
     });
 
     it('works with a non-exact version', async () => {
@@ -139,7 +142,7 @@ describe('getElectronVersion', () => {
     });
 
     afterAll(() => {
-      delete process.env.NODE_INSTALLER;
+      process.env.npm_config_user_agent = originalUserAgent;
     });
   });
 });
@@ -213,12 +216,15 @@ describe('getElectronModulePath', () => {
   });
 
   describe('with yarn workspaces', () => {
+    let originalUserAgent: string | undefined;
     beforeAll(() => {
-      process.env.NODE_INSTALLER = 'yarn';
+      originalUserAgent = process.env.npm_config_user_agent;
+      process.env.npm_config_user_agent =
+        'yarn/1.22.22 npm/? node/v22.13.0 darwin arm64';
     });
 
     afterAll(() => {
-      delete process.env.NODE_INSTALLER;
+      process.env.npm_config_user_agent = originalUserAgent;
     });
 
     it('finds the top-level electron module', async () => {

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 
-import { MakerRpmConfig } from './Config';
+import { MakerRpmConfig } from './Config.js';
 
 function renameRpm(dest: string, _src: string): string {
   return path.join(
@@ -12,6 +12,13 @@ function renameRpm(dest: string, _src: string): string {
   );
 }
 
+/**
+ * Converts the Node.js architecture value of the processor architecture
+ * into a string accepted by `electron-installer-redhat`.
+ *
+ * @param nodeArch - Node.js architecture string
+ * @returns - electron-installer-redhat architecture string
+ */
 export function rpmArch(nodeArch: ForgeArch): string {
   switch (nodeArch) {
     case 'ia32':
@@ -22,10 +29,8 @@ export function rpmArch(nodeArch: ForgeArch): string {
       return 'aarch64';
     case 'armv7l':
       return 'armv7hl';
-    case 'arm':
-      return 'armv6hl';
     default:
-      return nodeArch;
+      throw new Error(`Unsupported architecture ${nodeArch}`);
   }
 }
 
@@ -41,8 +46,8 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line n/no-missing-require
-    const installer = require('electron-installer-redhat');
+    // @ts-expect-error - this package has no types
+    const { default: installer } = await import('electron-installer-redhat');
 
     const outDir = path.resolve(makeDir, 'rpm', targetArch);
 

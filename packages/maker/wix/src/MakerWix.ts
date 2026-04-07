@@ -1,14 +1,18 @@
 import path from 'node:path';
 
 import { getNameFromAuthor } from '@electron-forge/core-utils';
-import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { MakerBase, type MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import chalk from 'chalk';
-import { MSICreator, MSICreatorOptions } from 'electron-wix-msi/lib/creator';
+import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';
 import logSymbols from 'log-symbols';
 import semver from 'semver';
 
-import { MakerWixConfig } from './Config';
+import { MakerWixConfig } from './Config.js';
+
+function isValidWixArch(arch: string): arch is 'x64' | 'ia64' | 'x86' {
+  return ['x64', 'ia64', 'x86'].includes(arch);
+}
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {
   name = 'wix';
@@ -44,12 +48,17 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
       );
     }
 
+    if (!isValidWixArch(targetArch)) {
+      throw new Error(`Invalid arch: ${targetArch}`);
+    }
+
     const creator = new MSICreator({
       description: packageJSON.description,
       name: appName,
       version,
       manufacturer: getNameFromAuthor(packageJSON.author),
       exe: `${appName}.exe`,
+      arch: targetArch,
       ...this.config,
       appDirectory: dir,
       outputDirectory: outPath,

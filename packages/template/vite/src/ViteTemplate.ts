@@ -8,7 +8,7 @@ import { BaseTemplate } from '@electron-forge/template-base';
 import fs from 'fs-extra';
 
 class ViteTemplate extends BaseTemplate {
-  public templateDir = path.resolve(__dirname, '..', 'tmpl');
+  public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
   public async initializeTemplate(
     directory: string,
@@ -46,7 +46,7 @@ class ViteTemplate extends BaseTemplate {
                 return `  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, \`../renderer/\${MAIN_WINDOW_VITE_NAME}/index.html\`));
+    mainWindow.loadFile(path.join(import.meta.dirname, \`../renderer/\${MAIN_WINDOW_VITE_NAME}/index.html\`));
   }`;
               return line;
             },
@@ -69,14 +69,6 @@ class ViteTemplate extends BaseTemplate {
               return line;
             },
           );
-
-          // update package.json entry point
-          const pjPath = path.resolve(directory, 'package.json');
-          const currentPJ = await fs.readJson(pjPath);
-          currentPJ.main = '.vite/build/main.js';
-          await fs.writeJson(pjPath, currentPJ, {
-            spaces: 2,
-          });
         },
       },
     ];
