@@ -20,7 +20,9 @@ export function getConfig(
         external: [...external, 'electron/main'],
       },
     },
-    plugins: [pluginHotRestart('restart')],
+    plugins: [
+      ...(forgeEnv.forgeConfig.hotRestart ? [pluginHotRestart('restart')] : []),
+    ],
     define,
     resolve: {
       // Load the Node.js entry.
