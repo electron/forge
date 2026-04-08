@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -52,7 +53,7 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
       bad = true;
     } else if (!SKIP_IMPORT.has(pj.name)) {
       try {
-        await import(path.resolve(dir, main));
+        await import(pathToFileURL(path.resolve(dir, main)).href);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
         console.error(
