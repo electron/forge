@@ -2,8 +2,10 @@ import path from 'node:path';
 
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as webpack from 'webpack';
-import { DefinePlugin, ExternalsPlugin, WebpackPluginInstance } from 'webpack';
+import type * as webpack from 'webpack';
+import webpackPkg from 'webpack';
+
+const { DefinePlugin, ExternalsPlugin } = webpackPkg;
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -366,7 +368,7 @@ export default class WebpackConfigGenerator {
             template: entryPoint.html,
             filename: `${entryPoint.name}/index.html`,
             chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-          }) as WebpackPluginInstance,
+          }) as webpack.WebpackPluginInstance,
         );
       }
     }
