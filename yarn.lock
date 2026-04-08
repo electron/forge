@@ -900,6 +900,7 @@ __metadata:
     debug: "npm:^4.3.1"
     electron-forge-template-fixture-two: "link:./spec/fixture/electron-forge-template-fixture"
     electron-installer-common: "npm:^0.10.2"
+    eta: "npm:^3.5.0"
     fast-glob: "npm:^3.2.7"
     filenamify: "npm:^4.1.0"
     find-up: "npm:^5.0.0"
@@ -8619,6 +8620,7 @@ __metadata:
     eslint-plugin-n: "npm:^17.15.1"
     eslint-plugin-promise: "npm:^7.2.1"
     eslint-plugin-tsdoc: "npm:^0.4.0"
+    eta: "npm:^3.5.0"
     express: "npm:^4.17.1"
     express-ws: "npm:^5.0.2"
     fast-glob: "npm:^3.2.7"
@@ -9998,6 +10000,13 @@ __metadata:
   version: 2.0.3
   resolution: "esutils@npm:2.0.3"
   checksum: 10c0/9a2fe69a41bfdade834ba7c42de4723c97ec776e40656919c62cbd13607c45e127a003f05f724a1ea55e5029a4cf2de444b13009f2af71271e42d93a637137c7
+  languageName: node
+  linkType: hard
+
+"eta@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "eta@npm:3.5.0"
+  checksum: 10c0/28ffc23658e3d77c1ab2660d0158b979688457659fc190d0edca26c186ab34039bec9d6745d975e5f0543981e285cd757bff85b47ea2374ab11444e2b7271dd0
   languageName: node
   linkType: hard
 

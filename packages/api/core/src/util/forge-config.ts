@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { Eta } from 'eta';
 import fs from 'fs-extra';
 import * as interpret from 'interpret';
 import { createJiti } from 'jiti';
@@ -136,6 +137,8 @@ export async function forgeConfigIsValidFilePath(
   );
 }
 
+const eta = new Eta({ useWith: true, autoEscape: false, autoTrim: false });
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderConfigTemplate(
   dir: string,
@@ -146,12 +149,7 @@ export function renderConfigTemplate(
     if (typeof value === 'object' && value !== null) {
       renderConfigTemplate(dir, templateObj, value);
     } else if (typeof value === 'string') {
-      obj[key] = value.replace(/<%=([\s\S]+?)%>/g, (_match, expr) => {
-        const result = new Function('obj', `with(obj){return(${expr})}`)(
-          templateObj,
-        );
-        return result == null ? '' : String(result);
-      });
+      obj[key] = eta.renderString(value, templateObj);
       if (obj[key].startsWith('require:')) {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));
