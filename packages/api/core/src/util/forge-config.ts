@@ -4,7 +4,6 @@ import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import * as interpret from 'interpret';
 import { createJiti } from 'jiti';
-import { template } from 'lodash';
 import * as rechoir from 'rechoir';
 
 // eslint-disable-next-line n/no-missing-import
@@ -147,7 +146,12 @@ export function renderConfigTemplate(
     if (typeof value === 'object' && value !== null) {
       renderConfigTemplate(dir, templateObj, value);
     } else if (typeof value === 'string') {
-      obj[key] = template(value)(templateObj);
+      obj[key] = value.replace(/<%=([\s\S]+?)%>/g, (_match, expr) => {
+        const result = new Function('obj', `with(obj){return(${expr})}`)(
+          templateObj,
+        );
+        return result == null ? '' : String(result);
+      });
       if (obj[key].startsWith('require:')) {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));

@@ -909,7 +909,6 @@ __metadata:
     interpret: "npm:^3.1.1"
     jiti: "npm:^2.4.2"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.23"
     log-symbols: "npm:^4.0.0"
     node-fetch: "npm:^2.6.7"
     rechoir: "npm:^0.8.0"
@@ -4942,13 +4941,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.166":
-  version: 4.14.178
-  resolution: "@types/lodash@npm:4.14.178"
-  checksum: 10c0/820e33578a084aba2ca66fc83728c14d82813b91f3f14f281621b36904533c3d1681992b5e2719579b8beb52e1a77cfa914283a145f66dfa71b5e02a7cec5a37
-  languageName: node
-  linkType: hard
-
 "@types/mdast@npm:^3.0.0":
   version: 3.0.11
   resolution: "@types/mdast@npm:3.0.11"
@@ -8595,7 +8587,6 @@ __metadata:
     "@types/interpret": "npm:^1.1.1"
     "@types/keyv": "npm:^3.1.4"
     "@types/listr": "npm:^0.14.2"
-    "@types/lodash": "npm:^4.14.166"
     "@types/mime-types": "npm:^2.1.0"
     "@types/minimist": "npm:^1.2.0"
     "@types/node": "npm:^18.0.3"
@@ -8646,7 +8637,6 @@ __metadata:
     lerna: "npm:^9.0.0"
     lint-staged: "npm:^12.1.7"
     listr2: "npm:^7.0.2"
-    lodash: "npm:^4.17.23"
     log-symbols: "npm:^4.0.0"
     mime-types: "npm:^2.1.25"
     minimist: "npm:^1.2.6"
@@ -13746,7 +13736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4, lodash@npm:^4.17.12, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.23, lodash@npm:^4.17.4":
+"lodash@npm:4, lodash@npm:^4.17.12, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
   version: 4.17.23
   resolution: "lodash@npm:4.17.23"
   checksum: 10c0/1264a90469f5bb95d4739c43eb6277d15b6d9e186df4ac68c3620443160fc669e2f14c11e7d8b2ccf078b81d06147c01a8ccced9aab9f9f63d50dcf8cace6bf6
