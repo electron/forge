@@ -12,6 +12,7 @@
     "node": ">= 22.12.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/shared-types": "workspace:*"
   },
   "publishConfig": {
