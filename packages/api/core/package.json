@@ -68,12 +68,8 @@
   },
   "funding": [
     {
-      "type": "individual",
-      "url": "https://github.com/sponsors/malept"
-    },
-    {
-      "type": "tidelift",
-      "url": "https://tidelift.com/subscription/pkg/npm-.electron-forge-core?utm_medium=referral&utm_source=npm_fund"
+      "type": "opencollective",
+      "url": "https://opencollective.com/electron"
     }
   ],
   "publishConfig": {
