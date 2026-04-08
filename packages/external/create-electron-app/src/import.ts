@@ -14,7 +14,6 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
-import { merge } from 'lodash-es';
 
 import { initGit } from './init-scripts/init-git.js';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm.js';
@@ -319,7 +318,10 @@ export const forgeImport = async ({
                       path.resolve(baseTemplate.templateDir, 'forge.config.js')
                     );
                     packageJSON = await readRawPackageJson(dir);
-                    merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
+                    packageJSON.config.forge = structuredClone({
+                      ...templateConfig,
+                      ...packageJSON.config.forge,
+                    });
                     await writeChanges();
                     // otherwise, write to forge.config.js
                   } else {
