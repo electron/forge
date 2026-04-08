@@ -85,10 +85,7 @@ export type ForgeHookName = keyof (ForgeSimpleHookSignatures &
   ForgeMutatingHookSignatures);
 export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
-  ...args: [
-    ...ForgeSimpleHookSignatures[Hook],
-    task: ForgeListrTask<never> | null,
-  ]
+  ...args: ForgeSimpleHookSignatures[Hook]
 ) => Promise<Listr | void>;
 export type ForgeMutatingHookFn<
   Hook extends keyof ForgeMutatingHookSignatures,

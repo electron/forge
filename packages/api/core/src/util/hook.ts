@@ -26,7 +26,6 @@ export const runHook = async <Hook extends keyof ForgeSimpleHookSignatures>(
       await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(
         forgeConfig,
         ...hookArgs,
-        null,
       );
     }
   }
@@ -55,11 +54,10 @@ export const getHookListrTasks = async <
             category: '@electron-forge/hooks',
             extraDetails: { hook: hookName },
           },
-          async (_childTrace, _ctx, task) => {
+          async () => {
             await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(
               forgeConfig,
               ...hookArgs,
-              task,
             );
           },
         ),

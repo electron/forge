@@ -45,16 +45,25 @@ export default abstract class Plugin<C> implements IForgePlugin {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
+ * Wraps a hook function to receive the Listr2 task object as the first argument,
+ * enabling `task.output` and `task.title` updates from within the hook. Also sets
+ * a custom display name for the task in the Listr2 renderer.
  *
- * This is a filthy hack around TypeScript to allow internal hooks in our
- * internal plugins to have some level of access to the "Task" that Listr2 runs.
- * Specifically the ability to set a custom task name and receive the task
+ * @example
+ * ```ts
+ * import { createHookWithTask } from '@electron-forge/plugin-base';
  *
- * This method is not type-safe internally, but is type-safe for consumers.
- *
- * @internal
+ * export default {
+ *   hooks: {
+ *     prePackage: createHookWithTask(async (task, config, platform, arch) => {
+ *       task.title = 'Preparing native modules';
+ *       task.output = 'Compiling...';
+ *     }, 'Custom prePackage step'),
+ *   },
+ * };
+ * ```
  */
-export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
+export const createHookWithTask = <Hook extends ForgeHookName>(
   hookFn: <Ctx = never>(
     task: ForgeListrTask<Ctx> | null,
     ...args: Parameters<ForgeHookFn<Hook>>

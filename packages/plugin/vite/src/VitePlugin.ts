@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
-import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { createHookWithTask, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
@@ -140,7 +140,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   getHooks = (): ForgeMultiHookMap => {
     return {
       preStart: [
-        namedHookWithTaskFn<'preStart'>(async (task) => {
+        createHookWithTask<'preStart'>(async (task) => {
           if (VitePlugin.alreadyStarted) return;
           VitePlugin.alreadyStarted = true;
 
@@ -182,7 +182,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
         }, 'Preparing Vite bundles'),
       ],
       prePackage: [
-        namedHookWithTaskFn<'prePackage'>(async (task) => {
+        createHookWithTask<'prePackage'>(async (task) => {
           this.isProd = true;
           await fs.remove(this.baseDir);
 

@@ -1,11 +1,7 @@
 import { ForgeHookFn, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
-import {
-  getHookListrTasks,
-  runHook,
-  runMutatingHook,
-} from '../../../src/util/hook.js';
+import { runHook, runMutatingHook } from '../../../src/util/hook.js';
 
 const fakeConfig = {
   pluginInterface: {
@@ -38,46 +34,6 @@ describe('runHook', () => {
     fn.mockResolvedValue('beep-boop');
     await runHook({ hooks: { preMake: fn }, ...fakeConfig }, 'preMake');
     expect(fn).toHaveBeenCalledOnce();
-  });
-
-  it('should pass null as the task parameter when running outside listr', async () => {
-    const fn = vi.fn().mockResolvedValue(undefined);
-    await runHook({ hooks: { preMake: fn }, ...fakeConfig }, 'preMake');
-    expect(fn).toHaveBeenCalledWith(expect.anything(), null);
-  });
-});
-
-describe('getHookListrTasks', () => {
-  // A minimal mock of childTrace that preserves the (childTrace, ctx, task) => ... calling convention
-  const fakeChildTrace: any = (_opts: any, fn: any) => {
-    return (...args: any[]) => fn(fakeChildTrace, ...args);
-  };
-
-  it('should pass the listr task to the hook function', async () => {
-    const fn = vi.fn().mockResolvedValue(undefined);
-    const config = {
-      ...fakeConfig,
-      hooks: { generateAssets: fn },
-      pluginInterface: {
-        ...fakeConfig.pluginInterface,
-        getHookListrTasks: vi.fn().mockResolvedValue([]),
-      },
-    } as unknown as ResolvedForgeConfig;
-
-    const tasks = await getHookListrTasks(
-      fakeChildTrace,
-      config,
-      'generateAssets',
-      'darwin',
-      'x64',
-    );
-
-    expect(tasks).toHaveLength(1);
-
-    const fakeTask = { output: '' };
-    await (tasks[0].task as any)({}, fakeTask);
-
-    expect(fn).toHaveBeenCalledWith(config, 'darwin', 'x64', fakeTask);
   });
 });
 

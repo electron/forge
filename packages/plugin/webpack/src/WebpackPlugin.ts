@@ -7,7 +7,7 @@ import {
   getElectronVersion,
   listrCompatibleRebuildHook,
 } from '@electron-forge/core-utils';
-import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { createHookWithTask, PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeArch,
   ForgeMultiHookMap,
@@ -195,7 +195,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   getHooks(): ForgeMultiHookMap {
     return {
       preStart: [
-        namedHookWithTaskFn<'preStart'>(async (task) => {
+        createHookWithTask<'preStart'>(async (task) => {
           if (this.alreadyStarted) return;
           this.alreadyStarted = true;
 
@@ -230,7 +230,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         }, 'Preparing webpack bundles'),
       ],
       prePackage: [
-        namedHookWithTaskFn<'prePackage'>(
+        createHookWithTask<'prePackage'>(
           async (task, config, platform, arch) => {
             if (!task) {
               throw new Error(

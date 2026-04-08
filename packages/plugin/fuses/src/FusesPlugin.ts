@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { flipFuses, FuseConfig } from '@electron/fuses';
-import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
+import { createHookWithTask, PluginBase } from '@electron-forge/plugin-base';
 import { ForgeMultiHookMap, ForgePlatform } from '@electron-forge/shared-types';
 
 import { getElectronExecutablePath } from './util/getElectronExecutablePath.js';
@@ -19,7 +19,7 @@ export default class FusesPlugin extends PluginBase<FuseConfig> {
 
   getHooks(): ForgeMultiHookMap {
     return {
-      packageAfterCopy: namedHookWithTaskFn<'packageAfterCopy'>(
+      packageAfterCopy: createHookWithTask<'packageAfterCopy'>(
         async (
           listrTask,
           resolvedForgeConfig,
