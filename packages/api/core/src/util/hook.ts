@@ -46,21 +46,29 @@ export const getHookListrTasks = async <
     d(`hook triggered: ${hookName}`);
     if (typeof hooks[hookName] === 'function') {
       d('calling hook:', hookName, 'with args:', hookArgs);
+      const hook = hooks[hookName] as ForgeSimpleHookFn<Hook>;
+      const hasName = !!(hook as any).__hookName;
       tasks.push({
-        title: `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
+        title:
+          (hook as any).__hookName ||
+          `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
         task: childTrace(
           {
             name: 'forge-config-hook',
             category: '@electron-forge/hooks',
             extraDetails: { hook: hookName },
           },
-          async () => {
-            await (hooks[hookName] as ForgeSimpleHookFn<Hook>)(
-              forgeConfig,
-              ...hookArgs,
-            );
+          async (_, __, task) => {
+            if (hasName) {
+              await hook.call(task, forgeConfig, ...hookArgs);
+            } else {
+              await hook(forgeConfig, ...hookArgs);
+            }
           },
         ),
+        rendererOptions: hasName
+          ? { bottomBar: Infinity, persistentOutput: true }
+          : {},
       });
     }
   }
