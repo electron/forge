@@ -106,9 +106,9 @@ function stopVerdaccio(): void {
 async function publishPackages(): Promise<void> {
   console.log('📦 Publishing monorepo packages to Verdaccio registry...');
 
-  try {
-    await spawnPromise(
-      `yarn`,
+  return new Promise<void>((resolve, reject) => {
+    const child: ChildProcess = spawn(
+      'yarn',
       [
         'lerna',
         'publish',
@@ -122,18 +122,35 @@ async function publishPackages(): Promise<void> {
       ],
       {
         cwd: FORGE_ROOT_DIR,
-        stdio: 'inherit',
+        stdio: 'pipe',
       },
     );
-    console.log('✅ All packages published to Verdaccio registry');
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error('❌ Failed to publish packages:', errorMessage);
-    throw error;
-  }
+
+    let stderr = '';
+
+    child.stdout?.pipe(process.stdout);
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString();
+      process.stderr.write(data);
+    });
+
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(
+          new Error(
+            `Failed to publish packages (exit code ${code})\n${stderr}`,
+          ),
+        );
+      } else {
+        console.log('✅ All packages published to Verdaccio registry');
+        resolve();
+      }
+    });
+  });
 }
 
-async function runCommand(args: string[]) {
+async function runCommand(args: string[]): Promise<void> {
   process.env.COREPACK_ENABLE_STRICT = '0';
   console.log('🗑️  Pruning pnpm store before running command');
   await spawnPromise('pnpm', ['store', 'prune']);
@@ -147,26 +164,49 @@ async function runCommand(args: string[]) {
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
-  await spawnPromise(args[0], args.slice(1), {
-    cwd: FORGE_ROOT_DIR,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      // https://docs.npmjs.com/cli/v9/using-npm/config#registry
-      // https://pnpm.io/settings#registry
-      NPM_CONFIG_REGISTRY: VERDACCIO_URL,
-      // https://yarnpkg.com/configuration/yarnrc#npmRegistryServer
-      YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
-      // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
-      YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
-      // Isolate package manager caches so Verdaccio packages
-      // don't corrupt the global caches. These directories live
-      // under STORAGE_PATH and get cleaned up on next run.
-      // https://yarnpkg.com/configuration/yarnrc#globalFolder
-      YARN_GLOBAL_FOLDER: tempYarnGlobal,
-      // https://yarnpkg.com/configuration/yarnrc#enableGlobalCache
-      YARN_ENABLE_GLOBAL_CACHE: 'false',
-    },
+  return new Promise<void>((resolve, reject) => {
+    const child: ChildProcess = spawn(args[0], args.slice(1), {
+      cwd: FORGE_ROOT_DIR,
+      stdio: 'pipe',
+      env: {
+        ...process.env,
+        // https://docs.npmjs.com/cli/v9/using-npm/config#registry
+        // https://pnpm.io/settings#registry
+        NPM_CONFIG_REGISTRY: VERDACCIO_URL,
+        // https://yarnpkg.com/configuration/yarnrc#npmRegistryServer
+        YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
+        // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
+        YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
+        // Isolate package manager caches so Verdaccio packages
+        // don't corrupt the global caches. These directories live
+        // under STORAGE_PATH and get cleaned up on next run.
+        // https://yarnpkg.com/configuration/yarnrc#globalFolder
+        YARN_GLOBAL_FOLDER: tempYarnGlobal,
+        // https://yarnpkg.com/configuration/yarnrc#enableGlobalCache
+        YARN_ENABLE_GLOBAL_CACHE: 'false',
+      },
+    });
+
+    let stderr = '';
+
+    child.stdout?.pipe(process.stdout);
+    child.stderr?.on('data', (data: Buffer) => {
+      stderr += data.toString();
+      process.stderr.write(data);
+    });
+
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(
+          new Error(
+            `Command "${args.join(' ')}" exited with code ${code}\n${stderr}`,
+          ),
+        );
+      } else {
+        resolve();
+      }
+    });
   });
 }
 
