@@ -9,7 +9,7 @@
   "exports": "./dist/MakerRpm.js",
   "typings": "dist/MakerRpm.d.ts",
   "devDependencies": {
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"

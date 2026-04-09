@@ -22,7 +22,7 @@
     "@electron-forge/test-utils": "workspace:*",
     "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

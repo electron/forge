@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "files": [
     "dist",
