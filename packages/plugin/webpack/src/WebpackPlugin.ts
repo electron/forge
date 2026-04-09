@@ -20,7 +20,7 @@ import debug from 'debug';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
-import * as webpack from 'webpack';
+import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -145,7 +145,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     rendererOptions: WebpackPluginRendererConfig | null,
   ): Promise<webpack.MultiStats | undefined> =>
     new Promise((resolve, reject) => {
-      webpack.webpack(options).run(async (err, stats) => {
+      webpack(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
             const name = rendererOptions.entryPoints[index].name;
@@ -639,7 +639,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
 
     const mainConfig = await this.configGenerator.getMainConfig();
     await new Promise((resolve, reject) => {
-      const compiler = webpack.webpack(mainConfig);
+      const compiler = webpack(mainConfig);
       const [onceResolve, onceReject] = once(resolve, reject);
       const cb: WebpackWatchHandler = async (err, stats) => {
         if (tab && stats) {
@@ -741,7 +741,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       entryConfig.stats = 'none';
     }
 
-    const compiler = webpack.webpack(configs);
+    const compiler = webpack(configs);
 
     const promises = preloadPlugins.map((preloadPlugin) => {
       return new Promise((resolve, reject) => {

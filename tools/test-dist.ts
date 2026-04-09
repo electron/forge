@@ -1,10 +1,15 @@
 import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
+
+// Packages whose entry points have top-level side effects (CLI scripts)
+// that cannot be safely imported in a test context.
+const SKIP_IMPORT = new Set(['create-electron-app']);
 
 (async () => {
   const dirsToCheck: string[] = [];
@@ -46,6 +51,17 @@ const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
         chalk.red(`Main entry not found (${main})`),
       );
       bad = true;
+    } else if (!SKIP_IMPORT.has(pj.name)) {
+      try {
+        await import(pathToFileURL(path.resolve(dir, main)).href);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error(
+          `${chalk.cyan(`[${pj.name}]`)}:`,
+          chalk.red(`Failed to import main entry (${main}): ${message}`),
+        );
+        bad = true;
+      }
     }
     if (!typings || !(await fs.pathExists(path.resolve(dir, typings)))) {
       console.error(
