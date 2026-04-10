@@ -390,4 +390,24 @@ describe('renderConfigTemplate', () => {
       },
     });
   });
+
+  it('should interpolate <%= %> placeholders from the template object', () => {
+    const config = {
+      productName: '<%= name %>-<%= version %>',
+      copyright: 'Copyright <%= year %>',
+      nested: { value: '<%= author.name %>' },
+      untouched: 'plain string',
+    };
+    renderConfigTemplate(
+      '.',
+      { name: 'app', version: '1.0.0', year: 2024, author: { name: 'me' } },
+      config,
+    );
+    expect(config).toEqual({
+      productName: 'app-1.0.0',
+      copyright: 'Copyright 2024',
+      nested: { value: 'me' },
+      untouched: 'plain string',
+    });
+  });
 });

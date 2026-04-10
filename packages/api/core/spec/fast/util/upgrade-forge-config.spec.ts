@@ -5,7 +5,6 @@ import {
   IForgeResolvableMaker,
   IForgeResolvablePublisher,
 } from '@electron-forge/shared-types';
-import { merge } from 'lodash';
 import { describe, expect, it } from 'vitest';
 
 import upgradeForgeConfig, {
@@ -123,7 +122,7 @@ describe('upgradeForgeConfig', () => {
 });
 
 describe('updateUpgradedForgeDevDeps', () => {
-  const skeletonPackageJSON = {
+  const skeletonPackageJSON = () => ({
     config: {
       forge: {
         packagerConfig: {},
@@ -139,10 +138,10 @@ describe('updateUpgradedForgeDevDeps', () => {
       } as ForgeConfig,
     },
     devDependencies: {},
-  };
+  });
 
   it('removes unused makers from devDependencies', () => {
-    const packageJSON = merge({}, skeletonPackageJSON);
+    const packageJSON = skeletonPackageJSON();
     const devDeps = updateUpgradedForgeDevDeps(packageJSON, [
       '@electron-forge/maker-squirrel',
     ]);
@@ -150,7 +149,7 @@ describe('updateUpgradedForgeDevDeps', () => {
   });
 
   it('adds makers to devDependencies', () => {
-    const packageJSON = merge({}, skeletonPackageJSON);
+    const packageJSON = skeletonPackageJSON();
     packageJSON.config.forge.makers = [
       {
         name: '@electron-forge/maker-zip',
@@ -174,7 +173,7 @@ describe('updateUpgradedForgeDevDeps', () => {
   });
 
   it('adds publishers to devDependencies', () => {
-    const packageJSON = merge({}, skeletonPackageJSON);
+    const packageJSON = skeletonPackageJSON();
     packageJSON.config.forge.publishers = [
       { name: '@electron-forge/publisher-github' },
       { name: '@electron-forge/publisher-snapcraft' },

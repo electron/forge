@@ -15,7 +15,6 @@ import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
-import { merge } from 'lodash';
 
 import {
   DepType,
@@ -345,15 +344,7 @@ export default autoTrace(
                         d(
                           'detected existing Forge config in package.json, merging with base template Forge config',
                         );
-                        // eslint-disable-next-line @typescript-eslint/no-require-imports
-                        const templateConfig = require(
-                          path.resolve(
-                            baseTemplate.templateDir,
-                            'forge.config.js',
-                          ),
-                        );
                         packageJSON = await readRawPackageJson(dir);
-                        merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
                         await writeChanges();
                         // otherwise, write to forge.config.js
                       } else {
