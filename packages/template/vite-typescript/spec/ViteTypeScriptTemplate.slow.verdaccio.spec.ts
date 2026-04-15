@@ -67,6 +67,16 @@ describe('ViteTypeScriptTemplate', () => {
       const packageJSON = JSON.parse(packageJSONString);
       expect(packageJSON).toHaveProperty('private', true);
     });
+
+    it('should contain electron-forge scripts in package.json', async () => {
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
+      );
+      expect(packageJSON.scripts.start).toBe('electron-forge start');
+      expect(packageJSON.scripts.package).toBe('electron-forge package');
+      expect(packageJSON.scripts.make).toBe('electron-forge make');
+      expect(packageJSON.scripts.publish).toBe('electron-forge publish');
+    });
   });
 
   describe('lint', () => {
