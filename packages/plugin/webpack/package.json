@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-webpack",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.7",
   "type": "module",
   "description": "Webpack plugin for Electron Forge, lets you use Webpack directly in your tooling",
   "repository": "https://github.com/electron/forge",
@@ -12,7 +12,7 @@
     "@electron/packager": "^19.0.1",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^22.10.7",
-    "vitest": "^4.0.14",
+    "vitest": "catalog:",
     "which": "^2.0.2",
     "xvfb-maybe": "^0.2.1"
   },

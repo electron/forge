@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/core",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.7",
   "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
@@ -22,7 +22,7 @@
     "@electron-forge/test-utils": "workspace:*",
     "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",

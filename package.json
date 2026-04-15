@@ -7,6 +7,11 @@
   "engines": {
     "node": ">= 22.12.0"
   },
+  "resolutions": {
+    "ajv@8.17.1": "^8.18.0",
+    "handlebars@4.7.8": "^4.7.9",
+    "minimatch@7.4.6": "^7.4.8"
+  },
   "scripts": {
     "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\"\"",
     "build": "tsc -b packages && tsx tools/test-dist",
@@ -65,7 +70,7 @@
     "typedoc": "0.25.13",
     "typescript": "5.9.3",
     "verdaccio": "^6.2.4",
-    "vitest": "^4.0.14",
+    "vitest": "catalog:",
     "xvfb-maybe": "^0.2.1"
   },
   "optionalDependencies": {
@@ -103,6 +108,9 @@
     "macos-alias": {
       "built": true
     }
+  },
+  "catalog": {
+    "vitest": "^4.1.2"
   },
   "workspaces": {
     "packages": [

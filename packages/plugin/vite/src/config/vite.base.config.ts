@@ -24,7 +24,7 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
-      watch: command === 'serve' ? {} : null,
+      watch: command === 'serve' ? { exclude: '**/.git/**' } : null,
       minify: command === 'build',
     },
     clearScreen: false,

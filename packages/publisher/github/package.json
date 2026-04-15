@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-github",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.7",
   "type": "module",
   "description": "Github publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherGithub.js",
   "typings": "dist/PublisherGithub.d.ts",
   "devDependencies": {
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"

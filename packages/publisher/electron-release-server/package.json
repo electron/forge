@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/publisher-electron-release-server",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.7",
   "type": "module",
   "description": "Electron release server publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -10,7 +10,7 @@
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
     "msw": "^2.7.0",
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"
