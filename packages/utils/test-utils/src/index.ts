@@ -85,3 +85,5 @@ export async function updatePackageJSON(
   );
   return packageJSON;
 }
+
+export * from './template-tests.js';
