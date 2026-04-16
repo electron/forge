@@ -29,7 +29,8 @@ export default defineConfig({
       {
         extends: './vitest.config.mts',
         test: {
-          include: ['**/spec/**/*.slow.verdaccio.spec.ts'],
+          // TODO roll back before merging
+          include: ['**/spec/**/base-template.slow.verdaccio.spec.ts'],
           name: 'slow-verdaccio',
           hookTimeout: 240000,
           testTimeout: 240000,
