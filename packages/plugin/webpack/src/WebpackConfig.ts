@@ -24,6 +24,7 @@ import {
   isPreloadOnly,
   isPreloadOnlyEntries,
 } from './util/rendererTypeUtils.js';
+import { pathToFileURL } from 'node:url';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
@@ -97,9 +98,9 @@ export default class WebpackConfigGenerator {
 
     let rawConfig =
       typeof config === 'string'
-        ? ((await import(path.resolve(this.projectDir, config))) as MaybeESM<
-            webpack.Configuration | ConfigurationFactory
-          >)
+        ? ((await import(
+            pathToFileURL(path.resolve(this.projectDir, config)).toString()
+          )) as MaybeESM<webpack.Configuration | ConfigurationFactory>)
         : config;
 
     if (rawConfig && typeof rawConfig === 'object' && 'default' in rawConfig) {

@@ -18,6 +18,7 @@ import { merge } from 'lodash-es';
 
 import { initGit } from './init-scripts/init-git.js';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm.js';
+import { pathToFileURL } from 'node:url';
 
 const d = debug('electron-forge:import');
 
@@ -316,7 +317,12 @@ export const forgeImport = async ({
                       'detected existing Forge config in package.json, merging with base template Forge config',
                     );
                     const templateConfig = await import(
-                      path.resolve(baseTemplate.templateDir, 'forge.config.js')
+                      pathToFileURL(
+                        path.resolve(
+                          baseTemplate.templateDir,
+                          'forge.config.js',
+                        ),
+                      ).toString()
                     );
                     packageJSON = await readRawPackageJson(dir);
                     merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object

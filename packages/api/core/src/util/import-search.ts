@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
+import { pathToFileURL } from 'node:url';
 
 const d = debug('electron-forge:import-search');
 
@@ -50,7 +51,7 @@ async function importSearchRaw<T>(
         moduleName,
       );
       d('testing local forge build', { moduleType, moduleName, localPath });
-      return await import(localPath);
+      return await import(pathToFileURL(localPath).toString());
     } catch {
       // Ignore
     }
