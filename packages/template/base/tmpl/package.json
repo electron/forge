@@ -1,5 +1,6 @@
 {
   "name": "",
+  "productName": "",
   "version": "1.0.0",
   "private": true,
   "description": "My Electron application description",
@@ -11,7 +12,6 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "productName": ""
+    "publish": "electron-forge publish"
   }
 }
