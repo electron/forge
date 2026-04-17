@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -62,7 +62,7 @@ describe('base template', () => {
     },
   );
 
-  afterAll(async () => {
+  afterEach(async () => {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   });
 });
