@@ -1,7 +1,8 @@
 {
   "main": ".webpack/main",
   "scripts": {
-    "lint": "oxlint && oxfmt --check .",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
