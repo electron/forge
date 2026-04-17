@@ -18,7 +18,7 @@ describe('base template', () => {
   });
 
   // TODO use hardcoded value for each template test
-  const templateName = 'base';
+  const templateName: TestForgeTemplateOptions['templateName'] = 'base';
 
   /**
    * Note: `testForgeTemplate` currently attempts to make some changes to

@@ -179,33 +179,33 @@ export async function testForgeTemplate({
     ['run', 'start'],
     {
       cwd: tmpDir,
-      ...(packageManager !== 'yarn' && {
-        env: {
-          ...(process.platform === 'linux' && {
-            DISPLAY: process.env.DISPLAY,
-            XAUTHORITY: process.env.XAUTHORITY,
-          }),
-          PATH: process.env.PATH,
+      env: {
+        PATH: process.env.PATH,
+        ...(process.platform === 'linux' && {
+          DISPLAY: process.env.DISPLAY,
+          XAUTHORITY: process.env.XAUTHORITY,
+        }),
+        ...(packageManager !== 'yarn' && {
           /**
            * HACK: when running the test script with Yarn on a npm/pnpm project
            * created by `create-electron-app`, `process.env.npm_config_user_agent`
            * can be something like `yarn/4.10.3 npm/? node/v24.14.1 win32 x64`,
            * and Forge's `checkPackageManager` function takes this value to mean
-           * that the project _also_ uses Yarn, so `electron-forge start` ends up
-           * failing because there's no `yarn.lock` ([relevant code](https://github.com/electron/forge/blob/001f41befe2c049b6f54ce7d6c55e83435141055/packages/api/cli/src/util/check-system.ts#L108-L135)).
+           * that the project _also_ uses Yarn, so `electron-forge start` ends
+           * up failing because there's no `yarn.lock` ([relevant code](https://github.com/electron/forge/blob/001f41befe2c049b6f54ce7d6c55e83435141055/packages/api/cli/src/util/check-system.ts#L108-L135)).
            *
            * Removing the `yarn/4.10.3` user agent causes Forge to correctly
            * identify the project's package manager, but since the version
            * information can be missing for npm in `npm/?`, it fails semver
-           * validation and Forge treats it like an unsupported npm version, so we
-           * also have to spoof a supported npm version number to work around that
-           * behavior.
+           * validation and Forge treats it like an unsupported npm version, so
+           * we also have to spoof a supported npm version number to work around
+           * that behavior.
            */
           npm_config_user_agent: process.env
             .npm_config_user_agent!.replace(/^yarn\/\d+\.\d+\.\d+ /i, '')
             .replace(/\bnpm\/\?/, 'npm/10.0.0'),
-        },
-      }),
+        }),
+      },
     },
   );
 
