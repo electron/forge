@@ -38,8 +38,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
-          // Copy eslint config with recommended settings
-          await this.copyTemplateFile(directory, '.eslintrc.json');
+          await this.writeLintConfig(directory);
 
           // Remove index.js and replace with main.ts
           await fs.remove(filePath('index.js'));
@@ -67,12 +66,20 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.join(directory, 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               if (line.includes('</body>'))
                 return '    <script type="module" src="/src/renderer.ts"></script>\n  </body>';
               return line;
             },
           );
+
+          // update package.json
+          const packageJSONPath = path.resolve(directory, 'package.json');
+          const packageJSON = await fs.readJson(packageJSONPath);
+          packageJSON.main = '.vite/build/main.js';
+          await fs.writeJson(packageJSONPath, packageJSON, {
+            spaces: 2,
+          });
         },
       },
     ];

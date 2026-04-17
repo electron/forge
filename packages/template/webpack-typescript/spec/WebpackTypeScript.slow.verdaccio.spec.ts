@@ -18,9 +18,6 @@ describe('WebpackTypeScriptTemplate', () => {
 
   beforeAll(async () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
-  });
-
-  it('should succeed in initializing the typescript template', async () => {
     await init({
       dir,
       template: path.join(import.meta.dirname, '..'),
@@ -32,7 +29,7 @@ describe('WebpackTypeScriptTemplate', () => {
   describe('template files are copied to project', () => {
     it.each([
       'tsconfig.json',
-      '.eslintrc.json',
+      '.oxlintrc.json',
       'forge.config.ts',
       'webpack.main.config.ts',
       'webpack.renderer.config.ts',

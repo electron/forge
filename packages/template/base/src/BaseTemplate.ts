@@ -123,6 +123,17 @@ export class BaseTemplate implements ForgeTemplate {
     await fs.copy(source, target);
   }
 
+  async writeLintConfig(directory: string): Promise<void> {
+    await this.copyTemplateFile(directory, '.oxlintrc.json');
+    const oxfmtrc = await fs.readJson(
+      path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
+    );
+    delete oxfmtrc.ignorePatterns;
+    await fs.writeJson(path.resolve(directory, '.oxfmtrc.json'), oxfmtrc, {
+      spaces: 2,
+    });
+  }
+
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
     await this.copy(
       path.join(this.templateDir, basename),
@@ -178,12 +189,13 @@ export class BaseTemplate implements ForgeTemplate {
 
   async updateFileByLine(
     inputPath: string,
-    lineHandler: (line: string) => string,
+    lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
+      .filter((line): line is string => line !== null)
       .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {

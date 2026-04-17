@@ -29,6 +29,8 @@ class ViteTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'vite.main.config.mjs');
           await this.copyTemplateFile(directory, 'vite.preload.config.mjs');
           await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
+
+          await this.writeLintConfig(directory);
           await this.copyTemplateFile(
             path.join(directory, 'src'),
             'renderer.js',
@@ -63,7 +65,7 @@ class ViteTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.join(directory, 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               if (line.includes('</body>'))
                 return '    <script type="module" src="/src/renderer.js"></script>\n  </body>';
               return line;

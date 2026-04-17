@@ -1,10 +1,16 @@
 {
   "main": ".webpack/main",
+  "scripts": {
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write"
+  },
   "devDependencies": {
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "node-loader": "^2.0.0",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.0.0",
     "style-loader": "^3.0.0"
   }
 }
