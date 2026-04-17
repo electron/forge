@@ -178,6 +178,10 @@ export async function testForgeTemplate({
     cwd: tmpDir,
     ...(packageManager !== 'yarn' && {
       env: {
+        ...(process.platform === 'linux' && {
+          DISPLAY: process.env.DISPLAY,
+          XAUTHORITY: process.env.XAUTHORITY,
+        }),
         PATH: process.env.PATH,
         /**
          * HACK: when running the test script with Yarn on a npm/pnpm project
