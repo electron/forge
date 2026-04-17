@@ -81,9 +81,9 @@ describe('ViteConfigGenerator', () => {
       'electron/renderer',
     ]);
     expect(buildConfig.build?.rollupOptions?.input).toEqual('src/preload.js');
+    expect(buildConfig.build?.codeSplitting).toBe(false);
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
-      inlineDynamicImports: true,
       entryFileNames: '[name].js',
       chunkFileNames: '[name].js',
       assetFileNames: '[name].[ext]',

@@ -14,14 +14,14 @@ export function getConfig(
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
+      // Preload scripts require a single entrypoint.
+      codeSplitting: false,
       rollupOptions: {
         external: [...external, 'electron/renderer'],
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry,
         output: {
           format: 'cjs',
-          // It should not be split chunks.
-          inlineDynamicImports: true,
           entryFileNames: '[name].js',
           chunkFileNames: '[name].js',
           assetFileNames: '[name].[ext]',
