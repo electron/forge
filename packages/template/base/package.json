@@ -21,6 +21,7 @@
     "username": "^5.1.0"
   },
   "devDependencies": {
+    "@electron-forge/test-utils": "workspace:*",
     "vitest": "catalog:"
   },
   "publishConfig": {
