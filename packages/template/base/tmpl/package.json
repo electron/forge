@@ -11,7 +11,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish"
-  },
-  "productName": ""
+    "publish": "electron-forge publish",
+    "productName": ""
+  }
 }

@@ -38,8 +38,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
-          // Copy oxc.rs config with recommended settings
-          await this.copyTemplateFile(directory, '.oxlintrc.json');
+          await this.writeLintConfig(directory);
 
           // Remove index.js and replace with main.ts
           await fs.remove(filePath('index.js'));

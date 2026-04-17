@@ -1,7 +1,13 @@
 {
   "main": ".vite/build/main.js",
+  "scripts": {
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write"
+  },
   "devDependencies": {
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
+    "oxfmt": "^0.41.0",
+    "oxlint": "^1.0.0",
     "vite": "^8.0.0"
   }
 }

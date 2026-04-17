@@ -28,6 +28,8 @@ class WebpackTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'webpack.main.config.js');
           await this.copyTemplateFile(directory, 'webpack.renderer.config.js');
           await this.copyTemplateFile(directory, 'webpack.rules.js');
+
+          await this.writeLintConfig(directory);
           await this.copyTemplateFile(
             path.join(directory, 'src'),
             'renderer.js',
