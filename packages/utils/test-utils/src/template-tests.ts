@@ -151,18 +151,27 @@ export async function testForgeTemplate({
   //  Non-TypeScript templates are left untouched since they'd also need
   //  `forge.config.js` to be converted to ESM.
   if (moduleFormat === 'es' && templateName.endsWith('-typescript')) {
-    const mainProcessEntrypointContent = await fs.promises.readFile(
+    let mainProcessEntrypointContent = await fs.promises.readFile(
       mainProcessEntrypoint,
       { encoding: 'utf-8' },
     );
 
-    mainProcessEntrypointContent
-      .replaceAll(/preload\.c?js/g, 'preload.js')
-      .replaceAll('__dirname', 'import.meta.dirname');
+    const importElectronSquirrelStartup = `import started from 'electron-squirrel-startup';`;
 
     await fs.promises.writeFile(
       mainProcessEntrypoint,
-      mainProcessEntrypointContent,
+      mainProcessEntrypointContent
+        .replaceAll(/preload\.c?js/g, 'preload.js')
+        .replaceAll('__dirname', 'import.meta.dirname')
+        .replace(
+          importElectronSquirrelStartup,
+          [
+            '\n',
+            `import { createRequire } from 'node:module';`,
+            `const require = createRequire(import.meta.url);`,
+            `const started = require('electron-squirrel-startup')`,
+          ].join('\n'),
+        ),
     );
 
     await updatePackageJSON(tmpDir, async (packageJSON) => {
