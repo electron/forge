@@ -178,6 +178,7 @@ export async function testForgeTemplate({
     cwd: tmpDir,
     ...(packageManager !== 'yarn' && {
       env: {
+        PATH: process.env.PATH,
         /**
          * HACK: when running the test script with Yarn on a npm/pnpm project
          * created by `create-electron-app`, `process.env.npm_config_user_agent`
