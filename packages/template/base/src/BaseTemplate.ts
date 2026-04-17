@@ -156,10 +156,11 @@ export class BaseTemplate implements ForgeTemplate {
       );
       if (fs.existsSync(templatePackageJSONPath)) {
         const templatePackageJSON = await fs.readJson(templatePackageJSONPath);
-        const { dependencies, devDependencies, ...rest } = templatePackageJSON;
+        const { dependencies, devDependencies, scripts, ...rest } =
+          templatePackageJSON;
         Object.assign(packageJSON, rest);
-        if (rest.scripts) {
-          packageJSON.scripts = { ...packageJSON.scripts, ...rest.scripts };
+        if (scripts) {
+          packageJSON.scripts = { ...packageJSON.scripts, ...scripts };
         }
       }
     }
