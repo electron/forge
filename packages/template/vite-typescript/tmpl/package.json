@@ -1,5 +1,5 @@
 {
-  "main": ".vite/build/main.js",
+  "main": ".vite/build/main.cjs",
   "scripts": {
     "lint": "eslint --ext .ts,.tsx .",
     "typecheck": "tsc --noEmit"

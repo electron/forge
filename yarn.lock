@@ -9845,8 +9845,8 @@ __metadata:
   linkType: hard
 
 "got@npm:^11.7.0, got@npm:^11.8.5":
-  version: 11.8.5
-  resolution: "got@npm:11.8.5"
+  version: 11.8.6
+  resolution: "got@npm:11.8.6"
   dependencies:
     "@sindresorhus/is": "npm:^4.0.0"
     "@szmarczak/http-timer": "npm:^4.0.5"
@@ -9859,13 +9859,13 @@ __metadata:
     lowercase-keys: "npm:^2.0.0"
     p-cancelable: "npm:^2.0.0"
     responselike: "npm:^2.0.0"
-  checksum: 10c0/14d160a21d085b0fca1c794ae17411d6abe05491a1db37b97e8218bf434d086eea335cadc022964f1896a60ac036db6af0debad94d3747f85503bc7d21bf0fa0
+  checksum: 10c0/754dd44877e5cf6183f1e989ff01c648d9a4719e357457bd4c78943911168881f1cfb7b2cb15d885e2105b3ad313adb8f017a67265dd7ade771afdb261ee8cb1
   languageName: node
   linkType: hard
 
 "got@npm:^14.4.5":
-  version: 14.6.4
-  resolution: "got@npm:14.6.4"
+  version: 14.6.6
+  resolution: "got@npm:14.6.6"
   dependencies:
     "@sindresorhus/is": "npm:^7.0.1"
     byte-counter: "npm:^0.1.0"
@@ -9879,7 +9879,7 @@ __metadata:
     p-cancelable: "npm:^4.0.1"
     responselike: "npm:^4.0.2"
     type-fest: "npm:^4.26.1"
-  checksum: 10c0/ee8980feb842db876cffa42fa27da6d90cc1a9cfe2a38942f4b319cbb37c000e34919a7e5dea017a0fa53b0535c02d00426abbbf528d6a4e89c6eb07b2bde977
+  checksum: 10c0/dab4dbd35deac5634450cd745187ba68cfb9fd8d9236bec4861b633c7dc54f6383fde04cf504b16148625c307a229ff8cccf35d6622824ab13243c9d0af0fcc1
   languageName: node
   linkType: hard
 

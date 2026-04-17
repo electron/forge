@@ -27,7 +27,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'outputFormat'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -222,6 +222,19 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
+    if (this.config.outputFormat === 'es') {
+      const pj = await fs.readJson(
+        path.resolve(this.projectDir, 'package.json'),
+      );
+      if (pj.type !== 'module' && !pj.main?.endsWith('.mjs')) {
+        throw new Error(
+          `The Vite plugin is configured with outputFormat: "es", but your package.json does not have "type": "module" ` +
+            `and the main entry point does not use an .mjs extension. Electron requires one of these for ESM support in the main process. ` +
+            `See https://www.electronjs.org/docs/latest/tutorial/esm for more details.`,
+        );
+      }
+    }
+
     forgeConfig.packagerConfig ??= {};
 
     if (forgeConfig.packagerConfig.ignore) {
@@ -259,6 +272,15 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
 
+    const expectedExt = this.config.outputFormat === 'es' ? '.mjs' : '.cjs';
+    if (!pj.main?.endsWith(expectedExt)) {
+      throw new Error(
+        `The Vite plugin is configured with outputFormat: "${this.config.outputFormat ?? 'cjs'}", ` +
+          `but your package.json "main" entry is ${JSON.stringify(pj.main)} which does not use the expected ` +
+          `"${expectedExt}" extension. Update your "main" field to match the output format.`,
+      );
+    }
+
     if (pj.config) {
       delete pj.config.forge;
     }
@@ -275,11 +297,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'outputFormat'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      outputFormat: this.config.outputFormat ?? 'cjs',
     };
   }
 

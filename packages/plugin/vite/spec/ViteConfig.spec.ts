@@ -37,7 +37,7 @@ describe('ViteConfigGenerator', () => {
     expect(
       buildConfig.build?.lib &&
         (buildConfig.build.lib.fileName as () => string)(),
-    ).toEqual('[name].js');
+    ).toEqual('[name].cjs');
     expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
       'cjs',
     ]);
@@ -54,6 +54,30 @@ describe('ViteConfigGenerator', () => {
       conditions: ['node'],
       mainFields: ['module', 'jsnext:main', 'jsnext'],
     });
+  });
+
+  it('getBuildConfigs:main with type module', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+      outputFormat: 'es',
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
+      'es',
+    ]);
+    expect(
+      buildConfig.build?.lib &&
+        (buildConfig.build.lib.fileName as () => string)(),
+    ).toEqual('[name].mjs');
   });
 
   it('getBuildConfigs:preload', async () => {
@@ -84,14 +108,38 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
       inlineDynamicImports: true,
-      entryFileNames: '[name].js',
-      chunkFileNames: '[name].js',
+      entryFileNames: '[name].cjs',
+      chunkFileNames: '[name].cjs',
       assetFileNames: '[name].[ext]',
     });
     expect(buildConfig.clearScreen).toBe(false);
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
     ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+  });
+
+  it('getBuildConfigs:preload with type module', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+      outputFormat: 'es',
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.rollupOptions?.output).toEqual({
+      format: 'es',
+      inlineDynamicImports: true,
+      entryFileNames: '[name].mjs',
+      chunkFileNames: '[name].mjs',
+      assetFileNames: '[name].[ext]',
+    });
   });
 
   it('getRendererConfig:renderer', async () => {
