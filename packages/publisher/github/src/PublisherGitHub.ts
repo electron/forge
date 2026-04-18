@@ -26,7 +26,7 @@ interface GitHubRelease {
   upload_url: string;
 }
 
-export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
+export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
   async publish({
@@ -195,4 +195,4 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
   }
 }
 
-export { PublisherGithub, PublisherGitHubConfig };
+export { PublisherGitHub, PublisherGitHubConfig };

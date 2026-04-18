@@ -2,12 +2,12 @@
   "name": "@electron-forge/publisher-github",
   "version": "8.0.0-alpha.7",
   "type": "module",
-  "description": "Github publisher for Electron Forge",
+  "description": "GitHub publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "exports": "./dist/PublisherGithub.js",
-  "typings": "dist/PublisherGithub.d.ts",
+  "exports": "./dist/PublisherGitHub.js",
+  "typings": "dist/PublisherGitHub.d.ts",
   "devDependencies": {
     "vitest": "catalog:"
   },
