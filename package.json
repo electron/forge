@@ -68,7 +68,7 @@
     "ref-napi": "^3.0.3",
     "tsx": "^4.21.0",
     "typedoc": "0.25.13",
-    "typescript": "5.9.3",
+    "typescript": "^6.0.2",
     "verdaccio": "^6.2.4",
     "vitest": "catalog:",
     "xvfb-maybe": "^0.2.1"
