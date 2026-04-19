@@ -35,7 +35,6 @@
     "@electron/packager": "^19.0.1",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
-    "fast-glob": "^3.2.7",
     "filenamify": "^4.1.0",
     "fs-extra": "^10.0.0",
     "jiti": "^2.4.2",

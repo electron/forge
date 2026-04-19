@@ -7,7 +7,6 @@ import {
   spawnPackageManager,
 } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
-import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
@@ -52,7 +51,9 @@ describe('ViteTypeScriptTemplate', () => {
     });
 
     it('should ensure js source files from base template are removed', async () => {
-      const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+      const jsFiles = await Array.fromAsync(
+        fs.promises.glob(path.join(dir, 'src', '**', '*.js')),
+      );
       expect(jsFiles.length).toEqual(0);
     });
 

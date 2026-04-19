@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { glob } from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
 import { pipeline } from 'stream/promises';
@@ -17,7 +18,6 @@ import {
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import chalk from 'chalk';
 import debug from 'debug';
-import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
 import webpack from 'webpack';
@@ -276,12 +276,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                         const mapping: Record<string, string[]> =
                           Object.create(null);
 
-                        const webpackNodeFiles = await glob('**/*.node', {
-                          cwd: firstArchDir,
-                        });
-                        const nodeModulesNodeFiles = await glob('**/*.node', {
-                          cwd: nodeModulesDir,
-                        });
+                        const webpackNodeFiles = await Array.fromAsync(
+                          glob('**/*.node', { cwd: firstArchDir }),
+                        );
+                        const nodeModulesNodeFiles = await Array.fromAsync(
+                          glob('**/*.node', { cwd: nodeModulesDir }),
+                        );
                         const hashToNodeModules: Record<string, string[]> =
                           Object.create(null);
 
@@ -390,12 +390,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                           );
                                         }
 
-                                        const nodeModulesNodeFiles = await glob(
-                                          '**/*.node',
-                                          {
-                                            cwd: nodeModulesDir,
-                                          },
-                                        );
+                                        const nodeModulesNodeFiles =
+                                          await Array.fromAsync(
+                                            glob('**/*.node', {
+                                              cwd: nodeModulesDir,
+                                            }),
+                                          );
                                         const nodeModuleToHash: Record<
                                           string,
                                           string
