@@ -1,3 +1,4 @@
+import { glob } from 'node:fs/promises';
 import path from 'node:path';
 
 import { getHostArch } from '@electron/get';
@@ -25,7 +26,6 @@ import {
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
-import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 
@@ -272,9 +272,11 @@ export const listrPackage = (
                 signalDone(signalCopyDone, { platform, arch });
               },
               async ({ buildPath }) => {
-                const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
-                for (const bin of bins) {
-                  await fs.remove(bin);
+                const bins = glob('**/node_modules/.bin/**/*', {
+                  cwd: buildPath,
+                });
+                for await (const bin of bins) {
+                  await fs.remove(path.join(buildPath, bin));
                 }
               },
               async ({ buildPath, electronVersion, platform, arch }) => {
