@@ -58,12 +58,15 @@ if (!watch) {
     clearScreen: false,
   });
 } else {
+  // Matches the format of the default Vite logger
   const timeFormatter = new Intl.DateTimeFormat(undefined, {
     hour: 'numeric',
     minute: 'numeric',
     second: 'numeric',
   });
 
+  // Rollup's `input` can be a string, an array of strings, or an object.
+  // https://rollupjs.org/configuration-options/#input
   const input =
     resolved.build?.rollupOptions?.input ??
     (typeof resolved.build?.lib !== 'boolean'
@@ -85,10 +88,14 @@ if (!watch) {
   };
 
   const result = await build({
+    // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
     configFile: false,
+    // We suppress Vite output and instead log lines using RollupWatcher events
     logLevel: 'silent',
     ...resolved,
     plugins: [
+      // `buildEnd` and `closeBundle` are Rollup output generation hooks.
+      // https://rollupjs.org/plugin-development/#output-generation-hooks
       {
         name: '@electron-forge/plugin-vite:build-done',
         buildEnd(err) {
@@ -119,6 +126,7 @@ if (!watch) {
     typeof x.close === 'function';
 
   if (isRollupWatcher(result)) {
+    // The Rollup watcher emits events for subsequent builds.
     result.on('event', (event) => {
       if (event.code === 'ERROR' && resolved.logLevel !== 'silent') {
         console.error(
