@@ -26,7 +26,6 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
     dir,
     makeDir,
     targetArch,
-    targetPlatform,
     packageJSON,
     appName,
   }: MakerOptions): Promise<string[]> {
@@ -57,7 +56,7 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
         makeDir,
         'msix',
         targetArch,
-        `${appName}-${packageJSON.version}-${targetPlatform}-${targetArch}.msix`,
+        `${path.basename(dir)}-${packageJSON.version}.msix`,
       );
       await fs.mkdirp(path.dirname(outputPath));
       await fs.move(result.msixPackage, outputPath);
