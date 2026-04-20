@@ -106,21 +106,15 @@ export function testForgeTemplate({
           throw new Error(`unknown template ${templateName}`);
         }
 
-        await spawn(
-          'node',
-          [
-            path.resolve(
-              __dirname,
-              '../../../external/create-electron-app/dist/create-electron-app.js',
-            ),
-            tmpDir,
-            `--template=${templateName}`,
-            `--package-manager=${packageManager}`,
-          ],
-          {
-            stdio: 'inherit',
-          },
-        );
+        await spawn('node', [
+          path.resolve(
+            __dirname,
+            '../../../external/create-electron-app/dist/create-electron-app.js',
+          ),
+          tmpDir,
+          `--template=${templateName}`,
+          `--package-manager=${packageManager}`,
+        ]);
 
         d('tmpdir: ', pathToFileURL(tmpDir).toString());
 
