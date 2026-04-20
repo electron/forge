@@ -1,6 +1,6 @@
+import { glob } from 'node:fs/promises';
 import * as path from 'node:path';
 
-import glob from 'fast-glob';
 import * as fs from 'fs-extra';
 
 import { getPackageInfo } from './utils';
@@ -50,7 +50,7 @@ async function normalizeLinks(
 
     // Rewrite assets path to allow better cross-dep caching
     // otherwise each module will have it's own unique JS file :(
-    for (const htmlFile of await glob(path.resolve(docPath, '**', '*.html'))) {
+    for await (const htmlFile of glob(path.resolve(docPath, '**', '*.html'))) {
       await fs.writeFile(htmlFile, await normalizeLinks(htmlFile, subPath));
     }
   }
