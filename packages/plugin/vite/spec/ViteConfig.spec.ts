@@ -83,7 +83,7 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.rollupOptions?.input).toEqual('src/preload.js');
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
-      inlineDynamicImports: true,
+      codeSplitting: false,
       entryFileNames: '[name].js',
       chunkFileNames: '[name].js',
       assetFileNames: '[name].[ext]',
