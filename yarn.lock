@@ -1233,6 +1233,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-vite@workspace:packages/template/vite"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
@@ -1246,6 +1247,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-webpack@workspace:packages/template/webpack"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
