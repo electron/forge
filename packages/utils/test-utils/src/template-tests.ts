@@ -164,9 +164,12 @@ export function testForgeTemplate({
           preloadPath,
           [
             '\n',
-            moduleFormat === 'es'
-              ? `import { ipcRenderer } from 'electron';`
-              : `const { ipcRenderer } = require('electron');`,
+
+            // Renderer processes are sandboxed by default and therefore can't
+            // run ESM preloads per [the docs](https://github.com/electron/electron/blob/61e815c28ab46eb594b7e4cb2b3256bece81ad2f/docs/tutorial/esm.md?plain=1#L144-L148),
+            // so we always use CommonJS for the injected preload code
+            // regardless of the `moduleFormat` option.
+            `const { ipcRenderer } = require('electron');`,
 
             // If the preload file loads correctly, it will send this message to
             // the main process, which will in turn log it. Once the app exits
