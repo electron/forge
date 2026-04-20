@@ -3,7 +3,6 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 import debug from 'debug';
-import { updatePackageJSON } from './index.js';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import os from 'node:os';
 
@@ -203,43 +202,6 @@ export function testForgeTemplate({
         `,
           ].join('\n'),
         );
-
-        // TODO decide if we want to keep this or remove it in favor of manually
-        //  updating any files that need to change when moving a project to ESM.
-        //  Non-TypeScript templates are left untouched since they'd also need
-        //  `forge.config.js` to be converted to ESM.
-        if (moduleFormat === 'es' && templateName.endsWith('-typescript')) {
-          let mainProcessEntrypointContent = await fs.promises.readFile(
-            mainProcessEntrypoint,
-            { encoding: 'utf-8' },
-          );
-
-          const importElectronSquirrelStartup = `import started from 'electron-squirrel-startup';`;
-
-          await fs.promises.writeFile(
-            mainProcessEntrypoint,
-            mainProcessEntrypointContent
-              .replaceAll(/preload\.c?js/g, 'preload.js')
-              .replaceAll('__dirname', 'import.meta.dirname')
-              .replace(
-                importElectronSquirrelStartup,
-                [
-                  '\n',
-                  `import { createRequire } from 'node:module';`,
-                  `const require = createRequire(import.meta.url);`,
-                  `const started = require('electron-squirrel-startup')`,
-                ].join('\n'),
-              ),
-          );
-
-          await updatePackageJSON(tmpDir, async (packageJSON) => {
-            packageJSON.type = 'module';
-
-            (packageJSON.main as string).replace(/\.c?js/, '.js');
-
-            return packageJSON;
-          });
-        }
 
         const electronForgeStartOutput = await spawn(
           packageManager,
