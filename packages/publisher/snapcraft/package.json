@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherSnapcraft.js",
   "typings": "dist/PublisherSnapcraft.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",

@@ -13,7 +13,7 @@
     "fs-extra": "^10.0.0"
   },
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "publishConfig": {
     "access": "public"
