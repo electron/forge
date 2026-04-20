@@ -20,6 +20,9 @@ const currentForgeVersion = fs.readJSONSync(
 
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
+const oxfmtConfig = fs.readJSONSync(
+  path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
+);
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
@@ -127,13 +130,12 @@ export class BaseTemplate implements ForgeTemplate {
 
   async writeLintConfig(directory: string): Promise<void> {
     await this.copyTemplateFile(directory, '.oxlintrc.json');
-    const oxfmtrc = await fs.readJson(
-      path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
+    const { ignorePatterns: _, ...projectConfig } = oxfmtConfig;
+    await fs.writeJson(
+      path.resolve(directory, '.oxfmtrc.json'),
+      projectConfig,
+      { spaces: 2 },
     );
-    delete oxfmtrc.ignorePatterns;
-    await fs.writeJson(path.resolve(directory, '.oxfmtrc.json'), oxfmtrc, {
-      spaces: 2,
-    });
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
@@ -192,7 +194,7 @@ export class BaseTemplate implements ForgeTemplate {
   async stripAndRename(srcPath: string, destPath: string): Promise<void> {
     const source = await fs.readFile(srcPath, 'utf8');
     const stripped = stripTypeScriptTypes(source, { mode: 'transform' });
-    const formatted = await format(destPath, stripped);
+    const formatted = await format(destPath, stripped, oxfmtConfig);
     await fs.writeFile(destPath, formatted.code);
     if (srcPath !== destPath) {
       await fs.remove(srcPath);
