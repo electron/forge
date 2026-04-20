@@ -1,3 +1,4 @@
+import { stripTypeScriptTypes } from 'node:module';
 import path from 'node:path';
 
 import { resolvePackageManager } from '@electron-forge/core-utils';
@@ -8,6 +9,7 @@ import {
 } from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import { format } from 'oxfmt';
 import semver from 'semver';
 
 import determineAuthor from './determine-author.js';
@@ -185,6 +187,16 @@ export class BaseTemplate implements ForgeTemplate {
     await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
       spaces: 2,
     });
+  }
+
+  async stripAndRename(srcPath: string, destPath: string): Promise<void> {
+    const source = await fs.readFile(srcPath, 'utf8');
+    const stripped = stripTypeScriptTypes(source, { mode: 'transform' });
+    const formatted = await format(destPath, stripped);
+    await fs.writeFile(destPath, formatted.code);
+    if (srcPath !== destPath) {
+      await fs.remove(srcPath);
+    }
   }
 
   async updateFileByLine(
