@@ -927,6 +927,7 @@ __metadata:
   dependencies:
     "@electron-forge/maker-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
+    "@electron/notarize": "npm:^3.1.0"
     "@electron/osx-sign": "npm:^2.3.0"
     vitest: "catalog:"
   languageName: unknown
