@@ -103,6 +103,12 @@ export async function init({
 }: InitOptions): Promise<void> {
   d(`Initializing in: ${dir}`);
 
+  if (typescript && template === 'base') {
+    throw new Error(
+      'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+    );
+  }
+
   const runner = new Listr<{
     templateModule: ForgeTemplate;
     pm: PMDetails;

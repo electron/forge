@@ -73,7 +73,7 @@ class ViteTemplate extends BaseTemplate {
         },
       },
       {
-        title: `Setting up ${typescript ? 'TypeScript' : 'Vite'} configuration`,
+        title: `Setting up ${typescript ? 'TypeScript and Vite' : 'Vite'} configuration`,
         task: async () => {
           // Copy Vite config files
           if (typescript) {
