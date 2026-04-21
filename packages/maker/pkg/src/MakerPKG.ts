@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { notarize } from '@electron/notarize';
 import { flat } from '@electron/osx-sign';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
@@ -22,6 +23,7 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
     packageJSON,
     targetPlatform,
     targetArch,
+    forgeConfig,
   }: MakerOptions): Promise<string[]> {
     if (!this.isValidTargetPlatform(targetPlatform)) {
       throw new Error(
@@ -42,6 +44,13 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
       platform: targetPlatform,
     };
     await flat(pkgConfig);
+
+    if (this.config.identity && forgeConfig.packagerConfig.osxNotarize) {
+      await notarize({
+        ...forgeConfig.packagerConfig.osxNotarize,
+        appPath: outPath,
+      });
+    }
 
     return [outPath];
   }
