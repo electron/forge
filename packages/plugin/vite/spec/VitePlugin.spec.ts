@@ -145,48 +145,15 @@ describe('VitePlugin', async () => {
         );
       });
 
-      it('allows externalized modules through the ignore function', async () => {
+      it('blocks unknown modules through the ignore function', async () => {
         plugin = new VitePlugin(baseConfig);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        // Simulate what scanExternalModules does
-        // Access the private set via the public scanExternalModules method indirectly
-        // by writing a fixture and scanning it (tested separately below).
-        // Here we verify the ignore function blocks unknown modules:
         expect(ignore('/node_modules/unknown-pkg')).toEqual(true);
         expect(ignore('/node_modules/unknown-pkg/index.js')).toEqual(true);
-      });
-
-      it('allows scoped packages in node_modules when externalized', async () => {
-        plugin = new VitePlugin(baseConfig);
-        const scanDir = await fs.promises.mkdtemp(path.join(tmp, 'vite-scan-'));
-        plugin.setDirectories(scanDir);
-
-        const buildDir = path.join(scanDir, '.vite', 'build');
-        await fs.promises.mkdir(buildDir, { recursive: true });
-        await fs.promises.writeFile(
-          path.join(buildDir, 'main.js'),
-          'const x = require("@serialport/bindings-cpp");',
-          'utf-8',
-        );
-
-        await plugin.scanExternalModules();
-        const config = await plugin.resolveForgeConfig(
-          {} as ResolvedForgeConfig,
-        );
-        const ignore = config.packagerConfig.ignore as IgnoreFunction;
-
-        expect(
-          ignore(
-            '/node_modules/@serialport/bindings-cpp/build/Release/bindings.node',
-          ),
-        ).toEqual(false);
-        expect(ignore('/node_modules/@serialport/other-pkg')).toEqual(true);
-
-        await fs.promises.rm(scanDir, { recursive: true });
       });
 
       it('ignores source map files by default', async () => {
@@ -264,148 +231,6 @@ describe('VitePlugin', async () => {
           ),
         ).toEqual(false);
       });
-    });
-  });
-
-  describe('getPackageNameFromRequire', () => {
-    it('extracts simple package names', () => {
-      expect(VitePlugin.getPackageNameFromRequire('better-sqlite3')).toEqual(
-        'better-sqlite3',
-      );
-      expect(VitePlugin.getPackageNameFromRequire('mssql')).toEqual('mssql');
-    });
-
-    it('extracts scoped package names', () => {
-      expect(
-        VitePlugin.getPackageNameFromRequire('@serialport/bindings-cpp'),
-      ).toEqual('@serialport/bindings-cpp');
-      expect(
-        VitePlugin.getPackageNameFromRequire('@electron/rebuild/lib/something'),
-      ).toEqual('@electron/rebuild');
-    });
-
-    it('extracts package name from deep imports', () => {
-      expect(
-        VitePlugin.getPackageNameFromRequire('better-sqlite3/lib/binding'),
-      ).toEqual('better-sqlite3');
-    });
-
-    it('returns null for relative paths', () => {
-      expect(VitePlugin.getPackageNameFromRequire('./foo')).toBeNull();
-      expect(VitePlugin.getPackageNameFromRequire('../bar')).toBeNull();
-      expect(VitePlugin.getPackageNameFromRequire('/absolute/path')).toBeNull();
-    });
-
-    it('returns null for Node.js builtins', () => {
-      expect(VitePlugin.getPackageNameFromRequire('fs')).toBeNull();
-      expect(VitePlugin.getPackageNameFromRequire('path')).toBeNull();
-      expect(VitePlugin.getPackageNameFromRequire('node:crypto')).toBeNull();
-    });
-
-    it('returns null for electron', () => {
-      expect(VitePlugin.getPackageNameFromRequire('electron')).toBeNull();
-      expect(VitePlugin.getPackageNameFromRequire('electron/main')).toBeNull();
-      expect(
-        VitePlugin.getPackageNameFromRequire('electron/renderer'),
-      ).toBeNull();
-      expect(
-        VitePlugin.getPackageNameFromRequire('electron/common'),
-      ).toBeNull();
-    });
-
-    it('returns null for incomplete scoped packages', () => {
-      expect(VitePlugin.getPackageNameFromRequire('@scope')).toBeNull();
-    });
-  });
-
-  describe('scanExternalModules', () => {
-    let scanDir: string;
-    let plugin: VitePlugin;
-
-    beforeAll(async () => {
-      scanDir = await fs.promises.mkdtemp(path.join(tmp, 'vite-scan-ext-'));
-      plugin = new VitePlugin(baseConfig);
-      plugin.setDirectories(scanDir);
-    });
-
-    it('finds externalized require calls in built output', async () => {
-      const buildDir = path.join(scanDir, '.vite', 'build');
-      await fs.promises.mkdir(buildDir, { recursive: true });
-      await fs.promises.writeFile(
-        path.join(buildDir, 'main.js'),
-        [
-          'const sqlite = require("better-sqlite3");',
-          'const fs = require("node:fs");',
-          'const path = require("path");',
-          'const electron = require("electron");',
-          'const serial = require("@serialport/bindings-cpp");',
-          'const local = require("./local");',
-          'const mssql = require("mssql");',
-          'const backtick = require(`backtick-pkg`);',
-        ].join('\n'),
-        'utf-8',
-      );
-
-      await plugin.scanExternalModules();
-      const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
-      const ignore = config.packagerConfig.ignore as IgnoreFunction;
-
-      // These should be included
-      expect(ignore('/node_modules/better-sqlite3')).toEqual(false);
-      expect(
-        ignore(
-          '/node_modules/better-sqlite3/build/Release/better_sqlite3.node',
-        ),
-      ).toEqual(false);
-      expect(ignore('/node_modules/@serialport/bindings-cpp')).toEqual(false);
-      expect(ignore('/node_modules/mssql')).toEqual(false);
-      expect(ignore('/node_modules/backtick-pkg')).toEqual(false);
-
-      // These should still be excluded
-      expect(ignore('/node_modules/typescript')).toEqual(true);
-      expect(ignore('/node_modules/vite')).toEqual(true);
-    });
-
-    it('handles missing build directory gracefully', async () => {
-      const emptyDir = await fs.promises.mkdtemp(path.join(tmp, 'vite-empty-'));
-      const emptyPlugin = new VitePlugin(baseConfig);
-      emptyPlugin.setDirectories(emptyDir);
-
-      await emptyPlugin.scanExternalModules();
-      const config = await emptyPlugin.resolveForgeConfig(
-        {} as ResolvedForgeConfig,
-      );
-      const ignore = config.packagerConfig.ignore as IgnoreFunction;
-
-      expect(ignore('/node_modules/anything')).toEqual(true);
-
-      await fs.promises.rm(emptyDir, { recursive: true });
-    });
-
-    it('only scans .js files', async () => {
-      const buildDir = path.join(scanDir, '.vite', 'build');
-      await fs.promises.writeFile(
-        path.join(buildDir, 'main.js.map'),
-        '{"sources": ["require(\\"should-not-match\\")"]}',
-        'utf-8',
-      );
-
-      const freshPlugin = new VitePlugin(baseConfig);
-      freshPlugin.setDirectories(scanDir);
-      await freshPlugin.scanExternalModules();
-      const config = await freshPlugin.resolveForgeConfig(
-        {} as ResolvedForgeConfig,
-      );
-      const ignore = config.packagerConfig.ignore as IgnoreFunction;
-
-      // should-not-match must not be included (came from a .map file)
-      expect(ignore('/node_modules/should-not-match')).toEqual(true);
-      // but better-sqlite3 from main.js should still be found
-      expect(ignore('/node_modules/better-sqlite3')).toEqual(false);
-    });
-
-    afterAll(async () => {
-      await fs.promises.rm(scanDir, { recursive: true });
     });
   });
 });

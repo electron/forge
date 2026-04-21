@@ -1,4 +1,3 @@
-import { builtinModules } from 'node:module';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
@@ -10,6 +9,10 @@ import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
+import {
+  detectNativePackages,
+  walkTransitiveDependencies,
+} from './detect-native-modules.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
 import type { VitePluginConfig } from './Config.js';
@@ -277,9 +280,13 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                 },
               },
               {
-                title: 'Scanning for externalized dependencies...',
+                title: 'Detecting native dependencies...',
                 task: async (_ctx, subtask) => {
-                  await this.scanExternalModules();
+                  const nativePackages = detectNativePackages(this.projectDir);
+                  this.externalModules = walkTransitiveDependencies(
+                    this.projectDir,
+                    nativePackages,
+                  );
                   if (this.externalModules.size > 0) {
                     subtask.title = `Detected externalized dependencies: ${[...this.externalModules].join(', ')}`;
                   } else {
@@ -366,82 +373,6 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       spaces: 2,
     });
   };
-
-  private static readonly IGNORED_EXTERNALS = new Set([
-    'electron',
-    'electron/main',
-    'electron/renderer',
-    'electron/common',
-    ...builtinModules,
-    ...builtinModules.map((m) => `node:${m}`),
-  ]);
-
-  private static readonly REQUIRE_PATTERN =
-    /require\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g;
-
-  static getPackageNameFromRequire(specifier: string): string | null {
-    if (
-      specifier.startsWith('.') ||
-      specifier.startsWith('/') ||
-      VitePlugin.IGNORED_EXTERNALS.has(specifier)
-    ) {
-      return null;
-    }
-
-    const segments = specifier.split('/');
-    if (segments[0].startsWith('@')) {
-      return segments.length >= 2 ? `${segments[0]}/${segments[1]}` : null;
-    }
-    return segments[0];
-  }
-
-  async scanExternalModules(): Promise<void> {
-    this.externalModules.clear();
-
-    const buildDir = path.join(this.baseDir, 'build');
-    if (!(await fs.pathExists(buildDir))) return;
-
-    const files = await fs.readdir(buildDir);
-    for (const file of files) {
-      if (!file.endsWith('.js')) continue;
-      const content = await fs.readFile(path.join(buildDir, file), 'utf-8');
-
-      let match;
-      while ((match = VitePlugin.REQUIRE_PATTERN.exec(content)) !== null) {
-        const name = VitePlugin.getPackageNameFromRequire(match[1]);
-        if (name) {
-          this.externalModules.add(name);
-        }
-      }
-    }
-
-    // Walk transitive production dependencies so flat node_modules layouts work
-    const visited = new Set<string>();
-    const queue = [...this.externalModules];
-    while (queue.length > 0) {
-      const pkg = queue.pop()!;
-      if (visited.has(pkg)) continue;
-      visited.add(pkg);
-
-      const pkgJsonPath = path.join(
-        this.projectDir,
-        'node_modules',
-        pkg,
-        'package.json',
-      );
-      if (!(await fs.pathExists(pkgJsonPath))) continue;
-
-      const pkgJson = await fs.readJson(pkgJsonPath);
-      for (const dep of Object.keys(pkgJson.dependencies ?? {})) {
-        this.externalModules.add(dep);
-        if (!visited.has(dep)) {
-          queue.push(dep);
-        }
-      }
-    }
-
-    d('externalized modules:', [...this.externalModules]);
-  }
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.

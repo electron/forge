@@ -11,31 +11,33 @@ const NATIVE_DEPENDENCY_MARKERS = [
   'prebuild-install',
 ];
 
+function readJsonSafe(filePath: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
 export function isNativePackage(pkgDir: string): boolean {
   if (fs.existsSync(path.join(pkgDir, 'binding.gyp'))) return true;
 
   if (fs.existsSync(path.join(pkgDir, 'prebuilds'))) return true;
 
-  const buildRelease = path.join(pkgDir, 'build', 'Release');
-  if (fs.existsSync(buildRelease)) {
-    try {
-      const files = fs.readdirSync(buildRelease);
-      if (files.some((f) => f.endsWith('.node'))) return true;
-    } catch {
-      /* ignore read errors */
-    }
+  try {
+    const files = fs.readdirSync(path.join(pkgDir, 'build', 'Release'));
+    if (files.some((f) => f.endsWith('.node'))) return true;
+  } catch {
+    // Directory doesn't exist or isn't readable
   }
 
-  const pkgJsonPath = path.join(pkgDir, 'package.json');
-  if (fs.existsSync(pkgJsonPath)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
-      const deps = Object.keys(pkg.dependencies ?? {});
-      if (deps.some((dep) => NATIVE_DEPENDENCY_MARKERS.includes(dep))) {
-        return true;
-      }
-    } catch {
-      /* ignore parse errors */
+  const pkg = readJsonSafe(path.join(pkgDir, 'package.json'));
+  if (pkg) {
+    const deps = Object.keys(
+      (pkg.dependencies as Record<string, string>) ?? {},
+    );
+    if (deps.some((dep) => NATIVE_DEPENDENCY_MARKERS.includes(dep))) {
+      return true;
     }
   }
 
@@ -81,4 +83,32 @@ export function detectNativePackages(projectDir: string): string[] {
 
   d('detected native packages:', results);
   return results;
+}
+
+export function walkTransitiveDependencies(
+  projectDir: string,
+  packages: string[],
+): Set<string> {
+  const all = new Set(packages);
+  const queue = [...packages];
+
+  while (queue.length > 0) {
+    const pkg = queue.pop()!;
+    const pkgJson = readJsonSafe(
+      path.join(projectDir, 'node_modules', pkg, 'package.json'),
+    );
+    if (!pkgJson) continue;
+
+    for (const dep of Object.keys(
+      (pkgJson.dependencies as Record<string, string>) ?? {},
+    )) {
+      if (!all.has(dep)) {
+        all.add(dep);
+        queue.push(dep);
+      }
+    }
+  }
+
+  d('native packages with transitive deps:', [...all]);
+  return all;
 }

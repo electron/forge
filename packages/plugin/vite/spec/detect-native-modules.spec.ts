@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   detectNativePackages,
   isNativePackage,
+  walkTransitiveDependencies,
 } from '../src/detect-native-modules';
 
 describe('detect-native-modules', () => {
@@ -187,6 +188,108 @@ describe('detect-native-modules', () => {
       const result = detectNativePackages(path.join(testDir, 'no-project'));
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('walkTransitiveDependencies', () => {
+    let projectDir: string;
+
+    beforeAll(async () => {
+      projectDir = path.join(testDir, 'transitive-project');
+      const nm = path.join(projectDir, 'node_modules');
+
+      // Native package with a production dependency
+      const nativePkg = path.join(nm, 'better-sqlite3');
+      await fs.promises.mkdir(nativePkg, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(nativePkg, 'package.json'),
+        JSON.stringify({
+          name: 'better-sqlite3',
+          dependencies: { bindings: '^1.5.0', 'prebuild-install': '^7.0.0' },
+        }),
+        'utf-8',
+      );
+
+      // Transitive dep with its own dependency
+      const bindingsPkg = path.join(nm, 'bindings');
+      await fs.promises.mkdir(bindingsPkg, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(bindingsPkg, 'package.json'),
+        JSON.stringify({
+          name: 'bindings',
+          dependencies: { 'file-uri-to-path': '^1.0.0' },
+        }),
+        'utf-8',
+      );
+
+      // Leaf dep (no further dependencies)
+      const leafPkg = path.join(nm, 'file-uri-to-path');
+      await fs.promises.mkdir(leafPkg, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(leafPkg, 'package.json'),
+        JSON.stringify({ name: 'file-uri-to-path' }),
+        'utf-8',
+      );
+
+      // prebuild-install (no package.json to test missing gracefully)
+      await fs.promises.mkdir(path.join(nm, 'prebuild-install'), {
+        recursive: true,
+      });
+    });
+
+    it('walks transitive production dependencies', () => {
+      const result = walkTransitiveDependencies(projectDir, ['better-sqlite3']);
+
+      expect(result).toContain('better-sqlite3');
+      expect(result).toContain('bindings');
+      expect(result).toContain('file-uri-to-path');
+      expect(result).toContain('prebuild-install');
+    });
+
+    it('handles missing packages gracefully', () => {
+      const result = walkTransitiveDependencies(projectDir, [
+        'nonexistent-pkg',
+      ]);
+
+      expect(result).toEqual(new Set(['nonexistent-pkg']));
+    });
+
+    it('handles circular dependencies', async () => {
+      const nm = path.join(projectDir, 'node_modules');
+
+      const circA = path.join(nm, 'circ-a');
+      await fs.promises.mkdir(circA, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(circA, 'package.json'),
+        JSON.stringify({
+          name: 'circ-a',
+          dependencies: { 'circ-b': '^1.0.0' },
+        }),
+        'utf-8',
+      );
+
+      const circB = path.join(nm, 'circ-b');
+      await fs.promises.mkdir(circB, { recursive: true });
+      await fs.promises.writeFile(
+        path.join(circB, 'package.json'),
+        JSON.stringify({
+          name: 'circ-b',
+          dependencies: { 'circ-a': '^1.0.0' },
+        }),
+        'utf-8',
+      );
+
+      const result = walkTransitiveDependencies(projectDir, ['circ-a']);
+
+      expect(result).toContain('circ-a');
+      expect(result).toContain('circ-b');
+      expect(result.size).toEqual(2);
+    });
+
+    it('returns empty set for empty input', () => {
+      const result = walkTransitiveDependencies(projectDir, []);
+
+      expect(result.size).toEqual(0);
     });
   });
 });
