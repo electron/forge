@@ -19,6 +19,10 @@ describe('VitePlugin', async () => {
   const tmpdir = path.join(tmp, 'electron-forge-test-');
   const viteTestDir = await fs.promises.mkdtemp(tmpdir);
 
+  afterAll(async () => {
+    await fs.promises.rm(viteTestDir, { recursive: true });
+  });
+
   describe('packageAfterCopy', () => {
     const packageJSONPath = path.join(viteTestDir, 'package.json');
     const packagedPath = path.join(viteTestDir, 'packaged');
@@ -88,10 +92,6 @@ describe('VitePlugin', async () => {
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(viteTestDir, { recursive: true });
-    });
   });
 
   describe('resolveForgeConfig', () => {
@@ -99,6 +99,7 @@ describe('VitePlugin', async () => {
 
     beforeAll(() => {
       plugin = new VitePlugin(baseConfig);
+      plugin.setDirectories(viteTestDir);
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
@@ -133,6 +134,7 @@ describe('VitePlugin', async () => {
       it('ignores source map files by default', async () => {
         const viteConfig = { ...baseConfig };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -171,6 +173,7 @@ describe('VitePlugin', async () => {
       it('includes source map files when specified by config', async () => {
         const viteConfig = { ...baseConfig, packageSourceMaps: true };
         plugin = new VitePlugin(viteConfig);
+        plugin.setDirectories(viteTestDir);
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -204,6 +207,17 @@ describe('VitePlugin', async () => {
             ),
           ),
         ).toEqual(false);
+      });
+
+      it('includes /node_modules directory', async () => {
+        plugin = new VitePlugin(baseConfig);
+        plugin.setDirectories(viteTestDir);
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/node_modules')).toEqual(false);
       });
     });
   });
