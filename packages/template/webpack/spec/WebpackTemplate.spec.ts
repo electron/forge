@@ -35,9 +35,9 @@ describe('WebpackTemplate', () => {
       const expectedFiles = [
         'package.json',
         'forge.config.mjs',
-        'webpack.main.config.js',
-        'webpack.renderer.config.js',
-        'webpack.rules.js',
+        'webpack.main.config.mjs',
+        'webpack.renderer.config.mjs',
+        'webpack.rules.mjs',
         path.join('src', 'main.js'),
         path.join('src', 'renderer.js'),
         path.join('src', 'preload.js'),
@@ -82,9 +82,9 @@ describe('WebpackTemplate', () => {
       expect(mainFile).not.toMatch(/\bdeclare\s+const\b/);
     });
 
-    it('should not include ts-loader rule in webpack.rules.js', async () => {
+    it('should not include ts-loader rule in webpack.rules.mjs', async () => {
       const rules = (
-        await fs.promises.readFile(path.join(dir, 'webpack.rules.js'))
+        await fs.promises.readFile(path.join(dir, 'webpack.rules.mjs'))
       ).toString();
       expect(rules).not.toMatch(/ts-loader/);
       expect(rules).not.toMatch(/\.tsx\?\$/);
@@ -92,8 +92,8 @@ describe('WebpackTemplate', () => {
 
     it('should not include plugins or resolve.extensions in webpack configs', async () => {
       for (const name of [
-        'webpack.main.config.js',
-        'webpack.renderer.config.js',
+        'webpack.main.config.mjs',
+        'webpack.renderer.config.mjs',
       ]) {
         const config = (
           await fs.promises.readFile(path.join(dir, name))
@@ -108,8 +108,8 @@ describe('WebpackTemplate', () => {
       const config = (
         await fs.promises.readFile(path.join(dir, 'forge.config.mjs'))
       ).toString();
-      expect(config).toMatch(/webpack\.main\.config\.js/);
-      expect(config).toMatch(/webpack\.renderer\.config\.js/);
+      expect(config).toMatch(/webpack\.main\.config\.mjs/);
+      expect(config).toMatch(/webpack\.renderer\.config\.mjs/);
       expect(config).toMatch(/src\/renderer\.js/);
       expect(config).toMatch(/src\/preload\.js/);
     });
@@ -182,8 +182,11 @@ describe('WebpackTemplate', () => {
       const unexpectedFiles = [
         'forge.config.mjs',
         'webpack.main.config.js',
+        'webpack.main.config.mjs',
         'webpack.renderer.config.js',
+        'webpack.renderer.config.mjs',
         'webpack.rules.js',
+        'webpack.rules.mjs',
         'webpack.plugins.js',
         path.join('src', 'main.js'),
         path.join('src', 'renderer.js'),

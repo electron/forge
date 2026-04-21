@@ -1,6 +1,6 @@
-import { rules } from './webpack.rules';
+import { rules } from './webpack.rules.mjs';
 
-export const mainConfig = {
+export default {
   /**
    * This is the main entry point for your application, it's the first file
    * that runs in the main process.

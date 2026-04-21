@@ -130,9 +130,9 @@ describe('WebpackTemplate (JavaScript)', () => {
     it.each([
       '.oxlintrc.json',
       'forge.config.mjs',
-      'webpack.main.config.js',
-      'webpack.renderer.config.js',
-      'webpack.rules.js',
+      'webpack.main.config.mjs',
+      'webpack.renderer.config.mjs',
+      'webpack.rules.mjs',
       path.join('src', 'main.js'),
       path.join('src', 'renderer.js'),
       path.join('src', 'preload.js'),

@@ -63,12 +63,12 @@ class WebpackTemplate extends BaseTemplate {
                 if (line.includes('mainConfig,'))
                   return line.replace(
                     'mainConfig,',
-                    "'./webpack.main.config.js',",
+                    "mainConfig: './webpack.main.config.mjs',",
                   );
                 if (/config:\s*rendererConfig,/.test(line))
                   return line.replace(
                     'rendererConfig,',
-                    "'./webpack.renderer.config.js',",
+                    "'./webpack.renderer.config.mjs',",
                   );
                 return line
                   .replace(/src\/renderer\.ts/g, 'src/renderer.js')
@@ -93,9 +93,9 @@ class WebpackTemplate extends BaseTemplate {
             await this.copyTemplateFile(directory, 'tsconfig.json');
           } else {
             for (const name of [
-              'webpack.main.config.js',
-              'webpack.renderer.config.js',
-              'webpack.rules.js',
+              'webpack.main.config.mjs',
+              'webpack.renderer.config.mjs',
+              'webpack.rules.mjs',
             ]) {
               await this.copy(
                 path.join(this.templateDir, 'js', name),
