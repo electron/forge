@@ -43,10 +43,10 @@ export const listrCompatibleRebuildHook = async <Ctx = never>(
   };
 
   child.stdout?.on('data', (chunk) => {
-    task.output = chunk.toString();
+    task.output = chunk.toString().trim();
   });
   child.stderr?.on('data', (chunk) => {
-    task.output = chunk.toString();
+    task.output = chunk.toString().trim();
   });
 
   child.on(
