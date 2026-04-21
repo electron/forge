@@ -1,3 +1,4 @@
+import { builtinModules } from 'node:module';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
@@ -105,6 +106,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private servers: vite.ViteDevServer[] = [];
 
+  private externalModules = new Set<string>();
+
   // Matches the format of the default Vite logger
   private timeFormatter = new Intl.DateTimeFormat(undefined, {
     hour: 'numeric',
@@ -189,21 +192,42 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           return task?.newListr(
             [
               {
-                title: 'Building main and preload targets...',
+                title: 'Building Vite targets...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.build(subtask);
-                  return results;
+                  return subtask.newListr(
+                    [
+                      {
+                        title: 'Building main and preload targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.build(subtask);
+                          return results;
+                        },
+                      },
+                      {
+                        title: 'Building renderer targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.buildRenderer(subtask);
+                          return results;
+                        },
+                      },
+                    ],
+                    { concurrent: true },
+                  );
                 },
               },
               {
-                title: 'Building renderer targets...',
+                title: 'Scanning for externalized dependencies...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.buildRenderer(subtask);
-                  return results;
+                  await this.scanExternalModules();
+                  if (this.externalModules.size > 0) {
+                    subtask.title = `Detected externalized dependencies: ${[...this.externalModules].join(', ')}`;
+                  } else {
+                    subtask.title = 'No externalized dependencies detected';
+                  }
                 },
               },
             ],
-            { concurrent: true },
+            { concurrent: false },
           );
         }, 'Building production Vite bundles'),
       ],
@@ -241,8 +265,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       // `file` always starts with `/`
       // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      if (file.startsWith('/.vite')) return false;
+      if (file === '/package.json') return false;
+
+      // Include node_modules that were externalized by the Vite build.
+      // The set is populated during prePackage after the Vite build completes.
+      if (file.startsWith('/node_modules')) {
+        if (file === '/node_modules') return false;
+        const bare = file.slice('/node_modules/'.length);
+        const segments = bare.split('/');
+        const name = segments[0].startsWith('@')
+          ? `${segments[0]}/${segments[1]}`
+          : segments[0];
+        return !this.externalModules.has(name);
+      }
+
+      return true;
     };
     return forgeConfig;
   };
@@ -267,6 +305,82 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       spaces: 2,
     });
   };
+
+  private static readonly IGNORED_EXTERNALS = new Set([
+    'electron',
+    'electron/main',
+    'electron/renderer',
+    'electron/common',
+    ...builtinModules,
+    ...builtinModules.map((m) => `node:${m}`),
+  ]);
+
+  private static readonly REQUIRE_PATTERN =
+    /require\s*\(\s*["'`]([^"'`]+)["'`]\s*\)/g;
+
+  static getPackageNameFromRequire(specifier: string): string | null {
+    if (
+      specifier.startsWith('.') ||
+      specifier.startsWith('/') ||
+      VitePlugin.IGNORED_EXTERNALS.has(specifier)
+    ) {
+      return null;
+    }
+
+    const segments = specifier.split('/');
+    if (segments[0].startsWith('@')) {
+      return segments.length >= 2 ? `${segments[0]}/${segments[1]}` : null;
+    }
+    return segments[0];
+  }
+
+  async scanExternalModules(): Promise<void> {
+    this.externalModules.clear();
+
+    const buildDir = path.join(this.baseDir, 'build');
+    if (!(await fs.pathExists(buildDir))) return;
+
+    const files = await fs.readdir(buildDir);
+    for (const file of files) {
+      if (!file.endsWith('.js')) continue;
+      const content = await fs.readFile(path.join(buildDir, file), 'utf-8');
+
+      let match;
+      while ((match = VitePlugin.REQUIRE_PATTERN.exec(content)) !== null) {
+        const name = VitePlugin.getPackageNameFromRequire(match[1]);
+        if (name) {
+          this.externalModules.add(name);
+        }
+      }
+    }
+
+    // Walk transitive production dependencies so flat node_modules layouts work
+    const visited = new Set<string>();
+    const queue = [...this.externalModules];
+    while (queue.length > 0) {
+      const pkg = queue.pop()!;
+      if (visited.has(pkg)) continue;
+      visited.add(pkg);
+
+      const pkgJsonPath = path.join(
+        this.projectDir,
+        'node_modules',
+        pkg,
+        'package.json',
+      );
+      if (!(await fs.pathExists(pkgJsonPath))) continue;
+
+      const pkgJson = await fs.readJson(pkgJsonPath);
+      for (const dep of Object.keys(pkgJson.dependencies ?? {})) {
+        this.externalModules.add(dep);
+        if (!visited.has(dep)) {
+          queue.push(dep);
+        }
+      }
+    }
+
+    d('externalized modules:', [...this.externalModules]);
+  }
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
