@@ -11,7 +11,7 @@ export const external = [
 
 // Used for hot reload after preload scripts.
 const viteDevServers: Record<string, ViteDevServer> = {};
-const viteDevServerUrls: Record<string, string> = {};
+export const viteDevServerUrls: Record<string, string> = {};
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   const { root, mode, command } = env;

@@ -9,6 +9,7 @@ import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
+import { viteDevServerUrls } from './config/vite.base.config.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
 import type { VitePluginConfig } from './Config.js';
@@ -17,6 +18,7 @@ import type {
   ForgeMultiHookMap,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
+import type { ChildProcess } from 'node:child_process';
 import type { AddressInfo } from 'node:net';
 import type { LibraryOptions } from 'vite';
 
@@ -77,6 +79,72 @@ function spawnViteBuild(
   });
 }
 
+function spawnViteBuildWatch(
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  index: number,
+  projectDir: string,
+  devServerUrls: Record<string, string>,
+  onReloadRenderers: () => void,
+): { child: ChildProcess; firstBuild: Promise<void> } {
+  const child = spawn(process.execPath, [subprocessWorkerPath], {
+    cwd: projectDir,
+    env: {
+      ...process.env,
+      FORGE_VITE_PROJECT_DIR: projectDir,
+      FORGE_VITE_KIND: 'build',
+      FORGE_VITE_INDEX: String(index),
+      FORGE_VITE_CONFIG: JSON.stringify(pluginConfig),
+      FORGE_VITE_WATCH: '1',
+      FORGE_VITE_DEV_SERVER_URLS: JSON.stringify(devServerUrls),
+    },
+    stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+  });
+
+  let settled = false;
+  let stderr = '';
+  child.stderr!.setEncoding('utf8');
+  child.stderr!.on('data', (chunk) => {
+    if (!settled) stderr += chunk;
+    process.stderr.write(chunk);
+  });
+  child.stdout!.setEncoding('utf8');
+  child.stdout!.on('data', (chunk) => process.stdout.write(chunk));
+
+  const firstBuild = new Promise<void>((resolve, reject) => {
+    const settle = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      stderr = '';
+      fn();
+    };
+
+    child.on('message', (msg: { type: string; message?: string }) => {
+      if (msg.type === 'first-build-done') {
+        settle(resolve);
+      } else if (msg.type === 'first-build-error') {
+        settle(() => reject(new Error(msg.message)));
+      } else if (msg.type === 'reload-renderers') {
+        onReloadRenderers();
+      }
+    });
+    child.on('error', (err) => settle(() => reject(err)));
+    child.on('close', (code, signal) => {
+      const reason = signal
+        ? `killed by signal ${signal}`
+        : `exited with code ${code}`;
+      settle(() =>
+        reject(
+          new Error(
+            `Vite watch subprocess ${reason} before first build completed${stderr ? `:\n${stderr}` : ''}`,
+          ),
+        ),
+      );
+    });
+  });
+
+  return { child, firstBuild };
+}
+
 function entryToDisplay(entry: LibraryOptions['entry']): string {
   if (typeof entry === 'string') return entry;
   if (Array.isArray(entry)) return entry.join(' ');
@@ -102,18 +170,11 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private configGeneratorCache!: ViteConfigGenerator;
 
-  private watchers: vite.Rollup.RollupWatcher[] = [];
+  private watchChildren: ChildProcess[] = [];
 
   private servers: vite.ViteDevServer[] = [];
 
   private externalModules = new Set<string>();
-
-  // Matches the format of the default Vite logger
-  private timeFormatter = new Intl.DateTimeFormat(undefined, {
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-  });
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -399,10 +460,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   // Main process, Preload scripts and Worker process, etc.
   build = async (task?: ForgeListrTask<null>): Promise<Listr | void> => {
+    const targets = this.config.build
+      .map((spec, index) => ({ spec, index }))
+      .filter(({ spec }) => spec.config);
+
     if (this.isProd) {
-      const targets = this.config.build
-        .map((spec, index) => ({ spec, index }))
-        .filter(({ spec }) => spec.config);
       return task?.newListr(
         targets.map(({ spec, index }) => ({
           title: `Building ${chalk.green(entryToDisplay(spec.entry))}`,
@@ -423,129 +485,28 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       );
     }
 
-    const configs = await this.configGenerator.getBuildConfigs();
-    /**
-     * Checks if the result of the Vite build is a Rollup watcher.
-     * This should happen iff we're running `electron-forge start`.
-     */
-    const isRollupWatcher = (
-      x:
-        | vite.Rollup.RollupWatcher
-        | vite.Rollup.RollupOutput
-        | vite.Rollup.RollupOutput[],
-    ): x is vite.Rollup.RollupWatcher =>
-      x &&
-      typeof x === 'object' &&
-      'on' in x &&
-      typeof x.on === 'function' &&
-      'close' in x &&
-      typeof x.close === 'function';
-
-    /**
-     * Rollup's `input` can be a string, an array of strings, or an object.
-     * This function converts the input to a string for the Forge CLI to consume.
-     *
-     * @see https://rollupjs.org/configuration-options/#input
-     */
-    const parseInputOptionToString = (input: vite.Rollup.InputOption) => {
-      if (typeof input === 'string') {
-        return input;
-      } else if (Array.isArray(input)) {
-        return input.join(' ');
-      } else {
-        return Object.keys(input).join(' ');
-      }
-    };
-
     return task?.newListr(
-      configs.map((userConfig) => {
-        let target = '';
-        const input = userConfig.build?.rollupOptions?.input;
-        if (input) {
-          target = parseInputOptionToString(input);
-        } else if (
-          typeof userConfig.build?.lib !== 'boolean' &&
-          userConfig.build?.lib?.entry
-        ) {
-          target = parseInputOptionToString(userConfig.build.lib.entry);
-        }
-
-        return {
-          title: `Building ${chalk.green(target)} target`,
-          task: async (_ctx, subtask) => {
-            // We wrap this function in a Promise to ensure that the task is marked as completed
-            // only after all bundles are done generated. This is done in the `closeBundle` Rollup hook
-            // rather than when the `vite.build` promise resolves.
-            await new Promise<void>((resolve, reject) => {
-              vite
-                .build({
-                  // Avoid recursive builds caused by users configuring @electron-forge/plugin-vite in Vite config file.
-                  configFile: false,
-                  // We suppress Vite output and instead log lines using RollupWatcher events
-                  logLevel: 'silent',
-                  ...userConfig,
-                  plugins: [
-                    // This plugin controls the output of the first-time Vite build that happens.
-                    // `buildEnd` and `closeBundle` are Rollup output generation hooks.
-                    // See https://rollupjs.org/plugin-development/#output-generation-hooks
-                    {
-                      name: '@electron-forge/plugin-vite:build-done',
-                      buildEnd(err) {
-                        if (err instanceof Error) {
-                          d(
-                            'buildEnd rollup hook called with error so build failed',
-                          );
-                          reject(err);
-                        }
-                      },
-                      closeBundle() {
-                        d(
-                          'no error in buildEnd and reached closeBundle so build succeeded',
-                        );
-                        resolve();
-                      },
-                    },
-                    ...(userConfig.plugins ?? []),
-                  ],
-                  clearScreen: false,
-                })
-                .then((result) => {
-                  // When running `start` and enabling watch mode in Vite, the Rollup watcher
-                  // emits events for subsequent builds.
-                  if (isRollupWatcher(result)) {
-                    result.on('event', (event) => {
-                      if (
-                        event.code === 'ERROR' &&
-                        userConfig.logLevel !== 'silent'
-                      ) {
-                        console.error(
-                          `\n${chalk.dim(this.timeFormatter.format(new Date()))} ${event.error.message}`,
-                        );
-                      } else if (
-                        event.code === 'BUNDLE_END' &&
-                        (!userConfig.logLevel || userConfig.logLevel === 'info')
-                      ) {
-                        console.log(
-                          `${chalk.dim(this.timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
-                            'target built',
-                          )} ${chalk.dim(target)}`,
-                        );
-                      }
-                    });
-                    this.watchers.push(result);
-                  } else {
-                    subtask.title = `Built target ${chalk.dim(target)}`;
-                  }
-                  return result;
-                })
-                .catch(reject);
-            });
-          },
-        };
-      }),
+      targets.map(({ spec, index }) => ({
+        title: `Building ${chalk.green(entryToDisplay(spec.entry))} target`,
+        task: async () => {
+          const { child, firstBuild } = spawnViteBuildWatch(
+            this.serializableConfig,
+            index,
+            this.projectDir,
+            viteDevServerUrls,
+            () => {
+              for (const server of this.servers) {
+                server.ws.send({ type: 'full-reload' });
+              }
+            },
+          );
+          this.watchChildren.push(child);
+          await firstBuild;
+        },
+      })),
       {
         concurrent: this.config.concurrent ?? true,
-        exitOnError: this.isProd,
+        exitOnError: false,
       },
     );
   };
@@ -638,11 +599,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
   ): void => {
     d('handling process exit with:', options);
     if (options.cleanup) {
-      for (const watcher of this.watchers) {
-        d('cleaning vite watcher');
-        watcher.close();
+      for (const child of this.watchChildren) {
+        d('killing vite watch subprocess');
+        child.kill();
       }
-      this.watchers = [];
+      this.watchChildren = [];
 
       for (const server of this.servers) {
         d('cleaning http server');
