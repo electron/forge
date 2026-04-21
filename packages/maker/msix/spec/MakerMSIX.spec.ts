@@ -30,10 +30,11 @@ vi.mock(import('fs-extra'), async (importOriginal) => {
 });
 
 describe('MakerMSIX', () => {
-  const dir = '/my/test/dir/out';
-  const makeDir = '/my/test/dir/make';
   const appName = 'My Test App';
+  const targetPlatform = 'win32';
   const targetArch = 'x64' as ForgeArch;
+  const dir = `/my/test/dir/${appName}-${targetPlatform}-${targetArch}`;
+  const makeDir = '/my/test/dir/make';
   const packageJSON = { version: '1.2.3' };
 
   it('should generate an MSIX with version and arch in the filename', async () => {
@@ -45,7 +46,7 @@ describe('MakerMSIX', () => {
       appName,
       targetArch,
       packageJSON,
-      targetPlatform: 'win32',
+      targetPlatform,
       forgeConfig: null as any,
     });
 
@@ -55,7 +56,7 @@ describe('MakerMSIX', () => {
         makeDir,
         'msix',
         targetArch,
-        `${appName}-${packageJSON.version}-win32-${targetArch}.msix`,
+        `${path.basename(dir)}-${packageJSON.version}.msix`,
       ),
     );
     expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
@@ -65,7 +66,7 @@ describe('MakerMSIX', () => {
         makeDir,
         'msix',
         targetArch,
-        `${appName}-${packageJSON.version}-win32-${targetArch}.msix`,
+        `${path.basename(dir)}-${packageJSON.version}.msix`,
       ),
     );
   });
