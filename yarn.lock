@@ -1251,6 +1251,7 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
+    fs-extra: "npm:^10.0.0"
     listr2: "npm:^7.0.2"
     vitest: "catalog:"
   languageName: unknown
