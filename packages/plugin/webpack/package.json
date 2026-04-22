@@ -13,7 +13,7 @@
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^22.10.7",
     "vitest": "catalog:",
-    "which": "^2.0.2",
+    "which": "^6.0.0",
     "xvfb-maybe": "^0.2.1"
   },
   "engines": {

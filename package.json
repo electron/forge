@@ -49,7 +49,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/node": "^22.10.7",
     "@types/semver": "^7.3.4",
-    "@types/which": "^2.0.0",
+    "@types/which": "^3.0.4",
     "@yarnpkg/types": "^4.0.1",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
