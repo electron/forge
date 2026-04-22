@@ -1,5 +1,6 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
+import { detectNativePackages } from '../detect-native-modules.js';
 import {
   external,
   getBuildConfig,
@@ -12,12 +13,13 @@ export function getConfig(
   userConfig: UserConfig = {},
 ): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
+  const nativePackages = detectNativePackages(forgeEnv.root);
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
       rollupOptions: {
-        external: [...external, 'electron/main'],
+        external: [...external, 'electron/main', ...nativePackages],
       },
     },
     plugins: [pluginHotRestart('restart')],

@@ -9,6 +9,10 @@ import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
+import {
+  detectNativePackages,
+  walkTransitiveDependencies,
+} from './detect-native-modules.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
 import type { VitePluginConfig } from './Config.js';
@@ -173,6 +177,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private servers: vite.ViteDevServer[] = [];
 
+  private externalModules = new Set<string>();
+
   init = (dir: string): void => {
     this.setDirectories(dir);
 
@@ -250,21 +256,46 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           return task?.newListr(
             [
               {
-                title: 'Building main and preload targets...',
+                title: 'Building Vite targets...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.build(subtask);
-                  return results;
+                  return subtask.newListr(
+                    [
+                      {
+                        title: 'Building main and preload targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.build(subtask);
+                          return results;
+                        },
+                      },
+                      {
+                        title: 'Building renderer targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.buildRenderer(subtask);
+                          return results;
+                        },
+                      },
+                    ],
+                    { concurrent: true },
+                  );
                 },
               },
               {
-                title: 'Building renderer targets...',
+                title: 'Detecting native dependencies...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.buildRenderer(subtask);
-                  return results;
+                  const nativePackages = detectNativePackages(this.projectDir);
+                  this.externalModules = walkTransitiveDependencies(
+                    this.projectDir,
+                    nativePackages,
+                  );
+                  if (this.externalModules.size > 0) {
+                    subtask.title = `Detected externalized dependencies: ${[...this.externalModules].join(', ')}`;
+                  } else {
+                    subtask.title = 'No externalized dependencies detected';
+                  }
                 },
               },
             ],
-            { concurrent: true },
+            { concurrent: false },
           );
         }, 'Building production Vite bundles'),
       ],
@@ -302,8 +333,22 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       // `file` always starts with `/`
       // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      if (file.startsWith('/.vite')) return false;
+      if (file === '/package.json') return false;
+
+      // Include node_modules that were externalized by the Vite build.
+      // The set is populated during prePackage after the Vite build completes.
+      if (file.startsWith('/node_modules')) {
+        if (file === '/node_modules') return false;
+        const bare = file.slice('/node_modules/'.length);
+        const segments = bare.split('/');
+        const name = segments[0].startsWith('@')
+          ? `${segments[0]}/${segments[1]}`
+          : segments[0];
+        return !this.externalModules.has(name);
+      }
+
+      return true;
     };
     return forgeConfig;
   };
