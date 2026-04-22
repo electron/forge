@@ -59,6 +59,10 @@ export interface InitOptions {
    * Force a package manager to use (npm|yarn|pnpm).
    */
   packageManager?: string;
+  /**
+   * Whether to use TypeScript in the template.
+   */
+  typescript?: boolean;
 }
 
 async function validateTemplate(
@@ -95,8 +99,15 @@ export async function init({
   skipGit = false,
   electronVersion = 'latest',
   packageManager,
+  typescript = false,
 }: InitOptions): Promise<void> {
   d(`Initializing in: ${dir}`);
+
+  if (typescript && template === 'base') {
+    throw new Error(
+      'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+    );
+  }
 
   const runner = new Listr<{
     templateModule: ForgeTemplate;
@@ -173,6 +184,7 @@ export async function init({
             const tasks = await templateModule.initializeTemplate(dir, {
               copyCIFiles,
               force,
+              typescript,
             });
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });

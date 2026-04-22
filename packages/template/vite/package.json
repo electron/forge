@@ -13,7 +13,7 @@
   "exports": "./dist/ViteTemplate.js",
   "typings": "dist/ViteTemplate.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",
@@ -21,6 +21,7 @@
     "fs-extra": "^10.0.0"
   },
   "devDependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/test-utils": "workspace:*",
     "listr2": "^7.0.2",
     "vitest": "catalog:"

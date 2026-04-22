@@ -48,4 +48,18 @@ describe('findTemplate', () => {
       'Failed to locate custom template: "non-existent-template".',
     );
   });
+
+  describe('deprecated -typescript templates', () => {
+    it('should provide a helpful error for vite-typescript', async () => {
+      await expect(findTemplate('vite-typescript')).rejects.toThrowError(
+        /no longer exists.*--template vite/,
+      );
+    });
+
+    it('should provide a helpful error for webpack-typescript', async () => {
+      await expect(findTemplate('webpack-typescript')).rejects.toThrowError(
+        /no longer exists.*--template webpack/,
+      );
+    });
+  });
 });

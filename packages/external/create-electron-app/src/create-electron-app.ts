@@ -41,6 +41,7 @@ const initCommand = program
     '--package-manager [name]',
     'Set a specific package manager to use for your Forge project. Supported package managers are `npm`, `pnpm`, and `yarn`. You can also specify an exact version to use (e.g. `yarn@1.22.22`).',
   )
+  .option('--typescript', 'Use TypeScript in the template.')
   .action(async (dir) => {
     const options = initCommand.opts();
     const tasks = new Listr<InitOptions>(
@@ -52,6 +53,7 @@ const initCommand = program
             initOpts.copyCIFiles = Boolean(options.copyCiFiles);
             initOpts.force = Boolean(options.force);
             initOpts.skipGit = Boolean(options.skipGit);
+            initOpts.typescript = Boolean(options.typescript);
             initOpts.dir = resolveWorkingDir(dir, false);
             initOpts.electronVersion = options.electronVersion ?? 'latest';
             initOpts.packageManager = options.packageManager ?? 'npm@latest';
@@ -120,21 +122,19 @@ const initCommand = program
               },
             );
 
-            let language: string | undefined;
-
             if (bundler !== 'base') {
-              language = await prompt.run<Prompt<string | undefined, any>>(
+              initOpts.typescript = await prompt.run<Prompt<boolean, any>>(
                 select,
                 {
                   message: 'Select a programming language',
                   choices: [
                     {
                       name: 'JavaScript',
-                      value: undefined,
+                      value: false,
                     },
                     {
                       name: 'TypeScript',
-                      value: 'typescript',
+                      value: true,
                     },
                   ],
                 },
@@ -142,7 +142,7 @@ const initCommand = program
             }
 
             initOpts.packageManager = packageManager;
-            initOpts.template = `${bundler}${language ? `-${language}` : ''}`;
+            initOpts.template = bundler;
 
             // TODO: add prompt for passing in an exact version as well
             initOpts.electronVersion = await prompt.run<Prompt<string, any>>(

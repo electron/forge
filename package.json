@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= "
   },
   "resolutions": {
     "ajv@8.17.1": "^8.18.0",
