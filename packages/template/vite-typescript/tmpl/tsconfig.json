@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
+    "rootDir": "src",
     "outDir": "dist",
     "resolveJsonModule": true,
     "types": ["@electron-forge/plugin-vite/forge-vite-env"]
