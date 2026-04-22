@@ -26,7 +26,7 @@
     "listr2": "^7.0.2"
   },
   "devDependencies": {
-    "@electron/packager": "^19.0.1",
+    "@electron/packager": "^20.0.0",
     "@types/node": "^22.10.7",
     "vite": "^8.0.0",
     "vitest": "catalog:",
