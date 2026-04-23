@@ -33,11 +33,15 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     );
 
     await this.ensureFile(outPath);
+    // Escape appName and appPath by wrapping them in quotes.
+    // This avoids macOS treating spaces as argument separators during
+    // DMG creation (fixes issue #4055).
+    const escapedAppPath = `"${path.resolve(dir, `${appName}.app`)}"`;
     const dmgConfig: ElectronInstallerDMGOptions = {
       overwrite: true,
-      name: appName,
+      name: `"${appName}"`, // escaped name
       ...this.config,
-      appPath: path.resolve(dir, `${appName}.app`),
+      appPath: escapedAppPath, // escaped app path
       out: path.dirname(outPath),
     };
     await createDMG(dmgConfig);
