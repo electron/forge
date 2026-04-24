@@ -56,7 +56,7 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
         makeDir,
         'msix',
         targetArch,
-        `${appName}.msix`,
+        `${path.basename(dir)}-${packageJSON.version}.msix`,
       );
       await fs.mkdirp(path.dirname(outputPath));
       await fs.move(result.msixPackage, outputPath);

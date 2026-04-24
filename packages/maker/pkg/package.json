@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-pkg",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.8",
   "type": "module",
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
+    "@electron/notarize": "^3.1.0",
     "@electron/osx-sign": "^2.3.0"
   },
   "publishConfig": {

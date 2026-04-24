@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/shared-types",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.8",
   "type": "module",
   "description": "Shared types across Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -10,7 +10,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/tracer": "workspace:*",
-    "@electron/packager": "^19.0.1",
+    "@electron/packager": "^20.0.0",
     "@electron/rebuild": "^4.0.1",
     "listr2": "^7.0.2"
   },

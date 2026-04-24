@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/cli",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.8",
   "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
@@ -19,7 +19,7 @@
     "@electron-forge/core": "workspace:*",
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@electron/get": "^4.0.2",
+    "@electron/get": "^5.0.0",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
