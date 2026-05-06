@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { styleText } from 'node:util';
 
-import chalk from 'chalk';
 import fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(import.meta.dirname, '..');
@@ -47,8 +47,8 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
     }
     if (!main || !(await fs.pathExists(path.resolve(dir, main)))) {
       console.error(
-        `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Main entry not found (${main})`),
+        `${styleText('cyan', `[${pj.name}]`)}:`,
+        styleText('red', `Main entry not found (${main})`),
       );
       bad = true;
     } else if (!SKIP_IMPORT.has(pj.name)) {
@@ -57,16 +57,16 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
         console.error(
-          `${chalk.cyan(`[${pj.name}]`)}:`,
-          chalk.red(`Failed to import main entry (${main}): ${message}`),
+          `${styleText('cyan', `[${pj.name}]`)}:`,
+          styleText('red', `Failed to import main entry (${main}): ${message}`),
         );
         bad = true;
       }
     }
     if (!typings || !(await fs.pathExists(path.resolve(dir, typings)))) {
       console.error(
-        `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Typings entry not found (${typings})`),
+        `${styleText('cyan', `[${pj.name}]`)}:`,
+        styleText('red', `Typings entry not found (${typings})`),
       );
       bad = true;
     }

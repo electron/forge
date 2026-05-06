@@ -1,4 +1,5 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
+
 import { build } from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
@@ -130,16 +131,17 @@ if (!watch) {
     result.on('event', (event) => {
       if (event.code === 'ERROR' && resolved.logLevel !== 'silent') {
         console.error(
-          `\n${chalk.dim(timeFormatter.format(new Date()))} ${event.error.message}`,
+          `\n${styleText('dim', timeFormatter.format(new Date()))} ${event.error.message}`,
         );
       } else if (
         event.code === 'BUNDLE_END' &&
         (!resolved.logLevel || resolved.logLevel === 'info')
       ) {
         console.log(
-          `${chalk.dim(timeFormatter.format(new Date()))} ${chalk.cyan.bold('[@electron-forge/plugin-vite]')} ${chalk.green(
+          `${styleText('dim', timeFormatter.format(new Date()))} ${styleText(['cyan', 'bold'], '[@electron-forge/plugin-vite]')} ${styleText(
+            'green',
             'target built',
-          )} ${chalk.dim(targetDisplay)}`,
+          )} ${styleText('dim', targetDisplay)}`,
         );
       }
     });

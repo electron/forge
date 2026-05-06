@@ -1,3 +1,5 @@
+import { styleText } from 'node:util';
+
 import {
   ForgeListrTaskDefinition,
   ForgeMutatingHookFn,
@@ -7,7 +9,6 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
 
 const d = debug('electron-forge:hook');
@@ -47,7 +48,7 @@ export const getHookListrTasks = async <
     if (typeof hooks[hookName] === 'function') {
       d('calling hook:', hookName, 'with args:', hookArgs);
       tasks.push({
-        title: `Running ${chalk.yellow(hookName)} hook from forgeConfig`,
+        title: `Running ${styleText('yellow', hookName)} hook from forgeConfig`,
         task: childTrace(
           {
             name: 'forge-config-hook',

@@ -52,7 +52,6 @@
     "@types/which": "^3.0.4",
     "@typescript/native-preview": "^7.0.0-dev.20260416.2",
     "@yarnpkg/types": "^4.0.1",
-    "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "electron": "^41.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
