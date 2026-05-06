@@ -292,7 +292,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
             'yellow',
             `You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`),
+Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`,
+          ),
         );
       }
       return forgeConfig;
