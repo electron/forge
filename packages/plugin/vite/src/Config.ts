@@ -49,4 +49,10 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Enable hot restart for the main process when its bundle is rebuilt.
+   * @defaultValue false
+   */
+  hotRestart?: boolean;
 }

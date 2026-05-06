@@ -4,3 +4,4 @@ export * from './package-manager.js';
 export * from './author-name.js';
 export * from './install-dependencies.js';
 export * from './resolve-working-dir.js';
+export * from './restart.js';
