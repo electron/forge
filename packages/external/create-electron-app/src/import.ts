@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import {
   DepType,
@@ -10,7 +11,6 @@ import {
 } from '@electron-forge/core-utils';
 import { ForgeListrOptions } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
-import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr } from 'listr2';
@@ -133,13 +133,15 @@ export const forgeImport = async ({
 
           let packageJSON = await readRawPackageJson(dir);
           if (!packageJSON.version) {
-            task.output = chalk.yellow(
-              `Please set the ${chalk.green('"version"')} in your application's package.json`,
+            task.output = styleText(
+              'yellow',
+              `Please set the ${styleText('green', '"version"')} in your application's package.json`,
             );
           }
           if (packageJSON.config && packageJSON.config.forge) {
             if (packageJSON.config.forge.makers) {
-              task.output = chalk.green(
+              task.output = styleText(
+                'green',
                 'Existing Electron Forge configuration detected',
               );
               if (typeof shouldContinueOnExisting === 'function') {
@@ -150,7 +152,8 @@ export const forgeImport = async ({
                 }
               }
             } else if (!(typeof packageJSON.config.forge === 'object')) {
-              task.output = chalk.yellow(
+              task.output = styleText(
+                'yellow',
                 "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway",
               );
             }
@@ -243,7 +246,7 @@ export const forgeImport = async ({
                 title: `Resolving package manager`,
                 task: async (ctx, task) => {
                   ctx.pm = await resolvePackageManager();
-                  task.title = `Resolving package manager: ${chalk.cyan(ctx.pm.executable)}`;
+                  task.title = `Resolving package manager: ${styleText('cyan', ctx.pm.executable)}`;
                 },
               },
               {
@@ -367,7 +370,7 @@ export const forgeImport = async ({
         task: (_ctx, task) => {
           task.output = `We have attempted to convert your app to be in a format that Electron Forge understands.
 
-          Thanks for using ${chalk.green('Electron Forge')}!`;
+          Thanks for using ${styleText('green', 'Electron Forge')}!`;
         },
       },
     ],

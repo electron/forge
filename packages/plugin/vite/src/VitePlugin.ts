@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
-import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
@@ -288,7 +288,9 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
         console.error(
-          chalk.yellow(`You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
+          styleText(
+            'yellow',
+            `You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
 
 Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`),
         );
@@ -353,7 +355,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     if (this.isProd) {
       return task?.newListr(
         targets.map(({ spec, index }) => ({
-          title: `Building ${chalk.green(entryToDisplay(spec.entry))}`,
+          title: `Building ${styleText('green', entryToDisplay(spec.entry))}`,
           task: async (_ctx, subtask) => {
             await spawnViteBuild(
               this.serializableConfig,
@@ -361,7 +363,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
               index,
               this.projectDir,
             );
-            subtask.title = `Built target ${chalk.dim(entryToDisplay(spec.entry))}`;
+            subtask.title = `Built target ${styleText('dim', entryToDisplay(spec.entry))}`;
           },
         })),
         {
@@ -373,7 +375,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
     return task?.newListr(
       targets.map(({ spec, index }) => ({
-        title: `Building ${chalk.green(entryToDisplay(spec.entry))} target`,
+        title: `Building ${styleText('green', entryToDisplay(spec.entry))} target`,
         task: async () => {
           const { child, firstBuild } = spawnViteBuildWatch(
             this.serializableConfig,
@@ -405,7 +407,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
         .filter(({ spec }) => spec.config);
       return task?.newListr(
         targets.map(({ spec, index }) => ({
-          title: `Building ${chalk.green(spec.name)}`,
+          title: `Building ${styleText('green', spec.name)}`,
           task: async (_ctx, subtask) => {
             await spawnViteBuild(
               this.serializableConfig,
@@ -413,7 +415,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
               index,
               this.projectDir,
             );
-            subtask.title = `Built target ${chalk.dim(spec.name)}`;
+            subtask.title = `Built target ${styleText('dim', spec.name)}`;
           },
         })),
         {
@@ -432,7 +434,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
             logLevel: 'error',
             ...userConfig,
           });
-          subtask.title = `Built target ${chalk.dim(path.basename(userConfig.build?.outDir ?? ''))}`;
+          subtask.title = `Built target ${styleText('dim', path.basename(userConfig.build?.outDir ?? ''))}`;
         },
       })),
       {
@@ -445,7 +447,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     const rendererConfigs = await this.configGenerator.getRendererConfig();
     return task?.newListr(
       rendererConfigs.map((userConfig) => ({
-        title: `Target ${chalk.cyan(path.basename(userConfig.build?.outDir ?? ''))}`,
+        title: `Target ${styleText('cyan', path.basename(userConfig.build?.outDir ?? ''))}`,
         task: async (_ctx, subtask) => {
           const viteDevServer = await vite.createServer({
             configFile: false,
@@ -510,18 +512,24 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 function getServerURLs(urls: vite.ResolvedServerUrls) {
   let output = '';
   const colorUrl = (url: string) =>
-    chalk.cyan(url.replace(/:(\d+)\//, (_, port) => `:${chalk.bold(port)}/`));
+    styleText(
+      'cyan',
+      url.replace(/:(\d+)\//, (_, port) => `:${styleText('bold', port)}/`),
+    );
   for (const url of urls.local) {
-    output += `  ${chalk.green('➜')}  ${chalk.bold('Local')}:   ${colorUrl(url)}`;
+    output += `  ${styleText('green', '➜')}  ${styleText('bold', 'Local')}:   ${colorUrl(url)}`;
   }
   for (const url of urls.network) {
-    output += `  \n${chalk.green('➜')}  ${chalk.bold('Network')}: ${colorUrl(url)}`;
+    output += `  \n${styleText('green', '➜')}  ${styleText('bold', 'Network')}: ${colorUrl(url)}`;
   }
   if (urls.network.length === 0) {
     output +=
-      chalk.dim(`  \n${chalk.green('➜')}  ${chalk.bold('Network')}: use `) +
-      chalk.bold('--host') +
-      chalk.dim(' to expose');
+      styleText(
+        'dim',
+        `  \n${styleText('green', '➜')}  ${styleText('bold', 'Network')}: use `,
+      ) +
+      styleText('bold', '--host') +
+      styleText('dim', ' to expose');
   }
 
   return output;

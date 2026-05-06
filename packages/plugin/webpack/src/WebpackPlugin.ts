@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { glob } from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import { pipeline } from 'stream/promises';
 
 import {
@@ -16,7 +17,6 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
-import chalk from 'chalk';
 import debug from 'debug';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
@@ -219,7 +219,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
               title: 'Launching dev servers for renderer process code',
               task: async (_, task) => {
                 await this.launchRendererDevServers(logger);
-                task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+                task.output = `Output Available: ${styleText('cyan', `http://localhost:${this.loggerPort}`)}\n`;
               },
               rendererOptions: {
                 persistentOutput: true,
@@ -330,7 +330,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                         return task.newListr(
                           otherArches.map(
                             (pArch): ListrTask<NativeDepsCtx> => ({
-                              title: `Generating ${chalk.magenta(pArch)} bundle`,
+                              title: `Generating ${styleText('magenta', pArch)} bundle`,
                               task: async (_, innerTask) => {
                                 return innerTask.newListr(
                                   [
@@ -477,7 +477,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             return task.newListr<NativeDepsCtx>(
               [
                 {
-                  title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                  title: `Preparing native dependencies for ${styleText('magenta', firstArch)}`,
                   task: async (_, innerTask) => {
                     await listrCompatibleRebuildHook(
                       this.projectDir,
@@ -569,7 +569,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
         console.error(
-          chalk.red(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
+          styleText(
+            'red',
+            `You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
 Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`),
         );

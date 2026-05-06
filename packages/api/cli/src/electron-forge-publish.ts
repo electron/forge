@@ -1,7 +1,8 @@
+import { styleText } from 'node:util';
+
 import { initializeProxy } from '@electron/get';
 import { api, PublishOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
-import chalk from 'chalk';
 import { program } from 'commander';
 
 import './util/terminate.js';
@@ -22,7 +23,7 @@ program
   )
   .option(
     '--dry-run',
-    `Run the ${chalk.green('make')} command and save publish metadata without uploading anything.`,
+    `Run the ${styleText('green', 'make')} command and save publish metadata without uploading anything.`,
   )
   .option('--from-dry-run', 'Publish artifacts from the last saved dry run.')
   .allowUnknownOption(true)

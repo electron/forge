@@ -1,8 +1,8 @@
 import { glob } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
-import chalk from 'chalk';
 import fs from 'fs-extra';
 
 (async () => {
@@ -21,7 +21,8 @@ import fs from 'fs-extra';
     }
   } else {
     console.log(
-      chalk.gray(
+      styleText(
+        'gray',
         'There is no "electron-forge-test-*" dir that needs to be cleaned.',
       ),
     );
