@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@electron-forge/plugin-base": "workspace:*",
-    "@electron-forge/shared-types": "workspace:*",
-    "fs-extra": "^10.0.0"
+    "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
     "vitest": "catalog:"

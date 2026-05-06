@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises';
+
 import { PluginBase } from '@electron-forge/plugin-base';
 import { ForgeHookFn, ForgeHookMap } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 
 import { LocalElectronPluginConfig } from './Config.js';
 
@@ -62,9 +63,9 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     this.checkPlatform(platform);
     this.checkArch(arch);
 
-    await fs.remove(buildPath);
+    await fs.rm(buildPath, { recursive: true, force: true });
 
-    await fs.copy(this.config.electronPath, buildPath);
+    await fs.cp(this.config.electronPath, buildPath, { recursive: true });
   };
 }
 

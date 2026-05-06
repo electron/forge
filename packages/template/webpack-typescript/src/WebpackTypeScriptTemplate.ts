@@ -1,11 +1,12 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { readJson, writeJson } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 class WebpackTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
@@ -21,7 +22,9 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
         title: 'Setting up Forge configuration',
         task: async () => {
           await this.copyTemplateFile(directory, 'forge.config.ts');
-          await fs.remove(path.resolve(directory, 'forge.config.js'));
+          await fs.rm(path.resolve(directory, 'forge.config.js'), {
+            force: true,
+          });
         },
       },
       {
@@ -55,7 +58,7 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           );
 
           // Remove index.js and replace with index.ts
-          await fs.remove(filePath('index.js'));
+          await fs.rm(filePath('index.js'), { force: true });
           await this.copyTemplateFile(path.join(directory, 'src'), 'index.ts');
 
           await this.copyTemplateFile(
@@ -64,7 +67,7 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
           );
 
           // Remove preload.js and replace with preload.ts
-          await fs.remove(filePath('preload.js'));
+          await fs.rm(filePath('preload.js'), { force: true });
           await this.copyTemplateFile(
             path.join(directory, 'src'),
             'preload.ts',
@@ -72,9 +75,9 @@ class WebpackTypeScriptTemplate extends BaseTemplate {
 
           // update package.json
           const packageJSONPath = path.resolve(directory, 'package.json');
-          const packageJSON = await fs.readJson(packageJSONPath);
+          const packageJSON = await readJson(packageJSONPath);
           packageJSON.main = '.webpack/main';
-          await fs.writeJson(packageJSONPath, packageJSON, {
+          await writeJson(packageJSONPath, packageJSON, {
             spaces: 2,
           });
         },

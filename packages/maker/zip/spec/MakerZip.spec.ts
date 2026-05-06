@@ -1,9 +1,9 @@
 import os from 'node:os';
 import path from 'node:path';
 
+import { writeJson } from '@electron-forge/core-utils';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { zip } from 'cross-zip';
-import fs from 'fs-extra';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MakerZIP } from '../src/MakerZIP';
@@ -20,14 +20,11 @@ vi.mock(import('cross-zip'), async (importOriginal) => {
   };
 });
 
-vi.mock(import('fs-extra'), async (importOriginal) => {
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
-    default: {
-      ...mod,
-      writeJson: vi.fn(),
-    },
+    writeJson: vi.fn(),
   };
 });
 
@@ -164,7 +161,7 @@ describe('MakerZip', () => {
         });
 
         expect(mockFetch).toHaveBeenCalledOnce();
-        expect(fs.writeJson).toHaveBeenCalledWith(expect.anything(), {
+        expect(writeJson).toHaveBeenCalledWith(expect.anything(), {
           currentRelease: '1.2.3',
           releases: [
             {
@@ -202,7 +199,7 @@ describe('MakerZip', () => {
         });
 
         expect(mockFetch).toHaveBeenCalledOnce();
-        expect(fs.writeJson).toHaveBeenCalledWith(expect.anything(), {
+        expect(writeJson).toHaveBeenCalledWith(expect.anything(), {
           currentRelease: '1.2.3',
           releases: [
             {
@@ -256,25 +253,22 @@ describe('MakerZip', () => {
           forgeConfig: null as any,
         });
 
-        expect(vi.mocked(fs.writeJson)).toHaveBeenCalledWith(
-          expect.anything(),
-          {
-            currentRelease: '1.2.3',
-            releases: [
-              oneOneOneRelease,
-              {
+        expect(vi.mocked(writeJson)).toHaveBeenCalledWith(expect.anything(), {
+          currentRelease: '1.2.3',
+          releases: [
+            oneOneOneRelease,
+            {
+              version: '1.2.3',
+              updateTo: {
                 version: '1.2.3',
-                updateTo: {
-                  version: '1.2.3',
-                  name: 'My Test App v1.2.3',
-                  url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
-                  notes: 'my-notes',
-                  pub_date: expect.anything(),
-                },
+                name: 'My Test App v1.2.3',
+                url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
+                notes: 'my-notes',
+                pub_date: expect.anything(),
               },
-            ],
-          },
-        );
+            },
+          ],
+        });
       });
     });
   });

@@ -1,7 +1,7 @@
+const fs = require('fs/promises');
 const path = require('path');
 
 const baseTemplate = require('@electron-forge/template-base').default;
-const fs = require('fs-extra');
 
 module.exports = {
   requiredForgeVersion: '>= 8.0.0-alpha.0',
@@ -14,13 +14,15 @@ module.exports = {
       {
         title: 'Adding custom template files',
         task: async () => {
-          await fs.copy(
+          await fs.cp(
             path.resolve(__dirname, 'tmpl', '_bar'),
             path.resolve(directory, '.bar'),
+            { recursive: true },
           );
-          await fs.copy(
+          await fs.cp(
             path.resolve(__dirname, 'tmpl', 'src'),
             path.resolve(directory, 'src'),
+            { recursive: true },
           );
         },
       },

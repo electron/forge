@@ -5,7 +5,7 @@ import {
   PublisherOptions,
 } from '@electron-forge/publisher-base';
 import FormData from 'form-data';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 
 import { PublisherBitbucketConfig } from './Config.js';
 

@@ -1,7 +1,5 @@
-import { glob } from 'node:fs/promises';
+import fs, { glob } from 'node:fs/promises';
 import * as path from 'node:path';
-
-import * as fs from 'fs-extra';
 
 import { getPackageInfo } from './utils';
 
@@ -29,8 +27,11 @@ async function normalizeLinks(
   const packages = await getPackageInfo();
 
   let copiedAssets = false;
-  await fs.remove(path.resolve(DOCS_PATH, 'assets'));
-  await fs.remove(path.resolve(DOCS_PATH));
+  await fs.rm(path.resolve(DOCS_PATH, 'assets'), {
+    recursive: true,
+    force: true,
+  });
+  await fs.rm(path.resolve(DOCS_PATH), { recursive: true, force: true });
   for (const p of packages) {
     const dir = p.path;
     const subPath = path.posix.join(
@@ -39,14 +40,18 @@ async function normalizeLinks(
     );
     const docPath = path.resolve(DOCS_PATH, subPath);
     if (!copiedAssets) {
-      await fs.copy(
+      await fs.cp(
         path.resolve(dir, 'doc', 'assets'),
         path.resolve(DOCS_PATH, 'assets'),
+        { recursive: true },
       );
       copiedAssets = true;
     }
-    await fs.copy(path.resolve(dir, 'doc'), docPath);
-    await fs.remove(path.resolve(docPath, 'assets'));
+    await fs.cp(path.resolve(dir, 'doc'), docPath, { recursive: true });
+    await fs.rm(path.resolve(docPath, 'assets'), {
+      recursive: true,
+      force: true,
+    });
 
     // Rewrite assets path to allow better cross-dep caching
     // otherwise each module will have it's own unique JS file :(

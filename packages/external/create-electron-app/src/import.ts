@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
@@ -5,14 +6,16 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
+  pathExists,
   PMDetails,
+  readJson,
   resolvePackageManager,
   updateElectronDependency,
+  writeJson,
 } from '@electron-forge/core-utils';
 import { ForgeListrOptions } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import debug from 'debug';
-import fs from 'fs-extra';
 import { Listr } from 'listr2';
 import { merge } from 'lodash-es';
 
@@ -67,7 +70,7 @@ export interface ImportOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const readRawPackageJson = async (dir: string): Promise<any> =>
-  fs.readJson(path.resolve(dir, 'package.json'));
+  readJson(path.resolve(dir, 'package.json'));
 
 export const forgeImport = async ({
   dir = process.cwd(),
@@ -97,8 +100,8 @@ export const forgeImport = async ({
         task: async () => {
           d(`Attempting to import project in: ${dir}`);
           if (
-            !(await fs.pathExists(dir)) ||
-            !(await fs.pathExists(path.resolve(dir, 'package.json')))
+            !(await pathExists(dir)) ||
+            !(await pathExists(path.resolve(dir, 'package.json')))
           ) {
             throw new Error(
               `We couldn't find a project with a package.json file in: ${dir}`,
@@ -235,7 +238,7 @@ export const forgeImport = async ({
           d('forgified scripts object:', packageJSON.scripts);
 
           const writeChanges = async () => {
-            await fs.writeJson(path.resolve(dir, 'package.json'), packageJSON, {
+            await writeJson(path.resolve(dir, 'package.json'), packageJSON, {
               spaces: 2,
             });
           };
@@ -256,7 +259,7 @@ export const forgeImport = async ({
                   // lets ensure that nodeLinker is set to node-modules
                   if (pm.executable === 'yarn') {
                     const yarnrcPath = path.resolve(dir, '.yarnrc.yml');
-                    if (!(await fs.pathExists(yarnrcPath))) {
+                    if (!(await pathExists(yarnrcPath))) {
                       d('creating .yarnrc.yml with nodeLinker: node-modules');
                       await fs.writeFile(
                         yarnrcPath,
@@ -272,11 +275,13 @@ export const forgeImport = async ({
                   await writeChanges();
 
                   d('deleting old dependencies forcefully');
-                  await fs.remove(
-                    path.resolve(dir, 'node_modules/.bin/electron'),
-                  );
-                  await fs.remove(
+                  await fs.rm(path.resolve(dir, 'node_modules/.bin/electron'), {
+                    recursive: true,
+                    force: true,
+                  });
+                  await fs.rm(
                     path.resolve(dir, 'node_modules/.bin/electron.cmd'),
+                    { recursive: true, force: true },
                   );
 
                   d('installing dependencies');
@@ -343,7 +348,7 @@ export const forgeImport = async ({
               {
                 title: 'Fixing .gitignore',
                 task: async () => {
-                  if (await fs.pathExists(path.resolve(dir, '.gitignore'))) {
+                  if (await pathExists(path.resolve(dir, '.gitignore'))) {
                     const gitignore = await fs.readFile(
                       path.resolve(dir, '.gitignore'),
                     );

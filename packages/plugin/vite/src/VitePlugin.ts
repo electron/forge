@@ -1,10 +1,11 @@
 import { spawn } from 'node:child_process';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
+import { readJson, writeJson } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import debug from 'debug';
-import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
@@ -206,7 +207,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           VitePlugin.alreadyStarted = true;
 
           d(`preStart: removing old content from ${this.baseDir}`);
-          await fs.remove(this.baseDir);
+          await fs.rm(this.baseDir, { recursive: true, force: true });
 
           return task?.newListr(
             [
@@ -245,7 +246,7 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async (task) => {
           this.isProd = true;
-          await fs.remove(this.baseDir);
+          await fs.rm(this.baseDir, { recursive: true, force: true });
 
           return task?.newListr(
             [
@@ -315,7 +316,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     _forgeConfig: ResolvedForgeConfig,
     buildPath: string,
   ): Promise<void> => {
-    const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+    const pj = await readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.includes('.vite/')) {
       throw new Error(`Electron Forge is configured to use the Vite plugin. The plugin expects the
@@ -327,7 +328,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       delete pj.config.forge;
     }
 
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+    await writeJson(path.resolve(buildPath, 'package.json'), pj, {
       spaces: 2,
     });
   };

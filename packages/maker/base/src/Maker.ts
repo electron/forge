@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import {
@@ -6,7 +7,6 @@ import {
   IForgeMaker,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import which from 'which';
 
 export type EmptyConfig = Record<string, never>;
@@ -136,10 +136,8 @@ export default abstract class Maker<C> implements IForgeMaker {
    * is a destructive operation
    */
   async ensureDirectory(dir: string): Promise<void> {
-    if (await fs.pathExists(dir)) {
-      await fs.remove(dir);
-    }
-    return fs.mkdirs(dir);
+    await fs.rm(dir, { recursive: true, force: true });
+    await fs.mkdir(dir, { recursive: true });
   }
 
   /**
@@ -148,10 +146,8 @@ export default abstract class Maker<C> implements IForgeMaker {
    * I.e. If the file already exists it is deleted and the path created
    */
   async ensureFile(file: string): Promise<void> {
-    if (await fs.pathExists(file)) {
-      await fs.remove(file);
-    }
-    await fs.mkdirs(path.dirname(file));
+    await fs.rm(file, { recursive: true, force: true });
+    await fs.mkdir(path.dirname(file), { recursive: true });
   }
 
   /**

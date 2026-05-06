@@ -2,7 +2,7 @@ import path from 'node:path';
 import { styleText } from 'node:util';
 
 import { getHostArch } from '@electron/get';
-import { getElectronVersion } from '@electron-forge/core-utils';
+import { getElectronVersion, pathExists } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
   ForgeArch,
@@ -16,7 +16,6 @@ import {
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import filenamify from 'filenamify';
-import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
@@ -320,7 +319,7 @@ export const listrMake = (
                 actualOutDir,
                 `${appName}-${platform}-${targetArch}`,
               );
-              if (!(await fs.pathExists(packageDir))) {
+              if (!(await pathExists(packageDir))) {
                 throw new Error(`Couldn't find packaged app at: ${packageDir}`);
               }
 

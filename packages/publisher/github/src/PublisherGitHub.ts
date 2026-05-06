@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
@@ -8,7 +9,6 @@ import {
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { RequestError } from '@octokit/request-error';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
-import fs from 'fs-extra';
 import mime from 'mime-types';
 
 import { PublisherGitHubConfig } from './Config.js';

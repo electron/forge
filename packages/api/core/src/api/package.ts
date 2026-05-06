@@ -1,4 +1,4 @@
-import { glob } from 'node:fs/promises';
+import fs, { glob } from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
@@ -14,6 +14,7 @@ import {
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
+  writeJson,
 } from '@electron-forge/core-utils';
 import {
   ForgeArch,
@@ -26,7 +27,6 @@ import {
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import debug from 'debug';
-import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
@@ -276,7 +276,10 @@ export const listrPackage = (
                   cwd: buildPath,
                 });
                 for await (const bin of bins) {
-                  await fs.remove(path.join(buildPath, bin));
+                  await fs.rm(path.join(buildPath, bin), {
+                    recursive: true,
+                    force: true,
+                  });
                 }
               },
               async ({ buildPath, electronVersion, platform, arch }) => {
@@ -316,7 +319,7 @@ export const listrPackage = (
                 ) {
                   delete copiedPackageJSON.config.forge;
                 }
-                await fs.writeJson(
+                await writeJson(
                   path.resolve(buildPath, 'package.json'),
                   copiedPackageJSON,
                   { spaces: 2 },
