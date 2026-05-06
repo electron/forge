@@ -234,7 +234,7 @@ export function testForgeTemplate({
                  */
                 npm_config_user_agent: process.env
                   .npm_config_user_agent!.replace(/^yarn\/\d+\.\d+\.\d+ /i, '')
-                  .replace(/\bnpm\/\?/, 'npm/10.0.0'),
+                  .replace(/\bnpm\/\?/, 'npm/99.99.99'),
               }),
             },
           },
