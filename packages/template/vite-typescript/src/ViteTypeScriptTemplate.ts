@@ -40,6 +40,11 @@ class ViteTypeScriptTemplate extends BaseTemplate {
 
           await this.writeLintConfig(directory);
 
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'declarations.d.ts',
+          );
+
           // Remove index.js and replace with main.ts
           await fs.remove(filePath('index.js'));
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');

@@ -15,7 +15,6 @@
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/template-base": "workspace:*",
     "fs-extra": "^10.0.0",
-    "typescript": "5.9.3",
     "webpack": "^5.69.1"
   },
   "devDependencies": {
@@ -28,7 +27,6 @@
     "@electron-forge/test-utils": "workspace:*",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "listr2": "^7.0.2",
-    "typescript": "5.9.3",
     "vitest": "catalog:",
     "webpack": "^5.69.1"
   },
