@@ -1,5 +1,7 @@
 import { PackagePerson } from '@electron-forge/shared-types';
 
+type ParsedAuthor = { name?: string; email?: string; url?: string };
+
 /*!
  * Inlined from parse-author <https://github.com/jonschlinkert/parse-author>
  * and author-regex <https://github.com/jonschlinkert/author-regex>
@@ -11,9 +13,7 @@ function authorRegex(): RegExp {
   return /^\s*([^<(]*?)\s*([<(]([^>)]*?)[>)])?\s*([<(]([^>)]*?)[>)])*\s*$/;
 }
 
-export function parseAuthor(
-  str: string,
-): { name?: string; email?: string; url?: string } {
+export function parseAuthor(str: string): ParsedAuthor {
   if (typeof str !== 'string') {
     throw new TypeError('expected author to be a string');
   }
@@ -23,7 +23,7 @@ export function parseAuthor(
   }
 
   const match = ([] as unknown[]).concat.apply([], authorRegex().exec(str));
-  const author: { name?: string; email?: string; url?: string } = {};
+  const author: ParsedAuthor = {};
 
   if (match[1]) {
     author.name = match[1] as string;
@@ -48,29 +48,12 @@ export function parseAuthor(
 /**
  * Extracts the name from a package.json author field.
  *
- * @param author - The author object to extract the name from.
+ * @param author - The author field to extract the name from.
  * @returns The name of the author.
  *
  * @see https://docs.npmjs.com/cli/configuring-npm/package-json#people-fields-author-contributors
  */
 export function getNameFromAuthor(author: PackagePerson): string {
-  let publisher: PackagePerson = author || '';
-
-  if (typeof publisher === 'string') {
-    publisher = parseAuthor(publisher);
-  }
-
-  if (
-    typeof publisher !== 'string' &&
-    publisher &&
-    typeof publisher.name === 'string'
-  ) {
-    publisher = publisher.name;
-  }
-
-  if (typeof publisher !== 'string') {
-    publisher = '';
-  }
-
-  return publisher;
+  const parsed = typeof author === 'string' ? parseAuthor(author) : author;
+  return parsed?.name ?? '';
 }
