@@ -790,7 +790,6 @@ __metadata:
     "@electron/rebuild": "npm:^4.0.1"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     debug: "npm:^4.3.1"
-    find-up: "npm:^5.0.0"
     fs-extra: "npm:^10.0.0"
     parse-author: "npm:^2.0.0"
     semver: "npm:^7.2.1"
