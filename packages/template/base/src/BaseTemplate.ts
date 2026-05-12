@@ -125,13 +125,10 @@ export class BaseTemplate implements ForgeTemplate {
 
   async writeLintConfig(directory: string): Promise<void> {
     await this.copyTemplateFile(directory, '.oxlintrc.json');
-    const oxfmtrc = await fs.readJson(
-      path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
+    await this.copy(
+      path.join(tmplDir, '.oxfmtrc.json'),
+      path.resolve(directory, '.oxfmtrc.json'),
     );
-    delete oxfmtrc.ignorePatterns;
-    await fs.writeJson(path.resolve(directory, '.oxfmtrc.json'), oxfmtrc, {
-      spaces: 2,
-    });
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
