@@ -132,6 +132,29 @@ describe('checkPackageManager', () => {
     },
   );
 
+  it('should accept prerelease versions within the supported range', async () => {
+    vi.mocked(resolvePackageManager).mockResolvedValue({
+      executable: 'pnpm',
+      install: 'add',
+      dev: '--dev',
+      exact: '--exact',
+    });
+    vi.mocked(spawnPackageManager).mockImplementation((_pm, args) => {
+      if (args?.join(' ') === 'config get node-linker') {
+        return Promise.resolve('hoisted');
+      } else if (args?.join(' ') === 'config get hoist-pattern') {
+        return Promise.resolve('undefined');
+      } else if (args?.join(' ') === 'config get public-hoist-pattern') {
+        return Promise.resolve('undefined');
+      } else if (args?.join(' ') === '--version') {
+        return Promise.resolve('11.0.0-beta.1');
+      } else {
+        throw new Error('Unexpected command');
+      }
+    });
+    await expect(checkPackageManager()).resolves.not.toThrow();
+  });
+
   // resolvePackageManager optionally returns a `version` if `npm_config_user_agent` was used to
   // resolve the package manager being used.
   it('should not shell out to child process if version was already parsed via npm_config_user_agent', async () => {

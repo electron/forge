@@ -119,7 +119,7 @@ export async function checkPackageManager() {
       `Could not check ${pm.executable} version "${version}", assuming incompatible`,
     );
   }
-  if (!semver.satisfies(version, range)) {
+  if (!semver.satisfies(version, range, { includePrerelease: true })) {
     throw new Error(
       `Incompatible version of ${pm.executable} detected: "${version}" must be in range ${range}`,
     );
