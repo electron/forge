@@ -47,7 +47,9 @@ describe('init', () => {
         dir,
         electronVersion: 'v38.0.0',
       });
-      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      const packageJSON = JSON.parse(
+        fs.readFileSync(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
       expect(packageJSON.devDependencies.electron).toEqual('38.0.0');
     });
 
@@ -56,7 +58,9 @@ describe('init', () => {
         dir,
         electronVersion: '40.0.0-nightly.20251020',
       });
-      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      const packageJSON = JSON.parse(
+        fs.readFileSync(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
       expect(
         semver.valid(packageJSON.devDependencies['electron-nightly']),
       ).not.toBeNull();
@@ -68,7 +72,9 @@ describe('init', () => {
         dir,
         electronVersion: 'beta',
       });
-      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      const packageJSON = JSON.parse(
+        fs.readFileSync(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
       const prereleaseTag = semver.prerelease(
         packageJSON.devDependencies.electron,
       );
@@ -82,7 +88,9 @@ describe('init', () => {
         dir,
         electronVersion: 'nightly',
       });
-      const packageJSON = await import(path.resolve(dir, 'package.json'));
+      const packageJSON = JSON.parse(
+        fs.readFileSync(path.resolve(dir, 'package.json'), 'utf-8'),
+      );
       expect(
         semver.valid(packageJSON.devDependencies['electron-nightly']),
       ).not.toBeNull();
