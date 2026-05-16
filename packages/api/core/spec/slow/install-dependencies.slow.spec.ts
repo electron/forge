@@ -23,8 +23,11 @@ describe.runIf(!(process.platform === 'linux' && process.env.CI))(
         'debug@^2.0.0',
       ]);
 
-      const packageJSON = await import(
-        path.resolve(installDir, 'node_modules', 'debug', 'package.json')
+      const packageJSON = JSON.parse(
+        await fs.readFile(
+          path.resolve(installDir, 'node_modules', 'debug', 'package.json'),
+          'utf-8',
+        ),
       );
       expect(packageJSON.version).not.toEqual('2.0.0');
     });
