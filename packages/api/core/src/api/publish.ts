@@ -1,6 +1,8 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
+import { pathExists } from '@electron-forge/core-utils';
 import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
@@ -14,7 +16,6 @@ import {
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
 import debug from 'debug';
-import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
@@ -300,9 +301,7 @@ export default autoTrace(
                                     const normalizedPath = makePath
                                       .split(/\/|\\/)
                                       .join(path.sep);
-                                    if (
-                                      !(await fs.pathExists(normalizedPath))
-                                    ) {
+                                    if (!(await pathExists(normalizedPath))) {
                                       throw new Error(
                                         `Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`,
                                       );
@@ -384,7 +383,10 @@ export default autoTrace(
                         'publish-dry-run',
                       );
 
-                      await fs.remove(dryRunDir);
+                      await fs.rm(dryRunDir, {
+                        recursive: true,
+                        force: true,
+                      });
                       await PublishState.saveToDirectory(
                         dryRunDir,
                         makeResults!,

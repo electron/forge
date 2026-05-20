@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises';
+
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
 
 const d = debug('electron-forge:init:directory');
 
@@ -10,7 +11,7 @@ export const initDirectory = async (
   force = false,
 ): Promise<void> => {
   d('creating directory:', dir);
-  await fs.mkdirs(dir);
+  await fs.mkdir(dir, { recursive: true });
 
   const files = await fs.readdir(dir);
   if (files.length !== 0) {

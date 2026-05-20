@@ -1,8 +1,8 @@
 import path from 'node:path';
 
+import { move } from '@electron-forge/core-utils';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
-import fs from 'fs-extra';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerMSIX } from '../src/MakerMSIX';
@@ -15,17 +15,24 @@ vi.mock(import('electron-windows-msix'), () => {
   };
 });
 
-vi.mock(import('fs-extra'), async (importOriginal) => {
+vi.mock(import('node:fs/promises'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
     default: {
       ...mod.default,
       mkdtemp: vi.fn().mockResolvedValue('/tmp/msix-maker-mock'),
-      mkdirp: vi.fn(),
-      move: vi.fn(),
-      remove: vi.fn(),
+      mkdir: vi.fn(),
+      rm: vi.fn(),
     },
+  };
+});
+
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    move: vi.fn(),
   };
 });
 
@@ -60,7 +67,7 @@ describe('MakerMSIX', () => {
       ),
     );
     expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
-    expect(vi.mocked(fs.move)).toHaveBeenCalledWith(
+    expect(vi.mocked(move)).toHaveBeenCalledWith(
       '/tmp/mock-output.msix',
       path.resolve(
         makeDir,

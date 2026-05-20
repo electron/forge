@@ -18,10 +18,10 @@
     "./forge-vite-env": "./forge-vite-env.d.ts"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1",
-    "fs-extra": "^10.0.0",
     "listr2": "^7.0.2"
   },
   "devDependencies": {

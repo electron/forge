@@ -1,8 +1,8 @@
+import { existsSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { styleText } from 'node:util';
-
-import fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -30,7 +30,9 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
 
   let bad = false;
   for (const dir of dirsToCheck) {
-    const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+    const pj = JSON.parse(
+      await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'),
+    );
     if (pj.name === '@electron-forge/cli') continue;
     // The entrypoint can be defined under `exports` or `main` in package.json now!
     // `exports` can be a string or an exports map object (e.g. { ".": { "default": "...", "types": "..." } })
@@ -45,7 +47,7 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
     } else {
       main = pj.main;
     }
-    if (!main || !(await fs.pathExists(path.resolve(dir, main)))) {
+    if (!main || !existsSync(path.resolve(dir, main))) {
       console.error(
         `${styleText('cyan', `[${pj.name}]`)}:`,
         styleText('red', `Main entry not found (${main})`),
@@ -63,7 +65,7 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
         bad = true;
       }
     }
-    if (!typings || !(await fs.pathExists(path.resolve(dir, typings)))) {
+    if (!typings || !existsSync(path.resolve(dir, typings))) {
       console.error(
         `${styleText('cyan', `[${pj.name}]`)}:`,
         styleText('red', `Typings entry not found (${typings})`),

@@ -1,6 +1,8 @@
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import { pathExists } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import {
@@ -8,7 +10,6 @@ import {
   createWindowsInstaller,
   Options as ElectronWinstallerOptions,
 } from 'electron-winstaller';
-import fs from 'fs-extra';
 
 export type MakerSquirrelConfig = Omit<
   ElectronWinstallerOptions,
@@ -42,7 +43,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       path.resolve(os.tmpdir(), 'squirrel-maker-'),
     );
 
-    await fs.copy(dir, tmpFolder);
+    await fs.cp(dir, tmpFolder, { recursive: true });
 
     try {
       const winstallerConfig: ElectronWinstallerOptions = {
@@ -81,7 +82,7 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
       if (
         winstallerConfig.remoteReleases &&
         !winstallerConfig.noDelta &&
-        (await fs.pathExists(deltaPath))
+        (await pathExists(deltaPath))
       ) {
         artifacts.push(deltaPath);
       }
@@ -89,12 +90,12 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
         outPath,
         winstallerConfig.setupMsi || `${appName}Setup.msi`,
       );
-      if (!winstallerConfig.noMsi && (await fs.pathExists(msiPath))) {
+      if (!winstallerConfig.noMsi && (await pathExists(msiPath))) {
         artifacts.push(msiPath);
       }
       return artifacts;
     } finally {
-      await fs.remove(tmpFolder);
+      await fs.rm(tmpFolder, { recursive: true, force: true });
     }
   }
 }

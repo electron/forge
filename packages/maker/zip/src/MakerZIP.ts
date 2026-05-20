@@ -1,10 +1,10 @@
 import path from 'node:path';
 import { promisify } from 'node:util';
 
+import { writeJson } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { zip } from 'cross-zip';
-import fs from 'fs-extra';
 
 import { MakerZIPConfig } from './Config.js';
 
@@ -97,7 +97,7 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
         'RELEASES.json',
       );
       await this.ensureFile(releasesPath);
-      await fs.writeJson(releasesPath, currentValue);
+      await writeJson(releasesPath, currentValue);
 
       return [zipPath, releasesPath];
     }
