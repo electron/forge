@@ -114,6 +114,10 @@ class ViteTemplate extends BaseTemplate {
 
           // Copy source files
           if (typescript) {
+            await this.copyTemplateFile(
+              path.join(directory, 'src'),
+              'declarations.d.ts',
+            );
             await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
             await this.copyTemplateFile(
               path.join(directory, 'src'),

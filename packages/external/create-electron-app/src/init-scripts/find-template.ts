@@ -47,7 +47,7 @@ export const findTemplate = async (
     const tsMatch = template.match(/^(.+)-typescript$/);
     if (tsMatch) {
       throw new Error(
-        `The "${template}" template no longer exists. Use "--template ${tsMatch[1]}" instead and select TypeScript when prompted.`,
+        `The "${template}" template no longer exists. Use "--template ${tsMatch[1]} --typescript" instead.`,
       );
     }
     throw new Error(`Failed to locate custom template: "${template}".`);

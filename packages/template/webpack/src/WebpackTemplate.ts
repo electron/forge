@@ -1,11 +1,12 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { readJson, writeJson } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 const TS_ONLY_DEV_DEPS = new Set([
   'fork-ts-checker-webpack-plugin',
@@ -42,7 +43,9 @@ class WebpackTemplate extends BaseTemplate {
       {
         title: 'Setting up Forge configuration',
         task: async () => {
-          await fs.remove(path.resolve(directory, 'forge.config.js'));
+          await fs.rm(path.resolve(directory, 'forge.config.js'), {
+            force: true,
+          });
 
           if (typescript) {
             await this.copyTemplateFile(directory, 'forge.config.mts');
@@ -107,11 +110,19 @@ class WebpackTemplate extends BaseTemplate {
           await this.writeLintConfig(directory);
 
           // Remove base template's JS source files
-          await fs.remove(path.resolve(directory, 'src', 'index.js'));
-          await fs.remove(path.resolve(directory, 'src', 'preload.js'));
+          await fs.rm(path.resolve(directory, 'src', 'index.js'), {
+            force: true,
+          });
+          await fs.rm(path.resolve(directory, 'src', 'preload.js'), {
+            force: true,
+          });
 
           // Copy and process source files
           if (typescript) {
+            await this.copyTemplateFile(
+              path.join(directory, 'src'),
+              'declarations.d.ts',
+            );
             await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
             await this.copyTemplateFile(
               path.join(directory, 'src'),
@@ -146,11 +157,11 @@ class WebpackTemplate extends BaseTemplate {
           // Remove TS-only scripts from package.json for JS variant
           if (!typescript) {
             const packageJSONPath = path.resolve(directory, 'package.json');
-            const packageJSON = await fs.readJson(packageJSONPath);
+            const packageJSON = await readJson(packageJSONPath);
             for (const script of TS_ONLY_SCRIPTS) {
               delete packageJSON.scripts[script];
             }
-            await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
+            await writeJson(packageJSONPath, packageJSON, { spaces: 2 });
           }
         },
       },

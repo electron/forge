@@ -1046,7 +1046,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/plugin-webpack@workspace:*, @electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
+"@electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-webpack@workspace:packages/plugin/webpack"
   dependencies:
@@ -1212,18 +1212,6 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript":
-  version: 0.0.0-use.local
-  resolution: "@electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript"
-  dependencies:
-    "@electron-forge/core-utils": "workspace:*"
-    "@electron-forge/shared-types": "workspace:*"
-    "@electron-forge/template-base": "workspace:*"
-    "@electron-forge/test-utils": "workspace:*"
-    vitest: "catalog:"
-  languageName: unknown
-  linkType: soft
-
 "@electron-forge/template-vite@workspace:*, @electron-forge/template-vite@workspace:packages/template/vite":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-vite@workspace:packages/template/vite"
@@ -1237,26 +1225,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript":
-  version: 0.0.0-use.local
-  resolution: "@electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript"
-  dependencies:
-    "@electron-forge/core-utils": "workspace:*"
-    "@electron-forge/maker-deb": "workspace:*"
-    "@electron-forge/maker-rpm": "workspace:*"
-    "@electron-forge/maker-squirrel": "workspace:*"
-    "@electron-forge/maker-zip": "workspace:*"
-    "@electron-forge/plugin-webpack": "workspace:*"
-    "@electron-forge/shared-types": "workspace:*"
-    "@electron-forge/template-base": "workspace:*"
-    "@electron-forge/test-utils": "workspace:*"
-    fork-ts-checker-webpack-plugin: "npm:^7.2.13"
-    listr2: "npm:^7.0.2"
-    vitest: "catalog:"
-    webpack: "npm:^5.69.1"
-  languageName: unknown
-  linkType: soft
-
 "@electron-forge/template-webpack@workspace:*, @electron-forge/template-webpack@workspace:packages/template/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-webpack@workspace:packages/template/webpack"
@@ -1265,7 +1233,6 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
-    fs-extra: "npm:^10.0.0"
     listr2: "npm:^7.0.2"
     vitest: "catalog:"
   languageName: unknown
