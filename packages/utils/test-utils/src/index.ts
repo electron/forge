@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ExitError, spawn } from '@malept/cross-spawn-promise';
-import fs from 'fs-extra';
 
 export type PackageJSON = Record<string, unknown> & {
   config?: {
@@ -34,7 +34,7 @@ let dirID = Date.now();
 export async function ensureTestDirIsNonexistent(): Promise<string> {
   const dir = path.resolve(os.tmpdir(), `electron-forge-test-${dirID}`);
   dirID += 1;
-  await fs.promises.rm(dir, { recursive: true, force: true });
+  await fs.rm(dir, { recursive: true, force: true });
 
   return dir;
 }
@@ -76,9 +76,11 @@ export async function updatePackageJSON(
   dir: string,
   callback: (packageJSON: PackageJSON) => Promise<PackageJSON>,
 ) {
-  const packageJSON = await fs.readJson(path.resolve(dir, 'package.json'));
+  const packageJSON = JSON.parse(
+    await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'),
+  );
   const mutated = await callback(JSON.parse(JSON.stringify(packageJSON)));
-  await fs.promises.writeFile(
+  await fs.writeFile(
     path.resolve(dir, 'package.json'),
     JSON.stringify(mutated, null, 2),
     'utf-8',

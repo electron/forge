@@ -1,11 +1,12 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { move, readJson, writeJson } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 const TS_ONLY_DEV_DEPS = new Set([
   '@types/electron-squirrel-startup',
@@ -42,7 +43,9 @@ class ViteTemplate extends BaseTemplate {
         title: 'Setting up Forge configuration',
         task: async () => {
           // Remove the base template's forge.config.js
-          await fs.remove(path.resolve(directory, 'forge.config.js'));
+          await fs.rm(path.resolve(directory, 'forge.config.js'), {
+            force: true,
+          });
 
           if (typescript) {
             await this.copyTemplateFile(directory, 'forge.config.mts');
@@ -102,8 +105,12 @@ class ViteTemplate extends BaseTemplate {
           await this.writeLintConfig(directory);
 
           // Remove base template's JS source files
-          await fs.remove(path.resolve(directory, 'src', 'index.js'));
-          await fs.remove(path.resolve(directory, 'src', 'preload.js'));
+          await fs.rm(path.resolve(directory, 'src', 'index.js'), {
+            force: true,
+          });
+          await fs.rm(path.resolve(directory, 'src', 'preload.js'), {
+            force: true,
+          });
 
           // Copy source files
           if (typescript) {
@@ -132,8 +139,7 @@ class ViteTemplate extends BaseTemplate {
 
           const ext = typescript ? 'ts' : 'js';
 
-          // Move index.html to root (Vite uses root index.html as entry)
-          await fs.move(
+          await move(
             path.join(directory, 'src', 'index.html'),
             path.join(directory, 'index.html'),
             { overwrite: options.force },
@@ -151,11 +157,11 @@ class ViteTemplate extends BaseTemplate {
           // Remove TS-only scripts from package.json for JS variant
           if (!typescript) {
             const packageJSONPath = path.resolve(directory, 'package.json');
-            const packageJSON = await fs.readJson(packageJSONPath);
+            const packageJSON = await readJson(packageJSONPath);
             for (const script of TS_ONLY_SCRIPTS) {
               delete packageJSON.scripts[script];
             }
-            await fs.writeJson(packageJSONPath, packageJSON, { spaces: 2 });
+            await writeJson(packageJSONPath, packageJSON, { spaces: 2 });
           }
         },
       },

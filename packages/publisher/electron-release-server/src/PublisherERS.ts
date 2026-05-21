@@ -7,7 +7,7 @@ import {
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import debug from 'debug';
 import FormData from 'form-data';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 
 import { PublisherERSConfig } from './Config.js';
 

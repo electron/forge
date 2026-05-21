@@ -1,12 +1,16 @@
 import crypto from 'node:crypto';
-import { glob } from 'node:fs/promises';
+import fsPromises, { glob } from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
+import { styleText } from 'node:util';
 import { pipeline } from 'stream/promises';
 
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
+  move,
+  readJson,
+  writeJson,
 } from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
@@ -16,9 +20,8 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import Logger, { Tab } from '@electron-forge/web-multi-logger';
-import chalk from 'chalk';
 import debug from 'debug';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 import { PRESET_TIMER } from 'listr2';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -137,7 +140,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       type,
       `stats-${suffix}.json`,
     );
-    await fs.writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
+    await writeJson(jsonStatsFilename, jsonStats, { spaces: 2 });
   }
 
   private runWebpack = async (
@@ -199,7 +202,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           if (this.alreadyStarted) return;
           this.alreadyStarted = true;
 
-          await fs.remove(this.baseDir);
+          await fsPromises.rm(this.baseDir, {
+            recursive: true,
+            force: true,
+          });
 
           const logger = new Logger(this.loggerPort);
           this.loggers.push(logger);
@@ -219,7 +225,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
               title: 'Launching dev servers for renderer process code',
               task: async (_, task) => {
                 await this.launchRendererDevServers(logger);
-                task.output = `Output Available: ${chalk.cyan(`http://localhost:${this.loggerPort}`)}\n`;
+                task.output = `Output Available: ${styleText('cyan', `http://localhost:${this.loggerPort}`)}\n`;
               },
               rendererOptions: {
                 persistentOutput: true,
@@ -239,7 +245,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             }
 
             this.isProd = true;
-            await fs.remove(this.baseDir);
+            await fsPromises.rm(this.baseDir, {
+              recursive: true,
+              force: true,
+            });
 
             // TODO: Figure out how to get matrix from packager
             const archStrings = arch.split(',');
@@ -330,7 +339,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                         return task.newListr(
                           otherArches.map(
                             (pArch): ListrTask<NativeDepsCtx> => ({
-                              title: `Generating ${chalk.magenta(pArch)} bundle`,
+                              title: `Generating ${styleText('magenta', pArch)} bundle`,
                               task: async (_, innerTask) => {
                                 return innerTask.newListr(
                                   [
@@ -341,7 +350,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                           this.projectDir,
                                           await getElectronVersion(
                                             this.projectDir,
-                                            await fs.readJson(
+                                            await readJson(
                                               path.join(
                                                 this.projectDir,
                                                 'package.json',
@@ -377,11 +386,13 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                           this.baseDir,
                                           pArch,
                                         );
-                                        await fs.mkdirp(targetDir);
-                                        for (const child of await fs.readdir(
+                                        await fsPromises.mkdir(targetDir, {
+                                          recursive: true,
+                                        });
+                                        for (const child of await fsPromises.readdir(
                                           firstDir,
                                         )) {
-                                          await fs.promises.cp(
+                                          await fsPromises.cp(
                                             path.resolve(firstDir, child),
                                             path.resolve(targetDir, child),
                                             {
@@ -427,7 +438,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                             targetDir,
                                             nativeDep,
                                           );
-                                          await fs.remove(archPath);
+                                          await fsPromises.rm(archPath, {
+                                            recursive: true,
+                                            force: true,
+                                          });
 
                                           const mappedPaths =
                                             ctx.nativeDeps[nativeDep];
@@ -456,7 +470,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                                             );
                                           }
 
-                                          await fs.promises.cp(
+                                          await fsPromises.cp(
                                             mappedPaths[0],
                                             archPath,
                                           );
@@ -477,13 +491,13 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             return task.newListr<NativeDepsCtx>(
               [
                 {
-                  title: `Preparing native dependencies for ${chalk.magenta(firstArch)}`,
+                  title: `Preparing native dependencies for ${styleText('magenta', firstArch)}`,
                   task: async (_, innerTask) => {
                     await listrCompatibleRebuildHook(
                       this.projectDir,
                       await getElectronVersion(
                         this.projectDir,
-                        await fs.readJson(
+                        await readJson(
                           path.join(this.projectDir, 'package.json'),
                         ),
                       ),
@@ -506,11 +520,13 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                     await this.compileRenderers();
                     // Store it in a place that won't get messed with
                     // We'll restore the right "arch" in the afterCopy hook further down
-                    const preExistingChildren = await fs.readdir(this.baseDir);
+                    const preExistingChildren = await fsPromises.readdir(
+                      this.baseDir,
+                    );
                     const targetDir = path.resolve(this.baseDir, firstArch);
-                    await fs.mkdirp(targetDir);
+                    await fsPromises.mkdir(targetDir, { recursive: true });
                     for (const child of preExistingChildren) {
-                      await fs.move(
+                      await move(
                         path.resolve(this.baseDir, child),
                         path.resolve(targetDir, child),
                       );
@@ -548,12 +564,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           // Restore the correct 'arch' build of webpack
           // Steal the correct arch, wipe the folder, move it back to pretend to be ".webpack" root
           const tmpWebpackDir = path.resolve(buildPath, '.webpack.tmp');
-          await fs.move(
-            path.resolve(buildPath, '.webpack', pArch),
-            tmpWebpackDir,
-          );
-          await fs.remove(path.resolve(buildPath, '.webpack'));
-          await fs.move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
+          await move(path.resolve(buildPath, '.webpack', pArch), tmpWebpackDir);
+          await fsPromises.rm(path.resolve(buildPath, '.webpack'), {
+            recursive: true,
+            force: true,
+          });
+          await move(tmpWebpackDir, path.resolve(buildPath, '.webpack'));
         },
         this.packageAfterCopy,
       ],
@@ -569,9 +585,12 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     if (forgeConfig.packagerConfig.ignore) {
       if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
         console.error(
-          chalk.red(`You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
+          styleText(
+            'red',
+            `You have set packagerConfig.ignore, the Electron Forge webpack plugin normally sets this automatically.
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`),
+Your packaged app may be larger than expected if you dont ignore everything other than the '.webpack' folder`,
+          ),
         );
       }
       return forgeConfig;
@@ -612,7 +631,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     _forgeConfig: ResolvedForgeConfig,
     buildPath: string,
   ): Promise<void> => {
-    const pj = await fs.readJson(path.resolve(this.projectDir, 'package.json'));
+    const pj = await readJson(path.resolve(this.projectDir, 'package.json'));
 
     if (!pj.main?.endsWith('.webpack/main')) {
       throw new Error(`Electron Forge is configured to use the Webpack plugin. The plugin expects the
@@ -624,11 +643,13 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       delete pj.config.forge;
     }
 
-    await fs.writeJson(path.resolve(buildPath, 'package.json'), pj, {
+    await writeJson(path.resolve(buildPath, 'package.json'), pj, {
       spaces: 2,
     });
 
-    await fs.mkdirp(path.resolve(buildPath, 'node_modules'));
+    await fsPromises.mkdir(path.resolve(buildPath, 'node_modules'), {
+      recursive: true,
+    });
   };
 
   compileMain = async (watch = false, logger?: Logger): Promise<void> => {

@@ -1,7 +1,8 @@
+import fs from 'node:fs/promises';
+
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { createDMG } from 'electron-installer-dmg';
-import fs from 'fs-extra';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MakerDMG } from '../src/MakerDMG';
@@ -14,7 +15,7 @@ vi.mock(import('electron-installer-dmg'), () => {
   };
 });
 
-vi.mock(import('fs-extra'), async (importOriginal) => {
+vi.mock(import('node:fs/promises'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,

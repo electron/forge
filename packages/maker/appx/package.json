@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-appx",
-  "version": "8.0.0-alpha.8",
+  "version": "8.0.0-alpha.9",
   "type": "module",
   "description": "AppX maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -18,8 +18,7 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "cross-spawn": "^7.0.3",
-    "fs-extra": "^10.0.0"
+    "cross-spawn": "^7.0.3"
   },
   "optionalDependencies": {
     "electron-windows-store": "^2.1.0"

@@ -1,10 +1,10 @@
 import path from 'node:path';
 
+import { pathExists } from '@electron-forge/core-utils';
 import {
   PublisherBase,
   PublisherOptions,
 } from '@electron-forge/publisher-base';
-import fs from 'fs-extra';
 
 import { PublisherSnapcraftConfig } from './Config.js';
 
@@ -33,7 +33,7 @@ export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraft
 
     const snapcraftCfgPath = path.join(dir, '.snapcraft', 'snapcraft.cfg');
 
-    if (!(await fs.pathExists(snapcraftCfgPath))) {
+    if (!(await pathExists(snapcraftCfgPath))) {
       throw new Error(
         `Snapcraft credentials not found at "${snapcraftCfgPath}". It can be generated with the command "snapcraft export-login"` +
           '(snapcraft 2.37 and above).',

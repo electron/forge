@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-zip",
-  "version": "8.0.0-alpha.8",
+  "version": "8.0.0-alpha.9",
   "type": "module",
   "description": "ZIP maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -15,10 +15,10 @@
     "node": ">= 22.13.0"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "cross-zip": "^4.0.0",
-    "fs-extra": "^10.0.0"
+    "cross-zip": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"

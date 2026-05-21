@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // This file requires a shebang above. If it is missing, this is an error.
 
-import chalk from 'chalk';
+import { styleText } from 'node:util';
+
 import { program } from 'commander';
-import logSymbols from 'log-symbols';
 import semver from 'semver';
 
 import packageJSON from '../package.json' with { type: 'json' };
@@ -13,8 +13,8 @@ import { checkSystem, SystemCheckContext } from './util/check-system.js';
 
 if (!semver.satisfies(process.versions.node, packageJSON.engines.node)) {
   console.error(
-    logSymbols.error,
-    `You are running Node.js version ${chalk.red(process.versions.node)}, but Electron Forge requires Node.js ${chalk.red(packageJSON.engines.node)}. \n`,
+    styleText('red', '✖'),
+    `You are running Node.js version ${styleText('red', process.versions.node)}, but Electron Forge requires Node.js ${styleText('red', packageJSON.engines.node)}. \n`,
   );
   process.exit(1);
 }

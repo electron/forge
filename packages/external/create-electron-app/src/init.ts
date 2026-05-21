@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import {
   DepType,
@@ -10,7 +11,6 @@ import {
 } from '@electron-forge/core-utils';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import { spawn } from '@malept/cross-spawn-promise';
-import chalk from 'chalk';
 import debug from 'debug';
 import { Listr } from 'listr2';
 import semver from 'semver';
@@ -119,34 +119,34 @@ export async function init({
         title: `Resolving package manager`,
         task: async (ctx, task) => {
           ctx.pm = await resolvePackageManager(packageManager);
-          task.title = `Resolved package manager: ${chalk.cyan(`${ctx.pm.executable}@${ctx.pm.version}`)}`;
+          task.title = `Resolved package manager: ${styleText('cyan', `${ctx.pm.executable}@${ctx.pm.version}`)}`;
         },
       },
       {
-        title: `Resolving template: ${chalk.cyan(template)}`,
+        title: `Resolving template: ${styleText('cyan', template)}`,
         task: async (ctx, task) => {
           const tmpl = await findTemplate(template);
           ctx.templateModule = tmpl.template;
-          task.output = `Using ${chalk.green(tmpl.name)}`;
+          task.output = `Using ${styleText('green', tmpl.name)}`;
         },
         rendererOptions: { persistentOutput: true },
       },
       {
-        title: `Resolving Electron version: ${chalk.cyan(electronVersion)}`,
+        title: `Resolving Electron version: ${styleText('cyan', electronVersion)}`,
         task: async (ctx, task) => {
           if (
             electronVersion === 'latest' ||
             electronVersion === 'beta' ||
             electronVersion === 'nightly'
           ) {
-            task.output = `Using Electron version tag: ${chalk.cyan(electronVersion)}`;
+            task.output = `Using Electron version tag: ${styleText('cyan', electronVersion)}`;
             ctx.parsedElectronVersion = electronVersion;
           } else {
             // semver.clean allows us to accept `v` versions and trims whitespace
             const maybeVersion = semver.clean(electronVersion);
 
             if (maybeVersion) {
-              task.output = `Using Electron version: ${chalk.cyan(maybeVersion)}`;
+              task.output = `Using Electron version: ${styleText('cyan', maybeVersion)}`;
               ctx.parsedElectronVersion = maybeVersion;
             } else {
               throw new Error(
@@ -203,10 +203,10 @@ export async function init({
             await spawn('corepack', ['use', pmString], {
               cwd: dir,
             });
-            task.title = `Set ${chalk.cyan(pmString)} via Corepack`;
+            task.title = `Set ${styleText('cyan', pmString)} via Corepack`;
           } catch (e) {
             d('corepack failed to run with error', e);
-            task.title = `Forge was unable to set ${chalk.cyan(pmString)} via Corepack and will fall back to ${chalk.cyan('npm')}. If you are using Node.js >= 25, you will need to install corepack via ${chalk.green('npm install -g corepack')}. Otherwise, you may need to enable Corepack shims via ${chalk.green('corepack enable')}.`;
+            task.title = `Forge was unable to set ${styleText('cyan', pmString)} via Corepack and will fall back to ${styleText('cyan', 'npm')}. If you are using Node.js >= 25, you will need to install corepack via ${styleText('green', 'npm install -g corepack')}. Otherwise, you may need to enable Corepack shims via ${styleText('green', 'corepack enable')}.`;
           }
         },
       },

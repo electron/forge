@@ -1,8 +1,8 @@
+import { existsSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
-
-import chalk from 'chalk';
-import fs from 'fs-extra';
+import { styleText } from 'node:util';
 
 const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -30,7 +30,9 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
 
   let bad = false;
   for (const dir of dirsToCheck) {
-    const pj = await fs.readJson(path.resolve(dir, 'package.json'));
+    const pj = JSON.parse(
+      await fs.readFile(path.resolve(dir, 'package.json'), 'utf8'),
+    );
     if (pj.name === '@electron-forge/cli') continue;
     // The entrypoint can be defined under `exports` or `main` in package.json now!
     // `exports` can be a string or an exports map object (e.g. { ".": { "default": "...", "types": "..." } })
@@ -45,10 +47,10 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
     } else {
       main = pj.main;
     }
-    if (!main || !(await fs.pathExists(path.resolve(dir, main)))) {
+    if (!main || !existsSync(path.resolve(dir, main))) {
       console.error(
-        `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Main entry not found (${main})`),
+        `${styleText('cyan', `[${pj.name}]`)}:`,
+        styleText('red', `Main entry not found (${main})`),
       );
       bad = true;
     } else if (!SKIP_IMPORT.has(pj.name)) {
@@ -57,16 +59,16 @@ const SKIP_IMPORT = new Set(['create-electron-app']);
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
         console.error(
-          `${chalk.cyan(`[${pj.name}]`)}:`,
-          chalk.red(`Failed to import main entry (${main}): ${message}`),
+          `${styleText('cyan', `[${pj.name}]`)}:`,
+          styleText('red', `Failed to import main entry (${main}): ${message}`),
         );
         bad = true;
       }
     }
-    if (!typings || !(await fs.pathExists(path.resolve(dir, typings)))) {
+    if (!typings || !existsSync(path.resolve(dir, typings))) {
       console.error(
-        `${chalk.cyan(`[${pj.name}]`)}:`,
-        chalk.red(`Typings entry not found (${typings})`),
+        `${styleText('cyan', `[${pj.name}]`)}:`,
+        styleText('red', `Typings entry not found (${typings})`),
       );
       bad = true;
     }

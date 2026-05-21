@@ -1,6 +1,6 @@
+import fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import * as fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 const workspaceMappings: {

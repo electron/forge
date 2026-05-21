@@ -1,9 +1,9 @@
 import fs from 'node:fs';
+import { styleText } from 'node:util';
 
 import { resolveWorkingDir } from '@electron-forge/core-utils';
 import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
-import chalk from 'chalk';
 import { program } from 'commander';
 import { Listr } from 'listr2';
 
@@ -77,7 +77,7 @@ const initCommand = program
               (await fs.promises.readdir(initOpts.dir)).length > 0
             ) {
               const confirmResult = await prompt.run(confirm, {
-                message: `${chalk.cyan(initOpts.dir)} is not empty. Would you like to continue and overwrite existing files?`,
+                message: `${styleText('cyan', initOpts.dir)} is not empty. Would you like to continue and overwrite existing files?`,
                 default: false,
               });
 

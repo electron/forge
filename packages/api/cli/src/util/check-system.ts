@@ -4,13 +4,13 @@ import path from 'node:path';
 
 import {
   PACKAGE_MANAGERS,
+  pathExists,
   resolvePackageManager,
   spawnPackageManager,
   SupportedPackageManager,
 } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
 import semver from 'semver';
 
 const d = debug('electron-forge:check-system');
@@ -87,15 +87,12 @@ async function checkYarnConfig() {
   }
 }
 
-// TODO(erickzhao): Drop antiquated versions of npm for Forge v8
 const ALLOWLISTED_VERSIONS: Record<
   SupportedPackageManager,
   Record<string, string>
 > = {
   npm: {
-    all: '^3.0.0 || ^4.0.0 || ~5.1.0 || ~5.2.0 || >= 5.4.2',
-    darwin: '>= 5.4.0',
-    linux: '>= 5.4.0',
+    all: '>= 10.9.0',
   },
   yarn: {
     all: '>= 1.0.0',
@@ -119,7 +116,7 @@ export async function checkPackageManager() {
       `Could not check ${pm.executable} version "${version}", assuming incompatible`,
     );
   }
-  if (!semver.satisfies(version, range)) {
+  if (!semver.satisfies(version, range, { includePrerelease: true })) {
     throw new Error(
       `Incompatible version of ${pm.executable} detected: "${version}" must be in range ${range}`,
     );
@@ -158,7 +155,7 @@ export type SystemCheckContext = {
 export async function checkSystem(
   callerTask: ForgeListrTask<SystemCheckContext>,
 ) {
-  if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
+  if (!(await pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return callerTask.newListr<SystemCheckContext>(
       [

@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-flatpak",
-  "version": "8.0.0-alpha.8",
+  "version": "8.0.0-alpha.9",
   "type": "module",
   "description": "Flatpak maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -16,8 +16,7 @@
   },
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",
-    "@electron-forge/shared-types": "workspace:*",
-    "fs-extra": "^10.0.0"
+    "@electron-forge/shared-types": "workspace:*"
   },
   "optionalDependencies": {
     "@malept/electron-installer-flatpak": "^0.11.4"

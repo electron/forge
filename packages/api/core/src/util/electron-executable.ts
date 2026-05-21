@@ -1,8 +1,8 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { styleText } from 'node:util';
 
 import { getElectronModulePath } from '@electron-forge/core-utils';
-import logSymbols from 'log-symbols';
-import { pathToFileURL } from 'node:url';
 
 type PackageJSON = Record<string, unknown>;
 
@@ -32,7 +32,7 @@ export default async function locateElectronExecutable(
     return electronExecPath;
   } else {
     console.warn(
-      logSymbols.warning,
+      styleText('yellow', '⚠'),
       `Returned Electron executable path (${electronExecPath}) is not a string. Defaulting to node_modules/electron.`,
     );
     const { default: fallbackExecPath } = await import(
