@@ -55,13 +55,13 @@ function generateTargets(
   return forgeConfig.makers;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 function isElectronForgeMaker(
   target: MakerBase<any> | unknown,
 ): target is MakerBase<any> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (target as MakerBase<any>).__isElectronForgeMaker;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 type MakeContext = {
   dir: string;

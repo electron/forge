@@ -45,6 +45,12 @@
       "rules": {
         "no-undef": "off"
       }
+    },
+    {
+      "files": ["**/*.spec.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off"
+      }
     }
   ],
   "ignorePatterns": [

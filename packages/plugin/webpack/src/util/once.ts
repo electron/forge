@@ -1,4 +1,4 @@
-/* eslint "arrow-parens": "off", "@typescript-eslint/no-explicit-any": "off" */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default <A, B>(fn1: A, fn2: B): [A, B] => {
   let once = true;
   let val: any;

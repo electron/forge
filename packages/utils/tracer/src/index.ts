@@ -73,7 +73,7 @@ export function delayTraceTillSignal<O extends object, K extends keyof O>(
 ) {
   const original: any = signaller[signal];
   (trace as any)._autoEnd = false;
-  signaller[signal] = function (...args: any[]) {
+  signaller[signal] = function (...args: unknown[]) {
     const result = original.call(signaller, ...args);
     if (typeof result === 'object' && result.then && result.catch) {
       result
