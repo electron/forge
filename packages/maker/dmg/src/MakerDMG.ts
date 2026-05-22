@@ -23,7 +23,6 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     appName,
     packageJSON,
     targetArch,
-    targetPlatform,
   }: MakerOptions): Promise<string[]> {
     const { createDMG } = await import('electron-installer-dmg');
 
