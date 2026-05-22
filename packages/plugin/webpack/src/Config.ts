@@ -1,4 +1,5 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
+// eslint-disable-next-line import/default -- webpack-dev-server v5 uses `export =`; esModuleInterop resolves the default
 import WebpackDevServer from 'webpack-dev-server';
 
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig';

@@ -20,6 +20,7 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
 import webpack, { Configuration, Watching } from 'webpack';
+// eslint-disable-next-line import/default -- webpack-dev-server v5 uses `export =`; esModuleInterop resolves the default
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
