@@ -23,12 +23,14 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     appName,
     packageJSON,
     targetArch,
+    targetPlatform,
   }: MakerOptions): Promise<string[]> {
     const { createDMG } = await import('electron-installer-dmg');
 
-    const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
+    const dmgDir = path.resolve(makeDir, 'dmg', targetPlatform, targetArch);
+    const outPath = path.resolve(dmgDir, `${this.config.name || appName}.dmg`);
     const forgeDefaultOutPath = path.resolve(
-      makeDir,
+      dmgDir,
       `${appName}-${packageJSON.version}-${targetArch}.dmg`,
     );
 
@@ -38,7 +40,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
       name: appName,
       ...this.config,
       appPath: path.resolve(dir, `${appName}.app`),
-      out: path.dirname(outPath),
+      out: dmgDir,
     };
     await createDMG(dmgConfig);
     if (!this.config.name) {

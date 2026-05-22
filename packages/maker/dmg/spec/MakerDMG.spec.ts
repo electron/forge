@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
+import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { createDMG } from 'electron-installer-dmg';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -31,6 +32,7 @@ describe('MakerDMG', () => {
   const makeDir = '/my/test/dir/make';
   const appName = 'My Test App';
   const targetArch = process.arch as ForgeArch;
+  const targetPlatform = 'darwin' as ForgePlatform;
   const packageJSON = { version: '1.2.3' };
 
   it('should pass through correct defaults', async () => {
@@ -42,9 +44,37 @@ describe('MakerDMG', () => {
       makeDir,
       appName,
       targetArch,
+      targetPlatform,
       packageJSON,
     });
     expect(vi.mocked(createDMG)).toHaveBeenCalledOnce();
+  });
+
+  it('should output to a platform/arch specific subdirectory to avoid conflicts between parallel makers', async () => {
+    const maker = new MakerDMG({}, []);
+    maker.ensureFile = vi.fn();
+    await maker.prepareConfig(targetArch);
+    const expectedDir = path.resolve(
+      makeDir,
+      'dmg',
+      targetPlatform,
+      targetArch,
+    );
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      targetPlatform,
+      packageJSON,
+    });
+    expect(vi.mocked(createDMG)).toHaveBeenCalledWith(
+      expect.objectContaining({ out: expectedDir }),
+    );
+    expect(vi.mocked(fs.rename)).toHaveBeenCalledWith(
+      expect.stringContaining(expectedDir),
+      expect.stringContaining(expectedDir),
+    );
   });
 
   it('should attempt to rename the DMG file with version if no custom name is set', async () => {
@@ -56,6 +86,7 @@ describe('MakerDMG', () => {
       makeDir,
       appName,
       targetArch,
+      targetPlatform,
       packageJSON,
     });
     expect(vi.mocked(fs.rename)).toHaveBeenCalledOnce();
@@ -74,6 +105,7 @@ describe('MakerDMG', () => {
       makeDir,
       appName,
       targetArch,
+      targetPlatform,
       packageJSON,
     });
     expect(vi.mocked(fs.rename)).not.toHaveBeenCalled();
