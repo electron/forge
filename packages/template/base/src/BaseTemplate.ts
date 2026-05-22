@@ -14,7 +14,6 @@ import {
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fsExtra from 'fs-extra';
 import gracefulFs from 'graceful-fs';
 import { format } from 'oxfmt';
 import semver from 'semver';
@@ -27,7 +26,7 @@ const currentForgeVersion = readJsonSync(
 
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
-const oxfmtConfig = fsExtra.readJSONSync(
+const oxfmtConfig = readJsonSync(
   path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
 );
 
@@ -138,11 +137,9 @@ export class BaseTemplate implements ForgeTemplate {
   async writeLintConfig(directory: string): Promise<void> {
     await this.copyTemplateFile(directory, '.oxlintrc.json');
     const { ignorePatterns: _, ...projectConfig } = oxfmtConfig;
-    await fsExtra.writeJson(
-      path.resolve(directory, '.oxfmtrc.json'),
-      projectConfig,
-      { spaces: 2 },
-    );
+    await writeJson(path.resolve(directory, '.oxfmtrc.json'), projectConfig, {
+      spaces: 2,
+    });
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
