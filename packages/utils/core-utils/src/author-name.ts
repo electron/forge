@@ -22,7 +22,7 @@ export function parseAuthor(str: string): ParsedAuthor {
     return {};
   }
 
-  const match = ([] as unknown[]).concat.apply([], authorRegex().exec(str));
+  const match = ([] as unknown[]).concat.apply([], authorRegex().exec(str)!);
   const author: ParsedAuthor = {};
 
   if (match[1]) {
