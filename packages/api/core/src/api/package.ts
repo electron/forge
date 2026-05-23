@@ -671,6 +671,7 @@ export const listrPackage = (
                                     },
                                   ],
                                   {
+                                    concurrent: false,
                                     rendererOptions: {
                                       collapseSubtasks: true,
                                       collapseErrors: false,
