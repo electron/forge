@@ -118,7 +118,7 @@ describe('VitePlugin', async () => {
         expect(config.packagerConfig.ignore).toEqual(/test/);
       });
 
-      it('ignores everything but files in .vite', async () => {
+      it('ignores everything but .vite and package.json', async () => {
         const config = await plugin.resolveForgeConfig(
           {} as ResolvedForgeConfig,
         );
@@ -126,8 +126,34 @@ describe('VitePlugin', async () => {
 
         expect(ignore('')).toEqual(false);
         expect(ignore('/abc')).toEqual(true);
+        expect(ignore('/src/main.ts')).toEqual(true);
         expect(ignore('/.vite')).toEqual(false);
         expect(ignore('/.vite/foo')).toEqual(false);
+        expect(ignore('/package.json')).toEqual(false);
+      });
+
+      it('allows the node_modules directory itself but blocks unknown modules', async () => {
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/node_modules')).toEqual(false);
+        expect(ignore('/node_modules/typescript')).toEqual(true);
+        expect(ignore('/node_modules/typescript/lib/typescript.js')).toEqual(
+          true,
+        );
+      });
+
+      it('blocks unknown modules through the ignore function', async () => {
+        plugin = new VitePlugin(baseConfig);
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/node_modules/unknown-pkg')).toEqual(true);
+        expect(ignore('/node_modules/unknown-pkg/index.js')).toEqual(true);
       });
 
       it('ignores source map files by default', async () => {
