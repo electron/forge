@@ -83,7 +83,28 @@ export default class PublishState {
   }
 
   async load(): Promise<void> {
-    this.state = await fs.readJson(this.path);
+    try {
+      this.state = await fs.readJson(this.path);
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException)?.code;
+      if (code === 'ENOENT') {
+        throw Object.assign(
+          new Error(
+            `Publish state file not found: ${this.path}. The dry-run output directory may have been deleted or moved.`,
+          ),
+          { cause: err },
+        );
+      }
+      if (err instanceof SyntaxError) {
+        throw Object.assign(
+          new Error(
+            `Publish state file is corrupt: ${this.path}. Re-run \`electron-forge make\` to regenerate it.`,
+          ),
+          { cause: err },
+        );
+      }
+      throw err;
+    }
   }
 
   async saveToDisk(): Promise<void> {
@@ -92,7 +113,20 @@ export default class PublishState {
       this.hasHash = true;
     }
 
-    await fs.mkdirs(path.dirname(this.path));
-    await fs.writeJson(this.path, this.state);
+    try {
+      // outputJson() = mkdirs(dirname) + writeJson(file) atomically.
+      await fs.outputJson(this.path, this.state);
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException)?.code;
+      if (code === 'EACCES' || code === 'EPERM' || code === 'EROFS') {
+        throw Object.assign(
+          new Error(
+            `Cannot write publish state to ${this.path}: permission denied. Check that the dry-run output directory is writable.`,
+          ),
+          { cause: err },
+        );
+      }
+      throw err;
+    }
   }
 }
