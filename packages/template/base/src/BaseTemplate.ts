@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 import path from 'node:path';
 
@@ -14,7 +15,6 @@ import {
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import gracefulFs from 'graceful-fs';
 import { format } from 'oxfmt';
 import semver from 'semver';
 
@@ -26,9 +26,6 @@ const currentForgeVersion = readJsonSync(
 
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
-const oxfmtConfig = readJsonSync(
-  path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
-);
 
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
@@ -37,7 +34,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const deps = readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
@@ -54,7 +51,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const packageDevDeps = readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
@@ -136,10 +133,10 @@ export class BaseTemplate implements ForgeTemplate {
 
   async writeLintConfig(directory: string): Promise<void> {
     await this.copyTemplateFile(directory, '.oxlintrc.json');
-    const { ignorePatterns: _, ...projectConfig } = oxfmtConfig;
-    await writeJson(path.resolve(directory, '.oxfmtrc.json'), projectConfig, {
-      spaces: 2,
-    });
+    await this.copy(
+      path.join(tmplDir, '.oxfmtrc.json'),
+      path.resolve(directory, '.oxfmtrc.json'),
+    );
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
@@ -160,7 +157,7 @@ export class BaseTemplate implements ForgeTemplate {
         this.templateDir,
         'package.json',
       );
-      if (gracefulFs.existsSync(templatePackageJSONPath)) {
+      if (existsSync(templatePackageJSONPath)) {
         const templatePackageJSON = await readJson(templatePackageJSONPath);
         const { dependencies, devDependencies, scripts, ...rest } =
           templatePackageJSON;
@@ -197,7 +194,8 @@ export class BaseTemplate implements ForgeTemplate {
 
   async stripAndRename(srcPath: string, destPath: string): Promise<void> {
     const source = await fs.readFile(srcPath, 'utf8');
-    const stripped = stripTypeScriptTypes(source, { mode: 'transform' });
+    const stripped = stripTypeScriptTypes(source, { mode: 'strip' });
+    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
     const formatted = await format(destPath, stripped, oxfmtConfig);
     await fs.writeFile(destPath, formatted.code);
     if (srcPath !== destPath) {

@@ -1197,7 +1197,6 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     debug: "npm:^4.3.1"
-    graceful-fs: "npm:^4.2.11"
     oxfmt: "npm:^0.41.0"
     semver: "npm:^7.2.1"
     username: "npm:^5.1.0"

@@ -95,6 +95,9 @@ class WebpackTemplate extends BaseTemplate {
             await this.copyTemplateFile(directory, 'webpack.plugins.ts');
             await this.copyTemplateFile(directory, 'tsconfig.json');
           } else {
+            // JS webpack configs are hand-maintained in tmpl/js/ because
+            // they differ structurally from the TS variants (no ts-loader,
+            // no fork-ts-checker-webpack-plugin, different rule sets).
             for (const name of [
               'webpack.main.config.mjs',
               'webpack.renderer.config.mjs',

@@ -122,7 +122,7 @@ const initCommand = program
               },
             );
 
-            if (bundler !== 'base') {
+            if (bundler !== 'base' && !options.typescript) {
               initOpts.typescript = await prompt.run<Prompt<boolean, any>>(
                 select,
                 {
