@@ -33,6 +33,10 @@ program
   )
   .command('package', 'Package the current Electron application.')
   .command(
+    'bundle',
+    'Bundle the current Electron application source code for production.',
+  )
+  .command(
     'make',
     'Generate distributables for the current Electron application.',
   )
