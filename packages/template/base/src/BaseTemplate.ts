@@ -203,20 +203,29 @@ export class BaseTemplate implements ForgeTemplate {
     }
   }
 
+  async formatFile(filePath: string): Promise<void> {
+    const source = await fs.readFile(filePath, 'utf8');
+    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
+    const formatted = await format(filePath, source, oxfmtConfig);
+    await fs.writeFile(filePath, formatted.code);
+  }
+
   async updateFileByLine(
     inputPath: string,
     lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
+    const destPath = outputPath || inputPath;
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
       .filter((line): line is string => line !== null)
       .join('\n');
-    await fs.writeFile(outputPath || inputPath, fileContents);
+    await fs.writeFile(destPath, fileContents);
     if (outputPath !== undefined) {
       await fs.rm(inputPath, { recursive: true, force: true });
     }
+    await this.formatFile(destPath);
   }
 }
 

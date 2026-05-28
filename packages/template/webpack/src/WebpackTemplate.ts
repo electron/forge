@@ -57,27 +57,25 @@ class WebpackTemplate extends BaseTemplate {
             );
             // For JS, replace module imports with string-based config paths
             // and patch file references from .ts to .js
-            await this.updateFileByLine(
-              path.resolve(directory, 'forge.config.mjs'),
-              (line) => {
-                // Remove webpack config imports (JS uses string paths instead)
-                if (line.includes("from './webpack.")) return null;
-                // Replace object reference with string path
-                if (line.includes('mainConfig,'))
-                  return line.replace(
-                    'mainConfig,',
-                    "mainConfig: './webpack.main.config.mjs',",
-                  );
-                if (/config:\s*rendererConfig,/.test(line))
-                  return line.replace(
-                    'rendererConfig,',
-                    "'./webpack.renderer.config.mjs',",
-                  );
-                return line
-                  .replace(/src\/renderer\.ts/g, 'src/renderer.js')
-                  .replace(/src\/preload\.ts/g, 'src/preload.js');
-              },
-            );
+            const forgeConfigPath = path.resolve(directory, 'forge.config.mjs');
+            await this.updateFileByLine(forgeConfigPath, (line) => {
+              // Remove webpack config imports (JS uses string paths instead)
+              if (line.includes("from './webpack.")) return null;
+              // Replace object reference with string path
+              if (line.includes('mainConfig,'))
+                return line.replace(
+                  'mainConfig,',
+                  "mainConfig: './webpack.main.config.mjs',",
+                );
+              if (/config:\s*rendererConfig,/.test(line))
+                return line.replace(
+                  'rendererConfig,',
+                  "'./webpack.renderer.config.mjs',",
+                );
+              return line
+                .replace(/src\/renderer\.ts/g, 'src/renderer.js')
+                .replace(/src\/preload\.ts/g, 'src/preload.js');
+            });
           }
         },
       },

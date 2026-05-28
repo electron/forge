@@ -51,26 +51,25 @@ class ViteTemplate extends BaseTemplate {
             await this.copyTemplateFile(directory, 'forge.config.mts');
           } else {
             await this.copyTemplateFile(directory, 'forge.config.mts');
+            const forgeConfigPath = path.resolve(directory, 'forge.config.mjs');
             await this.stripAndRename(
               path.resolve(directory, 'forge.config.mts'),
-              path.resolve(directory, 'forge.config.mjs'),
+              forgeConfigPath,
             );
             // Patch entry/config paths from .ts to .js/.mjs
-            await this.updateFileByLine(
-              path.resolve(directory, 'forge.config.mjs'),
-              (line) =>
-                line
-                  .replace(/src\/main\.ts/g, 'src/main.js')
-                  .replace(/src\/preload\.ts/g, 'src/preload.js')
-                  .replace(/vite\.main\.config\.ts/g, 'vite.main.config.mjs')
-                  .replace(
-                    /vite\.preload\.config\.ts/g,
-                    'vite.preload.config.mjs',
-                  )
-                  .replace(
-                    /vite\.renderer\.config\.ts/g,
-                    'vite.renderer.config.mjs',
-                  ),
+            await this.updateFileByLine(forgeConfigPath, (line) =>
+              line
+                .replace(/src\/main\.ts/g, 'src/main.js')
+                .replace(/src\/preload\.ts/g, 'src/preload.js')
+                .replace(/vite\.main\.config\.ts/g, 'vite.main.config.mjs')
+                .replace(
+                  /vite\.preload\.config\.ts/g,
+                  'vite.preload.config.mjs',
+                )
+                .replace(
+                  /vite\.renderer\.config\.ts/g,
+                  'vite.renderer.config.mjs',
+                ),
             );
           }
         },
