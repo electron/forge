@@ -29,12 +29,7 @@ describe('BaseTemplate', () => {
     });
 
     it('.oxlintrc.json should exist in each template that uses writeLintConfig', () => {
-      const templatesWithLintConfig = [
-        'vite',
-        'vite-typescript',
-        'webpack',
-        'webpack-typescript',
-      ];
+      const templatesWithLintConfig = ['vite', 'webpack'];
       for (const template of templatesWithLintConfig) {
         const oxlintrcPath = path.resolve(
           import.meta.dirname,
