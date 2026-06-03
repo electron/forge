@@ -44,10 +44,16 @@ export const findTemplate = async (
     }
   }
   if (!foundTemplate) {
-    const tsMatch = template.match(/^(.+)-typescript$/);
-    if (tsMatch) {
+    // Only the bundled `vite`/`webpack` templates were unified behind the
+    // `--typescript` flag, so only redirect the old short-form names. Skip
+    // absolute paths and third-party templates, which don't honor the flag.
+    if (
+      !isAbsolutePath &&
+      (template === 'vite-typescript' || template === 'webpack-typescript')
+    ) {
+      const bundler = template.replace(/-typescript$/, '');
       throw new Error(
-        `The "${template}" template no longer exists. Use "--template ${tsMatch[1]} --typescript" instead.`,
+        `The "${template}" template no longer exists. Use "--template ${bundler} --typescript" instead.`,
       );
     }
     throw new Error(`Failed to locate custom template: "${template}".`);
