@@ -32,7 +32,7 @@
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/tracer": "workspace:*",
     "@electron/get": "^5.0.0",
-    "@electron/packager": "^20.0.0",
+    "@electron/packager": "^20.0.1",
     "debug": "^4.3.1",
     "graceful-fs": "^4.2.11",
     "jiti": "^2.4.2",
