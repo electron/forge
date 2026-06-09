@@ -3,6 +3,7 @@
   "printWidth": 80,
   "sortPackageJson": false,
   "ignorePatterns": [
+    "**/.claude/**",
     ".nyc_output",
     "dist/",
     "docs/",
