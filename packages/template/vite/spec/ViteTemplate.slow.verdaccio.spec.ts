@@ -13,14 +13,15 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { api } from '../../../api/core/dist/api';
 import { init } from '../../../external/create-electron-app/src/init';
 
-describe('ViteTypeScriptTemplate', () => {
+describe('ViteTemplate (TypeScript)', () => {
   let dir: string;
 
   beforeAll(async () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
     await init({
       dir,
-      template: path.resolve(import.meta.dirname, '..'),
+      template: 'vite',
+      typescript: true,
       interactive: false,
       electronVersion: '38.2.2',
     });
@@ -29,7 +30,6 @@ describe('ViteTypeScriptTemplate', () => {
   afterAll(async () => {
     await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['unlink', '--all']);
     if (os.platform() !== 'win32') {
-      // Windows platform `fs.remove(dir)` logic using `npm run test:clear`.
       await fs.promises.rm(dir, { force: true, recursive: true });
     }
   });
@@ -39,7 +39,7 @@ describe('ViteTypeScriptTemplate', () => {
       'package.json',
       'tsconfig.json',
       '.oxlintrc.json',
-      'forge.config.ts',
+      'forge.config.mts',
       'vite.main.config.ts',
       'vite.preload.config.ts',
       'vite.renderer.config.ts',
@@ -58,11 +58,9 @@ describe('ViteTypeScriptTemplate', () => {
     });
 
     it('should contain `private:true` in package.json', async () => {
-      const packageJSONString = await fs.promises.readFile(
-        path.join(dir, 'package.json'),
-        'utf-8',
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
       );
-      const packageJSON = JSON.parse(packageJSONString);
       expect(packageJSON).toHaveProperty('private', true);
     });
 
@@ -95,7 +93,98 @@ describe('ViteTypeScriptTemplate', () => {
 
     beforeAll(async () => {
       delete process.env.TS_NODE_PROJECT;
-      // Vite resolves plugins via cwd
+      cwd = process.cwd();
+      process.chdir(dir);
+    });
+
+    afterAll(() => {
+      process.chdir(cwd);
+    });
+
+    it('should pass', async () => {
+      await api.package({
+        dir,
+        interactive: false,
+      });
+    });
+  });
+});
+
+describe('ViteTemplate (JavaScript)', () => {
+  let dir: string;
+
+  beforeAll(async () => {
+    dir = await testUtils.ensureTestDirIsNonexistent();
+    await init({
+      dir,
+      template: 'vite',
+      typescript: false,
+      interactive: false,
+      electronVersion: '38.2.2',
+    });
+  });
+
+  afterAll(async () => {
+    await spawnPackageManager(PACKAGE_MANAGERS['yarn'], ['unlink', '--all']);
+    if (os.platform() !== 'win32') {
+      await fs.promises.rm(dir, { force: true, recursive: true });
+    }
+  });
+
+  describe('template files are copied to project', () => {
+    it.each([
+      'package.json',
+      '.oxlintrc.json',
+      'forge.config.mjs',
+      'vite.main.config.mjs',
+      'vite.preload.config.mjs',
+      'vite.renderer.config.mjs',
+      path.join('src', 'main.js'),
+      path.join('src', 'renderer.js'),
+      path.join('src', 'preload.js'),
+    ])(`%s should exist`, async (filename) => {
+      expect(fs.existsSync(path.join(dir, filename))).toBe(true);
+    });
+
+    it('should ensure ts source files are not present', async () => {
+      const tsFiles = await Array.fromAsync(
+        fs.promises.glob(path.join(dir, 'src', '**', '*.ts')),
+      );
+      expect(tsFiles.length).toEqual(0);
+    });
+
+    it('should not have tsconfig.json', async () => {
+      expect(fs.existsSync(path.join(dir, 'tsconfig.json'))).toBe(false);
+    });
+
+    it('should contain `private:true` in package.json', async () => {
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
+      );
+      expect(packageJSON).toHaveProperty('private', true);
+    });
+
+    it('should contain electron-forge scripts in package.json', async () => {
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
+      );
+      expect(packageJSON.scripts.start).toBe('electron-forge start');
+      expect(packageJSON.scripts.package).toBe('electron-forge package');
+      expect(packageJSON.scripts.make).toBe('electron-forge make');
+      expect(packageJSON.scripts.publish).toBe('electron-forge publish');
+    });
+  });
+
+  describe('lint', () => {
+    it('should initially pass the linting process', async () => {
+      await testUtils.expectLintToPass(dir);
+    });
+  });
+
+  describe('package', () => {
+    let cwd: string;
+
+    beforeAll(async () => {
       cwd = process.cwd();
       process.chdir(dir);
     });

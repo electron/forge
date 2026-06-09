@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { stripTypeScriptTypes } from 'node:module';
 import path from 'node:path';
 
 import {
@@ -13,7 +15,7 @@ import {
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import gracefulFs from 'graceful-fs';
+import { format } from 'oxfmt';
 import semver from 'semver';
 
 import determineAuthor from './determine-author.js';
@@ -32,7 +34,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const deps = readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
@@ -49,7 +51,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const packageDevDeps = readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
@@ -66,8 +68,20 @@ export class BaseTemplate implements ForgeTemplate {
 
   public async initializeTemplate(
     directory: string,
-    { copyCIFiles }: InitTemplateOptions,
+    { copyCIFiles, typescript }: InitTemplateOptions,
   ): Promise<ForgeListrTaskDefinition[]> {
+    // The base template only ships JavaScript starter files and ignores the
+    // `typescript` flag. Reject here rather than in `init` so the guard holds
+    // no matter how the template was resolved (`base`,
+    // `@electron-forge/template-base`, etc.). The `vite`/`webpack` subclasses
+    // honor the flag and override `templateDir`, so this only trips for a
+    // direct base-template scaffold, not their `super.initializeTemplate` calls.
+    if (typescript && this.templateDir === tmplDir) {
+      throw new Error(
+        'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+      );
+    }
+
     return [
       {
         title: 'Copying starter files',
@@ -155,7 +169,7 @@ export class BaseTemplate implements ForgeTemplate {
         this.templateDir,
         'package.json',
       );
-      if (gracefulFs.existsSync(templatePackageJSONPath)) {
+      if (existsSync(templatePackageJSONPath)) {
         const templatePackageJSON = await readJson(templatePackageJSONPath);
         const { dependencies, devDependencies, scripts, ...rest } =
           templatePackageJSON;
@@ -190,20 +204,40 @@ export class BaseTemplate implements ForgeTemplate {
     });
   }
 
+  async stripAndRename(srcPath: string, destPath: string): Promise<void> {
+    const source = await fs.readFile(srcPath, 'utf8');
+    const stripped = stripTypeScriptTypes(source, { mode: 'strip' });
+    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
+    const formatted = await format(destPath, stripped, oxfmtConfig);
+    await fs.writeFile(destPath, formatted.code);
+    if (srcPath !== destPath) {
+      await fs.rm(srcPath, { force: true });
+    }
+  }
+
+  async formatFile(filePath: string): Promise<void> {
+    const source = await fs.readFile(filePath, 'utf8');
+    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
+    const formatted = await format(filePath, source, oxfmtConfig);
+    await fs.writeFile(filePath, formatted.code);
+  }
+
   async updateFileByLine(
     inputPath: string,
     lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
+    const destPath = outputPath || inputPath;
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
       .filter((line): line is string => line !== null)
       .join('\n');
-    await fs.writeFile(outputPath || inputPath, fileContents);
+    await fs.writeFile(destPath, fileContents);
     if (outputPath !== undefined) {
       await fs.rm(inputPath, { recursive: true, force: true });
     }
+    await this.formatFile(destPath);
   }
 }
 

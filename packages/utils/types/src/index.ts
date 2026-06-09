@@ -281,6 +281,7 @@ export type StartResult =
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
   force?: boolean;
+  typescript?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
