@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "@electron-forge/plugin-webpack": "ELECTRON_FORGE/VERSION",
+    "@types/electron-squirrel-startup": "^1.0.2",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",

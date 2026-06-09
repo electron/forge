@@ -68,8 +68,20 @@ export class BaseTemplate implements ForgeTemplate {
 
   public async initializeTemplate(
     directory: string,
-    { copyCIFiles }: InitTemplateOptions,
+    { copyCIFiles, typescript }: InitTemplateOptions,
   ): Promise<ForgeListrTaskDefinition[]> {
+    // The base template only ships JavaScript starter files and ignores the
+    // `typescript` flag. Reject here rather than in `init` so the guard holds
+    // no matter how the template was resolved (`base`,
+    // `@electron-forge/template-base`, etc.). The `vite`/`webpack` subclasses
+    // honor the flag and override `templateDir`, so this only trips for a
+    // direct base-template scaffold, not their `super.initializeTemplate` calls.
+    if (typescript && this.templateDir === tmplDir) {
+      throw new Error(
+        'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+      );
+    }
+
     return [
       {
         title: 'Copying starter files',

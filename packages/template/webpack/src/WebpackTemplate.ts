@@ -9,6 +9,7 @@ import {
 import { BaseTemplate } from '@electron-forge/template-base';
 
 const TS_ONLY_DEV_DEPS = new Set([
+  '@types/electron-squirrel-startup',
   'fork-ts-checker-webpack-plugin',
   'ts-loader',
   'typescript',
