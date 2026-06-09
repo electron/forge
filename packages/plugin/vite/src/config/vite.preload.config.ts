@@ -1,5 +1,6 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
+import { detectNativePackages } from '../detect-native-modules.js';
 import {
   external,
   getBuildConfig,
@@ -11,11 +12,12 @@ export function getConfig(
   userConfig: UserConfig = {},
 ): UserConfig {
   const { forgeConfigSelf } = forgeEnv;
+  const nativePackages = detectNativePackages(forgeEnv.root);
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
       rollupOptions: {
-        external: [...external, 'electron/renderer'],
+        external: [...external, 'electron/renderer', ...nativePackages],
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry,
         output: {
