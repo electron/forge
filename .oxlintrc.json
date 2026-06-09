@@ -48,6 +48,7 @@
     }
   ],
   "ignorePatterns": [
+    "**/.claude/**",
     "dist",
     "docs/",
     "node_modules",
