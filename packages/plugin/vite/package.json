@@ -16,6 +16,7 @@
     "@electron-forge/shared-types": "workspace:*",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
+    "flora-colossus": "^2.0.0",
     "fs-extra": "^10.0.0",
     "listr2": "^7.0.2"
   },
