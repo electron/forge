@@ -85,9 +85,11 @@ export function pluginExposeRenderer(name: string): Plugin {
 
       server.httpServer?.once('listening', () => {
         const addressInfo = server.httpServer?.address() as AddressInfo;
+        const configHost = server.config.server?.host
+        const devHost = typeof configHost === 'string' ? configHost : 'localhost'
         // Expose env constant for main process use.
         viteDevServerUrls[VITE_DEV_SERVER_URL] =
-          `http://localhost:${addressInfo?.port}`;
+          `http://${devHost}:${addressInfo?.port}`;
       });
     },
   };
