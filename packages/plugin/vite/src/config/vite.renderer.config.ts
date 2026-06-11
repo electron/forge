@@ -1,6 +1,6 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { pluginExposeRenderer } from './vite.base.config';
+import { external, pluginExposeRenderer } from './vite.base.config';
 
 // https://vitejs.dev/config
 export function getConfig(
@@ -9,6 +9,7 @@ export function getConfig(
 ) {
   const { root, mode, forgeConfigSelf } = forgeEnv;
   const name = forgeConfigSelf.name ?? '';
+  const nodeIntegration = forgeConfigSelf.nodeIntegration ?? false;
 
   const config: UserConfig = {
     root,
@@ -21,7 +22,24 @@ export function getConfig(
     plugins: [pluginExposeRenderer(name)],
     resolve: {
       preserveSymlinks: true,
+      ...(nodeIntegration
+        ? {
+            conditions: ['node'],
+            mainFields: ['module', 'jsnext:main', 'jsnext'],
+          }
+        : {}),
     },
+    ...(nodeIntegration
+      ? {
+          build: {
+            copyPublicDir: true,
+            outDir: `.vite/renderer/${name}`,
+            rollupOptions: {
+              external,
+            },
+          },
+        }
+      : {}),
     clearScreen: false,
   };
 
