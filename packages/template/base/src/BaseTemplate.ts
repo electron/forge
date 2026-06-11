@@ -178,6 +178,22 @@ export class BaseTemplate implements ForgeTemplate {
       packageJSON.pnpm = {
         onlyBuiltDependencies: ['electron', 'electron-winstaller'],
       };
+
+      // Ensures we're using the same `pnpm` version that we use in CI.
+      packageJSON.devEngines = {
+        packageManager: 'pnpm@10.0.0',
+      };
+
+      // Ensures all transitive dependencies for `electron-winstaller` are
+      // installed to `node_modules/electron-winstaller/node_modules` instead of
+      // being hoisted to `node_modules`; otherwise, `jiti` fails to load
+      // `forge.config.ts` because it can't locate the transitive dependencies
+      // for `electron-winstaller` (loaded via `@electron-forge/maker-squirrel`)
+      // in the root `node_modules` folder.
+      packageJSON.peerDependencies = {
+        ...packageJSON.peerDependencies,
+        'electron-winstaller': '^5.4.0',
+      };
     }
 
     if (!packageJSON.scripts.lint) {

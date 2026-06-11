@@ -113,6 +113,10 @@ export function testForgeTemplate({
           tmpDir,
           `--template=${templateName}`,
           `--package-manager=${packageManager}`,
+
+          // TODO there's something about Electron 42 that breaks this test on
+          //  Windows; investigate.
+          `--electron-version=41.0.0`,
         ]);
 
         d('tmpdir: ', pathToFileURL(tmpDir).toString());
