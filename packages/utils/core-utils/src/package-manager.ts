@@ -102,12 +102,6 @@ export const resolvePackageManager: (
       if (Object.keys(PACKAGE_MANAGERS).includes(executable)) {
         const pm = PACKAGE_MANAGERS[executable as SupportedPackageManager];
         installerVersion = version ?? 'latest';
-
-        // Ensures we're using the same `pnpm` version that we use in CI.
-        if (pm.executable === 'pnpm') {
-          installerVersion = '10.0.0';
-        }
-
         explicitPMCache = { ...pm, version: installerVersion };
         d(`Resolved and cached explicit package manager: ${pm.executable}`);
         return explicitPMCache;

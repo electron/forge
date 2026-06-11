@@ -115,7 +115,7 @@ jobs:
           sudo add-apt-repository -y ppa:alexlarsson/flatpak
 
       - name: Install pnpm
-        run: npm install -g pnpm@10.0.0
+        run: npm install -g pnpm@^11.0.0
 
       - name: Run fast tests
         run: |
@@ -192,7 +192,7 @@ jobs:
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Install pnpm
-        run: npm install -g pnpm@10.0.0
+        run: npm install -g pnpm@^11.0.0
 
       - name: Run slow tests
         run: |

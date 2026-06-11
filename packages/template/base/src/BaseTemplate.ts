@@ -78,7 +78,7 @@ export class BaseTemplate implements ForgeTemplate {
           const rootFiles = ['_gitignore', 'forge.config.js'];
 
           if (pm.executable === 'pnpm') {
-            rootFiles.push('_npmrc');
+            rootFiles.push('pnpm-workspace.yaml');
           } else if (
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
             pm.executable === 'yarn' &&
@@ -174,14 +174,9 @@ export class BaseTemplate implements ForgeTemplate {
     const pm = await resolvePackageManager();
 
     if (pm.executable === 'pnpm') {
-      d('Adding Electron dependencies to `onlyBuiltDependencies`');
-      packageJSON.pnpm = {
-        onlyBuiltDependencies: ['electron', 'electron-winstaller'],
-      };
-
-      // Ensures we're using the same `pnpm` version that we use in CI.
+      // Ensures we're using the same `pnpm` version range that we use in CI.
       packageJSON.devEngines = {
-        packageManager: 'pnpm@10.0.0',
+        packageManager: 'pnpm@^11.0.0',
       };
 
       // Ensures all transitive dependencies for `electron-winstaller` are
