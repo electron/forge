@@ -1,8 +1,9 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { pathExists, readJson, writeJson } from '@electron-forge/core-utils';
 import { ForgeMakeResult } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 
 const EXTENSION = '.forge.publish';
 
@@ -11,7 +12,7 @@ export default class PublishState {
     directory: string,
     rootDir: string,
   ): Promise<PublishState[][]> {
-    if (!(await fs.pathExists(directory))) {
+    if (!(await pathExists(directory))) {
       throw new Error(
         `Attempted to load publish state from a missing directory: ${directory}`,
       );
@@ -83,7 +84,7 @@ export default class PublishState {
   }
 
   async load(): Promise<void> {
-    this.state = await fs.readJson(this.path);
+    this.state = await readJson(this.path);
   }
 
   async saveToDisk(): Promise<void> {
@@ -92,7 +93,7 @@ export default class PublishState {
       this.hasHash = true;
     }
 
-    await fs.mkdirs(path.dirname(this.path));
-    await fs.writeJson(this.path, this.state);
+    await fs.mkdir(path.dirname(this.path), { recursive: true });
+    await writeJson(this.path, this.state);
   }
 }

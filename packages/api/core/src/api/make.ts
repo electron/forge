@@ -1,7 +1,8 @@
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { getHostArch } from '@electron/get';
-import { getElectronVersion } from '@electron-forge/core-utils';
+import { getElectronVersion, pathExists } from '@electron-forge/core-utils';
 import { MakerBase } from '@electron-forge/maker-base';
 import {
   ForgeArch,
@@ -14,12 +15,9 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
-import filenamify from 'filenamify';
-import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
-import logSymbols from 'log-symbols';
 
+import filenamify from '../util/filenamify.js';
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
 import { importSearch } from '../util/import-search.js';
@@ -235,7 +233,7 @@ export const listrMake = (
 
             ctx.makers = makers;
 
-            task.output = `Making for the following targets: ${chalk.magenta(`${makers.map((maker) => maker.name).join(', ')}`)}`;
+            task.output = `Making for the following targets: ${styleText('magenta', `${makers.map((maker) => maker.name).join(', ')}`)}`;
           },
         ),
         rendererOptions: {
@@ -243,7 +241,7 @@ export const listrMake = (
         },
       },
       {
-        title: `Running ${chalk.yellow('package')} command`,
+        title: `Running ${styleText('yellow', 'package')} command`,
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
           { name: 'package()', category: '@electron-forge/core' },
           async (childTrace, ctx, task) => {
@@ -260,8 +258,9 @@ export const listrMake = (
                 'run',
               );
             } else {
-              task.output = chalk.yellow(
-                `${logSymbols.warning} Skipping could result in an out of date build`,
+              task.output = styleText(
+                'yellow',
+                `⚠ Skipping could result in an out of date build`,
               );
               task.skip();
             }
@@ -272,7 +271,7 @@ export const listrMake = (
         },
       },
       {
-        title: `Running ${chalk.yellow('preMake')} hook`,
+        title: `Running ${styleText('yellow', 'preMake')} hook`,
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
           { name: 'run-preMake-hook', category: '@electron-forge/core' },
           async (childTrace, ctx, task) => {
@@ -320,14 +319,14 @@ export const listrMake = (
                 actualOutDir,
                 `${appName}-${platform}-${targetArch}`,
               );
-              if (!(await fs.pathExists(packageDir))) {
+              if (!(await pathExists(packageDir))) {
                 throw new Error(`Couldn't find packaged app at: ${packageDir}`);
               }
 
               for (const maker of makers) {
                 const uniqMaker = maker();
                 subRunner.add({
-                  title: `Making a ${chalk.magenta(uniqMaker.name)} distributable for ${chalk.cyan(`${platform}/${targetArch}`)}`,
+                  title: `Making a ${styleText('magenta', uniqMaker.name)} distributable for ${styleText('cyan', `${platform}/${targetArch}`)}`,
                   task: childTrace<[]>(
                     {
                       name: `make-${maker.name}`,
@@ -380,7 +379,7 @@ export const listrMake = (
         ),
       },
       {
-        title: `Running ${chalk.yellow('postMake')} hook`,
+        title: `Running ${styleText('yellow', 'postMake')} hook`,
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
           { name: 'run-postMake-hook', category: '@electron-forge/core' },
           async (_, ctx, task) => {
@@ -411,7 +410,7 @@ export const listrMake = (
             }
             receiveMakeResults?.(ctx.outputs);
 
-            task.output = `Artifacts available at: ${chalk.green(outputLocations.join(', '))}`;
+            task.output = `Artifacts available at: ${styleText('green', outputLocations.join(', '))}`;
           },
         ),
         rendererOptions: {

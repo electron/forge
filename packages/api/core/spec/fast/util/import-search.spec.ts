@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 import findConfig from '../../../src/util/forge-config.js';
@@ -22,6 +24,16 @@ describe('import-search', () => {
     await expect(
       importSearch(import.meta.dirname, ['../../fixture/import-search/erick']),
     ).resolves.toBeNull();
+  });
+
+  it('should resolve a file given an absolute path', async () => {
+    const resolved = await importSearch(import.meta.dirname, [
+      path.resolve(
+        import.meta.dirname,
+        '../../fixture/import-search/default-export.js',
+      ),
+    ]);
+    expect(resolved).toEqual('electron-forge');
   });
 
   it('should throw if file exists but fails to load', async () => {

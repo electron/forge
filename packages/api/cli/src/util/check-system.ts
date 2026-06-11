@@ -4,13 +4,13 @@ import path from 'node:path';
 
 import {
   PACKAGE_MANAGERS,
+  pathExists,
   resolvePackageManager,
   spawnPackageManager,
   SupportedPackageManager,
 } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
 import semver from 'semver';
 
 const d = debug('electron-forge:check-system');
@@ -155,7 +155,7 @@ export type SystemCheckContext = {
 export async function checkSystem(
   callerTask: ForgeListrTask<SystemCheckContext>,
 ) {
-  if (!(await fs.pathExists(SKIP_SYSTEM_CHECK))) {
+  if (!(await pathExists(SKIP_SYSTEM_CHECK))) {
     d('checking system, create ~/.skip-forge-system-check to stop doing this');
     return callerTask.newListr<SystemCheckContext>(
       [

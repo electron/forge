@@ -13,9 +13,9 @@
     "minimatch@7.4.6": "^7.4.8"
   },
   "scripts": {
-    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\"\"",
-    "build": "tsc -b packages && tsx tools/test-dist",
-    "build:watch": "tsc -b packages --watch",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && node -e \"fs.rmSync('packages/tsconfig.json', { force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.json', { force: true })\\\"\"",
+    "build": "tsgo -b packages && tsx tools/test-dist",
+    "build:watch": "tsgo -b packages --watch",
     "docs": "yarn build && typedoc",
     "lerna:version": "./tools/version.sh",
     "lint:js": "oxfmt --check . && oxlint",
@@ -43,19 +43,18 @@
     "@types/debug": "^4.1.12",
     "@types/express": "^4.17.9",
     "@types/express-ws": "^3.0.0",
-    "@types/fs-extra": "^9.0.6",
+    "@types/graceful-fs": "^4.1.9",
     "@types/keyv": "^3.1.4",
     "@types/lodash-es": "^4.17.12",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^22.10.7",
     "@types/semver": "^7.3.4",
     "@types/which": "^3.0.4",
+    "@typescript/native-preview": "^7.0.0-dev.20260416.2",
     "@yarnpkg/types": "^4.0.1",
-    "chalk": "^4.0.0",
     "debug": "^4.3.1",
-    "electron": "^41.2.0",
+    "electron": "^42.3.3",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
-    "fs-extra": "^10.0.0",
     "husky": "^7.0.1",
     "knip": "^5.87.0",
     "lerna": "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch",
@@ -66,8 +65,8 @@
     "oxlint": "^1.51.0",
     "ref-napi": "^3.0.3",
     "tsx": "^4.21.0",
-    "typedoc": "0.25.13",
-    "typescript": "5.9.3",
+    "typedoc": "~0.28.0",
+    "typescript": "^6.0.2",
     "verdaccio": "^6.2.4",
     "vitest": "catalog:",
     "xvfb-maybe": "^0.2.1"
@@ -93,9 +92,6 @@
   "packageManager": "yarn@4.10.3+sha512.c38cafb5c7bb273f3926d04e55e1d8c9dfa7d9c3ea1f36a4868fa028b9e5f72298f0b7f401ad5eb921749eb012eb1c3bb74bf7503df3ee43fd600d14a018266f",
   "dependenciesMeta": {
     "@bitdisaster/exe-icon-extractor": {
-      "built": true
-    },
-    "electron": {
       "built": true
     },
     "electron-winstaller": {

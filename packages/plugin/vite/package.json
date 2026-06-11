@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-vite",
-  "version": "8.0.0-alpha.8",
+  "version": "8.0.0-alpha.9",
   "type": "module",
   "description": "Vite plugin for Electron Forge, lets you use Vite directly in your tooling",
   "repository": {
@@ -18,15 +18,14 @@
     "./forge-vite-env": "./forge-vite-env.d.ts"
   },
   "dependencies": {
+    "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "chalk": "^4.0.0",
     "debug": "^4.3.1",
-    "fs-extra": "^10.0.0",
     "listr2": "^7.0.2"
   },
   "devDependencies": {
-    "@electron/packager": "^20.0.0",
+    "@electron/packager": "^20.0.1",
     "@types/node": "^22.10.7",
     "vite": "^8.0.0",
     "vitest": "catalog:",

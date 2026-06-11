@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/plugin-local-electron",
-  "version": "8.0.0-alpha.8",
+  "version": "8.0.0-alpha.9",
   "type": "module",
   "description": "Local Electron plugin for Electron Forge, let's you use a local build of Electron",
   "repository": "https://github.com/electron/forge",
@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@electron-forge/plugin-base": "workspace:*",
-    "@electron-forge/shared-types": "workspace:*",
-    "fs-extra": "^10.0.0"
+    "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
     "vitest": "catalog:"

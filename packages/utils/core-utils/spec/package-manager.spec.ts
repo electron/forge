@@ -1,7 +1,7 @@
 import { spawn } from '@malept/cross-spawn-promise';
-import findUp from 'find-up';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { findUp } from '../src/find-up';
 import {
   resolvePackageManager,
   spawnPackageManager,
@@ -10,13 +10,9 @@ import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 
 vi.mock('@malept/cross-spawn-promise');
-vi.mock('find-up', async (importOriginal) => {
-  const mod = await importOriginal<object>();
-  return {
-    ...mod,
-    default: vi.fn(),
-  };
-});
+vi.mock('../src/find-up', () => ({
+  findUp: vi.fn(),
+}));
 
 describe('package-manager', () => {
   beforeAll(() => {

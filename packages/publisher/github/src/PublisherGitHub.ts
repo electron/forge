@@ -1,4 +1,6 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import {
   PublisherBase,
@@ -7,9 +9,6 @@ import {
 import { ForgeMakeResult } from '@electron-forge/shared-types';
 import { RequestError } from '@octokit/request-error';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
-import chalk from 'chalk';
-import fs from 'fs-extra';
-import logSymbols from 'log-symbols';
 import mime from 'mime-types';
 
 import { PublisherGitHubConfig } from './Config.js';
@@ -165,8 +164,9 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
               if (uploadedAsset.name !== sanitizedArtifactName) {
                 // There's definitely a bug with GitHub.sanitizeName
                 console.warn(
-                  logSymbols.warning,
-                  chalk.yellow(
+                  styleText('yellow', '⚠'),
+                  styleText(
+                    'yellow',
                     `Expected artifact's name to be '${sanitizedArtifactName}' - got '${uploadedAsset.name}'`,
                   ),
                 );

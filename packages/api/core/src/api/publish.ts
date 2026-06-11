@@ -1,5 +1,8 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
+import { pathExists } from '@electron-forge/core-utils';
 import { PublisherBase } from '@electron-forge/publisher-base';
 import {
   ForgeConfigPublisher,
@@ -12,9 +15,7 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
-import fs from 'fs-extra';
 import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
@@ -116,7 +117,7 @@ export default autoTrace(
               childTrace,
               task.newListr<never>(
                 publishers.map((publisher) => ({
-                  title: `${chalk.cyan(`[publisher-${publisher.name}]`)} Running the ${chalk.yellow('publish')} command`,
+                  title: `${styleText('cyan', `[publisher-${publisher.name}]`)} Running the ${styleText('yellow', 'publish')} command`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
                     {
                       name: `publish-${publisher.name}`,
@@ -239,7 +240,7 @@ export default autoTrace(
               }
 
               if (ctx.publishers.length) {
-                task.output = `Publishing to the following targets: ${chalk.magenta(`${ctx.publishers.map((publisher) => publisher.name).join(', ')}`)}`;
+                task.output = `Publishing to the following targets: ${styleText('magenta', `${ctx.publishers.map((publisher) => publisher.name).join(', ')}`)}`;
               }
             },
           ),
@@ -250,7 +251,7 @@ export default autoTrace(
         {
           title: dryRunResume
             ? 'Resuming from dry run...'
-            : `Running ${chalk.yellow('make')} command`,
+            : `Running ${styleText('yellow', 'make')} command`,
           task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
             {
               name: dryRunResume ? 'resume-dry-run' : 'make()',
@@ -278,7 +279,7 @@ export default autoTrace(
                   task.newListr<PublishContext>(
                     publishes.map((publishStates, index) => {
                       return {
-                        title: `Publishing dry-run ${chalk.blue(`#${index + 1}`)}`,
+                        title: `Publishing dry-run ${styleText('blue', `#${index + 1}`)}`,
                         task: childTrace<
                           Parameters<ForgeListrTaskFn<PublishContext>>
                         >(
@@ -300,9 +301,7 @@ export default autoTrace(
                                     const normalizedPath = makePath
                                       .split(/\/|\\/)
                                       .join(path.sep);
-                                    if (
-                                      !(await fs.pathExists(normalizedPath))
-                                    ) {
+                                    if (!(await pathExists(normalizedPath))) {
                                       throw new Error(
                                         `Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`,
                                       );
@@ -384,7 +383,10 @@ export default autoTrace(
                         'publish-dry-run',
                       );
 
-                      await fs.remove(dryRunDir);
+                      await fs.rm(dryRunDir, {
+                        recursive: true,
+                        force: true,
+                      });
                       await PublishState.saveToDirectory(
                         dryRunDir,
                         makeResults!,
