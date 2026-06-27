@@ -28,4 +28,14 @@ export type MakerMSIXConfig = Omit<
     | 'packageIdentity'
     | 'targetArch'
   >;
+  /**
+   * The base name of the generated `.msix` file, without the `.msix`
+   * extension (the maker always appends `.msix`). This only overrides the
+   * file name; the file is still written to the same `msix/<arch>` output
+   * directory.
+   *
+   * @defaultValue `${path.basename(dir)}-${packageJSON.version}`, e.g.
+   * `my-app-win32-x64-1.2.3`
+   */
+  outputFileName?: string;
 };

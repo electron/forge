@@ -77,4 +77,34 @@ describe('MakerMSIX', () => {
       ),
     );
   });
+
+  it('should use the configured outputFileName when set', async () => {
+    const outputFileName = 'custom-package-name';
+    const maker = new MakerMSIX({ outputFileName }, []);
+    await maker.prepareConfig(targetArch);
+    const output = await maker.make({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
+      targetPlatform,
+      forgeConfig: null as any,
+    });
+
+    const expectedPath = path.resolve(
+      makeDir,
+      'msix',
+      targetArch,
+      `${outputFileName}.msix`,
+    );
+
+    expect(output).toHaveLength(1);
+    expect(output[0]).toBe(expectedPath);
+    expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+    expect(vi.mocked(move)).toHaveBeenCalledWith(
+      '/tmp/mock-output.msix',
+      expectedPath,
+    );
+  });
 });
