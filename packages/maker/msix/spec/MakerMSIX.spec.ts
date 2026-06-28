@@ -108,63 +108,38 @@ describe('MakerMSIX', () => {
     );
   });
 
-  it('should resolve outputFileName when it is a sync function', async () => {
-    const outputFileName = () => 'computed-package-name';
-    const maker = new MakerMSIX({ outputFileName }, []);
-    await maker.prepareConfig(targetArch);
-    const output = await maker.make({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-      targetPlatform,
-      forgeConfig: null as any,
-    });
+  it.each([
+    { kind: 'sync', outputFileName: () => 'computed-package-name' },
+    { kind: 'async', outputFileName: async () => 'computed-package-name' },
+  ])(
+    'should resolve outputFileName when it is a $kind function',
+    async ({ outputFileName }) => {
+      const maker = new MakerMSIX({ outputFileName }, []);
+      await maker.prepareConfig(targetArch);
+      const output = await maker.make({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        packageJSON,
+        targetPlatform,
+        forgeConfig: null as any,
+      });
 
-    const expectedPath = path.resolve(
-      makeDir,
-      'msix',
-      targetArch,
-      'computed-package-name.msix',
-    );
+      const expectedPath = path.resolve(
+        makeDir,
+        'msix',
+        targetArch,
+        'computed-package-name.msix',
+      );
 
-    expect(output).toHaveLength(1);
-    expect(output[0]).toBe(expectedPath);
-    expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
-    expect(vi.mocked(move)).toHaveBeenCalledWith(
-      '/tmp/mock-output.msix',
-      expectedPath,
-    );
-  });
-
-  it('should resolve outputFileName when it is an async function', async () => {
-    const outputFileName = async () => `async-package-${packageJSON.version}`;
-    const maker = new MakerMSIX({ outputFileName }, []);
-    await maker.prepareConfig(targetArch);
-    const output = await maker.make({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-      targetPlatform,
-      forgeConfig: null as any,
-    });
-
-    const expectedPath = path.resolve(
-      makeDir,
-      'msix',
-      targetArch,
-      `async-package-${packageJSON.version}.msix`,
-    );
-
-    expect(output).toHaveLength(1);
-    expect(output[0]).toBe(expectedPath);
-    expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
-    expect(vi.mocked(move)).toHaveBeenCalledWith(
-      '/tmp/mock-output.msix',
-      expectedPath,
-    );
-  });
+      expect(output).toHaveLength(1);
+      expect(output[0]).toBe(expectedPath);
+      expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+      expect(vi.mocked(move)).toHaveBeenCalledWith(
+        '/tmp/mock-output.msix',
+        expectedPath,
+      );
+    },
+  );
 });
