@@ -209,6 +209,19 @@ jobs:
       - fast-tests
       - slow-tests
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     steps:
+      - name: Fail if any required job failed or was cancelled
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        env:
+          LINT_AND_BUILD_RESULT: ${{ needs.lint-and-build.result }}
+          FAST_TESTS_RESULT: ${{ needs.fast-tests.result }}
+          SLOW_TESTS_RESULT: ${{ needs.slow-tests.result }}
+        run: |
+          echo "One or more required jobs did not succeed:"
+          echo "  lint-and-build: $LINT_AND_BUILD_RESULT"
+          echo "  fast-tests:     $FAST_TESTS_RESULT"
+          echo "  slow-tests:     $SLOW_TESTS_RESULT"
+          exit 1
       - name: We are done
         run: echo "Hello World"
