@@ -71,7 +71,7 @@
     "semver": "^7.2.1",
     "source-map-support": "^0.5.13",
     "username": "^5.1.0",
-    "vite": "^7.3.3",
+    "vite": "^6.4.3",
     "webpack": "^5.69.1",
     "webpack-dev-server": "^5.2.4",
     "webpack-merge": "^5.7.3",
