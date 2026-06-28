@@ -54,7 +54,9 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
       });
 
       const baseName =
-        outputFileName ?? `${path.basename(dir)}-${packageJSON.version}`;
+        (typeof outputFileName === 'function'
+          ? await outputFileName()
+          : outputFileName) ?? `${path.basename(dir)}-${packageJSON.version}`;
       const outputPath = path.resolve(
         makeDir,
         'msix',

@@ -34,8 +34,12 @@ export type MakerMSIXConfig = Omit<
    * file name; the file is still written to the same `msix/<arch>` output
    * directory.
    *
+   * This can be a string, or a (possibly async) function returning the base
+   * filename. The function form is useful when you want to compute the value
+   * dynamically, e.g. to include a version number.
+   *
    * @defaultValue `${path.basename(dir)}-${packageJSON.version}`, e.g.
    * `my-app-win32-x64-1.2.3`
    */
-  outputFileName?: string;
+  outputFileName?: string | (() => string | Promise<string>);
 };
