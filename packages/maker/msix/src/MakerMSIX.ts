@@ -29,7 +29,8 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
     packageJSON,
     appName,
   }: MakerOptions): Promise<string[]> {
-    const { manifestVariables, ...packageOptions } = this.config;
+    const { manifestVariables, outputFileName, ...packageOptions } =
+      this.config;
 
     // Do all the scratch work in a temporary folder
     const tmpFolder = await fs.mkdtemp(
@@ -52,11 +53,15 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
         outputDir: tmpFolder,
       });
 
+      const baseName =
+        (typeof outputFileName === 'function'
+          ? await outputFileName()
+          : outputFileName) || `${path.basename(dir)}-${packageJSON.version}`;
       const outputPath = path.resolve(
         makeDir,
         'msix',
         targetArch,
-        `${path.basename(dir)}-${packageJSON.version}.msix`,
+        `${baseName}.msix`,
       );
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       await move(result.msixPackage, outputPath);
