@@ -139,8 +139,7 @@ describe('MakerMSIX', () => {
   });
 
   it('should resolve outputFileName when it is an async function', async () => {
-    const outputFileName = async () =>
-      `async-package-${packageJSON.version}`;
+    const outputFileName = async () => `async-package-${packageJSON.version}`;
     const maker = new MakerMSIX({ outputFileName }, []);
     await maker.prepareConfig(targetArch);
     const output = await maker.make({
