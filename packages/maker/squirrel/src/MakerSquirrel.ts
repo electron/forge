@@ -13,8 +13,20 @@ import {
 
 export type MakerSquirrelConfig = Omit<
   ElectronWinstallerOptions,
-  'appDirectory' | 'outputDirectory'
->;
+  'appDirectory' | 'outputDirectory' | 'name'
+> & {
+  /**
+   * The application name.
+   *
+   * On Windows, the Application User Model ID (AUMID) is derived from this
+   * value and follows the pattern `com.squirrel.<name>.<packageName>`, where
+   * `<name>` is this option and `<packageName>` is the `name` field in your
+   * app's package.json file.
+   *
+   * @defaultValue the `name` field in your app's package.json file
+   */
+  name?: string;
+};
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';
