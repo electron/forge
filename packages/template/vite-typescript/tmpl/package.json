@@ -8,6 +8,7 @@
   "devDependencies": {
     "@electron-forge/plugin-vite": "ELECTRON_FORGE/VERSION",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/node": "^22.10.7",
     "oxfmt": "^0.41.0",
     "oxlint": "^1.0.0",
     "typescript": "^6.0.0",

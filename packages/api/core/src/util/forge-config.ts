@@ -2,9 +2,9 @@ import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import fs from 'graceful-fs';
-import { createJiti } from 'jiti';
 
 import { runMutatingHook } from './hook.js';
+import { loadTypeScriptConfig } from './load-ts-config.js';
 import PluginInterface from './plugin-interface.js';
 import { readRawPackageJson } from './read-package-json.js';
 import { pathToFileURL } from 'node:url';
@@ -164,15 +164,12 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   ) {
     const forgeConfigPath = path.resolve(dir, forgeConfig);
     try {
-      let loadFn;
-      if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
-        const jiti = createJiti(import.meta.filename);
-        loadFn = jiti.import;
-      }
       // The loaded "config" could potentially be a static forge config, ESM module or async function
       let loaded: MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>;
-      if (loadFn) {
-        loaded = await loadFn(forgeConfigPath);
+      if (['.cts', '.mts', '.ts'].includes(path.extname(forgeConfigPath))) {
+        loaded = await loadTypeScriptConfig<
+          MaybeESM<ForgeConfig | AsyncForgeConfigGenerator>
+        >(dir, forgeConfigPath);
       } else {
         loaded = await import(pathToFileURL(forgeConfigPath).toString());
       }

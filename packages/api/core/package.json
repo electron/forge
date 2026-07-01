@@ -22,7 +22,9 @@
     "@electron-forge/test-utils": "workspace:*",
     "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
     "electron-installer-common": "^0.10.2",
-    "vitest": "catalog:"
+    "typescript": "^6.0.2",
+    "vitest": "catalog:",
+    "webpack": "^5.69.1"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
@@ -35,7 +37,6 @@
     "@electron/packager": "^20.0.1",
     "debug": "^4.3.1",
     "graceful-fs": "^4.2.11",
-    "jiti": "^2.4.2",
     "listr2": "^7.0.2"
   },
   "engines": {
