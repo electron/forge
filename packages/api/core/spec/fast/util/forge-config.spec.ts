@@ -4,6 +4,7 @@ import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
 import findConfig, {
+  createCaseInsensitiveModuleCache,
   forgeConfigIsValidFilePath,
   registerForgeConfigForDirectory,
   renderConfigTemplate,
@@ -409,5 +410,81 @@ describe('renderConfigTemplate', () => {
       nested: { value: 'me' },
       untouched: 'plain string',
     });
+  });
+});
+
+// Regression coverage for electron/forge#3949. On Windows jiti's resolved
+// module filenames aren't case-canonicalized against Node's realpath-keyed
+// require.cache, so jiti's dedup misses an already-loaded module and evaluates
+// a duplicate (e.g. webpack, whose Compilation stage constants then come back
+// undefined). createCaseInsensitiveModuleCache wraps the cache so lookups that
+// only differ by case still resolve to the single loaded copy.
+describe('createCaseInsensitiveModuleCache', () => {
+  // NodeModule is heavy; the cache logic only cares about object identity.
+  const fakeModule = (id: string) =>
+    ({ id, exports: {} }) as unknown as NodeModule;
+
+  it('resolves a key that differs only by case to the same module object', () => {
+    const realKey =
+      'C:\\Users\\Niklas\\project\\node_modules\\webpack\\lib\\index.js';
+    const mod = fakeModule(realKey);
+    const cache = createCaseInsensitiveModuleCache({ [realKey]: mod });
+
+    // jiti asks with a differently-cased drive/segment casing than Node stored.
+    const requestedKey = realKey.toLowerCase();
+    expect(cache[requestedKey]).toBe(mod);
+    expect(requestedKey in cache).toBe(true);
+  });
+
+  it('uses the exact key fast-path without a case fallback when present', () => {
+    const realKey = '/abs/path/webpack/lib/index.js';
+    const mod = fakeModule(realKey);
+    const cache = createCaseInsensitiveModuleCache({ [realKey]: mod });
+
+    expect(cache[realKey]).toBe(mod);
+    expect(realKey in cache).toBe(true);
+  });
+
+  it('returns undefined / false for keys with no case-insensitive match', () => {
+    const cache = createCaseInsensitiveModuleCache({
+      '/abs/webpack/lib/index.js': fakeModule('/abs/webpack/lib/index.js'),
+    });
+
+    expect(cache['/abs/other/lib/index.js']).toBeUndefined();
+    expect('/abs/other/lib/index.js' in cache).toBe(false);
+  });
+
+  it('reflects entries added after construction (index invalidation)', () => {
+    const cache = createCaseInsensitiveModuleCache({});
+
+    const lateKey = '/Abs/Late/module.js';
+    cache[lateKey] = fakeModule(lateKey);
+
+    // A later case-insensitive lookup must see the newly-set entry.
+    expect(cache[lateKey.toLowerCase()]).toBe(cache[lateKey]);
+    expect(lateKey.toLowerCase() in cache).toBe(true);
+  });
+
+  it('reflects deletions (index invalidation)', () => {
+    const key = '/Abs/module.js';
+    const cache = createCaseInsensitiveModuleCache({ [key]: fakeModule(key) });
+    expect(key.toLowerCase() in cache).toBe(true);
+
+    delete cache[key];
+
+    expect(cache[key.toLowerCase()]).toBeUndefined();
+    expect(key.toLowerCase() in cache).toBe(false);
+  });
+
+  it('writes through to the underlying real cache object', () => {
+    const realCache: Record<string, NodeModule | undefined> = {};
+    const cache = createCaseInsensitiveModuleCache(realCache);
+
+    const key = '/Abs/written.js';
+    const mod = fakeModule(key);
+    cache[key] = mod;
+
+    // Mutations must land on the same object Node hands around, not a copy.
+    expect(realCache[key]).toBe(mod);
   });
 });
