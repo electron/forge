@@ -65,7 +65,7 @@ describe('WebpackTypeScriptTemplate', () => {
     expect(packageJSON.scripts.start).toBe('electron-forge start');
     expect(packageJSON.scripts.package).toBe('electron-forge package');
     expect(packageJSON.scripts.make).toBe('electron-forge make');
-    expect(packageJSON.scripts.publish).toBe('electron-forge publish');
+    expect(packageJSON.scripts.release).toBe('electron-forge release');
   });
 
   describe('lint', () => {
