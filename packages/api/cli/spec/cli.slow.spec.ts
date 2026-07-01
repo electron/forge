@@ -20,4 +20,12 @@ describe('cli', () => {
   it('should fail on unknown subcommands', async () => {
     await expect(runForgeCLI('nonexistent')).rejects.toThrow(Error);
   });
+
+  it('should list the release command in help output', async () => {
+    await expect(runForgeCLI('help')).resolves.toMatch(/\brelease\b/);
+  });
+
+  it('should hide the deprecated publish alias from help output', async () => {
+    await expect(runForgeCLI('help')).resolves.not.toMatch(/\bpublish\b/);
+  });
 });
