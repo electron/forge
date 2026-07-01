@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
+import { Compilation } from 'webpack';
 import { describe, expect, it, vi } from 'vitest';
 
 import findConfig, {
@@ -346,6 +347,35 @@ describe('findConfig', () => {
       );
       const conf = await findConfig(fixturePath);
       expect(conf.buildIdentifier).toEqual('async-typescript-esm');
+    });
+
+    it('should support top-level await and extensionless relative imports', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/tla_ts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('tla-relative-import');
+    });
+
+    // Regression test for https://github.com/electron/forge/issues/3949 —
+    // CJS packages imported by a TypeScript config must be the same instances
+    // that the rest of the process (e.g. the webpack plugin) sees.
+    it('should share dependency instances with the loading process', async () => {
+      type WebpackDepConfig = ResolvedForgeConfig & {
+        stage: number;
+        compilationClass: unknown;
+      };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/webpack_dep_ts_conf',
+      );
+      const conf = (await findConfig(fixturePath)) as WebpackDepConfig;
+      expect(conf.stage).toBeDefined();
+      expect(conf.stage).toEqual(
+        Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER,
+      );
+      expect(conf.compilationClass).toBe(Compilation);
     });
   });
 
