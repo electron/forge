@@ -11,6 +11,8 @@ yarn-error.log
 packages/**/.npmignore
 packages/**/tsconfig.json
 !packages/template/*/tmpl/tsconfig.json
+!packages/*/*/spec/fixture/*/tsconfig.json
+!packages/api/core/spec/fixture/esm_dep_ts_conf/node_modules
 packages/**/tslint.json
 packages/**/yarn.lock
 packages/*/*/index.ts
