@@ -117,4 +117,26 @@ describe('ViteConfigGenerator', () => {
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
   });
+
+  it('getRendererConfig:renderer with nodeIntegration', async () => {
+    const forgeConfig = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
+          nodeIntegration: true,
+        },
+      ],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    expect(rendererConfig.build?.rollupOptions?.external).toEqual(external);
+    expect(rendererConfig.resolve).toEqual({
+      preserveSymlinks: true,
+      conditions: ['node'],
+      mainFields: ['module', 'jsnext:main', 'jsnext'],
+    });
+  });
 });

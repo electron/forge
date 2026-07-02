@@ -36,3 +36,29 @@ module.exports = {
   ]
 };
 ```
+
+### Node integration in renderer builds
+
+If a renderer `BrowserWindow` enables `nodeIntegration: true`, set the matching
+Forge Vite renderer entry to `nodeIntegration: true` as well. This tells the
+plugin to externalize Electron and Node.js built-ins and resolve packages using
+Node-oriented entry points, avoiding fragile manual Vite configuration.
+
+```javascript
+new VitePlugin({
+  build: [
+    {
+      entry: 'src/main.js',
+      config: 'vite.main.config.mjs',
+      target: 'main',
+    },
+  ],
+  renderer: [
+    {
+      name: 'main_window',
+      config: 'vite.renderer.config.mjs',
+      nodeIntegration: true,
+    },
+  ],
+});
+```
