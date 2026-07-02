@@ -11,8 +11,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@typescript/typescript6": "6.0.1",
-    "electron": "99.99.99",
-    "typescript": "7.0.1-rc"
+    "electron": "99.99.99"
   }
 }
