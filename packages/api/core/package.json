@@ -26,6 +26,14 @@
     "vitest": "catalog:",
     "webpack": "^5.69.1"
   },
+  "peerDependencies": {
+    "typescript": ">=4.7.0 <7"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",

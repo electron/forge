@@ -826,6 +826,11 @@ __metadata:
     typescript: "npm:^6.0.2"
     vitest: "catalog:"
     webpack: "npm:^5.69.1"
+  peerDependencies:
+    typescript: ">=4.7.0 <7"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
   languageName: unknown
   linkType: soft
 

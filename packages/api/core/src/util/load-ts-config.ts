@@ -71,16 +71,39 @@ const CHECK_INCOMPATIBLE_OPTIONS = [
 
 function loadUserTypeScript(projectDir: string): TypeScriptModule {
   const require = createRequire(path.join(projectDir, 'noop.js'));
-  let tsPath: string;
+  // Resolve the version from package.json first: TypeScript 7+ (the native
+  // compiler) is `"type": "module"` with no root `"."` export, so a plain
+  // `require('typescript')` would die with ERR_PACKAGE_PATH_NOT_EXPORTED
+  // before any feature detection could run. `typescript/package.json` stays
+  // exported across every version this loader can meet.
+  let pkgPath: string;
   try {
-    tsPath = require.resolve('typescript');
+    pkgPath = require.resolve('typescript/package.json');
   } catch {
     throw new Error(
-      `Loading a TypeScript Forge config requires the "typescript" package to be installed in your project (searched from ${projectDir}). ` +
+      `Loading a TypeScript Forge config requires the "typescript" package (version 4.7.0 or later) to be installed in your project (searched from ${projectDir}). ` +
         `Forge's TypeScript templates include it by default — run \`npm install --save-dev typescript\` (or the equivalent for your package manager) and try again.`,
     );
   }
-  return require(tsPath) as TypeScriptModule;
+  const version: string = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
+  if (Number(version.split('.')[0]) >= 7) {
+    // TypeScript 7 drops the JavaScript compiler API this loader is built on
+    // (`transpileModule`, `resolveModuleName`, ...) in favor of a JSON-RPC
+    // interface to the native compiler. Microsoft's prescribed path for
+    // API-dependent tools is a side-by-side TypeScript 6 — use it
+    // transparently when the project has it installed.
+    try {
+      const ts6 = require('@typescript/typescript6') as TypeScriptModule;
+      if (typeof ts6.transpileModule === 'function') return ts6;
+    } catch {
+      // Not installed — fall through to the actionable error below.
+    }
+    throw new Error(
+      `Your project's "typescript" dependency is version ${version}, but TypeScript 7+ (the native compiler) no longer provides the JavaScript compiler API that Forge uses to load TypeScript config files. ` +
+        `Until Forge supports the TypeScript 7 API, install TypeScript 6 alongside it — run \`npm install --save-dev @typescript/typescript6\` (or pin \`typescript@6\`) and try again.`,
+    );
+  }
+  return require('typescript') as TypeScriptModule;
 }
 
 function readTsconfigOptions(

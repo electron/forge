@@ -416,12 +416,38 @@ describe('findConfig', () => {
       try {
         await fs.cp(fixturePath, tmpDir, { recursive: true });
         await expect(findConfig(tmpDir)).rejects.toThrow(
-          /requires the "typescript" package to be installed/,
+          /requires the "typescript" package \(version 4\.7\.0 or later\) to be installed/,
         );
       } finally {
         await fs.rm(tmpDir, { recursive: true, force: true });
         spy.mockRestore();
       }
+    });
+
+    it('should throw a helpful error when the project TypeScript is v7+', async () => {
+      const spy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/ts7_dep_conf',
+      );
+      try {
+        await expect(findConfig(fixturePath)).rejects.toThrow(
+          /TypeScript 7\+ \(the native compiler\) no longer provides the JavaScript compiler API/,
+        );
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    it('should fall back to a side-by-side @typescript/typescript6 when the project TypeScript is v7+', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/ts7_with_ts6_dep_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('ts7-with-ts6-fallback');
     });
 
     it('should surface type errors when the config fails to load', async () => {
