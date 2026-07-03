@@ -5,6 +5,7 @@ import {
 } from '@electron-forge/shared-types';
 
 import ForgeUtils from '../util/index.js';
+import { defaultSanitizePackageJson } from '../util/sanitize-package-json.js';
 
 import make, { MakeOptions } from './make.js';
 import _package, { PackageOptions } from './package.js';
@@ -72,5 +73,6 @@ export {
   ReleaseOptions,
   StartOptions,
   api,
+  defaultSanitizePackageJson,
   utils,
 };

@@ -14,7 +14,6 @@ import {
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
-  writeJson,
 } from '@electron-forge/core-utils';
 import {
   ForgeArch,
@@ -36,6 +35,7 @@ import { warn } from '../util/messages.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';
 import resolveDir from '../util/resolve-dir.js';
+import { sanitizeCopiedPackageJson } from '../util/sanitize-package-json.js';
 
 const d = debug('electron-forge:packager');
 
@@ -309,21 +309,7 @@ export const listrPackage = (
                 signalRebuildDone.get(targetKey)?.pop()?.();
               },
               async ({ buildPath }) => {
-                const copiedPackageJSON = await readMutatedPackageJson(
-                  buildPath,
-                  forgeConfig,
-                );
-                if (
-                  copiedPackageJSON.config &&
-                  copiedPackageJSON.config.forge
-                ) {
-                  delete copiedPackageJSON.config.forge;
-                }
-                await writeJson(
-                  path.resolve(buildPath, 'package.json'),
-                  copiedPackageJSON,
-                  { spaces: 2 },
-                );
+                await sanitizeCopiedPackageJson(forgeConfig, buildPath);
               },
               ...(await resolveHooks(
                 forgeConfig.packagerConfig.afterCopy,

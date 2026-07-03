@@ -79,6 +79,21 @@ export interface ForgeMutatingHookSignatures {
   resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readPackageJson: [packageJson: Record<string, any>];
+  /**
+   * Mutates the packaged app's package.json before it is written into the
+   * build directory. Runs in the packager's afterCopy phase, after all
+   * `packageAfterCopy` hooks and before pruning.
+   *
+   * When neither the Forge config nor any plugin provides this hook, Forge
+   * applies its default sanitizer (`defaultSanitizePackageJson` from
+   * `@electron-forge/core`), which strips development-only fields such as
+   * `devDependencies`, `scripts`, and tooling configuration, and removes
+   * `config.forge`. Providing this hook replaces the default entirely; call
+   * `defaultSanitizePackageJson` from your hook to extend the default
+   * behavior instead of replacing it.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  sanitizePackageJson: [packageJson: Record<string, any>];
 }
 
 export type ForgeHookName = keyof (ForgeSimpleHookSignatures &
@@ -120,6 +135,10 @@ export interface IForgePluginInterface {
     hookName: Hook,
     item: ForgeMutatingHookSignatures[Hook][0],
   ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
+  /**
+   * Whether any plugin registers at least one handler for the given hook.
+   */
+  hasHook(hookName: ForgeHookName): boolean;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

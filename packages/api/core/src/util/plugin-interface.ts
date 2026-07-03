@@ -2,6 +2,7 @@ import { styleText } from 'node:util';
 
 import { PluginBase } from '@electron-forge/plugin-base';
 import {
+  ForgeHookName,
   ForgeListrTaskDefinition,
   ForgeMutatingHookFn,
   ForgeMutatingHookSignatures,
@@ -176,6 +177,16 @@ export default class PluginInterface implements IForgePluginInterface {
       }
     }
     return result;
+  }
+
+  hasHook(hookName: ForgeHookName): boolean {
+    return this.plugins.some((plugin) => {
+      if (typeof plugin.getHooks !== 'function') return false;
+      const hooks = plugin.getHooks()[hookName];
+      return Array.isArray(hooks)
+        ? hooks.length > 0
+        : typeof hooks === 'function';
+    });
   }
 
   async overrideStartLogic(opts: StartOptions): Promise<StartResult> {
