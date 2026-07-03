@@ -51,6 +51,10 @@ describe('Package', () => {
     });
     expect(cleanPackageJSON).not.toHaveProperty('config.forge');
 
+    // the default sanitizePackageJson behavior strips dev-only fields
+    expect(cleanPackageJSON).not.toHaveProperty('devDependencies');
+    expect(cleanPackageJSON).not.toHaveProperty('scripts');
+
     // should leave the original Forge config intact
     const normalPackageJSON = await readRawPackageJson(dir);
     expect(normalPackageJSON).toHaveProperty('config.forge');
