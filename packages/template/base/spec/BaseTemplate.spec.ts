@@ -3,9 +3,23 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import template from '../src/BaseTemplate';
+
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
 
 describe('BaseTemplate', () => {
+  describe('initializeTemplate', () => {
+    it('should reject the typescript option', async () => {
+      await expect(
+        template.initializeTemplate('/tmp/forge-base-template-test', {
+          typescript: true,
+        }),
+      ).rejects.toThrowError(
+        'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+      );
+    });
+  });
+
   describe('lint config files', () => {
     it('should include .oxfmtrc.json in the base template', () => {
       const oxfmtrcPath = path.join(tmplDir, '.oxfmtrc.json');

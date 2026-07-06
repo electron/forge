@@ -48,4 +48,18 @@ describe('findTemplate', () => {
       'Failed to locate custom template: "non-existent-template".',
     );
   });
+
+  describe('removed language-specific templates', () => {
+    it.each([
+      ['vite-typescript', 'vite'],
+      ['webpack-typescript', 'webpack'],
+    ])(
+      'should redirect "%s" to the --typescript flag',
+      async (template, bundler) => {
+        await expect(findTemplate(template)).rejects.toThrowError(
+          `The "${template}" template no longer exists. Use "--template ${bundler} --typescript" instead.`,
+        );
+      },
+    );
+  });
 });
