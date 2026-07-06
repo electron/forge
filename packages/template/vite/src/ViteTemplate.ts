@@ -1,11 +1,11 @@
 import path from 'node:path';
 
+import { moveSync } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 class ViteTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
@@ -57,7 +57,7 @@ class ViteTemplate extends BaseTemplate {
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          fs.moveSync(
+          moveSync(
             path.join(directory, 'src', 'index.html'),
             path.join(directory, 'index.html'),
             { overwrite: options.force },

@@ -1,5 +1,6 @@
 import { spawn, SpawnOptions } from 'node:child_process';
 import readline from 'node:readline';
+import { styleText } from 'node:util';
 
 import {
   getElectronVersion,
@@ -15,7 +16,6 @@ import {
   StartOptions,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 
@@ -127,7 +127,7 @@ export default autoTrace(
           },
         },
         {
-          title: `Running ${chalk.yellow('generateAssets')} hook`,
+          title: `Running ${styleText('yellow', 'generateAssets')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             {
               name: 'run-generateAssets-hook',
@@ -151,7 +151,7 @@ export default autoTrace(
           ),
         },
         {
-          title: `Running ${chalk.yellow('preStart')} hook`,
+          title: `Running ${styleText('yellow', 'preStart')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             { name: 'run-preStart-hook', category: '@electron-forge/core' },
             async (childTrace, { forgeConfig }, task) => {
@@ -167,7 +167,7 @@ export default autoTrace(
         },
         {
           task: (_ctx, task) => {
-            task.title = `${chalk.dim(`Launched Electron app. Type`)} ${chalk.bold('rs')} ${chalk.dim(`in terminal to restart main process.`)}`;
+            task.title = `${styleText('dim', `Launched Electron app. Type`)} ${styleText('bold', 'rs')} ${styleText('dim', `in terminal to restart main process.`)}`;
           },
         },
       ],
@@ -301,7 +301,7 @@ export default autoTrace(
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
           console.info(
-            `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
+            `${styleText('green', '✔ ')}${styleText('dim', 'Restarting Electron app')}`,
           );
           lastSpawned.restarted = true;
           lastSpawned.on('exit', async () => {

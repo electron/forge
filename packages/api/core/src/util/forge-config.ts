@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 import { createJiti } from 'jiti';
 
 import { runMutatingHook } from './hook.js';

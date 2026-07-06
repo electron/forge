@@ -1,11 +1,11 @@
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { getNameFromAuthor } from '@electron-forge/core-utils';
+import { getNameFromAuthor, move } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
-import fs from 'fs-extra';
 
 import { MakerMSIXConfig } from './Config.js';
 import { toMsixArch } from './util/arch.js';
@@ -29,7 +29,8 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
     packageJSON,
     appName,
   }: MakerOptions): Promise<string[]> {
-    const { manifestVariables, ...packageOptions } = this.config;
+    const { manifestVariables, outputFileName, ...packageOptions } =
+      this.config;
 
     // Do all the scratch work in a temporary folder
     const tmpFolder = await fs.mkdtemp(
@@ -52,17 +53,21 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
         outputDir: tmpFolder,
       });
 
+      const baseName =
+        (typeof outputFileName === 'function'
+          ? await outputFileName()
+          : outputFileName) || `${path.basename(dir)}-${packageJSON.version}`;
       const outputPath = path.resolve(
         makeDir,
         'msix',
         targetArch,
-        `${path.basename(dir)}-${packageJSON.version}.msix`,
+        `${baseName}.msix`,
       );
-      await fs.mkdirp(path.dirname(outputPath));
-      await fs.move(result.msixPackage, outputPath);
+      await fs.mkdir(path.dirname(outputPath), { recursive: true });
+      await move(result.msixPackage, outputPath);
       return [outputPath];
     } finally {
-      fs.remove(tmpFolder);
+      fs.rm(tmpFolder, { recursive: true, force: true });
     }
   }
 }

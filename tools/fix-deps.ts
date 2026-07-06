@@ -1,14 +1,16 @@
+import fs from 'node:fs/promises';
 import * as path from 'node:path';
-
-import * as fs from 'fs-extra';
 
 import { getPackageInfo } from './utils';
 
 (async () => {
   const packages = await getPackageInfo();
 
-  const baseJson = await fs.readJson(
-    path.resolve(import.meta.dirname, '..', 'package.json'),
+  const baseJson = JSON.parse(
+    await fs.readFile(
+      path.resolve(import.meta.dirname, '..', 'package.json'),
+      'utf8',
+    ),
   );
 
   const allDeps = {
@@ -18,7 +20,9 @@ import { getPackageInfo } from './utils';
   };
 
   for (const p of packages) {
-    const json = await fs.readJson(path.resolve(p.path, 'package.json'));
+    const json = JSON.parse(
+      await fs.readFile(path.resolve(p.path, 'package.json'), 'utf8'),
+    );
 
     for (const key of [
       'dependencies',
@@ -38,8 +42,9 @@ import { getPackageInfo } from './utils';
       }
     }
 
-    await fs.writeJson(path.resolve(p.path, 'package.json'), json, {
-      spaces: 2,
-    });
+    await fs.writeFile(
+      path.resolve(p.path, 'package.json'),
+      `${JSON.stringify(json, null, 2)}\n`,
+    );
   }
 })().catch(console.error);

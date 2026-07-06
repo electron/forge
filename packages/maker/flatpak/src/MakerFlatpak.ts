@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 
 import { MakerFlatpakConfig } from './Config.js';
 

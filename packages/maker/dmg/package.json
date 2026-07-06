@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-dmg",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.10",
   "type": "module",
   "description": "DMG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -16,8 +16,7 @@
   },
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",
-    "@electron-forge/shared-types": "workspace:*",
-    "fs-extra": "^10.0.0"
+    "@electron-forge/shared-types": "workspace:*"
   },
   "optionalDependencies": {
     "electron-installer-dmg": "^5.0.1"

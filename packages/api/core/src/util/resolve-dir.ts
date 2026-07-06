@@ -1,8 +1,7 @@
 import path from 'node:path';
 
-import { getElectronVersion } from '@electron-forge/core-utils';
+import { getElectronVersion, pathExists } from '@electron-forge/core-utils';
 import debug from 'debug';
-import fs from 'fs-extra';
 
 import { registeredForgeConfigs } from './forge-config.js';
 import { readRawPackageJson } from './read-package-json.js';
@@ -26,7 +25,7 @@ export default async (dir: string): Promise<string | null> => {
       return mDir;
     }
     const testPath = path.resolve(mDir, 'package.json');
-    if (await fs.pathExists(testPath)) {
+    if (await pathExists(testPath)) {
       const packageJSON = await readRawPackageJson(mDir);
 
       // TODO: Move this check to inside the forge config resolver and use

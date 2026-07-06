@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 
 import { MakerDMGConfig } from './Config.js';
 
@@ -26,9 +26,10 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
   }: MakerOptions): Promise<string[]> {
     const { createDMG } = await import('electron-installer-dmg');
 
-    const outPath = path.resolve(makeDir, `${this.config.name || appName}.dmg`);
+    const dmgDir = path.resolve(makeDir, 'dmg', targetArch);
+    const outPath = path.resolve(dmgDir, `${this.config.name || appName}.dmg`);
     const forgeDefaultOutPath = path.resolve(
-      makeDir,
+      dmgDir,
       `${appName}-${packageJSON.version}-${targetArch}.dmg`,
     );
 
@@ -38,7 +39,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
       name: appName,
       ...this.config,
       appPath: path.resolve(dir, `${appName}.app`),
-      out: path.dirname(outPath),
+      out: dmgDir,
     };
     await createDMG(dmgConfig);
     if (!this.config.name) {

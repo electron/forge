@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 function redConsoleError(msg: string) {
-  console.error(chalk.red(msg));
+  console.error(styleText('red', msg));
 }
 
 process.on(

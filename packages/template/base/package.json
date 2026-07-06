@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-base",
-  "version": "8.0.0-alpha.7",
+  "version": "8.0.0-alpha.10",
   "type": "module",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -16,7 +16,7 @@
     "@electron-forge/shared-types": "workspace:*",
     "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.3.1",
-    "fs-extra": "^10.0.0",
+    "graceful-fs": "^4.2.11",
     "semver": "^7.2.1",
     "username": "^5.1.0"
   },

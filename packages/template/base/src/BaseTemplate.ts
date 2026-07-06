@@ -1,18 +1,24 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { resolvePackageManager } from '@electron-forge/core-utils';
+import {
+  readJson,
+  readJsonSync,
+  resolvePackageManager,
+  writeJson,
+} from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   ForgeTemplate,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
+import gracefulFs from 'graceful-fs';
 import semver from 'semver';
 
 import determineAuthor from './determine-author.js';
 
-const currentForgeVersion = fs.readJSONSync(
+const currentForgeVersion = readJsonSync(
   path.resolve(import.meta.dirname, '../package.json'),
 ).version;
 
@@ -26,8 +32,8 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.existsSync(packageJSONPath)) {
-      const deps = fs.readJsonSync(packageJSONPath).dependencies;
+    if (gracefulFs.existsSync(packageJSONPath)) {
+      const deps = readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
@@ -43,8 +49,8 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.existsSync(packageJSONPath)) {
-      const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
+    if (gracefulFs.existsSync(packageJSONPath)) {
+      const packageDevDeps = readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
@@ -68,7 +74,7 @@ export class BaseTemplate implements ForgeTemplate {
         task: async () => {
           const pm = await resolvePackageManager();
           d('creating directory:', path.resolve(directory, 'src'));
-          await fs.mkdirs(path.resolve(directory, 'src'));
+          await fs.mkdir(path.resolve(directory, 'src'), { recursive: true });
           const rootFiles = ['_gitignore', 'forge.config.js'];
 
           if (pm.executable === 'pnpm') {
@@ -120,18 +126,15 @@ export class BaseTemplate implements ForgeTemplate {
 
   async copy(source: string, target: string): Promise<void> {
     d(`copying "${source}" --> "${target}"`);
-    await fs.copy(source, target);
+    await fs.cp(source, target, { recursive: true });
   }
 
   async writeLintConfig(directory: string): Promise<void> {
     await this.copyTemplateFile(directory, '.oxlintrc.json');
-    const oxfmtrc = await fs.readJson(
-      path.resolve(import.meta.dirname, '../../../../.oxfmtrc.json'),
+    await this.copy(
+      path.join(tmplDir, '.oxfmtrc.json'),
+      path.resolve(directory, '.oxfmtrc.json'),
     );
-    delete oxfmtrc.ignorePatterns;
-    await fs.writeJson(path.resolve(directory, '.oxfmtrc.json'), oxfmtrc, {
-      spaces: 2,
-    });
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
@@ -142,7 +145,7 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    const packageJSON = await fs.readJson(
+    const packageJSON = await readJson(
       path.resolve(import.meta.dirname, '../tmpl/package.json'),
     );
 
@@ -152,8 +155,8 @@ export class BaseTemplate implements ForgeTemplate {
         this.templateDir,
         'package.json',
       );
-      if (fs.existsSync(templatePackageJSONPath)) {
-        const templatePackageJSON = await fs.readJson(templatePackageJSONPath);
+      if (gracefulFs.existsSync(templatePackageJSONPath)) {
+        const templatePackageJSON = await readJson(templatePackageJSONPath);
         const { dependencies, devDependencies, scripts, ...rest } =
           templatePackageJSON;
         Object.assign(packageJSON, rest);
@@ -182,7 +185,7 @@ export class BaseTemplate implements ForgeTemplate {
     }
 
     d('writing package.json to:', directory);
-    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
+    await writeJson(path.resolve(directory, 'package.json'), packageJSON, {
       spaces: 2,
     });
   }
@@ -199,7 +202,7 @@ export class BaseTemplate implements ForgeTemplate {
       .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {
-      await fs.remove(inputPath);
+      await fs.rm(inputPath, { recursive: true, force: true });
     }
   }
 }
