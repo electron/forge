@@ -12,6 +12,12 @@ on:
     types: [checks_requested]
   workflow_call:
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint-and-build:
     runs-on: ubuntu-22.04
@@ -21,6 +27,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -68,6 +76,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -145,6 +155,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -205,6 +217,19 @@ jobs:
       - fast-tests
       - slow-tests
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     steps:
+      - name: Fail if any required job failed or was cancelled
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        env:
+          LINT_AND_BUILD_RESULT: ${{ needs.lint-and-build.result }}
+          FAST_TESTS_RESULT: ${{ needs.fast-tests.result }}
+          SLOW_TESTS_RESULT: ${{ needs.slow-tests.result }}
+        run: |
+          echo "One or more required jobs did not succeed:"
+          echo "  lint-and-build: $LINT_AND_BUILD_RESULT"
+          echo "  fast-tests:     $FAST_TESTS_RESULT"
+          echo "  slow-tests:     $SLOW_TESTS_RESULT"
+          exit 1
       - name: We are done
         run: echo "Hello World"

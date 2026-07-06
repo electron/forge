@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/core",
-  "version": "8.0.0-alpha.9",
+  "version": "8.0.0-alpha.10",
   "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
@@ -32,9 +32,8 @@
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/tracer": "workspace:*",
     "@electron/get": "^5.0.0",
-    "@electron/packager": "^20.0.0",
+    "@electron/packager": "^20.0.1",
     "debug": "^4.3.1",
-    "filenamify": "^6.0.0",
     "graceful-fs": "^4.2.11",
     "jiti": "^2.4.2",
     "listr2": "^7.0.2"

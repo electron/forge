@@ -111,7 +111,7 @@ const initCommand = program
                     value: 'base',
                   },
                   {
-                    name: 'Vite',
+                    name: 'Vite (Experimental)',
                     value: 'vite',
                   },
                   {

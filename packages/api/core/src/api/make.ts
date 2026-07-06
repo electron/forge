@@ -15,9 +15,9 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import filenamify from 'filenamify';
 import { Listr, PRESET_TIMER } from 'listr2';
 
+import filenamify from '../util/filenamify.js';
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
 import { importSearch } from '../util/import-search.js';

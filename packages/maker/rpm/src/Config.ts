@@ -34,6 +34,11 @@ export interface MakerRpmConfigOptions {
    */
   license?: string;
   /**
+   * The copyright string to use for the package. Defaults to the `copyright` field in the
+   * application's package.json.
+   */
+  copyright?: string;
+  /**
    * Group of the package, used in the Group field of the spec file.
    */
   group?: string;

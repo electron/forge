@@ -206,6 +206,11 @@ export interface MakerDebConfigOptions {
    * The absolute path to a custom template for the generated FreeDesktop.org desktop entry file.
    */
   desktopTemplate?: string;
+  /**
+   * The copyright string to use for the package. Defaults to the `copyright` field in the
+   * application's package.json.
+   */
+  copyright?: string;
 }
 
 export interface MakerDebConfig {

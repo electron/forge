@@ -35,7 +35,13 @@ program
     'make',
     'Generate distributables for the current Electron application.',
   )
-  .command('publish', 'Publish the current Electron application.')
+  .command('release', 'Release the current Electron application.')
+  // `publish` is a deprecated alias for `release`. It is hidden from the help
+  // output and prints a deprecation warning when invoked (see
+  // electron-forge-publish.ts).
+  .command('publish', 'Publish the current Electron application.', {
+    hidden: true,
+  })
   .passThroughOptions(true)
   .hook('preSubcommand', async (_command, subcommand) => {
     if (!process.argv.includes('--help') && !process.argv.includes('-h')) {

@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
@@ -45,6 +46,27 @@ describe('MakerDMG', () => {
       packageJSON,
     });
     expect(vi.mocked(createDMG)).toHaveBeenCalledOnce();
+  });
+
+  it('should output to an arch-specific subdirectory to avoid conflicts between parallel makers', async () => {
+    const maker = new MakerDMG({}, []);
+    maker.ensureFile = vi.fn();
+    await maker.prepareConfig(targetArch);
+    const expectedDir = path.resolve(makeDir, 'dmg', targetArch);
+    await (maker.make as MakeFunction)({
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      packageJSON,
+    });
+    expect(vi.mocked(createDMG)).toHaveBeenCalledWith(
+      expect.objectContaining({ out: expectedDir }),
+    );
+    expect(vi.mocked(fs.rename)).toHaveBeenCalledWith(
+      expect.stringContaining(expectedDir),
+      expect.stringContaining(expectedDir),
+    );
   });
 
   it('should attempt to rename the DMG file with version if no custom name is set', async () => {
