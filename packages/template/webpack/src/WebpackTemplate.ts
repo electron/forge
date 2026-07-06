@@ -20,23 +20,20 @@ const TS_ONLY_SCRIPTS = new Set(['typecheck']);
 class WebpackTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
-  public override get devDependencies(): string[] {
-    const all = super.devDependencies;
-    if (this._typescript) return all;
+  public override getDevDependencies(options: InitTemplateOptions): string[] {
+    const all = super.getDevDependencies(options);
+    if (options.typescript) return all;
     return all.filter((dep) => {
       const name = dep.replace(/@[^@]*$/, '');
       return !TS_ONLY_DEV_DEPS.has(name);
     });
   }
 
-  private _typescript = false;
-
   public async initializeTemplate(
     directory: string,
     options: InitTemplateOptions,
   ): Promise<ForgeListrTaskDefinition[]> {
     const typescript = options.typescript ?? false;
-    this._typescript = typescript;
     const superTasks = await super.initializeTemplate(directory, options);
 
     return [
@@ -57,7 +54,9 @@ class WebpackTemplate extends BaseTemplate {
               path.resolve(directory, 'forge.config.mjs'),
             );
             // For JS, replace module imports with string-based config paths
-            // and patch file references from .ts to .js
+            // and patch file references from .ts to .js. The string matching
+            // below depends on the oxfmt-formatted output of forge.config.mts;
+            // the slow verdaccio spec catches drift.
             const forgeConfigPath = path.resolve(directory, 'forge.config.mjs');
             await this.updateFileByLine(forgeConfigPath, (line) => {
               // Remove webpack config imports (JS uses string paths instead)

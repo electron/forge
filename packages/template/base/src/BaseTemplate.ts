@@ -66,6 +66,10 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
+  getDevDependencies(_options: InitTemplateOptions): string[] {
+    return this.devDependencies;
+  }
+
   public async initializeTemplate(
     directory: string,
     { copyCIFiles, typescript }: InitTemplateOptions,

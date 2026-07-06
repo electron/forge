@@ -230,13 +230,21 @@ export async function init({
                 title: 'Installing development dependencies',
                 task: async ({ pm }, task) => {
                   d('installing devDependencies');
-                  if (templateModule.devDependencies?.length) {
-                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
+                  const devDependencies =
+                    templateModule.getDevDependencies?.({
+                      copyCIFiles,
+                      force,
+                      typescript,
+                    }) ??
+                    templateModule.devDependencies ??
+                    [];
+                  if (devDependencies.length) {
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${devDependencies.join(' ')}`;
                   }
                   await installDependencies(
                     pm,
                     dir,
-                    templateModule.devDependencies || [],
+                    devDependencies,
                     DepType.DEV,
                   );
                 },

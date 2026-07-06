@@ -18,23 +18,20 @@ const TS_ONLY_SCRIPTS = new Set(['typecheck']);
 class ViteTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
 
-  public override get devDependencies(): string[] {
-    const all = super.devDependencies;
-    if (this._typescript) return all;
+  public override getDevDependencies(options: InitTemplateOptions): string[] {
+    const all = super.getDevDependencies(options);
+    if (options.typescript) return all;
     return all.filter((dep) => {
       const name = dep.replace(/@[^@]*$/, '');
       return !TS_ONLY_DEV_DEPS.has(name);
     });
   }
 
-  private _typescript = false;
-
   public async initializeTemplate(
     directory: string,
     options: InitTemplateOptions,
   ): Promise<ForgeListrTaskDefinition[]> {
     const typescript = options.typescript ?? false;
-    this._typescript = typescript;
     const superTasks = await super.initializeTemplate(directory, options);
 
     return [
@@ -47,10 +44,9 @@ class ViteTemplate extends BaseTemplate {
             force: true,
           });
 
-          if (typescript) {
-            await this.copyTemplateFile(directory, 'forge.config.mts');
-          } else {
-            await this.copyTemplateFile(directory, 'forge.config.mts');
+          await this.copyTemplateFile(directory, 'forge.config.mts');
+
+          if (!typescript) {
             const forgeConfigPath = path.resolve(directory, 'forge.config.mjs');
             await this.stripAndRename(
               path.resolve(directory, 'forge.config.mts'),

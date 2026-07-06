@@ -292,6 +292,11 @@ export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
+  /**
+   * Computes dev dependencies for the given init options. Takes precedence
+   * over `devDependencies` when defined.
+   */
+  getDevDependencies?: (options: InitTemplateOptions) => string[];
   initializeTemplate?: (
     dir: string,
     options: InitTemplateOptions,
