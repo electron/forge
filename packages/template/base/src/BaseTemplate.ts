@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { stripTypeScriptTypes } from 'node:module';
+// Namespace import so that older Node.js versions without
+// `stripTypeScriptTypes` fail in the guard below instead of at load time.
+import * as nodeModule from 'node:module';
 import path from 'node:path';
 
 import {
@@ -209,11 +211,18 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async stripAndRename(srcPath: string, destPath: string): Promise<void> {
+    // `stripTypeScriptTypes` is only available in Node.js >= 22.13, and
+    // `npx create-electron-app` does not enforce the `engines` field.
+    if (typeof nodeModule.stripTypeScriptTypes !== 'function') {
+      throw new Error(
+        `Generating JavaScript template files requires Node.js >= 22.13 (currently running ${process.version}).`,
+      );
+    }
     const source = await fs.readFile(srcPath, 'utf8');
-    const stripped = stripTypeScriptTypes(source, { mode: 'strip' });
-    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
-    const formatted = await format(destPath, stripped, oxfmtConfig);
-    await fs.writeFile(destPath, formatted.code);
+    const stripped = nodeModule.stripTypeScriptTypes(source, {
+      mode: 'strip',
+    });
+    await this.writeFormattedFile(destPath, stripped);
     if (srcPath !== destPath) {
       await fs.rm(srcPath, { force: true });
     }
@@ -221,8 +230,22 @@ export class BaseTemplate implements ForgeTemplate {
 
   async formatFile(filePath: string): Promise<void> {
     const source = await fs.readFile(filePath, 'utf8');
+    await this.writeFormattedFile(filePath, source);
+  }
+
+  private async writeFormattedFile(
+    filePath: string,
+    source: string,
+  ): Promise<void> {
     const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
     const formatted = await format(filePath, source, oxfmtConfig);
+    if (formatted.errors.length > 0) {
+      throw new Error(
+        `Failed to format template file "${filePath}":\n${formatted.errors
+          .map((error) => error.message)
+          .join('\n')}`,
+      );
+    }
     await fs.writeFile(filePath, formatted.code);
   }
 
