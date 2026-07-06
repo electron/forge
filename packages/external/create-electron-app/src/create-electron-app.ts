@@ -61,11 +61,32 @@ const initCommand = program
         },
         {
           task: async (initOpts, task): Promise<void> => {
-            if (
-              Object.keys(options).length > 0 ||
-              process.env.CI ||
-              !process.stdout.isTTY
-            ) {
+            const canPrompt = !process.env.CI && process.stdout.isTTY;
+
+            if (Object.keys(options).length > 0 || !canPrompt) {
+              // `--typescript` requires a bundler-based template, so if no
+              // `--template` was passed, prompt for a bundler when possible.
+              // In non-interactive contexts, the base template rejects the
+              // flag with an actionable error instead.
+              if (canPrompt && options.typescript && !options.template) {
+                const prompt = task.prompt(ListrInquirerPromptAdapter);
+                initOpts.template = await prompt.run<Prompt<string, any>>(
+                  select,
+                  {
+                    message: 'Select a bundler',
+                    choices: [
+                      {
+                        name: 'Vite (Experimental)',
+                        value: 'vite',
+                      },
+                      {
+                        name: 'webpack',
+                        value: 'webpack',
+                      },
+                    ],
+                  },
+                );
+              }
               return;
             }
 
@@ -122,7 +143,7 @@ const initCommand = program
               },
             );
 
-            if (bundler !== 'base' && !options.typescript) {
+            if (bundler !== 'base') {
               initOpts.typescript = await prompt.run<Prompt<boolean, any>>(
                 select,
                 {
