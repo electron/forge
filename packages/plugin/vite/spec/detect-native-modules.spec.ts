@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
+  applyNativeModuleOverrides,
   detectNativePackages,
   isNativePackage,
   walkTransitiveDependencies,
@@ -631,6 +632,46 @@ describe('detect-native-modules', () => {
 
       expect(result).toContain('native-pkg');
       expect(result).toContain('store-helper');
+    });
+  });
+
+  describe('applyNativeModuleOverrides', () => {
+    it('returns the detected list when no overrides are given', () => {
+      expect(applyNativeModuleOverrides(['a', 'b'])).toEqual(['a', 'b']);
+      expect(applyNativeModuleOverrides(['a', 'b'], {})).toEqual(['a', 'b']);
+    });
+
+    it('adds packages from include', () => {
+      const result = applyNativeModuleOverrides(['a'], {
+        include: ['b', '@scope/c'],
+      });
+
+      expect(result).toContain('a');
+      expect(result).toContain('b');
+      expect(result).toContain('@scope/c');
+    });
+
+    it('does not duplicate already-detected includes', () => {
+      const result = applyNativeModuleOverrides(['a'], { include: ['a'] });
+
+      expect(result).toEqual(['a']);
+    });
+
+    it('removes packages from exclude', () => {
+      const result = applyNativeModuleOverrides(['a', 'b'], {
+        exclude: ['b'],
+      });
+
+      expect(result).toEqual(['a']);
+    });
+
+    it('applies exclude after include', () => {
+      const result = applyNativeModuleOverrides(['a'], {
+        include: ['b'],
+        exclude: ['b'],
+      });
+
+      expect(result).toEqual(['a']);
     });
   });
 });

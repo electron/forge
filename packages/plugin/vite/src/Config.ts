@@ -1,3 +1,4 @@
+import type { NativeModulesConfig } from './detect-native-modules.js';
 import type { LibraryOptions } from 'vite';
 
 export interface VitePluginBuildConfig {
@@ -49,4 +50,15 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Manual overrides for native Node module detection.
+   *
+   * The plugin automatically detects native modules, externalizes them from
+   * the Vite bundle, and copies them (along with their transitive
+   * dependencies) into the packaged app. Use `include` to force packages into
+   * that set when detection misses them, and `exclude` to remove detected
+   * packages so they are bundled by Vite instead.
+   */
+  nativeModules?: NativeModulesConfig;
 }

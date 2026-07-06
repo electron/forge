@@ -1,6 +1,9 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { detectNativePackages } from '../detect-native-modules.js';
+import {
+  applyNativeModuleOverrides,
+  detectNativePackages,
+} from '../detect-native-modules.js';
 import {
   external,
   getBuildConfig,
@@ -12,8 +15,11 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
-  const nativePackages = detectNativePackages(forgeEnv.root);
+  const { forgeConfig, forgeConfigSelf } = forgeEnv;
+  const nativePackages = applyNativeModuleOverrides(
+    detectNativePackages(forgeEnv.root),
+    forgeConfig.nativeModules,
+  );
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {

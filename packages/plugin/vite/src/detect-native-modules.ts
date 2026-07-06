@@ -11,6 +11,20 @@ const NATIVE_DEPENDENCY_MARKERS = [
   'prebuild-install',
 ];
 
+export interface NativeModulesConfig {
+  /**
+   * Package names to always treat as native. They are externalized from the
+   * Vite bundle and copied (with their transitive dependencies) into the
+   * packaged app, even if automatic detection misses them.
+   */
+  include?: string[];
+  /**
+   * Package names to remove from the automatically detected set. They are
+   * bundled by Vite like any other JavaScript dependency.
+   */
+  exclude?: string[];
+}
+
 function readJsonSafe(filePath: string): Record<string, unknown> | null {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -210,6 +224,26 @@ export function detectNativePackages(projectDir: string): string[] {
 
   d('detected native packages:', results);
   return results;
+}
+
+/**
+ * Apply the user's manual `nativeModules` overrides to a detected package
+ * list: `include` entries are added, `exclude` entries are removed.
+ */
+export function applyNativeModuleOverrides(
+  detected: string[],
+  overrides?: NativeModulesConfig,
+): string[] {
+  if (!overrides) return detected;
+
+  const result = new Set(detected);
+  for (const name of overrides.include ?? []) {
+    result.add(name);
+  }
+  for (const name of overrides.exclude ?? []) {
+    result.delete(name);
+  }
+  return [...result];
 }
 
 export function walkTransitiveDependencies(

@@ -11,6 +11,7 @@ import * as vite from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
 import {
+  applyNativeModuleOverrides,
   detectNativePackages,
   walkTransitiveDependencies,
 } from './detect-native-modules.js';
@@ -35,7 +36,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'nativeModules'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -85,7 +86,7 @@ function spawnViteBuild(
 }
 
 function spawnViteBuildWatch(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'nativeModules'>,
   index: number,
   projectDir: string,
   devServerUrls: Record<string, string>,
@@ -302,7 +303,10 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
               {
                 title: 'Detecting native dependencies...',
                 task: async (_ctx, subtask) => {
-                  const nativePackages = detectNativePackages(this.projectDir);
+                  const nativePackages = applyNativeModuleOverrides(
+                    detectNativePackages(this.projectDir),
+                    this.config.nativeModules,
+                  );
                   this.externalModules = walkTransitiveDependencies(
                     this.projectDir,
                     nativePackages,
@@ -422,16 +426,18 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
-   * We only include build[] and renderer[] — the worker needs the full renderer
-   * list for defines even when building a single main target.
+   * We only include build[], renderer[] and nativeModules — the worker needs
+   * the full renderer list for defines even when building a single main
+   * target, and the nativeModules overrides to build the rollup external list.
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'nativeModules'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      nativeModules: this.config.nativeModules,
     };
   }
 

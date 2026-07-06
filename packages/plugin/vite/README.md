@@ -36,3 +36,32 @@ module.exports = {
   ]
 };
 ```
+
+### Native Node modules
+
+The plugin automatically detects native Node modules (e.g. `better-sqlite3`, `serialport`, `sharp`), externalizes them from the Vite bundle, and copies them — along with their transitive dependencies — into the packaged app.
+
+If detection misses a package (or flags one it shouldn't), use the `nativeModules` option to override it:
+
+```javascript
+// forge.config.js
+
+module.exports = {
+  plugins: [
+    {
+      name: '@electron-forge/plugin-vite',
+      config: {
+        build: [],
+        renderer: [],
+        nativeModules: {
+          // Force packages to be treated as native: externalized from the
+          // bundle and copied into the packaged app with their dependencies.
+          include: ['some-native-package'],
+          // Remove packages from the detected set so Vite bundles them normally.
+          exclude: ['false-positive-package']
+        }
+      }
+    }
+  ]
+};
+```
