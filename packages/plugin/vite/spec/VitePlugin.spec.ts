@@ -107,15 +107,103 @@ describe('VitePlugin', async () => {
       expect(config.packagerConfig.ignore).toBeTypeOf('function');
     });
 
+    // Populate the plugin's private set of externalized modules, normally
+    // filled in during the prePackage hook.
+    const setExternalModules = (target: VitePlugin, modules: string[]) => {
+      (target as unknown as { externalModules: Set<string> }).externalModules =
+        new Set(modules);
+    };
+
     describe('packagerConfig.ignore', () => {
-      it('does not overwrite an existing ignore value', async () => {
+      it('composes an existing RegExp ignore value with the plugin ignore', async () => {
         const config = await plugin.resolveForgeConfig({
           packagerConfig: {
             ignore: /test/,
           },
         } as ResolvedForgeConfig);
 
-        expect(config.packagerConfig.ignore).toEqual(/test/);
+        // The user value is composed into a function rather than left as-is.
+        expect(config.packagerConfig.ignore).toBeTypeOf('function');
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        // Plugin keep-list still survives...
+        expect(ignore('/.vite/build/main.js')).toEqual(false);
+        expect(ignore('/package.json')).toEqual(false);
+        // ...even when the user pattern matches it.
+        expect(ignore('/.vite/build/test.js')).toEqual(false);
+        // Everything else is still excluded.
+        expect(ignore('/test/foo.js')).toEqual(true);
+        expect(ignore('/src/main.ts')).toEqual(true);
+      });
+
+      it('composes a user ignore function with the plugin allowlist', async () => {
+        plugin = new VitePlugin(baseConfig);
+        const userIgnore = (file: string) =>
+          file.includes('secret') || file.startsWith('/node_modules');
+        const config = await plugin.resolveForgeConfig({
+          packagerConfig: {
+            ignore: userIgnore,
+          },
+        } as ResolvedForgeConfig);
+        setExternalModules(plugin, [
+          'better-sqlite3',
+          '@serialport/bindings-cpp',
+        ]);
+
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        // The plugin's keep-list always wins, even though the user's ignore
+        // excludes all of node_modules — otherwise the externalized native
+        // modules would be missing from the packaged app.
+        expect(ignore('/node_modules')).toEqual(false);
+        expect(ignore('/node_modules/better-sqlite3')).toEqual(false);
+        expect(
+          ignore('/node_modules/better-sqlite3/build/Release/addon.node'),
+        ).toEqual(false);
+        expect(ignore('/node_modules/@serialport')).toEqual(false);
+        expect(ignore('/node_modules/@serialport/bindings-cpp')).toEqual(false);
+        expect(
+          ignore('/node_modules/@serialport/bindings-cpp/prebuilds/x.node'),
+        ).toEqual(false);
+        expect(ignore('/.vite/build/secret.js')).toEqual(false);
+
+        // Paths outside the keep-list follow user or plugin exclusions.
+        expect(ignore('/node_modules/lodash')).toEqual(true);
+        expect(ignore('/node_modules/@scope/other')).toEqual(true);
+        expect(ignore('/secret.txt')).toEqual(true);
+        expect(ignore('/src/main.ts')).toEqual(true);
+      });
+
+      it('composes an array of RegExps', async () => {
+        plugin = new VitePlugin(baseConfig);
+        const config = await plugin.resolveForgeConfig({
+          packagerConfig: {
+            ignore: [/foo/, /bar/],
+          },
+        } as ResolvedForgeConfig);
+
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/.vite')).toEqual(false);
+        expect(ignore('/foo')).toEqual(true);
+        expect(ignore('/bar')).toEqual(true);
+        expect(ignore('/baz')).toEqual(true);
+      });
+
+      it('keeps allowlisted native modules without a user ignore', async () => {
+        plugin = new VitePlugin(baseConfig);
+        const config = await plugin.resolveForgeConfig(
+          {} as ResolvedForgeConfig,
+        );
+        setExternalModules(plugin, ['better-sqlite3']);
+
+        const ignore = config.packagerConfig.ignore as IgnoreFunction;
+
+        expect(ignore('/node_modules/better-sqlite3')).toEqual(false);
+        expect(ignore('/node_modules/better-sqlite3/lib/index.js')).toEqual(
+          false,
+        );
+        expect(ignore('/node_modules/lodash')).toEqual(true);
       });
 
       it('ignores everything but .vite and package.json', async () => {

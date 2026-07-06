@@ -20,6 +20,7 @@ import type { VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
+  ForgePackagerOptions,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import type { ChildProcess } from 'node:child_process';
@@ -147,6 +148,24 @@ function spawnViteBuildWatch(
   });
 
   return { child, firstBuild };
+}
+
+/**
+ * Normalize the packager `ignore` option (function, RegExp, or array of
+ * RegExps/patterns) into a predicate so the plugin can compose the user's
+ * ignore with its own.
+ */
+function normalizeIgnore(
+  ignore: ForgePackagerOptions['ignore'],
+): ((file: string) => boolean) | undefined {
+  if (ignore == null) return undefined;
+  if (typeof ignore === 'function') {
+    return ignore as (file: string) => boolean;
+  }
+  const patterns = (Array.isArray(ignore) ? ignore : [ignore]).map((pattern) =>
+    pattern instanceof RegExp ? pattern : new RegExp(String(pattern)),
+  );
+  return (file: string) => patterns.some((pattern) => pattern.test(file));
 }
 
 function entryToDisplay(entry: LibraryOptions['entry']): string {
@@ -312,46 +331,69 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     };
   };
 
+  /**
+   * Whether the plugin needs `file` to survive the packager copy step for the
+   * packaged app to work: the Vite output (`/.vite`), the app's
+   * `/package.json`, the `/node_modules` directory itself, and the directories
+   * of native modules (plus their transitive dependencies) that were
+   * externalized from the Vite bundle. `this.externalModules` is populated
+   * during prePackage after the Vite build completes.
+   *
+   * `file` always starts with `/`
+   * @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
+   */
+  private mustKeepForPackage = (file: string): boolean => {
+    if (file.startsWith('/.vite')) return true;
+    if (file === '/package.json') return true;
+
+    if (file === '/node_modules') return true;
+    if (file.startsWith('/node_modules/')) {
+      const bare = file.slice('/node_modules/'.length);
+      const segments = bare.split('/');
+      if (segments[0].startsWith('@')) {
+        // A bare scope directory (e.g. `/node_modules/@serialport`) must be
+        // kept whenever any allowlisted module lives under it — if the
+        // directory itself is ignored, packager never descends into it.
+        if (segments.length === 1) {
+          for (const name of this.externalModules) {
+            if (name.startsWith(`${segments[0]}/`)) return true;
+          }
+          return false;
+        }
+        return this.externalModules.has(`${segments[0]}/${segments[1]}`);
+      }
+      return this.externalModules.has(segments[0]);
+    }
+
+    return false;
+  };
+
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
     forgeConfig.packagerConfig ??= {};
 
-    if (forgeConfig.packagerConfig.ignore) {
-      if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
-        console.error(
-          styleText(
-            'yellow',
-            `You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
+    const userIgnore = normalizeIgnore(forgeConfig.packagerConfig.ignore);
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`,
-          ),
-        );
-      }
-      return forgeConfig;
-    }
-
+    // Compose the user's ignore with the plugin's own logic instead of
+    // deferring to the user entirely: a path is ignored if either the user's
+    // ignore or the plugin's ignore excludes it. The plugin's keep-list is
+    // checked first and always wins, because without the Vite output, the
+    // app's package.json and the externalized native modules the packaged app
+    // cannot start at all — a user ignore pattern like /node_modules/ or /^\/(?!\.vite)/
+    // (both common before this plugin handled ignore automatically) would
+    // otherwise silently strip files the plugin just externalized for.
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
-      // `file` always starts with `/`
-      // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
+      // Paths the plugin must keep always survive, even if the user's ignore
+      // matches them — see comment above.
+      if (this.mustKeepForPackage(file)) return false;
 
-      if (file.startsWith('/.vite')) return false;
-      if (file === '/package.json') return false;
+      if (userIgnore?.(file)) return true;
 
-      // Include node_modules that were externalized by the Vite build.
-      // The set is populated during prePackage after the Vite build completes.
-      if (file.startsWith('/node_modules')) {
-        if (file === '/node_modules') return false;
-        const bare = file.slice('/node_modules/'.length);
-        const segments = bare.split('/');
-        const name = segments[0].startsWith('@')
-          ? `${segments[0]}/${segments[1]}`
-          : segments[0];
-        return !this.externalModules.has(name);
-      }
-
+      // The plugin's default behaviour: everything that is not on the
+      // keep-list is excluded from the packaged app.
       return true;
     };
     return forgeConfig;
