@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import debug from 'debug';
 
+import type { NativeModulesConfig } from './Config.js';
+
 const d = debug('electron-forge:plugin:vite:native-modules');
 
 const NATIVE_DEPENDENCY_MARKERS = [
@@ -10,20 +12,6 @@ const NATIVE_DEPENDENCY_MARKERS = [
   'node-gyp-build',
   'prebuild-install',
 ];
-
-export interface NativeModulesConfig {
-  /**
-   * Package names to always treat as native. They are externalized from the
-   * Vite bundle and copied (with their transitive dependencies) into the
-   * packaged app, even if automatic detection misses them.
-   */
-  include?: string[];
-  /**
-   * Package names to remove from the automatically detected set. They are
-   * bundled by Vite like any other JavaScript dependency.
-   */
-  exclude?: string[];
-}
 
 function readJsonSafe(filePath: string): Record<string, unknown> | null {
   try {

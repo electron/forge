@@ -1,5 +1,18 @@
-import type { NativeModulesConfig } from './detect-native-modules.js';
 import type { LibraryOptions } from 'vite';
+
+export interface NativeModulesConfig {
+  /**
+   * Package names to always treat as native. They are externalized from the
+   * Vite bundle and copied (with their transitive dependencies) into the
+   * packaged app, even if automatic detection misses them.
+   */
+  include?: string[];
+  /**
+   * Package names to remove from the automatically detected set. They are
+   * bundled by Vite like any other JavaScript dependency.
+   */
+  exclude?: string[];
+}
 
 export interface VitePluginBuildConfig {
   /**
