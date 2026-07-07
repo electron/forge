@@ -26,16 +26,16 @@ import resolveDir from '../util/resolve-dir.js';
 
 import { listrMake, MakeOptions } from './make.js';
 
-const d = debug('electron-forge:publish');
+const d = debug('electron-forge:release');
 
-type PublishContext = {
+type ReleaseContext = {
   dir: string;
   forgeConfig: ResolvedForgeConfig;
   publishers: PublisherBase<unknown>[];
   makeResults: ForgeMakeResult[];
 };
 
-export interface PublishOptions {
+export interface ReleaseOptions {
   /**
    * The path to the app to be published
    */
@@ -70,7 +70,7 @@ export interface PublishOptions {
 }
 
 export default autoTrace(
-  { name: 'publish()', category: '@electron-forge/core' },
+  { name: 'release()', category: '@electron-forge/core' },
   async (
     childTrace,
     {
@@ -81,13 +81,13 @@ export default autoTrace(
       dryRun = false,
       dryRunResume = false,
       outDir,
-    }: PublishOptions,
+    }: ReleaseOptions,
   ): Promise<void> => {
     if (dryRun && dryRunResume) {
       throw new Error("Can't dry run and resume a dry run at the same time");
     }
 
-    const listrOptions: ForgeListrOptions<PublishContext> = {
+    const listrOptions: ForgeListrOptions<ReleaseContext> = {
       concurrent: false,
       rendererOptions: {
         collapseErrors: false,
@@ -100,12 +100,12 @@ export default autoTrace(
     const publishDistributablesTasks = (childTrace: typeof autoTrace) => [
       {
         title: 'Publishing distributables',
-        task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
+        task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
           { name: 'publish-distributables', category: '@electron-forge/core' },
           async (
             childTrace,
             { dir, forgeConfig, makeResults, publishers },
-            task: ForgeListrTask<PublishContext>,
+            task: ForgeListrTask<ReleaseContext>,
           ) => {
             if (publishers.length === 0) {
               task.output = 'No publishers configured';
@@ -156,11 +156,11 @@ export default autoTrace(
       },
     ];
 
-    const runner = new Listr<PublishContext>(
+    const runner = new Listr<ReleaseContext>(
       [
         {
           title: 'Loading configuration',
-          task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
+          task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
             { name: 'load-forge-config', category: '@electron-forge/core' },
             async (childTrace, ctx) => {
               const resolvedDir = await resolveDir(providedDir);
@@ -177,7 +177,7 @@ export default autoTrace(
         },
         {
           title: 'Resolving publish targets',
-          task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
+          task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
             {
               name: 'resolve-publish-targets',
               category: '@electron-forge/core',
@@ -252,7 +252,7 @@ export default autoTrace(
           title: dryRunResume
             ? 'Resuming from dry run...'
             : `Running ${styleText('yellow', 'make')} command`,
-          task: childTrace<Parameters<ForgeListrTaskFn<PublishContext>>>(
+          task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
             {
               name: dryRunResume ? 'resume-dry-run' : 'make()',
               category: '@electron-forge/core',
@@ -276,12 +276,12 @@ export default autoTrace(
 
                 return delayTraceTillSignal(
                   childTrace,
-                  task.newListr<PublishContext>(
+                  task.newListr<ReleaseContext>(
                     publishes.map((publishStates, index) => {
                       return {
                         title: `Publishing dry-run ${styleText('blue', `#${index + 1}`)}`,
                         task: childTrace<
-                          Parameters<ForgeListrTaskFn<PublishContext>>
+                          Parameters<ForgeListrTaskFn<ReleaseContext>>
                         >(
                           {
                             name: `publish-dry-run-${index + 1}`,
@@ -371,7 +371,7 @@ export default autoTrace(
                 {
                   title: 'Saving dry-run state',
                   task: childTrace<
-                    Parameters<ForgeListrTaskFn<PublishContext>>
+                    Parameters<ForgeListrTaskFn<ReleaseContext>>
                   >(
                     { name: 'save-dry-run', category: '@electron-forge/core' },
                     async (childTrace, { dir, forgeConfig, makeResults }) => {

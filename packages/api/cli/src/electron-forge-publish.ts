@@ -1,48 +1,21 @@
+import url from 'node:url';
 import { styleText } from 'node:util';
 
-import { initializeProxy } from '@electron/get';
-import { api, PublishOptions } from '@electron-forge/core';
-import { resolveWorkingDir } from '@electron-forge/core-utils';
-import { program } from 'commander';
-
 import './util/terminate.js';
-import packageJSON from '../package.json' with { type: 'json' };
 
-import { getMakeOptions } from './electron-forge-make.js';
+import { runRelease } from './electron-forge-release.js';
 
-program
-  .version(packageJSON.version, '-V, --version', 'Output the current version.')
-  .helpOption('-h, --help', 'Output usage information.')
-  .argument(
-    '[dir]',
-    'Directory to run the command in. (default: current directory)',
-  )
-  .option(
-    '--target [target[,target...]]',
-    'A comma-separated list of deployment targets. (default: all publishers in your Forge config)',
-  )
-  .option(
-    '--dry-run',
-    `Run the ${styleText('green', 'make')} command and save publish metadata without uploading anything.`,
-  )
-  .option('--from-dry-run', 'Publish artifacts from the last saved dry run.')
-  .allowUnknownOption(true)
-  .action(async (targetDir) => {
-    const dir = resolveWorkingDir(targetDir);
-    const options = program.opts();
+// `electron-forge publish` is a deprecated alias for `electron-forge release`.
+// It keeps working for now but prints a deprecation warning to stderr and
+// delegates to the exact same behavior as `release`.
+if (import.meta.url.startsWith('file:')) {
+  const modulePath = url.fileURLToPath(import.meta.url);
+  if (process.argv[1] === modulePath) {
+    console.error(
+      styleText('yellow', '⚠'),
+      '`electron-forge publish` is deprecated and will be removed in a future major version; use `electron-forge release` instead.',
+    );
 
-    initializeProxy();
-
-    const publishOpts: PublishOptions = {
-      dir,
-      interactive: true,
-      dryRun: options.dryRun,
-      dryRunResume: options.fromDryRun,
-    };
-    if (options.target) publishOpts.publishTargets = options.target.split(',');
-
-    publishOpts.makeOptions = await getMakeOptions();
-
-    await api.publish(publishOpts);
-  })
-  .parse(process.argv);
+    await runRelease();
+  }
+}
