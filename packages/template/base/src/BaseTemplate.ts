@@ -174,9 +174,9 @@ export class BaseTemplate implements ForgeTemplate {
     const pm = await resolvePackageManager();
 
     if (pm.executable === 'pnpm') {
-      // Ensures we're using the same `pnpm` version range that we use in CI.
+      // Ensures we're using the same `pnpm` version that we use in CI.
       packageJSON.devEngines = {
-        packageManager: 'pnpm@^11.0.0',
+        packageManager: 'pnpm@11.10.0',
       };
 
       // Ensures all transitive dependencies for `electron-winstaller` are
