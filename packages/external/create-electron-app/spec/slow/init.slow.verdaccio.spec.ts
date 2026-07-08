@@ -269,14 +269,14 @@ describe('init', () => {
         process.env.COREPACK_ENABLE_STRICT = '0';
       });
 
-      it('initializes with correct node-linker value', async () => {
+      it('initializes with correct nodeLinker value', async () => {
         await init({ dir, packageManager: 'pnpm' });
 
-        expect(fs.readFileSync(path.join(dir, '.npmrc'), 'utf-8')).toContain(
-          'node-linker = hoisted',
-        );
+        expect(
+          fs.readFileSync(path.join(dir, 'pnpm-workspace.yaml'), 'utf-8'),
+        ).toContain('nodeLinker: hoisted');
 
-        // If `node-linker = hoisted`, we can expect node_modules to be instantiated properly
+        // If `nodeLinker: hoisted`, we can expect node_modules to be instantiated properly
         expect(
           fs
             .statSync(path.join(dir, 'node_modules', 'electron'))
