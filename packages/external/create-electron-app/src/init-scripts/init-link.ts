@@ -2,7 +2,10 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { PMDetails, spawnPackageManager } from '@electron-forge/core-utils';
+import {
+  PMDetails,
+  spawnPackageManager,
+} from '@electron-forge/core-utils/package-manager';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 

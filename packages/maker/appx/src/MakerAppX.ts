@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { getNameFromAuthor, pathExists } from '@electron-forge/core-utils';
+import { getNameFromAuthor } from '@electron-forge/core-utils/author-name';
+import { pathExists } from '@electron-forge/core-utils/fs';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 // eslint-disable-next-line n/no-missing-import

@@ -2,13 +2,13 @@ import { exec } from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 
+import { pathExists } from '@electron-forge/core-utils/fs';
 import {
   PACKAGE_MANAGERS,
-  pathExists,
   resolvePackageManager,
   spawnPackageManager,
   SupportedPackageManager,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/package-manager';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import semver from 'semver';

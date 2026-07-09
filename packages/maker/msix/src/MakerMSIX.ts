@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { getNameFromAuthor, move } from '@electron-forge/core-utils';
+import { getNameFromAuthor } from '@electron-forge/core-utils/author-name';
+import { move } from '@electron-forge/core-utils/fs';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';

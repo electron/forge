@@ -1,12 +1,12 @@
 import path from 'node:path';
 
+import { readJsonSync } from '@electron-forge/core-utils/fs';
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-  PMDetails,
-  readJsonSync,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/install-dependencies';
+import { PMDetails } from '@electron-forge/core-utils/package-manager';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
 import semver from 'semver';
