@@ -10,6 +10,10 @@ on:
   merge_group:
     types: [checks_requested]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions: {}
 
 env:
@@ -34,7 +38,7 @@ jobs:
           python-version: 3.11
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -66,10 +70,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-22.04, macos-latest]
+        os: [windows-2022, ubuntu-22.04, macos-latest]
         arch: [x64, arm64]
         exclude:
-          - os: windows-latest
+          - os: windows-2022
             arch: arm64
           - os: ubuntu-22.04
             arch: arm64
@@ -94,7 +98,7 @@ jobs:
           python-version: 3.11
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -143,10 +147,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-22.04, macos-latest]
+        os: [windows-2022, ubuntu-22.04, macos-latest]
         arch: [x64, arm64]
         exclude:
-          - os: windows-latest
+          - os: windows-2022
             arch: arm64
           - os: ubuntu-22.04
             arch: arm64
@@ -171,7 +175,7 @@ jobs:
           python-version: 3.11
 
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -221,6 +225,19 @@ jobs:
       - fast-tests
       - slow-tests
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     steps:
+      - name: Fail if any required job failed or was cancelled
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        env:
+          LINT_AND_BUILD_RESULT: ${{ needs.lint-and-build.result }}
+          FAST_TESTS_RESULT: ${{ needs.fast-tests.result }}
+          SLOW_TESTS_RESULT: ${{ needs.slow-tests.result }}
+        run: |
+          echo "One or more required jobs did not succeed:"
+          echo "  lint-and-build: $LINT_AND_BUILD_RESULT"
+          echo "  fast-tests:     $FAST_TESTS_RESULT"
+          echo "  slow-tests:     $SLOW_TESTS_RESULT"
+          exit 1
       - name: We are done
         run: echo "Hello World"
