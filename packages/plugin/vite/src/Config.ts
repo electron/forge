@@ -1,5 +1,19 @@
 import type { LibraryOptions } from 'vite';
 
+export interface NativeModulesConfig {
+  /**
+   * Package names to always treat as native. They are externalized from the
+   * Vite bundle and copied (with their transitive dependencies) into the
+   * packaged app, even if automatic detection misses them.
+   */
+  include?: string[];
+  /**
+   * Package names to remove from the automatically detected set. They are
+   * bundled by Vite like any other JavaScript dependency.
+   */
+  exclude?: string[];
+}
+
 export interface VitePluginBuildConfig {
   /**
    * Alias of `build.lib.entry` in `config`.
@@ -49,4 +63,15 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Manual overrides for native Node module detection.
+   *
+   * The plugin automatically detects native modules, externalizes them from
+   * the Vite bundle, and copies them (along with their transitive
+   * dependencies) into the packaged app. Use `include` to force packages into
+   * that set when detection misses them, and `exclude` to remove detected
+   * packages so they are bundled by Vite instead.
+   */
+  nativeModules?: NativeModulesConfig;
 }

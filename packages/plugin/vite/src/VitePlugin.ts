@@ -10,12 +10,18 @@ import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
+import {
+  applyNativeModuleOverrides,
+  detectNativePackages,
+  walkTransitiveDependencies,
+} from './detect-native-modules.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
 import type { VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
+  ForgePackagerOptions,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import type { ChildProcess } from 'node:child_process';
@@ -30,7 +36,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'nativeModules'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -80,7 +86,7 @@ function spawnViteBuild(
 }
 
 function spawnViteBuildWatch(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'nativeModules'>,
   index: number,
   projectDir: string,
   devServerUrls: Record<string, string>,
@@ -145,6 +151,24 @@ function spawnViteBuildWatch(
   return { child, firstBuild };
 }
 
+/**
+ * Normalize the packager `ignore` option (function, RegExp, or array of
+ * RegExps/patterns) into a predicate so the plugin can compose the user's
+ * ignore with its own.
+ */
+function normalizeIgnore(
+  ignore: ForgePackagerOptions['ignore'],
+): ((file: string) => boolean) | undefined {
+  if (ignore == null) return undefined;
+  if (typeof ignore === 'function') {
+    return ignore as (file: string) => boolean;
+  }
+  const patterns = (Array.isArray(ignore) ? ignore : [ignore]).map((pattern) =>
+    pattern instanceof RegExp ? pattern : new RegExp(String(pattern)),
+  );
+  return (file: string) => patterns.some((pattern) => pattern.test(file));
+}
+
 function entryToDisplay(entry: LibraryOptions['entry']): string {
   if (typeof entry === 'string') return entry;
   if (Array.isArray(entry)) return entry.join(' ');
@@ -173,6 +197,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   private watchChildren: ChildProcess[] = [];
 
   private servers: vite.ViteDevServer[] = [];
+
+  private externalModules = new Set<string>();
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -251,21 +277,49 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
           return task?.newListr(
             [
               {
-                title: 'Building main and preload targets...',
+                title: 'Building Vite targets...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.build(subtask);
-                  return results;
+                  return subtask.newListr(
+                    [
+                      {
+                        title: 'Building main and preload targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.build(subtask);
+                          return results;
+                        },
+                      },
+                      {
+                        title: 'Building renderer targets...',
+                        task: async (_ctx, subtask) => {
+                          const results = await this.buildRenderer(subtask);
+                          return results;
+                        },
+                      },
+                    ],
+                    { concurrent: true },
+                  );
                 },
               },
               {
-                title: 'Building renderer targets...',
+                title: 'Detecting native dependencies...',
                 task: async (_ctx, subtask) => {
-                  const results = await this.buildRenderer(subtask);
-                  return results;
+                  const nativePackages = applyNativeModuleOverrides(
+                    detectNativePackages(this.projectDir),
+                    this.config.nativeModules,
+                  );
+                  this.externalModules = walkTransitiveDependencies(
+                    this.projectDir,
+                    nativePackages,
+                  );
+                  if (this.externalModules.size > 0) {
+                    subtask.title = `Detected externalized dependencies: ${[...this.externalModules].join(', ')}`;
+                  } else {
+                    subtask.title = 'No externalized dependencies detected';
+                  }
                 },
               },
             ],
-            { concurrent: true },
+            { concurrent: false },
           );
         }, 'Building production Vite bundles'),
       ],
@@ -281,33 +335,70 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
     };
   };
 
+  /**
+   * Whether the plugin needs `file` to survive the packager copy step for the
+   * packaged app to work: the Vite output (`/.vite`), the app's
+   * `/package.json`, the `/node_modules` directory itself, and the directories
+   * of native modules (plus their transitive dependencies) that were
+   * externalized from the Vite bundle. `this.externalModules` is populated
+   * during prePackage after the Vite build completes.
+   *
+   * `file` always starts with `/`
+   * @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
+   */
+  private mustKeepForPackage = (file: string): boolean => {
+    if (file.startsWith('/.vite')) return true;
+    if (file === '/package.json') return true;
+
+    if (file === '/node_modules') return true;
+    if (file.startsWith('/node_modules/')) {
+      const bare = file.slice('/node_modules/'.length);
+      const segments = bare.split('/');
+      if (segments[0].startsWith('@')) {
+        // A bare scope directory (e.g. `/node_modules/@serialport`) must be
+        // kept whenever any allowlisted module lives under it — if the
+        // directory itself is ignored, packager never descends into it.
+        if (segments.length === 1) {
+          for (const name of this.externalModules) {
+            if (name.startsWith(`${segments[0]}/`)) return true;
+          }
+          return false;
+        }
+        return this.externalModules.has(`${segments[0]}/${segments[1]}`);
+      }
+      return this.externalModules.has(segments[0]);
+    }
+
+    return false;
+  };
+
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
     forgeConfig.packagerConfig ??= {};
 
-    if (forgeConfig.packagerConfig.ignore) {
-      if (typeof forgeConfig.packagerConfig.ignore !== 'function') {
-        console.error(
-          styleText(
-            'yellow',
-            `You have set packagerConfig.ignore, the Electron Forge Vite plugin normally sets this automatically.
+    const userIgnore = normalizeIgnore(forgeConfig.packagerConfig.ignore);
 
-Your packaged app may be larger than expected if you dont ignore everything other than the '.vite' folder`,
-          ),
-        );
-      }
-      return forgeConfig;
-    }
-
+    // Compose the user's ignore with the plugin's own logic instead of
+    // deferring to the user entirely: a path is ignored if either the user's
+    // ignore or the plugin's ignore excludes it. The plugin's keep-list is
+    // checked first and always wins, because without the Vite output, the
+    // app's package.json and the externalized native modules the packaged app
+    // cannot start at all — a user ignore pattern like /node_modules/ or /^\/(?!\.vite)/
+    // (both common before this plugin handled ignore automatically) would
+    // otherwise silently strip files the plugin just externalized for.
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
-      // `file` always starts with `/`
-      // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
+      // Paths the plugin must keep always survive, even if the user's ignore
+      // matches them — see comment above.
+      if (this.mustKeepForPackage(file)) return false;
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      if (userIgnore?.(file)) return true;
+
+      // The plugin's default behaviour: everything that is not on the
+      // keep-list is excluded from the packaged app.
+      return true;
     };
     return forgeConfig;
   };
@@ -335,16 +426,18 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
-   * We only include build[] and renderer[] — the worker needs the full renderer
-   * list for defines even when building a single main target.
+   * We only include build[], renderer[] and nativeModules — the worker needs
+   * the full renderer list for defines even when building a single main
+   * target, and the nativeModules overrides to build the rollup external list.
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'nativeModules'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      nativeModules: this.config.nativeModules,
     };
   }
 
