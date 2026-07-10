@@ -24,6 +24,8 @@ describe('FusesPlugin', () => {
     await fs.promises.rm(outDir, {
       recursive: true,
       force: true,
+      maxRetries: 5,
+      retryDelay: 500,
     });
   });
 

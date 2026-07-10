@@ -267,7 +267,12 @@ export function testForgeTemplate({
     );
 
     afterEach(async () => {
-      await fs.promises.rm(tmpDir, { recursive: true, force: true });
+      await fs.promises.rm(tmpDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 5,
+        retryDelay: 500,
+      });
     });
   });
 }
