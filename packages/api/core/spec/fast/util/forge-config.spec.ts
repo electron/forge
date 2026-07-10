@@ -1,7 +1,10 @@
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
+import { Compilation } from 'webpack';
 
 import findConfig, {
   forgeConfigIsValidFilePath,
@@ -346,6 +349,153 @@ describe('findConfig', () => {
       );
       const conf = await findConfig(fixturePath);
       expect(conf.buildIdentifier).toEqual('async-typescript-esm');
+    });
+
+    it('should support top-level await and extensionless relative imports', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/tla_ts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('tla-relative-import');
+    });
+
+    // Regression test for https://github.com/electron/forge/issues/3949 —
+    // CJS packages imported by a TypeScript config must be the same instances
+    // that the rest of the process (e.g. the webpack plugin) sees.
+    it('should share dependency instances with the loading process', async () => {
+      type WebpackDepConfig = ResolvedForgeConfig & {
+        stage: number;
+        compilationClass: unknown;
+      };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/webpack_dep_ts_conf',
+      );
+      const conf = (await findConfig(fixturePath)) as WebpackDepConfig;
+      expect(conf.stage).toBeDefined();
+      expect(conf.stage).toEqual(
+        Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER,
+      );
+      expect(conf.compilationClass).toBe(Compilation);
+    });
+
+    it('should load ESM-only dependencies that use top-level await', async () => {
+      type EsmDepConfig = ResolvedForgeConfig & { answer: number };
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/esm_dep_ts_conf',
+      );
+      const conf = (await findConfig(fixturePath)) as EsmDepConfig;
+      expect(conf.buildIdentifier).toEqual('esm-tla-dep');
+      expect(conf.answer).toEqual(42);
+    });
+
+    it('should respect "paths" aliases from the project tsconfig', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/paths_ts_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('tsconfig-paths-alias');
+    });
+
+    it('should throw a helpful error when typescript is not installed', async () => {
+      const spy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/missing_ts_dep_conf',
+      );
+      // Copy the fixture outside the repo so the monorepo's own `typescript`
+      // install is not resolvable from the project directory.
+      const tmpDir = await fs.mkdtemp(
+        path.join(os.tmpdir(), 'forge-missing-ts-'),
+      );
+      try {
+        await fs.cp(fixturePath, tmpDir, { recursive: true });
+        await expect(findConfig(tmpDir)).rejects.toThrow(
+          /requires the "typescript" package \(version 4\.7\.0 or later\) to be installed/,
+        );
+      } finally {
+        await fs.rm(tmpDir, { recursive: true, force: true });
+        spy.mockRestore();
+      }
+    });
+
+    it('should throw a helpful error when the project TypeScript is v7+', async () => {
+      const spy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/ts7_dep_conf',
+      );
+      try {
+        await expect(findConfig(fixturePath)).rejects.toThrow(
+          /TypeScript 7\+ \(the native compiler\) no longer provides the JavaScript compiler API/,
+        );
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    it('should fall back to a side-by-side @typescript/typescript6 when the project TypeScript is v7+', async () => {
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/ts7_with_ts6_dep_conf',
+      );
+      const conf = await findConfig(fixturePath);
+      expect(conf.buildIdentifier).toEqual('ts7-with-ts6-fallback');
+    });
+
+    it('should surface type errors when the config fails to load', async () => {
+      const spy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      const fixturePath = path.resolve(
+        import.meta.dirname,
+        '../../fixture/typed_error_ts_conf',
+      );
+      try {
+        // The config crashes at runtime; the loader should type-check it and
+        // report the actual type error instead of the runtime stack trace.
+        await expect(findConfig(fixturePath)).rejects.toThrow(/TS2339/);
+      } finally {
+        spy.mockRestore();
+      }
+    });
+
+    describe('FORGE_TYPECHECK_CONFIG', () => {
+      it('should not type-check configs that load successfully by default', async () => {
+        type TypeErrorOnlyConfig = ResolvedForgeConfig & {
+          buildIdentifier: string;
+        };
+        const fixturePath = path.resolve(
+          import.meta.dirname,
+          '../../fixture/type_error_only_ts_conf',
+        );
+        const conf = (await findConfig(fixturePath)) as TypeErrorOnlyConfig;
+        expect(conf.buildIdentifier).toEqual('type-error-only');
+      });
+
+      it('should fail on type errors when FORGE_TYPECHECK_CONFIG is set', async () => {
+        const spy = vi
+          .spyOn(console, 'error')
+          .mockImplementation(() => undefined);
+        const fixturePath = path.resolve(
+          import.meta.dirname,
+          '../../fixture/type_error_only_ts_conf',
+        );
+        process.env.FORGE_TYPECHECK_CONFIG = '1';
+        try {
+          await expect(findConfig(fixturePath)).rejects.toThrow(/TS2322/);
+        } finally {
+          delete process.env.FORGE_TYPECHECK_CONFIG;
+          spy.mockRestore();
+        }
+      });
     });
   });
 

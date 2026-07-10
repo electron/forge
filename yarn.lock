@@ -822,9 +822,15 @@ __metadata:
     electron-forge-template-fixture-two: "portal:./spec/fixture/electron-forge-template-fixture"
     electron-installer-common: "npm:^0.10.2"
     graceful-fs: "npm:^4.2.11"
-    jiti: "npm:^2.4.2"
     listr2: "npm:^7.0.2"
+    typescript: "npm:^6.0.2"
     vitest: "catalog:"
+    webpack: "npm:^5.69.1"
+  peerDependencies:
+    typescript: ">=4.7.0 <7"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
   languageName: unknown
   linkType: soft
 
@@ -11732,7 +11738,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jiti@npm:^2.4.2, jiti@npm:^2.6.0":
+"jiti@npm:^2.6.0":
   version: 2.6.1
   resolution: "jiti@npm:2.6.1"
   bin:

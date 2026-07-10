@@ -24,6 +24,7 @@
       "ignore": ["spec/fixture/**"],
       "ignoreDependencies": [
         "@electron-forge/template-fixture",
+        "@typescript/typescript6",
         "electron-forge-template-fixture-two",
         "@electron-forge/maker-.*"
       ]
