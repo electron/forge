@@ -1044,7 +1044,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/plugin-webpack@workspace:*, @electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
+"@electron-forge/plugin-webpack@workspace:packages/plugin/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-webpack@workspace:packages/plugin/webpack"
   dependencies:
@@ -1196,7 +1196,7 @@ __metadata:
     "@electron-forge/test-utils": "workspace:*"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     debug: "npm:^4.3.1"
-    graceful-fs: "npm:^4.2.11"
+    oxfmt: "npm:^0.41.0"
     semver: "npm:^7.2.1"
     username: "npm:^5.1.0"
     vitest: "catalog:"
@@ -1207,18 +1207,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-fixture@portal:./spec/fixture/electron-forge-template-fixture::locator=%40electron-forge%2Fcore%40workspace%3Apackages%2Fapi%2Fcore"
   languageName: node
-  linkType: soft
-
-"@electron-forge/template-vite-typescript@workspace:*, @electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript":
-  version: 0.0.0-use.local
-  resolution: "@electron-forge/template-vite-typescript@workspace:packages/template/vite-typescript"
-  dependencies:
-    "@electron-forge/core-utils": "workspace:*"
-    "@electron-forge/shared-types": "workspace:*"
-    "@electron-forge/template-base": "workspace:*"
-    "@electron-forge/test-utils": "workspace:*"
-    vitest: "catalog:"
-  languageName: unknown
   linkType: soft
 
 "@electron-forge/template-vite@workspace:*, @electron-forge/template-vite@workspace:packages/template/vite":
@@ -1234,30 +1222,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@electron-forge/template-webpack-typescript@workspace:*, @electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript":
-  version: 0.0.0-use.local
-  resolution: "@electron-forge/template-webpack-typescript@workspace:packages/template/webpack-typescript"
-  dependencies:
-    "@electron-forge/core-utils": "workspace:*"
-    "@electron-forge/maker-deb": "workspace:*"
-    "@electron-forge/maker-rpm": "workspace:*"
-    "@electron-forge/maker-squirrel": "workspace:*"
-    "@electron-forge/maker-zip": "workspace:*"
-    "@electron-forge/plugin-webpack": "workspace:*"
-    "@electron-forge/shared-types": "workspace:*"
-    "@electron-forge/template-base": "workspace:*"
-    "@electron-forge/test-utils": "workspace:*"
-    fork-ts-checker-webpack-plugin: "npm:^7.2.13"
-    listr2: "npm:^7.0.2"
-    vitest: "catalog:"
-    webpack: "npm:^5.69.1"
-  languageName: unknown
-  linkType: soft
-
 "@electron-forge/template-webpack@workspace:*, @electron-forge/template-webpack@workspace:packages/template/webpack":
   version: 0.0.0-use.local
   resolution: "@electron-forge/template-webpack@workspace:packages/template/webpack"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
@@ -7706,9 +7675,7 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@electron-forge/template-base": "workspace:*"
     "@electron-forge/template-vite": "workspace:*"
-    "@electron-forge/template-vite-typescript": "workspace:*"
     "@electron-forge/template-webpack": "workspace:*"
-    "@electron-forge/template-webpack-typescript": "workspace:*"
     "@electron-forge/test-utils": "workspace:*"
     "@inquirer/prompts": "npm:^6.0.1"
     "@listr2/prompt-adapter-inquirer": "npm:^2.0.22"

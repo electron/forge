@@ -59,6 +59,10 @@ export interface InitOptions {
    * Force a package manager to use (npm|yarn|pnpm).
    */
   packageManager?: string;
+  /**
+   * Whether to use TypeScript in the template.
+   */
+  typescript?: boolean;
 }
 
 async function validateTemplate(
@@ -95,6 +99,7 @@ export async function init({
   skipGit = false,
   electronVersion = 'latest',
   packageManager,
+  typescript = false,
 }: InitOptions): Promise<void> {
   d(`Initializing in: ${dir}`);
 
@@ -173,6 +178,7 @@ export async function init({
             const tasks = await templateModule.initializeTemplate(dir, {
               copyCIFiles,
               force,
+              typescript,
             });
             if (tasks) {
               return task.newListr(tasks, { concurrent: false });
@@ -224,13 +230,21 @@ export async function init({
                 title: 'Installing development dependencies',
                 task: async ({ pm }, task) => {
                   d('installing devDependencies');
-                  if (templateModule.devDependencies?.length) {
-                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${templateModule.devDependencies.join(' ')}`;
+                  const devDependencies =
+                    templateModule.getDevDependencies?.({
+                      copyCIFiles,
+                      force,
+                      typescript,
+                    }) ??
+                    templateModule.devDependencies ??
+                    [];
+                  if (devDependencies.length) {
+                    task.output = `${pm.executable} ${pm.install} ${pm.dev} ${devDependencies.join(' ')}`;
                   }
                   await installDependencies(
                     pm,
                     dir,
-                    templateModule.devDependencies || [],
+                    devDependencies,
                     DepType.DEV,
                   );
                 },

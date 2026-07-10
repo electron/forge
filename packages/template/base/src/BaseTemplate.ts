@@ -1,4 +1,8 @@
 import fs from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+// Namespace import so that older Node.js versions without
+// `stripTypeScriptTypes` fail in the guard below instead of at load time.
+import * as nodeModule from 'node:module';
 import path from 'node:path';
 
 import {
@@ -13,7 +17,7 @@ import {
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import gracefulFs from 'graceful-fs';
+import { format } from 'oxfmt';
 import semver from 'semver';
 
 import determineAuthor from './determine-author.js';
@@ -32,7 +36,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const deps = readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
@@ -49,7 +53,7 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (gracefulFs.existsSync(packageJSONPath)) {
+    if (existsSync(packageJSONPath)) {
       const packageDevDeps = readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
@@ -64,10 +68,26 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
+  getDevDependencies(_options: InitTemplateOptions): string[] {
+    return this.devDependencies;
+  }
+
   public async initializeTemplate(
     directory: string,
-    { copyCIFiles }: InitTemplateOptions,
+    { copyCIFiles, typescript }: InitTemplateOptions,
   ): Promise<ForgeListrTaskDefinition[]> {
+    // The base template only ships JavaScript starter files and ignores the
+    // `typescript` flag. Reject here rather than in `init` so the guard holds
+    // no matter how the template was resolved (`base`,
+    // `@electron-forge/template-base`, etc.). The `vite`/`webpack` subclasses
+    // honor the flag and override `templateDir`, so this only trips for a
+    // direct base-template scaffold, not their `super.initializeTemplate` calls.
+    if (typescript && this.templateDir === tmplDir) {
+      throw new Error(
+        'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+      );
+    }
+
     return [
       {
         title: 'Copying starter files',
@@ -155,7 +175,7 @@ export class BaseTemplate implements ForgeTemplate {
         this.templateDir,
         'package.json',
       );
-      if (gracefulFs.existsSync(templatePackageJSONPath)) {
+      if (existsSync(templatePackageJSONPath)) {
         const templatePackageJSON = await readJson(templatePackageJSONPath);
         const { dependencies, devDependencies, scripts, ...rest } =
           templatePackageJSON;
@@ -201,20 +221,61 @@ export class BaseTemplate implements ForgeTemplate {
     });
   }
 
+  async stripAndRename(srcPath: string, destPath: string): Promise<void> {
+    // `stripTypeScriptTypes` is only available in Node.js >= 22.13, and
+    // `npx create-electron-app` does not enforce the `engines` field.
+    if (typeof nodeModule.stripTypeScriptTypes !== 'function') {
+      throw new Error(
+        `Generating JavaScript template files requires Node.js >= 22.13 (currently running ${process.version}).`,
+      );
+    }
+    const source = await fs.readFile(srcPath, 'utf8');
+    const stripped = nodeModule.stripTypeScriptTypes(source, {
+      mode: 'strip',
+    });
+    await this.writeFormattedFile(destPath, stripped);
+    if (srcPath !== destPath) {
+      await fs.rm(srcPath, { force: true });
+    }
+  }
+
+  async formatFile(filePath: string): Promise<void> {
+    const source = await fs.readFile(filePath, 'utf8');
+    await this.writeFormattedFile(filePath, source);
+  }
+
+  private async writeFormattedFile(
+    filePath: string,
+    source: string,
+  ): Promise<void> {
+    const oxfmtConfig = readJsonSync(path.join(tmplDir, '.oxfmtrc.json'));
+    const formatted = await format(filePath, source, oxfmtConfig);
+    if (formatted.errors.length > 0) {
+      throw new Error(
+        `Failed to format template file "${filePath}":\n${formatted.errors
+          .map((error) => error.message)
+          .join('\n')}`,
+      );
+    }
+    await fs.writeFile(filePath, formatted.code);
+  }
+
   async updateFileByLine(
     inputPath: string,
     lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
+    const destPath = outputPath || inputPath;
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
       .filter((line): line is string => line !== null)
       .join('\n');
-    await fs.writeFile(outputPath || inputPath, fileContents);
+    await fs.writeFile(destPath, fileContents);
     if (outputPath !== undefined) {
       await fs.rm(inputPath, { recursive: true, force: true });
     }
+    await this.formatFile(destPath);
   }
 }
 
