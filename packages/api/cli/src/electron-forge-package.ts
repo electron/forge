@@ -1,6 +1,6 @@
 import { initializeProxy } from '@electron/get';
 import { api, PackageOptions } from '@electron-forge/core';
-import { resolveWorkingDir } from '@electron-forge/core-utils';
+import { resolveWorkingDir } from '@electron-forge/core-utils/resolve-working-dir';
 import { program } from 'commander';
 
 import './util/terminate.js';

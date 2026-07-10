@@ -5,13 +5,9 @@ import path from 'node:path';
 import { styleText } from 'node:util';
 import { pipeline } from 'stream/promises';
 
-import {
-  getElectronVersion,
-  listrCompatibleRebuildHook,
-  move,
-  readJson,
-  writeJson,
-} from '@electron-forge/core-utils';
+import { getElectronVersion } from '@electron-forge/core-utils/electron-version';
+import { move, readJson, writeJson } from '@electron-forge/core-utils/fs';
+import { listrCompatibleRebuildHook } from '@electron-forge/core-utils/rebuild';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeArch,

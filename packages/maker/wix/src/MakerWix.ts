@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { styleText } from 'node:util';
 
-import { getNameFromAuthor } from '@electron-forge/core-utils';
+import { getNameFromAuthor } from '@electron-forge/core-utils/author-name';
 import { MakerBase, type MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';

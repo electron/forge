@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
-import { readJson, writeJson } from '@electron-forge/core-utils';
+import { readJson, writeJson } from '@electron-forge/core-utils/fs';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';

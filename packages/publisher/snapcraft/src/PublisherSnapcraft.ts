@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { pathExists } from '@electron-forge/core-utils';
+import { pathExists } from '@electron-forge/core-utils/fs';
 import {
   PublisherBase,
   PublisherOptions,

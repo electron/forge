@@ -2,17 +2,17 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
+import { updateElectronDependency } from '@electron-forge/core-utils/electron-version';
+import { pathExists, readJson, writeJson } from '@electron-forge/core-utils/fs';
 import {
   DepType,
   DepVersionRestriction,
   installDependencies,
-  pathExists,
+} from '@electron-forge/core-utils/install-dependencies';
+import {
   PMDetails,
-  readJson,
   resolvePackageManager,
-  updateElectronDependency,
-  writeJson,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/package-manager';
 import { ForgeListrOptions } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import debug from 'debug';

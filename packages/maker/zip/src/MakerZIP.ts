@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { promisify } from 'node:util';
 
-import { writeJson } from '@electron-forge/core-utils';
+import { writeJson } from '@electron-forge/core-utils/fs';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 import { zip } from 'cross-zip';
