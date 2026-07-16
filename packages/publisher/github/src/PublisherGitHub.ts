@@ -250,3 +250,4 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
 }
 
 export { PublisherGitHub, PublisherGitHubConfig };
+export type { GitHubRepository } from './Config.ts';
