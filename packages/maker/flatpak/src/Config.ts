@@ -1,4 +1,4 @@
-export interface MakerFlatpakOptionsConfig {
+export interface MakerFlatpakConfigOptions {
   /**
    * App id of the flatpak, used in the id field of a flatpak-builder manifest.
    *
@@ -122,5 +122,5 @@ export interface MakerFlatpakOptionsConfig {
 }
 
 export interface MakerFlatpakConfig {
-  options?: MakerFlatpakOptionsConfig;
+  options?: MakerFlatpakConfigOptions;
 }
