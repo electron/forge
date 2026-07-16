@@ -5,7 +5,6 @@
     "packages/api/core",
     "packages/maker/*",
     "packages/plugin/*",
-    "packages/plugin/*",
     "packages/publisher/*",
     "packages/utils/types"
   ]
