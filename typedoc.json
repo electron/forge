@@ -7,5 +7,13 @@
     "packages/plugin/*",
     "packages/publisher/*",
     "packages/utils/types"
-  ]
+  ],
+  "externalSymbolLinkMappings": {
+    "listr2": {
+      "ListrTask": "https://listr2.kilic.dev/api/listr2/interfaces/ListrTask.html"
+    }
+  },
+  "packageOptions": {
+    "excludeExternals": true
+  }
 }
