@@ -14,8 +14,8 @@
   },
   "scripts": {
     "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && node -e \"fs.rmSync('packages/tsconfig.json', { force: true })\" && lerna exec -- \"node -e \\\"fs.rmSync('dist', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.tsbuildinfo', { recursive: true, force: true })\\\" && node -e \\\"fs.rmSync('tsconfig.json', { force: true })\\\"\"",
-    "build": "tsgo -b packages && tsx tools/test-dist",
-    "build:watch": "tsgo -b packages --watch",
+    "build": "tsc -b packages && tsx tools/test-dist",
+    "build:watch": "tsc -b packages --watch",
     "docs": "yarn build && typedoc",
     "lerna:version": "./tools/version.sh",
     "lint:js": "oxfmt --check . && oxlint",
@@ -50,7 +50,7 @@
     "@types/node": "^22.10.7",
     "@types/semver": "^7.3.4",
     "@types/which": "^3.0.4",
-    "@typescript/native-preview": "^7.0.0-dev.20260416.2",
+    "@typescript/native": "npm:typescript@^7.0.0",
     "@yarnpkg/types": "^4.0.1",
     "debug": "^4.3.1",
     "electron": "^42.3.3",
@@ -66,7 +66,7 @@
     "ref-napi": "^3.0.3",
     "tsx": "^4.21.0",
     "typedoc": "~0.28.0",
-    "typescript": "^6.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "verdaccio": "^6.2.4",
     "vitest": "catalog:",
     "xvfb-maybe": "^0.2.1"
