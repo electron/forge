@@ -3,6 +3,7 @@ import {
   PackagingOptions as MSIXPackagingOptions,
 } from 'electron-windows-msix';
 
+/** @inline */
 type SemiPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /**
