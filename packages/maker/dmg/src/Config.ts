@@ -1,6 +1,8 @@
 import type { ElectronInstallerDMGOptions } from 'electron-installer-dmg';
 
-export type MakerDMGConfig = Omit<
+export interface MakerDMGConfig extends Omit<
   ElectronInstallerDMGOptions,
   'name' | 'appPath' | 'out'
-> & { name?: string };
+> {
+  name?: string;
+}
