@@ -15,10 +15,10 @@ type SemiPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
  *
  * @see https://github.com/bitdisaster/electron-windows-msix/blob/master/src/types.ts
  */
-export type MakerMSIXConfig = Omit<
+export interface MakerMSIXConfig extends Omit<
   MSIXPackagingOptions,
   'outputDir' | 'appDir' | 'manifestVariables'
-> & {
+> {
   manifestVariables?: SemiPartial<
     ManifestGenerationVariables,
     | 'packageDescription'
@@ -42,4 +42,4 @@ export type MakerMSIXConfig = Omit<
    * `my-app-win32-x64-1.2.3`
    */
   outputFileName?: string | (() => string | Promise<string>);
-};
+}
