@@ -1,0 +1,30 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "packages",
+  "entryPoints": [
+    "packages/api/core",
+    "packages/maker/*",
+    "packages/plugin/*",
+    "packages/publisher/*",
+    "packages/utils/types"
+  ],
+  "externalSymbolLinkMappings": {
+    "listr2": {
+      // ListrTask is referenced by @electron-forge/shared-types
+      "ListrTask": "https://listr2.kilic.dev/api/listr2/interfaces/ListrTask.html"
+    }
+  },
+  // Replaces previous *.base.json concept: it is
+  // a per-package default documentation. It can still
+  // be overwritten if needed with a per-package config.
+  "packageOptions": {
+    "excludeInternal": true,
+    // Usually, we want to use "externalSymbolLinkMappings"
+    // to point out symbols that are in external packages,
+    // while allow for exceptions if Typedoc docs offer
+    // better quality of documentation or upstream docs
+    // are manually maintained and in risk of being
+    // out-of-date.
+    "excludeExternals": true
+  }
+}
