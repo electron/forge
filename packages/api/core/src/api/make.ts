@@ -33,6 +33,7 @@ type MakerImpl = {
   new (...args: any[]): MakerBase<any>;
 };
 
+/** @inline */
 type MakeTargets = ForgeConfigMaker[] | string[];
 
 function generateTargets(
