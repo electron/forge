@@ -106,9 +106,12 @@ export function unregisterForgeConfigForDirectory(dir: string): void {
   registeredForgeConfigs.delete(path.resolve(dir));
 }
 
+/** @inline */
 export interface BuildIdentifierMap<T> extends Record<string, T | undefined> {}
+/** @inline */
 export interface BuildIdentifierConfig<T> {
   map: BuildIdentifierMap<T>;
+  /** @internal */
   __isMagicBuildIdentifierMap: true;
 }
 
