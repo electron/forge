@@ -33,7 +33,9 @@ export type ForgeListrTaskFn<Ctx = any> = ListrTask<
   Ctx,
   ListrDefaultRenderer
 >['task'];
-export type ElectronProcess = ChildProcess & { restarted: boolean };
+export interface ElectronProcess extends ChildProcess {
+  restarted: boolean;
+}
 
 export type ForgePlatform = OfficialPlatform;
 export type ForgeArch = OfficialArch | 'all';
