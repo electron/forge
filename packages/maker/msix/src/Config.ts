@@ -3,8 +3,17 @@ import {
   PackagingOptions as MSIXPackagingOptions,
 } from 'electron-windows-msix';
 
-/** @inline */
 type SemiPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export interface MakerMSIXConfigManifestVariables extends SemiPartial<
+  ManifestGenerationVariables,
+  | 'packageDescription'
+  | 'appExecutable'
+  | 'packageVersion'
+  | 'publisher'
+  | 'packageIdentity'
+  | 'targetArch'
+> {}
 
 /**
  * The configuration object for the MSIX maker.
@@ -20,15 +29,7 @@ export interface MakerMSIXConfig extends Omit<
   MSIXPackagingOptions,
   'outputDir' | 'appDir' | 'manifestVariables'
 > {
-  manifestVariables?: SemiPartial<
-    ManifestGenerationVariables,
-    | 'packageDescription'
-    | 'appExecutable'
-    | 'packageVersion'
-    | 'publisher'
-    | 'packageIdentity'
-    | 'targetArch'
-  >;
+  manifestVariables?: MakerMSIXConfigManifestVariables;
   /**
    * The base name of the generated `.msix` file, without the `.msix`
    * extension (the maker always appends `.msix`). This only overrides the
