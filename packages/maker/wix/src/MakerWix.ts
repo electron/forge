@@ -4,7 +4,7 @@ import { styleText } from 'node:util';
 import { getNameFromAuthor } from '@electron-forge/core-utils';
 import { MakerBase, type MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';
+import { MSICreator } from 'electron-wix-msi';
 import semver from 'semver';
 
 import { MakerWixConfig } from './Config.js';
@@ -74,4 +74,4 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
   }
 }
 
-export { MakerWix, MakerWixConfig, MSICreatorOptions };
+export { MakerWix, MakerWixConfig };
