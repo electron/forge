@@ -8,10 +8,58 @@
     "packages/publisher/*",
     "packages/utils/types"
   ],
+  "sourceLinkExternal": false,
   "externalSymbolLinkMappings": {
+    // @electron-forge/shared-types
+    "@electron/packager": {
+      "OfficialArch": "https://packages.electronjs.org/packager/v20.0.3/types/OfficialArch.html",
+      "OfficialPlatform": "https://packages.electronjs.org/packager/v20.0.3/types/OfficialPlatform.html",
+      "Options": "https://packages.electronjs.org/packager/v20.0.3/interfaces/Options.html"
+    },
+    "@electron/rebuild": {
+      "RebuildOptions": "https://packages.electronjs.org/rebuild/v4.2.0/interfaces/RebuildOptions.html"
+    },
     "listr2": {
-      // ListrTask is referenced by @electron-forge/shared-types
-      "ListrTask": "https://listr2.kilic.dev/api/listr2/interfaces/ListrTask.html"
+      "ListrBaseClassOptions": "https://listr2.kilic.dev/api/listr2/interfaces/ListrBaseClassOptions.html",
+      "ListrTask": "https://listr2.kilic.dev/api/listr2/interfaces/ListrTask.html",
+      "TaskWrapper": "https://listr2.kilic.dev/api/listr2/interfaces/ListrTaskWrapper.html",
+      "ListrDefaultRenderer": "https://listr2.kilic.dev/api/listr2/type-aliases/ListrDefaultRenderer.html",
+      "ListrDefaultRendererValue": "https://listr2.kilic.dev/api/listr2/type-aliases/ListrDefaultRendererValue.html",
+      "ListrSimpleRenderer": "https://listr2.kilic.dev/api/listr2/type-aliases/ListrSimpleRenderer.html",
+      "ListrSimpleRendererValue": "https://listr2.kilic.dev/api/listr2/type-aliases/ListrSimpleRendererValue.html"
+    },
+    "@types/node": {
+      "\"child_process\".ChildProcess": "https://nodejs.org/docs/latest/api/child_process.html#class-childprocess"
+    },
+    // @electron-forge/maker-snap
+    "electron-installer-snap": {
+      "createSnap.Options": "https://electron-userland.github.io/electron-installer-snap/master/interfaces/createsnap.snapcraftoptions.html",
+      "createSnap.SnapcraftConfig": "https://electron-userland.github.io/electron-installer-snap/master/modules/createsnap.html#customsnapcraftconfig"
+    },
+    // @electron-forge/plugin-fuses
+    "@electron/fuses": {
+      "FuseConfig": "https://packages.electronjs.org/fuses/v2.1.3/types/FuseConfig.html"
+    },
+    // @electron-forge/plugin-webpack
+    "webpack": {
+      "exports.Configuration": "https://webpack.js.org/configuration/"
+    },
+    "webpack-dev-server": {
+      "Configuration": "https://webpack.js.org/configuration/dev-server/"
+    },
+    // @electron-forge/publisher-gcs
+    "@google-cloud/storage": {
+      "ConfigMetadata": "https://docs.cloud.google.com/storage/docs/metadata",
+      "StorageOptions": "https://docs.cloud.google.com/nodejs/docs/reference/storage/latest/storage/storageoptions",
+      "UploadOptions": "https://docs.cloud.google.com/nodejs/docs/reference/storage/latest/storage/uploadoptions"
+    },
+    // @electron-forge/publisher-github
+    "@octokit/core": {
+      "OctokitOptions": "https://github.com/octokit/core.js#options"
+    },
+    // @electron-forge/publisher-s3
+    "@aws-sdk/types": {
+      "Credentials": "https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-types/Interface/Credentials/"
     }
   },
   // Replaces previous *.base.json concept: it is
