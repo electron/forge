@@ -1,8 +1,8 @@
+import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
 import { ForgeMakeResult } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PublisherGitHub } from '../src/PublisherGitHub';
@@ -59,6 +59,9 @@ describe('PublisherGitHub', () => {
   };
 
   beforeEach(async () => {
+    // Ensure the spec does not depend on ambient credentials — CI runners
+    // have no GITHUB_TOKEN, so the publisher must rely on config.authToken
+    vi.stubEnv('GITHUB_TOKEN', '');
     tmpDir = await fs.mkdtemp(
       path.resolve(os.tmpdir(), 'forge-publisher-github-'),
     );
@@ -79,13 +82,15 @@ describe('PublisherGitHub', () => {
   });
 
   afterEach(async () => {
-    await fs.remove(tmpDir);
+    vi.unstubAllEnvs();
+    await fs.rm(tmpDir, { recursive: true, force: true });
   });
 
   it('does not create a duplicate release when publishing multiple dry runs for the same version', async () => {
     const publisher = new PublisherGitHub({
       repository: { owner: 'my-owner', name: 'my-repo' },
       draft: true,
+      authToken: 'fake-token',
     });
 
     await publishFor(publisher, 'app-1.0.0-darwin.zip');
