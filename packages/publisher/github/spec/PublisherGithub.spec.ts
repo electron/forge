@@ -59,6 +59,9 @@ describe('PublisherGithub', () => {
   };
 
   beforeEach(async () => {
+    // Ensure the spec does not depend on ambient credentials — CI runners
+    // have no GITHUB_TOKEN, so the publisher must rely on config.authToken
+    vi.stubEnv('GITHUB_TOKEN', '');
     tmpDir = await fs.mkdtemp(
       path.resolve(os.tmpdir(), 'forge-publisher-github-'),
     );
@@ -79,6 +82,7 @@ describe('PublisherGithub', () => {
   });
 
   afterEach(async () => {
+    vi.unstubAllEnvs();
     await fs.remove(tmpDir);
   });
 
@@ -86,6 +90,7 @@ describe('PublisherGithub', () => {
     const publisher = new PublisherGithub({
       repository: { owner: 'my-owner', name: 'my-repo' },
       draft: true,
+      authToken: 'fake-token',
     });
 
     await publishFor(publisher, 'app-1.0.0-darwin.zip');
