@@ -1,4 +1,4 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "excludeInternal": true
+  "excludeExternals": false,
 }

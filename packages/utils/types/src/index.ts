@@ -33,7 +33,9 @@ export type ForgeListrTaskFn<Ctx = any> = ListrTask<
   Ctx,
   ListrDefaultRenderer
 >['task'];
-export type ElectronProcess = ChildProcess & { restarted: boolean };
+export interface ElectronProcess extends ChildProcess {
+  restarted: boolean;
+}
 
 export type ForgePlatform = OfficialPlatform;
 export type ForgeArch = OfficialArch | 'all';
@@ -124,14 +126,14 @@ export interface IForgePluginInterface {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type ForgeRebuildOptions = Omit<
+export interface ForgeRebuildOptions extends Omit<
   RebuildOptions,
   'buildPath' | 'electronVersion' | 'arch'
->;
-export type ForgePackagerOptions = Omit<
+> {}
+export interface ForgePackagerOptions extends Omit<
   ElectronPackagerOptions,
   'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'
->;
+> {}
 export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended

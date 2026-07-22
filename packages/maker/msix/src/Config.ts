@@ -5,6 +5,16 @@ import {
 
 type SemiPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+export interface MakerMSIXConfigManifestVariables extends SemiPartial<
+  ManifestGenerationVariables,
+  | 'packageDescription'
+  | 'appExecutable'
+  | 'packageVersion'
+  | 'publisher'
+  | 'packageIdentity'
+  | 'targetArch'
+> {}
+
 /**
  * The configuration object for the MSIX maker.
  * The `outputDir` and `appDir` parameters are preconfigured by Forge so that the
@@ -15,19 +25,11 @@ type SemiPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
  *
  * @see https://github.com/bitdisaster/electron-windows-msix/blob/master/src/types.ts
  */
-export type MakerMSIXConfig = Omit<
+export interface MakerMSIXConfig extends Omit<
   MSIXPackagingOptions,
   'outputDir' | 'appDir' | 'manifestVariables'
-> & {
-  manifestVariables?: SemiPartial<
-    ManifestGenerationVariables,
-    | 'packageDescription'
-    | 'appExecutable'
-    | 'packageVersion'
-    | 'publisher'
-    | 'packageIdentity'
-    | 'targetArch'
-  >;
+> {
+  manifestVariables?: MakerMSIXConfigManifestVariables;
   /**
    * The base name of the generated `.msix` file, without the `.msix`
    * extension (the maker always appends `.msix`). This only overrides the
@@ -42,4 +44,4 @@ export type MakerMSIXConfig = Omit<
    * `my-app-win32-x64-1.2.3`
    */
   outputFileName?: string | (() => string | Promise<string>);
-};
+}
