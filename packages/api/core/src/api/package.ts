@@ -33,6 +33,7 @@ import { getHookListrTasks, runHook } from '../util/hook';
 import importSearch from '../util/import-search';
 import { warn } from '../util/messages';
 import getCurrentOutDir from '../util/out-dir';
+import parseArchs from '../util/parse-archs';
 import { readMutatedPackageJson } from '../util/read-package-json';
 import resolveDir from '../util/resolve-dir';
 
@@ -478,6 +479,22 @@ export const listrPackage = (
 
             type PackagerArch = Exclude<ForgeArch, 'arm'>;
 
+            const electronVersion = await getElectronVersion(
+              ctx.dir,
+              packageJSON,
+            );
+
+            // Expand `--arch=all` in Forge (rather than deferring to
+            // @electron/packager) so that architectures that this Electron
+            // version no longer publishes are filtered out of the expansion,
+            // and explicit requests for them fail with a descriptive error
+            // instead of an opaque download 404.
+            const targetArchs = parseArchs(
+              platform,
+              arch,
+              electronVersion,
+            ) as PackagerArch[];
+
             const packageOpts: Options = {
               asar: false,
               overwrite: true,
@@ -485,7 +502,7 @@ export const listrPackage = (
               quiet: true,
               ...forgeConfig.packagerConfig,
               dir: ctx.dir,
-              arch: arch as PackagerArch,
+              arch: targetArchs,
               platform,
               afterFinalizePackageTargets:
                 sequentialFinalizePackageTargetsHooks(
@@ -496,7 +513,7 @@ export const listrPackage = (
               afterExtract: sequentialHooks(afterExtractHooks),
               afterPrune: sequentialHooks(afterPruneHooks),
               out: calculatedOutDir,
-              electronVersion: await getElectronVersion(ctx.dir, packageJSON),
+              electronVersion,
             };
 
             if (packageOpts.all) {
