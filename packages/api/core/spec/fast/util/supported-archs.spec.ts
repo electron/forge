@@ -3,48 +3,84 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   assertSupportedArch,
   filterSupportedArchs,
-  isDroppedArch,
+  isArchDroppedByElectron44,
 } from '../../../src/util/supported-archs';
 
 describe('supported-archs', () => {
-  describe('isDroppedArch', () => {
+  describe('isArchDroppedByElectron44', () => {
     it('returns false for platform/arch combinations Electron still publishes', () => {
-      expect(isDroppedArch('win32', 'x64', '45.0.0')).toEqual(false);
-      expect(isDroppedArch('win32', 'arm64', '45.0.0')).toEqual(false);
-      expect(isDroppedArch('linux', 'x64', '45.0.0')).toEqual(false);
-      expect(isDroppedArch('linux', 'arm64', '45.0.0')).toEqual(false);
-      expect(isDroppedArch('darwin', 'arm64', '45.0.0')).toEqual(false);
+      expect(isArchDroppedByElectron44('win32', 'x64', '45.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('win32', 'arm64', '45.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('linux', 'x64', '45.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('linux', 'arm64', '45.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('darwin', 'arm64', '45.0.0')).toEqual(
+        false,
+      );
     });
 
     it('returns false for ia32/armv7l on Electron <= 43', () => {
-      expect(isDroppedArch('win32', 'ia32', '43.0.0')).toEqual(false);
-      expect(isDroppedArch('linux', 'armv7l', '43.5.1')).toEqual(false);
-      expect(isDroppedArch('win32', 'ia32', '33.0.0')).toEqual(false);
+      expect(isArchDroppedByElectron44('win32', 'ia32', '43.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('linux', 'armv7l', '43.5.1')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('win32', 'ia32', '33.0.0')).toEqual(
+        false,
+      );
     });
 
     it('returns false for the Electron 44 prereleases that still shipped the dropped arches', () => {
-      expect(isDroppedArch('win32', 'ia32', '44.0.0-alpha.1')).toEqual(false);
-      expect(isDroppedArch('win32', 'ia32', '44.0.0-alpha.3')).toEqual(false);
-      expect(isDroppedArch('linux', 'armv7l', '44.0.0-alpha.3')).toEqual(false);
+      expect(
+        isArchDroppedByElectron44('win32', 'ia32', '44.0.0-alpha.1'),
+      ).toEqual(false);
+      expect(
+        isArchDroppedByElectron44('win32', 'ia32', '44.0.0-alpha.3'),
+      ).toEqual(false);
+      expect(
+        isArchDroppedByElectron44('linux', 'armv7l', '44.0.0-alpha.3'),
+      ).toEqual(false);
     });
 
     it('returns true for ia32/armv7l from 44.0.0-alpha.4 onwards', () => {
-      expect(isDroppedArch('win32', 'ia32', '44.0.0-alpha.4')).toEqual(true);
-      expect(isDroppedArch('win32', 'ia32', '44.0.0')).toEqual(true);
-      expect(isDroppedArch('win32', 'ia32', '45.0.0')).toEqual(true);
-      expect(isDroppedArch('linux', 'armv7l', '44.0.0-alpha.4')).toEqual(true);
       expect(
-        isDroppedArch('linux', 'armv7l', '45.0.0-nightly.20260714'),
+        isArchDroppedByElectron44('win32', 'ia32', '44.0.0-alpha.4'),
+      ).toEqual(true);
+      expect(isArchDroppedByElectron44('win32', 'ia32', '44.0.0')).toEqual(
+        true,
+      );
+      expect(isArchDroppedByElectron44('win32', 'ia32', '45.0.0')).toEqual(
+        true,
+      );
+      expect(
+        isArchDroppedByElectron44('linux', 'armv7l', '44.0.0-alpha.4'),
+      ).toEqual(true);
+      expect(
+        isArchDroppedByElectron44('linux', 'armv7l', '45.0.0-nightly.20260714'),
       ).toEqual(true);
     });
 
     it('only drops the arch on the platform Electron dropped it for', () => {
-      expect(isDroppedArch('linux', 'ia32', '45.0.0')).toEqual(false);
-      expect(isDroppedArch('win32', 'armv7l', '45.0.0')).toEqual(false);
+      expect(isArchDroppedByElectron44('linux', 'ia32', '45.0.0')).toEqual(
+        false,
+      );
+      expect(isArchDroppedByElectron44('win32', 'armv7l', '45.0.0')).toEqual(
+        false,
+      );
     });
 
     it('returns false when the Electron version is not a valid semver version', () => {
-      expect(isDroppedArch('win32', 'ia32', 'not-a-version')).toEqual(false);
+      expect(
+        isArchDroppedByElectron44('win32', 'ia32', 'not-a-version'),
+      ).toEqual(false);
     });
   });
 
