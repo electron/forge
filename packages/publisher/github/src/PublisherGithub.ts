@@ -26,8 +26,21 @@ interface GitHubRelease {
   upload_url: string;
 }
 
+type OctokitRelease = GetResponseDataTypeFromEndpointMethod<
+  Octokit['repos']['getRelease']
+>;
+type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<
+  Octokit['repos']['updateReleaseAsset']
+>;
+
 export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
+
+  // Releases we already found or created in this process, keyed by tag name.
+  // GitHub's "list releases" API is eventually consistent, so a release
+  // created moments ago (e.g. by a previous restored dry run) may be missing
+  // from the listing, which would cause a duplicate release to be created.
+  private knownReleases = new Map<string, OctokitRelease>();
 
   async publish({
     makeResults,
@@ -63,13 +76,6 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
     const github = new GitHub(config.authToken, true, config.octokitOptions);
     github.getGitHub();
 
-    type OctokitRelease = GetResponseDataTypeFromEndpointMethod<
-      Octokit['repos']['getRelease']
-    >;
-    type OctokitReleaseAsset = GetResponseDataTypeFromEndpointMethod<
-      Octokit['repos']['updateReleaseAsset']
-    >;
-
     for (const releaseVersion of Object.keys(perReleaseArtifacts)) {
       let release: OctokitRelease | undefined;
       const artifacts = perReleaseArtifacts[releaseVersion];
@@ -77,15 +83,18 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
 
       setStatusLine(`Searching for target release: ${releaseName}`);
       try {
-        release = (
-          await github.getGitHub().repos.listReleases({
-            owner: config.repository.owner,
-            repo: config.repository.name,
-            per_page: 100,
-          })
-        ).data.find(
-          (testRelease: GitHubRelease) => testRelease.tag_name === releaseName,
-        );
+        release =
+          this.knownReleases.get(releaseName) ??
+          (
+            await github.getGitHub().repos.listReleases({
+              owner: config.repository.owner,
+              repo: config.repository.name,
+              per_page: 100,
+            })
+          ).data.find(
+            (testRelease: GitHubRelease) =>
+              testRelease.tag_name === releaseName,
+          );
         if (!release) {
           throw new NoReleaseError(404);
         }
@@ -108,6 +117,9 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
           throw err;
         }
       }
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.knownReleases.set(releaseName, release!);
 
       let uploaded = 0;
       const updateUploadStatus = () => {
