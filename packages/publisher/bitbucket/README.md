@@ -4,7 +4,7 @@
 
 This publish target is for Bitbucket Cloud only and will not work with self hosted Bitbucket Server instances.
 
-Configuration options are documented in [`PublisherBitbucketConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_bitbucket.PublisherBitbucketConfig.html).
+Configuration options are documented in [`PublisherBitbucketConfig`](https://js.electronforge.io/interfaces/_electron-forge_publisher-bitbucket.PublisherBitbucketConfig.html).
 
 ```javascript title=forge.config.js
 module.exports = {

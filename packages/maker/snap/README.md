@@ -4,7 +4,7 @@
 
 You can only build the Snapcraft target on Linux systems with the `snapcraft` package installed.
 
-Configuration options are documented in [`MakerSnapConfig`](https://js.electronforge.io/interfaces/_electron_forge_maker_snap.MakerSnapConfig.html).
+Configuration options are documented in [`MakerSnapConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-snap.MakerSnapConfig.html).
 
 ```javascript
 {
