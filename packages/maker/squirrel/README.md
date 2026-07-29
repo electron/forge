@@ -7,7 +7,7 @@ Pre-requisites:
 * Windows machine
 * Linux machine with `mono` and `wine` installed.
 
-Configuration options are documented in [`MakerSquirrelConfigOptions`](https://js.electronforge.io/interfaces/_electron_forge_maker_squirrel.MakerSquirrelConfig.html).
+Configuration options are documented in [`MakerSquirrelConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-squirrel.MakerSquirrelConfig.html).
 
 ```javascript
 {
