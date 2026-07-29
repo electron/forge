@@ -126,6 +126,10 @@ export interface IForgePluginInterface {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+/**
+ * @inlineType RebuildMode
+ * @inlineType ModuleType
+ */
 export interface ForgeRebuildOptions extends Omit<
   RebuildOptions,
   'buildPath' | 'electronVersion' | 'arch'
