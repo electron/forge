@@ -9427,15 +9427,15 @@ __metadata:
   linkType: hard
 
 "electron@npm:^39.2.6":
-  version: 39.8.6
-  resolution: "electron@npm:39.8.6"
+  version: 39.8.10
+  resolution: "electron@npm:39.8.10"
   dependencies:
     "@electron/get": "npm:^2.0.0"
     "@types/node": "npm:^22.7.7"
     extract-zip: "npm:^2.0.1"
   bin:
     electron: cli.js
-  checksum: 10c0/6b86d4ee2fab2daa89792ce62c48b8d4cda46a2d1aead2fd9150b796eb5aada334b7d4cae666ce6ded3b322d16b31996fd019dcc1ac4bba3174eff8801ed2a9f
+  checksum: 10c0/a62fc5a9d2cf96b4684547e14d2a9a1dc4350d66bcfdd2747d4154d6af3bdf8e4e0aae21dfaee55617035b870a3326b61102ef84b7bed5cd73040ec9b0ebe595
   languageName: node
   linkType: hard
 
