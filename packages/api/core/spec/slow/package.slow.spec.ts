@@ -72,6 +72,40 @@ describe('Package', () => {
     });
   });
 
+  describe('with an Electron version that dropped ia32/armv7l', () => {
+    beforeAll(async () => {
+      const original = await updatePackageJSON(dir, async (packageJSON) => {
+        packageJSON.devDependencies = {
+          ...packageJSON.devDependencies,
+          // An exact version is resolved without inspecting the installed
+          // module, so no Electron 44 install is needed for these tests.
+          electron: '44.0.0',
+        };
+        return packageJSON;
+      });
+
+      return async () => {
+        await updatePackageJSON(dir, async (_packageJSON) => {
+          return original;
+        });
+      };
+    });
+
+    it('throws a descriptive error for explicit win32/ia32', async () => {
+      await expect(
+        api.package({ dir, platform: 'win32', arch: 'ia32' }),
+      ).rejects.toThrow(
+        /Electron >= 44 no longer publishes Windows ia32 \/ Linux armv7l builds/,
+      );
+    });
+
+    it('throws a descriptive error for explicit linux/armv7l', async () => {
+      await expect(
+        api.package({ dir, platform: 'linux', arch: 'armv7l' }),
+      ).rejects.toThrow(/Use Electron <= 43 \(supported until Jan 2027\)/);
+    });
+  });
+
   describe('with prebuilt native module dependencies', () => {
     beforeAll(async () => {
       const original = await updatePackageJSON(dir, async (packageJSON) => {
