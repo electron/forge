@@ -3,7 +3,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
-import { readJson, writeJson } from '@electron-forge/core-utils';
+import {
+  canInjectDevtron,
+  readJson,
+  writeJson,
+} from '@electron-forge/core-utils';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
@@ -30,7 +34,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'devtron'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -80,7 +84,7 @@ function spawnViteBuild(
 }
 
 function spawnViteBuildWatch(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'devtron'>,
   index: number,
   projectDir: string,
   devServerUrls: Record<string, string>,
@@ -174,6 +178,13 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
   private servers: vite.ViteDevServer[] = [];
 
+  /**
+   * Whether the Devtron bootstrap should be injected into the main process
+   * bundle. Only ever set during `start`, after verifying the environment
+   * supports it.
+   */
+  private devtronEnabled = false;
+
   init = (dir: string): void => {
     this.setDirectories(dir);
 
@@ -208,6 +219,10 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
 
           d(`preStart: removing old content from ${this.baseDir}`);
           await fs.rm(this.baseDir, { recursive: true, force: true });
+
+          if (this.config.devtron) {
+            this.devtronEnabled = await canInjectDevtron(this.projectDir);
+          }
 
           return task?.newListr(
             [
@@ -340,11 +355,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'devtron'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      devtron: this.devtronEnabled,
     };
   }
 
