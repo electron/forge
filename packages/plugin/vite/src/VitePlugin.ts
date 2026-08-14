@@ -6,6 +6,7 @@ import path from 'node:path';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import chalk from 'chalk';
 import debug from 'debug';
+import { DepType, Module, Walker } from 'flora-colossus';
 import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 import { default as vite } from 'vite';
@@ -75,6 +76,18 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       this.projectDir,
       this.isProd,
     ));
+  }
+
+  /**
+   * Scans node_modules to find packages in production dependencies
+   */
+  private async getFlatDependencies(): Promise<Module[]> {
+    const nodeModulesPath = path.join(this.projectDir, 'node_modules');
+
+    const walker = new Walker(nodeModulesPath);
+    const deps = await walker.walkTree();
+
+    return deps.filter((dep) => dep.depType === DepType.PROD);
   }
 
   getHooks = (): ForgeMultiHookMap => {
@@ -175,15 +188,33 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       return forgeConfig;
     }
 
+    // Find packages containing native modules (.node files)
+    // These need to be included in the asar for AutoUnpackNativesPlugin to work
+    const flatDeps = await this.getFlatDependencies();
+
     forgeConfig.packagerConfig.ignore = (file: string) => {
       if (!file) return false;
 
       // `file` always starts with `/`
       // @see - https://github.com/electron/packager/blob/v18.1.3/src/copy-filter.ts#L89-L93
 
-      // Collect the files built by Vite
-      return !file.startsWith('/.vite');
+      // Include files built by Vite
+      if (file.startsWith('/.vite')) return false;
+
+      // Include node_modules folder itself (required for the ignore function to work)
+      if (file === '/node_modules') return false;
+
+      // For files inside node_modules, only include packages with native modules
+      if (file.startsWith('/node_modules/')) {
+        // Collect dependencies from package.json
+        const [, , name] = file.split('/');
+        return flatDeps.some((dep) => dep.name === name);
+      }
+
+      // Exclude everything else
+      return true;
     };
+
     return forgeConfig;
   };
 
