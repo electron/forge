@@ -117,4 +117,26 @@ describe('ViteConfigGenerator', () => {
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
   });
+
+  it('getRendererConfig:renderer with Node.js integration', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
+          nodeIntegration: true,
+        },
+      ],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    expect(
+      rendererConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual([
+      '@electron-forge/plugin-vite:expose-renderer',
+      '@electron-forge/plugin-vite:node-integration',
+    ]);
+  });
 });
