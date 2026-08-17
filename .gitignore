@@ -2,8 +2,8 @@
 .nyc_output
 *.lcov
 /coverage
+api-docs
 dist
-docs
 doc
 node_modules
 lerna-debug.log
