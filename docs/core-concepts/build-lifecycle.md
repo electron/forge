@@ -14,17 +14,14 @@ Each one of these steps is a separate command exposed through Forge's `electron-
 Running each of these tasks will also run the previous ones in the sequence (i.e. running the `electron-forge publish` script will first run `package` and `make` as prerequisite steps).
 :::
 
-```mermaid fullWidth="false"
-graph LR
- dev["fa:fa-code electron.app"] -.-> forge
- forge -.-> cloud
-
-subgraph forge["fa:fa-hammer Electron Forge"]
-direction TB
+```mermaid
+graph TB
+ dev["fa:fa-folder-open development Electron app"] --> package
  package["fa:fa-box Package"] -->|executable app bundle| make
- make["fa:fa-compact-disc Make"] -->|distributable installers| publish["fa:fa-upload Publish"]
-end
- cloud["fa:fa-cloud Users"]
+ make["fa:fa-compact-disc Make"] -->|installers or archives| publish
+ publish["fa:fa-upload Publish"] -->|uploaded to cloud storage for distribution| cloud["fa:fa-cloud Users"]
+ make -.->|depends on| package
+ publish -.->|depends on| make
 ```
 
 ## Step 1: Package
