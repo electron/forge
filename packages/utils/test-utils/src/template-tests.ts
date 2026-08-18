@@ -114,9 +114,14 @@ export function testForgeTemplate({
           `--template=${templateName}`,
           `--package-manager=${packageManager}`,
 
-          // TODO there's something about Electron 42 that breaks this test on
-          //  Windows; investigate.
-          `--electron-version=41.0.0`,
+          // Electron 41 is the last version that downloads its binary from a
+          // `postinstall` script. Yarn 4.18 disables install scripts by
+          // default (`enableScripts`), so on 41 the binary never gets
+          // downloaded and `electron-forge start` fails with "Electron failed
+          // to install correctly". Electron 42+ downloads the binary on demand
+          // the first time it's needed instead, so no install script is
+          // involved.
+          `--electron-version=43.4.0`,
         ]);
 
         d('tmpdir: ', pathToFileURL(tmpDir).toString());
