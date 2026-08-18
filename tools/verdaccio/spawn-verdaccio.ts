@@ -159,6 +159,11 @@ async function runCommand(args: string[]) {
       YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
       // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
       YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
+      // We publish the monorepo to Verdaccio seconds before the tests install
+      // it, so Yarn's minimum age gate (1 day by default since Yarn 4.18)
+      // quarantines every local package. Disable it for the test registry.
+      // https://yarnpkg.com/configuration/yarnrc#npmMinimalAgeGate
+      YARN_NPM_MINIMAL_AGE_GATE: '0',
       // Isolate package manager caches so Verdaccio packages
       // don't corrupt the global caches. These directories live
       // under STORAGE_PATH and get cleaned up on next run.
