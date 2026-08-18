@@ -3,7 +3,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     clearMocks: true,
-    exclude: ['**/.links/**', '**/node_modules/**'],
+    // `.claude` can hold git worktrees of this repo, whose specs would
+    // otherwise be collected as duplicates of the real ones.
+    exclude: ['**/.claude/**', '**/.links/**', '**/node_modules/**'],
     fileParallelism: false,
     projects: [
       {

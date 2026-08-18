@@ -51,8 +51,9 @@ export interface VitePluginConfig {
   concurrent?: boolean | number;
 
   /**
-   * Enable hot restart for the main process when its bundle is rebuilt.
-   * @defaultValue false
+   * Restart the running app whenever the main process bundle is rebuilt during
+   * `electron-forge start`. Has no effect when packaging.
+   * @defaultValue `false`
    */
   hotRestart?: boolean;
 }

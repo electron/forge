@@ -36,3 +36,21 @@ module.exports = {
   ]
 };
 ```
+
+### Main process hot restart
+
+Renderer code is hot-reloaded by Vite out of the box, but main process code is
+not: the app has to be relaunched to pick it up. Set `hotRestart` to have
+`electron-forge start` do that for you whenever a main process bundle rebuilds:
+
+```javascript
+config: {
+  hotRestart: true,
+  build: [/* ... */],
+  renderer: [/* ... */]
+}
+```
+
+This is off by default, so main process changes otherwise only take effect when
+you type `rs` in the terminal or restart `electron-forge start`. The option has
+no effect when packaging.

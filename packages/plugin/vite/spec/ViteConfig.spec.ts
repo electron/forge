@@ -21,7 +21,6 @@ describe('ViteConfigGenerator', () => {
         },
       ],
       renderer: [],
-      hotRestart: true,
     };
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
     const buildConfig = (await generator.getBuildConfigs())[0];
@@ -47,14 +46,33 @@ describe('ViteConfigGenerator', () => {
       'electron/main',
     ]);
     expect(buildConfig.clearScreen).toBe(false);
-    expect(
-      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    // Hot restart is opt-in, so the main config carries no plugins by default.
+    expect(buildConfig.plugins).toEqual([]);
     expect(buildConfig.define).toEqual({});
     expect(buildConfig.resolve).toEqual({
       conditions: ['node'],
       mainFields: ['module', 'jsnext:main', 'jsnext'],
     });
+  });
+
+  it('getBuildConfigs:main adds the hot restart plugin when hotRestart is enabled', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+      hotRestart: true,
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
   });
 
   it('getBuildConfigs:preload', async () => {
@@ -90,9 +108,10 @@ describe('ViteConfigGenerator', () => {
       assetFileNames: '[name].[ext]',
     });
     expect(buildConfig.clearScreen).toBe(false);
+    // Preload scripts are reloaded, never restarted, regardless of `hotRestart`.
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    ).toEqual(['@electron-forge/plugin-vite:hot-reload']);
   });
 
   it('getRendererConfig:renderer', async () => {

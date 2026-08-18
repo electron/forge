@@ -1,9 +1,12 @@
 import { ChildProcess, spawn } from 'node:child_process';
+import { EventEmitter } from 'node:events';
 
+import { requestAppRestart } from '@electron-forge/core-utils/restart';
 import { ElectronProcess } from '@electron-forge/shared-types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
+import locateElectronExecutable from '../../src/util/electron-executable.js';
 import findConfig from '../../src/util/forge-config.js';
 import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
 import resolveDir from '../../src/util/resolve-dir.js';
@@ -241,6 +244,127 @@ describe('start', () => {
         interactive: false,
       }),
     ).rejects.toThrowError("Please set your application's 'version' in");
+  });
+
+  describe('restarting', () => {
+    // A stand-in for a spawned Electron process that dies when killed.
+    const fakeChild = () => {
+      const child = new EventEmitter() as ElectronProcess & {
+        kill: ReturnType<typeof vi.fn>;
+      };
+      child.kill = vi.fn(() => {
+        child.emit('exit');
+        child.emit('close');
+        return true;
+      });
+      return child;
+    };
+
+    const spawnsInOrder = (...children: ReturnType<typeof fakeChild>[]) => {
+      const mock = vi.mocked(spawn);
+      for (const child of children) mock.mockReturnValueOnce(child);
+      return children;
+    };
+
+    beforeEach(() => {
+      // Silence the "Restarting Electron app" line.
+      vi.spyOn(console, 'info').mockImplementation(() => undefined);
+    });
+
+    it('kills the running app and hands back its replacement', async () => {
+      const [first, second] = spawnsInOrder(fakeChild(), fakeChild());
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: false,
+      });
+      expect(spawned).toBe(first);
+
+      const replaced = new Promise((resolve) =>
+        spawned.on('restarted', resolve),
+      );
+
+      expect(requestAppRestart()).toBe(true);
+      expect(first.restarted).toBe(true);
+      expect(first.kill).toHaveBeenCalledWith('SIGTERM');
+
+      // The event has to fire on the *exiting* child: that is what re-attaches
+      // the CLI's exit handling to the replacement.
+      await expect(replaced).resolves.toBe(second);
+      expect(vi.mocked(spawn)).toHaveBeenCalledTimes(2);
+    });
+
+    it('initializes `restarted` instead of leaving it undefined', async () => {
+      spawnsInOrder(fakeChild());
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: false,
+      });
+
+      expect(spawned.restarted).toBe(false);
+    });
+
+    it('declines to restart when no app is running', async () => {
+      // `spawn` is mocked with no return value, so nothing is ever running.
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      expect(requestAppRestart()).toBe(false);
+    });
+
+    it('still restarts once more when asked mid-restart', async () => {
+      spawnsInOrder(fakeChild(), fakeChild(), fakeChild());
+
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      expect(requestAppRestart()).toBe(true);
+      // A request landing mid-restart must not be dropped, or the app keeps
+      // running the code that was just replaced.
+      expect(requestAppRestart()).toBe(true);
+
+      await vi.waitFor(() => expect(vi.mocked(spawn)).toHaveBeenCalledTimes(3));
+    });
+
+    it('keeps the replacement app when the old one closes late', async () => {
+      const [first, second] = spawnsInOrder(fakeChild(), fakeChild());
+      first.kill = vi.fn(() => {
+        first.emit('exit');
+        return true;
+      });
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: false,
+      });
+      const replaced = new Promise((resolve) =>
+        spawned.on('restarted', resolve),
+      );
+      requestAppRestart();
+      await replaced;
+
+      // A late `close` from the old child must not clear the live replacement.
+      first.emit('close');
+
+      expect(requestAppRestart()).toBe(true);
+      expect(second.kill).toHaveBeenCalledWith('SIGTERM');
+    });
+
+    it('reports a failed relaunch rather than rejecting unobserved', async () => {
+      spawnsInOrder(fakeChild());
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      vi.mocked(locateElectronExecutable).mockRejectedValueOnce(
+        new Error('electron is gone'),
+      );
+      requestAppRestart();
+
+      // An unhandled rejection here would take down the whole Forge process.
+      await vi.waitFor(() => expect(consoleError).toHaveBeenCalled());
+    });
   });
 
   // TODO(erickzhao): improve test coverage
