@@ -161,9 +161,25 @@ async function runCommand(args: string[]) {
       YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
       // We publish the monorepo to Verdaccio seconds before the tests install
       // it, so Yarn's minimum age gate (1 day by default since Yarn 4.18)
-      // quarantines every local package. Disable it for the test registry.
+      // quarantines every local package. The tests install those packages into
+      // app directories created under `os.tmpdir()`, which are outside this
+      // repository and therefore never pick up the root `.yarnrc.yml`, so we
+      // mirror its policy here instead of switching the gate off: our own
+      // packages are exempt, everything else still has to have been on the
+      // registry for a week. Keep this in sync with `.yarnrc.yml`.
       // https://yarnpkg.com/configuration/yarnrc#npmMinimalAgeGate
-      YARN_NPM_MINIMAL_AGE_GATE: '0',
+      YARN_NPM_MINIMAL_AGE_GATE: '10080',
+      // Yarn only accepts comma-separated values for array settings passed
+      // through the environment.
+      // https://yarnpkg.com/configuration/yarnrc#npmPreapprovedPackages
+      YARN_NPM_PREAPPROVED_PACKAGES: [
+        '@electron/*',
+        '@electron-forge/*',
+        '@electron-internal/*',
+        'create-electron-app',
+        'electron',
+        'node-abi',
+      ].join(','),
       // Isolate package manager caches so Verdaccio packages
       // don't corrupt the global caches. These directories live
       // under STORAGE_PATH and get cleaned up on next run.
