@@ -2,8 +2,10 @@ import path from 'node:path';
 
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import * as webpack from 'webpack';
-import { DefinePlugin, ExternalsPlugin, WebpackPluginInstance } from 'webpack';
+import type * as webpack from 'webpack';
+import webpackPkg from 'webpack';
+
+const { DefinePlugin, ExternalsPlugin } = webpackPkg;
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -22,6 +24,7 @@ import {
   isPreloadOnly,
   isPreloadOnlyEntries,
 } from './util/rendererTypeUtils.js';
+import { pathToFileURL } from 'node:url';
 
 type EntryType = string | string[] | Record<string, string | string[]>;
 type WebpackMode = 'production' | 'development';
@@ -95,9 +98,9 @@ export default class WebpackConfigGenerator {
 
     let rawConfig =
       typeof config === 'string'
-        ? ((await import(path.resolve(this.projectDir, config))) as MaybeESM<
-            webpack.Configuration | ConfigurationFactory
-          >)
+        ? ((await import(
+            pathToFileURL(path.resolve(this.projectDir, config)).toString()
+          )) as MaybeESM<webpack.Configuration | ConfigurationFactory>)
         : config;
 
     if (rawConfig && typeof rawConfig === 'object' && 'default' in rawConfig) {
@@ -366,7 +369,7 @@ export default class WebpackConfigGenerator {
             template: entryPoint.html,
             filename: `${entryPoint.name}/index.html`,
             chunks: [entryPoint.name].concat(entryPoint.additionalChunks || []),
-          }) as WebpackPluginInstance,
+          }) as webpack.WebpackPluginInstance,
         );
       }
     }

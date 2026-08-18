@@ -5,14 +5,14 @@ import {
   DepVersionRestriction,
   installDependencies,
   PMDetails,
+  readJsonSync,
 } from '@electron-forge/core-utils';
 import { ForgeListrTask } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
 import semver from 'semver';
 
 const d = debug('electron-forge:init:npm');
-const packageJSON = fs.readJsonSync(
+const packageJSON = readJsonSync(
   path.resolve(import.meta.dirname, '../../package.json'),
 );
 

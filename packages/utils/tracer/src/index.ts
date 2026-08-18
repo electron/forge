@@ -2,18 +2,20 @@ import * as fs from 'node:fs';
 
 import { Fields, Tracer } from 'chrome-trace-event';
 
-const store = global as any;
+const store = global as any as {
+  _forgeTracer?: {
+    tracer: Tracer;
+    traceIdCounter: number;
+  } | null;
+};
 store._forgeTracer = store._forgeTracer || {
   tracer: new Tracer(),
   traceIdCounter: 1,
 };
-const forgeTracer: {
-  tracer: Tracer;
-  traceIdCounter: number;
-} = store._forgeTracer;
+const forgeTracer = store._forgeTracer;
 
 if (process.env.ELECTRON_FORGE_TRACE_FILE) {
-  store._forgeTracer.pipe(
+  store._forgeTracer.tracer.pipe(
     fs.createWriteStream(process.env.ELECTRON_FORGE_TRACE_FILE),
   );
 } else {

@@ -1,7 +1,7 @@
 import { builtinModules } from 'node:module';
+import { styleText } from 'node:util';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
-import chalk from 'chalk';
 
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
@@ -14,7 +14,7 @@ export const external = [
 
 // Used for hot reload after preload scripts.
 const viteDevServers: Record<string, ViteDevServer> = {};
-const viteDevServerUrls: Record<string, string> = {};
+export const viteDevServerUrls: Record<string, string> = {};
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   const { root, mode, command } = env;
@@ -27,7 +27,7 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
-      watch: command === 'serve' ? {} : null,
+      watch: command === 'serve' ? { exclude: '**/.git/**' } : null,
       minify: command === 'build',
     },
     clearScreen: false,
@@ -117,7 +117,8 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
         // The first build finishes before the app is spawned, so only a rebuild
         // that fails to reach it is worth warning about.
         console.warn(
-          chalk.yellow(
+          styleText(
+            'yellow',
             '[@electron-forge/plugin-vite] Rebuilt the main process bundle, but the running app was not restarted, so it is still running the previous code.',
           ),
         );

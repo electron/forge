@@ -9,7 +9,7 @@ import {
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { listrMake } from '../../src/api/make';
-import publish from '../../src/api/publish';
+import release from '../../src/api/release';
 import findConfig from '../../src/util/forge-config.js';
 import { importSearch } from '../../src/util/import-search.js';
 
@@ -45,9 +45,9 @@ vi.mock(import('../../src/util/import-search'), async (importOriginal) => {
   };
 });
 
-describe('publish', () => {
+describe('release', () => {
   it('calls "make"', async () => {
-    await publish({
+    await release({
       dir: import.meta.dirname,
       interactive: false,
     });
@@ -79,7 +79,7 @@ describe('publish', () => {
       } as any;
     });
 
-    await publish({
+    await release({
       dir: import.meta.dirname,
       interactive: false,
     });
@@ -109,7 +109,7 @@ describe('publish', () => {
       {} as unknown as ResolvedForgeConfig,
     );
 
-    await publish({
+    await release({
       dir: import.meta.dirname,
       interactive: false,
       publishTargets: [new MockPublisher()],
@@ -134,7 +134,7 @@ describe('publish', () => {
 
     vi.mocked(importSearch).mockResolvedValue(MockPublisher);
 
-    await publish({
+    await release({
       dir: import.meta.dirname,
       interactive: false,
     });
@@ -172,7 +172,7 @@ describe('publish', () => {
     });
 
     it('dryRun creates hash JSON files', async () => {
-      await publish({
+      await release({
         dir: import.meta.dirname,
         outDir: tmpDir,
         interactive: false,
@@ -203,7 +203,7 @@ describe('publish', () => {
       MockPublisher.prototype.publish = mockPublish;
       MockPublisher.prototype.__isElectronForgePublisher = true;
 
-      await publish({
+      await release({
         dir: import.meta.dirname,
         outDir: tmpDir,
         interactive: false,

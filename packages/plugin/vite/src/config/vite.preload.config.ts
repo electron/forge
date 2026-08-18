@@ -20,8 +20,8 @@ export function getConfig(
         input: forgeConfigSelf.entry,
         output: {
           format: 'cjs',
-          // It should not be split chunks.
-          inlineDynamicImports: true,
+          // Preload scripts require a single entrypoint.
+          codeSplitting: false,
           entryFileNames: '[name].js',
           chunkFileNames: '[name].js',
           assetFileNames: '[name].[ext]',

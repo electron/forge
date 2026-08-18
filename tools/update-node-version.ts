@@ -1,6 +1,5 @@
+import fs from 'node:fs';
 import path from 'node:path';
-
-import { readJsonSync, writeJsonSync } from 'fs-extra';
 
 import { getPackageInfoSync } from './utils';
 
@@ -8,7 +7,7 @@ const nodeVersion = process.argv[2];
 
 for (const { path: packagePath } of getPackageInfoSync()) {
   const filename = path.join(packagePath, 'package.json');
-  const packageJSON = readJsonSync(filename);
+  const packageJSON = JSON.parse(fs.readFileSync(filename, 'utf8'));
   packageJSON.engines.node = `>= ${nodeVersion}`;
-  writeJsonSync(filename, packageJSON, { spaces: 2 });
+  fs.writeFileSync(filename, `${JSON.stringify(packageJSON, null, 2)}\n`);
 }

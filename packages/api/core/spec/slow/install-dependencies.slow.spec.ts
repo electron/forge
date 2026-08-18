@@ -7,6 +7,7 @@ import {
   PACKAGE_MANAGERS,
 } from '@electron-forge/core-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { pathToFileURL } from 'node:url';
 
 describe.runIf(!(process.platform === 'linux' && process.env.CI))(
   'install-dependencies',
@@ -25,7 +26,9 @@ describe.runIf(!(process.platform === 'linux' && process.env.CI))(
       ]);
 
       const packageJSON = await import(
-        path.resolve(installDir, 'node_modules', 'debug', 'package.json')
+        pathToFileURL(
+          path.resolve(installDir, 'node_modules', 'debug', 'package.json'),
+        ).toString()
       );
       expect(packageJSON.version).not.toEqual('2.0.0');
     });

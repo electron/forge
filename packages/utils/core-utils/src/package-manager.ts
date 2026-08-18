@@ -6,7 +6,8 @@ import {
   spawn,
 } from '@malept/cross-spawn-promise';
 import debug from 'debug';
-import findUp from 'find-up';
+
+import { findUp } from './find-up.js';
 
 const d = debug('electron-forge:package-manager');
 
@@ -119,10 +120,12 @@ export const resolvePackageManager: (
 
   const executingPM = pmFromUserAgent();
   let lockfilePM;
-  const lockfile = await findUp(
-    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
-    { type: 'file' },
-  );
+  const lockfile = await findUp([
+    'package-lock.json',
+    'yarn.lock',
+    'pnpm-lock.yaml',
+    'pnpm-workspace.yaml',
+  ]);
   if (lockfile) {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];

@@ -1,4 +1,6 @@
+import fs, { glob } from 'node:fs/promises';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import { getHostArch } from '@electron/get';
 import {
@@ -12,6 +14,7 @@ import {
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
+  writeJson,
 } from '@electron-forge/core-utils';
 import {
   ForgeArch,
@@ -23,10 +26,7 @@ import {
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
-import glob from 'fast-glob';
-import fs from 'fs-extra';
 import { Listr, PRESET_TIMER } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
@@ -147,7 +147,7 @@ export const listrPackage = (
               childTrace,
               task.newListr([
                 {
-                  title: `Running ${chalk.yellow('generateAssets')} hook`,
+                  title: `Running ${styleText('yellow', 'generateAssets')} hook`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
                     {
                       name: 'run-generateAssets-hook',
@@ -171,7 +171,7 @@ export const listrPackage = (
                   ),
                 },
                 {
-                  title: `Running ${chalk.yellow('prePackage')} hook`,
+                  title: `Running ${styleText('yellow', 'prePackage')} hook`,
                   task: childTrace<Parameters<ForgeListrTaskFn>>(
                     {
                       name: 'run-prePackage-hook',
@@ -272,9 +272,14 @@ export const listrPackage = (
                 signalDone(signalCopyDone, { platform, arch });
               },
               async ({ buildPath }) => {
-                const bins = await glob(path.join(buildPath, '**/.bin/**/*'));
-                for (const bin of bins) {
-                  await fs.remove(bin);
+                const bins = glob('**/node_modules/.bin/**/*', {
+                  cwd: buildPath,
+                });
+                for await (const bin of bins) {
+                  await fs.rm(path.join(buildPath, bin), {
+                    recursive: true,
+                    force: true,
+                  });
                 }
               },
               async ({ buildPath, electronVersion, platform, arch }) => {
@@ -314,7 +319,7 @@ export const listrPackage = (
                 ) {
                   delete copiedPackageJSON.config.forge;
                 }
-                await fs.writeJson(
+                await writeJson(
                   path.resolve(buildPath, 'package.json'),
                   copiedPackageJSON,
                   { spaces: 2 },
@@ -411,7 +416,8 @@ export const listrPackage = (
             if (!packageJSON.version && !packageOpts.appVersion) {
               warn(
                 interactive,
-                chalk.yellow(
+                styleText(
+                  'yellow',
                   'Please set "version" or "config.forge.packagerConfig.appVersion" in your application\'s package.json so auto-updates work properly',
                 ),
               );
@@ -488,7 +494,8 @@ export const listrPackage = (
                   (target): ForgeListrTaskDefinition =>
                     target.arch === 'universal'
                       ? {
-                          title: `Stitching ${chalk.cyan(`${target.platform}/x64`)} and ${chalk.cyan(`${target.platform}/arm64`)} into a ${chalk.green(
+                          title: `Stitching ${styleText('cyan', `${target.platform}/x64`)} and ${styleText('cyan', `${target.platform}/arm64`)} into a ${styleText(
+                            'green',
                             `${target.platform}/universal`,
                           )} package`,
                           task: async () => {
@@ -499,9 +506,9 @@ export const listrPackage = (
                           },
                         }
                       : {
-                          title: `Packaging for ${chalk.cyan(target.arch)} on ${chalk.cyan(target.platform)}${
+                          title: `Packaging for ${styleText('cyan', target.arch)} on ${styleText('cyan', target.platform)}${
                             target.forUniversal
-                              ? chalk.italic(' (for universal package)')
+                              ? styleText('italic', ' (for universal package)')
                               : ''
                           }`,
                           task: childTrace<Parameters<ForgeListrTaskFn<never>>>(
@@ -574,6 +581,7 @@ export const listrPackage = (
                                     },
                                   ],
                                   {
+                                    concurrent: false,
                                     rendererOptions: {
                                       collapseSubtasks: true,
                                       collapseErrors: false,
@@ -603,7 +611,7 @@ export const listrPackage = (
         ),
       },
       {
-        title: `Running ${chalk.yellow('postPackage')} hook`,
+        title: `Running ${styleText('yellow', 'postPackage')} hook`,
         task: childTrace<Parameters<ForgeListrTaskFn<PackageContext>>>(
           { name: 'run-postPackage-hook', category: '@electron-forge/core' },
           async (childTrace, { packagerPromise, forgeConfig }, task) => {

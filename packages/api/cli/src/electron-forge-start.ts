@@ -61,7 +61,7 @@ import packageJSON from '../package.json' with { type: 'json' };
 
   const opts: StartOptions = {
     dir,
-    interactive: true,
+    interactive: process.stdin.isTTY ?? false,
     enableLogging: !!options.enableLogging,
     runAsNode: !!options.runAsNode,
     inspect: !!options.inspectElectron,

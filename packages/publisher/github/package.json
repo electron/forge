@@ -1,15 +1,15 @@
 {
   "name": "@electron-forge/publisher-github",
-  "version": "8.0.0-alpha.6",
+  "version": "8.0.0-alpha.10",
   "type": "module",
-  "description": "Github publisher for Electron Forge",
+  "description": "GitHub publisher for Electron Forge",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "exports": "./dist/PublisherGithub.js",
-  "typings": "dist/PublisherGithub.d.ts",
+  "exports": "./dist/PublisherGitHub.js",
+  "typings": "dist/PublisherGitHub.d.ts",
   "devDependencies": {
-    "vitest": "^4.0.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">= 22.12.0"
@@ -22,10 +22,7 @@
     "@octokit/request-error": "^5.1.1",
     "@octokit/rest": "^20.1.2",
     "@octokit/types": "^6.1.2",
-    "chalk": "^4.0.0",
     "debug": "^4.3.1",
-    "fs-extra": "^10.0.0",
-    "log-symbols": "^4.0.0",
     "mime-types": "^2.1.25"
   },
   "publishConfig": {

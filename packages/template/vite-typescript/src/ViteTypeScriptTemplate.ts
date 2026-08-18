@@ -1,11 +1,12 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import { move, readJson, writeJson } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 class ViteTypeScriptTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
@@ -21,7 +22,9 @@ class ViteTypeScriptTemplate extends BaseTemplate {
         title: 'Setting up Forge configuration',
         task: async () => {
           await this.copyTemplateFile(directory, 'forge.config.ts');
-          await fs.remove(path.resolve(directory, 'forge.config.js'));
+          await fs.rm(path.resolve(directory, 'forge.config.js'), {
+            force: true,
+          });
         },
       },
       {
@@ -38,11 +41,15 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           // Copy tsconfig with a small set of presets
           await this.copyTemplateFile(directory, 'tsconfig.json');
 
-          // Copy eslint config with recommended settings
-          await this.copyTemplateFile(directory, '.eslintrc.json');
+          await this.writeLintConfig(directory);
+
+          await this.copyTemplateFile(
+            path.join(directory, 'src'),
+            'declarations.d.ts',
+          );
 
           // Remove index.js and replace with main.ts
-          await fs.remove(filePath('index.js'));
+          await fs.rm(filePath('index.js'), { force: true });
           await this.copyTemplateFile(path.join(directory, 'src'), 'main.ts');
 
           await this.copyTemplateFile(
@@ -51,7 +58,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           );
 
           // Remove preload.js and replace with preload.ts
-          await fs.remove(filePath('preload.js'));
+          await fs.rm(filePath('preload.js'), { force: true });
           await this.copyTemplateFile(
             path.join(directory, 'src'),
             'preload.ts',
@@ -59,7 +66,7 @@ class ViteTypeScriptTemplate extends BaseTemplate {
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          await fs.move(
+          await move(
             filePath('index.html'),
             path.join(directory, 'index.html'),
             { overwrite: options.force },
@@ -67,12 +74,20 @@ class ViteTypeScriptTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.join(directory, 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               if (line.includes('</body>'))
                 return '    <script type="module" src="/src/renderer.ts"></script>\n  </body>';
               return line;
             },
           );
+
+          // update package.json
+          const packageJSONPath = path.resolve(directory, 'package.json');
+          const packageJSON = await readJson(packageJSONPath);
+          packageJSON.main = '.vite/build/main.js';
+          await writeJson(packageJSONPath, packageJSON, {
+            spaces: 2,
+          });
         },
       },
     ];

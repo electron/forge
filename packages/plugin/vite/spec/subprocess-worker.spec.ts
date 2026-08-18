@@ -130,7 +130,7 @@ describe('subprocess-worker', () => {
     const outFile = path.join(viteOutDir, 'build', 'main-with-define.js');
     const contents = fs.readFileSync(outFile, 'utf8');
     // MAIN_WINDOW_VITE_NAME should be statically replaced with "main_window"
-    expect(contents).toContain('"main_window"');
+    expect(contents).toMatch(/["'`]main_window["'`]/);
     expect(contents).not.toContain('MAIN_WINDOW_VITE_NAME');
   });
 

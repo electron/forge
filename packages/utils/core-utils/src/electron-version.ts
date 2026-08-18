@@ -1,9 +1,10 @@
 import path from 'node:path';
 
 import debug from 'debug';
-import findUp from 'find-up';
-import fs from 'fs-extra';
 import semver from 'semver';
+
+import { findUp } from './find-up.js';
+import { pathExists, readJson } from './fs.js';
 
 const d = debug('electron-forge:electron-version');
 
@@ -25,7 +26,7 @@ async function findAncestorNodeModulesPath(
   d('Looking for a lock file to indicate the root of the repo');
   const lockPath = await findUp(
     ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'],
-    { cwd: dir, type: 'file' },
+    { cwd: dir },
   );
   if (lockPath) {
     d(`Found lock file: ${lockPath}`);
@@ -34,7 +35,7 @@ async function findAncestorNodeModulesPath(
       'node_modules',
       packageName,
     );
-    if (await fs.pathExists(nodeModulesPath)) {
+    if (await pathExists(nodeModulesPath)) {
       return nodeModulesPath;
     }
   }
@@ -51,7 +52,7 @@ async function determineNodeModulesPath(
     'node_modules',
     packageName,
   );
-  if (await fs.pathExists(nodeModulesPath)) {
+  if (await pathExists(nodeModulesPath)) {
     return nodeModulesPath;
   }
   return findAncestorNodeModulesPath(dir, packageName);
@@ -92,7 +93,7 @@ async function getElectronPackageJSONPath(
   }
 
   const electronPackageJSONPath = path.join(nodeModulesPath, 'package.json');
-  if (await fs.pathExists(electronPackageJSONPath)) {
+  if (await pathExists(electronPackageJSONPath)) {
     return electronPackageJSONPath;
   }
 
@@ -128,7 +129,7 @@ export async function getElectronVersion(
       packageName,
     );
     if (electronPackageJSONPath) {
-      const electronPackageJSON = await fs.readJson(electronPackageJSONPath);
+      const electronPackageJSON = await readJson(electronPackageJSONPath);
       version = electronPackageJSON.version;
     } else {
       throw new PackageNotFoundError(packageName, dir);

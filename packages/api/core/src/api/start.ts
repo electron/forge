@@ -1,5 +1,6 @@
 import { spawn, SpawnOptions } from 'node:child_process';
 import readline from 'node:readline';
+import { styleText } from 'node:util';
 
 import {
   getElectronVersion,
@@ -19,7 +20,6 @@ import {
   StartOptions,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 
@@ -131,7 +131,7 @@ export default autoTrace(
           },
         },
         {
-          title: `Running ${chalk.yellow('generateAssets')} hook`,
+          title: `Running ${styleText('yellow', 'generateAssets')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             {
               name: 'run-generateAssets-hook',
@@ -155,7 +155,7 @@ export default autoTrace(
           ),
         },
         {
-          title: `Running ${chalk.yellow('preStart')} hook`,
+          title: `Running ${styleText('yellow', 'preStart')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             { name: 'run-preStart-hook', category: '@electron-forge/core' },
             async (childTrace, { forgeConfig }, task) => {
@@ -171,7 +171,7 @@ export default autoTrace(
         },
         {
           task: (_ctx, task) => {
-            task.title = `${chalk.dim(`Launched Electron app. Type`)} ${chalk.bold('rs')} ${chalk.dim(`in terminal to restart main process.`)}`;
+            task.title = `${styleText('dim', `Launched Electron app. Type`)} ${styleText('bold', 'rs')} ${styleText('dim', `in terminal to restart main process.`)}`;
           },
         },
       ],
@@ -322,7 +322,7 @@ export default autoTrace(
       const dying = lastSpawned;
       restartInFlight = true;
       console.info(
-        `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
+        `${styleText('green', '✔ ')}${styleText('dim', 'Restarting Electron app')}`,
       );
       dying.restarted = true;
       dying.on('exit', () => {
@@ -342,7 +342,8 @@ export default autoTrace(
             restartInFlight = false;
             restartPending = false;
             console.error(
-              chalk.red(
+              styleText(
+                'red',
                 'Failed to relaunch the Electron app after a restart, so it is no longer running.',
               ),
             );
