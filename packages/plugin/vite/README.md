@@ -44,11 +44,25 @@ not: the app has to be relaunched to pick it up. Set `hotRestart` to have
 `electron-forge start` do that for you whenever a main process bundle rebuilds:
 
 ```javascript
-config: {
-  hotRestart: true,
-  build: [/* ... */],
-  renderer: [/* ... */]
-}
+// forge.config.js
+
+module.exports = {
+  plugins: [
+    {
+      name: '@electron-forge/plugin-vite',
+      config: {
+        hotRestart: true,
+        build: [
+          {
+            entry: 'src/main.js',
+            config: 'vite.main.config.mjs'
+          }
+        ],
+        renderer: []
+      }
+    }
+  ]
+};
 ```
 
 This is off by default, so main process changes otherwise only take effect when
