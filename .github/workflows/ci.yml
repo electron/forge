@@ -206,6 +206,14 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm@11.10.0
 
+      # The Verdaccio tests age-gate their installs like the root `.yarnrc.yml`
+      # does, and npm only learned about `min-release-age` in 11.19, which is
+      # newer than the npm bundled with the Node version in `.nvmrc`. npm 12
+      # requires Node `^22.22.2 || ^24.15.0 || >=26`, so it cannot be installed
+      # on that Node version at all; bump this pin when `.nvmrc` moves.
+      - name: Install npm
+        run: npm install -g npm@11.19.0
+
       - name: Run slow tests
         run: |
           mkdir -p ./reports/out
