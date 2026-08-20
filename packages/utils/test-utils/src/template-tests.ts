@@ -37,6 +37,36 @@ export type TestForgeTemplateOptions = {
 const d = debug('electron-forge:testForgeTemplate');
 
 /**
+ * Summarizes the layout a package manager installed into a project, which is
+ * what tells a flat `node_modules` (npm, Yarn, pnpm with `nodeLinker: hoisted`)
+ * apart from one where every package is a link into a store, and shows which
+ * packages a failing app could have resolved.
+ */
+function describeDependencyTree(projectDir: string) {
+  const nodeModules = path.join(projectDir, 'node_modules');
+
+  let entries;
+  try {
+    entries = fs.readdirSync(nodeModules, { withFileTypes: true });
+  } catch (error) {
+    return `no readable \`node_modules\` in ${projectDir} (${error})`;
+  }
+
+  const names = entries
+    .flatMap((entry) =>
+      // Scopes hold the packages we care about rather than being one themselves.
+      entry.name.startsWith('@')
+        ? fs
+            .readdirSync(path.join(nodeModules, entry.name))
+            .map((scoped) => `${entry.name}/${scoped}`)
+        : [entry.name],
+    )
+    .sort();
+
+  return `${names.length} packages into ${nodeModules}: ${names.join(' ')}`;
+}
+
+/**
  * Runs the local version of `create-electron-app` to create a project based on
  * a given Forge template using all supported package managers. Because this
  * test suite runs under Verdaccio, all ´@electron-forge/*` packages installed
@@ -212,10 +242,8 @@ export function testForgeTemplate({
           ].join('\n'),
         );
 
-        const electronForgeStartOutput = await spawn(
-          packageManager,
-          ['run', 'start'],
-          {
+        const startApp = () =>
+          spawn(packageManager, ['run', 'start'], {
             cwd: tmpDir,
             env: {
               PATH: process.env.PATH,
@@ -258,8 +286,24 @@ export function testForgeTemplate({
                   .replace(/\bnpm\/\?/, 'npm/99.99.99'),
               }),
             },
-          },
-        );
+          });
+
+        let electronForgeStartOutput: string;
+        try {
+          electronForgeStartOutput = await startApp();
+        } catch (error) {
+          /**
+           * When `start` fails, it is usually because the package manager
+           * installed a dependency tree the app cannot resolve its own
+           * configuration from, and the failure alone doesn't say which tree it
+           * ended up with.
+           */
+          console.error(
+            `[template-tests] ${packageManager} installed ${describeDependencyTree(tmpDir)}`,
+          );
+
+          throw error;
+        }
 
         d({ electronForgeStartOutput });
 

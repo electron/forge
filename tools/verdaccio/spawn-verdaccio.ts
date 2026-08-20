@@ -243,6 +243,17 @@ async function runCommand(args: string[]) {
          * https://pnpm.io/settings#verifydepsbeforerun
          */
         verifyDepsBeforeRun: 'warn',
+        /**
+         * Whether pnpm links dependencies through a store-wide virtual store or
+         * one inside the project defaults to whether pnpm believes it is
+         * running in CI, which these tests cannot keep consistent: they install
+         * with the environment they inherit and then run the app's `start`
+         * script with a minimal one, so pnpm read the same project two
+         * different ways and reported that `node_modules` no longer matched the
+         * lockfile. Pin it to the value CI would pick anyway.
+         * https://pnpm.io/settings#enableglobalvirtualstore
+         */
+        enableGlobalVirtualStore: false,
       },
       null,
       2,
