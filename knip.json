@@ -4,8 +4,8 @@
   "ignoreExportsUsedInFile": true,
   "workspaces": {
     ".": {
-      "entry": ["tools/*.ts", "tools/verdaccio/*.ts"],
-      "project": ["tools/**/*.ts"],
+      "entry": ["tools/*.ts", "tools/verdaccio/*.ts", "tools/verdaccio/*.mjs"],
+      "project": ["tools/**/*.{ts,mjs}"],
       "ignoreDependencies": [
         "@types/keyv",
         "electron",

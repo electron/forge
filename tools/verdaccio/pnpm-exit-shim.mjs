@@ -25,9 +25,19 @@
  * Delete this shim and its wiring once the fix has shipped in a pnpm release.
  */
 
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+
+/**
+ * On Windows the real pnpm is a `.cmd` file, which can only be run through
+ * `cmd.exe`, and Node passes it the command line unquoted: `cmd.exe` then reads
+ * the `^` in a version range like `typescript@^6.0.0` as its own escape
+ * character and asks pnpm for `typescript@6.0.0`, a version that need not
+ * exist. `cross-spawn` quotes and escapes arguments the way `cmd.exe` needs,
+ * and is what Forge itself runs package managers with.
+ */
+import spawn from 'cross-spawn';
 
 /**
  * How long pnpm gets to exit by itself after it says it is done. Long enough
@@ -195,8 +205,6 @@ function runPnpm(attempt) {
       // Run pnpm in its own process group so that we can take down the version
       // of itself that it hands over to along with it.
       detached: process.platform !== 'win32',
-      // `.cmd` and `.bat` files can only be run through a shell.
-      shell: process.platform === 'win32',
     });
 
     let exitTimer;
