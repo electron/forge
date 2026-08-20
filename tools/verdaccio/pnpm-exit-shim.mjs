@@ -1,8 +1,8 @@
 /**
  * A stand-in for `pnpm` that the Verdaccio test harness puts at the front of
- * `PATH` (see `spawn-verdaccio.ts`). It runs the real pnpm and, once pnpm has
- * reported that it is finished, gives it a few seconds to exit on its own and
- * then kills it.
+ * `PATH` (see `spawn-verdaccio.ts`). It runs the real pnpm and, once an install
+ * has reported that it is finished, gives it a few seconds to exit on its own
+ * and then kills it.
  *
  * pnpm shuts its tarball worker pool down once per install, but any worker call
  * that happens after that lazily creates a new pool that nothing ever shuts
@@ -30,16 +30,50 @@ import path from 'node:path';
 const EXIT_GRACE_PERIOD_MS = 15_000;
 
 /**
- * What pnpm prints when it has finished the work it was asked to do. `pnpm run`
- * and friends print nothing of the sort, so they are simply left alone.
+ * What pnpm prints when it has finished the work it was asked to do.
  */
 const DONE_PATTERN = /(^|\n)(Done in |Already up to date)/;
+
+/**
+ * The commands that install packages, and therefore the only ones that can hang
+ * this way. Every other command — `pnpm run start`, which the tests use to
+ * launch the app they are testing, above all — is left alone entirely: it keeps
+ * running long after pnpm has said that it is done, and killing it is the last
+ * thing we want.
+ */
+const INSTALL_COMMANDS = new Set([
+  'add',
+  'dedupe',
+  'fetch',
+  'i',
+  'import',
+  'install',
+  'link',
+  'prune',
+  'remove',
+  'rm',
+  'un',
+  'uninstall',
+  'unlink',
+  'up',
+  'update',
+]);
 
 /**
  * How much of a chunk of output has to be kept around to match `DONE_PATTERN`
  * against the next one: anything at least as long as the strings it looks for.
  */
 const TAIL_LENGTH = 32;
+
+const pnpmArgs = process.argv.slice(2);
+
+/**
+ * These tests only ever run pnpm as `pnpm <command> [flags]`, so the first
+ * argument that isn't a flag is the command.
+ */
+const watchForHang = INSTALL_COMMANDS.has(
+  pnpmArgs.find((arg) => !arg.startsWith('-')),
+);
 
 /**
  * The directory the launcher that runs this file lives in, which the launcher
@@ -92,8 +126,10 @@ if (!realPnpm) {
   throw new Error(`pnpm not found on PATH (${realPath.join(path.delimiter)})`);
 }
 
-const pnpm = spawn(realPnpm, process.argv.slice(2), {
-  stdio: ['inherit', 'pipe', 'pipe'],
+const pnpm = spawn(realPnpm, pnpmArgs, {
+  // Watching for the hang means reading pnpm's output on the way past. Anything
+  // we are not watching gets the real thing's streams, untouched.
+  stdio: watchForHang ? ['inherit', 'pipe', 'pipe'] : 'inherit',
   env: { ...process.env, [pathKey]: realPath.join(path.delimiter) },
   // Run pnpm in its own process group so that we can take down the version of
   // itself that it hands over to along with it.
@@ -143,15 +179,17 @@ function forward(stream, chunk, previousTail) {
   return text.slice(-TAIL_LENGTH);
 }
 
-let stdoutTail = '';
-pnpm.stdout.on('data', (chunk) => {
-  stdoutTail = forward(process.stdout, chunk, stdoutTail);
-});
+if (watchForHang) {
+  let stdoutTail = '';
+  pnpm.stdout.on('data', (chunk) => {
+    stdoutTail = forward(process.stdout, chunk, stdoutTail);
+  });
 
-let stderrTail = '';
-pnpm.stderr.on('data', (chunk) => {
-  stderrTail = forward(process.stderr, chunk, stderrTail);
-});
+  let stderrTail = '';
+  pnpm.stderr.on('data', (chunk) => {
+    stderrTail = forward(process.stderr, chunk, stderrTail);
+  });
+}
 
 pnpm.on('error', (error) => {
   clearTimeout(exitTimer);

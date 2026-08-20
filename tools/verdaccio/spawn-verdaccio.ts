@@ -230,6 +230,19 @@ async function runCommand(args: string[]) {
          * https://pnpm.io/settings#cachedir
          */
         cacheDir: path.join(STORAGE_PATH, '.pnpm-cache'),
+        /**
+         * Since pnpm 11, `pnpm run` silently runs an install first whenever it
+         * decides that `node_modules` is out of sync with the lockfile. The
+         * tests run `<package manager> run start` to check that the app
+         * `create-electron-app` just installed can start, so an install in
+         * between replaces the very thing they are checking: on Windows it
+         * rewrote the dependency tree into one where the generated
+         * `forge.config.ts` could no longer resolve the Forge plugin it
+         * imports. `warn` keeps the check itself, and its report of whatever it
+         * believes is out of sync, without acting on it.
+         * https://pnpm.io/settings#verifydepsbeforerun
+         */
+        verifyDepsBeforeRun: 'warn',
       },
       null,
       2,
