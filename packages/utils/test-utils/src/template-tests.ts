@@ -135,7 +135,7 @@ export function testForgeTemplate({
           throw new Error(`unknown template ${templateName}`);
         }
 
-        await spawn('node', [
+        const createOutput = await spawn('node', [
           path.resolve(
             __dirname,
             '../../../external/create-electron-app/dist/create-electron-app.js',
@@ -296,10 +296,16 @@ export function testForgeTemplate({
            * When `start` fails, it is usually because the package manager
            * installed a dependency tree the app cannot resolve its own
            * configuration from, and the failure alone doesn't say which tree it
-           * ended up with.
+           * ended up with. `create-electron-app` runs its steps with listr2's
+           * `exitOnError: false`, so a failed install leaves a broken project
+           * behind and still exits 0; its output is the only place that failure
+           * is reported at all.
            */
           console.error(
-            `[template-tests] ${packageManager} installed ${describeDependencyTree(tmpDir)}`,
+            [
+              `[template-tests] ${packageManager} installed ${describeDependencyTree(tmpDir)}`,
+              `[template-tests] create-electron-app said:\n${createOutput}`,
+            ].join('\n'),
           );
 
           throw error;

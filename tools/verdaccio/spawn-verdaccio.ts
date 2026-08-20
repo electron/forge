@@ -261,46 +261,6 @@ async function runCommand(args: string[]) {
   );
 
   /**
-   * pnpm can finish an install and then never exit, which costs us a whole test
-   * because the tests wait for the package manager they spawned to be done.
-   * `pnpm-exit-shim.mjs` explains why and works around it; putting it in front
-   * of the real pnpm on `PATH` covers every pnpm these tests run, whether they
-   * run it themselves or through `create-electron-app`.
-   */
-  const tempBinDir = path.join(STORAGE_PATH, '.bin');
-  await fs.promises.mkdir(tempBinDir, { recursive: true });
-  const pnpmExitShim = path.resolve(import.meta.dirname, 'pnpm-exit-shim.mjs');
-  if (process.platform === 'win32') {
-    await fs.promises.writeFile(
-      path.join(tempBinDir, 'pnpm.cmd'),
-      [
-        '@echo off',
-        `set "FORGE_PNPM_EXIT_SHIM_DIR=${tempBinDir}"`,
-        `node "${pnpmExitShim}" %*`,
-        '',
-      ].join('\r\n'),
-    );
-  } else {
-    const pnpmLauncher = path.join(tempBinDir, 'pnpm');
-    await fs.promises.writeFile(
-      pnpmLauncher,
-      [
-        '#!/bin/sh',
-        `FORGE_PNPM_EXIT_SHIM_DIR="${tempBinDir}"`,
-        'export FORGE_PNPM_EXIT_SHIM_DIR',
-        `exec node "${pnpmExitShim}" "$@"`,
-        '',
-      ].join('\n'),
-    );
-    await fs.promises.chmod(pnpmLauncher, 0o755);
-  }
-  // Windows spells this `Path`, and spreading `process.env` above lost the
-  // case-insensitive lookup that hides the difference.
-  const pathKey =
-    Object.keys(parentEnv).find((key) => key.toUpperCase() === 'PATH') ??
-    'PATH';
-
-  /**
    * npm only learned about `min-release-age` in 11.19. Older versions install
    * without a gate and warn that the config is unknown on every single npm
    * invocation, so we only pass it when it is supported and say once that the
@@ -324,7 +284,6 @@ async function runCommand(args: string[]) {
     stdio: 'inherit',
     env: {
       ...parentEnv,
-      [pathKey]: [tempBinDir, parentEnv[pathKey]].join(path.delimiter),
       // https://docs.npmjs.com/cli/v9/using-npm/config#registry
       // https://pnpm.io/settings#registry
       NPM_CONFIG_REGISTRY: VERDACCIO_URL,
