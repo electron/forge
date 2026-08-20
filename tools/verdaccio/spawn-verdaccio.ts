@@ -325,6 +325,12 @@ async function runCommand(args: string[]) {
     env: {
       ...parentEnv,
       [pathKey]: [tempBinDir, parentEnv[pathKey]].join(path.delimiter),
+      // Where the shim records what every pnpm it ran printed, which is what a
+      // failing test reports when the project it was given cannot start.
+      FORGE_PNPM_INVOCATION_LOG: path.join(
+        STORAGE_PATH,
+        'pnpm-invocations.log',
+      ),
       // https://docs.npmjs.com/cli/v9/using-npm/config#registry
       // https://pnpm.io/settings#registry
       NPM_CONFIG_REGISTRY: VERDACCIO_URL,

@@ -67,6 +67,29 @@ function describeDependencyTree(projectDir: string) {
 }
 
 /**
+ * Everything the Verdaccio harness' pnpm shim recorded about the installs into
+ * one project, which is the only account there is of them: pnpm's own output.
+ */
+function describePnpmInstalls(projectDir: string) {
+  const invocationLog = process.env.FORGE_PNPM_INVOCATION_LOG;
+  if (!invocationLog) return 'no record of the pnpm runs was kept';
+
+  let records;
+  try {
+    records = fs.readFileSync(invocationLog, 'utf8').split(/^(?==== pnpm )/m);
+  } catch (error) {
+    return `no readable record of the pnpm runs in ${invocationLog} (${error})`;
+  }
+
+  const forThisProject = records.filter((record) =>
+    record.includes(`in ${projectDir}`),
+  );
+  return forThisProject.length
+    ? forThisProject.join('')
+    : `nothing in ${invocationLog} mentions ${projectDir}`;
+}
+
+/**
  * Runs the local version of `create-electron-app` to create a project based on
  * a given Forge template using all supported package managers. Because this
  * test suite runs under Verdaccio, all ´@electron-forge/*` packages installed
@@ -304,6 +327,12 @@ export function testForgeTemplate({
           console.error(
             [
               `[template-tests] ${packageManager} installed ${describeDependencyTree(tmpDir)}`,
+              `[template-tests] from this package.json:\n${fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8')}`,
+              ...(packageManager === 'pnpm'
+                ? [
+                    `[template-tests] pnpm was run like this:\n${describePnpmInstalls(tmpDir)}`,
+                  ]
+                : []),
               `[template-tests] create-electron-app said:\n${createOutput}`,
             ].join('\n'),
           );

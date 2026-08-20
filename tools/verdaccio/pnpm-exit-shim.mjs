@@ -159,10 +159,33 @@ function report(message) {
 }
 
 /**
+ * Where to write a record of every pnpm run. `create-electron-app` installs
+ * through listr2 with `exitOnError: false` and does not forward what the
+ * package manager printed, so a failing test otherwise has nothing to say about
+ * the installs that produced the project it is failing on.
+ */
+const INVOCATION_LOG = process.env.FORGE_PNPM_INVOCATION_LOG;
+
+function recordInvocation(attempt, output, outcome) {
+  if (!INVOCATION_LOG) return;
+
+  fs.appendFileSync(
+    INVOCATION_LOG,
+    [
+      `=== pnpm ${pnpmArgs.join(' ')}`,
+      `    in ${process.cwd()}${attempt > 1 ? ` (attempt ${attempt})` : ''}`,
+      `    ${outcome}`,
+      output,
+      '',
+    ].join('\n'),
+  );
+}
+
+/**
  * Runs pnpm once. Resolves with how it went: either it exited on its own, and
  * with what status, or it reported that it was done and had to be killed.
  */
-function runPnpm() {
+function runPnpm(attempt) {
   return new Promise((resolve, reject) => {
     const pnpm = spawn(realPnpm, pnpmArgs, {
       // Watching for the hang means reading pnpm's output on the way past.
@@ -178,6 +201,7 @@ function runPnpm() {
 
     let exitTimer;
     let hung = false;
+    let output = '';
 
     function killPnpm() {
       if (process.platform === 'win32') {
@@ -201,6 +225,7 @@ function runPnpm() {
      */
     function forward(stream, chunk, previousTail) {
       stream.write(chunk);
+      output += chunk;
 
       const text = `${previousTail}${chunk}`;
       if (exitTimer === undefined && DONE_PATTERN.test(text)) {
@@ -247,7 +272,15 @@ function runPnpm() {
     // written has been flushed.
     pnpm.on('close', (code, signal) => {
       clearTimeout(exitTimer);
-      resolve({ hung, code: signal ? 1 : (code ?? 0) });
+      const exitCode = signal ? 1 : (code ?? 0);
+      recordInvocation(
+        attempt,
+        output,
+        hung
+          ? 'reported that it was done and then had to be killed'
+          : `exited with ${exitCode}`,
+      );
+      resolve({ hung, code: exitCode });
     });
   });
 }
@@ -268,7 +301,7 @@ async function discardInstallState() {
 }
 
 for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-  const { hung, code } = await runPnpm();
+  const { hung, code } = await runPnpm(attempt);
 
   if (!hung) {
     process.exitCode = code;
