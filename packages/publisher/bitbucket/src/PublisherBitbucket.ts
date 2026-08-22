@@ -98,3 +98,4 @@ export default class PublisherBitbucket extends PublisherBase<PublisherBitbucket
 }
 
 export { PublisherBitbucket, PublisherBitbucketConfig };
+export type { BitbucketAuth, BitbucketRepository } from './Config.ts';

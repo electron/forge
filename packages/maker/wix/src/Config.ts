@@ -1,6 +1,6 @@
 import { MSICreator, type MSICreatorOptions } from 'electron-wix-msi';
 
-export type MakerWixConfig = Omit<
+export interface MakerWixConfig extends Omit<
   MSICreatorOptions,
   | 'appDirectory'
   | 'outputDirectory'
@@ -9,7 +9,7 @@ export type MakerWixConfig = Omit<
   | 'version'
   | 'manufacturer'
   | 'exe'
-> & {
+> {
   /**
    * The app's description
    *
@@ -44,4 +44,4 @@ export type MakerWixConfig = Omit<
    * Allows for the modification of the MSICreator before create is called.
    */
   beforeCreate?: (creator: MSICreator) => Promise<void> | void;
-};
+}

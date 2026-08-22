@@ -31,6 +31,7 @@ type WebpackMode = 'production' | 'development';
 
 const d = debug('electron-forge:plugin:webpack:webpackconfig');
 
+/** @inline */
 export type ConfigurationFactory = (
   env: string | Record<string, string | boolean | number> | unknown,
   args: Record<string, unknown>,
