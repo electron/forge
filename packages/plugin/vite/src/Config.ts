@@ -49,4 +49,11 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Restart the running app whenever the main process bundle is rebuilt during
+   * `electron-forge start`. Has no effect when packaging.
+   * @defaultValue `false`
+   */
+  hotRestart?: boolean;
 }
