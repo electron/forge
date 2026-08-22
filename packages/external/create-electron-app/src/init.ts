@@ -6,9 +6,11 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
+} from '@electron-forge/core-utils/install-dependencies';
+import {
   PMDetails,
   resolvePackageManager,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/package-manager';
 import { ForgeTemplate } from '@electron-forge/shared-types';
 import { spawn } from '@malept/cross-spawn-promise';
 import debug from 'debug';

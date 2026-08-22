@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { move } from '@electron-forge/core-utils';
+import { move } from '@electron-forge/core-utils/fs';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
 import { describe, expect, it, vi } from 'vitest';
@@ -28,7 +28,7 @@ vi.mock(import('node:fs/promises'), async (importOriginal) => {
   };
 });
 
-vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+vi.mock(import('@electron-forge/core-utils/fs'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,

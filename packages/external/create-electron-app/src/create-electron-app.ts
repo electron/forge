@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { styleText } from 'node:util';
 
-import { resolveWorkingDir } from '@electron-forge/core-utils';
+import { resolveWorkingDir } from '@electron-forge/core-utils/resolve-working-dir';
 import { confirm, select } from '@inquirer/prompts';
 import { ListrInquirerPromptAdapter } from '@listr2/prompt-adapter-inquirer';
 import { program } from 'commander';

@@ -3,7 +3,7 @@ import { styleText } from 'node:util';
 
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
-import { resolveWorkingDir } from '@electron-forge/core-utils';
+import { resolveWorkingDir } from '@electron-forge/core-utils/resolve-working-dir';
 import { program } from 'commander';
 
 import './util/terminate.js';

@@ -1,5 +1,5 @@
 import { api, StartOptions } from '@electron-forge/core';
-import { resolveWorkingDir } from '@electron-forge/core-utils';
+import { resolveWorkingDir } from '@electron-forge/core-utils/resolve-working-dir';
 import { ElectronProcess } from '@electron-forge/shared-types';
 import { Option, program } from 'commander';
 

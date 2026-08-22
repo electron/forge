@@ -1,7 +1,7 @@
 import os from 'node:os';
 import path from 'node:path';
 
-import { writeJson } from '@electron-forge/core-utils';
+import { writeJson } from '@electron-forge/core-utils/fs';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { zip } from 'cross-zip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -20,7 +20,7 @@ vi.mock(import('cross-zip'), async (importOriginal) => {
   };
 });
 
-vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+vi.mock(import('@electron-forge/core-utils/fs'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,

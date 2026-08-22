@@ -6,7 +6,16 @@
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./author-name": "./dist/author-name.js",
+    "./electron-version": "./dist/electron-version.js",
+    "./fs": "./dist/fs.js",
+    "./install-dependencies": "./dist/install-dependencies.js",
+    "./package-manager": "./dist/package-manager.js",
+    "./rebuild": "./dist/rebuild.js",
+    "./resolve-working-dir": "./dist/resolve-working-dir.js"
+  },
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@electron-forge/shared-types": "workspace:*",

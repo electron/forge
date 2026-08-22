@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { move, readJson, writeJson } from '@electron-forge/core-utils';
+import { move, readJson, writeJson } from '@electron-forge/core-utils/fs';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,

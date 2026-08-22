@@ -4,9 +4,9 @@ import path from 'node:path';
 import {
   readJson,
   readJsonSync,
-  resolvePackageManager,
   writeJson,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/fs';
+import { resolvePackageManager } from '@electron-forge/core-utils/package-manager';
 import {
   ForgeListrTaskDefinition,
   ForgeTemplate,

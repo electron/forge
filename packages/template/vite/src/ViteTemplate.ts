@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { moveSync } from '@electron-forge/core-utils';
+import { moveSync } from '@electron-forge/core-utils/fs';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,

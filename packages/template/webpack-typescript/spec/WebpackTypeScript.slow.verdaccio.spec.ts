@@ -4,7 +4,7 @@ import path from 'node:path';
 import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/package-manager';
 import * as testUtils from '@electron-forge/test-utils';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 

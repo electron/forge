@@ -1,19 +1,22 @@
 import {
   resolvePackageManager,
   spawnPackageManager,
-} from '@electron-forge/core-utils';
+} from '@electron-forge/core-utils/package-manager';
 import { describe, expect, it, vi } from 'vitest';
 
 import { checkPackageManager } from '../../src/util/check-system';
 
-vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
-  const mod = await importOriginal();
-  return {
-    ...mod,
-    resolvePackageManager: vi.fn(),
-    spawnPackageManager: vi.fn(),
-  };
-});
+vi.mock(
+  import('@electron-forge/core-utils/package-manager'),
+  async (importOriginal) => {
+    const mod = await importOriginal();
+    return {
+      ...mod,
+      resolvePackageManager: vi.fn(),
+      spawnPackageManager: vi.fn(),
+    };
+  },
+);
 
 describe('checkPackageManager', () => {
   it('should consider allowlisted versions to be valid', async () => {
