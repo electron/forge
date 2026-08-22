@@ -186,6 +186,17 @@ export interface WebpackPluginConfig {
     WebpackDevServer.Configuration,
     'port' | 'static' | 'setupExitSignals' | 'Content-Security-Policy'
   >;
+  /**
+   * Installs the [Devtron](https://github.com/electron/devtron) DevTools
+   * extension into your app while running `electron-forge start`.
+   *
+   * Requires `@electron/devtron` to be installed as a devDependency of your
+   * app and Electron >= 36. The extension is only injected in development;
+   * packaged builds are never affected.
+   *
+   * @defaultValue false
+   */
+  devtron?: boolean;
 }
 
 export type WebpackConfiguration =

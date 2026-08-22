@@ -5,7 +5,11 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type * as webpack from 'webpack';
 import webpackPkg from 'webpack';
 
-const { DefinePlugin, ExternalsPlugin } = webpackPkg;
+const { BannerPlugin, DefinePlugin, ExternalsPlugin } = webpackPkg;
+import {
+  canInjectDevtron,
+  getDevtronBootstrapCode,
+} from '@electron-forge/core-utils';
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -223,6 +227,26 @@ export default class WebpackConfigGenerator {
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
 
+    const plugins: webpack.WebpackPluginInstance[] = [
+      new DefinePlugin(this.getDefines()),
+    ];
+    if (
+      !this.isProd &&
+      this.pluginConfig.devtron &&
+      (await canInjectDevtron(this.projectDir))
+    ) {
+      // The banner is raw code prepended to the emitted bundle, so webpack
+      // never parses it; `@electron/devtron` is resolved from the app's
+      // node_modules at runtime instead of being bundled.
+      plugins.push(
+        new BannerPlugin({
+          banner: getDevtronBootstrapCode(),
+          raw: true,
+          entryOnly: true,
+        }),
+      );
+    }
+
     return webpackMerge(
       {
         devtool: 'source-map',
@@ -233,7 +257,7 @@ export default class WebpackConfigGenerator {
           filename: 'index.js',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins,
         node: {
           __dirname: false,
           __filename: false,
