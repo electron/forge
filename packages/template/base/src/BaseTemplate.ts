@@ -174,12 +174,18 @@ export class BaseTemplate implements ForgeTemplate {
     const pm = await resolvePackageManager();
 
     if (pm.executable === 'pnpm') {
-      // Ensures we're using the same `pnpm` version that we use in CI, and
-      // never one older than 11.18: before that, adding a dependency to a
-      // project that already had some could drop a package that another one
-      // it kept still depends on. That left `forge.config.ts` unable to load
-      // on Windows, where the platform-specific makers' dependencies are
-      // skipped and `rimraf` is the only thing left asking for `glob`.
+      // Records the pnpm version this template is known to work with, which is
+      // the one CI installs. Anything older than 11.18 is known not to: adding a
+      // dependency to a project that already had some could drop a package that
+      // another one it kept still depends on, which left `forge.config.ts`
+      // unable to load on Windows, where the platform-specific makers'
+      // dependencies are skipped and `rimraf` is the only thing left asking for
+      // `glob`.
+      //
+      // It is a record and not a floor. pnpm ignores `devEngines.packageManager`
+      // unless it is written in the object form the spec describes, and
+      // `create-electron-app` then has Corepack write a `packageManager` field,
+      // which takes precedence over this one either way.
       packageJSON.devEngines = {
         packageManager: 'pnpm@11.21.0',
       };

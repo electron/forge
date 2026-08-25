@@ -272,14 +272,12 @@ export function testForgeTemplate({
               PATH: process.env.PATH,
               /**
                * `start` makes the package manager check the lockfile it just
-               * wrote, and pnpm has enforced a minimum release age of its own by
-               * default since 11.16, so that check rejects the project outright
-               * whenever one of our dependencies published a release in the last
-               * day. `XDG_CONFIG_HOME` is where the Verdaccio test harness puts
-               * the config that tells pnpm which registry to use, how old a
-               * release has to be, and which packages are exempt, so we have to
-               * let it through to keep the same policy in force for the install
-               * and for the check.
+               * wrote, and `XDG_CONFIG_HOME` is where the Verdaccio test harness
+               * puts the config that tells pnpm which registry to use, how old a
+               * release has to be, which packages are exempt, and to warn rather
+               * than fail when the check finds a difference. Dropping it would
+               * leave the check looking at the public registry under a policy
+               * the install never ran under.
                */
               XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME,
               ...(process.platform === 'linux' && {

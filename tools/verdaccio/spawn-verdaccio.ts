@@ -154,7 +154,36 @@ async function publishPackages(): Promise<void> {
   }
 }
 
-async function runCommand(args: string[]) {
+/**
+ * Whether npm understands the age gate these tests hold their installs to. npm
+ * learned about `min-release-age` in 11.10 and about `min-release-age-exclude`
+ * in 11.17, so 11.17 is the first version that understands the whole policy.
+ * Older versions install without a gate and warn that the config is unknown on
+ * every single npm invocation, so we only pass it when it is supported.
+ *
+ * CI installs an npm new enough for it (see the `Install npm` step in
+ * `ci.yml`), and the gate quietly going missing there — a `.nvmrc` bump that
+ * drops that step, say — is exactly the failure this policy exists to catch, so
+ * only a local run is allowed to carry on without it. Checked before anything
+ * is published so that a CI failure costs a couple of seconds.
+ */
+async function checkNpmAgeGateSupport(): Promise<boolean> {
+  const npmVersion = (await spawnPromise('npm', ['--version'])).trim();
+  const [npmMajor, npmMinor] = npmVersion.split('.').map(Number);
+  const supported = npmMajor > 11 || (npmMajor === 11 && npmMinor >= 17);
+
+  if (!supported) {
+    const message = `npm ${npmVersion} does not support \`min-release-age\` (npm >= 11.17 required)`;
+    if (process.env.CI) throw new Error(message);
+    console.warn(
+      `⚠️  ${message}, so npm installs in these tests are not age-gated`,
+    );
+  }
+
+  return supported;
+}
+
+async function runCommand(args: string[], npmSupportsAgeGate: boolean) {
   process.env.COREPACK_ENABLE_STRICT = '0';
 
   /**
@@ -300,22 +329,6 @@ async function runCommand(args: string[]) {
     Object.keys(parentEnv).find((key) => key.toUpperCase() === 'PATH') ??
     'PATH';
 
-  /**
-   * npm only learned about `min-release-age` in 11.19. Older versions install
-   * without a gate and warn that the config is unknown on every single npm
-   * invocation, so we only pass it when it is supported and say once that the
-   * npm side of the tests is ungated.
-   */
-  const npmVersion = (await spawnPromise('npm', ['--version'])).trim();
-  const [npmMajor, npmMinor] = npmVersion.split('.').map(Number);
-  const npmSupportsAgeGate =
-    npmMajor > 11 || (npmMajor === 11 && npmMinor >= 19);
-  if (!npmSupportsAgeGate) {
-    console.warn(
-      `⚠️  npm ${npmVersion} does not support \`min-release-age\` (npm >= 11.19 required), so npm installs in these tests are not age-gated`,
-    );
-  }
-
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
 
@@ -381,6 +394,8 @@ async function main(): Promise<void> {
   });
 
   try {
+    const npmSupportsAgeGate = await checkNpmAgeGateSupport();
+
     await startVerdaccio();
     await publishPackages();
 
@@ -391,7 +406,7 @@ async function main(): Promise<void> {
       // Keep the process alive
       await new Promise(() => {});
     } else {
-      await runCommand(args);
+      await runCommand(args, npmSupportsAgeGate);
       stopVerdaccio();
       process.exit(0);
     }
