@@ -90,6 +90,29 @@ function forgeScriptEnv(packageManager: SupportedPackageManager) {
      * the install never ran under.
      */
     XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME,
+    /**
+     * `@electron/get` (which downloads the Electron binary during `start` and
+     * `package`) and the package managers need the proxy configuration in
+     * environments that route outbound traffic through one; these variables
+     * are simply unset everywhere else.
+     */
+    ...Object.fromEntries(
+      [
+        'HTTP_PROXY',
+        'HTTPS_PROXY',
+        'NO_PROXY',
+        'http_proxy',
+        'https_proxy',
+        'no_proxy',
+        'NODE_EXTRA_CA_CERTS',
+        'ELECTRON_GET_USE_PROXY',
+        'GLOBAL_AGENT_HTTP_PROXY',
+        'GLOBAL_AGENT_HTTPS_PROXY',
+        'GLOBAL_AGENT_NO_PROXY',
+      ]
+        .filter((name) => process.env[name] !== undefined)
+        .map((name) => [name, process.env[name]]),
+    ),
     ...(process.platform === 'linux' && {
       DISPLAY: process.env.DISPLAY,
       XAUTHORITY: process.env.XAUTHORITY,
