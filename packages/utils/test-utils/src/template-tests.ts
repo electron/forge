@@ -37,6 +37,59 @@ export type TestForgeTemplateOptions = {
 const d = debug('electron-forge:testForgeTemplate');
 
 /**
+ * Summarizes the layout a package manager installed into a project, which is
+ * what tells a flat `node_modules` (npm, Yarn, pnpm with `nodeLinker: hoisted`)
+ * apart from one where every package is a link into a store, and shows which
+ * packages a failing app could have resolved.
+ */
+function describeDependencyTree(projectDir: string) {
+  const nodeModules = path.join(projectDir, 'node_modules');
+
+  let entries;
+  try {
+    entries = fs.readdirSync(nodeModules, { withFileTypes: true });
+  } catch (error) {
+    return `no readable \`node_modules\` in ${projectDir} (${error})`;
+  }
+
+  const names = entries
+    .flatMap((entry) =>
+      // Scopes hold the packages we care about rather than being one themselves.
+      entry.name.startsWith('@')
+        ? fs
+            .readdirSync(path.join(nodeModules, entry.name))
+            .map((scoped) => `${entry.name}/${scoped}`)
+        : [entry.name],
+    )
+    .sort();
+
+  return `${names.length} packages into ${nodeModules}: ${names.join(' ')}`;
+}
+
+/**
+ * Everything the Verdaccio harness' pnpm shim recorded about the installs into
+ * one project, which is the only account there is of them: pnpm's own output.
+ */
+function describePnpmInstalls(projectDir: string) {
+  const invocationLog = process.env.FORGE_PNPM_INVOCATION_LOG;
+  if (!invocationLog) return 'no record of the pnpm runs was kept';
+
+  let records;
+  try {
+    records = fs.readFileSync(invocationLog, 'utf8').split(/^(?==== pnpm )/m);
+  } catch (error) {
+    return `no readable record of the pnpm runs in ${invocationLog} (${error})`;
+  }
+
+  const forThisProject = records.filter((record) =>
+    record.includes(`in ${projectDir}`),
+  );
+  return forThisProject.length
+    ? forThisProject.join('')
+    : `nothing in ${invocationLog} mentions ${projectDir}`;
+}
+
+/**
  * Runs the local version of `create-electron-app` to create a project based on
  * a given Forge template using all supported package managers. Because this
  * test suite runs under Verdaccio, all ´@electron-forge/*` packages installed
@@ -105,7 +158,7 @@ export function testForgeTemplate({
           throw new Error(`unknown template ${templateName}`);
         }
 
-        await spawn('node', [
+        const createOutput = await spawn('node', [
           path.resolve(
             __dirname,
             '../../../external/create-electron-app/dist/create-electron-app.js',
@@ -212,13 +265,21 @@ export function testForgeTemplate({
           ].join('\n'),
         );
 
-        const electronForgeStartOutput = await spawn(
-          packageManager,
-          ['run', 'start'],
-          {
+        const startApp = () =>
+          spawn(packageManager, ['run', 'start'], {
             cwd: tmpDir,
             env: {
               PATH: process.env.PATH,
+              /**
+               * `start` makes the package manager check the lockfile it just
+               * wrote, and `XDG_CONFIG_HOME` is where the Verdaccio test harness
+               * puts the config that tells pnpm which registry to use, how old a
+               * release has to be, which packages are exempt, and to warn rather
+               * than fail when the check finds a difference. Dropping it would
+               * leave the check looking at the public registry under a policy
+               * the install never ran under.
+               */
+              XDG_CONFIG_HOME: process.env.XDG_CONFIG_HOME,
               ...(process.platform === 'linux' && {
                 DISPLAY: process.env.DISPLAY,
                 XAUTHORITY: process.env.XAUTHORITY,
@@ -246,8 +307,36 @@ export function testForgeTemplate({
                   .replace(/\bnpm\/\?/, 'npm/99.99.99'),
               }),
             },
-          },
-        );
+          });
+
+        let electronForgeStartOutput: string;
+        try {
+          electronForgeStartOutput = await startApp();
+        } catch (error) {
+          /**
+           * When `start` fails, it is usually because the package manager
+           * installed a dependency tree the app cannot resolve its own
+           * configuration from, and the failure alone doesn't say which tree it
+           * ended up with. `create-electron-app` runs its steps with listr2's
+           * `exitOnError: false`, so a failed install leaves a broken project
+           * behind and still exits 0; its output is the only place that failure
+           * is reported at all.
+           */
+          console.error(
+            [
+              `[template-tests] ${packageManager} installed ${describeDependencyTree(tmpDir)}`,
+              `[template-tests] from this package.json:\n${fs.readFileSync(path.join(tmpDir, 'package.json'), 'utf8')}`,
+              ...(packageManager === 'pnpm'
+                ? [
+                    `[template-tests] pnpm was run like this:\n${describePnpmInstalls(tmpDir)}`,
+                  ]
+                : []),
+              `[template-tests] create-electron-app said:\n${createOutput}`,
+            ].join('\n'),
+          );
+
+          throw error;
+        }
 
         d({ electronForgeStartOutput });
 

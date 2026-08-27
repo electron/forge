@@ -8447,6 +8447,7 @@ __metadata:
     "@types/which": "npm:^3.0.4"
     "@typescript/native": "npm:typescript@^7.0.0"
     "@yarnpkg/types": "npm:^4.0.1"
+    cross-spawn: "npm:^7.0.3"
     debug: "npm:^4.3.1"
     electron: "npm:^42.3.3"
     electron-installer-debian: "npm:^3.2.0"

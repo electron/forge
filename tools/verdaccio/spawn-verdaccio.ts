@@ -34,6 +34,27 @@ const VERDACCIO_PORT = 4873;
 const VERDACCIO_URL = `http://${LOCALHOST}:${VERDACCIO_PORT}`;
 const STORAGE_PATH = path.resolve(import.meta.dirname, 'storage');
 
+/**
+ * We publish the monorepo to Verdaccio seconds before the tests install it, so
+ * every package manager's minimum age gate (which Yarn enables by default since
+ * 4.18) quarantines every local package. The tests install those packages into
+ * app directories created under `os.tmpdir()`, which are outside this repository
+ * and therefore never pick up the root `.yarnrc.yml`, so we mirror its policy
+ * for all three package managers here instead of switching the gate off: our own
+ * packages are exempt, everything else still has to have been on the registry
+ * for a week. Keep these in sync with `.yarnrc.yml`.
+ */
+const MINIMUM_RELEASE_AGE_MINUTES = 10080;
+const MINIMUM_RELEASE_AGE_DAYS = MINIMUM_RELEASE_AGE_MINUTES / 60 / 24;
+const PREAPPROVED_PACKAGES = [
+  '@electron/*',
+  '@electron-forge/*',
+  '@electron-internal/*',
+  'create-electron-app',
+  'electron',
+  'node-abi',
+];
+
 const d = debug('electron-forge:verdaccio');
 
 let verdaccioProcess: ChildProcess | null = null;
@@ -133,16 +154,180 @@ async function publishPackages(): Promise<void> {
   }
 }
 
-async function runCommand(args: string[]) {
+/**
+ * Whether npm understands the age gate these tests hold their installs to. npm
+ * learned about `min-release-age` in 11.10 and about `min-release-age-exclude`
+ * in 11.17, so 11.17 is the first version that understands the whole policy.
+ * Older versions install without a gate and warn that the config is unknown on
+ * every single npm invocation, so we only pass it when it is supported.
+ *
+ * CI installs an npm new enough for it (see the `Install npm` step in
+ * `ci.yml`), and the gate quietly going missing there — a `.nvmrc` bump that
+ * drops that step, say — is exactly the failure this policy exists to catch, so
+ * only a local run is allowed to carry on without it. Checked before anything
+ * is published so that a CI failure costs a couple of seconds.
+ */
+async function checkNpmAgeGateSupport(): Promise<boolean> {
+  const npmVersion = (await spawnPromise('npm', ['--version'])).trim();
+  const [npmMajor, npmMinor] = npmVersion.split('.').map(Number);
+  const supported = npmMajor > 11 || (npmMajor === 11 && npmMinor >= 17);
+
+  if (!supported) {
+    const message = `npm ${npmVersion} does not support \`min-release-age\` (npm >= 11.17 required)`;
+    if (process.env.CI) throw new Error(message);
+    console.warn(
+      `⚠️  ${message}, so npm installs in these tests are not age-gated`,
+    );
+  }
+
+  return supported;
+}
+
+async function runCommand(args: string[], npmSupportsAgeGate: boolean) {
   process.env.COREPACK_ENABLE_STRICT = '0';
-  console.log('🗑️  Pruning pnpm store before running command');
-  await spawnPromise('pnpm', ['store', 'prune']);
+
+  /**
+   * `yarn test:verdaccio` runs Yarn through Corepack, which sets
+   * `COREPACK_ROOT` for everything it spawns, and the tests inherit it all the
+   * way down to the package manager that installs each generated app. pnpm
+   * refuses to switch to the version it is asked for when it believes Corepack
+   * invoked it, and `create-electron-app` asks Corepack to pin the latest pnpm
+   * in every app it creates, so the first install in a pnpm app fails with a
+   * version mismatch against whatever pnpm happens to be on `PATH`. The tests
+   * spawn their own package managers and have no business inheriting this
+   * repository's Corepack context, so we drop the variable here.
+   */
+  const { COREPACK_ROOT: _corepackRoot, ...parentEnv } = process.env;
 
   /**
    * Avoid polluting the global yarn cache.
    */
   const tempYarnGlobal = path.join(STORAGE_PATH, '.yarn-global');
-  fs.promises.mkdir(tempYarnGlobal, { recursive: true });
+  await fs.promises.mkdir(tempYarnGlobal, { recursive: true });
+
+  /**
+   * npm and Yarn take their settings from the environment, but pnpm reads these
+   * ones from its config files only, so we generate a global config file for it
+   * and point pnpm at it with `XDG_CONFIG_HOME` (which pnpm honors on every
+   * platform, including Windows). The tests install into throwaway directories,
+   * so the alternative would be writing a `pnpm-workspace.yaml` into each of
+   * them, but that would also make Forge's own `resolvePackageManager` treat
+   * them as pnpm projects, which we don't want in the npm/Yarn cases.
+   *
+   * Note that any other tool the tests run also picks up this config home (on
+   * Linux, for instance, the test apps write their Electron `userData` there),
+   * which is harmless because the directory is thrown away on the next run.
+   */
+  const tempXdgConfigHome = path.join(STORAGE_PATH, '.xdg-config-home');
+  await fs.promises.mkdir(path.join(tempXdgConfigHome, 'pnpm'), {
+    recursive: true,
+  });
+  await fs.promises.writeFile(
+    path.join(tempXdgConfigHome, 'pnpm', 'config.yaml'),
+    // YAML is a superset of JSON, so this is a valid pnpm config file.
+    JSON.stringify(
+      {
+        /**
+         * pnpm reads the registry from its config files and from `--registry`,
+         * but not from `npm_config_registry` in the environment, so it is the
+         * one package manager that does not pick up `NPM_CONFIG_REGISTRY`
+         * below. Without this line pnpm quietly resolves `@electron-forge/*`
+         * from the public registry instead of from Verdaccio, and the tests
+         * pass against the last published release rather than the local build.
+         * https://pnpm.io/settings#registry
+         */
+        registry: VERDACCIO_URL,
+        // https://pnpm.io/settings#minimumreleaseage
+        minimumReleaseAge: MINIMUM_RELEASE_AGE_MINUTES,
+        // https://pnpm.io/settings#minimumreleaseageexclude
+        minimumReleaseAgeExclude: PREAPPROVED_PACKAGES,
+        /**
+         * Every run republishes the monorepo under the version that is already
+         * in the manifests, so pnpm must not resolve those packages through
+         * metadata it cached during an earlier run: it would then look up the
+         * integrity hash that version had last time and find the matching
+         * tarball in its store, which is how the tests would end up running
+         * against a stale build. `startVerdaccio` deletes `STORAGE_PATH`, so a
+         * cache directory under it is empty on every run, which forces pnpm to
+         * ask Verdaccio for the hashes it is serving now.
+         *
+         * The store itself is deliberately left alone: it only holds content
+         * addressed by hash, so once the metadata is gone it cannot serve a
+         * stale tarball, and keeping it saves every run from downloading all of
+         * the third-party dependencies again. Emptying it with `pnpm store
+         * prune` was the previous approach.
+         * https://pnpm.io/settings#cachedir
+         */
+        cacheDir: path.join(STORAGE_PATH, '.pnpm-cache'),
+        /**
+         * Since pnpm 11, `pnpm run` silently runs an install first whenever it
+         * decides that `node_modules` is out of sync with the lockfile. The
+         * tests run `<package manager> run start` to check that the app
+         * `create-electron-app` just installed can start, so an install in
+         * between replaces the very thing they are checking: on Windows it
+         * rewrote the dependency tree into one where the generated
+         * `forge.config.ts` could no longer resolve the Forge plugin it
+         * imports. `warn` keeps the check itself, and its report of whatever it
+         * believes is out of sync, without acting on it.
+         * https://pnpm.io/settings#verifydepsbeforerun
+         */
+        verifyDepsBeforeRun: 'warn',
+        /**
+         * Whether pnpm links dependencies through a store-wide virtual store or
+         * one inside the project defaults to whether pnpm believes it is
+         * running in CI, which these tests cannot keep consistent: they install
+         * with the environment they inherit and then run the app's `start`
+         * script with a minimal one, so pnpm read the same project two
+         * different ways and reported that `node_modules` no longer matched the
+         * lockfile. Pin it to the value CI would pick anyway.
+         * https://pnpm.io/settings#enableglobalvirtualstore
+         */
+        enableGlobalVirtualStore: false,
+      },
+      null,
+      2,
+    ),
+  );
+
+  /**
+   * pnpm can finish an install and then never exit, which costs us a whole test
+   * because the tests wait for the package manager they spawned to be done.
+   * `pnpm-exit-shim.mjs` explains why and works around it; putting it in front
+   * of the real pnpm on `PATH` covers every pnpm these tests run, whether they
+   * run it themselves or through `create-electron-app`.
+   */
+  const tempBinDir = path.join(STORAGE_PATH, '.bin');
+  await fs.promises.mkdir(tempBinDir, { recursive: true });
+  const pnpmExitShim = path.resolve(import.meta.dirname, 'pnpm-exit-shim.mjs');
+  if (process.platform === 'win32') {
+    await fs.promises.writeFile(
+      path.join(tempBinDir, 'pnpm.cmd'),
+      [
+        '@echo off',
+        `set "FORGE_PNPM_EXIT_SHIM_DIR=${tempBinDir}"`,
+        `node "${pnpmExitShim}" %*`,
+        '',
+      ].join('\r\n'),
+    );
+  } else {
+    const pnpmLauncher = path.join(tempBinDir, 'pnpm');
+    await fs.promises.writeFile(
+      pnpmLauncher,
+      [
+        '#!/bin/sh',
+        `FORGE_PNPM_EXIT_SHIM_DIR="${tempBinDir}"`,
+        'export FORGE_PNPM_EXIT_SHIM_DIR',
+        `exec node "${pnpmExitShim}" "$@"`,
+        '',
+      ].join('\n'),
+    );
+    await fs.promises.chmod(pnpmLauncher, 0o755);
+  }
+  // Windows spells this `Path`, and spreading `process.env` above lost the
+  // case-insensitive lookup that hides the difference.
+  const pathKey =
+    Object.keys(parentEnv).find((key) => key.toUpperCase() === 'PATH') ??
+    'PATH';
 
   console.log(`🏃 Running: ${args.join(' ')}`);
   console.log(`   Using registry: ${VERDACCIO_URL}`);
@@ -151,7 +336,14 @@ async function runCommand(args: string[]) {
     cwd: FORGE_ROOT_DIR,
     stdio: 'inherit',
     env: {
-      ...process.env,
+      ...parentEnv,
+      [pathKey]: [tempBinDir, parentEnv[pathKey]].join(path.delimiter),
+      // Where the shim records what every pnpm it ran printed, which is what a
+      // failing test reports when the project it was given cannot start.
+      FORGE_PNPM_INVOCATION_LOG: path.join(
+        STORAGE_PATH,
+        'pnpm-invocations.log',
+      ),
       // https://docs.npmjs.com/cli/v9/using-npm/config#registry
       // https://pnpm.io/settings#registry
       NPM_CONFIG_REGISTRY: VERDACCIO_URL,
@@ -159,27 +351,24 @@ async function runCommand(args: string[]) {
       YARN_NPM_REGISTRY_SERVER: VERDACCIO_URL,
       // https://yarnpkg.com/configuration/yarnrc#unsafeHttpWhitelist
       YARN_UNSAFE_HTTP_WHITELIST: LOCALHOST,
-      // We publish the monorepo to Verdaccio seconds before the tests install
-      // it, so Yarn's minimum age gate (1 day by default since Yarn 4.18)
-      // quarantines every local package. The tests install those packages into
-      // app directories created under `os.tmpdir()`, which are outside this
-      // repository and therefore never pick up the root `.yarnrc.yml`, so we
-      // mirror its policy here instead of switching the gate off: our own
-      // packages are exempt, everything else still has to have been on the
-      // registry for a week. Keep this in sync with `.yarnrc.yml`.
+      // Yarn's minimum age gate is 1 day by default since Yarn 4.18.
       // https://yarnpkg.com/configuration/yarnrc#npmMinimalAgeGate
-      YARN_NPM_MINIMAL_AGE_GATE: '10080',
+      YARN_NPM_MINIMAL_AGE_GATE: String(MINIMUM_RELEASE_AGE_MINUTES),
       // Yarn only accepts comma-separated values for array settings passed
       // through the environment.
       // https://yarnpkg.com/configuration/yarnrc#npmPreapprovedPackages
-      YARN_NPM_PREAPPROVED_PACKAGES: [
-        '@electron/*',
-        '@electron-forge/*',
-        '@electron-internal/*',
-        'create-electron-app',
-        'electron',
-        'node-abi',
-      ].join(','),
+      YARN_NPM_PREAPPROVED_PACKAGES: PREAPPROVED_PACKAGES.join(','),
+      ...(npmSupportsAgeGate && {
+        // npm calls the same policy `min-release-age` and counts it in days
+        // instead of minutes.
+        // https://docs.npmjs.com/cli/v12/using-npm/config#min-release-age
+        npm_config_min_release_age: String(MINIMUM_RELEASE_AGE_DAYS),
+        // Like Yarn, npm accepts a comma-separated list for this array setting.
+        // https://docs.npmjs.com/cli/v12/using-npm/config#min-release-age-exclude
+        npm_config_min_release_age_exclude: PREAPPROVED_PACKAGES.join(','),
+      }),
+      // Where pnpm looks for the global config file generated above.
+      XDG_CONFIG_HOME: tempXdgConfigHome,
       // Isolate package manager caches so Verdaccio packages
       // don't corrupt the global caches. These directories live
       // under STORAGE_PATH and get cleaned up on next run.
@@ -205,6 +394,8 @@ async function main(): Promise<void> {
   });
 
   try {
+    const npmSupportsAgeGate = await checkNpmAgeGateSupport();
+
     await startVerdaccio();
     await publishPackages();
 
@@ -215,7 +406,7 @@ async function main(): Promise<void> {
       // Keep the process alive
       await new Promise(() => {});
     } else {
-      await runCommand(args);
+      await runCommand(args, npmSupportsAgeGate);
       stopVerdaccio();
       process.exit(0);
     }
