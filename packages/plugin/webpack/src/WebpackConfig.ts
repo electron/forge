@@ -1,11 +1,15 @@
 import path from 'node:path';
 
+import {
+  getAppProtocolBanner,
+  getAppProtocolEntryUrl,
+} from '@electron-forge/core-utils';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type * as webpack from 'webpack';
 import webpackPkg from 'webpack';
 
-const { DefinePlugin, ExternalsPlugin } = webpackPkg;
+const { BannerPlugin, DefinePlugin, ExternalsPlugin } = webpackPkg;
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -135,6 +139,13 @@ export default class WebpackConfigGenerator {
     basename: string,
   ): string {
     if (this.isProd) {
+      // With `appProtocol` enabled, HTML entry points are served over the
+      // privileged `app://` scheme by the runtime injected into the main
+      // bundle. JS-only (no-window) entry points keep their `file://` paths —
+      // they are not window entry URLs.
+      if (this.pluginConfig.appProtocol && basename === 'index.html') {
+        return `'${getAppProtocolEntryUrl(entryPoint.name)}'`;
+      }
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
     const protocol =
@@ -223,6 +234,32 @@ export default class WebpackConfigGenerator {
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
 
+    // In production builds (not the dev server, where renderers are served
+    // over HTTP), prepend the runtime that registers the `app://` scheme and
+    // serves the built renderer files over it. `raw` emits the code verbatim
+    // (not wrapped in a comment) and `entryOnly` keeps it out of split chunks;
+    // as a banner it runs before any user code — see app-protocol.ts in
+    // @electron-forge/core-utils for the ordering constraints.
+    const appProtocolPlugins =
+      this.pluginConfig.appProtocol && this.isProd
+        ? [
+            new BannerPlugin({
+              banner: getAppProtocolBanner(
+                this.allPluginRendererOptions.flatMap((rendererOptions) =>
+                  (rendererOptions.entryPoints ?? [])
+                    .filter((entryPoint) => !isPreloadOnly(entryPoint))
+                    .map((entryPoint) => entryPoint.name),
+                ),
+                typeof this.pluginConfig.appProtocol === 'object'
+                  ? this.pluginConfig.appProtocol.additionalPrivilegedSchemes
+                  : undefined,
+              ),
+              raw: true,
+              entryOnly: true,
+            }),
+          ]
+        : [];
+
     return webpackMerge(
       {
         devtool: 'source-map',
@@ -233,7 +270,7 @@ export default class WebpackConfigGenerator {
           filename: 'index.js',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins: [new DefinePlugin(this.getDefines()), ...appProtocolPlugins],
         node: {
           __dirname: false,
           __filename: false,

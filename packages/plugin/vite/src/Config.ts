@@ -1,4 +1,11 @@
+import type {
+  AppProtocolConfig,
+  PrivilegedScheme,
+} from '@electron-forge/core-utils';
 import type { LibraryOptions } from 'vite';
+
+export type VitePluginPrivilegedScheme = PrivilegedScheme;
+export type VitePluginAppProtocolConfig = AppProtocolConfig;
 
 export interface VitePluginBuildConfig {
   /**
@@ -25,41 +32,6 @@ export interface VitePluginRendererConfig {
    * Vite config file path.
    */
   config: string;
-}
-
-/**
- * A custom scheme to register as privileged, structurally compatible with
- * Electron's `CustomScheme` type so values can be shared with app code.
- */
-export interface VitePluginPrivilegedScheme {
-  scheme: string;
-  privileges?: {
-    standard?: boolean;
-    secure?: boolean;
-    bypassCSP?: boolean;
-    allowServiceWorkers?: boolean;
-    supportFetchApi?: boolean;
-    corsEnabled?: boolean;
-    stream?: boolean;
-    codeCache?: boolean;
-  };
-}
-
-export interface VitePluginAppProtocolConfig {
-  /**
-   * Additional custom schemes to register as privileged alongside `app://`.
-   *
-   * Electron only allows a single `protocol.registerSchemesAsPrivileged` call
-   * per app, and the runtime injected by `appProtocol` makes that call. An app
-   * that needs its own privileged schemes must therefore declare them here
-   * instead of calling `registerSchemesAsPrivileged` itself. The app still
-   * registers its own `protocol.handle` for these schemes — Forge only
-   * registers their privileges.
-   *
-   * The `app` scheme itself is reserved for Forge's renderer serving and may
-   * not appear in this list.
-   */
-  additionalPrivilegedSchemes?: VitePluginPrivilegedScheme[];
 }
 
 export interface VitePluginConfig {

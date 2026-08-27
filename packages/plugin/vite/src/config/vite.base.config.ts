@@ -1,6 +1,6 @@
 import { builtinModules } from 'node:module';
 
-import { getAppProtocolEntryUrl } from './app-protocol.js';
+import { getAppProtocolEntryUrl } from '@electron-forge/core-utils';
 
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';

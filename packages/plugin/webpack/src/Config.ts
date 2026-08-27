@@ -1,3 +1,4 @@
+import type { AppProtocolConfig } from '@electron-forge/core-utils';
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
@@ -145,6 +146,31 @@ export interface WebpackPluginConfig {
    * single renderer configuration. Most usecases should not set this to an array.
    */
   renderer: WebpackPluginRendererConfig | WebpackPluginRendererConfig[];
+  /**
+   * Serve the built renderer files over a privileged `app://` custom scheme in
+   * packaged apps instead of loading them from `file://`, per Electron's
+   * security recommendations. See
+   * https://www.electronjs.org/docs/latest/api/protocol
+   *
+   * When enabled, the plugin injects the scheme registration and protocol
+   * handler into the production main-process bundle, and the `*_WEBPACK_ENTRY`
+   * magic constant for HTML entry points resolves to an
+   * `app://<entry-name>/index.html` URL in production (it is a dev server URL
+   * in development either way, so `mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)`
+   * keeps working unchanged). JS-only (no-window) entry points keep their
+   * `file://` paths.
+   *
+   * Notes:
+   * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
+   *   and the injected runtime makes that call. If your app needs its own
+   *   privileged schemes, pass them via the object form's
+   *   `additionalPrivilegedSchemes` instead of calling
+   *   `registerSchemesAsPrivileged` yourself.
+   * - Requires the default CommonJS output for the main-process bundle.
+   * @defaultValue `false`
+   */
+  appProtocol?: boolean | AppProtocolConfig;
+
   /**
    * The TCP port for the dev servers. Defaults to 3000.
    */

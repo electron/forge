@@ -1,6 +1,6 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
-import { getAppProtocolBanner } from './app-protocol.js';
+import { getAppProtocolBanner } from '@electron-forge/core-utils';
 import {
   external,
   getBuildConfig,

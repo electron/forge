@@ -163,7 +163,7 @@ describe('subprocess-worker', () => {
     // literals — local identifiers like `protocol` get mangled).
     expect(contents).toContain('registerSchemesAsPrivileged');
     expect(contents).toContain('bypassCustomProtocolHandlers');
-    expect(contents).toContain('__electronForgeViteAppProtocol');
+    expect(contents).toContain('__electronForgeAppProtocol');
     // The banner must come before the bundled module code so it runs first.
     expect(contents.indexOf('registerSchemesAsPrivileged')).toBeLessThan(
       contents.indexOf('exports'),

@@ -1,13 +1,13 @@
 /**
- * Support for serving packaged renderer bundles over a privileged custom
- * `app://` scheme instead of `file://`, per Electron's security
- * recommendations (secure origin, working `fetch()` of local resources,
- * origin-scoped storage, etc.).
+ * Shared support for the bundler plugins' `appProtocol` option: serving
+ * packaged renderer bundles over a privileged custom `app://` scheme instead
+ * of `file://`, per Electron's security recommendations (secure origin,
+ * working `fetch()` of local resources, origin-scoped storage, etc.).
  *
- * When `appProtocol` is enabled in the plugin config, the code returned by
- * {@link getAppProtocolBanner} is prepended to the production main-process
- * bundle. It must run before the app's `ready` event, so it is injected as a
- * Rollup banner at the very top of the bundle:
+ * The code returned by {@link getAppProtocolBanner} is prepended to the
+ * production main-process bundle by the plugin (a Rollup banner for Vite, a
+ * raw `BannerPlugin` banner for webpack). It must run before the app's
+ * `ready` event, hence a banner at the very top of the bundle:
  *
  * - `protocol.registerSchemesAsPrivileged` may only be called once, before
  *   `ready`.
@@ -16,15 +16,52 @@
  *   registration order, so the handler is guaranteed to be registered before
  *   a `createWindow()` in the app's own `ready` handler calls
  *   `loadURL('app://...')`.
+ *
+ * Both plugins emit main-process bundles laid out as `<out>/main-bundle.js`
+ * with renderers in `<out>/../renderer/<name>/`, which is the layout the
+ * runtime's `__dirname`-relative lookup assumes.
  */
-
-import type { VitePluginPrivilegedScheme } from '../Config.js';
 
 export const APP_PROTOCOL_SCHEME = 'app';
 
 /**
- * Builds the `app://<renderer-name>/<file>` entry URL that the
- * `*_VITE_ENTRY` define resolves to in production builds.
+ * A custom scheme to register as privileged, structurally compatible with
+ * Electron's `CustomScheme` type so values can be shared with app code.
+ */
+export interface PrivilegedScheme {
+  scheme: string;
+  privileges?: {
+    standard?: boolean;
+    secure?: boolean;
+    bypassCSP?: boolean;
+    allowServiceWorkers?: boolean;
+    supportFetchApi?: boolean;
+    corsEnabled?: boolean;
+    stream?: boolean;
+    codeCache?: boolean;
+  };
+}
+
+export interface AppProtocolConfig {
+  /**
+   * Additional custom schemes to register as privileged alongside `app://`.
+   *
+   * Electron only allows a single `protocol.registerSchemesAsPrivileged` call
+   * per app, and the runtime injected by `appProtocol` makes that call. An app
+   * that needs its own privileged schemes must therefore declare them here
+   * instead of calling `registerSchemesAsPrivileged` itself. The app still
+   * registers its own `protocol.handle` for these schemes — Forge only
+   * registers their privileges.
+   *
+   * The `app` scheme itself is reserved for Forge's renderer serving and may
+   * not appear in this list.
+   */
+  additionalPrivilegedSchemes?: PrivilegedScheme[];
+}
+
+/**
+ * Builds the `app://<renderer-name>/<file>` entry URL that the plugins'
+ * entry magic constants resolve to in production builds.
  *
  * Note: `standard: true` schemes are parsed like `http://`, so the renderer
  * name becomes the URL host and is lower-cased by the URL parser. The runtime
@@ -38,14 +75,14 @@ export function getAppProtocolEntryUrl(rendererName: string): string {
  * Returns the runtime source injected at the top of the production
  * main-process bundle.
  *
- * The emitted code is plain CommonJS because the plugin builds main-process
- * targets with `formats: ['cjs']`. If a user overrides `build.lib` to emit
- * ESM, the banner's `require('electron')` would break — `appProtocol` is
- * documented as requiring the default CJS output.
+ * The emitted code is plain CommonJS because both plugins emit CommonJS
+ * main-process bundles. If a user overrides their bundler config to emit ESM,
+ * the banner's `require('electron')` would break — `appProtocol` is
+ * documented as requiring the default CommonJS output.
  */
 export function getAppProtocolBanner(
   rendererNames: string[],
-  additionalPrivilegedSchemes: VitePluginPrivilegedScheme[] = [],
+  additionalPrivilegedSchemes: PrivilegedScheme[] = [],
 ): string {
   for (const { scheme } of additionalPrivilegedSchemes) {
     if (
@@ -57,20 +94,20 @@ export function getAppProtocolBanner(
       );
     }
   }
-  const privilegedSchemes: VitePluginPrivilegedScheme[] = [
+  const privilegedSchemes: PrivilegedScheme[] = [
     {
       scheme: APP_PROTOCOL_SCHEME,
       privileges: { standard: true, secure: true, supportFetchApi: true },
     },
     ...additionalPrivilegedSchemes,
   ];
-  return `// Injected by @electron-forge/plugin-vite because \`appProtocol\` is enabled.
+  return `// Injected by Electron Forge because \`appProtocol\` is enabled.
 // Serves the built renderer files over the privileged \`${APP_PROTOCOL_SCHEME}://\` scheme instead
 // of \`file://\`, per Electron's security recommendations.
 (function () {
   'use strict';
-  if (globalThis.__electronForgeViteAppProtocol) return;
-  globalThis.__electronForgeViteAppProtocol = true;
+  if (globalThis.__electronForgeAppProtocol) return;
+  globalThis.__electronForgeAppProtocol = true;
   const { app, net, protocol } = require('electron');
   const path = require('node:path');
   const { pathToFileURL } = require('node:url');
