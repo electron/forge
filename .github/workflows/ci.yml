@@ -101,12 +101,18 @@ jobs:
           name: dist-files
           path: packages
 
+      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
+      # every run, so `--before` holds them to the same week-old floor the root
+      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
+      # than `min-release-age` because this step runs under the npm bundled with
+      # the Node version in `.nvmrc`, which is older than either age-gate
+      # setting and would ignore both without failing.
       - name: Windows setup
         if: runner.os == 'Windows'
         shell: bash
         run: |
           cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0
+          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
 
       - name: Linux setup
         if: runner.os == 'Linux'
@@ -125,7 +131,7 @@ jobs:
           sudo add-apt-repository -y ppa:alexlarsson/flatpak
 
       - name: Install pnpm
-        run: npm install -g pnpm@11.10.0
+        run: npm install -g pnpm@11.21.0
 
       - name: Run fast tests
         run: |
@@ -180,12 +186,18 @@ jobs:
           name: dist-files
           path: packages
 
+      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
+      # every run, so `--before` holds them to the same week-old floor the root
+      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
+      # than `min-release-age` because this step runs under the npm bundled with
+      # the Node version in `.nvmrc`, which is older than either age-gate
+      # setting and would ignore both without failing.
       - name: Windows setup
         if: runner.os == 'Windows'
         shell: bash
         run: |
           cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0
+          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
 
       - name: Linux setup
         if: runner.os == 'Linux'
@@ -204,7 +216,17 @@ jobs:
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Install pnpm
-        run: npm install -g pnpm@11.10.0
+        run: npm install -g pnpm@11.21.0
+
+      # The Verdaccio tests age-gate their installs like the root `.yarnrc.yml`
+      # does, which needs npm 11.17: 11.10 added `min-release-age`
+      # (npm/cli#8965) and 11.17 added `min-release-age-exclude`
+      # (npm/cli#9534). Both are newer than the npm bundled with the Node
+      # version in `.nvmrc`. npm 12 requires Node
+      # `^22.22.2 || ^24.15.0 || >=26`, so it cannot be installed on that Node
+      # version at all; bump this pin when `.nvmrc` moves.
+      - name: Install npm
+        run: npm install -g npm@11.19.0
 
       - name: Run slow tests
         run: |

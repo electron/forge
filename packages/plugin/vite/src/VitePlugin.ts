@@ -351,7 +351,8 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
    * We only include build[] and renderer[] — the worker needs the full renderer
-   * list for defines even when building a single main target.
+   * list for defines even when building a single main target. `hotRestart` is
+   * moot here: workers only run when packaging.
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,

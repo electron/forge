@@ -36,7 +36,9 @@ export function getConfig(
           : {}),
       },
     },
-    plugins: [pluginHotRestart('restart')],
+    plugins: [
+      ...(forgeEnv.forgeConfig.hotRestart ? [pluginHotRestart('restart')] : []),
+    ],
     define,
     resolve: {
       // Load the Node.js entry.
