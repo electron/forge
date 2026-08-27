@@ -1,10 +1,6 @@
-import type {
-  AppProtocolConfig,
-  PrivilegedScheme,
-} from '@electron-forge/core-utils';
+import type { AppProtocolConfig } from '@electron-forge/core-utils';
 import type { LibraryOptions } from 'vite';
 
-export type VitePluginPrivilegedScheme = PrivilegedScheme;
 export type VitePluginAppProtocolConfig = AppProtocolConfig;
 
 export interface VitePluginBuildConfig {
