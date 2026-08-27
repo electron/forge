@@ -71,6 +71,10 @@ export interface VitePluginConfig {
    *   privileged schemes, pass them via the object form's
    *   {@link VitePluginAppProtocolConfig.additionalPrivilegedSchemes} instead
    *   of calling `registerSchemesAsPrivileged` yourself.
+   * - The object form's `scheme` renames the serving scheme (default `app`).
+   *   The scheme is part of the renderer's origin, so pick it before the
+   *   first release — renaming later orphans origin-scoped data such as
+   *   `localStorage` and IndexedDB.
    * - Requires the default CommonJS output for main-process targets.
    * @defaultValue `false`
    */

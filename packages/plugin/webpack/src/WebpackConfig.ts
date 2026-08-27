@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   getAppProtocolBanner,
   getAppProtocolEntryUrl,
+  resolveAppProtocolConfig,
 } from '@electron-forge/core-utils';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -144,7 +145,10 @@ export default class WebpackConfigGenerator {
       // bundle. JS-only (no-window) entry points keep their `file://` paths —
       // they are not window entry URLs.
       if (this.pluginConfig.appProtocol && basename === 'index.html') {
-        return `'${getAppProtocolEntryUrl(entryPoint.name)}'`;
+        const { scheme } = resolveAppProtocolConfig(
+          this.pluginConfig.appProtocol,
+        );
+        return `'${getAppProtocolEntryUrl(entryPoint.name, scheme)}'`;
       }
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
@@ -250,9 +254,7 @@ export default class WebpackConfigGenerator {
                     .filter((entryPoint) => !isPreloadOnly(entryPoint))
                     .map((entryPoint) => entryPoint.name),
                 ),
-                typeof this.pluginConfig.appProtocol === 'object'
-                  ? this.pluginConfig.appProtocol.additionalPrivilegedSchemes
-                  : undefined,
+                this.pluginConfig.appProtocol,
               ),
               raw: true,
               entryOnly: true,

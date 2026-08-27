@@ -79,6 +79,27 @@ describe('vite.main.config', () => {
     expect(banner).toContain('"stream":true');
   });
 
+  it('serves over a custom scheme when configured', () => {
+    const config = getConfig(
+      buildEnv({
+        forgeConfig: { ...forgeConfig, appProtocol: { scheme: 'myapp' } },
+      }),
+    );
+    const banner = getBanner(config);
+    expect(banner).toContain('"scheme":"myapp"');
+    expect(banner).not.toContain('"scheme":"app"');
+  });
+
+  it('rejects an invalid scheme at config time', () => {
+    expect(() =>
+      getConfig(
+        buildEnv({
+          forgeConfig: { ...forgeConfig, appProtocol: { scheme: 'My App' } },
+        }),
+      ),
+    ).toThrow(/valid lowercase URI scheme/);
+  });
+
   it('rejects an additional privileged scheme named app', () => {
     expect(() =>
       getConfig(

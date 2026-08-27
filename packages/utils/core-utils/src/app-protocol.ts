@@ -25,6 +25,38 @@
 export const APP_PROTOCOL_SCHEME = 'app';
 
 /**
+ * URI scheme syntax per RFC 3986, restricted to lowercase: Chromium
+ * lower-cases schemes at parse time, so an uppercase registration could never
+ * match a request.
+ */
+const SCHEME_SYNTAX = /^[a-z][a-z0-9+.-]*$/;
+
+/**
+ * Schemes Chromium or Electron already claim; registering one of these as the
+ * serving scheme would clash with built-in handling instead of serving the
+ * renderer.
+ */
+const RESERVED_SCHEMES = new Set([
+  'about',
+  'blob',
+  'chrome',
+  'chrome-error',
+  'chrome-extension',
+  'data',
+  'devtools',
+  'file',
+  'filesystem',
+  'ftp',
+  'http',
+  'https',
+  'javascript',
+  'mailto',
+  'view-source',
+  'ws',
+  'wss',
+]);
+
+/**
  * A custom scheme to register as privileged, structurally compatible with
  * Electron's `CustomScheme` type so values can be shared with app code.
  */
@@ -44,7 +76,23 @@ export interface PrivilegedScheme {
 
 export interface AppProtocolConfig {
   /**
-   * Additional custom schemes to register as privileged alongside `app://`.
+   * The custom scheme the built renderer files are served over.
+   *
+   * ⚠️ The scheme is part of the renderer's origin (`scheme://renderer-name`),
+   * which keys `localStorage`, IndexedDB, service worker registrations, and
+   * everything else origin-scoped. Changing it after an app has shipped
+   * orphans that data — pick it before the first release and treat a later
+   * rename as a data migration.
+   *
+   * Must be a valid lowercase URI scheme (a letter followed by letters,
+   * digits, `+`, `-`, or `.`) that Chromium/Electron do not already claim.
+   * @defaultValue 'app'
+   */
+  scheme?: string;
+
+  /**
+   * Additional custom schemes to register as privileged alongside the serving
+   * scheme.
    *
    * Electron only allows a single `protocol.registerSchemesAsPrivileged` call
    * per app, and the runtime injected by `appProtocol` makes that call. An app
@@ -53,22 +101,67 @@ export interface AppProtocolConfig {
    * registers its own `protocol.handle` for these schemes — Forge only
    * registers their privileges.
    *
-   * The `app` scheme itself is reserved for Forge's renderer serving and may
-   * not appear in this list.
+   * The serving scheme itself ({@link scheme}, `app` by default) is reserved
+   * for Forge's renderer serving and may not appear in this list.
    */
   additionalPrivilegedSchemes?: PrivilegedScheme[];
 }
 
+export interface ResolvedAppProtocolConfig {
+  scheme: string;
+  additionalPrivilegedSchemes: PrivilegedScheme[];
+}
+
 /**
- * Builds the `app://<renderer-name>/<file>` entry URL that the plugins'
+ * Normalizes the `appProtocol` option's boolean/object forms and validates
+ * the chosen scheme. Throws (failing the build) rather than emitting a
+ * runtime that could never serve a window.
+ */
+export function resolveAppProtocolConfig(
+  appProtocol: boolean | AppProtocolConfig,
+): ResolvedAppProtocolConfig {
+  const config = typeof appProtocol === 'object' ? appProtocol : {};
+  const scheme = config.scheme ?? APP_PROTOCOL_SCHEME;
+
+  if (typeof scheme !== 'string' || !SCHEME_SYNTAX.test(scheme)) {
+    throw new Error(
+      `\`appProtocol.scheme\` must be a valid lowercase URI scheme (a letter followed by letters, digits, '+', '-', or '.'), got ${JSON.stringify(scheme)}.`,
+    );
+  }
+  if (RESERVED_SCHEMES.has(scheme)) {
+    throw new Error(
+      `\`appProtocol.scheme\` cannot be '${scheme}' — that scheme is already claimed by Chromium/Electron. Pick a scheme of your own, e.g. 'app'.`,
+    );
+  }
+
+  const additionalPrivilegedSchemes = config.additionalPrivilegedSchemes ?? [];
+  for (const additional of additionalPrivilegedSchemes) {
+    if (
+      typeof additional.scheme !== 'string' ||
+      additional.scheme.toLowerCase() === scheme
+    ) {
+      throw new Error(
+        `The '${scheme}' scheme is reserved for serving renderer files when \`appProtocol\` is enabled — remove it from \`additionalPrivilegedSchemes\` (schemes must be non-empty strings).`,
+      );
+    }
+  }
+
+  return { scheme, additionalPrivilegedSchemes };
+}
+
+/**
+ * Builds the `<scheme>://<renderer-name>/<file>` entry URL that the plugins'
  * entry magic constants resolve to in production builds.
  *
  * Note: `standard: true` schemes are parsed like `http://`, so the renderer
  * name becomes the URL host and is lower-cased by the URL parser. The runtime
  * handler compensates by matching renderer names case-insensitively.
  */
-export function getAppProtocolEntryUrl(rendererName: string): string {
-  return `${APP_PROTOCOL_SCHEME}://${rendererName}/index.html`;
+export function getAppProtocolEntryUrl(
+  rendererName: string,
+  scheme: string = APP_PROTOCOL_SCHEME,
+): string {
+  return `${scheme}://${rendererName}/index.html`;
 }
 
 /**
@@ -82,27 +175,19 @@ export function getAppProtocolEntryUrl(rendererName: string): string {
  */
 export function getAppProtocolBanner(
   rendererNames: string[],
-  additionalPrivilegedSchemes: PrivilegedScheme[] = [],
+  appProtocol: boolean | AppProtocolConfig = true,
 ): string {
-  for (const { scheme } of additionalPrivilegedSchemes) {
-    if (
-      typeof scheme !== 'string' ||
-      scheme.toLowerCase() === APP_PROTOCOL_SCHEME
-    ) {
-      throw new Error(
-        `The '${APP_PROTOCOL_SCHEME}' scheme is reserved for serving renderer files when \`appProtocol\` is enabled — remove it from \`additionalPrivilegedSchemes\` (schemes must be non-empty strings).`,
-      );
-    }
-  }
+  const { scheme, additionalPrivilegedSchemes } =
+    resolveAppProtocolConfig(appProtocol);
   const privilegedSchemes: PrivilegedScheme[] = [
     {
-      scheme: APP_PROTOCOL_SCHEME,
+      scheme,
       privileges: { standard: true, secure: true, supportFetchApi: true },
     },
     ...additionalPrivilegedSchemes,
   ];
   return `// Injected by Electron Forge because \`appProtocol\` is enabled.
-// Serves the built renderer files over the privileged \`${APP_PROTOCOL_SCHEME}://\` scheme instead
+// Serves the built renderer files over the privileged \`${scheme}://\` scheme instead
 // of \`file://\`, per Electron's security recommendations.
 (function () {
   'use strict';
@@ -114,7 +199,7 @@ export function getAppProtocolBanner(
   const rendererNames = ${JSON.stringify(rendererNames)};
   protocol.registerSchemesAsPrivileged(${JSON.stringify(privilegedSchemes)});
   app.once('ready', function () {
-    protocol.handle('${APP_PROTOCOL_SCHEME}', function (request) {
+    protocol.handle(${JSON.stringify(scheme)}, function (request) {
       const url = new URL(request.url);
       // The URL host is lower-cased by the parser; renderer names may not be.
       const name = rendererNames.find(function (rendererName) {

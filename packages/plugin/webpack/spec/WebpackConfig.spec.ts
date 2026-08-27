@@ -203,6 +203,27 @@ describe('WebpackConfigGenerator', () => {
         expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'app://hello/index.html'");
       });
 
+      it('uses a custom scheme for entry URLs when configured', () => {
+        const config = {
+          appProtocol: { scheme: 'myapp' },
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "'myapp://hello/index.html'",
+        );
+      });
+
       it('keeps JS-only entry points on file:// in production', () => {
         const config = {
           appProtocol: true,

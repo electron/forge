@@ -100,6 +100,23 @@ describe('vite.base.config', () => {
     expect(define1).toEqual(define2);
   });
 
+  it('getBuildDefine:build with a custom appProtocol scheme', () => {
+    const define = getBuildDefine({
+      command: 'build',
+      mode: 'production',
+      root: configRoot,
+      forgeConfig: { ...forgeConfig, appProtocol: { scheme: 'myapp' } },
+      forgeConfigSelf: forgeConfig.build[0],
+    });
+
+    expect(define.MAIN_WINDOW_VITE_ENTRY).toEqual(
+      '"myapp://main_window/index.html"',
+    );
+    expect(define.SECOND_WINDOW_VITE_ENTRY).toEqual(
+      '"myapp://second_window/index.html"',
+    );
+  });
+
   it('getBuildDefine:serve', async () => {
     const servers = await Promise.all(
       forgeConfig.renderer.map(({ name }) =>

@@ -3,7 +3,10 @@ import { styleText } from 'node:util';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
 
-import { getAppProtocolEntryUrl } from '@electron-forge/core-utils';
+import {
+  getAppProtocolEntryUrl,
+  resolveAppProtocolConfig,
+} from '@electron-forge/core-utils';
 
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
@@ -60,6 +63,9 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
     .filter(({ name }) => name != null)
     .map(({ name }) => name!);
   const defineKeys = getDefineKeys(names);
+  const appProtocol = forgeConfig.appProtocol
+    ? resolveAppProtocolConfig(forgeConfig.appProtocol)
+    : undefined;
   const define = Object.entries(defineKeys).reduce(
     (acc, [name, keys]) => {
       const { VITE_DEV_SERVER_URL, VITE_NAME, VITE_ENTRY } = keys;
@@ -75,8 +81,8 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
         [VITE_ENTRY]:
           command === 'serve'
             ? JSON.stringify(viteDevServerUrls[VITE_DEV_SERVER_URL])
-            : forgeConfig.appProtocol
-              ? JSON.stringify(getAppProtocolEntryUrl(name))
+            : appProtocol
+              ? JSON.stringify(getAppProtocolEntryUrl(name, appProtocol.scheme))
               : undefined,
       };
       return { ...acc, ...def };

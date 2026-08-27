@@ -190,6 +190,7 @@ describe('subprocess-worker', () => {
           },
         ],
         appProtocol: {
+          scheme: 'custom-app',
           additionalPrivilegedSchemes: [
             { scheme: 'media', privileges: { stream: true } },
           ],
@@ -204,9 +205,10 @@ describe('subprocess-worker', () => {
       'utf8',
     );
     expect(contents).toContain('registerSchemesAsPrivileged');
-    // The additional scheme survives the JSON round-trip through
-    // FORGE_VITE_CONFIG into the worker's banner (minifiers may re-quote
-    // strings, so match any quote style).
+    // The custom serving scheme and the additional scheme survive the JSON
+    // round-trip through FORGE_VITE_CONFIG into the worker's banner
+    // (minifiers may re-quote strings, so match any quote style).
+    expect(contents).toMatch(/[`'"]custom-app[`'"]/);
     expect(contents).toMatch(/[`'"]media[`'"]/);
     expect(contents).toMatch(/stream\s*:\s*(true|!0)/);
   });
