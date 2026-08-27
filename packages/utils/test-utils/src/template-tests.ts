@@ -511,13 +511,20 @@ export function testForgeTemplate({
           ].join('\n'),
         );
 
+        // TypeScript entrypoints compile under `noImplicitAny` (webpack's
+        // ts-loader fails the packaging build on it), so the callback
+        // parameters need explicit types there — which .js entrypoints can't
+        // carry.
+        const probeParams = mainProcessEntrypoint.endsWith('.ts')
+          ? '_event: unknown, href: unknown'
+          : '_event, href';
         await fs.promises.appendFile(
           mainProcessEntrypoint,
           [
             '\n',
             `const { ipcMain } = require('electron');`,
-            `ipcMain.on('${rendererLocationMessage}', (_event, href) => {`,
-            `  console.log('${rendererLocationMessage}:' + href);`,
+            `ipcMain.on('${rendererLocationMessage}', (${probeParams}) => {`,
+            `  console.log('${rendererLocationMessage}:' + String(href));`,
             `  app.exit(0);`,
             `});`,
           ].join('\n'),
