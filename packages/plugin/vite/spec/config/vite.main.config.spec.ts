@@ -64,6 +64,40 @@ describe('vite.main.config', () => {
     expect(banner).toContain('"main_window"');
   });
 
+  it('accepts the object form and includes additional privileged schemes', () => {
+    const config = getConfig(
+      buildEnv({
+        forgeConfig: {
+          ...forgeConfig,
+          appProtocol: {
+            additionalPrivilegedSchemes: [
+              { scheme: 'media', privileges: { stream: true } },
+            ],
+          },
+        },
+      }),
+    );
+    const banner = getBanner(config);
+    expect(banner).toContain('registerSchemesAsPrivileged');
+    expect(banner).toContain('"media"');
+    expect(banner).toContain('"stream":true');
+  });
+
+  it('rejects an additional privileged scheme named app', () => {
+    expect(() =>
+      getConfig(
+        buildEnv({
+          forgeConfig: {
+            ...forgeConfig,
+            appProtocol: {
+              additionalPrivilegedSchemes: [{ scheme: 'app' }],
+            },
+          },
+        }),
+      ),
+    ).toThrow(/reserved/);
+  });
+
   it('does not inject the app protocol runtime for dev server builds', () => {
     const config = getConfig(
       buildEnv({
@@ -88,5 +122,25 @@ describe('app-protocol', () => {
     // Throws on a syntax error without executing the code.
     expect(() => new Function(banner)).not.toThrow();
     expect(banner).toContain('["main_window","second_window"]');
+  });
+
+  it('registers additional privileged schemes alongside app', () => {
+    const banner = getAppProtocolBanner(
+      ['main_window'],
+      [{ scheme: 'media', privileges: { stream: true, bypassCSP: true } }],
+    );
+    expect(() => new Function(banner)).not.toThrow();
+    // A single registerSchemesAsPrivileged call containing both schemes, with
+    // the app scheme first.
+    const registrations = banner.match(/registerSchemesAsPrivileged/g);
+    expect(registrations).toHaveLength(1);
+    expect(banner).toMatch(/"scheme":"app".*"scheme":"media"/s);
+    expect(banner).toContain('"bypassCSP":true');
+  });
+
+  it('throws when an additional scheme conflicts with the app scheme', () => {
+    expect(() =>
+      getAppProtocolBanner(['main_window'], [{ scheme: 'APP' }]),
+    ).toThrow(/reserved/);
   });
 });

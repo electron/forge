@@ -27,6 +27,41 @@ export interface VitePluginRendererConfig {
   config: string;
 }
 
+/**
+ * A custom scheme to register as privileged, structurally compatible with
+ * Electron's `CustomScheme` type so values can be shared with app code.
+ */
+export interface VitePluginPrivilegedScheme {
+  scheme: string;
+  privileges?: {
+    standard?: boolean;
+    secure?: boolean;
+    bypassCSP?: boolean;
+    allowServiceWorkers?: boolean;
+    supportFetchApi?: boolean;
+    corsEnabled?: boolean;
+    stream?: boolean;
+    codeCache?: boolean;
+  };
+}
+
+export interface VitePluginAppProtocolConfig {
+  /**
+   * Additional custom schemes to register as privileged alongside `app://`.
+   *
+   * Electron only allows a single `protocol.registerSchemesAsPrivileged` call
+   * per app, and the runtime injected by `appProtocol` makes that call. An app
+   * that needs its own privileged schemes must therefore declare them here
+   * instead of calling `registerSchemesAsPrivileged` itself. The app still
+   * registers its own `protocol.handle` for these schemes — Forge only
+   * registers their privileges.
+   *
+   * The `app` scheme itself is reserved for Forge's renderer serving and may
+   * not appear in this list.
+   */
+  additionalPrivilegedSchemes?: VitePluginPrivilegedScheme[];
+}
+
 export interface VitePluginConfig {
   // Reserved option, may support modification in the future.
   // @defaultValue '.vite'
@@ -64,10 +99,12 @@ export interface VitePluginConfig {
    *
    * Notes:
    * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
-   *   so this option cannot be combined with app code that registers its own
-   *   privileged schemes.
+   *   and the injected runtime makes that call. If your app needs its own
+   *   privileged schemes, pass them via the object form's
+   *   {@link VitePluginAppProtocolConfig.additionalPrivilegedSchemes} instead
+   *   of calling `registerSchemesAsPrivileged` yourself.
    * - Requires the default CommonJS output for main-process targets.
    * @defaultValue `false`
    */
-  appProtocol?: boolean;
+  appProtocol?: boolean | VitePluginAppProtocolConfig;
 }

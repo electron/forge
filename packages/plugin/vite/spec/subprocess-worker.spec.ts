@@ -173,6 +173,44 @@ describe('subprocess-worker', () => {
     expect(contents).not.toContain('MAIN_WINDOW_VITE_ENTRY');
   });
 
+  it('registers additional privileged schemes from the appProtocol object form', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'> =
+      {
+        build: [
+          {
+            entry: 'src/main.js',
+            config: path.join(projectDir, 'vite.main.config.mjs'),
+            target: 'main',
+          },
+        ],
+        renderer: [
+          {
+            name: 'main_window',
+            config: path.join(projectDir, 'vite.renderer.config.mjs'),
+          },
+        ],
+        appProtocol: {
+          additionalPrivilegedSchemes: [
+            { scheme: 'media', privileges: { stream: true } },
+          ],
+        },
+      };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const contents = fs.readFileSync(
+      path.join(viteOutDir, 'build', 'main.js'),
+      'utf8',
+    );
+    expect(contents).toContain('registerSchemesAsPrivileged');
+    // The additional scheme survives the JSON round-trip through
+    // FORGE_VITE_CONFIG into the worker's banner (minifiers may re-quote
+    // strings, so match any quote style).
+    expect(contents).toMatch(/[`'"]media[`'"]/);
+    expect(contents).toMatch(/stream\s*:\s*(true|!0)/);
+  });
+
   it('does not inject the app protocol runtime when appProtocol is not enabled', async () => {
     const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
       build: [

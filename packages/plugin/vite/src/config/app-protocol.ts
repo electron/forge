@@ -18,6 +18,8 @@
  *   `loadURL('app://...')`.
  */
 
+import type { VitePluginPrivilegedScheme } from '../Config.js';
+
 export const APP_PROTOCOL_SCHEME = 'app';
 
 /**
@@ -41,7 +43,27 @@ export function getAppProtocolEntryUrl(rendererName: string): string {
  * ESM, the banner's `require('electron')` would break — `appProtocol` is
  * documented as requiring the default CJS output.
  */
-export function getAppProtocolBanner(rendererNames: string[]): string {
+export function getAppProtocolBanner(
+  rendererNames: string[],
+  additionalPrivilegedSchemes: VitePluginPrivilegedScheme[] = [],
+): string {
+  for (const { scheme } of additionalPrivilegedSchemes) {
+    if (
+      typeof scheme !== 'string' ||
+      scheme.toLowerCase() === APP_PROTOCOL_SCHEME
+    ) {
+      throw new Error(
+        `The '${APP_PROTOCOL_SCHEME}' scheme is reserved for serving renderer files when \`appProtocol\` is enabled — remove it from \`additionalPrivilegedSchemes\` (schemes must be non-empty strings).`,
+      );
+    }
+  }
+  const privilegedSchemes: VitePluginPrivilegedScheme[] = [
+    {
+      scheme: APP_PROTOCOL_SCHEME,
+      privileges: { standard: true, secure: true, supportFetchApi: true },
+    },
+    ...additionalPrivilegedSchemes,
+  ];
   return `// Injected by @electron-forge/plugin-vite because \`appProtocol\` is enabled.
 // Serves the built renderer files over the privileged \`${APP_PROTOCOL_SCHEME}://\` scheme instead
 // of \`file://\`, per Electron's security recommendations.
@@ -53,12 +75,7 @@ export function getAppProtocolBanner(rendererNames: string[]): string {
   const path = require('node:path');
   const { pathToFileURL } = require('node:url');
   const rendererNames = ${JSON.stringify(rendererNames)};
-  protocol.registerSchemesAsPrivileged([
-    {
-      scheme: '${APP_PROTOCOL_SCHEME}',
-      privileges: { standard: true, secure: true, supportFetchApi: true },
-    },
-  ]);
+  protocol.registerSchemesAsPrivileged(${JSON.stringify(privilegedSchemes)});
   app.once('ready', function () {
     protocol.handle('${APP_PROTOCOL_SCHEME}', function (request) {
       const url = new URL(request.url);

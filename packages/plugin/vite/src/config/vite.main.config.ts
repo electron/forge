@@ -24,6 +24,9 @@ export function getConfig(
           forgeConfig.renderer
             .map(({ name }) => name)
             .filter((name) => name != null),
+          typeof forgeConfig.appProtocol === 'object'
+            ? forgeConfig.appProtocol.additionalPrivilegedSchemes
+            : undefined,
         )
       : undefined;
   const config: UserConfig = {
