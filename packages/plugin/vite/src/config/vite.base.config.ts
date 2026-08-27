@@ -1,5 +1,7 @@
 import { builtinModules } from 'node:module';
 
+import { getAppProtocolEntryUrl } from './app-protocol.js';
+
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
 
@@ -42,6 +44,7 @@ export function getDefineKeys(names: string[]) {
     const keys: VitePluginRuntimeKeys = {
       VITE_DEV_SERVER_URL: `${NAME}_VITE_DEV_SERVER_URL`,
       VITE_NAME: `${NAME}_VITE_NAME`,
+      VITE_ENTRY: `${NAME}_VITE_ENTRY`,
     };
 
     return { ...acc, [name]: keys };
@@ -56,13 +59,22 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
   const defineKeys = getDefineKeys(names);
   const define = Object.entries(defineKeys).reduce(
     (acc, [name, keys]) => {
-      const { VITE_DEV_SERVER_URL, VITE_NAME } = keys;
+      const { VITE_DEV_SERVER_URL, VITE_NAME, VITE_ENTRY } = keys;
       const def = {
         [VITE_DEV_SERVER_URL]:
           command === 'serve'
             ? JSON.stringify(viteDevServerUrls[VITE_DEV_SERVER_URL])
             : undefined,
         [VITE_NAME]: JSON.stringify(name),
+        // A single entry URL usable in both development and production: the
+        // dev server URL while serving, and (when `appProtocol` is enabled)
+        // the `app://` URL served by the injected protocol handler in builds.
+        [VITE_ENTRY]:
+          command === 'serve'
+            ? JSON.stringify(viteDevServerUrls[VITE_DEV_SERVER_URL])
+            : forgeConfig.appProtocol
+              ? JSON.stringify(getAppProtocolEntryUrl(name))
+              : undefined,
       };
       return { ...acc, ...def };
     },

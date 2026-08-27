@@ -52,10 +52,8 @@ describe('ViteTemplate', () => {
     const mainFile = (
       await fs.promises.readFile(path.join(dir, 'src', 'main.js'))
     ).toString();
-    expect(mainFile).toMatch(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
-    expect(mainFile).toMatch(
-      /\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/,
-    );
+    expect(mainFile).toMatch(/mainWindow\.loadURL\(MAIN_WINDOW_VITE_ENTRY\)/);
+    expect(mainFile).not.toMatch(/mainWindow\.loadFile/);
   });
 
   it('should remove the stylesheet link from the HTML file', async () => {

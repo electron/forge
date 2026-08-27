@@ -46,10 +46,12 @@ describe('vite.base.config', () => {
       main_window: {
         VITE_DEV_SERVER_URL: 'MAIN_WINDOW_VITE_DEV_SERVER_URL',
         VITE_NAME: 'MAIN_WINDOW_VITE_NAME',
+        VITE_ENTRY: 'MAIN_WINDOW_VITE_ENTRY',
       },
       second_window: {
         VITE_DEV_SERVER_URL: 'SECOND_WINDOW_VITE_DEV_SERVER_URL',
         VITE_NAME: 'SECOND_WINDOW_VITE_NAME',
+        VITE_ENTRY: 'SECOND_WINDOW_VITE_ENTRY',
       },
     };
 
@@ -67,8 +69,30 @@ describe('vite.base.config', () => {
     const define2 = {
       MAIN_WINDOW_VITE_DEV_SERVER_URL: undefined,
       MAIN_WINDOW_VITE_NAME: '"main_window"',
+      MAIN_WINDOW_VITE_ENTRY: undefined,
       SECOND_WINDOW_VITE_DEV_SERVER_URL: undefined,
       SECOND_WINDOW_VITE_NAME: '"second_window"',
+      SECOND_WINDOW_VITE_ENTRY: undefined,
+    };
+
+    expect(define1).toEqual(define2);
+  });
+
+  it('getBuildDefine:build with appProtocol resolves entries to app:// URLs', () => {
+    const define1 = getBuildDefine({
+      command: 'build',
+      mode: 'production',
+      root: configRoot,
+      forgeConfig: { ...forgeConfig, appProtocol: true },
+      forgeConfigSelf: forgeConfig.build[0],
+    });
+    const define2 = {
+      MAIN_WINDOW_VITE_DEV_SERVER_URL: undefined,
+      MAIN_WINDOW_VITE_NAME: '"main_window"',
+      MAIN_WINDOW_VITE_ENTRY: '"app://main_window/index.html"',
+      SECOND_WINDOW_VITE_DEV_SERVER_URL: undefined,
+      SECOND_WINDOW_VITE_NAME: '"second_window"',
+      SECOND_WINDOW_VITE_ENTRY: '"app://second_window/index.html"',
     };
 
     expect(define1).toEqual(define2);
@@ -100,8 +124,10 @@ describe('vite.base.config', () => {
     const define2 = {
       MAIN_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5173"',
       MAIN_WINDOW_VITE_NAME: '"main_window"',
+      MAIN_WINDOW_VITE_ENTRY: '"http://localhost:5173"',
       SECOND_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5174"',
       SECOND_WINDOW_VITE_NAME: '"second_window"',
+      SECOND_WINDOW_VITE_ENTRY: '"http://localhost:5174"',
     };
 
     for (const server of servers) {

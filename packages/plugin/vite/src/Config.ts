@@ -49,4 +49,25 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Serve the built renderer files over a privileged `app://` custom scheme in
+   * packaged apps instead of loading them from `file://`, per Electron's
+   * security recommendations. See
+   * https://www.electronjs.org/docs/latest/api/protocol
+   *
+   * When enabled, the plugin injects the scheme registration and protocol
+   * handler into the production main-process bundle, and the `*_VITE_ENTRY`
+   * magic constant resolves to the Vite dev server URL in development and an
+   * `app://<renderer-name>/index.html` URL in production, so the main process
+   * can unconditionally call `mainWindow.loadURL(MAIN_WINDOW_VITE_ENTRY)`.
+   *
+   * Notes:
+   * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
+   *   so this option cannot be combined with app code that registers its own
+   *   privileged schemes.
+   * - Requires the default CommonJS output for main-process targets.
+   * @defaultValue `false`
+   */
+  appProtocol?: boolean;
 }
