@@ -218,7 +218,6 @@ export async function init({
                     DepVersionRestriction.RANGE,
                   );
                 },
-                exitOnError: false,
               },
               {
                 title: 'Installing development dependencies',
@@ -234,7 +233,6 @@ export async function init({
                     DepType.DEV,
                   );
                 },
-                exitOnError: false,
               },
               {
                 title: 'Finalizing dependencies',
@@ -245,7 +243,6 @@ export async function init({
                       task: async ({ pm }, task) => {
                         await initNPM(pm, dir, ctx.parsedElectronVersion, task);
                       },
-                      exitOnError: false,
                     },
                     {
                       title: 'Linking Forge dependencies to local build',

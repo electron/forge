@@ -1,4 +1,7 @@
 import { builtinModules } from 'node:module';
+import { styleText } from 'node:util';
+
+import { requestAppRestart } from '@electron-forge/core-utils/restart';
 
 import { getAppProtocolEntryUrl } from '@electron-forge/core-utils';
 
@@ -104,19 +107,33 @@ export function pluginExposeRenderer(name: string): Plugin {
 }
 
 export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
+  let builtOnce = false;
+
   return {
-    name: '@electron-forge/plugin-vite:hot-restart',
-    closeBundle() {
+    name: `@electron-forge/plugin-vite:hot-${command}`,
+    closeBundle(error) {
+      const isRebuild = builtOnce;
+      builtOnce = true;
+
+      // Rollup passes the build error here before rethrowing it. The bundle on
+      // disk is stale in that case, so reloading or restarting would silently
+      // run the previous build's code.
+      if (error) return;
+
       if (command === 'reload') {
         for (const server of Object.values(viteDevServers)) {
           // Preload scripts hot reload.
           server.ws.send({ type: 'full-reload' });
         }
-      } else if (command === 'restart') {
-        // Main process hot restart.
-        // https://github.com/electron/forge/blob/v7.2.0/packages/api/core/src/api/start.ts#L216-L223
-        // TODO: blocked in #3380
-        // process.stdin.emit('data', 'rs');
+      } else if (command === 'restart' && !requestAppRestart() && isRebuild) {
+        // The first build finishes before the app is spawned, so only a rebuild
+        // that fails to reach it is worth warning about.
+        console.warn(
+          styleText(
+            'yellow',
+            '[@electron-forge/plugin-vite] Rebuilt the main process bundle, but the running app was not restarted, so it is still running the previous code.',
+          ),
+        );
       }
     },
   };

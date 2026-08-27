@@ -37,7 +37,9 @@ export function getConfig(
         output: appProtocolBanner ? { banner: appProtocolBanner } : undefined,
       },
     },
-    plugins: [pluginHotRestart('restart')],
+    plugins: [
+      ...(forgeEnv.forgeConfig.hotRestart ? [pluginHotRestart('restart')] : []),
+    ],
     define,
     resolve: {
       // Load the Node.js entry.

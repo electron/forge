@@ -79,4 +79,11 @@ export interface VitePluginConfig {
    * @defaultValue `false`
    */
   appProtocol?: boolean | VitePluginAppProtocolConfig;
+
+  /**
+   * Restart the running app whenever the main process bundle is rebuilt during
+   * `electron-forge start`. Has no effect when packaging.
+   * @defaultValue `false`
+   */
+  hotRestart?: boolean;
 }
