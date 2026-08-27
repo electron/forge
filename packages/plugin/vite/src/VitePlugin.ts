@@ -30,7 +30,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -80,7 +80,7 @@ function spawnViteBuild(
 }
 
 function spawnViteBuildWatch(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'>,
   index: number,
   projectDir: string,
   devServerUrls: Record<string, string>,
@@ -335,17 +335,20 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
-   * We only include build[] and renderer[] — the worker needs the full renderer
-   * list for defines even when building a single main target. `hotRestart` is
-   * moot here: workers only run when packaging.
+   * We include build[], renderer[], and appProtocol — the worker needs the
+   * full renderer list for defines even when building a single main target,
+   * and appProtocol drives both the `*_VITE_ENTRY` defines and the runtime
+   * injected into production main bundles. `hotRestart` is moot here: workers
+   * only run when packaging.
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'appProtocol'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      appProtocol: this.config.appProtocol,
     };
   }
 

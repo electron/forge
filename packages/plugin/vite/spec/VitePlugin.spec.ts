@@ -19,6 +19,19 @@ describe('VitePlugin', async () => {
   const tmpdir = path.join(tmp, 'electron-forge-test-');
   const viteTestDir = await fs.promises.mkdtemp(tmpdir);
 
+  describe('serializableConfig', () => {
+    it('carries appProtocol through to the build workers', () => {
+      // Regression test: the packaged app's `*_VITE_ENTRY` define and the
+      // injected app:// runtime both depend on the workers seeing this flag;
+      // dropping it here silently builds apps that call loadURL(undefined).
+      const plugin = new VitePlugin({ ...baseConfig, appProtocol: true });
+      expect(
+        (plugin as unknown as { serializableConfig: VitePluginConfig })
+          .serializableConfig.appProtocol,
+      ).toBe(true);
+    });
+  });
+
   describe('packageAfterCopy', () => {
     const packageJSONPath = path.join(viteTestDir, 'package.json');
     const packagedPath = path.join(viteTestDir, 'packaged');
