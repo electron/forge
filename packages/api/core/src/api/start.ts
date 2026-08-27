@@ -1,10 +1,15 @@
 import { spawn, SpawnOptions } from 'node:child_process';
 import readline from 'node:readline';
+import { styleText } from 'node:util';
 
 import {
   getElectronVersion,
   listrCompatibleRebuildHook,
 } from '@electron-forge/core-utils';
+import {
+  requestAppRestart,
+  setAppRestartHandler,
+} from '@electron-forge/core-utils/restart';
 import {
   ElectronProcess,
   ForgeArch,
@@ -15,7 +20,6 @@ import {
   StartOptions,
 } from '@electron-forge/shared-types';
 import { autoTrace, delayTraceTillSignal } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 
@@ -127,7 +131,7 @@ export default autoTrace(
           },
         },
         {
-          title: `Running ${chalk.yellow('generateAssets')} hook`,
+          title: `Running ${styleText('yellow', 'generateAssets')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             {
               name: 'run-generateAssets-hook',
@@ -151,7 +155,7 @@ export default autoTrace(
           ),
         },
         {
-          title: `Running ${chalk.yellow('preStart')} hook`,
+          title: `Running ${styleText('yellow', 'preStart')} hook`,
           task: childTrace<Parameters<ForgeListrTaskFn<StartContext>>>(
             { name: 'run-preStart-hook', category: '@electron-forge/core' },
             async (childTrace, { forgeConfig }, task) => {
@@ -167,7 +171,7 @@ export default autoTrace(
         },
         {
           task: (_ctx, task) => {
-            task.title = `${chalk.dim(`Launched Electron app. Type`)} ${chalk.bold('rs')} ${chalk.dim(`in terminal to restart main process.`)}`;
+            task.title = `${styleText('dim', `Launched Electron app. Type`)} ${styleText('bold', 'rs')} ${styleText('dim', `in terminal to restart main process.`)}`;
           },
         },
       ],
@@ -265,6 +269,10 @@ export default autoTrace(
       const spawned = await forgeSpawn();
       // When the child app is closed we should stop listening for stdin
       if (spawned) {
+        // `restarted` is non-optional on `ElectronProcess`, so don't leave it
+        // `undefined` until the first restart.
+        spawned.restarted = false;
+
         if (interactive && process.stdin.isPaused()) {
           process.stdin.resume();
         }
@@ -278,9 +286,12 @@ export default autoTrace(
           }
         });
 
-        // On close, reset lastSpawned, it's dead
+        // On close, reset lastSpawned, it's dead. A restart may already have put
+        // a replacement there, so only clear our own child.
         spawned.on('close', () => {
-          lastSpawned = null;
+          if (lastSpawned === spawned) {
+            lastSpawned = null;
+          }
         });
       } else if (interactive && !process.stdin.isPaused()) {
         process.stdin.pause();
@@ -290,25 +301,76 @@ export default autoTrace(
       return lastSpawned;
     };
 
+    // A restart spans kill -> exit -> respawn, during which `lastSpawned` is
+    // briefly null. Track that window so a request landing in it gets queued
+    // rather than mistaken for "there is nothing to restart".
+    let restartInFlight = false;
+    let restartPending = false;
+
+    const restartRunningApp = (): boolean => {
+      if (restartInFlight) {
+        d('a restart is already in flight, queueing a follow-up restart');
+        restartPending = true;
+        return true;
+      }
+
+      if (!lastSpawned || lastSpawned.restarted) {
+        d('restart requested, but no Electron app is running');
+        return false;
+      }
+
+      const dying = lastSpawned;
+      restartInFlight = true;
+      console.info(
+        `${styleText('green', '✔ ')}${styleText('dim', 'Restarting Electron app')}`,
+      );
+      dying.restarted = true;
+      dying.on('exit', () => {
+        forgeSpawnWrapper().then(
+          (child) => {
+            restartInFlight = false;
+            // Emit on the *exiting* child: its `restarted` listeners are what
+            // re-attach the CLI's exit handling to the replacement.
+            dying.emit('restarted', child);
+
+            if (restartPending) {
+              restartPending = false;
+              restartRunningApp();
+            }
+          },
+          (err) => {
+            restartInFlight = false;
+            restartPending = false;
+            console.error(
+              styleText(
+                'red',
+                'Failed to relaunch the Electron app after a restart, so it is no longer running.',
+              ),
+            );
+            console.error(err);
+          },
+        );
+      });
+      dying.kill('SIGTERM');
+      return true;
+    };
+
+    setAppRestartHandler(restartRunningApp);
+
     if (interactive) {
       process.stdin.on('data', (data) => {
-        if (
-          data.toString().trim() === 'rs' &&
-          lastSpawned &&
-          !lastSpawned.restarted
-        ) {
+        if (data.toString().trim() !== 'rs') return;
+
+        // Erase the echoed `rs` only when the "Restarting Electron app" line is
+        // about to take its place; otherwise we would eat a line of the app's
+        // own output.
+        if (lastSpawned && !lastSpawned.restarted) {
           readline.moveCursor(process.stdout, 0, -1);
           readline.clearLine(process.stdout, 0);
           readline.cursorTo(process.stdout, 0);
-          console.info(
-            `${chalk.green('✔ ')}${chalk.dim('Restarting Electron app')}`,
-          );
-          lastSpawned.restarted = true;
-          lastSpawned.on('exit', async () => {
-            lastSpawned!.emit('restarted', await forgeSpawnWrapper());
-          });
-          lastSpawned.kill('SIGTERM');
         }
+
+        requestAppRestart();
       });
       process.stdin.resume();
 

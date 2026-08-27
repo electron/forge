@@ -2,6 +2,7 @@ import path from 'node:path';
 
 import { PossibleModule } from '@electron-forge/shared-types';
 import debug from 'debug';
+import { pathToFileURL } from 'node:url';
 
 const d = debug('electron-forge:import-search');
 
@@ -50,7 +51,7 @@ async function importSearchRaw<T>(
         moduleName,
       );
       d('testing local forge build', { moduleType, moduleName, localPath });
-      return await import(localPath);
+      return await import(pathToFileURL(localPath).toString());
     } catch {
       // Ignore
     }
@@ -66,7 +67,14 @@ async function importSearchRaw<T>(
   for (const testPath of testPaths) {
     try {
       d('testing', testPath);
-      return await import(testPath);
+      // Absolute paths must be passed to `import()` as `file://` URLs, otherwise
+      // Node's ESM loader rejects Windows paths (e.g. `C:\...`) with
+      // `ERR_UNSUPPORTED_ESM_URL_SCHEME`. Bare specifiers are left untouched.
+      return await import(
+        path.isAbsolute(testPath)
+          ? pathToFileURL(testPath).toString()
+          : testPath
+      );
     } catch (err) {
       if (err instanceof Error) {
         const resolutionError = err as ResolutionError;

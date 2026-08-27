@@ -6,7 +6,6 @@ import {
   spawnPackageManager,
 } from '@electron-forge/core-utils';
 import * as testUtils from '@electron-forge/test-utils';
-import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 // eslint-disable-next-line n/no-missing-import
@@ -18,9 +17,6 @@ describe('WebpackTypeScriptTemplate', () => {
 
   beforeAll(async () => {
     dir = await testUtils.ensureTestDirIsNonexistent();
-  });
-
-  it('should succeed in initializing the typescript template', async () => {
     await init({
       dir,
       template: path.join(import.meta.dirname, '..'),
@@ -32,7 +28,7 @@ describe('WebpackTypeScriptTemplate', () => {
   describe('template files are copied to project', () => {
     it.each([
       'tsconfig.json',
-      '.eslintrc.json',
+      '.oxlintrc.json',
       'forge.config.ts',
       'webpack.main.config.ts',
       'webpack.renderer.config.ts',
@@ -47,7 +43,9 @@ describe('WebpackTypeScriptTemplate', () => {
   });
 
   it('should ensure js source files from base template are removed', async () => {
-    const jsFiles = await glob(path.join(dir, 'src', '**', '*.js'));
+    const jsFiles = await Array.fromAsync(
+      fs.promises.glob(path.join(dir, 'src', '**', '*.js')),
+    );
     expect(jsFiles.length).toEqual(0);
   });
 
@@ -58,6 +56,16 @@ describe('WebpackTypeScriptTemplate', () => {
     );
     const packageJSON = JSON.parse(packageJSONString);
     expect(packageJSON).toHaveProperty('private', true);
+  });
+
+  it('should contain electron-forge scripts in package.json', async () => {
+    const packageJSON = JSON.parse(
+      await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
+    );
+    expect(packageJSON.scripts.start).toBe('electron-forge start');
+    expect(packageJSON.scripts.package).toBe('electron-forge package');
+    expect(packageJSON.scripts.make).toBe('electron-forge make');
+    expect(packageJSON.scripts.release).toBe('electron-forge release');
   });
 
   describe('lint', () => {

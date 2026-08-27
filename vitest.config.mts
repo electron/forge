@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     clearMocks: true,
-    exclude: ['**/.links/**', '**/node_modules/**'],
+    exclude: ['**/.links/**', '**/node_modules/**', '**/.claude/**'],
     fileParallelism: false,
     projects: [
       {

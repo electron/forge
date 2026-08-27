@@ -61,7 +61,7 @@ import packageJSON from '../package.json' with { type: 'json' };
 
   const opts: StartOptions = {
     dir,
-    interactive: true,
+    interactive: process.stdin.isTTY ?? false,
     enableLogging: !!options.enableLogging,
     runAsNode: !!options.runAsNode,
     inspect: !!options.inspectElectron,
@@ -93,7 +93,9 @@ import packageJSON from '../package.json' with { type: 'json' };
       };
       onExit = (code: number) => {
         removeListeners();
-        if (spawned.restarted) return;
+        // `child`, not `spawned`: the first child's `restarted` flag stays true
+        // forever, so using it would ignore every exit after the first restart.
+        if (child.restarted) return;
         if (code !== 0) {
           process.exit(code);
         }

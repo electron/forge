@@ -23,7 +23,7 @@ const token = 'FAKE_TOKEN';
 const flavor = 'lite';
 const version = '3.0.0';
 
-vi.mock(import('fs-extra'), async (importOriginal) => {
+vi.mock(import('graceful-fs'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,

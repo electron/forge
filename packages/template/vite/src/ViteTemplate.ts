@@ -1,11 +1,11 @@
 import path from 'node:path';
 
+import { moveSync } from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import { BaseTemplate } from '@electron-forge/template-base';
-import fs from 'fs-extra';
 
 class ViteTemplate extends BaseTemplate {
   public templateDir = path.resolve(import.meta.dirname, '..', 'tmpl');
@@ -29,6 +29,8 @@ class ViteTemplate extends BaseTemplate {
           await this.copyTemplateFile(directory, 'vite.main.config.mjs');
           await this.copyTemplateFile(directory, 'vite.preload.config.mjs');
           await this.copyTemplateFile(directory, 'vite.renderer.config.mjs');
+
+          await this.writeLintConfig(directory);
           await this.copyTemplateFile(
             path.join(directory, 'src'),
             'renderer.js',
@@ -55,7 +57,7 @@ class ViteTemplate extends BaseTemplate {
 
           // TODO: Compatible with any path entry.
           // Vite uses index.html under the root path as the entry point.
-          fs.moveSync(
+          moveSync(
             path.join(directory, 'src', 'index.html'),
             path.join(directory, 'index.html'),
             { overwrite: options.force },
@@ -63,7 +65,7 @@ class ViteTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.join(directory, 'index.html'),
             (line) => {
-              if (line.includes('link rel="stylesheet"')) return '';
+              if (line.includes('link rel="stylesheet"')) return null;
               if (line.includes('</body>'))
                 return '    <script type="module" src="/src/renderer.js"></script>\n  </body>';
               return line;

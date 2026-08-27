@@ -1,3 +1,5 @@
+import { styleText } from 'node:util';
+
 import { PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeListrTaskDefinition,
@@ -11,7 +13,6 @@ import {
   StartResult,
 } from '@electron-forge/shared-types';
 import { autoTrace } from '@electron-forge/tracer';
-import chalk from 'chalk';
 import debug from 'debug';
 
 import { StartOptions } from '../api/start.js';
@@ -126,7 +127,7 @@ export default class PluginInterface implements IForgePluginInterface {
           if (typeof hooks === 'function') hooks = [hooks];
           for (const hook of hooks) {
             tasks.push({
-              title: `${chalk.cyan(`[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${chalk.yellow(hookName)} hook`}`,
+              title: `${styleText('cyan', `[plugin-${plugin.name}]`)} ${(hook as any).__hookName || `Running ${styleText('yellow', hookName)} hook`}`,
               task: childTrace(
                 {
                   name: 'forge-plugin-hook',
@@ -200,7 +201,7 @@ export default class PluginInterface implements IForgePluginInterface {
       if (typeof result === 'object' && 'tasks' in result) {
         result.tasks = result.tasks.map((task) => ({
           ...task,
-          title: `${chalk.cyan(`[plugin-${claimed[0]}]`)} ${task.title}`,
+          title: `${styleText('cyan', `[plugin-${claimed[0]}]`)} ${task.title}`,
         }));
       }
       return result;

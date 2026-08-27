@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { getNameFromAuthor } from '@electron-forge/core-utils';
+import { getNameFromAuthor, pathExists } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
 // eslint-disable-next-line n/no-missing-import
@@ -11,7 +12,6 @@ import {
   makeCert,
   // eslint-disable-next-line n/no-missing-import
 } from 'electron-windows-store/lib/sign.js';
-import fs from 'fs-extra';
 
 import { MakerAppXConfig } from './Config.js';
 
@@ -26,9 +26,9 @@ const windowsSdkPaths = [
 async function findSdkTool(exe: string) {
   let sdkTool: string | undefined;
   for (const testPath of windowsSdkPaths) {
-    if (await fs.pathExists(testPath)) {
+    if (await pathExists(testPath)) {
       let testExe = path.resolve(testPath, exe);
-      if (await fs.pathExists(testExe)) {
+      if (await pathExists(testExe)) {
         sdkTool = testExe;
         break;
       }
@@ -39,18 +39,18 @@ async function findSdkTool(exe: string) {
         if (subVersion.substr(0, 2) !== '10') continue;
 
         testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
-        if (await fs.pathExists(testExe)) {
+        if (await pathExists(testExe)) {
           sdkTool = testExe;
           break;
         }
       }
     }
   }
-  if (!sdkTool || !(await fs.pathExists(sdkTool))) {
+  if (!sdkTool || !(await pathExists(sdkTool))) {
     sdkTool = resolveCommand({ command: exe, options: { cwd: null } }, true);
   }
 
-  if (!sdkTool || !(await fs.pathExists(sdkTool))) {
+  if (!sdkTool || !(await pathExists(sdkTool))) {
     throw new Error(
       `Can't find ${exe} in PATH. You probably need to install the Windows SDK.`,
     );

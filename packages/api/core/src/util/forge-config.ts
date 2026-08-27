@@ -1,12 +1,13 @@
 import path from 'node:path';
 
 import { ForgeConfig, ResolvedForgeConfig } from '@electron-forge/shared-types';
-import fs from 'fs-extra';
+import fs from 'graceful-fs';
 import { createJiti } from 'jiti';
 
 import { runMutatingHook } from './hook.js';
 import PluginInterface from './plugin-interface.js';
 import { readRawPackageJson } from './read-package-json.js';
+import { pathToFileURL } from 'node:url';
 
 const underscoreCase = (str: string) =>
   str
@@ -173,7 +174,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
       if (loadFn) {
         loaded = await loadFn(forgeConfigPath);
       } else {
-        loaded = await import(forgeConfigPath);
+        loaded = await import(pathToFileURL(forgeConfigPath).toString());
       }
       const maybeForgeConfig = 'default' in loaded ? loaded.default : loaded;
       forgeConfig =

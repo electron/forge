@@ -21,8 +21,8 @@ export function getConfig(
         input: forgeConfigSelf.entry,
         output: {
           format: isEsm ? 'es' : 'cjs',
-          // It should not be split chunks.
-          inlineDynamicImports: true,
+          // Preload scripts require a single entrypoint.
+          codeSplitting: false,
           entryFileNames: isEsm ? '[name].mjs' : '[name].cjs',
           chunkFileNames: isEsm ? '[name].mjs' : '[name].cjs',
           assetFileNames: '[name].[ext]',

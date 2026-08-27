@@ -8,8 +8,14 @@ import ForgeUtils from '../util/index.js';
 
 import make, { MakeOptions } from './make.js';
 import _package, { PackageOptions } from './package.js';
-import publish, { PublishOptions } from './publish.js';
+import release, { ReleaseOptions } from './release.js';
 import start, { StartOptions } from './start.js';
+
+/**
+ * @deprecated Use {@link ReleaseOptions} instead. `PublishOptions` is a
+ * deprecated alias that will be removed in a future major version.
+ */
+export type PublishOptions = ReleaseOptions;
 
 export class ForgeAPI {
   /**
@@ -27,10 +33,20 @@ export class ForgeAPI {
   }
 
   /**
-   * Publish an Electron application into the given target service
+   * Release an Electron application into the given target service
    */
-  publish(opts: PublishOptions): Promise<void> {
-    return publish(opts);
+  release(opts: ReleaseOptions): Promise<void> {
+    return release(opts);
+  }
+
+  /**
+   * Publish an Electron application into the given target service
+   *
+   * @deprecated Use {@link ForgeAPI.release} instead. `publish` is a deprecated
+   * alias that will be removed in a future major version.
+   */
+  publish(opts: ReleaseOptions): Promise<void> {
+    return release(opts);
   }
 
   /**
@@ -53,7 +69,7 @@ export {
   ForgeUtils,
   MakeOptions,
   PackageOptions,
-  PublishOptions,
+  ReleaseOptions,
   StartOptions,
   api,
   utils,

@@ -16,7 +16,7 @@ vi.mock('@malept/electron-installer-flatpak', () => {
   };
 });
 
-vi.mock(import('fs-extra'), async (importOriginal) => {
+vi.mock(import('node:fs/promises'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,

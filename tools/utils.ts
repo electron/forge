@@ -1,6 +1,6 @@
+import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
-
-import fs from 'fs-extra';
 
 const BASE_DIR = path.resolve(import.meta.dirname, '..');
 const PACKAGES_DIR = path.resolve(BASE_DIR, 'packages');
@@ -14,15 +14,18 @@ export interface Package {
 export const getPackageInfo = async (): Promise<Package[]> => {
   const packages: Package[] = [];
 
-  for (const subDir of await fs.readdir(PACKAGES_DIR)) {
+  for (const subDir of await fsPromises.readdir(PACKAGES_DIR)) {
     const subDirPath = path.resolve(PACKAGES_DIR, subDir);
-    const stat = await fs.lstat(subDirPath);
+    const stat = await fsPromises.lstat(subDirPath);
 
     if (stat.isDirectory()) {
-      for (const packageDir of await fs.readdir(subDirPath)) {
+      for (const packageDir of await fsPromises.readdir(subDirPath)) {
         const packagePath = path.resolve(subDirPath, packageDir);
-        const pkg = await fs.readJson(
-          path.resolve(packagePath, 'package.json'),
+        const pkg = JSON.parse(
+          await fsPromises.readFile(
+            path.resolve(packagePath, 'package.json'),
+            'utf8',
+          ),
         );
         packages.push({
           path: packagePath,
@@ -45,7 +48,9 @@ export const getPackageInfoSync = (): Package[] => {
     if (stat.isDirectory()) {
       for (const packageDir of fs.readdirSync(subDirPath)) {
         const packagePath = path.resolve(subDirPath, packageDir);
-        const pkg = fs.readJsonSync(path.resolve(packagePath, 'package.json'));
+        const pkg = JSON.parse(
+          fs.readFileSync(path.resolve(packagePath, 'package.json'), 'utf8'),
+        );
         packages.push({
           path: packagePath,
           name: pkg.name,

@@ -1,9 +1,9 @@
 import url from 'node:url';
+import { styleText } from 'node:util';
 
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
-import chalk from 'chalk';
 import { program } from 'commander';
 
 import './util/terminate.js';
@@ -24,7 +24,7 @@ export async function getMakeOptions(): Promise<MakeOptions> {
     )
     .option(
       '--skip-package',
-      `Skip packaging the Electron application, and use the output from a previous ${chalk.green('package')} run instead.`,
+      `Skip packaging the Electron application, and use the output from a previous ${styleText('green', 'package')} run instead.`,
     )
     .option('-a, --arch [arch]', 'Target build architecture.', process.arch)
     .option(
@@ -34,7 +34,7 @@ export async function getMakeOptions(): Promise<MakeOptions> {
     )
     .option(
       '--targets [targets]',
-      `Override your ${chalk.green('make')} targets for this run.`,
+      `Override your ${styleText('green', 'make')} targets for this run.`,
     )
     .allowUnknownOption(true)
     .action((dir) => {

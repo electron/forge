@@ -1,18 +1,24 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { resolvePackageManager } from '@electron-forge/core-utils';
+import {
+  readJson,
+  readJsonSync,
+  resolvePackageManager,
+  writeJson,
+} from '@electron-forge/core-utils';
 import {
   ForgeListrTaskDefinition,
   ForgeTemplate,
   InitTemplateOptions,
 } from '@electron-forge/shared-types';
 import debug from 'debug';
-import fs from 'fs-extra';
+import gracefulFs from 'graceful-fs';
 import semver from 'semver';
 
 import determineAuthor from './determine-author.js';
 
-const currentForgeVersion = fs.readJSONSync(
+const currentForgeVersion = readJsonSync(
   path.resolve(import.meta.dirname, '../package.json'),
 ).version;
 
@@ -26,8 +32,8 @@ export class BaseTemplate implements ForgeTemplate {
 
   get dependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.existsSync(packageJSONPath)) {
-      const deps = fs.readJsonSync(packageJSONPath).dependencies;
+    if (gracefulFs.existsSync(packageJSONPath)) {
+      const deps = readJsonSync(packageJSONPath).dependencies;
       if (deps) {
         return Object.entries(deps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
@@ -43,8 +49,8 @@ export class BaseTemplate implements ForgeTemplate {
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
-    if (fs.existsSync(packageJSONPath)) {
-      const packageDevDeps = fs.readJsonSync(packageJSONPath).devDependencies;
+    if (gracefulFs.existsSync(packageJSONPath)) {
+      const packageDevDeps = readJsonSync(packageJSONPath).devDependencies;
       if (packageDevDeps) {
         return Object.entries(packageDevDeps).map(([packageName, version]) => {
           if (version === 'ELECTRON_FORGE/VERSION') {
@@ -68,11 +74,11 @@ export class BaseTemplate implements ForgeTemplate {
         task: async () => {
           const pm = await resolvePackageManager();
           d('creating directory:', path.resolve(directory, 'src'));
-          await fs.mkdirs(path.resolve(directory, 'src'));
+          await fs.mkdir(path.resolve(directory, 'src'), { recursive: true });
           const rootFiles = ['_gitignore', 'forge.config.js'];
 
           if (pm.executable === 'pnpm') {
-            rootFiles.push('_npmrc');
+            rootFiles.push('pnpm-workspace.yaml');
           } else if (
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
             pm.executable === 'yarn' &&
@@ -120,7 +126,15 @@ export class BaseTemplate implements ForgeTemplate {
 
   async copy(source: string, target: string): Promise<void> {
     d(`copying "${source}" --> "${target}"`);
-    await fs.copy(source, target);
+    await fs.cp(source, target, { recursive: true });
+  }
+
+  async writeLintConfig(directory: string): Promise<void> {
+    await this.copyTemplateFile(directory, '.oxlintrc.json');
+    await this.copy(
+      path.join(tmplDir, '.oxfmtrc.json'),
+      path.resolve(directory, '.oxfmtrc.json'),
+    );
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
@@ -131,7 +145,7 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    const packageJSON = await fs.readJson(
+    const packageJSON = await readJson(
       path.resolve(import.meta.dirname, '../tmpl/package.json'),
     );
 
@@ -141,12 +155,13 @@ export class BaseTemplate implements ForgeTemplate {
         this.templateDir,
         'package.json',
       );
-      if (fs.existsSync(templatePackageJSONPath)) {
-        const templatePackageJSON = await fs.readJson(templatePackageJSONPath);
-        const { dependencies, devDependencies, ...rest } = templatePackageJSON;
+      if (gracefulFs.existsSync(templatePackageJSONPath)) {
+        const templatePackageJSON = await readJson(templatePackageJSONPath);
+        const { dependencies, devDependencies, scripts, ...rest } =
+          templatePackageJSON;
         Object.assign(packageJSON, rest);
-        if (rest.scripts) {
-          packageJSON.scripts = { ...packageJSON.scripts, ...rest.scripts };
+        if (scripts) {
+          packageJSON.scripts = { ...packageJSON.scripts, ...scripts };
         }
       }
     }
@@ -159,9 +174,31 @@ export class BaseTemplate implements ForgeTemplate {
     const pm = await resolvePackageManager();
 
     if (pm.executable === 'pnpm') {
-      d('Adding Electron dependencies to `onlyBuiltDependencies`');
-      packageJSON.pnpm = {
-        onlyBuiltDependencies: ['electron', 'electron-winstaller'],
+      // Records the pnpm version this template is known to work with, which is
+      // the one CI installs. Anything older than 11.18 is known not to: adding a
+      // dependency to a project that already had some could drop a package that
+      // another one it kept still depends on, which left `forge.config.ts`
+      // unable to load on Windows, where the platform-specific makers'
+      // dependencies are skipped and `rimraf` is the only thing left asking for
+      // `glob`.
+      //
+      // It is a record and not a floor. pnpm ignores `devEngines.packageManager`
+      // unless it is written in the object form the spec describes, and
+      // `create-electron-app` then has Corepack write a `packageManager` field,
+      // which takes precedence over this one either way.
+      packageJSON.devEngines = {
+        packageManager: 'pnpm@11.21.0',
+      };
+
+      // Ensures all transitive dependencies for `electron-winstaller` are
+      // installed to `node_modules/electron-winstaller/node_modules` instead of
+      // being hoisted to `node_modules`; otherwise, `jiti` fails to load
+      // `forge.config.ts` because it can't locate the transitive dependencies
+      // for `electron-winstaller` (loaded via `@electron-forge/maker-squirrel`)
+      // in the root `node_modules` folder.
+      packageJSON.peerDependencies = {
+        ...packageJSON.peerDependencies,
+        'electron-winstaller': '^5.4.0',
       };
     }
 
@@ -170,23 +207,24 @@ export class BaseTemplate implements ForgeTemplate {
     }
 
     d('writing package.json to:', directory);
-    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
+    await writeJson(path.resolve(directory, 'package.json'), packageJSON, {
       spaces: 2,
     });
   }
 
   async updateFileByLine(
     inputPath: string,
-    lineHandler: (line: string) => string,
+    lineHandler: (line: string) => string | null,
     outputPath?: string | undefined,
   ): Promise<void> {
     const fileContents = (await fs.readFile(inputPath, 'utf8'))
       .split('\n')
       .map(lineHandler)
+      .filter((line): line is string => line !== null)
       .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {
-      await fs.remove(inputPath);
+      await fs.rm(inputPath, { recursive: true, force: true });
     }
   }
 }
