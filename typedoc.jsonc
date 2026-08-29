@@ -31,10 +31,10 @@
       "Options.out": "#",
     },
     "@electron/get": {
-      "ElectronDownloadRequestOptions": "https://packages.electronjs.org/get/v4.0.2/interfaces/ElectronDownloadRequestOptions.html"
+      "ElectronDownloadRequestOptions": "https://packages.electronjs.org/get/v4.0.2/interfaces/ElectronDownloadRequestOptions.html",
     },
     "@electron/asar": {
-      "CreateOptions": "https://packages.electronjs.org/asar/v4.0.1/types/CreateOptions.html"
+      "CreateOptions": "https://packages.electronjs.org/asar/v4.0.1/types/CreateOptions.html",
     },
     "@electron/rebuild": {
       "RebuildOptions": "https://packages.electronjs.org/rebuild/v4.2.0/interfaces/RebuildOptions.html",

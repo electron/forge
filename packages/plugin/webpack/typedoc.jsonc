@@ -4,6 +4,6 @@
     // This requires exposure of entire class / logic
     // of WebpackConfig, and I am not even sure if
     // this is even intended to be in public API
-    "src/WebpackConfig.ts:default"
-  ]
+    "src/WebpackConfig.ts:default",
+  ],
 }
