@@ -49,7 +49,7 @@
       "ListrSimpleRendererValue": "https://listr2.kilic.dev/api/listr2/type-aliases/ListrSimpleRendererValue.html",
     },
     "@types/node": {
-      "\"child_process\".ChildProcess": "https://nodejs.org/docs/latest/api/child_process.htmll#child_processforkmodulepath-args-options",
+      "\"child_process\".ChildProcess": "https://nodejs.org/api/child_process.html#class-childprocess",
       // Ignored as part of Node.js docs (there's intentional link to Node docs instead in hierarchy)
       "\"child_process\".fork": "#",
       "\"child_process\".spawn": "#",
