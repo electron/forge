@@ -37,11 +37,25 @@ function buildEnv(
   };
 }
 
-function getBanner(config: ReturnType<typeof getConfig>): string | undefined {
-  const output = config.build?.rollupOptions?.output as
-    | Rollup.OutputOptions
-    | undefined;
-  return output?.banner as string | undefined;
+/**
+ * The runtime is injected by a Forge-owned plugin's `outputOptions` hook (so
+ * a user's own `output.banner` composes with it instead of replacing it);
+ * resolve the banner the way Rollup would.
+ */
+function getBanner(
+  config: ReturnType<typeof getConfig>,
+  existingOutput: Rollup.OutputOptions = {},
+): string | Rollup.OutputOptions['banner'] | undefined {
+  const plugins = (config.plugins ?? []).flat() as Rollup.Plugin[];
+  const runtimePlugin = plugins.find(
+    (plugin) =>
+      plugin?.name === '@electron-forge/plugin-vite:app-protocol-runtime',
+  );
+  if (!runtimePlugin) return undefined;
+  const outputOptions = runtimePlugin.outputOptions as (
+    output: Rollup.OutputOptions,
+  ) => Rollup.OutputOptions;
+  return outputOptions.call(undefined as never, existingOutput).banner;
 }
 
 describe('vite.main.config', () => {
@@ -58,6 +72,16 @@ describe('vite.main.config', () => {
     expect(banner).toContain('registerSchemesAsPrivileged');
     expect(banner).toContain('protocol.handle');
     expect(banner).toContain('"main_window"');
+  });
+
+  it('composes with a user-configured output banner instead of replacing it', () => {
+    const config = getConfig(
+      buildEnv({ forgeConfig: { ...forgeConfig, appProtocol: true } }),
+    );
+    const banner = getBanner(config, { banner: '/* user banner */' });
+    expect(banner).toMatch(/^'use strict';/);
+    expect(banner).toContain('registerSchemesAsPrivileged');
+    expect(banner).toMatch(/\/\* user banner \*\/$/);
   });
 
   it('accepts the object form and includes additional privileged schemes', () => {
@@ -115,7 +139,10 @@ describe('vite.main.config', () => {
     ).toThrow(/reserved/);
   });
 
-  it('does not inject the app protocol runtime for dev server builds', () => {
+  it('only registers privileged schemes for dev server builds', () => {
+    // Schemes must carry the same privileges under `electron-forge start` as
+    // in the packaged app, but the dev server serves the renderers, so the
+    // protocol handler itself is production-only.
     const config = getConfig(
       buildEnv({
         command: 'serve',
@@ -123,6 +150,8 @@ describe('vite.main.config', () => {
         forgeConfig: { ...forgeConfig, appProtocol: true },
       }),
     );
-    expect(getBanner(config)).toBeUndefined();
+    const banner = getBanner(config);
+    expect(banner).toContain('registerSchemesAsPrivileged');
+    expect(banner).not.toContain('protocol.handle');
   });
 });

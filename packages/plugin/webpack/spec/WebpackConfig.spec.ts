@@ -200,7 +200,36 @@ describe('WebpackConfigGenerator', () => {
         const generator = new WebpackConfigGenerator(config, '/', true, 3000);
         const defines = generator.getDefines();
 
-        expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'app://hello/index.html'");
+        // The per-entry subdirectory is part of the path: every origin is
+        // rooted at the shared `.webpack/renderer/` directory so that
+        // `publicPath: '/'` asset URLs resolve.
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "'app://hello/hello/index.html'",
+        );
+      });
+
+      it('keeps nodeIntegration entry points on file:// in production', () => {
+        // Electron only derives renderer __dirname from file: URLs, which
+        // AssetRelocatorPatch relies on for nodeIntegration renderers.
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+                nodeIntegration: true,
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.html')}`",
+        );
       });
 
       it('uses a custom scheme for entry URLs when configured', () => {
@@ -220,7 +249,7 @@ describe('WebpackConfigGenerator', () => {
         const defines = generator.getDefines();
 
         expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
-          "'myapp://hello/index.html'",
+          "'myapp://hello/hello/index.html'",
         );
       });
 
@@ -447,7 +476,10 @@ describe('WebpackConfigGenerator', () => {
         expect(bannerPlugin!.options.banner).toContain('"stream":true');
       });
 
-      it('does not inject the banner in development', async () => {
+      it('only registers privileged schemes in development', async () => {
+        // Schemes must carry the same privileges under `electron-forge start`
+        // as in the packaged app, but the dev server serves the renderers, so
+        // the protocol handler itself is production-only.
         const generator = new WebpackConfigGenerator(
           appProtocolConfig,
           mockProjectDir,
@@ -455,7 +487,36 @@ describe('WebpackConfigGenerator', () => {
           3000,
         );
         const webpackConfig = await generator.getMainConfig();
-        expect(findBannerPlugin(webpackConfig.plugins)).toBeUndefined();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin).toBeDefined();
+        expect(bannerPlugin!.options.banner).toContain(
+          'registerSchemesAsPrivileged',
+        );
+        expect(bannerPlugin!.options.banner).not.toContain('protocol.handle');
+      });
+
+      it('uses root-relative publicPath for served renderers in production', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [
+            {
+              name: 'main_window',
+              html: 'index.html',
+              js: 'renderer.js',
+            },
+          ],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
+        );
+        const webConfig = configs.find((config) => config.target === 'web');
+        expect(webConfig?.output?.publicPath).toEqual('/');
       });
 
       it('does not inject the banner when appProtocol is not enabled', async () => {

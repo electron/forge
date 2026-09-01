@@ -13,10 +13,18 @@ describe('app-protocol', () => {
     );
   });
 
-  it('builds entry URLs on a custom scheme', () => {
+  it('builds entry URLs on a custom scheme and entry path', () => {
     expect(getAppProtocolEntryUrl('main_window', 'myapp')).toEqual(
       'myapp://main_window/index.html',
     );
+    expect(
+      getAppProtocolEntryUrl('main_window', 'app', 'main_window/index.html'),
+    ).toEqual('app://main_window/main_window/index.html');
+  });
+
+  it('rejects renderer names that cannot be URL hosts', () => {
+    expect(() => getAppProtocolEntryUrl('my window')).toThrow(/URL host/);
+    expect(() => getAppProtocolBanner(['my window'])).toThrow(/URL host/);
   });
 
   it('emits syntactically valid runtime code', () => {
@@ -24,6 +32,64 @@ describe('app-protocol', () => {
     // Throws on a syntax error without executing the code.
     expect(() => new Function(banner)).not.toThrow();
     expect(banner).toContain('["main_window","second_window"]');
+  });
+
+  it('keeps the bundle strict and no-ops outside the browser process', () => {
+    const banner = getAppProtocolBanner(['main_window']);
+    // The banner sits above the bundle's own directive prologue, so it must
+    // carry the directive itself or the whole bundle silently goes sloppy.
+    expect(banner).toMatch(/^'use strict';/);
+    // Main-target bundles can also be loaded in utility/worker processes,
+    // where `app`/`protocol` do not exist.
+    expect(banner).toContain(`process.type !== 'browser'`);
+  });
+
+  it('grants the serving scheme secure-origin defaults including stream and codeCache', () => {
+    const banner = getAppProtocolBanner(['main_window']);
+    expect(banner).toContain(
+      '{"scheme":"app","privileges":{"standard":true,"secure":true,"supportFetchApi":true,"stream":true,"codeCache":true}}',
+    );
+  });
+
+  it('merges privilege overrides for the serving scheme', () => {
+    const { privileges } = resolveAppProtocolConfig({
+      privileges: { allowServiceWorkers: true, codeCache: false },
+    });
+    expect(privileges).toEqual({
+      standard: true,
+      secure: true,
+      supportFetchApi: true,
+      stream: true,
+      codeCache: false,
+      allowServiceWorkers: true,
+    });
+  });
+
+  it('only registers schemes when not serving renderers (development)', () => {
+    const banner = getAppProtocolBanner(['main_window'], true, {
+      serveRenderers: false,
+    });
+    expect(() => new Function(banner)).not.toThrow();
+    expect(banner).toContain('registerSchemesAsPrivileged');
+    expect(banner).not.toContain('protocol.handle');
+  });
+
+  it('supports a shared renderer root for all origins', () => {
+    const perName = getAppProtocolBanner(['main_window']);
+    expect(perName).toContain(`'renderer', name`);
+    const shared = getAppProtocolBanner(['main_window'], true, {
+      rootIncludesName: false,
+    });
+    expect(shared).toContain(`'..', 'renderer')`);
+    expect(shared).not.toContain(`'renderer', name`);
+  });
+
+  it('fails malformed percent-escapes with a 400 instead of throwing', () => {
+    const banner = getAppProtocolBanner(['main_window']);
+    // decodeURIComponent throws URIError on e.g. %FF; uncaught, Electron
+    // fails the request with ERR_UNEXPECTED instead of a 4xx.
+    expect(banner).toMatch(/try \{\s*pathname = decodeURIComponent/);
+    expect(banner).toContain('status: 400');
   });
 
   it('registers and handles a custom scheme', () => {
@@ -51,8 +117,8 @@ describe('app-protocol', () => {
 
   it('throws when an additional scheme conflicts with the serving scheme', () => {
     expect(() =>
-      getAppProtocolBanner(['main_window'], {
-        additionalPrivilegedSchemes: [{ scheme: 'APP' }],
+      resolveAppProtocolConfig({
+        additionalPrivilegedSchemes: [{ scheme: 'app' }],
       }),
     ).toThrow(/reserved/);
     expect(() =>
@@ -61,6 +127,16 @@ describe('app-protocol', () => {
         additionalPrivilegedSchemes: [{ scheme: 'myapp' }],
       }),
     ).toThrow(/reserved/);
+  });
+
+  it('applies scheme syntax validation to additional schemes too', () => {
+    for (const scheme of ['', 'My App', 'APP']) {
+      expect(() =>
+        resolveAppProtocolConfig({
+          additionalPrivilegedSchemes: [{ scheme }],
+        }),
+      ).toThrow(/valid lowercase URI scheme/);
+    }
   });
 
   it('allows app as an additional scheme when the serving scheme differs', () => {
@@ -98,6 +174,13 @@ describe('app-protocol', () => {
   it('resolves the boolean form to the defaults', () => {
     expect(resolveAppProtocolConfig(true)).toEqual({
       scheme: 'app',
+      privileges: {
+        standard: true,
+        secure: true,
+        supportFetchApi: true,
+        stream: true,
+        codeCache: true,
+      },
       additionalPrivilegedSchemes: [],
     });
   });

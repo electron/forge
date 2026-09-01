@@ -138,17 +138,28 @@ export default class WebpackConfigGenerator {
   rendererEntryPoint(
     entryPoint: WebpackPluginEntryPoint,
     basename: string,
+    nodeIntegration: boolean,
   ): string {
     if (this.isProd) {
       // With `appProtocol` enabled, HTML entry points are served over the
       // privileged `app://` scheme by the runtime injected into the main
       // bundle. JS-only (no-window) entry points keep their `file://` paths —
-      // they are not window entry URLs.
-      if (this.pluginConfig.appProtocol && basename === 'index.html') {
+      // they are not window entry URLs. `nodeIntegration` entry points also
+      // stay on `file://`: Electron only derives the renderer's `__dirname`
+      // from `file:` page URLs, which AssetRelocatorPatch relies on for
+      // relocated native modules and assets in production.
+      if (
+        this.pluginConfig.appProtocol &&
+        basename === 'index.html' &&
+        !nodeIntegration
+      ) {
         const { scheme } = resolveAppProtocolConfig(
           this.pluginConfig.appProtocol,
         );
-        return `'${getAppProtocolEntryUrl(entryPoint.name, scheme)}'`;
+        // Every origin is rooted at the shared `.webpack/renderer/` output
+        // directory (see `buildRendererBaseConfig`'s `publicPath`), so the
+        // entry path carries the per-entry subdirectory.
+        return `'${getAppProtocolEntryUrl(entryPoint.name, scheme, `${entryPoint.name}/index.html`)}'`;
       }
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
@@ -199,10 +210,22 @@ export default class WebpackConfigGenerator {
       }
       for (const entryPoint of pluginRendererOptions.entryPoints) {
         const entryKey = this.toEnvironmentVariable(entryPoint);
+        const nodeIntegration =
+          entryPoint.nodeIntegration ??
+          pluginRendererOptions.nodeIntegration ??
+          false;
         if (isLocalWindow(entryPoint)) {
-          defines[entryKey] = this.rendererEntryPoint(entryPoint, 'index.html');
+          defines[entryKey] = this.rendererEntryPoint(
+            entryPoint,
+            'index.html',
+            nodeIntegration,
+          );
         } else {
-          defines[entryKey] = this.rendererEntryPoint(entryPoint, 'index.js');
+          defines[entryKey] = this.rendererEntryPoint(
+            entryPoint,
+            'index.js',
+            nodeIntegration,
+          );
         }
         defines[`process.env.${entryKey}`] = defines[entryKey];
 
@@ -238,29 +261,36 @@ export default class WebpackConfigGenerator {
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
 
-    // In production builds (not the dev server, where renderers are served
-    // over HTTP), prepend the runtime that registers the `app://` scheme and
-    // serves the built renderer files over it. `raw` emits the code verbatim
-    // (not wrapped in a comment) and `entryOnly` keeps it out of split chunks;
-    // as a banner it runs before any user code — see app-protocol.ts in
-    // @electron-forge/core-utils for the ordering constraints.
-    const appProtocolPlugins =
-      this.pluginConfig.appProtocol && this.isProd
-        ? [
-            new BannerPlugin({
-              banner: getAppProtocolBanner(
-                this.allPluginRendererOptions.flatMap((rendererOptions) =>
-                  (rendererOptions.entryPoints ?? [])
-                    .filter((entryPoint) => !isPreloadOnly(entryPoint))
-                    .map((entryPoint) => entryPoint.name),
-                ),
-                this.pluginConfig.appProtocol,
+    // Prepend the appProtocol runtime so it runs before any user code — see
+    // app-protocol.ts in @electron-forge/core-utils for the ordering
+    // constraints. In development the runtime only registers the privileged
+    // schemes (so they carry the same privileges as in the packaged app);
+    // serving over the scheme is production-only, the dev server serves
+    // renderers over HTTP. `raw` emits the code verbatim (not wrapped in a
+    // comment) and `entryOnly` keeps it out of split chunks.
+    const appProtocolPlugins = this.pluginConfig.appProtocol
+      ? [
+          new BannerPlugin({
+            banner: getAppProtocolBanner(
+              this.allPluginRendererOptions.flatMap((rendererOptions) =>
+                (rendererOptions.entryPoints ?? [])
+                  .filter((entryPoint) => !isPreloadOnly(entryPoint))
+                  .map((entryPoint) => entryPoint.name),
               ),
-              raw: true,
-              entryOnly: true,
-            }),
-          ]
-        : [];
+              this.pluginConfig.appProtocol,
+              {
+                serveRenderers: this.isProd,
+                // All origins share the `.webpack/renderer/` root — webpack
+                // emits one output directory with per-entry subdirectories
+                // and `publicPath: '/'`-based asset URLs.
+                rootIncludesName: false,
+              },
+            ),
+            raw: true,
+            entryOnly: true,
+          }),
+        ]
+      : [];
 
     return webpackMerge(
       {
@@ -349,6 +379,20 @@ export default class WebpackConfigGenerator {
     return rendererConfigs.filter(isNotNull);
   }
 
+  /**
+   * Renderers served over `appProtocol` need root-relative asset URLs: the
+   * handler roots every origin at `.webpack/renderer/`, so `publicPath: '/'`
+   * makes html-webpack-plugin emit `/<name>/index.js` instead of the `'auto'`
+   * relative URLs that only resolve under `file://`. Applies to Web-target
+   * renderers only — `nodeIntegration` renderers stay on `file://`.
+   */
+  private rendererPublicPath(target: RendererTarget) {
+    if (!this.isProd) return { publicPath: '/' };
+    return this.pluginConfig.appProtocol && target === RendererTarget.Web
+      ? { publicPath: '/' }
+      : {};
+  }
+
   buildRendererBaseConfig(target: RendererTarget): webpack.Configuration {
     return {
       target: rendererTargetToWebpackTarget(target),
@@ -358,7 +402,7 @@ export default class WebpackConfigGenerator {
         path: path.resolve(this.webpackDir, 'renderer'),
         filename: '[name]/index.js',
         globalObject: 'self',
-        ...(this.isProd ? {} : { publicPath: '/' }),
+        ...this.rendererPublicPath(target),
       },
       node: {
         __dirname: false,
@@ -392,7 +436,7 @@ export default class WebpackConfigGenerator {
       path: path.resolve(this.webpackDir, 'renderer'),
       filename: '[name]/index.js',
       globalObject: 'self',
-      ...(this.isProd ? {} : { publicPath: '/' }),
+      ...this.rendererPublicPath(target),
     };
     const plugins: webpack.WebpackPluginInstance[] = [];
 

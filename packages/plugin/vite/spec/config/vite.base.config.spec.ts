@@ -71,10 +71,15 @@ describe('vite.base.config', () => {
     const define2 = {
       MAIN_WINDOW_VITE_DEV_SERVER_URL: undefined,
       MAIN_WINDOW_VITE_NAME: '"main_window"',
-      MAIN_WINDOW_VITE_ENTRY: undefined,
+      // Without `appProtocol`, the entry constant still resolves to a valid
+      // (file://) URL in builds so `loadURL(MAIN_WINDOW_VITE_ENTRY)` app code
+      // does not break only when packaged.
+      MAIN_WINDOW_VITE_ENTRY:
+        "`file://${require('node:path').join(__dirname, '../renderer/main_window/index.html')}`",
       SECOND_WINDOW_VITE_DEV_SERVER_URL: undefined,
       SECOND_WINDOW_VITE_NAME: '"second_window"',
-      SECOND_WINDOW_VITE_ENTRY: undefined,
+      SECOND_WINDOW_VITE_ENTRY:
+        "`file://${require('node:path').join(__dirname, '../renderer/second_window/index.html')}`",
     };
 
     expect(define1).toEqual(define2);

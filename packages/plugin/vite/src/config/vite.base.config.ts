@@ -83,7 +83,11 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
             ? JSON.stringify(viteDevServerUrls[VITE_DEV_SERVER_URL])
             : appProtocol
               ? JSON.stringify(getAppProtocolEntryUrl(name, appProtocol.scheme))
-              : undefined,
+              : // Keep the constant a valid URL without `appProtocol` too, so
+                // an app that calls `loadURL(MAIN_WINDOW_VITE_ENTRY)` and later
+                // turns the option off keeps working when packaged instead of
+                // failing only in production with `loadURL(undefined)`.
+                `\`file://\${require('node:path').join(__dirname, '../renderer/${name}/index.html')}\``,
       };
       return { ...acc, ...def };
     },
@@ -108,6 +112,29 @@ export function pluginExposeRenderer(name: string): Plugin {
         viteDevServerUrls[VITE_DEV_SERVER_URL] =
           `http://localhost:${addressInfo?.port}`;
       });
+    },
+  };
+}
+
+/**
+ * Prepends the appProtocol runtime to the main-process bundle. Implemented as
+ * a plugin rather than `build.rollupOptions.output.banner` so that a user's
+ * own `banner` in their Vite config composes with the runtime instead of
+ * silently replacing it (plugin arrays concatenate under `mergeConfig`;
+ * plain config values do not).
+ */
+export function pluginAppProtocolRuntime(runtime: string): Plugin {
+  return {
+    name: '@electron-forge/plugin-vite:app-protocol-runtime',
+    outputOptions(output) {
+      const existing = output.banner;
+      return {
+        ...output,
+        banner:
+          typeof existing === 'function'
+            ? async (chunk) => runtime + (await existing(chunk))
+            : runtime + (existing ?? ''),
+      };
     },
   };
 }

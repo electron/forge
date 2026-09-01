@@ -5,6 +5,7 @@ import {
   external,
   getBuildConfig,
   getBuildDefine,
+  pluginAppProtocolRuntime,
   pluginHotRestart,
 } from './vite.base.config.js';
 
@@ -14,28 +15,31 @@ export function getConfig(
 ): UserConfig {
   const { command, forgeConfig, forgeConfigSelf } = forgeEnv;
   const define = getBuildDefine(forgeEnv);
-  // In production builds (not the dev server, where renderers are served over
-  // HTTP), prepend the runtime that registers the `app://` scheme and serves
-  // the built renderer files over it. It must be a banner so it runs before
-  // any user code — see app-protocol.ts for the ordering constraints.
-  const appProtocolBanner =
-    forgeConfig.appProtocol && command === 'build'
-      ? getAppProtocolBanner(
-          forgeConfig.renderer
-            .map(({ name }) => name)
-            .filter((name) => name != null),
-          forgeConfig.appProtocol,
-        )
-      : undefined;
+  // Prepend the appProtocol runtime so it runs before any user code — see
+  // app-protocol.ts for the ordering constraints. In development the runtime
+  // only registers the privileged schemes (so they carry the same privileges
+  // as in the packaged app); serving over the scheme is production-only, the
+  // dev server serves renderers over HTTP.
+  const appProtocolBanner = forgeConfig.appProtocol
+    ? getAppProtocolBanner(
+        forgeConfig.renderer
+          .map(({ name }) => name)
+          .filter((name) => name != null),
+        forgeConfig.appProtocol,
+        { serveRenderers: command === 'build' },
+      )
+    : undefined;
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
       rollupOptions: {
         external: [...external, 'electron/main'],
-        output: appProtocolBanner ? { banner: appProtocolBanner } : undefined,
       },
     },
     plugins: [
+      ...(appProtocolBanner
+        ? [pluginAppProtocolRuntime(appProtocolBanner)]
+        : []),
       ...(forgeEnv.forgeConfig.hotRestart ? [pluginHotRestart('restart')] : []),
     ],
     define,

@@ -485,69 +485,95 @@ export function testForgeTemplate({
     );
 
     if (packagedRendererProtocol) {
-      test(`a packaged \`template-${templateName}\` app serves its renderer over \`${packagedRendererProtocol}//\``, async () => {
-        const packageManager: SupportedPackageManager = 'npm';
-        const createOutput = await scaffoldProject(
-          tmpDir,
-          templateName,
-          packageManager,
-        );
-
-        d('tmpdir: ', pathToFileURL(tmpDir).toString());
-
-        const { preloadPath, mainProcessEntrypoint } = findProbeFiles(tmpDir);
-        const rendererLocationMessage = '__FORGE_INTERNAL_RENDERER_LOCATION__';
-
-        // The preload script runs inside the renderer after its navigation
-        // has committed, so `window.location` is the URL the window was
-        // actually served from — the thing the injected app:// runtime is
-        // supposed to determine in packaged apps.
-        await fs.promises.appendFile(
-          preloadPath,
-          [
-            '\n',
-            `const { ipcRenderer } = require('electron');`,
-            `ipcRenderer.send('${rendererLocationMessage}', window.location.href);`,
-          ].join('\n'),
-        );
-
-        // TypeScript entrypoints compile under `noImplicitAny` (webpack's
-        // ts-loader fails the packaging build on it), so the callback
-        // parameters need explicit types there — which .js entrypoints can't
-        // carry.
-        const probeParams = mainProcessEntrypoint.endsWith('.ts')
-          ? '_event: unknown, href: unknown'
-          : '_event, href';
-        await fs.promises.appendFile(
-          mainProcessEntrypoint,
-          [
-            '\n',
-            `const { ipcMain } = require('electron');`,
-            `ipcMain.on('${rendererLocationMessage}', (${probeParams}) => {`,
-            `  console.log('${rendererLocationMessage}:' + String(href));`,
-            `  app.exit(0);`,
-            `});`,
-          ].join('\n'),
-        );
-
-        try {
-          await spawn(packageManager, ['run', 'package'], {
-            cwd: tmpDir,
-            env: forgeScriptEnv(packageManager),
-          });
-        } catch (error) {
-          console.error(
-            `[template-tests] create-electron-app said:\n${createOutput}`,
+      test(
+        `a packaged \`template-${templateName}\` app serves its renderer over \`${packagedRendererProtocol}//\``,
+        {
+          // Scaffolding, installing, packaging, and launching in one test
+          // takes longer than the project-level timeout allows for.
+          timeout: 480_000,
+        },
+        async () => {
+          const packageManager: SupportedPackageManager = 'npm';
+          const createOutput = await scaffoldProject(
+            tmpDir,
+            templateName,
+            packageManager,
           );
-          throw error;
-        }
 
-        const output = await runPackagedApp(findPackagedExecutable(tmpDir));
+          d('tmpdir: ', pathToFileURL(tmpDir).toString());
 
-        expect(output).toContain(
-          `${rendererLocationMessage}:${packagedRendererProtocol}//`,
-        );
-      }, 480_000); // longer than the project-level timeout allows for. // Scaffolding, installing, packaging, and launching in one test takes
+          const { preloadPath, mainProcessEntrypoint } = findProbeFiles(tmpDir);
+          const rendererPath = ['renderer.ts', 'renderer.js']
+            .map((item) => path.resolve(tmpDir, `src/${item}`))
+            .find((item) => fs.existsSync(item));
+          if (!rendererPath) {
+            throw new Error(`no renderer entry file found in ${tmpDir}/src`);
+          }
+          const rendererLocationMessage =
+            '__FORGE_INTERNAL_RENDERER_LOCATION__';
+
+          // The probe must prove the renderer *bundle* actually loaded and
+          // ran, not just that navigation committed — the preload runs even
+          // when every subresource 404s. So the renderer script posts a
+          // message, the preload forwards it (with `window.location.href`,
+          // the URL the window was actually served from) to the main process
+          // over IPC, and the main process logs it and exits.
+          await fs.promises.appendFile(
+            rendererPath,
+            `\nwindow.postMessage('${rendererLocationMessage}', '*');\n`,
+          );
+
+          // TypeScript templates compile under `noImplicitAny` (webpack's
+          // ts-loader fails the packaging build on it), so callback
+          // parameters need explicit types there — which .js files can't
+          // carry.
+          await fs.promises.appendFile(
+            preloadPath,
+            [
+              '\n',
+              `const { ipcRenderer } = require('electron');`,
+              `window.addEventListener('message', (${preloadPath.endsWith('.ts') ? 'event: MessageEvent' : 'event'}) => {`,
+              `  if (event.data === '${rendererLocationMessage}') {`,
+              `    ipcRenderer.send('${rendererLocationMessage}', window.location.href);`,
+              `  }`,
+              `});`,
+            ].join('\n'),
+          );
+
+          const probeParams = mainProcessEntrypoint.endsWith('.ts')
+            ? '_event: unknown, href: unknown'
+            : '_event, href';
+          await fs.promises.appendFile(
+            mainProcessEntrypoint,
+            [
+              '\n',
+              `const { ipcMain } = require('electron');`,
+              `ipcMain.on('${rendererLocationMessage}', (${probeParams}) => {`,
+              `  console.log('${rendererLocationMessage}:' + String(href));`,
+              `  app.exit(0);`,
+              `});`,
+            ].join('\n'),
+          );
+
+          try {
+            await spawn(packageManager, ['run', 'package'], {
+              cwd: tmpDir,
+              env: forgeScriptEnv(packageManager),
+            });
+          } catch (error) {
+            console.error(
+              `[template-tests] create-electron-app said:\n${createOutput}`,
+            );
+            throw error;
+          }
+
+          const output = await runPackagedApp(findPackagedExecutable(tmpDir));
+
+          expect(output).toContain(
+            `${rendererLocationMessage}:${packagedRendererProtocol}//`,
+          );
+        },
+      );
     }
 
     afterEach(async () => {
