@@ -85,9 +85,11 @@ export interface PrivilegedScheme {
 
 /**
  * Default privileges for the serving scheme. `standard` + `secure` make it a
- * real secure origin, `supportFetchApi` lets renderer code `fetch()` its own
- * resources, `stream` keeps `<video>`/`<audio>` working (they did under
- * `file://`), and `codeCache` keeps V8 code caching for renderer scripts.
+ * real secure origin, `supportFetchApi` allows the Fetch API to target the
+ * scheme (renderer `fetch()` of custom protocols is still limited upstream —
+ * electron/electron#48297 — but XHR and every resource-loader path work),
+ * `stream` keeps `<video>`/`<audio>` working (they did under `file://`), and
+ * `codeCache` keeps V8 code caching for renderer scripts.
  *
  * Exported so an app that opts out of Forge's registration
  * (`appProtocol: { registerSchemes: false }`) can include the serving
@@ -236,10 +238,36 @@ export function resolveAppProtocolConfig(
     }
   }
 
+  const privileges = {
+    ...APP_PROTOCOL_DEFAULT_PRIVILEGES,
+    ...config.privileges,
+  };
+  if (registerSchemes) {
+    // Host-based renderer matching only works for standard schemes, and
+    // Electron rejects the whole registerSchemesAsPrivileged call for
+    // codeCache without standard — which would throw at the top of the main
+    // bundle instead of failing the build.
+    if (privileges.standard !== true) {
+      throw new Error(
+        '`appProtocol.privileges.standard` cannot be disabled — the serving scheme uses the renderer name as a URL host, which requires a standard scheme.',
+      );
+    }
+    for (const {
+      scheme: additionalScheme,
+      privileges: additionalPrivileges,
+    } of additionalPrivilegedSchemes) {
+      if (additionalPrivileges?.codeCache && !additionalPrivileges.standard) {
+        throw new Error(
+          `\`additionalPrivilegedSchemes\` entry '${additionalScheme}' enables \`codeCache\` without \`standard\` — Electron rejects that registration at app startup.`,
+        );
+      }
+    }
+  }
+
   return {
     scheme,
     registerSchemes,
-    privileges: { ...APP_PROTOCOL_DEFAULT_PRIVILEGES, ...config.privileges },
+    privileges,
     additionalPrivilegedSchemes,
   };
 }
@@ -251,9 +279,22 @@ export function resolveAppProtocolConfig(
  * `appProtocol`.
  */
 export function validateRendererNameForAppProtocol(name: string): void {
-  if (!RENDERER_NAME_AS_HOST.test(name)) {
+  // Standard schemes get Chromium's full host canonicalisation, so a name
+  // that parses but canonicalises differently (IPv4-like names: '1', '1.2',
+  // '0x10' → '0.0.0.16') would never match the handler's hostname check.
+  // Round-trip through a special-scheme URL to apply the same rules.
+  let canonicalHost = '';
+  try {
+    canonicalHost = new URL(`http://${name}/`).hostname;
+  } catch {
+    // Unparseable as a host; rejected below.
+  }
+  if (
+    !RENDERER_NAME_AS_HOST.test(name) ||
+    canonicalHost !== name.toLowerCase()
+  ) {
     throw new Error(
-      `Renderer entry name ${JSON.stringify(name)} cannot be used with \`appProtocol\`: names become the URL host (\`scheme://<name>/\`), so they may only contain letters, digits, '.', '_', and '-', and must start and end with a letter or digit.`,
+      `Renderer entry name ${JSON.stringify(name)} cannot be used with \`appProtocol\`: names become the URL host (\`scheme://<name>/\`), so they may only contain letters, digits, '.', '_', and '-', must start and end with a letter or digit, and must not look like an IP address.`,
     );
   }
 }
@@ -301,9 +342,11 @@ export interface AppProtocolBannerOptions {
  * The emitted code is plain CommonJS because both plugins emit CommonJS
  * main-process bundles. If a user overrides their bundler config to emit ESM,
  * the banner's `require('electron')` would break — `appProtocol` is
- * documented as requiring the default CommonJS output. The leading
- * `'use strict'` keeps the bundle's own directive prologue effective even
- * though the banner sits above it.
+ * documented as requiring the default CommonJS output. The strict-mode
+ * directive lives inside the IIFE: a file-level one would force webpack's
+ * deliberately-sloppy bundled CJS deps strict, while the Vite path (whose
+ * Rollup prologue directive this banner displaces) re-adds a file-level
+ * directive in `pluginAppProtocolRuntime`.
  */
 export function getAppProtocolBanner(
   rendererNames: string[],
@@ -336,7 +379,7 @@ export function getAppProtocolBanner(
     ? ''
     : `
   app.once('ready', function () {
-    protocol.handle(${JSON.stringify(scheme)}, function (request) {
+    protocol.handle(${JSON.stringify(scheme)}, async function (request) {
       const url = new URL(request.url);
       // The URL host is lower-cased by the parser; renderer names may not be.
       const name = rendererNames.find(function (rendererName) {
@@ -362,23 +405,81 @@ export function getAppProtocolBanner(
       if (relative.startsWith('..') || path.isAbsolute(relative)) {
         return new Response(null, { status: 404 });
       }
-      return net.fetch(pathToFileURL(target).toString(), {
+      // net.fetch(file:) does not forward the Range header
+      // (electron/electron#38749), which media seeking depends on and
+      // \`file://\` supported — serve single-range requests from the file
+      // directly.
+      const rangeHeader = request.headers.get('range');
+      if (rangeHeader !== null) {
+        let size;
+        try {
+          size = (await fs.promises.stat(target)).size;
+        } catch {
+          return new Response(null, { status: 404 });
+        }
+        // Chromium's media stack only sends single ranges.
+        const match = /^bytes=(\\d*)-(\\d*)$/.exec(rangeHeader);
+        let start = NaN;
+        let end = size - 1;
+        if (match && match[1] !== '') {
+          start = Number(match[1]);
+          if (match[2] !== '') end = Math.min(Number(match[2]), size - 1);
+        } else if (match && match[2] !== '') {
+          start = Math.max(0, size - Number(match[2]));
+        }
+        if (Number.isNaN(start) || start > end || start >= size) {
+          return new Response(null, {
+            status: 416,
+            headers: { 'Content-Range': 'bytes */' + size },
+          });
+        }
+        const mediaTypes = { mp4: 'video/mp4', m4v: 'video/mp4', m4a: 'audio/mp4', webm: 'video/webm', ogg: 'audio/ogg', ogv: 'video/ogg', opus: 'audio/ogg', mp3: 'audio/mpeg', wav: 'audio/wav', flac: 'audio/flac', mov: 'video/quicktime' };
+        const ext = path.extname(target).slice(1).toLowerCase();
+        return new Response(
+          Readable.toWeb(fs.createReadStream(target, { start: start, end: end })),
+          {
+            status: 206,
+            headers: {
+              'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
+              'Accept-Ranges': 'bytes',
+              'Content-Length': String(end - start + 1),
+              'Content-Type': mediaTypes[ext] || 'application/octet-stream',
+            },
+          },
+        );
+      }
+      const response = await net.fetch(pathToFileURL(target).toString(), {
         bypassCustomProtocolHandlers: true,
+      });
+      // Advertise range support so media elements attempt seeking at all.
+      const headers = new Headers(response.headers);
+      headers.set('Accept-Ranges', 'bytes');
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: headers,
       });
     });
   });`;
-  return `'use strict';
-// Injected by Electron Forge because \`appProtocol\` is enabled.
+  // No file-level 'use strict' here: webpack prepends this string verbatim,
+  // and a file-level directive would force every bundled sloppy-mode CJS dep
+  // into strict mode (webpack keeps CJS modules sloppy on purpose). The Vite
+  // path adds a file-level directive in pluginAppProtocolRuntime instead,
+  // because the banner displaces Rollup's own prologue directive there.
+  return `// Injected by Electron Forge because \`appProtocol\` is enabled.
 // ${registerSchemes ? `Registers the privileged \`${scheme}://\` scheme${serveRenderers ? ' and serves the built renderer files over it' : ''}` : `Serves the built renderer files over the \`${scheme}://\` scheme (registered by the app — \`registerSchemes: false\`)`}
 // instead of \`file://\`, per Electron's security recommendations.
 (function () {
+  'use strict';
   // Main-target bundles can also be loaded in utility/worker processes,
   // where \`app\` and \`protocol\` do not exist.
   if (typeof process === 'undefined' || process.type !== 'browser') return;
   if (globalThis.__electronForgeAppProtocol) return;
   globalThis.__electronForgeAppProtocol = true;
   const { app, net, protocol } = require('electron');
+  const fs = require('node:fs');
   const path = require('node:path');
+  const { Readable } = require('node:stream');
   const { pathToFileURL } = require('node:url');
   const rendererNames = ${JSON.stringify(rendererNames)};${registrationCode}${handlerCode}
 })();

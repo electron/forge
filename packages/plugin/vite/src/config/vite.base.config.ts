@@ -8,8 +8,18 @@ import {
   resolveAppProtocolConfig,
 } from '@electron-forge/core-utils';
 
+import { version as viteVersion } from 'vite';
+
 import type { AddressInfo } from 'node:net';
 import type { ConfigEnv, Plugin, UserConfig, ViteDevServer } from 'vite';
+
+/**
+ * Vite 5–7 run build-time `define` through esbuild, which only accepts JSON
+ * literals or identifier/member expressions — a template-literal define value
+ * fails the whole build with "Invalid define value". Vite 8's oxc define
+ * accepts expressions.
+ */
+const viteDefineSupportsExpressions = Number(viteVersion.split('.')[0]) >= 8;
 
 export const external = [
   'electron',
@@ -83,11 +93,19 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
             ? JSON.stringify(viteDevServerUrls[VITE_DEV_SERVER_URL])
             : appProtocol
               ? JSON.stringify(getAppProtocolEntryUrl(name, appProtocol.scheme))
-              : // Keep the constant a valid URL without `appProtocol` too, so
-                // an app that calls `loadURL(MAIN_WINDOW_VITE_ENTRY)` and later
-                // turns the option off keeps working when packaged instead of
-                // failing only in production with `loadURL(undefined)`.
-                `\`file://\${require('node:path').join(__dirname, '../renderer/${name}/index.html')}\``,
+              : viteDefineSupportsExpressions
+                ? // Keep the constant a valid URL without `appProtocol` too,
+                  // so an app that calls `loadURL(MAIN_WINDOW_VITE_ENTRY)` and
+                  // later turns the option off keeps working when packaged
+                  // instead of failing only in production with
+                  // `loadURL(undefined)`. pathToFileURL encodes '#', '?' and
+                  // '%' in install paths the way the loadFile call this
+                  // replaces did.
+                  `require('node:url').pathToFileURL(require('node:path').join(__dirname, '../renderer/${name}/index.html')).href`
+                : // Older Vite's esbuild-based define rejects expression
+                  // values, so there the constant is only defined with
+                  // `appProtocol` (or in dev).
+                  undefined,
       };
       return { ...acc, ...def };
     },
@@ -124,6 +142,12 @@ export function pluginExposeRenderer(name: string): Plugin {
  * plain config values do not).
  */
 export function pluginAppProtocolRuntime(runtime: string): Plugin {
+  // The banner sits above Rollup's own 'use strict' prologue directive, which
+  // stops being a directive once displaced — so re-assert it at file level
+  // here. (The shared banner itself must not carry a file-level directive:
+  // webpack's BannerPlugin path would force bundled sloppy-mode CJS deps
+  // strict.)
+  const banner = `'use strict';\n${runtime}`;
   return {
     name: '@electron-forge/plugin-vite:app-protocol-runtime',
     outputOptions(output) {
@@ -132,8 +156,8 @@ export function pluginAppProtocolRuntime(runtime: string): Plugin {
         ...output,
         banner:
           typeof existing === 'function'
-            ? async (chunk) => runtime + (await existing(chunk))
-            : runtime + (existing ?? ''),
+            ? async (chunk) => banner + (await existing(chunk))
+            : banner + (existing ?? ''),
       };
     },
   };

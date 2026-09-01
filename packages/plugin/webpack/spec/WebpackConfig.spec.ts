@@ -521,6 +521,62 @@ describe('WebpackConfigGenerator', () => {
         expect(findBannerPlugin(webpackConfig.plugins)).toBeUndefined();
       });
 
+      it('tolerates unservable names on entries the scheme never serves', async () => {
+        // `toEnvironmentVariable` supports names with spaces and file://
+        // tolerated them; JS-only entries stay on file://, so their names
+        // must be neither host-validated nor allowlisted.
+        const generator = new WebpackConfigGenerator(
+          {
+            ...appProtocolConfig,
+            renderer: {
+              entryPoints: [
+                { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+                { name: 'background worker', js: 'worker.js' },
+              ],
+            },
+          },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin!.options.banner).toContain('["main_window"]');
+        expect(bannerPlugin!.options.banner).not.toContain('background worker');
+      });
+
+      it('splits served and unserved entries into separate compilations in production', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [
+            { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+            { name: 'background_worker', js: 'worker.js' },
+          ],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
+        );
+        const webConfigs = configs.filter((config) => config.target === 'web');
+        expect(webConfigs).toHaveLength(2);
+        const servedConfig = webConfigs.find(
+          (config) => (config.entry as Entry)['main_window'],
+        );
+        const unservedConfig = webConfigs.find(
+          (config) => (config.entry as Entry)['background_worker'],
+        );
+        // The served compilation needs root-relative asset URLs; the JS-only
+        // one must keep webpack's 'auto' script-relative resolution for
+        // file:// loading.
+        expect(servedConfig?.output?.publicPath).toEqual('/');
+        expect(unservedConfig?.output?.publicPath).toBeUndefined();
+      });
+
       it('uses root-relative publicPath for served renderers in production', async () => {
         const rendererOptions = {
           config: {},

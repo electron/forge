@@ -270,9 +270,21 @@ export default class WebpackConfigGenerator {
     // comment) and `entryOnly` keeps it out of split chunks.
     const appProtocolBanner = this.pluginConfig.appProtocol
       ? getAppProtocolBanner(
+          // Only entries the scheme actually serves (the same predicate
+          // `rendererEntryPoint` uses): JS-only and `nodeIntegration` entries
+          // keep `file://`, so their names are neither validated as URL hosts
+          // nor added to the handler's origin allowlist.
           this.allPluginRendererOptions.flatMap((rendererOptions) =>
             (rendererOptions.entryPoints ?? [])
-              .filter((entryPoint) => !isPreloadOnly(entryPoint))
+              .filter(
+                (entryPoint) =>
+                  isLocalWindow(entryPoint) &&
+                  !(
+                    entryPoint.nodeIntegration ??
+                    rendererOptions.nodeIntegration ??
+                    false
+                  ),
+              )
               .map((entryPoint) => entryPoint.name),
           ),
           this.pluginConfig.appProtocol,
@@ -388,17 +400,20 @@ export default class WebpackConfigGenerator {
    * Renderers served over `appProtocol` need root-relative asset URLs: the
    * handler roots every origin at `.webpack/renderer/`, so `publicPath: '/'`
    * makes html-webpack-plugin emit `/<name>/index.js` instead of the `'auto'`
-   * relative URLs that only resolve under `file://`. Applies to Web-target
-   * renderers only — `nodeIntegration` renderers stay on `file://`.
+   * relative URLs that only resolve under `file://`. Only compilations whose
+   * every entry is actually served get it — JS-only and `nodeIntegration`
+   * entries stay on `file://` and rely on `'auto'` script-relative URLs, so
+   * served and unserved entries are built as separate compilations.
    */
-  private rendererPublicPath(target: RendererTarget) {
+  private rendererPublicPath(servedOverAppProtocol: boolean) {
     if (!this.isProd) return { publicPath: '/' };
-    return this.pluginConfig.appProtocol && target === RendererTarget.Web
-      ? { publicPath: '/' }
-      : {};
+    return servedOverAppProtocol ? { publicPath: '/' } : {};
   }
 
-  buildRendererBaseConfig(target: RendererTarget): webpack.Configuration {
+  buildRendererBaseConfig(
+    target: RendererTarget,
+    servedOverAppProtocol = false,
+  ): webpack.Configuration {
     return {
       target: rendererTargetToWebpackTarget(target),
       devtool: this.rendererSourceMapOption,
@@ -407,7 +422,7 @@ export default class WebpackConfigGenerator {
         path: path.resolve(this.webpackDir, 'renderer'),
         filename: '[name]/index.js',
         globalObject: 'self',
-        ...this.rendererPublicPath(target),
+        ...this.rendererPublicPath(servedOverAppProtocol),
       },
       node: {
         __dirname: false,
@@ -427,21 +442,24 @@ export default class WebpackConfigGenerator {
     rendererOptions: WebpackPluginRendererConfig,
     entryPoints: WebpackPluginEntryPoint[],
     target: RendererTarget.Web | RendererTarget.ElectronRenderer,
+    servedOverAppProtocol = false,
   ): Promise<webpack.Configuration | null> {
     if (!isLocalOrNoWindowEntries(entryPoints)) {
       throw new Error('Invalid renderer entry point detected.');
     }
 
     const entry: webpack.Entry = {};
-    const baseConfig: webpack.Configuration =
-      this.buildRendererBaseConfig(target);
+    const baseConfig: webpack.Configuration = this.buildRendererBaseConfig(
+      target,
+      servedOverAppProtocol,
+    );
     const rendererConfig = await this.resolveConfig(rendererOptions.config);
 
     const output = {
       path: path.resolve(this.webpackDir, 'renderer'),
       filename: '[name]/index.js',
       globalObject: 'self',
-      ...this.rendererPublicPath(target),
+      ...this.rendererPublicPath(servedOverAppProtocol),
     };
     const plugins: webpack.WebpackPluginInstance[] = [];
 
@@ -528,13 +546,39 @@ export default class WebpackConfigGenerator {
       target === RendererTarget.Web ||
       target === RendererTarget.ElectronRenderer
     ) {
-      rendererConfigs.push(
-        this.buildRendererConfigForWebOrRendererTarget(
-          rendererOptions,
-          entryPoints,
-          target,
-        ),
-      );
+      // With `appProtocol`, only local-window Web-target entries are served
+      // over the scheme; JS-only entries keep `file://` URLs and `'auto'`
+      // script-relative asset resolution. The two need different prod
+      // `publicPath` values, so they build as separate compilations.
+      const splitServedEntries =
+        this.isProd &&
+        !!this.pluginConfig.appProtocol &&
+        target === RendererTarget.Web;
+      const served = splitServedEntries
+        ? entryPoints.filter((entryPoint) => isLocalWindow(entryPoint))
+        : [];
+      const unserved = splitServedEntries
+        ? entryPoints.filter((entryPoint) => !isLocalWindow(entryPoint))
+        : entryPoints;
+      if (served.length > 0) {
+        rendererConfigs.push(
+          this.buildRendererConfigForWebOrRendererTarget(
+            rendererOptions,
+            served,
+            target,
+            true,
+          ),
+        );
+      }
+      if (unserved.length > 0) {
+        rendererConfigs.push(
+          this.buildRendererConfigForWebOrRendererTarget(
+            rendererOptions,
+            unserved,
+            target,
+          ),
+        );
+      }
       return rendererConfigs;
     } else if (
       target === RendererTarget.ElectronPreload ||

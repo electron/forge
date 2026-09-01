@@ -338,8 +338,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    * We include build[], renderer[], and appProtocol — the worker needs the
    * full renderer list for defines even when building a single main target,
    * and appProtocol drives both the `*_VITE_ENTRY` defines and the runtime
-   * injected into production main bundles. `hotRestart` is moot here: workers
-   * only run when packaging.
+   * injected into production main bundles. `hotRestart` is deliberately not
+   * serialized: the watch workers have no IPC bridge for restart requests, so
+   * installing pluginHotRestart there would warn on every rebuild without
+   * restarting anything (bridging it like `reload-renderers` is a separate
+   * fix).
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,

@@ -28,6 +28,31 @@ describe('app-protocol', () => {
     expect(() => getAppProtocolBanner(['my window'])).toThrow(/URL host/);
   });
 
+  it.each(['1', '2024', '1.2', '0x10'])(
+    'rejects the IPv4-canonicalising renderer name %j',
+    (name) => {
+      // Standard schemes canonicalise IPv4-like hosts (`app://1/` becomes
+      // `app://0.0.0.1/`), so these names could never match the handler.
+      expect(() => getAppProtocolEntryUrl(name)).toThrow(/URL host/);
+    },
+  );
+
+  it('rejects disabling standard on the serving scheme', () => {
+    expect(() =>
+      resolveAppProtocolConfig({ privileges: { standard: false } }),
+    ).toThrow(/standard/);
+  });
+
+  it('rejects codeCache without standard on additional schemes', () => {
+    expect(() =>
+      resolveAppProtocolConfig({
+        additionalPrivilegedSchemes: [
+          { scheme: 'media', privileges: { codeCache: true } },
+        ],
+      }),
+    ).toThrow(/codeCache/);
+  });
+
   it('emits syntactically valid runtime code', () => {
     const banner = getAppProtocolBanner(['main_window', 'second_window']);
     // Throws on a syntax error without executing the code.
@@ -35,14 +60,29 @@ describe('app-protocol', () => {
     expect(banner).toContain('["main_window","second_window"]');
   });
 
-  it('keeps the bundle strict and no-ops outside the browser process', () => {
+  it('keeps strict mode scoped to the runtime and no-ops outside the browser process', () => {
     const banner = getAppProtocolBanner(['main_window']);
-    // The banner sits above the bundle's own directive prologue, so it must
-    // carry the directive itself or the whole bundle silently goes sloppy.
-    expect(banner).toMatch(/^'use strict';/);
+    // The directive lives inside the IIFE: a file-level one would force
+    // webpack's deliberately-sloppy bundled CJS deps into strict mode (the
+    // Vite path re-adds a file-level directive in pluginAppProtocolRuntime,
+    // where the banner displaces Rollup's own prologue).
+    expect(banner).not.toMatch(/^'use strict';/);
+    expect(banner).toMatch(/\(function \(\) \{\s*'use strict';/);
     // Main-target bundles can also be loaded in utility/worker processes,
     // where `app`/`protocol` do not exist.
     expect(banner).toContain(`process.type !== 'browser'`);
+  });
+
+  it('serves single-range requests so media can seek', () => {
+    const banner = getAppProtocolBanner(['main_window']);
+    // net.fetch(file:) drops the Range header (electron/electron#38749);
+    // the handler answers ranges from the file directly and advertises
+    // Accept-Ranges on full responses.
+    expect(() => new Function(banner)).not.toThrow();
+    expect(banner).toContain(`request.headers.get('range')`);
+    expect(banner).toContain('status: 206');
+    expect(banner).toContain('status: 416');
+    expect(banner).toContain(`'Accept-Ranges', 'bytes'`);
   });
 
   it('grants the serving scheme secure-origin defaults including stream and codeCache', () => {

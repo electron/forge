@@ -155,10 +155,14 @@ export interface WebpackPluginConfig {
    * When enabled, the plugin injects the scheme registration and protocol
    * handler into the production main-process bundle, and the `*_WEBPACK_ENTRY`
    * magic constant for HTML entry points resolves to an
-   * `app://<entry-name>/index.html` URL in production (it is a dev server URL
-   * in development either way, so `mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)`
-   * keeps working unchanged). JS-only (no-window) entry points keep their
-   * `file://` paths.
+   * `app://<entry-name>/<entry-name>/index.html` URL in production (every
+   * origin is rooted at the shared renderer output directory, so the path
+   * carries the per-entry subdirectory; it is a dev server URL in development
+   * either way, so `mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)` keeps
+   * working unchanged). JS-only (no-window) entry points and
+   * `nodeIntegration: true` entry points keep their `file://` paths —
+   * Electron only derives the renderer's `__dirname` from `file:` URLs, which
+   * relocated native modules rely on.
    *
    * Notes:
    * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
