@@ -139,6 +139,34 @@ describe('vite.main.config', () => {
     ).toThrow(/reserved/);
   });
 
+  it('injects only the serving handler with registerSchemes: false', () => {
+    const config = getConfig(
+      buildEnv({
+        forgeConfig: {
+          ...forgeConfig,
+          appProtocol: { registerSchemes: false },
+        },
+      }),
+    );
+    const banner = getBanner(config);
+    expect(banner).toContain('protocol.handle');
+    expect(banner).not.toContain('registerSchemesAsPrivileged');
+  });
+
+  it('injects nothing for dev server builds with registerSchemes: false', () => {
+    const config = getConfig(
+      buildEnv({
+        command: 'serve',
+        mode: 'development',
+        forgeConfig: {
+          ...forgeConfig,
+          appProtocol: { registerSchemes: false },
+        },
+      }),
+    );
+    expect(getBanner(config)).toBeUndefined();
+  });
+
   it('only registers privileged schemes for dev server builds', () => {
     // Schemes must carry the same privileges under `electron-forge start` as
     // in the packaged app, but the dev server serves the renderers, so the

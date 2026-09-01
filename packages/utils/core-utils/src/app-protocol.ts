@@ -88,15 +88,21 @@ export interface PrivilegedScheme {
  * real secure origin, `supportFetchApi` lets renderer code `fetch()` its own
  * resources, `stream` keeps `<video>`/`<audio>` working (they did under
  * `file://`), and `codeCache` keeps V8 code caching for renderer scripts.
+ *
+ * Exported so an app that opts out of Forge's registration
+ * (`appProtocol: { registerSchemes: false }`) can include the serving
+ * scheme with these privileges in its own `registerSchemesAsPrivileged`
+ * call.
  */
-const DEFAULT_SERVING_PRIVILEGES: NonNullable<PrivilegedScheme['privileges']> =
-  {
-    standard: true,
-    secure: true,
-    supportFetchApi: true,
-    stream: true,
-    codeCache: true,
-  };
+export const APP_PROTOCOL_DEFAULT_PRIVILEGES: NonNullable<
+  PrivilegedScheme['privileges']
+> = {
+  standard: true,
+  secure: true,
+  supportFetchApi: true,
+  stream: true,
+  codeCache: true,
+};
 
 export interface AppProtocolConfig {
   /**
@@ -124,6 +130,33 @@ export interface AppProtocolConfig {
   privileges?: PrivilegedScheme['privileges'];
 
   /**
+   * Whether the injected runtime makes the app's
+   * `protocol.registerSchemesAsPrivileged` call.
+   *
+   * Set to `false` when your app needs to own that call itself (Electron
+   * allows exactly one per app, before `ready`). Forge then injects only the
+   * `protocol.handle` serving runtime, and your registration MUST include the
+   * serving scheme or the packaged app cannot load its window — spread
+   * `APP_PROTOCOL_DEFAULT_PRIVILEGES` (exported from
+   * `@electron-forge/core-utils`) or write the equivalent literal:
+   *
+   * ```js
+   * protocol.registerSchemesAsPrivileged([
+   *   {
+   *     scheme: 'app',
+   *     privileges: { standard: true, secure: true, supportFetchApi: true, stream: true, codeCache: true },
+   *   },
+   *   // ...your own schemes
+   * ]);
+   * ```
+   *
+   * `privileges` and `additionalPrivilegedSchemes` are rejected in this mode:
+   * both configure a registration call Forge no longer makes.
+   * @defaultValue `true`
+   */
+  registerSchemes?: boolean;
+
+  /**
    * Additional custom schemes to register as privileged alongside the serving
    * scheme.
    *
@@ -143,6 +176,7 @@ export interface AppProtocolConfig {
 
 export interface ResolvedAppProtocolConfig {
   scheme: string;
+  registerSchemes: boolean;
   privileges: NonNullable<PrivilegedScheme['privileges']>;
   additionalPrivilegedSchemes: PrivilegedScheme[];
 }
@@ -169,6 +203,22 @@ export function resolveAppProtocolConfig(
     );
   }
 
+  const registerSchemes = config.registerSchemes ?? true;
+  if (!registerSchemes) {
+    // Both options configure the registerSchemesAsPrivileged call, which the
+    // app owns in this mode — rejecting them beats silently ignoring them.
+    if (config.additionalPrivilegedSchemes?.length) {
+      throw new Error(
+        '`appProtocol.additionalPrivilegedSchemes` cannot be combined with `registerSchemes: false` — your app owns the `registerSchemesAsPrivileged` call, so register them there.',
+      );
+    }
+    if (config.privileges) {
+      throw new Error(
+        "`appProtocol.privileges` cannot be combined with `registerSchemes: false` — your app owns the `registerSchemesAsPrivileged` call, so include the serving scheme's privileges there (see `APP_PROTOCOL_DEFAULT_PRIVILEGES`).",
+      );
+    }
+  }
+
   const additionalPrivilegedSchemes = config.additionalPrivilegedSchemes ?? [];
   for (const additional of additionalPrivilegedSchemes) {
     if (
@@ -188,7 +238,8 @@ export function resolveAppProtocolConfig(
 
   return {
     scheme,
-    privileges: { ...DEFAULT_SERVING_PRIVILEGES, ...config.privileges },
+    registerSchemes,
+    privileges: { ...APP_PROTOCOL_DEFAULT_PRIVILEGES, ...config.privileges },
     additionalPrivilegedSchemes,
   };
 }
@@ -262,15 +313,25 @@ export function getAppProtocolBanner(
     rootIncludesName = true,
   }: AppProtocolBannerOptions = {},
 ): string {
-  const { scheme, privileges, additionalPrivilegedSchemes } =
+  const { scheme, registerSchemes, privileges, additionalPrivilegedSchemes } =
     resolveAppProtocolConfig(appProtocol);
   for (const name of rendererNames) {
     validateRendererNameForAppProtocol(name);
+  }
+  // With `registerSchemes: false` the app owns the registration call; in
+  // development there is then nothing left for the runtime to do (the dev
+  // server serves the renderers).
+  if (!registerSchemes && !serveRenderers) {
+    return '';
   }
   const privilegedSchemes: PrivilegedScheme[] = [
     { scheme, privileges },
     ...additionalPrivilegedSchemes,
   ];
+  const registrationCode = registerSchemes
+    ? `
+  protocol.registerSchemesAsPrivileged(${JSON.stringify(privilegedSchemes)});`
+    : '';
   const handlerCode = !serveRenderers
     ? ''
     : `
@@ -308,7 +369,7 @@ export function getAppProtocolBanner(
   });`;
   return `'use strict';
 // Injected by Electron Forge because \`appProtocol\` is enabled.
-// Registers the privileged \`${scheme}://\` scheme${serveRenderers ? ' and serves the built renderer files over it' : ''}
+// ${registerSchemes ? `Registers the privileged \`${scheme}://\` scheme${serveRenderers ? ' and serves the built renderer files over it' : ''}` : `Serves the built renderer files over the \`${scheme}://\` scheme (registered by the app — \`registerSchemes: false\`)`}
 // instead of \`file://\`, per Electron's security recommendations.
 (function () {
   // Main-target bundles can also be loaded in utility/worker processes,
@@ -319,8 +380,7 @@ export function getAppProtocolBanner(
   const { app, net, protocol } = require('electron');
   const path = require('node:path');
   const { pathToFileURL } = require('node:url');
-  const rendererNames = ${JSON.stringify(rendererNames)};
-  protocol.registerSchemesAsPrivileged(${JSON.stringify(privilegedSchemes)});${handlerCode}
+  const rendererNames = ${JSON.stringify(rendererNames)};${registrationCode}${handlerCode}
 })();
 `;
 }

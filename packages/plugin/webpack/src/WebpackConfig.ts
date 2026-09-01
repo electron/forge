@@ -268,24 +268,29 @@ export default class WebpackConfigGenerator {
     // serving over the scheme is production-only, the dev server serves
     // renderers over HTTP. `raw` emits the code verbatim (not wrapped in a
     // comment) and `entryOnly` keeps it out of split chunks.
-    const appProtocolPlugins = this.pluginConfig.appProtocol
+    const appProtocolBanner = this.pluginConfig.appProtocol
+      ? getAppProtocolBanner(
+          this.allPluginRendererOptions.flatMap((rendererOptions) =>
+            (rendererOptions.entryPoints ?? [])
+              .filter((entryPoint) => !isPreloadOnly(entryPoint))
+              .map((entryPoint) => entryPoint.name),
+          ),
+          this.pluginConfig.appProtocol,
+          {
+            serveRenderers: this.isProd,
+            // All origins share the `.webpack/renderer/` root — webpack
+            // emits one output directory with per-entry subdirectories
+            // and `publicPath: '/'`-based asset URLs.
+            rootIncludesName: false,
+          },
+        )
+      : '';
+    // The banner is empty in development with `registerSchemes: false` — the
+    // call above still validates the config either way.
+    const appProtocolPlugins = appProtocolBanner
       ? [
           new BannerPlugin({
-            banner: getAppProtocolBanner(
-              this.allPluginRendererOptions.flatMap((rendererOptions) =>
-                (rendererOptions.entryPoints ?? [])
-                  .filter((entryPoint) => !isPreloadOnly(entryPoint))
-                  .map((entryPoint) => entryPoint.name),
-              ),
-              this.pluginConfig.appProtocol,
-              {
-                serveRenderers: this.isProd,
-                // All origins share the `.webpack/renderer/` root — webpack
-                // emits one output directory with per-entry subdirectories
-                // and `publicPath: '/'`-based asset URLs.
-                rootIncludesName: false,
-              },
-            ),
+            banner: appProtocolBanner,
             raw: true,
             entryOnly: true,
           }),

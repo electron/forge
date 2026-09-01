@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  APP_PROTOCOL_DEFAULT_PRIVILEGES,
   getAppProtocolBanner,
   getAppProtocolEntryUrl,
   resolveAppProtocolConfig,
@@ -171,9 +172,60 @@ describe('app-protocol', () => {
     );
   });
 
+  describe('registerSchemes: false', () => {
+    it('emits the serving handler but no scheme registration', () => {
+      const banner = getAppProtocolBanner(['main_window'], {
+        registerSchemes: false,
+      });
+      expect(() => new Function(banner)).not.toThrow();
+      expect(banner).toContain('protocol.handle');
+      expect(banner).not.toContain('registerSchemesAsPrivileged');
+    });
+
+    it('emits nothing in development', () => {
+      // The app owns the registration call and the dev server serves the
+      // renderers, so there is nothing left for the runtime to do.
+      expect(
+        getAppProtocolBanner(
+          ['main_window'],
+          { registerSchemes: false },
+          {
+            serveRenderers: false,
+          },
+        ),
+      ).toEqual('');
+    });
+
+    it('rejects options that configure the registration Forge no longer makes', () => {
+      expect(() =>
+        resolveAppProtocolConfig({
+          registerSchemes: false,
+          additionalPrivilegedSchemes: [{ scheme: 'media' }],
+        }),
+      ).toThrow(/registerSchemes: false/);
+      expect(() =>
+        resolveAppProtocolConfig({
+          registerSchemes: false,
+          privileges: { stream: false },
+        }),
+      ).toThrow(/registerSchemes: false/);
+    });
+
+    it('exports the default serving privileges for app-owned registration', () => {
+      expect(APP_PROTOCOL_DEFAULT_PRIVILEGES).toEqual({
+        standard: true,
+        secure: true,
+        supportFetchApi: true,
+        stream: true,
+        codeCache: true,
+      });
+    });
+  });
+
   it('resolves the boolean form to the defaults', () => {
     expect(resolveAppProtocolConfig(true)).toEqual({
       scheme: 'app',
+      registerSchemes: true,
       privileges: {
         standard: true,
         secure: true,

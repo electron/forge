@@ -495,6 +495,32 @@ describe('WebpackConfigGenerator', () => {
         expect(bannerPlugin!.options.banner).not.toContain('protocol.handle');
       });
 
+      it('injects only the serving handler with registerSchemes: false', async () => {
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, appProtocol: { registerSchemes: false } },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin!.options.banner).toContain('protocol.handle');
+        expect(bannerPlugin!.options.banner).not.toContain(
+          'registerSchemesAsPrivileged',
+        );
+      });
+
+      it('injects nothing in development with registerSchemes: false', async () => {
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, appProtocol: { registerSchemes: false } },
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(findBannerPlugin(webpackConfig.plugins)).toBeUndefined();
+      });
+
       it('uses root-relative publicPath for served renderers in production', async () => {
         const rendererOptions = {
           config: {},

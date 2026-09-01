@@ -166,6 +166,11 @@ export interface WebpackPluginConfig {
    *   privileged schemes, pass them via the object form's
    *   `additionalPrivilegedSchemes` instead of calling
    *   `registerSchemesAsPrivileged` yourself.
+   * - The object form's `registerSchemes: false` hands the
+   *   `registerSchemesAsPrivileged` call to your app instead — Forge then
+   *   injects only the serving handler, and your registration must include
+   *   the serving scheme (see `APP_PROTOCOL_DEFAULT_PRIVILEGES` in
+   *   `@electron-forge/core-utils`).
    * - The object form's `scheme` renames the serving scheme (default `app`).
    *   The scheme is part of the renderer's origin, so pick it before the
    *   first release — renaming later orphans origin-scoped data such as
