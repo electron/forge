@@ -1,6 +1,8 @@
 import { builtinModules, createRequire } from 'node:module';
 import path from 'node:path';
 
+import * as vite from 'vite';
+
 import type { Plugin, UserConfig } from 'vite';
 
 const electronModules = ['electron', 'electron/common', 'electron/renderer'];
@@ -80,6 +82,7 @@ const electronExportNames = [
   'ServiceWorkerMain',
   'session',
   'ShareMenu',
+  'sharedTexture',
   'shell',
   'systemPreferences',
   'TouchBar',
@@ -114,16 +117,21 @@ function createRuntimeShim(source: string) {
   const declarations = exports
     .map(
       ({ binding, name }) =>
-        `const ${binding} = /*#__PURE__*/ (() => moduleValue[${JSON.stringify(name)}])();`,
+        `const ${binding} = moduleValue[${JSON.stringify(name)}];`,
     )
     .join('\n');
   const namedExports = exports
     .map(({ binding, name }) => `  ${binding} as ${name},`)
     .join('\n');
 
+  // `require` is called directly rather than through an alias. Rolldown (Vite 8+)
+  // only rewrites syntactically-direct `require(...)` calls into its
+  // external-module interop; assigning it first (`const runtimeRequire = require`)
+  // and calling the alias produces a bundle with no `require` at all, and every
+  // Electron export silently becomes `undefined`. Rollup accepted either form, so
+  // this reads as a cosmetic difference and is not one.
   return `
-const runtimeRequire = require;
-const moduleValue = runtimeRequire(${JSON.stringify(source)});
+const moduleValue = require(${JSON.stringify(source)});
 const defaultExport = moduleValue?.default ?? moduleValue;
 ${declarations}
 export {
@@ -152,14 +160,42 @@ function configureNodeIntegration(config: UserConfig) {
 
   config.build.rollupOptions ??= {};
   const { output } = config.build.rollupOptions;
-  if (Array.isArray(output)) {
-    for (const outputConfig of output) outputConfig.freeze ??= false;
-  } else {
-    config.build.rollupOptions.output = {
-      ...output,
-      freeze: output?.freeze ?? false,
-    };
+  // Rollup freezes the namespace object it builds for a CommonJS module, so the
+  // `require` shims below would hand back a frozen `electron` namespace and any
+  // consumer that assigns onto it (a common pattern in test setups) would throw
+  // in strict mode. `output.freeze: false` opts out of that.
+  //
+  // Only Rollup has the option: Vite 8 bundles Rolldown, which never emits
+  // `Object.freeze` at all, so the property is absent from its `OutputOptions`
+  // and setting it would be both a type error and a no-op. `freeze` is therefore
+  // written through a cast and only when the running Vite is Rollup-based.
+  if (rollupSupportsFreeze()) {
+    if (Array.isArray(output)) {
+      for (const outputConfig of output) applyFreeze(outputConfig);
+    } else {
+      const merged = { ...output };
+      applyFreeze(merged);
+      config.build.rollupOptions.output = merged;
+    }
   }
+}
+
+function applyFreeze(outputConfig: object) {
+  const freezable = outputConfig as { freeze?: boolean };
+  freezable.freeze ??= false;
+}
+
+/**
+ * Whether the bundler behind `build.rollupOptions` understands `output.freeze`.
+ * True for Rollup (Vite 6 and 7), false for Rolldown (Vite 8+), which never
+ * emits `Object.freeze` and so does not need the opt-out.
+ *
+ * Vite only exports `rolldownVersion` from the Rolldown-based builds, so its
+ * presence is the direct signal; a version-number check would need updating
+ * every time Vite changes bundler.
+ */
+function rollupSupportsFreeze() {
+  return (vite as { rolldownVersion?: string }).rolldownVersion === undefined;
 }
 
 export function pluginNodeIntegration(): Plugin {
@@ -169,7 +205,27 @@ export function pluginNodeIntegration(): Plugin {
     config(config) {
       configureNodeIntegration(config);
     },
-    resolveId(source) {
+    resolveId(source, importer) {
+      // Requests coming from inside our own shim must stay external. The shim's
+      // body is `runtimeRequire("electron")`, which is meant to reach Electron's
+      // runtime `require` at execution time, so the bundler has to leave it as a
+      // `require` call rather than resolving it.
+      //
+      // Rollup left it alone by default. Rolldown (Vite 8+) does not, and both of
+      // the other outcomes are silent:
+      //   - claim it here again, and the virtual module resolves to itself:
+      //     `init_x = __esmMin(() => { moduleValue = (init_x(), ...) })`. The
+      //     self-call is swallowed by `__esmMin`'s `fn = 0` guard, so instead of
+      //     recursing it yields `undefined` for every Electron export.
+      //   - decline it, and Rolldown resolves `electron` to the npm package --
+      //     which outside Electron is the *installer stub* -- and bundles
+      //     `getElectronPath()` plus a "Downloading Electron binary..." branch
+      //     into the renderer, with its own `fs`/`child_process` shimmed to
+      //     `module.exports = {}` by `__vite-browser-external`.
+      // Marking it external is what keeps a real `require` in the output.
+      if (importer?.startsWith(virtualModulePrefix)) {
+        return { id: source, external: true };
+      }
       if (nodeIntegrationModules.has(source)) {
         return `${virtualModulePrefix}${source}`;
       }
