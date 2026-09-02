@@ -21,6 +21,26 @@ const nodeRequire = createRequire(
 
 // Electron's package cannot expose these names to Vite while it runs in Node:
 // requiring it outside Electron returns the executable path instead.
+//
+// The list therefore has to be written out, and a name missing from it is a hard
+// build failure -- Rollup reports `"X" is not exported by
+// "<virtual>:electron"`, exactly as it would for a name that does not exist at
+// all, so a genuine API and a typo fail identically.
+//
+// Maintaining it: take the runtime value exports, NOT the names in
+// `electron.d.ts`. The two disagree. `ServiceWorkerMain` is only a `type` inside
+// the typings' `CrossProcessExports` namespace, yet in Electron 39.2.6 the main
+// process really does export it as a constructor (`typeof === 'function'`), so
+// deriving this list from the typings silently drops it. The runtime is the
+// ground truth for a bundler shim:
+//
+//   Object.keys(require('electron'))   // in the main process, and again in a
+//                                      // nodeIntegration renderer
+//
+// The union of both processes is what belongs here. Names that resolve only in
+// one process are still safe to list: the shim re-exports whatever the running
+// process actually has, and a main-only API simply reads as `undefined` in a
+// renderer -- which is what plain `require('electron')` does there too.
 const electronExportNames = [
   'app',
   'autoUpdater',
@@ -57,6 +77,7 @@ const electronExportNames = [
   'pushNotifications',
   'safeStorage',
   'screen',
+  'ServiceWorkerMain',
   'session',
   'ShareMenu',
   'shell',
