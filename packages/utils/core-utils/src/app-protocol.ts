@@ -76,7 +76,7 @@ export interface PrivilegedScheme {
     secure?: boolean;
     bypassCSP?: boolean;
     allowServiceWorkers?: boolean;
-    supportFetchApi?: boolean;
+    supportFetchAPI?: boolean;
     corsEnabled?: boolean;
     stream?: boolean;
     codeCache?: boolean;
@@ -85,11 +85,9 @@ export interface PrivilegedScheme {
 
 /**
  * Default privileges for the serving scheme. `standard` + `secure` make it a
- * real secure origin, `supportFetchApi` allows the Fetch API to target the
- * scheme (renderer `fetch()` of custom protocols is still limited upstream —
- * electron/electron#48297 — but XHR and every resource-loader path work),
- * `stream` keeps `<video>`/`<audio>` working (they did under `file://`), and
- * `codeCache` keeps V8 code caching for renderer scripts.
+ * real secure origin, `supportFetchAPI` lets renderer code `fetch()` its own
+ * resources, `stream` keeps `<video>`/`<audio>` working (they did under
+ * `file://`), and `codeCache` keeps V8 code caching for renderer scripts.
  *
  * Exported so an app that opts out of Forge's registration
  * (`appProtocol: { registerSchemes: false }`) can include the serving
@@ -101,7 +99,7 @@ export const APP_PROTOCOL_DEFAULT_PRIVILEGES: NonNullable<
 > = {
   standard: true,
   secure: true,
-  supportFetchApi: true,
+  supportFetchAPI: true,
   stream: true,
   codeCache: true,
 };
@@ -124,7 +122,7 @@ export interface AppProtocolConfig {
 
   /**
    * Privilege overrides for the serving scheme, merged over the defaults
-   * (`standard`, `secure`, `supportFetchApi`, `stream`, and `codeCache`, all
+   * (`standard`, `secure`, `supportFetchAPI`, `stream`, and `codeCache`, all
    * `true`). Use this to e.g. enable `allowServiceWorkers` for the renderer's
    * origin — the injected runtime owns the app's single
    * `registerSchemesAsPrivileged` call, so this is the only place to do it.
@@ -146,7 +144,7 @@ export interface AppProtocolConfig {
    * protocol.registerSchemesAsPrivileged([
    *   {
    *     scheme: 'app',
-   *     privileges: { standard: true, secure: true, supportFetchApi: true, stream: true, codeCache: true },
+   *     privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, codeCache: true },
    *   },
    *   // ...your own schemes
    * ]);
@@ -358,8 +356,20 @@ export function getAppProtocolBanner(
 ): string {
   const { scheme, registerSchemes, privileges, additionalPrivilegedSchemes } =
     resolveAppProtocolConfig(appProtocol);
+  const seenHosts = new Map<string, string>();
   for (const name of rendererNames) {
     validateRendererNameForAppProtocol(name);
+    // URL hosts are lower-cased by the parser and the handler matches
+    // case-insensitively, so names differing only by case share one origin —
+    // the second window would silently be served the first one's files.
+    const host = name.toLowerCase();
+    const clashingName = seenHosts.get(host);
+    if (clashingName !== undefined) {
+      throw new Error(
+        `Renderer entry names ${JSON.stringify(clashingName)} and ${JSON.stringify(name)} cannot both be used with \`appProtocol\`: names become the URL host, which is case-insensitive, so they would resolve to the same origin.`,
+      );
+    }
+    seenHosts.set(host, name);
   }
   // With `registerSchemes: false` the app owns the registration call; in
   // development there is then nothing left for the runtime to do (the dev

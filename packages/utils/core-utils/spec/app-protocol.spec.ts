@@ -28,6 +28,14 @@ describe('app-protocol', () => {
     expect(() => getAppProtocolBanner(['my window'])).toThrow(/URL host/);
   });
 
+  it('rejects renderer names that collide case-insensitively', () => {
+    // URL hosts are case-insensitive, so these would share one origin and
+    // the second window would silently be served the first one's files.
+    expect(() => getAppProtocolBanner(['MainWindow', 'mainwindow'])).toThrow(
+      /same origin/,
+    );
+  });
+
   it.each(['1', '2024', '1.2', '0x10'])(
     'rejects the IPv4-canonicalising renderer name %j',
     (name) => {
@@ -96,7 +104,7 @@ describe('app-protocol', () => {
   it('grants the serving scheme secure-origin defaults including stream and codeCache', () => {
     const banner = getAppProtocolBanner(['main_window']);
     expect(banner).toContain(
-      '{"scheme":"app","privileges":{"standard":true,"secure":true,"supportFetchApi":true,"stream":true,"codeCache":true}}',
+      '{"scheme":"app","privileges":{"standard":true,"secure":true,"supportFetchAPI":true,"stream":true,"codeCache":true}}',
     );
   });
 
@@ -107,7 +115,7 @@ describe('app-protocol', () => {
     expect(privileges).toEqual({
       standard: true,
       secure: true,
-      supportFetchApi: true,
+      supportFetchAPI: true,
       stream: true,
       codeCache: false,
       allowServiceWorkers: true,
@@ -274,7 +282,7 @@ describe('app-protocol', () => {
       expect(APP_PROTOCOL_DEFAULT_PRIVILEGES).toEqual({
         standard: true,
         secure: true,
-        supportFetchApi: true,
+        supportFetchAPI: true,
         stream: true,
         codeCache: true,
       });
@@ -288,7 +296,7 @@ describe('app-protocol', () => {
       privileges: {
         standard: true,
         secure: true,
-        supportFetchApi: true,
+        supportFetchAPI: true,
         stream: true,
         codeCache: true,
       },
