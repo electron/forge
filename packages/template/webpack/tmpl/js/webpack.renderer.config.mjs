@@ -1,12 +1,11 @@
-const rules = require('./webpack.rules');
+import { rules } from './webpack.rules.mjs';
 
 rules.push({
   test: /\.css$/,
   use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
 });
 
-module.exports = {
-  // Put your normal webpack config below here
+export default {
   module: {
     rules,
   },

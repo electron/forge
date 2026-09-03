@@ -142,23 +142,9 @@
       "entry": ["spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
     },
-    "packages/template/vite-typescript": {
-      "entry": ["spec/**/*.spec.ts"],
-      "project": ["src/**/*.ts!", "spec/**/*.ts"]
-    },
     "packages/template/webpack": {
       "entry": ["spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
-    },
-    "packages/template/webpack-typescript": {
-      "entry": ["spec/**/*.spec.ts"],
-      "project": ["src/**/*.ts!", "spec/**/*.ts"],
-      "ignoreDependencies": [
-        "@electron-forge/maker-.*",
-        "@electron-forge/plugin-webpack",
-        "webpack",
-        "listr2"
-      ]
     },
     "packages/utils/core-utils": {
       "entry": ["src/remote-rebuild.ts!", "spec/**/*.spec.ts"],
