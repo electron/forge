@@ -33,7 +33,7 @@ describe('VitePlugin', async () => {
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = {
-        main: './.vite/build/main.js',
+        main: './.vite/build/main.cjs',
         config: { forge: 'config.js' },
       };
       await fs.promises.writeFile(
@@ -50,7 +50,7 @@ describe('VitePlugin', async () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { main: '.vite/build/main.js' };
+      const packageJSON = { main: '.vite/build/main.cjs' };
       await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(packageJSON),
@@ -88,23 +88,69 @@ describe('VitePlugin', async () => {
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
     });
-
-    afterAll(async () => {
-      await fs.promises.rm(viteTestDir, { recursive: true });
-    });
   });
 
   describe('resolveForgeConfig', () => {
+    const packageJSONPath = path.join(viteTestDir, 'package.json');
     let plugin: VitePlugin;
 
-    beforeAll(() => {
+    beforeAll(async () => {
       plugin = new VitePlugin(baseConfig);
+      plugin.setDirectories(viteTestDir);
+      // Write a default package.json for tests that don't care about its contents
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.cjs' }),
+        'utf-8',
+      );
     });
 
     it('sets packagerConfig and packagerConfig.ignore if it does not exist', async () => {
       const config = await plugin.resolveForgeConfig({} as ResolvedForgeConfig);
       expect(config.packagerConfig).not.toEqual(undefined);
       expect(config.packagerConfig.ignore).toBeTypeOf('function');
+    });
+
+    it('should fail if outputFormat is "es" but package.json has no "type": "module" and main is not .mjs', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
+      esmPlugin.setDirectories(viteTestDir);
+
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.js' }),
+        'utf-8',
+      );
+      await expect(
+        esmPlugin.resolveForgeConfig({} as ResolvedForgeConfig),
+      ).rejects.toThrow(/outputFormat: "es"/);
+    });
+
+    it('should succeed if outputFormat is "es" and package.json has "type": "module"', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
+      esmPlugin.setDirectories(viteTestDir);
+
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.js', type: 'module' }),
+        'utf-8',
+      );
+      await expect(
+        esmPlugin.resolveForgeConfig({} as ResolvedForgeConfig),
+      ).resolves.toBeDefined();
+    });
+
+    it('should succeed if outputFormat is "es" and main entry uses .mjs extension', async () => {
+      const esmPlugin = new VitePlugin({ ...baseConfig, outputFormat: 'es' });
+      esmPlugin.setDirectories(viteTestDir);
+
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.mjs' }),
+        'utf-8',
+      );
+      await expect(
+        esmPlugin.resolveForgeConfig({} as ResolvedForgeConfig),
+      ).resolves.toBeDefined();
     });
 
     describe('packagerConfig.ignore', () => {
@@ -206,5 +252,9 @@ describe('VitePlugin', async () => {
         ).toEqual(false);
       });
     });
+  });
+
+  afterAll(async () => {
+    await fs.promises.rm(viteTestDir, { recursive: true });
   });
 });
