@@ -75,11 +75,11 @@ describe('vite.base.config', () => {
       // (file://) URL in builds so `loadURL(MAIN_WINDOW_VITE_ENTRY)` app code
       // does not break only when packaged.
       MAIN_WINDOW_VITE_ENTRY:
-        "require('node:url').pathToFileURL(require('node:path').join(__dirname, '../renderer/main_window/index.html')).href",
+        "require('node:url').pathToFileURL(require('node:path').join(__dirname, \"../renderer/main_window/index.html\")).href",
       SECOND_WINDOW_VITE_DEV_SERVER_URL: undefined,
       SECOND_WINDOW_VITE_NAME: '"second_window"',
       SECOND_WINDOW_VITE_ENTRY:
-        "require('node:url').pathToFileURL(require('node:path').join(__dirname, '../renderer/second_window/index.html')).href",
+        "require('node:url').pathToFileURL(require('node:path').join(__dirname, \"../renderer/second_window/index.html\")).href",
     };
 
     expect(define1).toEqual(define2);

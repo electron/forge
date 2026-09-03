@@ -101,7 +101,10 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
                   // `loadURL(undefined)`. pathToFileURL encodes '#', '?' and
                   // '%' in install paths the way the loadFile call this
                   // replaces did.
-                  `require('node:url').pathToFileURL(require('node:path').join(__dirname, '../renderer/${name}/index.html')).href`
+                  // JSON.stringify the path segment — this branch runs
+                  // without appProtocol's renderer-name validation, so a
+                  // name containing a quote must not break the define.
+                  `require('node:url').pathToFileURL(require('node:path').join(__dirname, ${JSON.stringify(`../renderer/${name}/index.html`)})).href`
                 : // Older Vite's esbuild-based define rejects expression
                   // values, so there the constant is only defined with
                   // `appProtocol` (or in dev).

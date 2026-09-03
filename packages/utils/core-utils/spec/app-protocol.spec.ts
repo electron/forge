@@ -83,6 +83,14 @@ describe('app-protocol', () => {
     expect(banner).toContain('status: 206');
     expect(banner).toContain('status: 416');
     expect(banner).toContain(`'Accept-Ranges', 'bytes'`);
+    // Only known media types take the fs-range path — everything else goes
+    // through net.fetch and keeps its sniffed Content-Type instead of
+    // getting application/octet-stream.
+    expect(banner).toContain('mediaType !== undefined');
+    expect(banner).not.toContain('application/octet-stream');
+    for (const mediaExtension of ['aac', 'mkv', 'oga', 'weba', 'mp4', 'mp3']) {
+      expect(banner).toContain(`${mediaExtension}: '`);
+    }
   });
 
   it('grants the serving scheme secure-origin defaults including stream and codeCache', () => {
@@ -123,6 +131,17 @@ describe('app-protocol', () => {
     });
     expect(shared).toContain(`'..', 'renderer')`);
     expect(shared).not.toContain(`'renderer', name`);
+    // With a shared root, '/' must map into the origin's own subdirectory —
+    // routers push '/' and reloads request it.
+    expect(shared).toContain(`path.join(name, 'index.html')`);
+  });
+
+  it('guards traversal without rejecting names that merely start with dots', () => {
+    const banner = getAppProtocolBanner(['main_window']);
+    // A '..' prefix check alone would 404 a real file named '..manifest.json'.
+    expect(banner).toContain(
+      `relative === '..' || relative.startsWith('..' + path.sep)`,
+    );
   });
 
   it('fails malformed percent-escapes with a 400 instead of throwing', () => {

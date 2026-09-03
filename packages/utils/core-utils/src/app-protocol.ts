@@ -399,18 +399,24 @@ export function getAppProtocolBanner(
       } catch {
         return new Response(null, { status: 400 });
       }
-      const target = path.join(root, pathname === '/' ? 'index.html' : pathname);
-      // Never serve files from outside the renderer output directory.
+      const target = path.join(root, pathname === '/' ? ${
+        rootIncludesName ? `'index.html'` : `path.join(name, 'index.html')`
+      } : pathname);
+      // Never serve files from outside the renderer output directory. (A
+      // plain prefix check would also reject files named '..something'.)
       const relative = path.relative(root, target);
-      if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      if (relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) {
         return new Response(null, { status: 404 });
       }
       // net.fetch(file:) does not forward the Range header
       // (electron/electron#38749), which media seeking depends on and
-      // \`file://\` supported — serve single-range requests from the file
-      // directly.
+      // \`file://\` supported — serve single-range requests for known media
+      // types from the file directly. Everything else goes through net.fetch
+      // so it keeps its sniffed Content-Type.
+      const mediaTypes = { aac: 'audio/aac', mp4: 'video/mp4', m4v: 'video/mp4', m4a: 'audio/mp4', mkv: 'video/x-matroska', webm: 'video/webm', weba: 'audio/webm', ogg: 'audio/ogg', oga: 'audio/ogg', ogv: 'video/ogg', opus: 'audio/ogg', mp3: 'audio/mpeg', wav: 'audio/wav', flac: 'audio/flac', mov: 'video/quicktime' };
+      const mediaType = mediaTypes[path.extname(target).slice(1).toLowerCase()];
       const rangeHeader = request.headers.get('range');
-      if (rangeHeader !== null) {
+      if (rangeHeader !== null && mediaType !== undefined) {
         let size;
         try {
           size = (await fs.promises.stat(target)).size;
@@ -433,8 +439,6 @@ export function getAppProtocolBanner(
             headers: { 'Content-Range': 'bytes */' + size },
           });
         }
-        const mediaTypes = { mp4: 'video/mp4', m4v: 'video/mp4', m4a: 'audio/mp4', webm: 'video/webm', ogg: 'audio/ogg', ogv: 'video/ogg', opus: 'audio/ogg', mp3: 'audio/mpeg', wav: 'audio/wav', flac: 'audio/flac', mov: 'video/quicktime' };
-        const ext = path.extname(target).slice(1).toLowerCase();
         return new Response(
           Readable.toWeb(fs.createReadStream(target, { start: start, end: end })),
           {
@@ -443,7 +447,7 @@ export function getAppProtocolBanner(
               'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
               'Accept-Ranges': 'bytes',
               'Content-Length': String(end - start + 1),
-              'Content-Type': mediaTypes[ext] || 'application/octet-stream',
+              'Content-Type': mediaType,
             },
           },
         );
