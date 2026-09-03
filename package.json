@@ -59,7 +59,7 @@
     "husky": "^7.0.1",
     "knip": "^5.87.0",
     "lerna": "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch",
-    "lint-staged": "^12.1.7",
+    "lint-staged": "^17.4.1",
     "listr2": "^7.0.2",
     "markdownlint-cli2": "^0.19.1",
     "oxfmt": "^0.41.0",
