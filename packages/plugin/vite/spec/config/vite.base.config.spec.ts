@@ -190,9 +190,11 @@ describe('vite.base.config', () => {
       // Custom string hosts are exposed as-is.
       MAIN_WINDOW_VITE_DEV_SERVER_URL: '"http://127.0.0.1:5183"',
       MAIN_WINDOW_VITE_NAME: '"main_window"',
+      MAIN_WINDOW_VITE_ENTRY: '"http://127.0.0.1:5183"',
       // Wildcard hosts fall back to localhost.
       SECOND_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5184"',
       SECOND_WINDOW_VITE_NAME: '"second_window"',
+      SECOND_WINDOW_VITE_ENTRY: '"http://localhost:5184"',
     };
 
     for (const server of servers) {
