@@ -1,3 +1,6 @@
+import path from 'node:path';
+
+import fs from 'fs-extra';
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import {
@@ -11,7 +14,11 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
+  const { forgeConfigSelf, root } = forgeEnv;
+  const packageJson = JSON.parse(
+    fs.readFileSync(path.join(root, 'package.json'), { encoding: 'utf-8' }),
+  );
+
   const define = getBuildDefine(forgeEnv);
   const config: UserConfig = {
     build: {
@@ -34,7 +41,7 @@ export function getConfig(
     config.build!.lib = {
       entry: forgeConfigSelf.entry,
       fileName: () => '[name].js',
-      formats: ['cjs'],
+      formats: packageJson.type !== 'module' ? ['cjs'] : ['es'],
     };
   }
 
