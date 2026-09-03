@@ -25,6 +25,19 @@ export interface VitePluginRendererConfig {
    * Vite config file path.
    */
   config: string;
+  /**
+   * Override the Vite config for this renderer based on whether `nodeIntegration`
+   * for the `BrowserWindow` is enabled.
+   *
+   * When true, Electron and Node.js built-in modules are externalized and Vite
+   * resolves package entry points using Node-oriented conditions and main fields.
+   *
+   * Unfortunately, Forge cannot derive the value from the main process code as it
+   * can be dynamically generated at run-time, while Vite processes at build-time.
+   *
+   * Defaults to `false` (as it is disabled by default in Electron >= 5).
+   */
+  nodeIntegration?: boolean;
 }
 
 export interface VitePluginConfig {
