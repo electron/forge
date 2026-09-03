@@ -5,7 +5,7 @@
 Check out the README at [`atlassian/nucleus`](https://github.com/atlassian/nucleus) for more information on this project.
 
 Configuration options are documented in [`Publisher
-NucleusConfig](https://js.electronforge.io/interfaces/_electron_forge_publisher_nucleus.PublisherNucleusConfig.html).
+NucleusConfig](https://js.electronforge.io/interfaces/_electron-forge_publisher-nucleus.PublisherNucleusConfig.html).
 
 ```javascript title=forge.config.js
 module.exports = {

@@ -46,3 +46,4 @@ export default abstract class PublisherStatic<
 }
 
 export { PublisherStatic, StaticPublisherConfig, PublisherOptions };
+export type { StaticArtifact };

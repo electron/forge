@@ -118,6 +118,20 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
   return define;
 }
 
+/**
+ * Resolve the host to use in the dev server URL exposed to the main process.
+ * Wildcard hosts (`true`, `0.0.0.0`, `::`) are mapped to `localhost` since the
+ * main process runs on the same machine and wildcard addresses are not
+ * reliably loadable in Chromium.
+ */
+function resolveDevHost(host: string | boolean | undefined): string {
+  if (typeof host !== 'string' || host === '0.0.0.0' || host === '::') {
+    return 'localhost';
+  }
+  // IPv6 literals must be bracketed in URLs.
+  return host.includes(':') ? `[${host}]` : host;
+}
+
 export function pluginExposeRenderer(name: string): Plugin {
   const { VITE_DEV_SERVER_URL } = getDefineKeys([name])[name];
 
@@ -131,7 +145,7 @@ export function pluginExposeRenderer(name: string): Plugin {
         const addressInfo = server.httpServer?.address() as AddressInfo;
         // Expose env constant for main process use.
         viteDevServerUrls[VITE_DEV_SERVER_URL] =
-          `http://localhost:${addressInfo?.port}`;
+          `http://${resolveDevHost(server.config.server.host)}:${addressInfo?.port}`;
       });
     },
   };

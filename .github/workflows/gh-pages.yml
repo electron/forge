@@ -49,6 +49,7 @@ jobs:
         with:
           cname: js.electronforge.io
           defaultBranch: main
+          docsPath: api-docs
           noCommit: true
           showUnderscoreFiles: true
         env:

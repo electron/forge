@@ -161,6 +161,47 @@ describe('vite.base.config', () => {
     expect(define1).toEqual(define2);
   });
 
+  it('getBuildDefine:serve with custom server host', async () => {
+    const hosts = ['127.0.0.1', '0.0.0.0'];
+    const servers = await Promise.all(
+      forgeConfig.renderer.map(({ name }, index) =>
+        createServer({
+          publicDir: false,
+          server: { host: hosts[index] },
+          plugins: [pluginExposeRenderer(name)],
+        }),
+      ),
+    );
+    let port = 5183;
+
+    for (const server of servers) {
+      await server.listen(port);
+      port++;
+    }
+
+    const define1 = getBuildDefine({
+      command: 'serve',
+      mode: 'development',
+      root: configRoot,
+      forgeConfig,
+      forgeConfigSelf: forgeConfig.build[0],
+    });
+    const define2 = {
+      // Custom string hosts are exposed as-is.
+      MAIN_WINDOW_VITE_DEV_SERVER_URL: '"http://127.0.0.1:5183"',
+      MAIN_WINDOW_VITE_NAME: '"main_window"',
+      // Wildcard hosts fall back to localhost.
+      SECOND_WINDOW_VITE_DEV_SERVER_URL: '"http://localhost:5184"',
+      SECOND_WINDOW_VITE_NAME: '"second_window"',
+    };
+
+    for (const server of servers) {
+      await server.close();
+    }
+
+    expect(define1).toEqual(define2);
+  });
+
   describe('pluginHotRestart', () => {
     let dispose: (() => void) | undefined;
 

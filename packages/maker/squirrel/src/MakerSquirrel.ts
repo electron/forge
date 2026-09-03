@@ -11,10 +11,10 @@ import {
   Options as ElectronWinstallerOptions,
 } from 'electron-winstaller';
 
-export type MakerSquirrelConfig = Omit<
+export interface MakerSquirrelConfig extends Omit<
   ElectronWinstallerOptions,
   'appDirectory' | 'outputDirectory'
->;
+> {}
 
 export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
   name = 'squirrel';

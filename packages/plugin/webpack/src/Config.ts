@@ -66,6 +66,7 @@ export interface WebpackPluginEntryPointNoWindow extends WebpackPluginEntryPoint
   js: string;
 }
 
+/** @inline */
 export type WebpackPluginEntryPoint =
   | WebpackPluginEntryPointLocalWindow
   | WebpackPluginEntryPointNoWindow
@@ -227,6 +228,7 @@ export interface WebpackPluginConfig {
   >;
 }
 
+/** @inline */
 export type WebpackConfiguration =
   | RawWebpackConfiguration
   | WebpackConfigurationFactory;
