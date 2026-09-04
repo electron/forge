@@ -151,7 +151,14 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       webpack(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
-            const name = rendererOptions.entryPoints[index].name;
+            // Name each stats file from its own compilation's entries — the
+            // config array does not align positionally with entryPoints
+            // (preload scripts and appProtocol's served/unserved split both
+            // build separate compilations).
+            const name =
+              Object.keys(options[index].entry ?? {}).join('-') ||
+              rendererOptions.entryPoints[index]?.name ||
+              String(index);
             await this.writeJSONStats(
               'renderer',
               entryStats,
