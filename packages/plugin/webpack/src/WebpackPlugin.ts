@@ -154,11 +154,16 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             // Name each stats file from its own compilation's entries — the
             // config array does not align positionally with entryPoints
             // (preload scripts and appProtocol's served/unserved split both
-            // build separate compilations).
+            // build separate compilations). Preload compilations reuse their
+            // window's entry name, so tag them to keep the filenames unique.
+            const entryNames = Object.keys(options[index].entry ?? {});
+            const isPreloadCompilation = String(
+              options[index].output?.filename ?? '',
+            ).includes('preload');
             const name =
-              Object.keys(options[index].entry ?? {}).join('-') ||
-              rendererOptions.entryPoints[index]?.name ||
-              String(index);
+              (entryNames.join('-') ||
+                rendererOptions.entryPoints[index]?.name ||
+                String(index)) + (isPreloadCompilation ? '-preload' : '');
             await this.writeJSONStats(
               'renderer',
               entryStats,

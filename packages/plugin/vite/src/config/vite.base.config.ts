@@ -107,8 +107,13 @@ export function getBuildDefine(env: ConfigEnv<'build'>) {
                   `require('node:url').pathToFileURL(require('node:path').join(__dirname, ${JSON.stringify(`../renderer/${name}/index.html`)})).href`
                 : // Older Vite's esbuild-based define rejects expression
                   // values, so there the constant is only defined with
-                  // `appProtocol` (or in dev).
-                  undefined,
+                  // `appProtocol` (or in dev) — warn, since app code calling
+                  // `loadURL(MAIN_WINDOW_VITE_ENTRY)` unconditionally breaks
+                  // only in the packaged app.
+                  (console.warn(
+                    `[@electron-forge/plugin-vite] ${VITE_ENTRY} is not defined in production builds on Vite < 8 without \`appProtocol\` — code calling loadURL(${VITE_ENTRY}) will fail when packaged. Enable \`appProtocol\`, upgrade Vite, or load the renderer with loadFile().`,
+                  ),
+                  undefined),
       };
       return { ...acc, ...def };
     },
