@@ -167,6 +167,31 @@ describe('vite.main.config', () => {
     expect(getBanner(config)).toBeUndefined();
   });
 
+  it('injects the entry fallback plugin only for builds without appProtocol', () => {
+    const hasFallback = (config: ReturnType<typeof getConfig>) =>
+      ((config.plugins ?? []).flat() as Rollup.Plugin[]).some(
+        (plugin) =>
+          plugin?.name === '@electron-forge/plugin-vite:vite-entry-fallback',
+      );
+
+    // Without appProtocol the *_VITE_ENTRY defines point at globals that the
+    // fallback plugin's banner assigns packaged file:// URLs.
+    expect(hasFallback(getConfig(buildEnv()))).toEqual(true);
+    expect(
+      hasFallback(
+        getConfig(
+          buildEnv({ forgeConfig: { ...forgeConfig, appProtocol: true } }),
+        ),
+      ),
+    ).toEqual(false);
+    // In dev the defines are dev-server URL strings.
+    expect(
+      hasFallback(
+        getConfig(buildEnv({ command: 'serve', mode: 'development' })),
+      ),
+    ).toEqual(false);
+  });
+
   it('only registers privileged schemes for dev server builds', () => {
     // Schemes must carry the same privileges under `electron-forge start` as
     // in the packaged app, but the dev server serves the renderers, so the
