@@ -1,3 +1,4 @@
+import type { AppProtocolConfig } from '@electron-forge/core-utils';
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
@@ -146,6 +147,44 @@ export interface WebpackPluginConfig {
    * single renderer configuration. Most usecases should not set this to an array.
    */
   renderer: WebpackPluginRendererConfig | WebpackPluginRendererConfig[];
+  /**
+   * Serve the built renderer files over a privileged `app://` custom scheme in
+   * packaged apps instead of loading them from `file://`, per Electron's
+   * security recommendations. See
+   * https://www.electronjs.org/docs/latest/api/protocol
+   *
+   * When enabled, the plugin injects the scheme registration and protocol
+   * handler into the production main-process bundle, and the `*_WEBPACK_ENTRY`
+   * magic constant for HTML entry points resolves to an
+   * `app://<entry-name>/<entry-name>/index.html` URL in production (every
+   * origin is rooted at the shared renderer output directory, so the path
+   * carries the per-entry subdirectory; it is a dev server URL in development
+   * either way, so `mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)` keeps
+   * working unchanged). JS-only (no-window) entry points and
+   * `nodeIntegration: true` entry points keep their `file://` paths —
+   * Electron only derives the renderer's `__dirname` from `file:` URLs, which
+   * relocated native modules rely on.
+   *
+   * Notes:
+   * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
+   *   and the injected runtime makes that call. If your app needs its own
+   *   privileged schemes, pass them via the object form's
+   *   `additionalPrivilegedSchemes` instead of calling
+   *   `registerSchemesAsPrivileged` yourself.
+   * - The object form's `registerSchemes: false` hands the
+   *   `registerSchemesAsPrivileged` call to your app instead — Forge then
+   *   injects only the serving handler, and your registration must include
+   *   the serving scheme (see `APP_PROTOCOL_DEFAULT_PRIVILEGES` in
+   *   `@electron-forge/core-utils`).
+   * - The object form's `scheme` renames the serving scheme (default `app`).
+   *   The scheme is part of the renderer's origin, so pick it before the
+   *   first release — renaming later orphans origin-scoped data such as
+   *   `localStorage` and IndexedDB.
+   * - Requires the default CommonJS output for the main-process bundle.
+   * @defaultValue `false`
+   */
+  appProtocol?: boolean | AppProtocolConfig;
+
   /**
    * The TCP port for the dev servers. Defaults to 3000.
    */

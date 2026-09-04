@@ -44,12 +44,10 @@ class ViteTemplate extends BaseTemplate {
           await this.updateFileByLine(
             path.resolve(directory, 'src', 'index.js'),
             (line) => {
+              if (line.includes('and load the index.html of the app'))
+                return "  // and load the index.html of the app. In development this is the Vite\n  // dev server URL; in production it is an `app://` URL served by Forge's\n  // Vite plugin.";
               if (line.includes('mainWindow.loadFile'))
-                return `  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile(path.join(import.meta.dirname, \`../renderer/\${MAIN_WINDOW_VITE_NAME}/index.html\`));
-  }`;
+                return '  mainWindow.loadURL(MAIN_WINDOW_VITE_ENTRY);';
               return line;
             },
             path.resolve(directory, 'src', 'main.js'),

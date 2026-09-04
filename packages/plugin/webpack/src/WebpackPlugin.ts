@@ -151,7 +151,19 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       webpack(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
-            const name = rendererOptions.entryPoints[index].name;
+            // Name each stats file from its own compilation's entries — the
+            // config array does not align positionally with entryPoints
+            // (preload scripts and appProtocol's served/unserved split both
+            // build separate compilations). Preload compilations reuse their
+            // window's entry name, so tag them to keep the filenames unique.
+            const entryNames = Object.keys(options[index].entry ?? {});
+            const isPreloadCompilation = String(
+              options[index].output?.filename ?? '',
+            ).includes('preload');
+            const name =
+              (entryNames.join('-') ||
+                rendererOptions.entryPoints[index]?.name ||
+                String(index)) + (isPreloadCompilation ? '-preload' : '');
             await this.writeJSONStats(
               'renderer',
               entryStats,
