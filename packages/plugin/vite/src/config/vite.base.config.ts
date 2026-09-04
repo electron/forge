@@ -174,15 +174,39 @@ function prependOutputBanner(
  * plain config values do not).
  */
 export function pluginAppProtocolRuntime(runtime: string): Plugin {
-  // The banner sits above Rollup's own 'use strict' prologue directive, which
-  // stops being a directive once displaced — so re-assert it at file level
-  // here. (The shared banner itself must not carry a file-level directive:
-  // webpack's BannerPlugin path would force bundled sloppy-mode CJS deps
-  // strict.)
-  const banner = `'use strict';\n${runtime}`;
   return {
     name: '@electron-forge/plugin-vite:app-protocol-runtime',
     outputOptions(output) {
+      // Rollup defaults to 'es' when no format is set.
+      const format = output.format ?? 'es';
+      const isCjs = format === 'cjs' || format === 'commonjs';
+      const isEsm = format === 'es' || format === 'esm' || format === 'module';
+      if (!isCjs && !isEsm) {
+        // Prepending the runtime anyway would surface as a cryptic
+        // ReferenceError at app startup; fail the build instead.
+        throw new Error(
+          `[@electron-forge/plugin-vite] appProtocol requires the main-process bundle to be CommonJS or ESM, but it is built with output format '${format}'.`,
+        );
+      }
+      const banner = isCjs
+        ? // The banner sits above Rollup's own 'use strict' prologue
+          // directive, which stops being a directive once displaced — so
+          // re-assert it at file level here. (The shared banner itself must
+          // not carry a file-level directive: webpack's BannerPlugin path
+          // would force bundled sloppy-mode CJS deps strict.)
+          `'use strict';\n${runtime}`
+        : // The shared runtime is CommonJS; a user's own `build.lib.formats:
+          // ['es']` skips the plugin's CJS default, so give the runtime
+          // `require`/`__dirname` bindings scoped to a block — module-level
+          // consts could collide with Rollup's own createRequire shims.
+          [
+            `import { createRequire as __electronForgeAppProtocolCreateRequire } from 'node:module';`,
+            `{`,
+            `const require = __electronForgeAppProtocolCreateRequire(import.meta.url);`,
+            `const __dirname = require('node:path').dirname(require('node:url').fileURLToPath(import.meta.url));`,
+            runtime,
+            `}`,
+          ].join('\n');
       return prependOutputBanner(output, banner);
     },
   };

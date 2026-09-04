@@ -338,9 +338,10 @@ export interface AppProtocolBannerOptions {
  * Returns the runtime source injected at the top of the main-process bundle.
  *
  * The emitted code is plain CommonJS because both plugins emit CommonJS
- * main-process bundles. If a user overrides their bundler config to emit ESM,
- * the banner's `require('electron')` would break — `appProtocol` is
- * documented as requiring the default CommonJS output. The strict-mode
+ * main-process bundles by default. The Vite plugin also supports user ESM
+ * main bundles by wrapping this runtime in a block-scoped `createRequire`
+ * prelude (see `pluginAppProtocolRuntime`); webpack main bundles are always
+ * CommonJS. The strict-mode
  * directive lives inside the IIFE: a file-level one would force webpack's
  * deliberately-sloppy bundled CJS deps strict, while the Vite path (whose
  * Rollup prologue directive this banner displaces) re-adds a file-level

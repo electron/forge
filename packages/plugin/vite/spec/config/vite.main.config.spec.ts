@@ -44,7 +44,8 @@ function buildEnv(
  */
 function getBanner(
   config: ReturnType<typeof getConfig>,
-  existingOutput: Rollup.OutputOptions = {},
+  // The plugin's default main config emits CJS bundles.
+  existingOutput: Rollup.OutputOptions = { format: 'cjs' },
 ): string | Rollup.OutputOptions['banner'] | undefined {
   const plugins = (config.plugins ?? []).flat() as Rollup.Plugin[];
   const runtimePlugin = plugins.find(
@@ -78,10 +79,40 @@ describe('vite.main.config', () => {
     const config = getConfig(
       buildEnv({ forgeConfig: { ...forgeConfig, appProtocol: true } }),
     );
-    const banner = getBanner(config, { banner: '/* user banner */' });
+    const banner = getBanner(config, {
+      format: 'cjs',
+      banner: '/* user banner */',
+    });
     expect(banner).toMatch(/^'use strict';/);
     expect(banner).toContain('registerSchemesAsPrivileged');
     expect(banner).toMatch(/\/\* user banner \*\/$/);
+  });
+
+  it('wraps the runtime in a createRequire prelude for ESM main bundles', () => {
+    // A user's own `build.lib.formats: ['es']` skips the plugin's CJS
+    // default; the CJS runtime must not hit an ESM bundle unwrapped, where
+    // its require('electron') throws before any app code runs.
+    const config = getConfig(
+      buildEnv({ forgeConfig: { ...forgeConfig, appProtocol: true } }),
+    );
+    const banner = getBanner(config, { format: 'es' }) as string;
+    expect(banner).toContain(`createRequire`);
+    expect(banner).toContain('import.meta.url');
+    expect(banner).toContain('registerSchemesAsPrivileged');
+    // ESM is implicitly strict; the file-level directive is CJS-only, and the
+    // require/__dirname bindings stay block-scoped to avoid colliding with
+    // Rollup's own shims at module level.
+    expect(banner).not.toMatch(/^'use strict';/);
+    expect(banner).toMatch(/^import \{ createRequire/);
+  });
+
+  it('fails the build for output formats no Electron main process can use', () => {
+    const config = getConfig(
+      buildEnv({ forgeConfig: { ...forgeConfig, appProtocol: true } }),
+    );
+    expect(() => getBanner(config, { format: 'umd' })).toThrow(
+      /CommonJS or ESM/,
+    );
   });
 
   it('accepts the object form and includes additional privileged schemes', () => {
