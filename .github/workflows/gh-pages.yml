@@ -8,6 +8,9 @@ on:
 
 permissions: {}
 
+# Release paths never touch the Actions cache; enforced regardless of per-step settings.
+cache-mode: none
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
