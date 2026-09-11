@@ -1158,6 +1158,8 @@ __metadata:
     vitest: "npm:^4.1.7"
     which: "npm:^2.0.2"
     xvfb-maybe: "npm:^0.2.1"
+  peerDependencies:
+    vite: ">=5"
   languageName: unknown
   linkType: soft
 
