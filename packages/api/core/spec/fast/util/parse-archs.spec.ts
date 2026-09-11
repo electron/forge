@@ -1,6 +1,17 @@
+import { allOfficialArchsForPlatformAndVersion } from '@electron/packager';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import parseArchs from '../../../src/util/parse-archs';
+
+vi.mock(import('@electron/packager'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    allOfficialArchsForPlatformAndVersion: vi.fn(
+      mod.allOfficialArchsForPlatformAndVersion,
+    ),
+  };
+});
 
 describe('parse-archs', () => {
   it('should make an Array out of one arch', () => {
@@ -61,10 +72,20 @@ describe('parse-archs', () => {
     });
 
     it('should warn when filtering a dropped arch out of "all"', () => {
+      // @electron/packager >= 20.3.0 already omits win32/ia32 for Electron
+      // 44, so simulate an older packager that still reports it to make sure
+      // Forge's own filter drops it (with a warning) rather than failing on a
+      // download 404 later.
+      vi.mocked(allOfficialArchsForPlatformAndVersion).mockReturnValueOnce([
+        'ia32',
+        'x64',
+        'arm64',
+      ]);
       const warnSpy = vi
         .spyOn(console, 'warn')
         .mockImplementation(() => undefined);
-      parseArchs('win32', 'all', '44.0.0');
+      expect(parseArchs('win32', 'all', '44.0.0')).toEqual(['x64', 'arm64']);
+      expect(warnSpy).toHaveBeenCalledOnce();
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Skipping win32/ia32'),
       );

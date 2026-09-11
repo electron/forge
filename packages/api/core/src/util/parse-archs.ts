@@ -19,9 +19,9 @@ export default function parseArchs(
       platform as SupportedPlatform,
       electronVersion,
     ) || ['x64'];
-    // `allOfficialArchsForPlatformAndVersion()` (as of @electron/packager
-    // 18.x) still reports architectures that Electron >= 44 no longer
-    // publishes, so filter those out rather than failing on a download 404.
+    // @electron/packager < 20.3.0 still reported architectures that
+    // Electron >= 44 no longer publishes, so filter those out ourselves
+    // rather than failing on a download 404.
     return filterSupportedArchs(platform, archs, electronVersion);
   }
 
