@@ -22,7 +22,7 @@
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1",
-    "listr2": "^7.0.2"
+    "listr2": "^11.1.0"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

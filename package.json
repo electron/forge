@@ -60,7 +60,7 @@
     "knip": "^5.87.0",
     "lerna": "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch",
     "lint-staged": "^17.4.1",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "markdownlint-cli2": "^0.19.1",
     "oxfmt": "^0.41.0",
     "oxlint": "^1.51.0",

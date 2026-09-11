@@ -22,7 +22,7 @@
     "@electron/get": "^5.1.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "semver": "^7.2.1"
   },
   "engines": {
