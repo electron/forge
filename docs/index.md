@@ -8,7 +8,7 @@ Electron Forge is an all-in-one tool for packaging and distributing Electron app
 
 ## Prerequisites
 
-* [Node.js](https://nodejs.org/) ≥ v16.4.0
+* [Node.js](https://nodejs.org/) ≥ v22.13.0
 * [Git](https://git-scm.com/)
 * A JavaScript package manager:
   * [npm](https://www.npmjs.com/)
