@@ -137,9 +137,9 @@ Here are some things to keep in mind as you file pull requests to fix bugs, add 
 This guide is for maintainers who have access to the [Forgers](https://github.com/orgs/electron/teams/forgers)
 GitHub team.
 
-> [!IMPORTANT]
-> These instructions are strictly for Electron Forge 8 pre-release versions.
-> Do not use against `main`!
+> [!NOTE]
+> Electron Forge 7 is end-of-life. Its history is preserved on the `7.x` branch, but no further
+> 7.x releases are published.
 
 ### 1. Run the version bump script
 
@@ -147,12 +147,20 @@ Run the `yarn lerna:version` script from the root of this monorepo. This script 
 
 1. Reset your current git state to `HEAD`.
 1. Run Lerna's [`version`](https://github.com/lerna/lerna/tree/main/libs/commands/version#readme)
-   command, which increments all packages to the next alpha pre-release version.
-   (You'll need to accept the version bump before proceeding.)
-1. Check out a new branch called `alpha-release/YYMMDD-hh-mm`.
+   command, which increments all packages to the next version based on the
+   [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) merged since the
+   last release. (You'll need to accept the version bump before proceeding.)
+1. Check out a new branch called `v8/YYMMDD-hh-mm`.
 1. Commit your changes with the appropriate commit title and message.
 
-### 2. Merge the change into `next`
+Any extra arguments are passed straight through to `lerna version`. In particular, to graduate a
+pre-release to a stable version (e.g. `8.0.0-alpha.10` to `8.0.0`), run:
+
+```sh
+yarn lerna:version --conventional-graduate
+```
+
+### 2. Merge the change into `main`
 
 Push your changes up and create a new PR. **When your PR is merged, ensure that you keep the original
 commit message and extended description from the original script.**
@@ -165,12 +173,13 @@ Once your PR is merged, the [`release.yml`](.github/workflows/release.yml) workf
 
 ### 3. Approve the release job
 
-Look for a pending [Publish](https://github.com/electron/forge/actions?query=event%3Apush+branch%3Anext)
+Look for a pending [Publish](https://github.com/electron/forge/actions?query=event%3Apush+branch%3Amain)
 job in the Actions tab on the Forge repository. You need to get another Forger member to approve
 the job before the publish happens.
 
 Once the job is completed, all `@electron-forge/` packages and `create-electron-app` should have
-new published versions under the `alpha` dist-tag.
+new published versions under the `latest` dist-tag (or the `alpha` dist-tag for pre-release
+versions), and a matching GitHub release should exist for the new `vX.Y.Z` tag.
 
 > [!NOTE]
 > If the Publish job fails for whatever reason, feel free to start over at step 1. Version numbers
