@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "vitest": "catalog:"
   },
   "publishConfig": {

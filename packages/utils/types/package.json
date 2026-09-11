@@ -12,7 +12,7 @@
     "@electron-forge/tracer": "workspace:*",
     "@electron/packager": "^20.3.0",
     "@electron/rebuild": "^4.2.0",
-    "listr2": "^7.0.2"
+    "listr2": "^11.1.0"
   },
   "engines": {
     "node": ">= 22.13.0"
