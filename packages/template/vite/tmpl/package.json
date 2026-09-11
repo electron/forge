@@ -1,5 +1,5 @@
 {
-  "main": ".vite/build/main.cjs",
+  "main": ".vite/build/main.js",
   "scripts": {
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt --write",

@@ -36,7 +36,7 @@ export function getConfig(
   if (userConfig.build?.lib == null) {
     config.build!.lib = {
       entry: forgeConfigSelf.entry,
-      fileName: () => (isEsm ? '[name].mjs' : '[name].cjs'),
+      fileName: () => (isEsm ? '[name].mjs' : '[name].js'),
       formats: [isEsm ? 'es' : 'cjs'],
     };
   }

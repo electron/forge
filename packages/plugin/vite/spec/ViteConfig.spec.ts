@@ -37,7 +37,7 @@ describe('ViteConfigGenerator', () => {
     expect(
       buildConfig.build?.lib &&
         (buildConfig.build.lib.fileName as () => string)(),
-    ).toEqual('[name].cjs');
+    ).toEqual('[name].js');
     expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
       'cjs',
     ]);
@@ -127,8 +127,8 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.rollupOptions?.output).toEqual({
       format: 'cjs',
       codeSplitting: false,
-      entryFileNames: '[name].cjs',
-      chunkFileNames: '[name].cjs',
+      entryFileNames: '[name].js',
+      chunkFileNames: '[name].js',
       assetFileNames: '[name].[ext]',
     });
     expect(buildConfig.clearScreen).toBe(false);

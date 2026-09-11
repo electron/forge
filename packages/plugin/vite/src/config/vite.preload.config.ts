@@ -23,8 +23,8 @@ export function getConfig(
           format: isEsm ? 'es' : 'cjs',
           // Preload scripts require a single entrypoint.
           codeSplitting: false,
-          entryFileNames: isEsm ? '[name].mjs' : '[name].cjs',
-          chunkFileNames: isEsm ? '[name].mjs' : '[name].cjs',
+          entryFileNames: isEsm ? '[name].mjs' : '[name].js',
+          chunkFileNames: isEsm ? '[name].mjs' : '[name].js',
           assetFileNames: '[name].[ext]',
         },
       },

@@ -335,7 +335,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
 
-    const expectedExt = this.config.outputFormat === 'es' ? '.mjs' : '.cjs';
+    const expectedExt = this.config.outputFormat === 'es' ? '.mjs' : '.js';
     if (!pj.main?.endsWith(expectedExt)) {
       throw new Error(
         `The Vite plugin is configured with outputFormat: "${this.config.outputFormat ?? 'cjs'}", ` +

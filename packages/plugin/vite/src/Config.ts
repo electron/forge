@@ -53,8 +53,9 @@ export interface VitePluginConfig {
   /**
    * The output format to use for the main process and preload script builds.
    *
-   * - `'cjs'` outputs CommonJS bundles (the default, matching Electron's traditional module system).
-   * - `'es'` outputs ES module bundles. When using this option, make sure that your Electron version
+   * - `'cjs'` outputs CommonJS bundles with a `.js` extension (the default, matching Electron's
+   *   traditional module system).
+   * - `'es'` outputs ES module bundles with an `.mjs` extension. When using this option, make sure that your Electron version
    *   supports ESM (Electron >= 28) and you change your `main` entry in `package.json` and your `preload`
    *   entry in any BrowserWindow to use the `.mjs` extension.
    *
