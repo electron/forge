@@ -1,0 +1,52 @@
+name: Website
+
+on:
+  push:
+    branches:
+      - next
+    paths:
+      - 'docs/**'
+      - 'website/**'
+      - '.github/workflows/website.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'website/**'
+      - '.github/workflows/website.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build forge.electronjs.org
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build website
+        run: yarn build
+
+      - name: Upload website build
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: website
+          path: website/build

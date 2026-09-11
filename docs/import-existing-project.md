@@ -1,16 +1,5 @@
 ---
 description: Import an existing Electron project to use Electron Forge.
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
 ---
 
 # Importing an Existing Project
