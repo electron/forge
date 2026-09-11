@@ -25,6 +25,16 @@ export interface VitePluginRendererConfig {
    * Vite config file path.
    */
   config: string;
+  /**
+   * Preserve Electron and Node.js imports for a renderer that has Node.js
+   * integration enabled.
+   *
+   * This does not change BrowserWindow preferences. The corresponding window
+   * must use `nodeIntegration: true` and `contextIsolation: false`.
+   *
+   * @defaultValue false
+   */
+  nodeIntegration?: boolean;
 }
 
 export interface VitePluginConfig {
