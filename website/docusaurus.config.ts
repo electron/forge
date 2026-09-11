@@ -8,7 +8,6 @@ import { themes as prismThemes } from 'prism-react-renderer';
 const config: Config = {
   title: 'Electron Forge',
   tagline: 'Quickly scaffold an Electron project with a full build pipeline',
-  favicon: 'img/icon.png',
 
   url: 'https://forge.electronjs.org',
   baseUrl: '/',
@@ -65,10 +64,6 @@ const config: Config = {
     },
     navbar: {
       title: 'Electron Forge',
-      logo: {
-        alt: 'Electron Forge logo',
-        src: 'img/icon.png',
-      },
       items: [
         { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '.*' },
         {
