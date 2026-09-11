@@ -15,9 +15,10 @@ const FIRST_RELEASE_WITHOUT_IA32_ARMV7L = '44.0.0-alpha.4';
  * longer publishes prebuilt binaries for it.
  *
  * Electron 44.0.0-alpha.4 and later no longer publish win32/ia32 or
- * linux/armv7l builds, but `allOfficialArchsForPlatformAndVersion()` from
- * `@electron/packager` (as of 18.x) still reports them, which would otherwise
- * surface as an opaque download 404.
+ * linux/armv7l builds. `allOfficialArchsForPlatformAndVersion()` from
+ * `@electron/packager` < 20.3.0 still reported them, which would otherwise
+ * surface as an opaque download 404, and an explicit `--arch=ia32` request
+ * still needs a descriptive error either way.
  */
 export function isArchDroppedByElectron44(
   platform: ForgePlatform | string,
