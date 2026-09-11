@@ -1,0 +1,97 @@
+name: Website
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'website/**'
+      - '.github/workflows/website.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build forge.electronjs.org
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false # publishing job: keep the release build cache-free
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build website
+        run: yarn build
+
+      - name: Upload website build
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: website
+          path: website/build
+
+  deploy:
+    name: Publish forge.electronjs.org
+    needs: build
+    # Publishes on every version tag, not on pushes to `next`
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'electron/forge'
+    runs-on: ubuntu-latest
+    # Holds the OIDC federated credential for the forge.electronjs.org storage
+    # account; its deployment policy only allows tags matching `v*`
+    environment: website-publish
+    permissions:
+      contents: read
+      id-token: write # for azure/login
+    concurrency:
+      group: forge-website-deploy
+      cancel-in-progress: false
+    steps:
+      - name: Download website build
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: website
+          path: website/build
+
+      - name: Azure login
+        uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
+        with:
+          client-id: ${{ secrets.AZURE_FORGE_WEBSITE_OIDC_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_OIDC_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_OIDC_SUBSCRIPTION_ID }}
+
+      - name: Sync to Azure Blob Storage
+        env:
+          AZCOPY_AUTO_LOGIN_TYPE: AZCLI
+          STORAGE_ACCOUNT: ${{ secrets.AZURE_FORGE_WEBSITE_STORAGE_ACCOUNT_NAME }}
+        run: |
+          set -eo pipefail
+          test -f website/build/index.html
+          # The static website container is `$web`; `%24` keeps the shell out of it
+          azcopy sync ./website/build "https://${STORAGE_ACCOUNT}.blob.core.windows.net/%24web/" --delete-destination=true --compare-hash=MD5
+
+      - name: Upload azcopy debug logs
+        if: failure()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: azcopy-log
+          path: /home/runner/.azcopy/*.log
+          include-hidden-files: true
+          retention-days: 3
