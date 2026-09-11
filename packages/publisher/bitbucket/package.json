@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherBitbucket.js",
   "typings": "dist/PublisherBitbucket.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/publisher-base": "workspace:*",

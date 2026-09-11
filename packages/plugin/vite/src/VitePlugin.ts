@@ -559,4 +559,8 @@ function getServerURLs(urls: vite.ResolvedServerUrls) {
   return output;
 }
 
-export { VitePlugin };
+export { VitePlugin, VitePluginConfig };
+export type {
+  VitePluginBuildConfig,
+  VitePluginRendererConfig,
+} from './Config.ts';

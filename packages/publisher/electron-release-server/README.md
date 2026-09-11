@@ -4,7 +4,7 @@
 
 Please note that Electron Release Server is a community powered project and is not associated with Electron Forge or the Electron project directly.
 
-Configuration options are documented in [`PublisherERSConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_electron_release_server.PublisherERSConfig.html).
+Configuration options are documented in [`PublisherERSConfig`](https://js.electronforge.io/interfaces/_electron-forge_publisher-electron-release-server.PublisherERSConfig.html).
 
 ```javascript title=forge.config.js
 module.exports = {

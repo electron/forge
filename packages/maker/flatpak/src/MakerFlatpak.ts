@@ -59,3 +59,4 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 }
 
 export { MakerFlatpak, MakerFlatpakConfig };
+export type { MakerFlatpakConfigOptions } from './Config.ts';

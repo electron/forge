@@ -1,0 +1,68 @@
+---
+description: >-
+  Generate platform specific distributables for Electron apps using Electron
+  Forge.
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Makers
+
+Makers are Electron Forge's way of taking your packaged application and generating platform-specific distributable formats like [DMG](dmg.mdx), [AppX](appx.md), or [Flatpak](flatpak.md) files (amongst others).
+
+Each maker has to be configured in the `makers` section of your Forge configuration. For example:
+
+<Tabs>
+<TabItem value="forge.config.js" label="forge.config.js">
+
+```javascript
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-zip',
+      platforms: ['darwin', 'linux'],
+      config: {
+        // the config can be an object
+      }
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: (arch) => ({
+        // it can also be a function taking the currently built arch
+        // as a parameter and returning a config object, e.g.
+      })
+    }
+  ]
+};
+```
+
+</TabItem>
+
+<TabItem value="package.json" label="package.json">
+
+```json
+// Only showing the relevant configuration for brevity
+{
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": ["darwin", "linux"], // optional
+          "config": {
+              // Config here
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+:::info
+If a Maker supports multiple platforms, you may specify which platforms you want to target. Note that all Makers have logical defaults for the `platforms` value so you normally don't need to specify that property.
+:::

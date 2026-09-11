@@ -1,0 +1,124 @@
+---
+description: How to publish your distributable Electron app artifacts to Amazon S3
+---
+
+import StaticFileAutoUpdates from '../../_partials/static-file-auto-updates.mdx';
+
+# S3
+
+The S3 target publishes your Make artifacts to an Amazon S3 bucket.
+
+## Installation
+
+```bash
+npm install --save-dev @electron-forge/publisher-s3
+```
+
+## Usage
+
+To use `@electron-forge/publisher-s3`, add it to the `publishers` array in your [Forge configuration](../configuration.mdx):
+
+```javascript title="forge.config.js"
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-s3',
+      config: {
+        bucket: 'my-bucket',
+        public: true
+      }
+    }
+  ]
+};
+```
+
+Configuration options are documented in [`PublisherS3Config`](https://js.electronforge.io/interfaces/_electron_forge_publisher_s3.PublisherS3Config.html).
+
+### Authentication
+
+It is recommended to follow the [Amazon AWS guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html) and set either a shared credentials guide or the proper environment variables. However, if that is not possible, the publisher config allows the setting of the `accessKeyId` and `secretAccessKey` configuration options.
+
+### Key management
+
+By default, the S3 publisher will upload its objects to the `{prefix}/{platform}/{arch}/{name}` key, where:
+
+* `{prefix}` is the value of the `config.folder` option (defaults to the `"name"` field in your package.json).
+* `{platform}` is the target platform for the artifact you are publishing.
+* `{arch}` is the target architecture for the artifact you are publishing.
+* `{name}` is the file name of the artifact you are publishing.
+
+:::warning
+If you run the Publish command multiple times on the same platform for the same version (e.g. simultaneously publishing `ia32` and `x64` Windows artifacts), your uploads can get overwritten in the S3 bucket.
+
+To avoid this problem, you can use the `keyResolver` option to generate the S3 key programmatically.
+
+```javascript title="forge.config.js"
+{
+  name: '@electron-forge/publisher-s3',
+  config: {
+    // ...
+    keyResolver: (filename, platform, arch) => {
+      return `some-prefix/${platform}/${arch}/${filename}`
+    }
+    // ...
+  }
+}
+```
+
+:::
+
+### Auto updating from S3
+
+You can configure Electron's built-in [`autoUpdater`](https://www.electronjs.org/docs/latest/api/auto-updater) module to use the artifacts published by the S3 publisher. This is a two-step process:
+
+First, you must configure the [S3](s3.mdx) publisher to publish your files into an auto-updater compatible layout and use the [ZIP](../makers/zip.md) maker (macOS) and the [Squirrel.Windows](../makers/squirrel.windows.md) maker (Windows) to build your application.
+
+```javascript title="forge.config.js"
+module.exports = {
+  // ...
+  makers: [
+    {
+      name: '@electron-forge/maker-zip',
+      config: (arch) => ({
+        // Note that we must provide this S3 URL here
+        // in order to support smooth version transitions
+        // especially when using a CDN to front your updates
+        macUpdateManifestBaseUrl: `https://my-bucket.s3.amazonaws.com/my-app-updates/darwin/${arch}`
+      })
+    },
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: (arch) => ({
+        // Note that we must provide this S3 URL here
+        // in order to generate delta updates
+        remoteReleases: `https://my-bucket.s3.amazonaws.com/my-app-updates/win32/${arch}`
+      })
+    }
+  ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-s3',
+      config: {
+        bucket: 'my-bucket',
+        public: true
+      }
+    }
+  ]
+};
+```
+
+With Forge configured correctly, the second step is to configure the `autoUpdater` module inside your app's main process. The simplest form is shown below but you might want to hook additional events to show UI to your user or ask them if they want to update your app right now.
+
+```javascript title="main.js"
+const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
+
+updateElectronApp({
+  updateSource: {
+    type: UpdateSourceType.StaticStorage,
+    baseUrl: `https://my-bucket.s3.amazonaws.com/my-app-updates/${process.platform}/${process.arch}`
+  }
+});
+```
+
+<StaticFileAutoUpdates />
