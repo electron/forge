@@ -34,7 +34,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
 
   defaultPlatforms: ForgePlatform[] = ['linux'];
 
-  requiredExternalBinaries: string[] = ['dpkg', 'fakeroot'];
+  requiredExternalBinaries: string[] = ['dpkg'];
 
   isSupportedOnCurrentPlatform(): boolean {
     return this.isInstalled('electron-installer-debian');

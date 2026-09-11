@@ -10,7 +10,7 @@ The deb target builds [`.deb` packages](https://www.debian.org/doc/manuals/debia
 
 ## Requirements
 
-You can only build the deb target on Linux or macOS machines with the [`fakeroot`](https://wiki.debian.org/FakeRoot) and [`dpkg`](https://wiki.debian.org/dpkg) packages installed.
+You can only build the deb target on Linux or macOS machines with the [`dpkg`](https://wiki.debian.org/dpkg) package installed.
 
 ## Installation
 
