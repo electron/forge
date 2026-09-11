@@ -61,3 +61,20 @@ updateElectronApp(); // additional configuration options available
 ```
 
 If your GitHub release is in a private repository, you should check our [Auto Update](../../advanced/auto-update.md) guide for alternative solutions.
+
+### Publishing Squirrel.Windows builds for multiple architectures
+
+GitHub Releases only allow one asset per file name, but the [Squirrel.Windows maker](../makers/squirrel.windows.md) names its `RELEASES` and `.nupkg` files identically for every architecture. When a single publish includes Squirrel.Windows artifacts for more than one architecture (for example `x64` and `arm64`), the GitHub Publisher uploads the non-x64 `RELEASES` and `.nupkg` assets with a lowercase `{arch}.` prefix, while x64 keeps the bare file names:
+
+| Architecture | Uploaded asset names |
+| --- | --- |
+| `x64` | `RELEASES`, `MyApp-1.0.0-full.nupkg` |
+| `arm64` | `arm64.RELEASES`, `arm64.MyApp-1.0.0-full.nupkg` |
+
+The package names inside each prefixed `RELEASES` file are rewritten to match, and [update.electronjs.org](https://github.com/electron/update.electronjs.org) serves the matching architecture to your users.
+
+`Setup.exe` names are not changed, so set the `setupExe` option of the Squirrel.Windows maker to include the architecture (for example `MyApp-${version}-win32-${arch} Setup.exe`) to avoid installers for different architectures colliding on the release.
+
+:::note
+Assets are only prefixed when the builds for all architectures are published together in one `electron-forge publish` run. If a release already has an asset with the same name, the GitHub Publisher skips it and logs a warning; set `force: true` in the publisher config to overwrite it instead.
+:::

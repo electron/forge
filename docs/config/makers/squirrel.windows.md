@@ -14,6 +14,8 @@ The Squirrel.Windows target builds your application using the [Squirrel.Windows]
 
 Squirrel.Windows is a no-prompt, no-hassle, no-admin method of installing Windows applications, and is therefore the most user friendly you can get.
 
+These file names do not include the target architecture, so if you publish builds for more than one Windows architecture to GitHub Releases, see [Publishing Squirrel.Windows builds for multiple architectures](../publishers/github.md#publishing-squirrelwindows-builds-for-multiple-architectures).
+
 ## Requirements
 
 You can only build the Squirrel.Windows target on a Windows machine or on a Linux machine with [`mono`](https://www.mono-project.com/) and [`wine`](https://www.winehq.org/) installed.
