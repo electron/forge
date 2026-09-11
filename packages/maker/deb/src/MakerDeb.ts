@@ -61,3 +61,4 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
 }
 
 export { MakerDeb, MakerDebConfig };
+export type { MakerDebConfigOptions } from './Config.ts';

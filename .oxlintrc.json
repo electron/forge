@@ -49,8 +49,8 @@
   ],
   "ignorePatterns": [
     "**/.claude/**",
+    "api-docs/",
     "dist",
-    "docs/",
     "node_modules",
     "*.d.ts",
     "packages/*/*/doc",

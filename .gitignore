@@ -2,8 +2,8 @@
 .nyc_output
 *.lcov
 /coverage
+api-docs
 dist
-docs
 doc
 node_modules
 lerna-debug.log
@@ -27,7 +27,6 @@ packages/plugin/webpack/spec/fixtures/apps/native-modules/package-lock.json
 packages/plugin/fuses/spec/fixture/out
 .links
 reports
-packages/**/typedoc.json
 .vscode/settings.json
 .pnp.*
 .yarn/*

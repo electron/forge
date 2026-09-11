@@ -12,7 +12,7 @@ import { api } from '@electron-forge/core';
 api.package(import.meta.dirname);
 ```
 
-The named export `api` has it's methods documented over at [ForgeAPI](https://js.electronforge.io/classes/_electron_forge_core.ForgeAPI.html).
+The named export `api` has it's methods documented over at [ForgeAPI](https://js.electronforge.io/classes/_electron-forge_core.ForgeAPI.html).
 All the methods are async and expose the core forge methods, please note that all
 user-side configuration is still done through your forge config file or the "config.forge"
 section of your package.json. This API simply let's you call the methods in

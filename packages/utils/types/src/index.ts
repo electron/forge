@@ -33,7 +33,9 @@ export type ForgeListrTaskFn<Ctx = any> = ListrTask<
   Ctx,
   ListrDefaultRenderer
 >['task'];
-export type ElectronProcess = ChildProcess & { restarted: boolean };
+export interface ElectronProcess extends ChildProcess {
+  restarted: boolean;
+}
 
 export type ForgePlatform = OfficialPlatform;
 export type ForgeArch = OfficialArch | 'all';
@@ -124,14 +126,18 @@ export interface IForgePluginInterface {
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
-export type ForgeRebuildOptions = Omit<
+/**
+ * @inlineType RebuildMode
+ * @inlineType ModuleType
+ */
+export interface ForgeRebuildOptions extends Omit<
   RebuildOptions,
   'buildPath' | 'electronVersion' | 'arch'
->;
-export type ForgePackagerOptions = Omit<
+> {}
+export interface ForgePackagerOptions extends Omit<
   ElectronPackagerOptions,
   'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'
->;
+> {}
 export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
@@ -281,6 +287,7 @@ export type StartResult =
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
   force?: boolean;
+  typescript?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -291,6 +298,11 @@ export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
+  /**
+   * Computes dev dependencies for the given init options. Takes precedence
+   * over `devDependencies` when defined.
+   */
+  getDevDependencies?: (options: InitTemplateOptions) => string[];
   initializeTemplate?: (
     dir: string,
     options: InitTemplateOptions,

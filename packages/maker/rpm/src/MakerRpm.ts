@@ -64,3 +64,4 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
 }
 
 export { MakerRpm, MakerRpmConfig };
+export type { MakerRpmConfigOptions } from './Config.ts';
