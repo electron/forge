@@ -101,19 +101,6 @@ jobs:
           name: dist-files
           path: packages
 
-      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
-      # every run, so `--before` holds them to the same week-old floor the root
-      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
-      # than `min-release-age` because this step runs under the npm bundled with
-      # the Node version in `.nvmrc`, which is older than either age-gate
-      # setting and would ignore both without failing.
-      - name: Windows setup
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
-
       - name: Linux setup
         if: runner.os == 'Linux'
         run: |
@@ -145,6 +132,12 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-22.04, macos-latest]
         arch: [x64, arm64]
+        # The `slow` and `slow-verdaccio` vitest projects run in separate jobs,
+        # and the Verdaccio one, which takes about three times as long, is split
+        # into three shards that run in parallel. Vitest shards by test file and
+        # only balances the file count, not the duration, so check the job
+        # timings before assuming that another shard would help.
+        suite: [slow, verdaccio-1, verdaccio-2, verdaccio-3]
         exclude:
           - os: windows-latest
             arch: arm64
@@ -152,6 +145,13 @@ jobs:
             arch: arm64
           - os: macos-latest
             arch: x64
+        include:
+          - suite: verdaccio-1
+            shard: 1/3
+          - suite: verdaccio-2
+            shard: 2/3
+          - suite: verdaccio-3
+            shard: 3/3
 
     runs-on: ${{ matrix.os }}
 
@@ -186,19 +186,6 @@ jobs:
           name: dist-files
           path: packages
 
-      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
-      # every run, so `--before` holds them to the same week-old floor the root
-      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
-      # than `min-release-age` because this step runs under the npm bundled with
-      # the Node version in `.nvmrc`, which is older than either age-gate
-      # setting and would ignore both without failing.
-      - name: Windows setup
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
-
       - name: Linux setup
         if: runner.os == 'Linux'
         run: |
@@ -229,10 +216,16 @@ jobs:
         run: npm install -g npm@11.19.0
 
       - name: Run slow tests
+        if: matrix.suite == 'slow'
         run: |
           mkdir -p ./reports/out
           yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
-          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml"
+
+      - name: Run Verdaccio tests
+        if: matrix.suite != 'slow'
+        run: |
+          mkdir -p ./reports/out
+          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml" --shard=${{ matrix.shard }}
 
   required-ci:
     needs:
