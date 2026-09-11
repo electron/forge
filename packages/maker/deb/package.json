@@ -19,7 +19,7 @@
     "@electron-forge/shared-types": "workspace:*"
   },
   "optionalDependencies": {
-    "electron-installer-debian": "^3.2.0"
+    "electron-installer-debian": "^4.0.0"
   },
   "publishConfig": {
     "access": "public"
