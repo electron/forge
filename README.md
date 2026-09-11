@@ -32,7 +32,7 @@ jump right in to Electron development.
 
 Pre-requisites:
 
-- Node 16.4.0 or higher
+- Node 22.13.0 or higher
 - Git
 
 You can initialize an Electron Forge project with the [`create-electron-app`](https://www.npmjs.com/package/create-electron-app)
