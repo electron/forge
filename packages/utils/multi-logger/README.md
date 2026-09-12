@@ -38,21 +38,26 @@ logger.stop();
 
 ### `new Logger(options?)`
 
-| Option        | Description                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------ |
-| `stdout`      | Stream to render to. Defaults to `process.stdout`.                                               |
-| `stdin`       | Stream to read keys from. Defaults to `process.stdin`.                                           |
-| `interactive` | Whether the tabbed UI may be used. Defaults to `stdout.isTTY && stdin.isTTY && !process.env.CI`. |
-| `forceMode`   | `'ink'` or `'plain'` to bypass detection.                                                        |
-| `title`       | Text shown at the left of the tab bar.                                                           |
-| `keys`        | Extra hotkeys, `{ key, label, onPress }`, listed in the footer.                                  |
-| `maxLines`    | Lines kept per tab (and for the merged view). Defaults to 5000.                                  |
+| Option                  | Description                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `stdout`                | Stream to render to. Defaults to `process.stdout`.                                               |
+| `stdin`                 | Stream to read keys from. Defaults to `process.stdin`.                                           |
+| `interactive`           | Whether the tabbed UI may be used. Defaults to `stdout.isTTY && stdin.isTTY && !process.env.CI`. |
+| `forceMode`             | `'ink'` or `'plain'` to bypass detection.                                                        |
+| `title`                 | Text shown at the left of the tab bar.                                                           |
+| `keys`                  | Extra hotkeys, `{ key, label, onPress }`, listed in the footer.                                  |
+| `maxLines`              | Lines kept per tab (and for the merged view). Defaults to 5000.                                  |
+| `initialTab`            | Name of the tab shown first, or `'all'` for the merged view. Defaults to the first tab.          |
+| `errorSwitchDebounceMs` | Minimum gap between automatic switches to a tab that failed. Defaults to 15000.                  |
 
 * `logger.createTab(name)` returns a `Tab`.
 * `logger.getTab(name)` / `logger.getTabs()`.
-* `logger.attachProcess(child, name = 'Electron')` pipes the child's `stdout` and
+* `logger.attachProcess(child, name = 'App')` pipes the child's `stdout` and
   `stderr` into a tab line by line and marks the tab as exited when it ends.
   A tab with the same name is reused, so a restarted process keeps its tab.
+  When the child exits, stdin is put back into raw mode in case the child
+  inherited the terminal and reset it on the way out (Node embedders such as
+  Electron do); `logger.reassertRawMode()` does the same on demand.
 * `logger.start()` begins rendering. Before this everything is buffered.
 * `logger.stop()` unmounts the UI and restores the terminal. If the UI never
   rendered, the buffered lines are written out as plain text instead so
@@ -69,7 +74,7 @@ logger.stop();
 ## Interactive UI
 
 ```text
-Electron Forge · webpack  1 Main Process ✔ 1.2s  2 Renderer (web) ⠹  3 Preload (electron-preload) ✖ 2  4 Electron ●  a All
+Electron Forge · webpack  1 Main Process ✔ 1.2s  2 Renderer (web) ⠹  3 Preload (electron-preload) ✖ 2  4 App ●  a All
 ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 … the active tab's most recent lines, wrapped to the terminal width …
 ←/→ 1-9 tabs · a all · r restart electron · c clear · f follow · ↑/↓ scroll · q quit
@@ -86,6 +91,11 @@ Electron Forge · webpack  1 Main Process ✔ 1.2s  2 Renderer (web) ⠹  3 Prel
 | `c`                            | Clear the current tab (or every tab in the merged view)   |
 | `q`, `Ctrl+C`                  | Restore the terminal and re-raise `SIGINT`                |
 | custom `keys`                  | Whatever the host registered, e.g. `r` to restart         |
+
+The tab bar always fits the terminal: when it gets tight the durations and
+counts go first, then the title, and finally the chips wrap onto more rows.
+When a tab's status turns to `error` the view switches to it, at most once per
+`errorSwitchDebounceMs`, so a cascade of failures does not fight the user.
 
 The UI uses the terminal's alternate screen, so whatever was printed before
 `start()` is still in the scrollback when it exits, and it prints a one-line

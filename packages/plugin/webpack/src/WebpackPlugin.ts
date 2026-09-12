@@ -572,13 +572,14 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         });
 
         if (this.logger) {
-          // Electron's own output gets a tab of its own. This hook runs again
-          // for every restart, so a replacement child lands in the same tab.
+          // The Electron app's own output gets a tab of its own. This hook
+          // runs again for every restart, so a replacement child lands in the
+          // same tab.
           if (child.stdout) {
             this.logger
-              .getTab('Electron')
+              .getTab('App')
               ?.log(styleText('dim', '--- restarted ---'));
-            this.logger.attachProcess(child, 'Electron');
+            this.logger.attachProcess(child, 'App');
           }
           await this.logger.start();
         }

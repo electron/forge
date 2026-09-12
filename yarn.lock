@@ -1006,7 +1006,9 @@ __metadata:
     ink: "npm:^7.1.1"
     ink-testing-library: "npm:^4.0.0"
     react: "npm:^19.2.0"
+    string-width: "npm:^8.2.0"
     vitest: "catalog:"
+    wrap-ansi: "npm:^10.0.0"
   languageName: unknown
   linkType: soft
 

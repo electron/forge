@@ -12,6 +12,8 @@ export interface StartInkOptions {
   stdin: NodeJS.ReadStream;
   title?: string;
   keys: LoggerKey[];
+  initialTab?: string;
+  errorSwitchDebounceMs?: number;
   onQuit: () => void;
 }
 

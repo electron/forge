@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process';
+import { Console } from 'node:console';
 import { once } from 'node:events';
 import { Writable } from 'node:stream';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import Logger from '../src/index';
+import { FakeStdin } from './fakes';
 
 class FakeStdout extends Writable {
   output = '';
@@ -22,6 +24,10 @@ class FakeStdout extends Writable {
     return this.output.split('\n').filter((line) => line.length > 0);
   }
 }
+
+// ink patches the console via `new console.Console(...)`, which vitest's
+// console replacement does not provide.
+if (!('Console' in console)) Object.assign(console, { Console });
 
 const loggers: Logger[] = [];
 
@@ -192,9 +198,49 @@ describe('Logger', () => {
       expect(logger.attachProcess(second)).toBe(tab);
       await once(second, 'close');
 
-      expect(tab.name).toBe('Electron');
+      expect(tab.name).toBe('App');
       expect(logger.getTabs()).toHaveLength(1);
       expect(tab.getLines()).toEqual(['one', 'two']);
+    });
+
+    it('puts stdin back into raw mode when the process exits', async () => {
+      const stdin = new FakeStdin();
+      const setRawMode = vi.spyOn(stdin, 'setRawMode');
+      const stdout = Object.assign(new FakeStdout(), {
+        isTTY: true,
+        columns: 80,
+        rows: 24,
+      });
+      const { logger } = makeLogger({
+        stdout: stdout as unknown as NodeJS.WriteStream,
+        stdin: stdin as unknown as NodeJS.ReadStream,
+        forceMode: 'ink',
+      });
+      await logger.start();
+      // ink enables raw mode from an effect, so it lands a tick later.
+      await vi.waitFor(() => expect(stdin.isRaw).toBe(true));
+      setRawMode.mockClear();
+
+      const child = spawn(process.execPath, ['-e', "console.log('one')"]);
+      logger.attachProcess(child);
+      await once(child, 'close');
+      await vi.waitFor(() =>
+        expect(setRawMode.mock.calls).toEqual([[false], [true]]),
+      );
+      expect(stdin.isRaw).toBe(true);
+    });
+
+    it('does not touch stdin in plain mode', async () => {
+      const stdin = new FakeStdin();
+      const setRawMode = vi.spyOn(stdin, 'setRawMode');
+      const { logger } = makeLogger({
+        stdin: stdin as unknown as NodeJS.ReadStream,
+      });
+      await logger.start();
+      const child = spawn(process.execPath, ['-e', "console.log('one')"]);
+      logger.attachProcess(child);
+      await once(child, 'close');
+      expect(setRawMode).not.toHaveBeenCalled();
     });
   });
 });

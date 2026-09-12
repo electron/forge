@@ -49,4 +49,14 @@ export interface LoggerOptions {
   title?: string;
   /** Lines kept per tab (and for the merged view). Defaults to 5000. */
   maxLines?: number;
+  /**
+   * Name of the tab shown first in the interactive UI, or `'all'` for the
+   * merged view. Defaults to the first tab (also when no tab has that name).
+   */
+  initialTab?: string;
+  /**
+   * The interactive UI switches to a tab whose status turns to `error`, at
+   * most once per this many milliseconds. Defaults to 15000.
+   */
+  errorSwitchDebounceMs?: number;
 }

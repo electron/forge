@@ -51,6 +51,8 @@ export default class Logger {
 
   private renderer: Renderer | null = null;
 
+  private inkActive = false;
+
   private started = false;
 
   private stopped = false;
@@ -124,7 +126,7 @@ export default class Logger {
    * marks the tab as exited when the process ends. A tab with the same name is
    * reused, so a restarted process keeps writing to the same tab.
    */
-  attachProcess(child: ChildProcess, name = 'Electron'): Tab {
+  attachProcess(child: ChildProcess, name = 'App'): Tab {
     const tab = this.getTab(name) ?? this.createTab(name);
     tab.setStatus({ state: 'idle', detail: 'running' });
 
@@ -150,8 +152,23 @@ export default class Logger {
         state: 'exited',
         detail: signal ? `exited (${signal})` : `exited with code ${code}`,
       });
+      this.reassertRawMode();
     });
     return tab;
+  }
+
+  /**
+   * Puts stdin back into raw mode after something else reset the terminal.
+   * A child that inherited the tty (Electron, or any Node embedder) restores
+   * cooked mode when it exits, while `stdin.isRaw` still reads `true`, so ink
+   * never notices and keys get echoed instead of handled. Toggling makes Node
+   * re-apply the termios settings. No-op unless the interactive UI is up.
+   */
+  reassertRawMode(): void {
+    if (!this.inkActive || !this.stdin.isTTY) return;
+    if (typeof this.stdin.setRawMode !== 'function') return;
+    this.stdin.setRawMode(false);
+    this.stdin.setRawMode(true);
   }
 
   subscribe(listener: LoggerListener): () => void {
@@ -187,8 +204,11 @@ export default class Logger {
           stdin: this.stdin,
           title: this.options.title,
           keys: this.options.keys ?? [],
+          initialTab: this.options.initialTab,
+          errorSwitchDebounceMs: this.options.errorSwitchDebounceMs,
           onQuit: () => this.quit(),
         });
+        this.inkActive = true;
         return;
       } catch (err) {
         d(
@@ -212,6 +232,7 @@ export default class Logger {
     if (this.stopped) return;
     this.stopped = true;
     process.off('exit', this.onProcessExit);
+    this.inkActive = false;
 
     if (this.renderer) {
       this.renderer.stop();
