@@ -69,10 +69,10 @@ describe('ViteTemplate', () => {
       const mainFile = (
         await fs.promises.readFile(path.join(dir, 'src', 'main.js'))
       ).toString();
-      expect(mainFile).toMatch(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
-      expect(mainFile).toMatch(
-        /\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/,
-      );
+      // The template loads a single entry URL: the dev server in
+      // development and an app:// URL (appProtocol) when packaged.
+      expect(mainFile).toMatch(/mainWindow\.loadURL\(MAIN_WINDOW_VITE_ENTRY\)/);
+      expect(mainFile).not.toMatch(/mainWindow\.loadFile/);
     });
 
     it('should produce valid JavaScript without type annotations', async () => {
@@ -185,10 +185,10 @@ describe('ViteTemplate', () => {
       const mainFile = (
         await fs.promises.readFile(path.join(dir, 'src', 'main.ts'))
       ).toString();
-      expect(mainFile).toMatch(/MAIN_WINDOW_VITE_DEV_SERVER_URL/);
-      expect(mainFile).toMatch(
-        /\.\.\/renderer\/\${MAIN_WINDOW_VITE_NAME}\/index\.html/,
-      );
+      // The template loads a single entry URL: the dev server in
+      // development and an app:// URL (appProtocol) when packaged.
+      expect(mainFile).toMatch(/mainWindow\.loadURL\(MAIN_WINDOW_VITE_ENTRY\)/);
+      expect(mainFile).not.toMatch(/mainWindow\.loadFile/);
     });
 
     it('should remove the stylesheet link from the HTML file', async () => {

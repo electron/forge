@@ -21,7 +21,7 @@ const workerPath = path.resolve(
 function runWorker(
   kind: 'build' | 'renderer',
   index: number,
-  config: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  config: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'>,
 ) {
   return new Promise<{ code: number | null; stderr: string }>(
     (resolve, reject) => {
@@ -132,6 +132,112 @@ describe('subprocess-worker', () => {
     // MAIN_WINDOW_VITE_NAME should be statically replaced with "main_window"
     expect(contents).toMatch(/["'`]main_window["'`]/);
     expect(contents).not.toContain('MAIN_WINDOW_VITE_NAME');
+  });
+
+  it('injects the app protocol runtime and entry define when appProtocol is enabled', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'> =
+      {
+        build: [
+          {
+            entry: 'src/main-with-entry.js',
+            config: path.join(projectDir, 'vite.main.config.mjs'),
+            target: 'main',
+          },
+        ],
+        renderer: [
+          {
+            name: 'main_window',
+            config: path.join(projectDir, 'vite.renderer.config.mjs'),
+          },
+        ],
+        appProtocol: true,
+      };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'main-with-entry.js');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    // The app protocol runtime should be prepended to the bundle. Only assert
+    // on markers that survive minification (property names and string
+    // literals — local identifiers like `protocol` get mangled).
+    expect(contents).toContain('registerSchemesAsPrivileged');
+    expect(contents).toContain('bypassCustomProtocolHandlers');
+    expect(contents).toContain('__electronForgeAppProtocol');
+    // The banner must come before the bundled module code so it runs first.
+    expect(contents.indexOf('registerSchemesAsPrivileged')).toBeLessThan(
+      contents.indexOf('exports'),
+    );
+    // MAIN_WINDOW_VITE_ENTRY should be statically replaced with the app:// URL.
+    expect(contents).toContain('app://main_window/index.html');
+    expect(contents).not.toContain('MAIN_WINDOW_VITE_ENTRY');
+  });
+
+  it('registers additional privileged schemes from the appProtocol object form', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer' | 'appProtocol'> =
+      {
+        build: [
+          {
+            entry: 'src/main.js',
+            config: path.join(projectDir, 'vite.main.config.mjs'),
+            target: 'main',
+          },
+        ],
+        renderer: [
+          {
+            name: 'main_window',
+            config: path.join(projectDir, 'vite.renderer.config.mjs'),
+          },
+        ],
+        appProtocol: {
+          scheme: 'custom-app',
+          additionalPrivilegedSchemes: [
+            { scheme: 'media', privileges: { stream: true } },
+          ],
+        },
+      };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const contents = fs.readFileSync(
+      path.join(viteOutDir, 'build', 'main.js'),
+      'utf8',
+    );
+    expect(contents).toContain('registerSchemesAsPrivileged');
+    // The custom serving scheme and the additional scheme survive the JSON
+    // round-trip through FORGE_VITE_CONFIG into the worker's banner
+    // (minifiers may re-quote strings, so match any quote style).
+    expect(contents).toMatch(/[`'"]custom-app[`'"]/);
+    expect(contents).toMatch(/[`'"]media[`'"]/);
+    expect(contents).toMatch(/stream\s*:\s*(true|!0)/);
+  });
+
+  it('does not inject the app protocol runtime when appProtocol is not enabled', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(projectDir, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const contents = fs.readFileSync(
+      path.join(viteOutDir, 'build', 'main.js'),
+      'utf8',
+    );
+    expect(contents).not.toContain('registerSchemesAsPrivileged');
   });
 
   it('builds a preload target', async () => {

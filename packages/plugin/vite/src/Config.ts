@@ -1,4 +1,7 @@
+import type { AppProtocolConfig } from '@electron-forge/core-utils';
 import type { LibraryOptions } from 'vite';
+
+export type VitePluginAppProtocolConfig = AppProtocolConfig;
 
 export interface VitePluginBuildConfig {
   /**
@@ -49,6 +52,38 @@ export interface VitePluginConfig {
    * @defaultValue `true`
    */
   concurrent?: boolean | number;
+
+  /**
+   * Serve the built renderer files over a privileged `app://` custom scheme in
+   * packaged apps instead of loading them from `file://`, per Electron's
+   * security recommendations. See
+   * https://www.electronjs.org/docs/latest/api/protocol
+   *
+   * When enabled, the plugin injects the scheme registration and protocol
+   * handler into the production main-process bundle, and the `*_VITE_ENTRY`
+   * magic constant resolves to the Vite dev server URL in development and an
+   * `app://<renderer-name>/index.html` URL in production, so the main process
+   * can unconditionally call `mainWindow.loadURL(MAIN_WINDOW_VITE_ENTRY)`.
+   *
+   * Notes:
+   * - `protocol.registerSchemesAsPrivileged` can only be called once per app,
+   *   and the injected runtime makes that call. If your app needs its own
+   *   privileged schemes, pass them via the object form's
+   *   {@link VitePluginAppProtocolConfig.additionalPrivilegedSchemes} instead
+   *   of calling `registerSchemesAsPrivileged` yourself.
+   * - The object form's `registerSchemes: false` hands the
+   *   `registerSchemesAsPrivileged` call to your app instead — Forge then
+   *   injects only the serving handler, and your registration must include
+   *   the serving scheme (see `APP_PROTOCOL_DEFAULT_PRIVILEGES` in
+   *   `@electron-forge/core-utils`).
+   * - The object form's `scheme` renames the serving scheme (default `app`).
+   *   The scheme is part of the renderer's origin, so pick it before the
+   *   first release — renaming later orphans origin-scoped data such as
+   *   `localStorage` and IndexedDB.
+   * - Requires the default CommonJS output for main-process targets.
+   * @defaultValue `false`
+   */
+  appProtocol?: boolean | VitePluginAppProtocolConfig;
 
   /**
    * Restart the running app whenever the main process bundle is rebuilt during

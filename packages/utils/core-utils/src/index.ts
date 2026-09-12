@@ -1,3 +1,4 @@
+export * from './app-protocol.js';
 export * from './rebuild.js';
 export * from './electron-version.js';
 export * from './fs.js';

@@ -7,10 +7,12 @@ declare global {
   // whether you're running in development or production).
   const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
   const MAIN_WINDOW_VITE_NAME: string;
+  const MAIN_WINDOW_VITE_ENTRY: string;
 
   interface VitePluginRuntimeKeys {
     VITE_DEV_SERVER_URL: `${string}_VITE_DEV_SERVER_URL`;
     VITE_NAME: `${string}_VITE_NAME`;
+    VITE_ENTRY: `${string}_VITE_ENTRY`;
   }
 }
 
