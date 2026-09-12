@@ -46,42 +46,57 @@ function runWorker(
   );
 }
 
+interface WatchWorkerOutput {
+  messages: WorkerMessage[];
+  stderr: string;
+}
+
 /**
- * Runs the worker in watch mode and collects its IPC messages until `until`
- * is satisfied (or the worker exits), then kills it.
+ * Runs the worker in watch mode, collecting its IPC messages and stderr until
+ * `until` is satisfied (or the worker exits), then kills it. The condition is
+ * re-checked on every message and every stderr chunk: stdio pipes are
+ * asynchronous on Windows, so output printed right before a message may only
+ * arrive after it, and killing the worker too early would drop it.
  */
 function runWatchWorker(
   index: number,
   config: Pick<VitePluginConfig, 'build' | 'renderer'>,
-  until: (messages: WorkerMessage[]) => boolean,
+  until: (output: WatchWorkerOutput) => boolean,
 ) {
-  return new Promise<{ messages: WorkerMessage[]; stderr: string }>(
-    (resolve, reject) => {
-      const child = spawn(process.execPath, [workerPath], {
-        cwd: projectDir,
-        env: {
-          ...process.env,
-          FORGE_VITE_PROJECT_DIR: projectDir,
-          FORGE_VITE_KIND: 'build',
-          FORGE_VITE_INDEX: String(index),
-          FORGE_VITE_CONFIG: JSON.stringify(config),
-          FORGE_VITE_WATCH: '1',
-          FORGE_VITE_DEV_SERVER_URLS: '{}',
-        },
-        stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
-      });
-      const messages: WorkerMessage[] = [];
-      let stderr = '';
-      child.stderr!.setEncoding('utf8');
-      child.stderr!.on('data', (c) => (stderr += c));
-      child.on('message', (msg: WorkerMessage) => {
-        messages.push(msg);
-        if (until(messages)) child.kill();
-      });
-      child.on('error', reject);
-      child.on('close', () => resolve({ messages, stderr }));
-    },
-  );
+  return new Promise<WatchWorkerOutput>((resolve, reject) => {
+    const child = spawn(process.execPath, [workerPath], {
+      cwd: projectDir,
+      env: {
+        ...process.env,
+        FORGE_VITE_PROJECT_DIR: projectDir,
+        FORGE_VITE_KIND: 'build',
+        FORGE_VITE_INDEX: String(index),
+        FORGE_VITE_CONFIG: JSON.stringify(config),
+        FORGE_VITE_WATCH: '1',
+        FORGE_VITE_DEV_SERVER_URLS: '{}',
+      },
+      stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
+    });
+    const output: WatchWorkerOutput = { messages: [], stderr: '' };
+    let killed = false;
+    const check = () => {
+      if (!killed && until(output)) {
+        killed = true;
+        child.kill();
+      }
+    };
+    child.stderr!.setEncoding('utf8');
+    child.stderr!.on('data', (chunk: string) => {
+      output.stderr += chunk;
+      check();
+    });
+    child.on('message', (msg: WorkerMessage) => {
+      output.messages.push(msg);
+      check();
+    });
+    child.on('error', reject);
+    child.on('close', () => resolve(output));
+  });
 }
 
 describe('subprocess-worker', () => {
@@ -256,7 +271,7 @@ describe('subprocess-worker', () => {
     const { messages, stderr } = await runWatchWorker(
       0,
       config,
-      (messages) =>
+      ({ messages }) =>
         types(messages).includes('first-build-done') &&
         types(messages).includes('build-done'),
     );
@@ -287,12 +302,15 @@ describe('subprocess-worker', () => {
       renderer: [],
     };
 
+    // Wait for the printed error as well as the messages: the worker sends
+    // `build-error` before printing, and the test times out if it never does.
     const { messages, stderr } = await runWatchWorker(
       0,
       config,
-      (messages) =>
+      ({ messages, stderr }) =>
         messages.some((m) => m.type === 'first-build-error') &&
-        messages.some((m) => m.type === 'build-error'),
+        messages.some((m) => m.type === 'build-error') &&
+        /does-not-exist/.test(stderr),
     );
 
     const firstError = messages.find((m) => m.type === 'first-build-error');
