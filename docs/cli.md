@@ -182,9 +182,24 @@ npx electron-forge publish -- --from-dry-run
 
 This command will launch your app in dev mode with the `electron` binary in the given directory (defaults to `.`).
 
-If you type `rs` (and hit enter) in the same terminal where you ran the start command, the running app will be terminated and restarted.
-
 Forge plugins can override this command to run custom development logic. For example, the [Webpack Plugin](config/plugins/webpack.mdx) runs a webpack-dev-server instance to provide live reloading and HMR.
+
+#### Terminal UI
+
+When run from an interactive terminal, `start` takes over the window with a tabbed view of everything going on. The **App** tab shows the Electron app's own output and is selected by default; bundler plugins such as the [Webpack Plugin](config/plugins/webpack.mdx) and the [Vite Plugin](config/plugins/vite.mdx) add a tab per compiler. When a build fails, its tab is switched to automatically so the error is not missed.
+
+| Key                        | Action                                                  |
+| -------------------------- | ------------------------------------------------------- |
+| `←` / `→`, `1`–`9`         | Switch tabs                                             |
+| `a`                        | Merged view of every tab, each line tagged with its tab |
+| `c`                        | Clear the current tab (or every tab in the merged view) |
+| `f`                        | Toggle following the newest output                      |
+| `↑` / `↓`, `PgUp` / `PgDn` | Scroll back through the buffer                          |
+| `End`                      | Jump back to the newest output                          |
+| `r`                        | Restart the Electron app                                |
+| `q`, `Ctrl+C`              | Quit                                                    |
+
+When stdout is not a terminal, or the `CI` environment variable is set, the same output is written as plain lines prefixed with the tab name (for example `[App]`) instead, and typing `rs` (and hitting enter) in the terminal restarts the app.
 
 #### Options
 

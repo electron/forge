@@ -242,14 +242,15 @@ The generated global for this entry is derived from its `name` with the `_PRELOA
 
 ### Compiler output
 
-While `electron-forge start` is running, the plugin renders the output of every
-webpack compiler (main process, each renderer and preload target) and of the
-Electron app itself (the `App` tab) as tabs in the terminal. Use `←`/`→` or the
-tab numbers to switch tabs, `a` for a merged view, `↑`/`↓` to scroll back, `r`
-to restart the Electron app and `q` (or `Ctrl+C`) to quit. When a compiler
-fails, the view switches to its tab automatically (at most once every 15
-seconds). When the terminal is not interactive, or `CI` is set, the same output
-is written as plain lines prefixed with the tab name instead.
+While `electron-forge start` is running, the plugin adds a tab for every
+webpack compiler (main process, each renderer and preload target) to Forge's
+[terminal UI](../../cli.md#terminal-ui), next to the `App` tab that shows the
+Electron app's own output. Use `←`/`→` or the tab numbers to switch tabs, `a`
+for a merged view, `↑`/`↓` to scroll back, `r` to restart the Electron app and
+`q` (or `Ctrl+C`) to quit. When a compiler fails, the view switches to its tab
+automatically (at most once every 15 seconds). When the terminal is not
+interactive, or `CI` is set, the same output is written as plain lines prefixed
+with the tab name instead.
 
 ### webpack-dev-server
 

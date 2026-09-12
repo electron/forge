@@ -12,8 +12,7 @@ import {
   readJson,
   writeJson,
 } from '@electron-forge/core-utils';
-import { requestAppRestart } from '@electron-forge/core-utils/restart';
-import Logger, { Tab } from '@electron-forge/multi-logger';
+import Logger, { ensureSharedLogger, Tab } from '@electron-forge/multi-logger';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeArch,
@@ -72,8 +71,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private servers: http.Server[] = [];
 
-  private logger: Logger | null = null;
-
   private port = DEFAULT_PORT;
 
   constructor(c: WebpackPluginConfig) {
@@ -118,11 +115,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         server.close();
       }
       this.servers = [];
-      if (this.logger) {
-        d('stopping logger');
-        this.logger.stop();
-        this.logger = null;
-      }
     }
     if (err) console.error(err.stack);
     // Why: This is literally what the option says to do.
@@ -211,21 +203,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             force: true,
           });
 
-          // Compiler output is buffered here and rendered by the postStart
-          // hook, once listr has finished drawing the startup tasks.
-          const logger = new Logger({
-            title: 'Electron Forge · webpack',
-            keys: [
-              {
-                key: 'r',
-                label: 'restart electron',
-                onPress: () => {
-                  requestAppRestart();
-                },
-              },
-            ],
-          });
-          this.logger = logger;
+          // Compiler output goes into tabs of Forge's terminal UI, which core
+          // owns (and starts once the app is up); this plugin only adds tabs.
+          const logger = ensureSharedLogger();
 
           return task?.newListr([
             {
@@ -570,19 +550,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           if (child.restarted) return;
           this.exitHandler({ cleanup: true, exit: true });
         });
-
-        if (this.logger) {
-          // The Electron app's own output gets a tab of its own. This hook
-          // runs again for every restart, so a replacement child lands in the
-          // same tab.
-          if (child.stdout) {
-            this.logger
-              .getTab('App')
-              ?.log(styleText('dim', '--- restarted ---'));
-            this.logger.attachProcess(child, 'App');
-          }
-          await this.logger.start();
-        }
       },
       resolveForgeConfig: this.resolveForgeConfig,
       packageAfterCopy: [
