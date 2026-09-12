@@ -151,7 +151,9 @@ export interface WebpackPluginConfig {
    */
   port?: number;
   /**
-   * The TCP port for web-multi-logger. Defaults to 9000.
+   * @deprecated No longer used: the webpack plugin now renders compiler output
+   * in the terminal. This option is ignored and will be removed in a future
+   * major.
    */
   loggerPort?: number;
   /**

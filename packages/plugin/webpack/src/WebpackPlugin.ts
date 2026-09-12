@@ -12,6 +12,8 @@ import {
   readJson,
   writeJson,
 } from '@electron-forge/core-utils';
+import { requestAppRestart } from '@electron-forge/core-utils/restart';
+import Logger, { Tab } from '@electron-forge/multi-logger';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import {
   ForgeArch,
@@ -19,7 +21,6 @@ import {
   ListrTask,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
-import Logger, { Tab } from '@electron-forge/web-multi-logger';
 import debug from 'debug';
 import fs from 'graceful-fs';
 import { PRESET_TIMER } from 'listr2';
@@ -28,14 +29,15 @@ import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
 import { WebpackPluginConfig, WebpackPluginRendererConfig } from './Config.js';
-import ElectronForgeLoggingPlugin from './util/ElectronForgeLogging.js';
+import ElectronForgeLoggingPlugin, {
+  statusFromStats,
+} from './util/ElectronForgeLogging.js';
 import EntryPointPreloadPlugin from './util/EntryPointPreloadPlugin.js';
 import once from './util/once.js';
 import WebpackConfigGenerator from './WebpackConfig.js';
 
 const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
-const DEFAULT_LOGGER_PORT = 9000;
 
 type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
 type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
@@ -43,6 +45,15 @@ type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
 type NativeDepsCtx = {
   nativeDeps: Record<string, string[]>;
 };
+
+// Several renderer groups can share a target, so number the repeats.
+function uniqueTabName(logger: Logger, name: string): string {
+  let candidate = name;
+  for (let n = 2; logger.getTab(candidate); n++) {
+    candidate = `${name} #${n}`;
+  }
+  return candidate;
+}
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   name = 'webpack';
@@ -61,11 +72,9 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
   private servers: http.Server[] = [];
 
-  private loggers: Logger[] = [];
+  private logger: Logger | null = null;
 
   private port = DEFAULT_PORT;
-
-  private loggerPort = DEFAULT_LOGGER_PORT;
 
   constructor(c: WebpackPluginConfig) {
     super(c);
@@ -76,9 +85,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
       }
     }
     if (c.loggerPort) {
-      if (this.isValidPort(c.loggerPort)) {
-        this.loggerPort = c.loggerPort;
-      }
+      d('ignoring deprecated loggerPort option');
     }
 
     this.getHooks = this.getHooks.bind(this);
@@ -114,11 +121,11 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         server.close();
       }
       this.servers = [];
-      for (const logger of this.loggers) {
+      if (this.logger) {
         d('stopping logger');
-        logger.stop();
+        this.logger.stop();
+        this.logger = null;
       }
-      this.loggers = [];
     }
     if (err) console.error(err.stack);
     // Why: This is literally what the option says to do.
@@ -207,9 +214,21 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
             force: true,
           });
 
-          const logger = new Logger(this.loggerPort);
-          this.loggers.push(logger);
-          await logger.start();
+          // Compiler output is buffered here and rendered by the postStart
+          // hook, once listr has finished drawing the startup tasks.
+          const logger = new Logger({
+            title: 'Electron Forge · webpack',
+            keys: [
+              {
+                key: 'r',
+                label: 'restart electron',
+                onPress: () => {
+                  requestAppRestart();
+                },
+              },
+            ],
+          });
+          this.logger = logger;
 
           return task?.newListr([
             {
@@ -225,7 +244,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
               title: 'Launching dev servers for renderer process code',
               task: async (_, task) => {
                 await this.launchRendererDevServers(logger);
-                task.output = `Output Available: ${styleText('cyan', `http://localhost:${this.loggerPort}`)}\n`;
+                task.output = styleText(
+                  'dim',
+                  'Compiler output will render in this terminal once the app launches\n',
+                );
               },
               rendererOptions: {
                 persistentOutput: true,
@@ -551,6 +573,18 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
           if (child.restarted) return;
           this.exitHandler({ cleanup: true, exit: true });
         });
+
+        if (this.logger) {
+          // Electron's own output gets a tab of its own. This hook runs again
+          // for every restart, so a replacement child lands in the same tab.
+          if (child.stdout) {
+            this.logger
+              .getTab('Electron')
+              ?.log(styleText('dim', '--- restarted ---'));
+            this.logger.attachProcess(child, 'Electron');
+          }
+          await this.logger.start();
+        }
       },
       resolveForgeConfig: this.resolveForgeConfig,
       packageAfterCopy: [
@@ -661,6 +695,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     const mainConfig = await this.configGenerator.getMainConfig();
     await new Promise((resolve, reject) => {
       const compiler = webpack(mainConfig);
+      if (tab) {
+        compiler.hooks.watchRun.tap('ElectronForgeLogging', () => {
+          tab.setStatus({ state: 'building' });
+        });
+      }
       const [onceResolve, onceReject] = once(resolve, reject);
       const cb: WebpackWatchHandler = async (err, stats) => {
         if (tab && stats) {
@@ -669,6 +708,11 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
               colors: true,
             }),
           );
+          tab.setStatus(statusFromStats(stats));
+        }
+        if (tab && err) {
+          tab.log(err.message);
+          tab.setStatus({ state: 'error', errors: 1 });
         }
         if (this.config.jsonStats) {
           await this.writeJSONStats(
@@ -740,14 +784,21 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
     let numPreloadEntriesWithConfig = 0;
     for (const entryConfig of configs) {
       if (!entryConfig.plugins) entryConfig.plugins = [];
+
+      const filename = entryConfig.output?.filename as string;
+      const isPreload = Boolean(filename?.endsWith('preload.js'));
       entryConfig.plugins.push(
         new ElectronForgeLoggingPlugin(
-          logger.createTab(`Renderer Target Bundle (${entryConfig.target})`),
+          logger.createTab(
+            uniqueTabName(
+              logger,
+              `${isPreload ? 'Preload' : 'Renderer'} (${entryConfig.target})`,
+            ),
+          ),
         ),
       );
 
-      const filename = entryConfig.output?.filename as string;
-      if (filename?.endsWith('preload.js')) {
+      if (isPreload) {
         let name = `entry-point-preload-${entryConfig.target}`;
         if (preloadPlugins.includes(name)) {
           name = `${name}-${++numPreloadEntriesWithConfig}`;
