@@ -17,7 +17,7 @@ import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
 import resolveDir from '../../src/util/resolve-dir.js';
 
 // A stand-in for the shared terminal UI logger. It only records tabs, but it
-// does read the attached streams, like the real one, so nothing is forwarded.
+// does read the attached streams, like the real one.
 const fakeLogger = vi.hoisted(() => {
   type FakeTab = { name: string; log: ReturnType<typeof vi.fn> };
   const tabs = new Map<string, FakeTab>();
@@ -125,63 +125,6 @@ describe('start', () => {
     );
   });
 
-  describe('app output', () => {
-    const childWithOutput = () =>
-      Object.assign(new EventEmitter(), {
-        stdout: new PassThrough(),
-        stderr: new PassThrough(),
-      }) as unknown as ElectronProcess;
-
-    let write: ReturnType<typeof vi.spyOn>;
-    beforeEach(() => {
-      write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
-    });
-
-    it('pipes stdout and stderr so that postStart hooks can claim them', async () => {
-      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
-      await start({ dir: import.meta.dirname, interactive: false });
-      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('stdio', [
-        'inherit',
-        'pipe',
-        'pipe',
-      ]);
-    });
-
-    it('forwards output that no postStart hook claimed', async () => {
-      const child = childWithOutput();
-      vi.mocked(spawn).mockReturnValueOnce(child);
-      await start({ dir: import.meta.dirname, interactive: false });
-
-      child.stdout!.write('from the app\n');
-      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce());
-      expect(String(write.mock.calls[0][0])).toBe('from the app\n');
-    });
-
-    it('leaves output alone once a postStart hook has claimed it', async () => {
-      const child = childWithOutput();
-      vi.mocked(spawn).mockReturnValueOnce(child);
-      const claimed: string[] = [];
-      vi.mocked(findConfig).mockResolvedValueOnce({
-        pluginInterface: {
-          triggerHook: vi.fn(),
-          getHookListrTasks: vi.fn(),
-          triggerMutatingHook: vi.fn(),
-          overrideStartLogic: vi.fn().mockResolvedValue(false),
-        },
-        hooks: {
-          postStart: async (_config, app) => {
-            app.stdout!.on('data', (chunk) => claimed.push(String(chunk)));
-          },
-        },
-      } as unknown as ResolvedForgeConfig);
-      await start({ dir: import.meta.dirname, interactive: false });
-
-      child.stdout!.write('from the app\n');
-      await vi.waitFor(() => expect(claimed).toEqual(['from the app\n']));
-      expect(write).not.toHaveBeenCalled();
-    });
-  });
-
   describe('terminal UI', () => {
     const childWithOutput = () =>
       Object.assign(new EventEmitter(), {
@@ -201,9 +144,31 @@ describe('start', () => {
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
     });
 
-    it('is not created for a programmatic start', async () => {
+    it('prints plugin tabs as plain lines and leaves the app alone for a programmatic start', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
       await start({ dir: import.meta.dirname, interactive: false });
-      expect(vi.mocked(ensureSharedLogger)).not.toHaveBeenCalled();
+
+      // Core still owns the logger, so tabs that plugins add are rendered
+      // (plain mode, whatever the terminal) and torn down with the app.
+      expect(vi.mocked(ensureSharedLogger)).toHaveBeenCalledWith(
+        expect.objectContaining({ interactive: false }),
+      );
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      // The app is not part of it: it inherits our stdio exactly as before,
+      // rather than being piped through a tab.
+      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty(
+        'stdio',
+        'inherit',
+      );
+      expect(fakeLogger.attachProcess).not.toHaveBeenCalled();
+      expect(process.stdin.on).not.toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+
+      child.emit('exit', 0);
+      expect(fakeLogger.stop).toHaveBeenCalledOnce();
     });
 
     it('shows the app in its own tab, attached before the postStart hooks run', async () => {
@@ -236,6 +201,15 @@ describe('start', () => {
           keys: [expect.objectContaining({ key: 'r' })],
         }),
       );
+      // Whether the UI can draw is left to the logger's own detection.
+      expect(vi.mocked(ensureSharedLogger).mock.calls[0][0]).not.toHaveProperty(
+        'interactive',
+      );
+      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('stdio', [
+        'inherit',
+        'pipe',
+        'pipe',
+      ]);
       expect(fakeLogger.attachProcess).toHaveBeenCalledWith(child, 'App');
       expect(attachedWhenHookRan).toBe(1);
       expect(fakeLogger.start).toHaveBeenCalledOnce();
@@ -310,6 +284,22 @@ describe('start', () => {
         'data',
         expect.any(Function),
       );
+    });
+
+    it('falls back to reading `rs` when the UI fails to start', async () => {
+      // The logger reports ink up front but ends up in plain mode once
+      // start() has actually tried to load the UI.
+      fakeLogger.start.mockImplementationOnce(async () => {
+        fakeLogger.mode = 'plain';
+      });
+      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
+      await start({ dir: import.meta.dirname, interactive: true });
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      expect(process.stdin.on).toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+      expect(process.stdin.resume).toHaveBeenCalled();
     });
   });
 

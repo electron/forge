@@ -199,7 +199,7 @@ When run from an interactive terminal, `start` takes over the window with a tabb
 | `r`                        | Restart the Electron app                                |
 | `q`, `Ctrl+C`              | Quit                                                    |
 
-When stdout is not a terminal, or the `CI` environment variable is set, the same output is written as plain lines prefixed with the tab name (for example `[App]`) instead, and typing `rs` (and hitting enter) in the terminal restarts the app.
+When stdout is not a terminal, or the `CI` environment variable is set, the same output is written as plain lines prefixed with the tab name (for example `[App]`) instead, and typing `rs` (and hitting enter) in the terminal restarts the app. When stdin is not a terminal either (piped input, or a programmatic `api.start()`), only the plugins' tabs are printed that way: the app itself inherits Forge's stdout and stderr, and nothing reads `rs`.
 
 #### Options
 

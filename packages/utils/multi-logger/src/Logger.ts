@@ -47,7 +47,7 @@ export default class Logger {
 
   private readonly stdin: NodeJS.ReadStream;
 
-  readonly mode: LoggerMode;
+  private activeMode: LoggerMode;
 
   private renderer: Renderer | null = null;
 
@@ -55,7 +55,7 @@ export default class Logger {
 
   private started = false;
 
-  private stopped = false;
+  private hasStopped = false;
 
   private readonly options: LoggerOptions;
 
@@ -71,13 +71,30 @@ export default class Logger {
       (Boolean(this.stdout.isTTY) &&
         Boolean(this.stdin.isTTY) &&
         !process.env.CI);
-    this.mode = options.forceMode ?? (interactive ? 'ink' : 'plain');
+    this.activeMode = options.forceMode ?? (interactive ? 'ink' : 'plain');
 
     // Make sure a crash never leaves the terminal in the alternate screen.
     process.on('exit', this.onProcessExit);
   }
 
   private onProcessExit = () => this.stop();
+
+  /**
+   * How output is rendered. Decided at construction from the streams and
+   * options, but only final once {@link Logger.start} has resolved: if the
+   * interactive UI fails to load, this switches to `'plain'`.
+   */
+  get mode(): LoggerMode {
+    return this.activeMode;
+  }
+
+  /**
+   * Whether {@link Logger.stop} has been called. A stopped logger renders
+   * nothing ever again, so callers that want output need a new one.
+   */
+  get stopped(): boolean {
+    return this.hasStopped;
+  }
 
   /**
    * Merges additive settings into the options this logger was created with:
@@ -217,13 +234,13 @@ export default class Logger {
    * Starts rendering. Lines logged before this point are shown too.
    */
   async start(): Promise<void> {
-    if (this.started || this.stopped) return;
+    if (this.started || this.hasStopped) return;
     this.started = true;
 
-    if (this.mode === 'ink') {
+    if (this.activeMode === 'ink') {
       try {
         const { startInk } = await import('./ink/render.js');
-        if (this.stopped) return;
+        if (this.hasStopped) return;
         this.renderer = startInk({
           logger: this,
           stdout: this.stdout,
@@ -241,6 +258,7 @@ export default class Logger {
           'failed to start the interactive UI, falling back to plain output',
           err,
         );
+        this.activeMode = 'plain';
       }
     }
 
@@ -255,8 +273,8 @@ export default class Logger {
    * out as plain text instead, so nothing is lost. Safe to call repeatedly.
    */
   stop(): void {
-    if (this.stopped) return;
-    this.stopped = true;
+    if (this.hasStopped) return;
+    this.hasStopped = true;
     process.off('exit', this.onProcessExit);
     this.inkActive = false;
 

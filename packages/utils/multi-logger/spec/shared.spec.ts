@@ -85,6 +85,30 @@ describe('shared logger', () => {
     await first.start();
   });
 
+  it('replaces a logger that has been stopped', async () => {
+    const first = ensureSharedLogger({ stdout, forceMode: 'plain' });
+    first.stop();
+    expect(first.stopped).toBe(true);
+
+    let written = '';
+    const out = new Writable({
+      write: (chunk, _encoding, callback) => {
+        written += String(chunk);
+        callback();
+      },
+    }) as unknown as NodeJS.WriteStream;
+    const second = ensureSharedLogger({ stdout: out, forceMode: 'plain' });
+    expect(second).not.toBe(first);
+    expect(second.stopped).toBe(false);
+    expect(getSharedLogger()).toBe(second);
+    expect(ensureSharedLogger()).toBe(second);
+
+    // The replacement renders, where the stopped one would have shown nothing.
+    await second.start();
+    second.createTab('Main').log('still rendered');
+    expect(written).toBe('[Main] still rendered\n');
+  });
+
   it('forgets the logger on reset without stopping it', () => {
     const logger = ensureSharedLogger({ stdout });
     const stop = vi.spyOn(logger, 'stop');

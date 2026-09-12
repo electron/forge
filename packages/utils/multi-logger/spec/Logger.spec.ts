@@ -135,6 +135,27 @@ describe('Logger', () => {
     });
   });
 
+  describe('when the interactive UI fails to load', () => {
+    it('falls back to plain output and reports the mode it ended up in', async () => {
+      vi.doMock(import('../src/ink/render'), () => {
+        throw new Error('ink is unavailable');
+      });
+      try {
+        const { logger, stdout } = makeLogger({ forceMode: 'ink' });
+        const tab = logger.createTab('Main');
+        tab.log('buffered');
+        expect(logger.mode).toBe('ink');
+
+        await logger.start();
+        expect(logger.mode).toBe('plain');
+        tab.log('live');
+        expect(stdout.lines).toEqual(['[Main] buffered', '[Main] live']);
+      } finally {
+        vi.doUnmock(import('../src/ink/render'));
+      }
+    });
+  });
+
   describe('buffers', () => {
     it('keeps a merged view of all tabs bounded by maxLines', () => {
       const { logger } = makeLogger({ maxLines: 3 });
