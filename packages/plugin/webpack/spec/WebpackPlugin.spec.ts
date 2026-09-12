@@ -41,12 +41,6 @@ describe('WebpackPlugin', async () => {
         /not a valid TCP port/,
       );
     });
-
-    it('should ignore the deprecated loggerPort option', () => {
-      expect(
-        () => new WebpackPlugin({ ...baseConfig, loggerPort: 80 }),
-      ).not.toThrow();
-    });
   });
 
   describe('packageAfterCopy', () => {

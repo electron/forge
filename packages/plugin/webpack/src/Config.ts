@@ -151,12 +151,6 @@ export interface WebpackPluginConfig {
    */
   port?: number;
   /**
-   * @deprecated No longer used: the webpack plugin now renders compiler output
-   * in the terminal. This option is ignored and will be removed in a future
-   * major.
-   */
-  loggerPort?: number;
-  /**
    * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
    * which results in `.map` files being generated), this option will cause the source map files be
    * packaged with your app. By default they are not included.

@@ -84,9 +84,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         this.port = c.port;
       }
     }
-    if (c.loggerPort) {
-      d('ignoring deprecated loggerPort option');
-    }
 
     this.getHooks = this.getHooks.bind(this);
   }
