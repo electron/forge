@@ -820,6 +820,7 @@ __metadata:
     "@electron-forge/maker-squirrel": "workspace:*"
     "@electron-forge/maker-wix": "workspace:*"
     "@electron-forge/maker-zip": "workspace:*"
+    "@electron-forge/multi-logger": "workspace:*"
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/publisher-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
