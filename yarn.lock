@@ -1059,6 +1059,7 @@ __metadata:
   resolution: "@electron-forge/plugin-vite@workspace:packages/plugin/vite"
   dependencies:
     "@electron-forge/core-utils": "workspace:*"
+    "@electron-forge/multi-logger": "workspace:*"
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/packager": "npm:^20.3.0"

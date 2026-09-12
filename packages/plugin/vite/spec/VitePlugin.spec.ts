@@ -1,13 +1,33 @@
+import { EventEmitter } from 'node:events';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { PassThrough } from 'node:stream';
 
 import { IgnoreFunction } from '@electron/packager';
-import { ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ElectronProcess,
+  ForgeHookFn,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { VitePluginConfig } from '../src/Config';
 import { VitePlugin } from '../src/VitePlugin';
+
+type FakeChild = ElectronProcess & {
+  stdout: PassThrough;
+  stderr: PassThrough;
+};
+
+function fakeChild(): FakeChild {
+  return Object.assign(new EventEmitter(), {
+    pid: 1234,
+    restarted: false,
+    stdout: new PassThrough(),
+    stderr: new PassThrough(),
+  }) as unknown as FakeChild;
+}
 
 describe('VitePlugin', async () => {
   const baseConfig: VitePluginConfig = {
@@ -91,6 +111,23 @@ describe('VitePlugin', async () => {
 
     afterAll(async () => {
       await fs.promises.rm(viteTestDir, { recursive: true });
+    });
+  });
+
+  describe('postStart', () => {
+    it('only hooks the app process exit, leaving its output to start()', async () => {
+      const plugin = new VitePlugin(baseConfig);
+      plugin.setDirectories(viteTestDir);
+      const child = fakeChild();
+
+      const postStart = plugin.getHooks().postStart as ForgeHookFn<'postStart'>;
+      await postStart({} as ResolvedForgeConfig, child);
+
+      expect(child.listenerCount('exit')).toBe(1);
+      // The shared terminal UI owns the app's stdio; the plugin must not
+      // claim it.
+      expect(child.stdout.listenerCount('data')).toBe(0);
+      expect(child.stderr.listenerCount('data')).toBe(0);
     });
   });
 
