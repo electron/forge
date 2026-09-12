@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { VitePluginConfig } from '../src/Config';
+import type { WorkerMessage } from '../src/worker-messages';
 
 const projectDir = path.join(
   import.meta.dirname,
@@ -41,6 +42,44 @@ function runWorker(
       child.stderr.on('data', (c) => (stderr += c));
       child.on('error', reject);
       child.on('close', (code) => resolve({ code, stderr }));
+    },
+  );
+}
+
+/**
+ * Runs the worker in watch mode and collects its IPC messages until `until`
+ * is satisfied (or the worker exits), then kills it.
+ */
+function runWatchWorker(
+  index: number,
+  config: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  until: (messages: WorkerMessage[]) => boolean,
+) {
+  return new Promise<{ messages: WorkerMessage[]; stderr: string }>(
+    (resolve, reject) => {
+      const child = spawn(process.execPath, [workerPath], {
+        cwd: projectDir,
+        env: {
+          ...process.env,
+          FORGE_VITE_PROJECT_DIR: projectDir,
+          FORGE_VITE_KIND: 'build',
+          FORGE_VITE_INDEX: String(index),
+          FORGE_VITE_CONFIG: JSON.stringify(config),
+          FORGE_VITE_WATCH: '1',
+          FORGE_VITE_DEV_SERVER_URLS: '{}',
+        },
+        stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
+      });
+      const messages: WorkerMessage[] = [];
+      let stderr = '';
+      child.stderr!.setEncoding('utf8');
+      child.stderr!.on('data', (c) => (stderr += c));
+      child.on('message', (msg: WorkerMessage) => {
+        messages.push(msg);
+        if (until(messages)) child.kill();
+      });
+      child.on('error', reject);
+      child.on('close', () => resolve({ messages, stderr }));
     },
   );
 }
@@ -198,6 +237,73 @@ describe('subprocess-worker', () => {
 
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code).not.toBe(0);
+    expect(stderr).toMatch(/does-not-exist/);
+  });
+
+  it('reports the first build and its duration when watching', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(projectDir, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const types = (messages: WorkerMessage[]) => messages.map((m) => m.type);
+    const { messages, stderr } = await runWatchWorker(
+      0,
+      config,
+      (messages) =>
+        types(messages).includes('first-build-done') &&
+        types(messages).includes('build-done'),
+    );
+
+    expect(types(messages), stderr).toEqual(
+      expect.arrayContaining(['first-build-done', 'build-done']),
+    );
+    expect(types(messages)).not.toContain('first-build-error');
+    expect(types(messages)).not.toContain('build-error');
+    // Preload targets ask the parent to reload the renderers.
+    expect(types(messages)).toContain('reload-renderers');
+    const done = messages.find((m) => m.type === 'build-done');
+    expect(done).toMatchObject({ durationMs: expect.any(Number) });
+    expect(fs.existsSync(path.join(viteOutDir, 'build', 'preload.js'))).toBe(
+      true,
+    );
+  });
+
+  it('reports a failing first build when watching', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/does-not-exist.js',
+          config: path.join(projectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { messages, stderr } = await runWatchWorker(
+      0,
+      config,
+      (messages) =>
+        messages.some((m) => m.type === 'first-build-error') &&
+        messages.some((m) => m.type === 'build-error'),
+    );
+
+    const firstError = messages.find((m) => m.type === 'first-build-error');
+    expect(firstError, stderr).toMatchObject({
+      message: expect.stringContaining('does-not-exist'),
+    });
+    expect(messages.find((m) => m.type === 'build-error')).toMatchObject({
+      message: expect.stringContaining('does-not-exist'),
+    });
+    expect(messages.map((m) => m.type)).not.toContain('first-build-done');
+    // The error text is also printed, so it shows up in the target's tab.
     expect(stderr).toMatch(/does-not-exist/);
   });
 

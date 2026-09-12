@@ -4,15 +4,27 @@ import path from 'node:path';
 import { styleText } from 'node:util';
 
 import { readJson, writeJson } from '@electron-forge/core-utils';
+import { ensureSharedLogger } from '@electron-forge/multi-logger';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
 import { viteDevServerUrls } from './config/vite.base.config.js';
+import {
+  buildTabName,
+  createTabLogger,
+  createUniqueTab,
+  entryToDisplay,
+  rendererTabName,
+} from './logging.js';
 import ViteConfigGenerator from './ViteConfig.js';
+import { statusFromWorkerMessage } from './worker-messages.js';
 
 import type { VitePluginConfig } from './Config.js';
+import type { WorkerMessage } from './worker-messages.js';
+import type Logger from '@electron-forge/multi-logger';
+import type { Tab } from '@electron-forge/multi-logger';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
@@ -20,7 +32,6 @@ import type {
 } from '@electron-forge/shared-types';
 import type { ChildProcess } from 'node:child_process';
 import type { AddressInfo } from 'node:net';
-import type { LibraryOptions } from 'vite';
 
 const d = debug('electron-forge:plugin:vite');
 
@@ -85,6 +96,8 @@ function spawnViteBuildWatch(
   projectDir: string,
   devServerUrls: Record<string, string>,
   onReloadRenderers: () => void,
+  logger: Logger,
+  tab: Tab,
 ): { child: ChildProcess; firstBuild: Promise<void> } {
   const child = spawn(process.execPath, [subprocessWorkerPath], {
     cwd: projectDir,
@@ -100,15 +113,17 @@ function spawnViteBuildWatch(
     stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
   });
 
+  // The worker's output lands in the target's tab. Keep a copy of stderr
+  // too, so a worker that dies before its first build can report why.
+  logger.attachProcess(child, tab.name);
+  tab.setStatus({ state: 'building' });
+
   let settled = false;
   let stderr = '';
   child.stderr!.setEncoding('utf8');
-  child.stderr!.on('data', (chunk) => {
+  child.stderr!.on('data', (chunk: string) => {
     if (!settled) stderr += chunk;
-    process.stderr.write(chunk);
   });
-  child.stdout!.setEncoding('utf8');
-  child.stdout!.on('data', (chunk) => process.stdout.write(chunk));
 
   const firstBuild = new Promise<void>((resolve, reject) => {
     const settle = (fn: () => void) => {
@@ -118,7 +133,10 @@ function spawnViteBuildWatch(
       fn();
     };
 
-    child.on('message', (msg: { type: string; message?: string }) => {
+    child.on('message', (msg: WorkerMessage) => {
+      const status = statusFromWorkerMessage(msg, tab.status);
+      if (status) tab.setStatus(status);
+
       if (msg.type === 'first-build-done') {
         settle(resolve);
       } else if (msg.type === 'first-build-error') {
@@ -143,12 +161,6 @@ function spawnViteBuildWatch(
   });
 
   return { child, firstBuild };
-}
-
-function entryToDisplay(entry: LibraryOptions['entry']): string {
-  if (typeof entry === 'string') return entry;
-  if (Array.isArray(entry)) return entry.join(' ');
-  return Object.keys(entry).join(' ');
 }
 
 export default class VitePlugin extends PluginBase<VitePluginConfig> {
@@ -231,6 +243,10 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
                 task: async (_ctx, task) => {
                   const result = await this.build(task);
                   task.title = 'Built main process and preload bundles';
+                  task.output = styleText(
+                    'dim',
+                    'Vite output will render in this terminal once the app launches\n',
+                  );
                   return result;
                 },
                 rendererOptions: {
@@ -376,25 +392,33 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
       );
     }
 
+    // Each target's output goes to a tab of the terminal UI that `start`
+    // renders once the app launches; until then it is buffered.
+    const logger = ensureSharedLogger();
     return task?.newListr(
-      targets.map(({ spec, index }) => ({
-        title: `Building ${styleText('green', entryToDisplay(spec.entry))} target`,
-        task: async () => {
-          const { child, firstBuild } = spawnViteBuildWatch(
-            this.serializableConfig,
-            index,
-            this.projectDir,
-            viteDevServerUrls,
-            () => {
-              for (const server of this.servers) {
-                server.ws.send({ type: 'full-reload' });
-              }
-            },
-          );
-          this.watchChildren.push(child);
-          await firstBuild;
-        },
-      })),
+      targets.map(({ spec, index }) => {
+        const tab = createUniqueTab(logger, buildTabName(spec));
+        return {
+          title: `Building ${styleText('green', entryToDisplay(spec.entry))} target`,
+          task: async () => {
+            const { child, firstBuild } = spawnViteBuildWatch(
+              this.serializableConfig,
+              index,
+              this.projectDir,
+              viteDevServerUrls,
+              () => {
+                for (const server of this.servers) {
+                  server.ws.send({ type: 'full-reload' });
+                }
+              },
+              logger,
+              tab,
+            );
+            this.watchChildren.push(child);
+            await firstBuild;
+          },
+        };
+      }),
       {
         concurrent: this.config.concurrent ?? true,
         exitOnError: false,
@@ -448,18 +472,26 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   launchRendererDevServers = async (task?: ForgeListrTask<null>) => {
     const rendererConfigs = await this.configGenerator.getRendererConfig();
+    const logger = ensureSharedLogger();
     return task?.newListr(
       rendererConfigs.map((userConfig) => ({
         title: `Target ${styleText('cyan', path.basename(userConfig.build?.outDir ?? ''))}`,
         task: async (_ctx, subtask) => {
+          const tab = createUniqueTab(logger, rendererTabName(userConfig));
+          tab.setStatus({ state: 'building' });
           const viteDevServer = await vite.createServer({
             configFile: false,
+            // Vite's request, HMR and error output goes to the tab, unless
+            // the renderer's own config already routes it elsewhere.
+            customLogger: createTabLogger(tab, userConfig.logLevel),
             ...userConfig,
           });
 
           await viteDevServer.listen();
           const urls = getServerURLs(viteDevServer.resolvedUrls!);
           subtask.output = urls;
+          tab.log(urls);
+          tab.setStatus({ state: 'success' });
 
           this.servers.push(viteDevServer);
 
