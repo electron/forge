@@ -62,6 +62,36 @@ logger.stop();
 * `logger.stop()` unmounts the UI and restores the terminal. If the UI never
   rendered, the buffered lines are written out as plain text instead so
   nothing is lost.
+* `logger.extendOptions({ keys?, title?, initialTab? })` adds to the options
+  the logger was created with: extra `keys` (already bound keys are left
+  alone) and `title` / `initialTab` when none is set yet. It has no effect on
+  the UI once `start()` has been called.
+
+### Sharing one logger across packages
+
+A process can only sensibly draw one UI, so a host and the plugins running
+inside it should share a logger instead of each creating their own:
+
+```javascript
+import { ensureSharedLogger } from '@electron-forge/multi-logger';
+
+// The host creates it. The first caller decides how it is set up…
+const logger = ensureSharedLogger({ title: 'My tool', initialTab: 'App' });
+
+// …and a plugin, later, just adds a tab to it.
+const tab = ensureSharedLogger().createTab('Bundler');
+```
+
+* `ensureSharedLogger(options?)` returns the process-wide logger, creating it
+  on the first call. On later calls `options` are merged additively via
+  `extendOptions()`: extra `keys` are added, `title` / `initialTab` are taken
+  only if none is set yet, and everything else is ignored.
+* `getSharedLogger()` returns it, or `undefined` if none has been created.
+* `resetSharedLogger()` forgets it without stopping it; meant for tests.
+
+The instance is registered under `Symbol.for('@electron-forge/multi-logger')`
+on `globalThis`, so even two copies of this package in one `node_modules` tree
+end up sharing it.
 
 ### `Tab`
 

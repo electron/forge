@@ -57,7 +57,11 @@ export default class Logger {
 
   private stopped = false;
 
-  constructor(private readonly options: LoggerOptions = {}) {
+  private readonly options: LoggerOptions;
+
+  constructor(options: LoggerOptions = {}) {
+    // Copied so that extendOptions() never mutates the caller's object.
+    this.options = { ...options, keys: [...(options.keys ?? [])] };
     this.maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
     this.stdout = options.stdout ?? process.stdout;
     this.stdin = options.stdin ?? process.stdin;
@@ -74,6 +78,28 @@ export default class Logger {
   }
 
   private onProcessExit = () => this.stop();
+
+  /**
+   * Merges additive settings into the options this logger was created with:
+   * extra `keys` (a key that is already bound is left alone) and `title` /
+   * `initialTab` when none is set yet. Everything else is ignored, since the
+   * streams and the mode are fixed at construction. Only affects the
+   * interactive UI if called before {@link Logger.start}.
+   */
+  extendOptions(
+    options: Pick<LoggerOptions, 'keys' | 'title' | 'initialTab'>,
+  ): void {
+    if (options.title && !this.options.title) {
+      this.options.title = options.title;
+    }
+    if (options.initialTab && !this.options.initialTab) {
+      this.options.initialTab = options.initialTab;
+    }
+    const keys = (this.options.keys ??= []);
+    for (const key of options.keys ?? []) {
+      if (!keys.some((existing) => existing.key === key.key)) keys.push(key);
+    }
+  }
 
   getTabs(): readonly Tab[] {
     return this.tabs;
