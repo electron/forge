@@ -65,6 +65,12 @@ module.exports = {
 
 You can use this hook to attach listeners to the spawned child process.
 
+The app is spawned with its `stdout` and `stderr` piped. A `postStart` hook that
+starts reading either stream (for example by calling `appProcess.stdout.pipe()`
+or adding a `data` listener) takes over displaying it; any stream that no hook
+has claimed by the time the hooks finish is forwarded to Forge's own output.
+The hook runs again with the new child process whenever the app is restarted.
+
 ```javascript title="forge.config.js"
 module.exports = {
   hooks: {

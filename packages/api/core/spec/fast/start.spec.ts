@@ -1,8 +1,12 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
-import { ElectronProcess } from '@electron-forge/shared-types';
+import {
+  ElectronProcess,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
@@ -85,6 +89,63 @@ describe('start', () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+
+  describe('app output', () => {
+    const childWithOutput = () =>
+      Object.assign(new EventEmitter(), {
+        stdout: new PassThrough(),
+        stderr: new PassThrough(),
+      }) as unknown as ElectronProcess;
+
+    let write: ReturnType<typeof vi.spyOn>;
+    beforeEach(() => {
+      write = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    });
+
+    it('pipes stdout and stderr so that postStart hooks can claim them', async () => {
+      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
+      await start({ dir: import.meta.dirname, interactive: false });
+      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('stdio', [
+        'inherit',
+        'pipe',
+        'pipe',
+      ]);
+    });
+
+    it('forwards output that no postStart hook claimed', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      child.stdout!.write('from the app\n');
+      await vi.waitFor(() => expect(write).toHaveBeenCalledOnce());
+      expect(String(write.mock.calls[0][0])).toBe('from the app\n');
+    });
+
+    it('leaves output alone once a postStart hook has claimed it', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      const claimed: string[] = [];
+      vi.mocked(findConfig).mockResolvedValueOnce({
+        pluginInterface: {
+          triggerHook: vi.fn(),
+          getHookListrTasks: vi.fn(),
+          triggerMutatingHook: vi.fn(),
+          overrideStartLogic: vi.fn().mockResolvedValue(false),
+        },
+        hooks: {
+          postStart: async (_config, app) => {
+            app.stdout!.on('data', (chunk) => claimed.push(String(chunk)));
+          },
+        },
+      } as unknown as ResolvedForgeConfig);
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      child.stdout!.write('from the app\n');
+      await vi.waitFor(() => expect(claimed).toEqual(['from the app\n']));
+      expect(write).not.toHaveBeenCalled();
+    });
   });
 
   it('allows plugin to override the start command with its own child process', async () => {

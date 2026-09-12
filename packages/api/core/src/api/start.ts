@@ -1,5 +1,6 @@
 import { spawn, SpawnOptions } from 'node:child_process';
 import readline from 'node:readline';
+import { Readable } from 'node:stream';
 import { styleText } from 'node:util';
 
 import {
@@ -32,6 +33,17 @@ import resolveDir from '../util/resolve-dir.js';
 const d = debug('electron-forge:start');
 
 export { StartOptions };
+
+const forwardUnclaimedStream = (
+  source: Readable | null | undefined,
+  target: NodeJS.WritableStream,
+) => {
+  // `readableFlowing` is `null` until someone attaches a `data` listener,
+  // calls `resume()` or pipes the stream.
+  if (source && source.readableFlowing === null) {
+    source.pipe(target, { end: false });
+  }
+};
 
 type StartContext = {
   dir: string;
@@ -230,7 +242,9 @@ export default autoTrace(
 
       const spawnOpts = {
         cwd: dir,
-        stdio: 'inherit',
+        // stdout/stderr are piped so that a postStart hook can claim them (see
+        // below); stdin stays inherited so the app can be interacted with.
+        stdio: ['inherit', 'pipe', 'pipe'],
         env: {
           ...process.env,
           ...(enableLogging
@@ -262,6 +276,12 @@ export default autoTrace(
       ) as ElectronProcess;
 
       await runHook(forgeConfig, 'postStart', spawned);
+      // A postStart hook that starts reading `spawned.stdout` / `spawned.stderr`
+      // (via `pipe()` or a `data` listener) claims that stream and is responsible
+      // for showing it. Anything left unclaimed is forwarded to our own stdio so
+      // the app's output shows up exactly as it did with `stdio: 'inherit'`.
+      forwardUnclaimedStream(spawned?.stdout, process.stdout);
+      forwardUnclaimedStream(spawned?.stderr, process.stderr);
       return spawned;
     };
 
