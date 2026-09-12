@@ -118,6 +118,21 @@ export default class Logger {
     }
   }
 
+  /**
+   * Switches to plain output regardless of what the streams looked like at
+   * construction. For callers that only find out later that the interactive
+   * UI would hide something it cannot show, for example an app that writes
+   * straight to the terminal instead of through a tab. Must be called before
+   * {@link Logger.start}: once rendering has begun the renderer is kept.
+   */
+  forcePlain(): void {
+    if (this.started) {
+      d('forcePlain() called after start(), keeping the current renderer');
+      return;
+    }
+    this.activeMode = 'plain';
+  }
+
   getTabs(): readonly Tab[] {
     return this.tabs;
   }

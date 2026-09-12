@@ -60,6 +60,32 @@ describe('Logger', () => {
         makeLogger({ interactive: true, forceMode: 'plain' }).logger.mode,
       ).toBe('plain');
     });
+
+    it('switches to plain output on forcePlain() until started', async () => {
+      const { logger, stdout } = makeLogger({ forceMode: 'ink' });
+      logger.forcePlain();
+      expect(logger.mode).toBe('plain');
+
+      await logger.start();
+      logger.createTab('Main').log('hello');
+      expect(stdout.lines).toEqual(['[Main] hello']);
+    });
+
+    it('keeps the interactive UI once it is drawing', async () => {
+      const stdout = Object.assign(new FakeStdout(), {
+        isTTY: true,
+        columns: 80,
+        rows: 24,
+      });
+      const { logger } = makeLogger({
+        stdout: stdout as unknown as NodeJS.WriteStream,
+        stdin: new FakeStdin() as unknown as NodeJS.ReadStream,
+        forceMode: 'ink',
+      });
+      await logger.start();
+      logger.forcePlain();
+      expect(logger.mode).toBe('ink');
+    });
   });
 
   describe('plain mode', () => {

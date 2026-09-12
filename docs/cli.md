@@ -186,7 +186,7 @@ Forge plugins can override this command to run custom development logic. For exa
 
 #### Terminal UI
 
-When run from an interactive terminal, `start` takes over the window with a tabbed view of everything going on. The **App** tab shows the Electron app's own output and is selected by default; bundler plugins such as the [Webpack Plugin](config/plugins/webpack.mdx) and the [Vite Plugin](config/plugins/vite.mdx) add a tab per compiler. When a build fails, its tab is switched to automatically so the error is not missed.
+When run from an interactive terminal, `start` takes over the window with a tabbed view of everything going on. The **App** tab shows the Electron app's own output and is selected by default; bundler plugins (the [Webpack Plugin](config/plugins/webpack.mdx) today) add a tab per compiler. When a build fails, its tab is switched to automatically so the error is not missed.
 
 | Key                        | Action                                                  |
 | -------------------------- | ------------------------------------------------------- |

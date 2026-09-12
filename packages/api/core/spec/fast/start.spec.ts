@@ -21,9 +21,18 @@ import resolveDir from '../../src/util/resolve-dir.js';
 const fakeLogger = vi.hoisted(() => {
   type FakeTab = { name: string; log: ReturnType<typeof vi.fn> };
   const tabs = new Map<string, FakeTab>();
+  let mode: 'ink' | 'plain' = 'ink';
   return {
     tabs,
-    mode: 'ink' as 'ink' | 'plain',
+    get mode() {
+      return mode;
+    },
+    set mode(value: 'ink' | 'plain') {
+      mode = value;
+    },
+    forcePlain: vi.fn(() => {
+      mode = 'plain';
+    }),
     getTab: vi.fn((name: string) => tabs.get(name)),
     attachProcess: vi.fn((child: ElectronProcess, name: string) => {
       child.stdout?.on('data', () => undefined);
@@ -300,6 +309,41 @@ describe('start', () => {
         expect.any(Function),
       );
       expect(process.stdin.resume).toHaveBeenCalled();
+    });
+
+    it('prints plain lines rather than drawing over an app that inherited our stdio', async () => {
+      // A plugin's startLogic spawned the app itself, with `stdio: 'inherit'`:
+      // there is nothing to show in an App tab, and the UI would only hide
+      // the app's output.
+      const child = Object.assign(new EventEmitter(), {
+        stdout: null,
+        stderr: null,
+        kill: vi.fn(),
+      }) as unknown as ElectronProcess;
+      vi.mocked(findConfig).mockResolvedValueOnce({
+        pluginInterface: {
+          triggerHook: vi.fn(),
+          getHookListrTasks: vi.fn(),
+          triggerMutatingHook: vi.fn(),
+          overrideStartLogic: vi.fn().mockResolvedValue(child),
+        },
+      } as any);
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: true,
+      });
+
+      expect(spawned).toBe(child);
+      expect(vi.mocked(spawn)).not.toHaveBeenCalled();
+      expect(fakeLogger.attachProcess).not.toHaveBeenCalled();
+      expect(fakeLogger.forcePlain).toHaveBeenCalledOnce();
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      // Plain output, so `rs` + Enter is the way to restart again.
+      expect(process.stdin.on).toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
     });
   });
 

@@ -228,6 +228,17 @@ export default autoTrace(
     // writes to our stdio directly.
     const attachApp = (child: ElectronProcess) => {
       if (!interactive) return;
+      // A plugin's `startLogic` may hand back a child it spawned with
+      // inherited stdio. There is nothing to read into an App tab then, and
+      // the UI's alternate screen would hide the app's real output, so print
+      // plugin tabs as plain lines and leave the terminal to the app instead.
+      if (!child.stdout && !child.stderr) {
+        d(
+          'app process has no piped stdout/stderr (spawned by a plugin with inherited stdio?), falling back to plain output',
+        );
+        logger.forcePlain();
+        return;
+      }
       // The tab already exists when this is a restart: separate the two runs.
       logger.getTab(APP_TAB)?.log(styleText('dim', '--- restarted ---'));
       logger.attachProcess(child, APP_TAB);
