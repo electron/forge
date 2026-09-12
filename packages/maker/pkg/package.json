@@ -11,13 +11,13 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "@electron/notarize": "^3.1.0",
-    "@electron/osx-sign": "^2.3.0"
+    "@electron/notarize": "^3.1.1",
+    "@electron/osx-sign": "^2.7.0"
   },
   "publishConfig": {
     "access": "public"

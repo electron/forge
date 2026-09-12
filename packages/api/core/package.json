@@ -21,7 +21,7 @@
     "@electron-forge/template-fixture": "portal:./spec/fixture/electron-forge-template-fixture",
     "@electron-forge/test-utils": "workspace:*",
     "electron-forge-template-fixture-two": "portal:./spec/fixture/electron-forge-template-fixture",
-    "electron-installer-common": "^0.10.2",
+    "electron-installer-common": "^0.10.4",
     "vitest": "catalog:"
   },
   "dependencies": {
@@ -31,15 +31,16 @@
     "@electron-forge/publisher-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "@electron-forge/tracer": "workspace:*",
-    "@electron/get": "^5.0.0",
-    "@electron/packager": "^20.0.1",
+    "@electron/get": "^5.1.0",
+    "@electron/packager": "^20.3.0",
     "debug": "^4.3.1",
     "graceful-fs": "^4.2.11",
     "jiti": "^2.4.2",
-    "listr2": "^7.0.2"
+    "listr2": "^11.1.0",
+    "semver": "^7.2.1"
   },
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "funding": [
     {

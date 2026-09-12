@@ -33,7 +33,7 @@ export default class MakerPKG extends MakerBase<MakerPKGConfig> {
 
     const name =
       this.config.name || `${appName}-${packageJSON.version}-${targetArch}`;
-    const outPath = path.resolve(makeDir, `${name}.pkg`);
+    const outPath = path.resolve(makeDir, 'pkg', targetArch, `${name}.pkg`);
 
     await this.ensureFile(outPath);
 

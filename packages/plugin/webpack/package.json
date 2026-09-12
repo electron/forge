@@ -9,7 +9,7 @@
   "exports": "./dist/WebpackPlugin.js",
   "typings": "dist/WebpackPlugin.d.ts",
   "devDependencies": {
-    "@electron/packager": "^20.0.1",
+    "@electron/packager": "^20.3.0",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^22.10.7",
     "vitest": "catalog:",
@@ -17,7 +17,7 @@
     "xvfb-maybe": "^0.2.1"
   },
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
@@ -27,7 +27,7 @@
     "debug": "^4.3.1",
     "graceful-fs": "^4.2.11",
     "html-webpack-plugin": "^5.5.3",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "webpack": "^5.69.1",
     "webpack-dev-server": "^5.2.4",
     "webpack-merge": "^5.7.3"
