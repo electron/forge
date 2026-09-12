@@ -31,15 +31,15 @@ describe('WebpackPlugin', async () => {
 
   describe('TCP port', () => {
     it('should fail for privileged ports', () => {
-      expect(
-        () => new WebpackPlugin({ ...baseConfig, loggerPort: 80 }),
-      ).toThrow(/privileged$/);
+      expect(() => new WebpackPlugin({ ...baseConfig, port: 80 })).toThrow(
+        /privileged$/,
+      );
     });
 
     it('should fail for too-large port numbers', () => {
-      expect(
-        () => new WebpackPlugin({ ...baseConfig, loggerPort: 99999 }),
-      ).toThrow(/not a valid TCP port/);
+      expect(() => new WebpackPlugin({ ...baseConfig, port: 99999 })).toThrow(
+        /not a valid TCP port/,
+      );
     });
   });
 

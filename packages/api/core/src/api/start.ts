@@ -10,6 +10,7 @@ import {
   requestAppRestart,
   setAppRestartHandler,
 } from '@electron-forge/core-utils/restart';
+import { ensureSharedLogger } from '@electron-forge/multi-logger';
 import {
   ElectronProcess,
   ForgeArch,
@@ -32,6 +33,11 @@ import resolveDir from '../util/resolve-dir.js';
 const d = debug('electron-forge:start');
 
 export { StartOptions };
+
+/**
+ * Name of the terminal UI tab that shows the Electron app's own output.
+ */
+const APP_TAB = 'App';
 
 type StartContext = {
   dir: string;
@@ -57,6 +63,34 @@ export default autoTrace(
   ): Promise<ElectronProcess> => {
     const platform = process.env.npm_config_platform || process.platform;
     const arch = process.env.npm_config_arch || process.arch;
+
+    // Every start owns the process-wide logger, created before any hook runs
+    // so that plugins can add tabs of their own. Interactively it renders the
+    // terminal UI with the app's output in its own tab; a non-interactive
+    // (programmatic, or stdin not a terminal) start never draws the UI and
+    // only prints the plugins' tabs as plain lines, while the app inherits our
+    // stdio directly, so a project without plugins sees no output from the
+    // logger at all.
+    const logger = ensureSharedLogger({
+      title: 'Electron Forge',
+      initialTab: APP_TAB,
+      ...(interactive ? {} : { interactive: false }),
+      keys: [
+        {
+          key: 'r',
+          label: 'restart app',
+          onPress: () => {
+            requestAppRestart();
+          },
+        },
+      ],
+    });
+    // The UI puts stdin into raw mode and binds `r` instead, so `rs` + Enter
+    // is only read when the UI is not drawing (plain mode). Whether it draws
+    // is only certain once the logger has started (the UI may fail to load and
+    // fall back to plain output), so this is settled after `logger.start()`.
+    let readsRestartCommand = false;
+
     const listrOptions: ForgeListrOptions<StartContext> = {
       concurrent: false,
       registerSignalListeners: false, // Don't re-render on SIGINT
@@ -171,7 +205,12 @@ export default autoTrace(
         },
         {
           task: (_ctx, task) => {
-            task.title = `${styleText('dim', `Launched Electron app. Type`)} ${styleText('bold', 'rs')} ${styleText('dim', `in terminal to restart main process.`)}`;
+            // The UI, once up, covers this line anyway; if it then falls back
+            // to plain output the `rs` hint is repeated below.
+            task.title =
+              logger.mode === 'ink'
+                ? styleText('dim', 'Launched Electron app.')
+                : `${styleText('dim', `Launched Electron app. Type`)} ${styleText('bold', 'rs')} ${styleText('dim', `in terminal to restart main process.`)}`;
           },
         },
       ],
@@ -182,6 +221,28 @@ export default autoTrace(
 
     const { dir, forgeConfig, packageJSON } = runner.ctx;
     let lastSpawned: ElectronProcess | null = null;
+
+    // Pipes the app's stdout/stderr into the App tab. Runs for every (re)spawn
+    // before the postStart hooks, so plugins never have to deal with the
+    // streams themselves. Non-interactive starts have no App tab: the app
+    // writes to our stdio directly.
+    const attachApp = (child: ElectronProcess) => {
+      if (!interactive) return;
+      // A plugin's `startLogic` may hand back a child it spawned with
+      // inherited stdio. There is nothing to read into an App tab then, and
+      // the UI's alternate screen would hide the app's real output, so print
+      // plugin tabs as plain lines and leave the terminal to the app instead.
+      if (!child.stdout && !child.stderr) {
+        d(
+          'app process has no piped stdout/stderr (spawned by a plugin with inherited stdio?), falling back to plain output',
+        );
+        logger.forcePlain();
+        return;
+      }
+      // The tab already exists when this is a restart: separate the two runs.
+      logger.getTab(APP_TAB)?.log(styleText('dim', '--- restarted ---'));
+      logger.attachProcess(child, APP_TAB);
+    };
 
     const forgeSpawn = async () => {
       let electronExecPath: string | null = null;
@@ -218,6 +279,7 @@ export default autoTrace(
       } else if (Array.isArray(spawnedPluginChild)) {
         [electronExecPath, ...prefixArgs] = spawnedPluginChild;
       } else if (spawnedPluginChild) {
+        attachApp(spawnedPluginChild);
         await runHook(forgeConfig, 'postStart', spawnedPluginChild);
         return spawnedPluginChild;
       }
@@ -230,7 +292,12 @@ export default autoTrace(
 
       const spawnOpts = {
         cwd: dir,
-        stdio: 'inherit',
+        // Interactively, stdout/stderr are piped so that the App tab can show
+        // them (stdin stays inherited so the app can be interacted with).
+        // Otherwise the app keeps our real stdio, as it always did: nothing
+        // would read the pipes, and the app should still see a TTY when we
+        // have one.
+        stdio: interactive ? ['inherit', 'pipe', 'pipe'] : 'inherit',
         env: {
           ...process.env,
           ...(enableLogging
@@ -261,6 +328,7 @@ export default autoTrace(
         spawnOpts as SpawnOptions,
       ) as ElectronProcess;
 
+      attachApp(spawned);
       await runHook(forgeConfig, 'postStart', spawned);
       return spawned;
     };
@@ -273,7 +341,7 @@ export default autoTrace(
         // `undefined` until the first restart.
         spawned.restarted = false;
 
-        if (interactive && process.stdin.isPaused()) {
+        if (readsRestartCommand && process.stdin.isPaused()) {
           process.stdin.resume();
         }
         spawned.on('exit', () => {
@@ -281,9 +349,13 @@ export default autoTrace(
             return;
           }
 
-          if (interactive && !process.stdin.isPaused()) {
+          if (readsRestartCommand && !process.stdin.isPaused()) {
             process.stdin.pause();
           }
+          // The app is gone for good: restore the terminal now so its exit
+          // status lands in the real scrollback rather than the alternate
+          // screen, and so the UI stops holding stdin open.
+          logger.stop();
         });
 
         // On close, reset lastSpawned, it's dead. A restart may already have put
@@ -293,7 +365,7 @@ export default autoTrace(
             lastSpawned = null;
           }
         });
-      } else if (interactive && !process.stdin.isPaused()) {
+      } else if (readsRestartCommand && !process.stdin.isPaused()) {
         process.stdin.pause();
       }
 
@@ -321,9 +393,15 @@ export default autoTrace(
 
       const dying = lastSpawned;
       restartInFlight = true;
-      console.info(
-        `${styleText('green', '✔ ')}${styleText('dim', 'Restarting Electron app')}`,
-      );
+      const notice = `${styleText('green', '✔ ')}${styleText('dim', 'Restarting Electron app')}`;
+      // Into the App tab when there is one: writing straight to stdout would
+      // paint over the UI's alternate screen.
+      const appTab = logger.getTab(APP_TAB);
+      if (appTab) {
+        appTab.log(notice);
+      } else {
+        console.info(notice);
+      }
       dying.restarted = true;
       dying.on('exit', () => {
         forgeSpawnWrapper().then(
@@ -358,6 +436,27 @@ export default autoTrace(
     setAppRestartHandler(restartRunningApp);
 
     if (interactive) {
+      const handleTerminationSignal = function (signal: NodeJS.Signals) {
+        process.on(signal, function signalHandler() {
+          lastSpawned?.kill(signal);
+        });
+      };
+
+      handleTerminationSignal('SIGINT');
+      handleTerminationSignal('SIGTERM');
+      handleTerminationSignal('SIGUSR2');
+    }
+
+    const spawned = await forgeSpawnWrapper();
+
+    // Idempotent, so the restart path (which respawns through the wrapper
+    // above) never has to care. The logger stops itself on process exit.
+    await logger.start();
+
+    // Only now is it known whether the UI is really drawing (see above).
+    const usesInkUI = logger.mode === 'ink';
+    readsRestartCommand = interactive && !usesInkUI;
+    if (readsRestartCommand) {
       process.stdin.on('data', (data) => {
         if (data.toString().trim() !== 'rs') return;
 
@@ -373,21 +472,8 @@ export default autoTrace(
         requestAppRestart();
       });
       process.stdin.resume();
-
-      const handleTerminationSignal = function (signal: NodeJS.Signals) {
-        process.on(signal, function signalHandler() {
-          lastSpawned?.kill(signal);
-        });
-      };
-
-      handleTerminationSignal('SIGINT');
-      handleTerminationSignal('SIGTERM');
-      handleTerminationSignal('SIGUSR2');
     }
-
-    const spawned = await forgeSpawnWrapper();
-
-    if (interactive) console.log('');
+    if (readsRestartCommand) console.log('');
 
     return spawned;
   },
