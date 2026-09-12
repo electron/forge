@@ -117,6 +117,18 @@ Your `main` entry in your `package.json` file needs to point at `".vite/build/ma
 
 If using the Vite template, this should be automatically set up for you.
 
+### Compiler output
+
+While `electron-forge start` is running, the plugin adds a tab for every Vite
+build (each `build` target, such as the main process and preload scripts) and
+for every renderer dev server (its requests, HMR updates and errors) to Forge's
+[terminal UI](../../cli.md#terminal-ui), next to the `App` tab that shows the
+Electron app's own output. Use `←`/`→` or the tab numbers to switch tabs, `a`
+for a merged view, `↑`/`↓` to scroll back, `r` to restart the Electron app and
+`q` (or `Ctrl+C`) to quit. When a build fails, the view switches to its tab
+automatically. When the terminal is not interactive, or `CI` is set, the same
+output is written as plain lines prefixed with the tab name instead.
+
 ## Advanced configuration
 
 ### Build concurrency
