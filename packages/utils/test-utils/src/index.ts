@@ -58,7 +58,7 @@ export async function expectLintToPass(dir: string): Promise<void> {
  * @param mockedUri - mocked module URI
  * @param stub - stub function to assign to mock
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export async function mockRequire(mockedUri: string, stub: any) {
   const { Module } = await import('module');
 

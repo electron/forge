@@ -12,7 +12,6 @@ import debug from 'debug';
 
 const d = debug('electron-forge:hook');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const runHook = async <Hook extends keyof ForgeSimpleHookSignatures>(
   forgeConfig: ResolvedForgeConfig,
   hookName: Hook,

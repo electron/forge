@@ -5,11 +5,10 @@ import {
   PACKAGE_MANAGERS,
   spawnPackageManager,
 } from '@electron-forge/core-utils';
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import glob from 'fast-glob';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-// eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
 
 describe('WebpackTypeScriptTemplate', () => {

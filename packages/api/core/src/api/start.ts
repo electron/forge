@@ -252,7 +252,7 @@ export default autoTrace(
       }
 
       const spawned = spawn(
-        electronExecPath!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        electronExecPath!,
         prefixArgs.concat([appPath]).concat(args as string[]),
         spawnOpts as SpawnOptions,
       ) as ElectronProcess;

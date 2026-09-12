@@ -144,7 +144,6 @@ describe('findConfig', () => {
       const conf = await findConfig(fixturePath);
       const preStart = conf.hooks?.preStart;
       expect(preStart).not.toBeUndefined();
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- not undefined above
       expect(preStart!(conf)).toEqual('running preStart hook');
     });
 
@@ -183,18 +182,17 @@ describe('findConfig', () => {
     it('allows access to built-ins', async () => {
       // Why: This needs to get refactored anyway.
       const fixture = path.resolve(__dirname, '../../fixture/dummy_js_conf');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       const conf: any = await findConfig(fixture);
       expect(conf.packagerConfig.baz.hasOwnProperty).toBeTypeOf('function');
       process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY = 'SecretyThing';
-      // eslint-disable-next-line no-prototype-builtins
       expect(conf.s3.hasOwnProperty('secretAccessKey')).toBe(true);
       delete process.env.ELECTRON_FORGE_S3_SECRET_ACCESS_KEY;
     });
 
     it('allows overwrite of properties', async () => {
       // Why: This needs to get refactored anyway.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       const conf: any = await findConfig(
         path.resolve(__dirname, '../../fixture/dummy_js_conf'),
       );

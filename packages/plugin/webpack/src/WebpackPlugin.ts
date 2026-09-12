@@ -20,7 +20,6 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import { PRESET_TIMER } from 'listr2';
 import webpack, { Configuration, Watching } from 'webpack';
-// eslint-disable-next-line import/default -- webpack-dev-server v5 uses `export =`; esModuleInterop resolves the default
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -119,7 +118,6 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
     }
     if (err) console.error(err.stack);
     // Why: This is literally what the option says to do.
-    // eslint-disable-next-line no-process-exit
     if (options.exit) process.exit();
   };
 
@@ -520,7 +518,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
                 ...multiArchTasks,
               ],
               { concurrent: false },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // oxlint-disable-next-line typescript/no-explicit-any
             ) as any;
           },
           'Preparing webpack bundles',

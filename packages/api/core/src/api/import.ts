@@ -120,7 +120,6 @@ export default autoTrace(
               if (typeof confirmImport === 'function') {
                 if (!(await confirmImport())) {
                   // TODO: figure out if we can just return early here
-                  // eslint-disable-next-line no-process-exit
                   process.exit(0);
                 }
               }
@@ -160,7 +159,6 @@ export default autoTrace(
                   if (typeof shouldContinueOnExisting === 'function') {
                     if (!(await shouldContinueOnExisting())) {
                       // TODO: figure out if we can just return early here
-                      // eslint-disable-next-line no-process-exit
                       process.exit(0);
                     }
                   }
@@ -217,7 +215,6 @@ export default autoTrace(
 
               for (const key of keys) {
                 if (buildToolPackages[key]) {
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   const explanation = buildToolPackages[key]!;
                   let remove = true;
                   if (typeof shouldRemoveDependency === 'function') {

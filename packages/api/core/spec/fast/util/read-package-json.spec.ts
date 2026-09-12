@@ -12,7 +12,6 @@ import {
 describe('readRawPackageJson', () => {
   it('should find a package.json file from the given directory', async () => {
     const raw = await readRawPackageJson(path.resolve(__dirname, '../../../'));
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     expect(raw).toEqual(packageJSON);
   });
 });
@@ -22,7 +21,7 @@ describe('readMutatedPackageJson', () => {
     expect(
       await readMutatedPackageJson(path.resolve(__dirname, '../../../'), {
         pluginInterface: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line typescript/no-explicit-any
           triggerMutatingHook: (_hookName: string, pj: any) =>
             Promise.resolve(pj),
         },

@@ -5,7 +5,6 @@ import { ensureTestDirIsNonexistent } from '@electron-forge/test-utils';
 import { spawn } from '@malept/cross-spawn-promise';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-// eslint-disable-next-line n/no-missing-import
 import { api } from '../../../api/core/dist/api';
 import { getElectronExecutablePath } from '../src/util/getElectronExecutablePath';
 

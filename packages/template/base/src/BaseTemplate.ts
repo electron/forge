@@ -12,7 +12,7 @@ import semver from 'semver';
 
 import determineAuthor from './determine-author';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const currentForgeVersion = require('../package.json').version;
 
 const d = debug('electron-forge:template:base');

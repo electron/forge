@@ -6,7 +6,6 @@ const { satisfies } = require('semver');
 
 const DO_NOT_UPGRADE = [
   '@types/node-fetch', // No longer needed when node-fetch is upgraded to >= 3.0.0
-  '@typescript-eslint/eslint-plugin', // special case
   'chalk', // Requires ESM
   'commander', // TODO: convert to yargs
   'find-up', // Requires ESM
@@ -143,7 +142,6 @@ async function main() {
         );
         continue;
       }
-      let commitPackageName = null;
       const nodePackage = new Package(
         packageName,
         currentVersion,
@@ -152,20 +150,7 @@ async function main() {
         packageType,
       );
       await nodePackage.upgrade();
-
-      if (packageName === '@typescript-eslint/parser') {
-        const eslintPlugin = new Package(
-          '@typescript-eslint/eslint-plugin',
-          currentVersion,
-          wantedVersion,
-          latestVersion,
-          packageType,
-        );
-        await eslintPlugin.upgrade();
-        commitPackageName = '@typescript-eslint/{parser,eslint-plugin}';
-      }
-
-      await nodePackage.smoketestAndCommit(commitPackageName);
+      await nodePackage.smoketestAndCommit();
     }
   }
 

@@ -380,7 +380,6 @@ export const listrPackage = (
                     pPlatform,
                     pArch,
                     forgeConfig.rebuildConfig,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     await rebuildTasks.get(targetKey)!.pop()!,
                   );
                   signalRebuildDone.get(targetKey)?.pop()?.();

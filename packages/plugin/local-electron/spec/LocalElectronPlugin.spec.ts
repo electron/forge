@@ -52,7 +52,7 @@ describe('LocalElectronPlugin', () => {
 
     beforeEach(() => {
       p = new LocalElectronPlugin({ electronPath: 'test/foo' });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       p.init('', {} as any);
     });
 
@@ -74,7 +74,6 @@ describe('LocalElectronPlugin', () => {
 
       it('should do nothing when disabled', async () => {
         p.config.enabled = false;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
         await fn(
@@ -90,7 +89,6 @@ describe('LocalElectronPlugin', () => {
       });
 
       it("should throw an error if the platform doesn't match", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
         await expect(
@@ -101,7 +99,6 @@ describe('LocalElectronPlugin', () => {
       });
 
       it("should throw an error if the arch doesn't match", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
         await expect(
@@ -126,7 +123,6 @@ describe('LocalElectronPlugin', () => {
           'hi i am electron I swear',
         );
         p.config.electronPath = electronDir;
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const fn = p.getHooks().packageAfterExtract!;
 
         await fn(

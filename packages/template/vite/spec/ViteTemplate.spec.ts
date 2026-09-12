@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import testUtils from '@electron-forge/test-utils';
+import * as testUtils from '@electron-forge/test-utils';
 import { Listr } from 'listr2';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 

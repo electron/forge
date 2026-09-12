@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import { PublisherSnapcraftConfig } from './Config';
 
 // TODO: convert to import statement once electron-installer-snap imports Snapcraft properly.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const Snapcraft = require('electron-installer-snap/src/snapcraft');
 
 export default class PublisherSnapcraft extends PublisherBase<PublisherSnapcraftConfig> {

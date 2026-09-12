@@ -94,7 +94,7 @@ export default class WebpackConfigGenerator {
 
     let rawConfig =
       typeof config === 'string'
-        ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+        ? // oxlint-disable-next-line typescript/no-require-imports
           (require(path.resolve(this.projectDir, config)) as MaybeESM<
             Configuration | ConfigurationFactory
           >)

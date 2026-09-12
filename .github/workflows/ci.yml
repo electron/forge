@@ -48,12 +48,6 @@ jobs:
       - name: Build Electron Forge
         run: yarn build
 
-      - name: Cache ESLint
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: .eslintcache
-          key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
-
       - name: Lint codebase
         run: |
           yarn lint

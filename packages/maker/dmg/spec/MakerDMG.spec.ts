@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MakerDMG } from '../src/MakerDMG';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const { createDMG } = require('electron-installer-dmg');
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;

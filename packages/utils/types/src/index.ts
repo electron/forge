@@ -76,7 +76,7 @@ export interface ForgeSimpleHookSignatures {
 export interface ForgeMutatingHookSignatures {
   postMake: [makeResults: ForgeMakeResult[]];
   resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   readPackageJson: [packageJson: Record<string, any>];
 }
 
@@ -121,7 +121,6 @@ export interface IForgePluginInterface {
   ): Promise<ForgeMutatingHookSignatures[Hook][0]>;
   overrideStartLogic(opts: StartOptions): Promise<StartResult>;
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type ForgeRebuildOptions = Omit<
   RebuildOptions,
@@ -166,7 +165,7 @@ export interface ForgeMakeResult {
   /**
    * The state of the package.json file when the make happened
    */
-  packageJSON: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  packageJSON: any; // oxlint-disable-line typescript/no-explicit-any
   /**
    * The platform this make run was for
    */
@@ -179,7 +178,7 @@ export interface ForgeMakeResult {
 
 export interface IForgeResolvablePlugin {
   name: string;
-  config?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  config?: any; // oxlint-disable-line typescript/no-explicit-any
 }
 
 export interface IForgePlugin {
@@ -194,7 +193,7 @@ export interface IForgePlugin {
 
 export interface IForgeResolvableMaker {
   name: string;
-  config: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  config: any; // oxlint-disable-line typescript/no-explicit-any
   enabled?: boolean;
   platforms?: ForgePlatform[] | null;
 }
@@ -208,7 +207,7 @@ export interface IForgeMaker {
 export interface IForgeResolvablePublisher {
   name: string;
   platforms?: ForgePlatform[] | null;
-  config?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  config?: any; // oxlint-disable-line typescript/no-explicit-any
 }
 
 export interface IForgePublisher {
@@ -263,7 +262,6 @@ export interface InitTemplateOptions {
   force?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ForgeListrTaskDefinition = ListrTask<never>;
 export { ListrTask };
 

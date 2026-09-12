@@ -71,7 +71,6 @@ function getElectronModuleName(packageJSON: PackageJSONWithDeps): string {
   }
 
   // Why: checked above
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const packageName = electronPackageNames.find(
     (pkg) => packageJSON.devDependencies![pkg],
   );
@@ -119,7 +118,6 @@ export async function getElectronVersion(
   const packageName = getElectronModuleName(packageJSON);
 
   // Why: checked in getElectronModuleName
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   let version = packageJSON.devDependencies![packageName];
   if (!semver.valid(version)) {
     // It's not an exact version, find it in the actual module
@@ -146,7 +144,6 @@ export function updateElectronDependency(
   const alteredDev = ([] as string[]).concat(dev);
   let alteredExact = ([] as string[]).concat(exact);
   // Why: checked in getElectronModuleName
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   if (Object.keys(packageJSON.devDependencies!).find(findElectronDep)) {
     alteredExact = alteredExact.filter((dep) => dep !== 'electron');
   } else if (packageJSON.dependencies) {

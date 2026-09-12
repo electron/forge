@@ -17,7 +17,7 @@ describe('Publisher', () => {
   it('__isElectronForgePublisher should not be settable', () => {
     const publisher = new PublisherImpl(null);
     expect(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       (publisher as any).__isElectronForgePublisher = false;
     }).toThrow();
     expect(() => {

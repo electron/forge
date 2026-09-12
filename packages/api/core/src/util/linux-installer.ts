@@ -6,7 +6,7 @@ import sudoPrompt from '@vscode/sudo-prompt';
 const which = async (
   type: string,
   prog: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   promise: () => Promise<any>,
 ): Promise<void> => {
   if (spawnSync('which', [prog]).status === 0) {

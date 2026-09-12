@@ -4,7 +4,6 @@ if (!process.send) {
   console.error(
     'The remote rebuilder expects to be spawned with an IPC channel',
   );
-  // eslint-disable-next-line no-process-exit
   process.exit(1);
 }
 
@@ -22,7 +21,6 @@ rebuilder.lifecycle.on('module-done', () =>
 rebuilder
   .then(() => {
     process.send?.({ msg: 'rebuild-done' });
-    // eslint-disable-next-line no-process-exit
     return process.exit(0);
   })
   .catch((err) => {
@@ -33,6 +31,5 @@ rebuilder
         stack: err.stack,
       },
     });
-    // eslint-disable-next-line no-process-exit
     process.exit(0);
   });

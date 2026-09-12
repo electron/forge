@@ -14,7 +14,6 @@ import { autoTrace } from '@electron-forge/tracer';
 import chalk from 'chalk';
 import debug from 'debug';
 
-// eslint-disable-next-line n/no-missing-import
 import { StartOptions } from '../api';
 
 import importSearch from './import-search';
@@ -58,7 +57,7 @@ export default class PluginInterface implements IForgePluginInterface {
               `Expected plugin[0] to be a string but found ${pluginName}`,
             );
           }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line typescript/no-explicit-any
           const Plugin = await importSearch<any>(dir, [pluginName]);
           if (!Plugin) {
             throw new Error(
@@ -80,7 +79,7 @@ export default class PluginInterface implements IForgePluginInterface {
       return;
     });
     // TODO: fix hack
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     this.config = null as any;
     Object.defineProperty(this, 'config', {
       value: forgeConfig,

@@ -31,7 +31,7 @@ import resolveDir from '../util/resolve-dir';
 import { listrPackage } from './package';
 
 type MakerImpl = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   new (...args: any[]): MakerBase<any>;
 };
 
@@ -57,11 +57,10 @@ function generateTargets(
   return forgeConfig.makers;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isElectronForgeMaker(
   target: MakerBase<any> | unknown,
 ): target is MakerBase<any> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   return (target as MakerBase<any>).__isElectronForgeMaker;
 }
 
@@ -161,7 +160,7 @@ export const listrMake = (
               );
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // oxlint-disable-next-line typescript/no-explicit-any
             const makers: Array<() => MakerBase<any>> = [];
 
             const possibleMakers = generateTargets(
@@ -170,7 +169,7 @@ export const listrMake = (
             );
 
             for (const possibleMaker of possibleMakers) {
-              /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+              /* oxlint-disable-next-line typescript/no-explicit-any */
               let maker: MakerBase<any>;
               if (isElectronForgeMaker(possibleMaker)) {
                 maker = possibleMaker;

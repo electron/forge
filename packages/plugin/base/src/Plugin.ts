@@ -43,7 +43,7 @@ export default abstract class Plugin<C> implements IForgePlugin {
   }
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable typescript/no-explicit-any */
 /**
  *
  * This is a filthy hack around TypeScript to allow internal hooks in our
@@ -71,6 +71,6 @@ export const namedHookWithTaskFn = <Hook extends ForgeHookName>(
   fn.__hookName = name;
   return fn;
 };
-/* eslint-enable @typescript-eslint/no-explicit-any */
+/* oxlint-enable typescript/no-explicit-any */
 
 export { Plugin as PluginBase };

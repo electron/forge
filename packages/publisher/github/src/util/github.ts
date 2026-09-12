@@ -14,7 +14,7 @@ export default class GitHub {
   token?: string;
 
   constructor(
-    authToken: string | undefined = undefined,
+    authToken?: string,
     requireAuth = false,
     options: OctokitOptions = {},
   ) {

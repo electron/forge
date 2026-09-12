@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { MakerSnap } from '../src/MakerSnap';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const installer = require('electron-installer-snap');
 
 vi.hoisted(async () => {

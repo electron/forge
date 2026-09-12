@@ -14,7 +14,7 @@ export default async function locateElectronExecutable(
     packageJSON,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  // oxlint-disable-next-line typescript/no-require-imports
   let electronExecPath = require(
     electronModulePath || path.resolve(dir, 'node_modules/electron'),
   );
@@ -25,7 +25,7 @@ export default async function locateElectronExecutable(
       'Returned Electron executable path is not a string, defaulting to a hardcoded location. Value:',
       electronExecPath,
     );
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // oxlint-disable-next-line typescript/no-require-imports
     electronExecPath = require(path.resolve(dir, 'node_modules/electron'));
   }
 

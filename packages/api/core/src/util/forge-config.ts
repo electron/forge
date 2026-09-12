@@ -7,7 +7,6 @@ import * as interpret from 'interpret';
 import { createJiti } from 'jiti';
 import * as rechoir from 'rechoir';
 
-// eslint-disable-next-line n/no-missing-import
 import { dynamicImportMaybe } from '../../helper/dynamic-import.js';
 
 import { runMutatingHook } from './hook';
@@ -23,7 +22,7 @@ const underscoreCase = (str: string) =>
 // Why: needs access to Object methods and also needs to be able to match any interface.
 type ProxiedObject = object;
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* oxlint-disable typescript/no-explicit-any */
 function isBuildIdentifierConfig(
   value: any,
 ): value is BuildIdentifierConfig<any> {
@@ -61,7 +60,6 @@ const proxify = <T extends ProxiedObject>(
 
   return new Proxy<T>(newObject, {
     get(target, name, receiver) {
-      // eslint-disable-next-line no-prototype-builtins
       if (!target.hasOwnProperty(name) && typeof name === 'string') {
         const envValue = process.env[`${envPrefix}_${underscoreCase(name)}`];
         if (envValue) return envValue;
@@ -80,7 +78,6 @@ const proxify = <T extends ProxiedObject>(
     getOwnPropertyDescriptor(target, name) {
       const envValue =
         process.env[`${envPrefix}_${underscoreCase(name as string)}`];
-      // eslint-disable-next-line no-prototype-builtins
       if (target.hasOwnProperty(name)) {
         return Reflect.getOwnPropertyDescriptor(target, name);
       }
@@ -98,7 +95,7 @@ const proxify = <T extends ProxiedObject>(
     },
   });
 };
-/* eslint-enable @typescript-eslint/no-explicit-any */
+/* oxlint-enable typescript/no-explicit-any */
 
 export const registeredForgeConfigs: Map<string, ForgeConfig> = new Map();
 export function registerForgeConfigForDirectory(
@@ -139,7 +136,6 @@ export async function forgeConfigIsValidFilePath(
 
 const eta = new Eta({ useWith: true, autoEscape: false, autoTrim: false });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderConfigTemplate(
   dir: string,
   templateObj: any,
@@ -151,7 +147,7 @@ export function renderConfigTemplate(
     } else if (typeof value === 'string') {
       obj[key] = eta.renderString(value, templateObj);
       if (obj[key].startsWith('require:')) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        // oxlint-disable-next-line typescript/no-require-imports
         obj[key] = require(path.resolve(dir, obj[key].substr(8)));
       }
     }
@@ -231,7 +227,7 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
   let resolvedForgeConfig: ResolvedForgeConfig = {
     ...defaultForgeConfig,
     ...forgeConfig,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     pluginInterface: null as any,
   };
 

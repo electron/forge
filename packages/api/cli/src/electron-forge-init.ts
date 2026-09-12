@@ -12,7 +12,6 @@ import packageJSON from '../package.json';
 
 import { resolveWorkingDir } from './util/resolve-working-dir';
 
-// eslint-disable-next-line n/no-extraneous-import -- we get this from `@inquirer/prompts`
 import type { Prompt } from '@inquirer/type';
 
 program

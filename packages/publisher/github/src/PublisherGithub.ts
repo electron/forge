@@ -118,7 +118,6 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.knownReleases.set(releaseName, release!);
 
       let uploaded = 0;
@@ -139,7 +138,6 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
             };
             const artifactName = path.basename(artifactPath);
             const sanitizedArtifactName = GitHub.sanitizeName(artifactName);
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const asset = release!.assets.find(
               (item: OctokitReleaseAsset) =>
                 item.name === sanitizedArtifactName,
@@ -161,9 +159,7 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
                 .repos.uploadReleaseAsset({
                   owner: config.repository.owner,
                   repo: config.repository.name,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   release_id: release!.id,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   url: release!.upload_url,
                   // https://github.com/octokit/rest.js/issues/1645
                   data: (await fs.readFile(artifactPath)) as unknown as string,
@@ -187,7 +183,6 @@ export default class PublisherGithub extends PublisherBase<PublisherGitHubConfig
               // If an asset with that name already exists, it's either a bug with GitHub.sanitizeName
               // where it did not sanitize the artifact name in the same way as GitHub did, or there
               // was simply a race condition with uploading artifacts with the same name
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               if (
                 err instanceof RequestError &&
                 err.status === 422 &&

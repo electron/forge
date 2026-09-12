@@ -443,7 +443,6 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '/',
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(1);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
@@ -474,7 +473,6 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].entry).toEqual({
         main: ['rendererScript.js'],
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
@@ -514,7 +512,6 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '/',
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
@@ -551,7 +548,6 @@ describe('WebpackConfigGenerator', () => {
         filename: '[name]/index.js',
         globalObject: 'self',
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(1);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
@@ -589,7 +585,6 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '',
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
@@ -629,7 +624,6 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
         publicPath: '',
       });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,

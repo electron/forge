@@ -77,7 +77,7 @@ export default autoTrace(
       dir: providedDir = process.cwd(),
       interactive = false,
       makeOptions = {},
-      publishTargets = undefined,
+      publishTargets,
       dryRun = false,
       dryRunResume = false,
       outDir,
@@ -210,17 +210,17 @@ export default autoTrace(
 
               ctx.publishers = [];
               for (const publishTarget of publishTargets) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // oxlint-disable-next-line typescript/no-explicit-any
                 let publisher: PublisherBase<any>;
                 if (
                   (publishTarget as IForgePublisher).__isElectronForgePublisher
                 ) {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  // oxlint-disable-next-line typescript/no-explicit-any
                   publisher = publishTarget as PublisherBase<any>;
                 } else {
                   const resolvablePublishTarget =
                     publishTarget as IForgeResolvablePublisher;
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  // oxlint-disable-next-line typescript/no-explicit-any
                   const PublisherClass: any = await importSearch(dir, [
                     resolvablePublishTarget.name,
                   ]);

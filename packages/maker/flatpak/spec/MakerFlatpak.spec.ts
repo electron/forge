@@ -6,7 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { flatpakArch, MakerFlatpak } from '../src/MakerFlatpak';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const installer = require('@malept/electron-installer-flatpak');
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;

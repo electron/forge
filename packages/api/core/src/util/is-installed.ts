@@ -1,6 +1,6 @@
 export default function isInstalled(pkg: string): boolean {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // oxlint-disable-next-line typescript/no-require-imports
     require(pkg);
     return true;
   } catch {
