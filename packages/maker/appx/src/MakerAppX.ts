@@ -49,8 +49,11 @@ const validDNRegex = (() => {
     'SERIALNUMBER',
     '(?:OID\\.(0|[1-9][0-9]*)(?:\\.(0|[1-9][0-9]*))+)',
   ].join('|');
-  const doubleQuotedValue = '"[^"\\\\]*(?:[^"][^"\\\\]*)*"';
-  const keyValuePair = `(${validKeyPattern})=((?:${doubleQuotedValue})|[^,"]*)`;
+  // Each character of a value is consumed by exactly one alternative so the
+  // pattern cannot backtrack catastrophically on unterminated quoted values.
+  const doubleQuotedValue = '"[^"]*"';
+  const unquotedValue = '[^,"]*';
+  const keyValuePair = `(${validKeyPattern})=(${doubleQuotedValue}|${unquotedValue})`;
   return new RegExp(`^${keyValuePair}(?:\\s*[,;]\\s*${keyValuePair})*,?$`, 'i');
 })();
 
@@ -104,7 +107,9 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
         'Please set the "publisher" option in the maker config or "author.name" in package.json for the appx target',
       );
     }
-    if (!validDNRegex.test(publisher)) {
+    // Like electron-windows-store, only validate the publisher when Forge has
+    // no user-supplied certificate; with a devCert it is forwarded verbatim.
+    if (!this.config.devCert && !validDNRegex.test(publisher)) {
       throw new Error(
         `Received invalid publisher name: '${publisher}' did not conform to X.500 distinguished name syntax.`,
       );
@@ -127,7 +132,11 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     const packageName =
       this.config.packageName ?? packageJSON.name.replace(/-/g, '');
 
-    // Do all the scratch work in a temporary folder
+    // Clear the previous artifact so a re-run does not fail in `move()`.
+    const outPath = path.resolve(makeDir, 'appx', targetArch);
+    await this.ensureDirectory(outPath);
+
+    // Do all the scratch work in a temporary folder (outside of outPath)
     const tmpFolder = await fs.mkdtemp(
       path.resolve(os.tmpdir(), 'appx-maker-'),
     );
@@ -166,13 +175,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
         },
       });
 
-      const outputPath = path.resolve(
-        makeDir,
-        'appx',
-        targetArch,
-        `${packageName}.msix`,
-      );
-      await fs.mkdir(path.dirname(outputPath), { recursive: true });
+      const outputPath = path.resolve(outPath, `${packageName}.msix`);
       await move(result.msixPackage, outputPath);
       return [outputPath];
     } finally {

@@ -70,11 +70,14 @@ describe('MakerAppX', () => {
     },
   };
 
+  let maker: MakerAppX;
+
   async function runMake(
     config: MakerAppXConfig,
     overrides: Partial<MakerOptions> = {},
   ) {
-    const maker = new MakerAppX(config, []);
+    maker = new MakerAppX(config, []);
+    maker.ensureDirectory = vi.fn();
     await maker.prepareConfig(overrides.targetArch ?? targetArch);
     return (maker.make as MakeFunction)({
       dir,
@@ -139,6 +142,16 @@ describe('MakerAppX', () => {
 
       expect(vi.mocked(move)).toHaveBeenCalledWith(mockMsixPath, output[0]);
       expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+    });
+
+    it('should clear the arch output directory before moving the .msix', async () => {
+      await runMake({});
+
+      expect(maker.ensureDirectory).toHaveBeenCalledOnce();
+      expect(maker.ensureDirectory).toHaveBeenCalledWith(outPath);
+      expect(
+        vi.mocked(maker.ensureDirectory).mock.invocationCallOrder[0],
+      ).toBeLessThan(vi.mocked(move).mock.invocationCallOrder[0]);
     });
 
     it('should fall back to the app name when package.json has no description', async () => {
@@ -288,12 +301,50 @@ describe('MakerAppX', () => {
         expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
       });
 
-      it('should throw when the publisher is not an X.500 distinguished name', async () => {
+      it('should throw when the publisher is not an X.500 distinguished name and no devCert is set', async () => {
         await expect(
           runMake({ publisher: 'Not A Distinguished Name' }),
         ).rejects.toThrow(
           "Received invalid publisher name: 'Not A Distinguished Name' did not conform to X.500 distinguished name syntax.",
         );
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+      });
+
+      it.each([
+        'CN=Test Author',
+        'CN="Quoted, Inc.", O=Org',
+        'CN=Foo; OU=Bar',
+        'OID.1.2.840.113549.1.9.1=test@example.com',
+        'cn=lowercase,',
+      ])(
+        'should accept the well-formed distinguished name %s',
+        async (publisher) => {
+          await runMake({ publisher });
+
+          expect(packagingOptions().manifestVariables).toMatchObject({
+            publisher,
+          });
+        },
+      );
+
+      it('should forward an unusual publisher unchanged when devCert is set', async () => {
+        const publisher = 'Not A Distinguished Name';
+        await runMake({ publisher, devCert: 'C:\\certs\\custom.pfx' });
+
+        expect(packagingOptions().manifestVariables).toMatchObject({
+          publisher,
+        });
+      });
+
+      it('should reject an unterminated quoted value without catastrophic backtracking', async () => {
+        const publisher = 'CN="' + 'a'.repeat(50_000);
+        const start = performance.now();
+
+        await expect(runMake({ publisher })).rejects.toThrow(
+          'did not conform to X.500 distinguished name syntax.',
+        );
+
+        expect(performance.now() - start).toBeLessThan(1000);
         expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
       });
     });
