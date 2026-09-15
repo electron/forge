@@ -54,6 +54,22 @@ describe('release', () => {
     expect(vi.mocked(listrMake)).toHaveBeenCalledOnce();
   });
 
+  it('passes the resolved forge config through to "make"', async () => {
+    const forgeConfig = { publishers: [] } as unknown as ResolvedForgeConfig;
+    vi.mocked(findConfig).mockResolvedValue(forgeConfig);
+
+    await release({
+      dir: import.meta.dirname,
+      interactive: false,
+    });
+
+    expect(vi.mocked(listrMake)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ forgeConfig }),
+      expect.any(Function),
+    );
+  });
+
   it('uses publishers from the forge config if provided', async () => {
     const MockPublisher = vi.fn();
     const mockPublish = vi.fn();

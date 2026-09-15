@@ -97,6 +97,18 @@ export interface PackageOptions {
   outDir?: string;
 }
 
+/**
+ * Options for the internal package runner. Callers that have already resolved
+ * the Forge config (e.g. `make`) pass it through so the plugin lifecycle
+ * (`init`, `resolveForgeConfig`) runs once per command instead of once per
+ * nested runner.
+ *
+ * @internal
+ */
+export type ListrPackageOptions = PackageOptions & {
+  forgeConfig?: ResolvedForgeConfig;
+};
+
 export const listrPackage = (
   childTrace: typeof autoTrace,
   {
@@ -105,7 +117,8 @@ export const listrPackage = (
     arch = getHostArch() as ForgeArch,
     platform = process.platform as ForgePlatform,
     outDir,
-  }: PackageOptions,
+    forgeConfig: providedForgeConfig,
+  }: ListrPackageOptions,
 ) => {
   const runner = new Listr<PackageContext>(
     [
@@ -122,7 +135,8 @@ export const listrPackage = (
             }
             ctx.dir = resolvedDir;
 
-            ctx.forgeConfig = await getForgeConfig(resolvedDir);
+            ctx.forgeConfig =
+              providedForgeConfig ?? (await getForgeConfig(resolvedDir));
             ctx.packageJSON = await readMutatedPackageJson(
               resolvedDir,
               ctx.forgeConfig,
