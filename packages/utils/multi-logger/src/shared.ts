@@ -18,6 +18,9 @@ export function getSharedLogger(): Logger | undefined {
 
 /**
  * Returns the process-wide logger, creating and registering it on first use.
+ * A logger that has been stopped is replaced by a fresh one, since it would
+ * never render again: a later session in the same process (a second
+ * `api.start()`, say) gets a working logger rather than a dead one.
  *
  * Only the first caller decides how the logger is set up. When a logger
  * already exists, `options` are merged additively — extra `keys` are added
@@ -27,7 +30,7 @@ export function getSharedLogger(): Logger | undefined {
  */
 export function ensureSharedLogger(options?: LoggerOptions): Logger {
   const existing = getSharedLogger();
-  if (existing) {
+  if (existing && !existing.stopped) {
     if (options) existing.extendOptions(options);
     return existing;
   }
