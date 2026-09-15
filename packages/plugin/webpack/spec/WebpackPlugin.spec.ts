@@ -190,10 +190,10 @@ describe('WebpackPlugin', async () => {
         );
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).toEqual(
+        expect(ignore(path.join('/.webpack', 'main', 'index.cjs'))).toEqual(
           false,
         );
-        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).toEqual(
+        expect(ignore(path.join('/.webpack', 'main', 'index.cjs.map'))).toEqual(
           true,
         );
         expect(
@@ -202,6 +202,21 @@ describe('WebpackPlugin', async () => {
         expect(
           ignore(
             path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'),
+          ),
+        ).toEqual(true);
+        expect(
+          ignore(
+            path.join('/.webpack', 'renderer', 'main_window', 'preload.cjs'),
+          ),
+        ).toEqual(false);
+        expect(
+          ignore(
+            path.join(
+              '/.webpack',
+              'renderer',
+              'main_window',
+              'preload.cjs.map',
+            ),
           ),
         ).toEqual(true);
       });
@@ -214,10 +229,10 @@ describe('WebpackPlugin', async () => {
         );
         const ignore = config.packagerConfig.ignore as IgnoreFunction;
 
-        expect(ignore(path.join('/.webpack', 'main', 'index.js'))).toEqual(
+        expect(ignore(path.join('/.webpack', 'main', 'index.cjs'))).toEqual(
           false,
         );
-        expect(ignore(path.join('/.webpack', 'main', 'index.js.map'))).toEqual(
+        expect(ignore(path.join('/.webpack', 'main', 'index.cjs.map'))).toEqual(
           false,
         );
         expect(
@@ -226,6 +241,16 @@ describe('WebpackPlugin', async () => {
         expect(
           ignore(
             path.join('/.webpack', 'renderer', 'main_window', 'index.js.map'),
+          ),
+        ).toEqual(false);
+        expect(
+          ignore(
+            path.join(
+              '/.webpack',
+              'renderer',
+              'main_window',
+              'preload.cjs.map',
+            ),
           ),
         ).toEqual(false);
       });
