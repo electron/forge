@@ -1,6 +1,6 @@
 import net from 'node:net';
 
-import { expect } from 'chai';
+import { describe, expect, it } from 'vitest';
 
 import { findAvailablePort, portOccupied } from '../src/port';
 
@@ -27,18 +27,18 @@ const usePorts = (port: number, endPort: number) => {
 
 describe('Port tests', () => {
   describe('portOccupied', () => {
-    it('should resolve to true if the port is available', async () => {
+    it('should resolve to false if the port is available', async () => {
       const port = 49152;
       const result = await portOccupied(port);
-      expect(result).to.not.throw;
+      expect(result).toBe(false);
     });
-    it('should reject if the port is occupied', async () => {
+
+    it('should resolve to true if the port is occupied', async () => {
       const port = 48143;
       const releasePort = usePort(port);
       try {
-        await portOccupied(port);
-      } catch (error) {
-        expect(error).to.equal(false);
+        const result = await portOccupied(port);
+        expect(result).toBe(true);
       } finally {
         releasePort();
       }
@@ -49,16 +49,18 @@ describe('Port tests', () => {
     it('should find an available port', async () => {
       const initialPort = 51155;
       const port = await findAvailablePort(initialPort);
-      expect(port).gte(initialPort);
+      expect(port).toBeGreaterThanOrEqual(initialPort);
     });
+
     it('should throw an error if no available port is found', async () => {
       const initialPort = 53024;
       const releasePort = usePorts(initialPort, initialPort + 10);
       try {
         await findAvailablePort(initialPort);
+        expect.unreachable('findAvailablePort should have thrown');
       } catch (error) {
-        expect((error as Error).message).to.equal(
-          `Could not find an available port between ${initialPort} and ${initialPort + 10}. Please free up a port and try again.`
+        expect((error as Error).message).toBe(
+          `Could not find an available port between ${initialPort} and ${initialPort + 10}. Please free up a port and try again.`,
         );
       } finally {
         releasePort();

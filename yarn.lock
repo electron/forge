@@ -1419,6 +1419,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/web-multi-logger@workspace:packages/utils/web-multi-logger"
   dependencies:
+    "@electron-forge/core-utils": "workspace:*"
     express: "npm:^4.17.1"
     express-ws: "npm:^5.0.2"
     xterm: "npm:^4.9.0"

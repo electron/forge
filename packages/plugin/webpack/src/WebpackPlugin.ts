@@ -203,7 +203,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
 
           const logger = new Logger(this.loggerPort);
           this.loggers.push(logger);
-          await logger.start();
+          this.loggerPort = await logger.start();
 
           return task?.newListr([
             {
