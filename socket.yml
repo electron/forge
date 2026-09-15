@@ -1,0 +1,5 @@
+version: 2
+
+projectIgnorePaths:
+  - 'packages/api/core/spec/fixture/async_forge_config'
+  - 'packages/api/core/spec/fixture/forge-config-no-package-json-config'

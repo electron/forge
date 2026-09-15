@@ -1,4 +1,5 @@
 import { PredefinedAcl, StorageOptions } from '@google-cloud/storage';
+// eslint-disable-next-line n/no-missing-import
 import { ConfigMetadata } from '@google-cloud/storage/build/cjs/src/resumable-upload';
 
 import { GCSArtifact } from './PublisherGCS';

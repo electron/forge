@@ -66,4 +66,10 @@ export interface PublisherS3Config {
    * Custom function to provide the key to upload a given file to
    */
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
+  /**
+   * Set the Cache-Control max-age metadata in S3 for the RELEASES file
+   *
+   * Default: Cache-Control metadata is not set
+   */
+  releaseFileCacheControlMaxAge?: number;
 }

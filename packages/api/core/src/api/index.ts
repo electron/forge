@@ -1,5 +1,6 @@
 import { ElectronProcess, ForgeMakeResult } from '@electron-forge/shared-types';
 
+// eslint-disable-next-line n/no-missing-import
 import ForgeUtils from '../util';
 
 import _import, { ImportOptions } from './import';
@@ -61,4 +62,16 @@ export class ForgeAPI {
 const api = new ForgeAPI();
 const utils = new ForgeUtils();
 
-export { ForgeMakeResult, ElectronProcess, ForgeUtils, ImportOptions, InitOptions, MakeOptions, PackageOptions, PublishOptions, StartOptions, api, utils };
+export {
+  ForgeMakeResult,
+  ElectronProcess,
+  ForgeUtils,
+  ImportOptions,
+  InitOptions,
+  MakeOptions,
+  PackageOptions,
+  PublishOptions,
+  StartOptions,
+  api,
+  utils,
+};

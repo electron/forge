@@ -1,4 +1,7 @@
-import { PublisherOptions, PublisherStatic } from '@electron-forge/publisher-static';
+import {
+  PublisherOptions,
+  PublisherStatic,
+} from '@electron-forge/publisher-static';
 import { Storage } from '@google-cloud/storage';
 import debug from 'debug';
 
@@ -20,13 +23,23 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
     return key.replace(/@/g, '_').replace(/\//g, '_');
   };
 
-  async publish({ makeResults, setStatusLine }: PublisherOptions): Promise<void> {
+  async publish({
+    makeResults,
+    setStatusLine,
+  }: PublisherOptions): Promise<void> {
     const artifacts: GCSArtifact[] = [];
 
-    const { storageOptions, bucket: configBucket, folder, ...uploadOptions } = this.config;
+    const {
+      storageOptions,
+      bucket: configBucket,
+      folder,
+      ...uploadOptions
+    } = this.config;
 
     if (!configBucket) {
-      throw new Error('In order to publish to Google Cloud Storage you must set the "bucket" property in your Forge config.');
+      throw new Error(
+        'In order to publish to Google Cloud Storage you must set the "bucket" property in your Forge config.',
+      );
     }
 
     for (const makeResult of makeResults) {
@@ -36,7 +49,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
           keyPrefix: folder || this.GCSKeySafe(makeResult.packageJSON.name),
           platform: makeResult.platform,
           arch: makeResult.arch,
-        }))
+        })),
       );
     }
 
@@ -47,14 +60,19 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
     d('creating Google Cloud Storage client with options:', this.config);
 
     let uploaded = 0;
-    const updateStatusLine = () => setStatusLine(`Uploading distributable (${uploaded}/${artifacts.length})`);
+    const updateStatusLine = () =>
+      setStatusLine(
+        `Uploading distributable (${uploaded}/${artifacts.length})`,
+      );
 
     updateStatusLine();
     await Promise.all(
       artifacts.map(async (artifact) => {
         d('uploading:', artifact.path);
         await bucket.upload(artifact.path, {
-          metadata: this.config.metadataGenerator ? this.config.metadataGenerator(artifact) : {},
+          metadata: this.config.metadataGenerator
+            ? this.config.metadataGenerator(artifact)
+            : {},
           gzip: true,
           destination: this.keyForArtifact(artifact),
           ...uploadOptions,
@@ -62,7 +80,7 @@ export default class PublisherGCS extends PublisherStatic<PublisherGCSConfig> {
 
         uploaded += 1;
         updateStatusLine();
-      })
+      }),
     );
   }
 }

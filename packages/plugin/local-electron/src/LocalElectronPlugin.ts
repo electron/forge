@@ -30,14 +30,16 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
   private checkPlatform = (platform: string) => {
     if ((this.config.electronPlatform || process.platform) !== platform) {
       throw new Error(
-        `Can not use local Electron version, required platform "${platform}" but local platform is "${this.config.electronPlatform || process.platform}"`
+        `Can not use local Electron version, required platform "${platform}" but local platform is "${this.config.electronPlatform || process.platform}"`,
       );
     }
   };
 
   private checkArch = (arch: string) => {
     if ((this.config.electronArch || process.arch) !== arch) {
-      throw new Error(`Can not use local Electron version, required arch "${arch}" but local arch is "${this.config.electronArch || process.arch}"`);
+      throw new Error(
+        `Can not use local Electron version, required arch "${arch}" but local arch is "${this.config.electronArch || process.arch}"`,
+      );
     }
   };
 
@@ -48,7 +50,13 @@ export default class LocalElectronPlugin extends PluginBase<LocalElectronPluginC
     }
   };
 
-  private afterExtract: ForgeHookFn<'packageAfterExtract'> = async (_config, buildPath, _electronVersion, platform, arch) => {
+  private afterExtract: ForgeHookFn<'packageAfterExtract'> = async (
+    _config,
+    buildPath,
+    _electronVersion,
+    platform,
+    arch,
+  ) => {
     if (!this.enabled) return;
 
     this.checkPlatform(platform);

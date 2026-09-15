@@ -1,0 +1,243 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags: # zizmor: ignore[cache-poisoning] this isn't used in a release workflow
+      - v[0-9]+.[0-9]+.[0-9]+*
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
+
+env:
+  NODE_VERSION: 20.17.0
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Configure git
+        run: git config --global core.autocrlf input
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
+      - name: Set up Python 3.11 (with distutils)
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.11
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build Electron Forge
+        run: yarn build
+
+      - name: Cache ESLint
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .eslintcache
+          key: v2-lint-dependencies-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.eslintrc.json') }}
+
+      - name: Lint codebase
+        run: |
+          yarn lint
+          yarn constraints
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist-files
+          path: packages/*/*/dist/*
+
+  fast-tests:
+    needs: lint-and-build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-22.04, macos-latest]
+        arch: [x64, arm64]
+        exclude:
+          - os: windows-2022
+            arch: arm64
+          - os: ubuntu-22.04
+            arch: arm64
+          - os: macos-latest
+            arch: x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Configure git
+        run: git config --global core.autocrlf input
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
+      - name: Set up Python 3.11 (with distutils)
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.11
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: dist-files
+          path: packages
+
+      - name: Windows setup
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
+          npm install node-gyp@9.4.0
+
+      - name: Linux setup
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            --no-install-recommends \
+            xvfb \
+            libnss3 \
+            libasound2 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libgdk-pixbuf2.0-dev \
+            libgtk-3-0 \
+            libgbm1
+          sudo add-apt-repository -y ppa:alexlarsson/flatpak
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.0.0
+
+      - name: Run fast tests
+        run: |
+          mkdir -p ./reports/out
+          yarn test:fast --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
+
+  slow-tests:
+    needs: lint-and-build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-22.04, macos-latest]
+        arch: [x64, arm64]
+        exclude:
+          - os: windows-2022
+            arch: arm64
+          - os: ubuntu-22.04
+            arch: arm64
+          - os: macos-latest
+            arch: x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Configure git
+        run: git config --global core.autocrlf input
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # TODO(Forge 8): remove this once we can upgrade to `@electron/rebuild` v4
+      - name: Set up Python 3.11 (with distutils)
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: 3.11
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: dist-files
+          path: packages
+
+      - name: Windows setup
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
+          npm install node-gyp@9.4.0
+
+      - name: Linux setup
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            --no-install-recommends \
+            xvfb \
+            libnss3 \
+            libasound2 \
+            libatk1.0-0 \
+            libatk-bridge2.0-0 \
+            libgdk-pixbuf2.0-dev \
+            libgtk-3-0 \
+            libgbm1
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.0.0
+
+      - name: Run slow tests
+        run: |
+          mkdir -p ./reports/out
+          yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
+          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml"
+
+  required-ci:
+    needs:
+      - lint-and-build
+      - fast-tests
+      - slow-tests
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Fail if any required job failed or was cancelled
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        env:
+          LINT_AND_BUILD_RESULT: ${{ needs.lint-and-build.result }}
+          FAST_TESTS_RESULT: ${{ needs.fast-tests.result }}
+          SLOW_TESTS_RESULT: ${{ needs.slow-tests.result }}
+        run: |
+          echo "One or more required jobs did not succeed:"
+          echo "  lint-and-build: $LINT_AND_BUILD_RESULT"
+          echo "  fast-tests:     $FAST_TESTS_RESULT"
+          echo "  slow-tests:     $SLOW_TESTS_RESULT"
+          exit 1
+      - name: We are done
+        run: echo "Hello World"

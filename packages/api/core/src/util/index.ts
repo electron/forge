@@ -1,4 +1,7 @@
-import { getElectronVersion, hasYarn, yarnOrNpmSpawn } from '@electron-forge/core-utils';
+import {
+  getElectronVersion,
+  spawnPackageManager,
+} from '@electron-forge/core-utils';
 
 import {
   BuildIdentifierConfig,
@@ -24,9 +27,7 @@ export default class ForgeUtils {
 
   getElectronVersion = getElectronVersion;
 
-  hasYarn = hasYarn;
-
-  yarnOrNpmSpawn = yarnOrNpmSpawn;
+  spawnPackageManager = spawnPackageManager;
 
   /**
    * Register a virtual config file for forge to find.

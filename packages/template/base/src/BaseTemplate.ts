@@ -1,12 +1,18 @@
 import path from 'node:path';
 
-import { ForgeListrTaskDefinition, ForgeTemplate, InitTemplateOptions } from '@electron-forge/shared-types';
+import { resolvePackageManager } from '@electron-forge/core-utils';
+import {
+  ForgeListrTaskDefinition,
+  ForgeTemplate,
+  InitTemplateOptions,
+} from '@electron-forge/shared-types';
 import debug from 'debug';
 import fs from 'fs-extra';
+import semver from 'semver';
 
 import determineAuthor from './determine-author';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const currentForgeVersion = require('../package.json').version;
 
 const d = debug('electron-forge:template:base');
@@ -16,6 +22,23 @@ export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
 
   public requiredForgeVersion = currentForgeVersion;
+
+  get dependencies(): string[] {
+    const packageJSONPath = path.join(this.templateDir, 'package.json');
+    if (fs.pathExistsSync(packageJSONPath)) {
+      const deps = fs.readJsonSync(packageJSONPath).dependencies;
+      if (deps) {
+        return Object.entries(deps).map(([packageName, version]) => {
+          if (version === 'ELECTRON_FORGE/VERSION') {
+            version = `^${currentForgeVersion}`;
+          }
+          return `${packageName}@${version}`;
+        });
+      }
+    }
+
+    return [];
+  }
 
   get devDependencies(): string[] {
     const packageJSONPath = path.join(this.templateDir, 'package.json');
@@ -34,24 +57,54 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  public async initializeTemplate(directory: string, { copyCIFiles }: InitTemplateOptions): Promise<ForgeListrTaskDefinition[]> {
+  public async initializeTemplate(
+    directory: string,
+    { copyCIFiles }: InitTemplateOptions,
+  ): Promise<ForgeListrTaskDefinition[]> {
     return [
       {
         title: 'Copying starter files',
         task: async () => {
+          const pm = await resolvePackageManager();
           d('creating directory:', path.resolve(directory, 'src'));
           await fs.mkdirs(path.resolve(directory, 'src'));
           const rootFiles = ['_gitignore', 'forge.config.js'];
-          if (copyCIFiles) {
-            d(`Copying CI files is currently not supported - this will be updated in a later version of Forge`);
+
+          if (pm.executable === 'pnpm') {
+            rootFiles.push('_npmrc');
+          } else if (
+            // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
+            pm.executable === 'yarn' &&
+            pm.version &&
+            semver.gte(pm.version, '2.0.0')
+          ) {
+            rootFiles.push('_yarnrc.yml');
           }
-          const srcFiles = ['index.css', 'index.js', 'index.html', 'preload.js'];
+
+          if (copyCIFiles) {
+            d(
+              `Copying CI files is currently not supported - this will be updated in a later version of Forge`,
+            );
+          }
+
+          const srcFiles = [
+            'index.css',
+            'index.js',
+            'index.html',
+            'preload.js',
+          ];
 
           for (const file of rootFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, file.replace(/^_/, '.')));
+            await this.copy(
+              path.resolve(tmplDir, file),
+              path.resolve(directory, file.replace(/^_/, '.')),
+            );
           }
           for (const file of srcFiles) {
-            await this.copy(path.resolve(tmplDir, file), path.resolve(directory, 'src', file));
+            await this.copy(
+              path.resolve(tmplDir, file),
+              path.resolve(directory, 'src', file),
+            );
           }
         },
       },
@@ -70,23 +123,54 @@ export class BaseTemplate implements ForgeTemplate {
   }
 
   async copyTemplateFile(destDir: string, basename: string): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await this.copy(path.join(this.templateDir!, basename), path.resolve(destDir, basename));
+    await this.copy(
+      path.join(this.templateDir, basename),
+      path.resolve(destDir, basename),
+    );
   }
 
   async initializePackageJSON(directory: string): Promise<void> {
-    const packageJSON = await fs.readJson(path.resolve(__dirname, '../tmpl/package.json'));
-    packageJSON.productName = packageJSON.name = path.basename(directory).toLowerCase();
+    const packageJSON = await fs.readJson(
+      path.resolve(__dirname, '../tmpl/package.json'),
+    );
+    packageJSON.productName = packageJSON.name = path
+      .basename(directory)
+      .toLowerCase();
     packageJSON.author = await determineAuthor(directory);
+
+    const pm = await resolvePackageManager();
+
+    if (pm.executable === 'pnpm') {
+      d('Adding Electron dependencies to `onlyBuiltDependencies`');
+      packageJSON.pnpm = {
+        onlyBuiltDependencies: ['electron', 'electron-winstaller'],
+      };
+    } else if (
+      pm.executable === 'yarn' &&
+      typeof pm.version === 'string' &&
+      semver.gte(pm.version, '2.0.0')
+    ) {
+      d('Detected Yarn 2+, adding packageManager field to package.json');
+      packageJSON.packageManager = `yarn@${pm.version}`;
+    }
 
     packageJSON.scripts.lint = 'echo "No linting configured"';
 
     d('writing package.json to:', directory);
-    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, { spaces: 2 });
+    await fs.writeJson(path.resolve(directory, 'package.json'), packageJSON, {
+      spaces: 2,
+    });
   }
 
-  async updateFileByLine(inputPath: string, lineHandler: (line: string) => string, outputPath?: string | undefined): Promise<void> {
-    const fileContents = (await fs.readFile(inputPath, 'utf8')).split('\n').map(lineHandler).join('\n');
+  async updateFileByLine(
+    inputPath: string,
+    lineHandler: (line: string) => string,
+    outputPath?: string | undefined,
+  ): Promise<void> {
+    const fileContents = (await fs.readFile(inputPath, 'utf8'))
+      .split('\n')
+      .map(lineHandler)
+      .join('\n');
     await fs.writeFile(outputPath || inputPath, fileContents);
     if (outputPath !== undefined) {
       await fs.remove(inputPath);

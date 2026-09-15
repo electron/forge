@@ -1,0 +1,21 @@
+name: Close issues that have been blocked for two weeks
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions: {}
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          any-of-labels: 'blocked/needs-info,blocked/needs-repro'
+          labels-to-remove-when-unstale: 'blocked/needs-info,blocked/needs-repro'
+          days-before-pr-stale: 9001 # good luck to whoever leaves their PR up for 25 years

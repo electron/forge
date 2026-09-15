@@ -32,7 +32,7 @@ export default class MakerDeb extends MakerBase<MakerDebConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line node/no-missing-require
+    // eslint-disable-next-line n/no-missing-require
     const installer = require('electron-installer-debian');
 
     const outDir = path.resolve(makeDir, 'deb', targetArch);

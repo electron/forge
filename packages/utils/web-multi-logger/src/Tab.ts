@@ -9,7 +9,10 @@ export default class Tab {
 
   private id: number;
 
-  constructor(public name: string, private ws: ews.Instance) {
+  constructor(
+    public name: string,
+    private ws: ews.Instance,
+  ) {
     this.id = idCounter;
     idCounter += 1;
   }
@@ -26,7 +29,7 @@ export default class Tab {
         JSON.stringify({
           tab: this.id,
           payload: log,
-        })
+        }),
       );
     }
   }

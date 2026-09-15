@@ -1,10 +1,14 @@
 ## Electron Forge
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/electron/forge/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/electron/forge/tree/main)
-[![Discord](https://img.shields.io/discord/745037351163527189?color=blueviolet&logo=discord)](https://discord.com/invite/APGC3k5yaH)
+[![CI](https://github.com/electron/forge/actions/workflows/ci.yml/badge.svg)](https://github.com/electron/forge/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@electron-forge/cli)](https://npm.im/@electron-forge/cli)
 [![license](https://img.shields.io/github/license/electron/forge.svg)](https://github.com/electron/forge/blob/main/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
+
+> [!IMPORTANT]
+> We're currently beginning feature development for the next major version of Electron Forge, which is being done in the [`next`](https://github.com/electron/forge/tree/next) branch.
+> To try out experimental pre-releases, install the `@alpha` dist-tag of the `@electron-forge/*` packages via npm.
+> For more details, see issue https://github.com/electron/forge/issues/4082.
 
 A complete tool for building modern Electron applications.
 
@@ -19,8 +23,7 @@ jump right in to Electron development.
 [Docs and Usage](#docs-and-usage) |
 [Configuration](https://www.electronforge.io/configuration) |
 [Support](https://github.com/electron/forge/blob/main/SUPPORT.md) |
-[Contributing](https://github.com/electron/forge/blob/main/CONTRIBUTING.md) |
-[Changelog](https://github.com/electron/forge/blob/main/CHANGELOG.md)
+[Contributing](https://github.com/electron/forge/blob/main/CONTRIBUTING.md)
 
 ---
 
@@ -31,15 +34,11 @@ Pre-requisites:
 - Node 16.4.0 or higher
 - Git
 
-If you have a more recent version of `npm` or `yarn`, you can use
-[`npx`](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b),
-or
-[`yarn create`](https://yarnpkg.com/blog/2017/05/12/introducing-yarn/).
+You can initialize an Electron Forge project with the [`create-electron-app`](https://www.npmjs.com/package/create-electron-app)
+CLI tool.
 
 ```bash
-npx create-electron-app my-new-app
-# or
-yarn create electron-app my-new-app
+npx create-electron-app@latest my-new-app
 
 # then
 cd my-new-app
@@ -78,4 +77,4 @@ If you are interested in reporting/fixing issues and contributing directly to th
 ## Community
 
 Please report bugs or feature requests in our [issue tracker](https://github.com/electron/forge/issues).
-You can find help for debugging your Electron Forge on the [Support page](https://github.com/electron/forge/blob/main/SUPPORT.md), and ask questions in the [official Electron Discord server](https://discord.gg/invite/APGC3k5yaH), where there is a dedicated channel for Electron Forge.
+You can find help for debugging your Electron Forge on the [Support page](https://github.com/electron/forge/blob/main/SUPPORT.md).

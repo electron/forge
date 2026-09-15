@@ -7,12 +7,18 @@ const trivialConfigurationFactory =
   () =>
     config;
 
-export type ConfigProcessor = (config: ConfigurationFactory) => Promise<Configuration>;
+export type ConfigProcessor = (
+  config: ConfigurationFactory,
+) => Promise<Configuration>;
 
 // Ensure processing logic is run for both `Configuration` and
 // `ConfigurationFactory` config variants.
-const processConfig = async (processor: ConfigProcessor, config: Configuration | ConfigurationFactory): Promise<Configuration> => {
-  const configFactory = typeof config === 'function' ? config : trivialConfigurationFactory(config);
+const processConfig = async (
+  processor: ConfigProcessor,
+  config: Configuration | ConfigurationFactory,
+): Promise<Configuration> => {
+  const configFactory =
+    typeof config === 'function' ? config : trivialConfigurationFactory(config);
   return processor(configFactory);
 };
 
