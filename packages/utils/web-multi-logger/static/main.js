@@ -94,7 +94,9 @@ class Renderer {
   selectTab(tab) {
     const selected = document.querySelector('.selected-tab');
     if (selected) selected.classList.remove('selected-tab');
-    document.querySelector(`[data-id="${tab.id}"]`).classList.add('selected-tab');
+    document
+      .querySelector(`[data-id="${tab.id}"]`)
+      .classList.add('selected-tab');
     this.currentTab = tab;
     this.initialRender(tab);
   }

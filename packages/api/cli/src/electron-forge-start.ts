@@ -1,29 +1,32 @@
-import { createRequire } from 'module';
-import path from 'path';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
 import boxen, { Options } from 'boxen';
 import chalk from 'chalk';
-import program from 'commander';
-import fs from 'fs-extra';
-// eslint-disable-next-line node/no-unpublished-import
+import { Option, program } from 'commander';
+// eslint-disable-next-line n/no-unpublished-import
 import updateNotifier from 'update-notifier';
 
 import './util/terminate';
-import workingDir from './util/working-dir';
+import packageJSON from '../package.json';
+
+import { resolveWorkingDir } from './util/resolve-working-dir';
 
 let userPackage;
 try {
   userPackage = createRequire(path.resolve('package.json'))('./package.json');
 } catch {
-  console.warn(`path=${'package.json'} file not found at CWD: path=${process.cwd()}.`);
+  console.warn(
+    `path=${'package.json'} file not found at CWD: path=${process.cwd()}.`,
+  );
 }
 (async () => {
   let commandArgs = process.argv;
   let appArgs;
   const notifier = updateNotifier({
-    pkg: await fs.readJson(path.resolve(__dirname, '../package.json')),
+    pkg: packageJSON,
     // Use 0 for debugging.
     updateCheckInterval: 1000 * 60 * 60,
   });
@@ -53,7 +56,7 @@ try {
 
       To upgrade Electron Forge packages to the latest version, execute the following command:
     ${chalk.cyanBright(`npm i ${sitePackagesForUpdate}`)}`,
-      boxenOptions
+      boxenOptions,
     );
     console.log(forgeUpdateMessage);
   }
@@ -64,45 +67,66 @@ try {
     appArgs = process.argv.slice(doubleDashIndex + 1);
   }
 
-  let dir = process.cwd();
+  let dir;
   program
-    .version((await fs.readJson(path.resolve(__dirname, '../package.json'))).version, '-V, --version', 'Output the current version')
-    .arguments('[cwd]')
-    .option('-p, --app-path <path>', "Override the path to the Electron app to launch (defaults to '.')")
-    .option('-l, --enable-logging', 'Enable advanced logging.  This will log internal Electron things')
-    .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script')
-    .option('--vscode', 'Used to enable arg transformation for debugging Electron through VSCode.  Do not use yourself.')
-    .option('-i, --inspect-electron', 'Triggers inspect mode on Electron to allow debugging the main process.  Electron >1.7 only')
-    .option('--inspect-brk-electron', 'Triggers inspect-brk mode on Electron to allow debugging the main process.  Electron >1.7 only')
-    .helpOption('-h, --help', 'Output usage information')
-    .action((cwd) => {
-      dir = workingDir(dir, cwd);
+    .version(
+      packageJSON.version,
+      '-V, --version',
+      'Output the current version.',
+    )
+    .helpOption('-h, --help', 'Output usage information.')
+    .argument(
+      '[dir]',
+      'Directory to run the command in. (default: current directory)',
+    )
+    .option(
+      '-p, --app-path <path>',
+      'Path to the Electron app to launch. (default: current directory)',
+    )
+    .option('-l, --enable-logging', 'Enable internal Electron logging.')
+    .option('-n, --run-as-node', 'Run the Electron app as a Node.JS script.')
+    .addOption(new Option('--vscode').hideHelp()) // Used to enable arg transformation for debugging Electron through VSCode. Hidden from users.
+    .option(
+      '-i, --inspect-electron',
+      'Run Electron in inspect mode to allow debugging the main process.',
+    )
+    .option(
+      '--inspect-brk-electron',
+      'Run Electron in inspect-brk mode to allow debugging the main process.',
+    )
+    .addHelpText(
+      'after',
+      `
+      Any arguments found after "--" will be passed to the Electron app. For example...
+      
+          $ npx electron-forge start /path/to/project --enable-logging -- -d -f foo.txt
+                                    
+      ...will pass the arguments "-d -f foo.txt" to the Electron app.`,
+    )
+    .action((targetDir: string) => {
+      dir = resolveWorkingDir(targetDir);
     })
     .parse(commandArgs);
 
-  program.on('--help', () => {
-    console.log('  Any arguments found after "--" will be passed to the Electron app, e.g.');
-    console.log('');
-    console.log('    $ electron-forge /path/to/project -l -- -d -f foo.txt');
-    console.log('');
-    console.log('  will pass the arguments "-d -f foo.txt" to the Electron app');
-  });
+  const options = program.opts();
 
   const opts: StartOptions = {
     dir,
-    interactive: true,
-    enableLogging: !!program.enableLogging,
-    runAsNode: !!program.runAsNode,
-    inspect: !!program.inspectElectron,
-    inspectBrk: !!program.inspectBrkElectron,
+    interactive: process.stdin.isTTY ?? false,
+    enableLogging: !!options.enableLogging,
+    runAsNode: !!options.runAsNode,
+    inspect: !!options.inspectElectron,
+    inspectBrk: !!options.inspectBrkElectron,
   };
 
-  if (program.vscode && appArgs) {
+  if (options.vscode && appArgs) {
     // Args are in the format ~arg~ so we need to strip the "~"
-    appArgs = appArgs.map((arg) => arg.substr(1, arg.length - 2)).filter((arg) => arg.length > 0);
+    appArgs = appArgs
+      .map((arg) => arg.substr(1, arg.length - 2))
+      .filter((arg) => arg.length > 0);
   }
 
-  if (program.appPath) opts.appPath = program.appPath;
+  if (options.appPath) opts.appPath = options.appPath;
   if (appArgs) opts.args = appArgs;
 
   const spawned = await api.start(opts);

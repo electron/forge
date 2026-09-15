@@ -1,6 +1,11 @@
-import path from 'path';
+import path from 'node:path';
 
-import { ForgeArch, ForgePlatform, IForgeMaker, ResolvedForgeConfig } from '@electron-forge/shared-types';
+import {
+  ForgeArch,
+  ForgePlatform,
+  IForgeMaker,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
 import fs from 'fs-extra';
 import which from 'which';
 
@@ -54,7 +59,10 @@ export default abstract class Maker<C> implements IForgeMaker {
    * @param configOrConfigFetcher - Either a configuration object for this maker or a simple method that returns such a configuration for a given target architecture
    * @param platformsToMakeOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
    */
-  constructor(private configOrConfigFetcher: C | ((arch: ForgeArch) => C) = {} as C, protected platformsToMakeOn?: ForgePlatform[]) {
+  constructor(
+    private configOrConfigFetcher: C | ((arch: ForgeArch) => C) = {} as C,
+    protected platformsToMakeOn?: ForgePlatform[],
+  ) {
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
@@ -71,7 +79,9 @@ export default abstract class Maker<C> implements IForgeMaker {
   //       v5 style functionality in the new API
   async prepareConfig(targetArch: ForgeArch): Promise<void> {
     if (typeof this.configOrConfigFetcher === 'function') {
-      this.config = await Promise.resolve((this.configOrConfigFetcher as (arch: ForgeArch) => C)(targetArch));
+      this.config = await Promise.resolve(
+        (this.configOrConfigFetcher as (arch: ForgeArch) => C)(targetArch),
+      );
     } else {
       this.config = this.configOrConfigFetcher as C;
     }
@@ -87,8 +97,13 @@ export default abstract class Maker<C> implements IForgeMaker {
    * telling the developer exactly what is missing and if possible how to get it.
    */
   isSupportedOnCurrentPlatform(): boolean {
-    if (this.isSupportedOnCurrentPlatform === Maker.prototype.isSupportedOnCurrentPlatform) {
-      throw new Error(`Maker ${this.name} did not implement the isSupportedOnCurrentPlatform method`);
+    if (
+      this.isSupportedOnCurrentPlatform ===
+      Maker.prototype.isSupportedOnCurrentPlatform
+    ) {
+      throw new Error(
+        `Maker ${this.name} did not implement the isSupportedOnCurrentPlatform method`,
+      );
     }
     return true;
   }
@@ -143,7 +158,9 @@ export default abstract class Maker<C> implements IForgeMaker {
    * Checks if the specified binaries exist, which are required for the maker to be used.
    */
   externalBinariesExist(): boolean {
-    return this.requiredExternalBinaries.every((binary) => which.sync(binary, { nothrow: true }) !== null);
+    return this.requiredExternalBinaries.every(
+      (binary) => which.sync(binary, { nothrow: true }) !== null,
+    );
   }
 
   /**
@@ -151,7 +168,9 @@ export default abstract class Maker<C> implements IForgeMaker {
    */
   ensureExternalBinariesExist(): void {
     if (!this.externalBinariesExist()) {
-      throw new Error(`Cannot make for ${this.name}, the following external binaries need to be installed: ${this.requiredExternalBinaries.join(', ')}`);
+      throw new Error(
+        `Cannot make for ${this.name}, the following external binaries need to be installed: ${this.requiredExternalBinaries.join(', ')}`,
+      );
     }
   }
 
@@ -163,7 +182,7 @@ export default abstract class Maker<C> implements IForgeMaker {
     try {
       require(module);
       return true;
-    } catch (e) {
+    } catch {
       // Package doesn't exist -- must not be installable on this platform
       return false;
     }

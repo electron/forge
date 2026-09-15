@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
@@ -6,7 +6,10 @@ import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
 import { MakerRpmConfig } from './Config';
 
 function renameRpm(dest: string, _src: string): string {
-  return path.join(dest, '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.rpm');
+  return path.join(
+    dest,
+    '<%= name %>-<%= version %>-<%= revision %>.<%= arch === "aarch64" ? "arm64" : arch %>.rpm',
+  );
 }
 
 export function rpmArch(nodeArch: ForgeArch): string {
@@ -38,7 +41,7 @@ export default class MakerRpm extends MakerBase<MakerRpmConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line node/no-missing-require
+    // eslint-disable-next-line n/no-missing-require
     const installer = require('electron-installer-redhat');
 
     const outDir = path.resolve(makeDir, 'rpm', targetArch);

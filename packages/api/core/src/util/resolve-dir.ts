@@ -1,9 +1,10 @@
-import path from 'path';
+import path from 'node:path';
 
 import { getElectronVersion } from '@electron-forge/core-utils';
 import debug from 'debug';
 import fs from 'fs-extra';
 
+import { registeredForgeConfigs } from './forge-config';
 import { readRawPackageJson } from './read-package-json';
 
 const d = debug('electron-forge:project-resolver');
@@ -12,15 +13,19 @@ const d = debug('electron-forge:project-resolver');
 //        and / or forge config then we need to be able to resolve
 //        the dir without calling getElectronVersion
 export default async (dir: string): Promise<string | null> => {
-  let mDir = dir;
+  let mDir = path.resolve(dir);
   let bestGuessDir: string | null = null;
   let lastError: string | null = null;
 
   let prevDir;
   while (prevDir !== mDir) {
     prevDir = mDir;
-    const testPath = path.resolve(mDir, 'package.json');
     d('searching for project in:', mDir);
+    if (registeredForgeConfigs.has(mDir)) {
+      d('virtual config found in:', mDir);
+      return mDir;
+    }
+    const testPath = path.resolve(mDir, 'package.json');
     if (await fs.pathExists(testPath)) {
       const packageJSON = await readRawPackageJson(mDir);
 
@@ -39,7 +44,10 @@ export default async (dir: string): Promise<string | null> => {
         return mDir;
       }
 
-      if (packageJSON.devDependencies?.['@electron-forge/cli'] || packageJSON.devDependencies?.['@electron-forge/core']) {
+      if (
+        packageJSON.devDependencies?.['@electron-forge/cli'] ||
+        packageJSON.devDependencies?.['@electron-forge/core']
+      ) {
         d('package.json with forge dependency found in', testPath);
         return mDir;
       }
@@ -49,7 +57,10 @@ export default async (dir: string): Promise<string | null> => {
     mDir = path.dirname(mDir);
   }
   if (bestGuessDir) {
-    d('guessing on the best electron-forge package.json found in', bestGuessDir);
+    d(
+      'guessing on the best electron-forge package.json found in',
+      bestGuessDir,
+    );
     return bestGuessDir;
   }
   if (lastError) {

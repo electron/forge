@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch, ForgePlatform } from '@electron-forge/shared-types';
@@ -14,6 +14,8 @@ export function flatpakArch(nodeArch: ForgeArch): string {
       return 'x86_64';
     case 'armv7l':
       return 'arm';
+    case 'arm64':
+      return 'aarch64';
     // arm => arm
     default:
       return nodeArch;
@@ -32,7 +34,7 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
   }
 
   async make({ dir, makeDir, targetArch }: MakerOptions): Promise<string[]> {
-    // eslint-disable-next-line node/no-missing-require
+    // eslint-disable-next-line n/no-missing-require
     const installer = require('@malept/electron-installer-flatpak');
 
     const arch = flatpakArch(targetArch);
@@ -48,7 +50,9 @@ export default class MakerFlatpak extends MakerBase<MakerFlatpakConfig> {
 
     await installer(flatpakConfig);
 
-    return (await fs.readdir(outDir)).filter((basename) => basename.endsWith('.flatpak')).map((basename) => path.join(outDir, basename));
+    return (await fs.readdir(outDir))
+      .filter((basename) => basename.endsWith('.flatpak'))
+      .map((basename) => path.join(outDir, basename));
   }
 }
 

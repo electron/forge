@@ -27,7 +27,7 @@ export class NavigationOverrideTheme extends DefaultTheme {
   override getRenderContext(): NavigationOverrideThemeContext {
     this._contextCache ||= new NavigationOverrideThemeContext(
       this,
-      this.application.options
+      this.application.options,
     );
     return this._contextCache;
   }
@@ -36,7 +36,7 @@ export class NavigationOverrideTheme extends DefaultTheme {
 // Replicated from the TypeDoc codebase. This should be exported by TypeDoc.
 function classNames(
   names: Record<string, boolean | null | undefined>,
-  extraCss?: string
+  extraCss?: string,
 ) {
   const css = Object.keys(names)
     .filter((key) => names[key])
@@ -49,10 +49,10 @@ function classNames(
 
 function overridePrimaryNavigation(
   context: DefaultThemeRenderContext,
-  props: PageEvent<Reflection>
+  props: PageEvent<Reflection>,
 ) {
   const modules = props.model.project.getChildrenByKind(
-    ReflectionKind.SomeModule
+    ReflectionKind.SomeModule,
   );
   const projectLinkName = modules.some((m) => m.kindOf(ReflectionKind.Module))
     ? 'All Modules'

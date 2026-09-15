@@ -16,13 +16,13 @@ export default class LoggingPlugin {
         this.tab.log(
           stats.toString({
             colors: true,
-          })
+          }),
         );
       }
     });
     compiler.hooks.failed.tap(pluginName, (err) => this.tab.log(err.message));
-    compiler.hooks.infrastructureLog.tap(pluginName, (name: string, _type: string, args: string[]) => {
-      this.tab.log(`${name} - ${args.join(' ')}\n`);
+    compiler.hooks.infrastructureLog.tap(pluginName, (name, _type, args) => {
+      this.tab.log(`${name} - ${args?.join(' ')}\n`);
       return true;
     });
   }

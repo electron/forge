@@ -1,5 +1,7 @@
 ## plugin-vite
 
+_Note: This plugin is considered experimental and is under active development; we do not offer API stability guarantees as development continues. Minor versions may include breaking changes - see release notes for details on migration._
+
 This plugin makes it easy to set up standard vite tooling to compile both your main process code and your renderer process code, with built-in support for Hot Module Replacement (HMR) in the renderer process and support for multiple renderers.
 
 ```javascript

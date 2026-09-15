@@ -39,6 +39,12 @@ export interface PublisherS3Config {
    */
   public?: boolean;
   /**
+   * Whether to omit the ACL when creating the S3 object. If set, `public` will have no effect.
+   *
+   * Default: false
+   */
+  omitAcl?: boolean;
+  /**
    * The endpoint URI to send requests to.
    *
    * E.g. `https://s3.example.com`
@@ -60,4 +66,10 @@ export interface PublisherS3Config {
    * Custom function to provide the key to upload a given file to
    */
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
+  /**
+   * Set the Cache-Control max-age metadata in S3 for the RELEASES file
+   *
+   * Default: Cache-Control metadata is not set
+   */
+  releaseFileCacheControlMaxAge?: number;
 }

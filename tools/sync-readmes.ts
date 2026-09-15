@@ -1,10 +1,12 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import * as fs from 'fs-extra';
 import { Listr } from 'listr2';
 import fetch from 'node-fetch';
 
-const workspaceMappings: { [space: string]: { [packageName: string]: string | undefined } } = {
+const workspaceMappings: {
+  [space: string]: { [packageName: string]: string | undefined };
+} = {
   maker: {
     wix: 'wix-msi',
     squirrel: 'squirrel.windows',
@@ -18,7 +20,8 @@ const workspaceMappings: { [space: string]: { [packageName: string]: string | un
 };
 
 const BASE_DIR = path.resolve(__dirname, '..');
-const DOCS_BASE = 'https://raw.githubusercontent.com/electron-forge/electron-forge-docs/v6';
+const DOCS_BASE =
+  'https://raw.githubusercontent.com/electron-forge/electron-forge-docs/v6';
 
 function sanitize(gb: string): string {
   return gb
@@ -51,10 +54,18 @@ function sync(): Listr<SyncContext> {
         for (const workspace of Object.keys(workspaceMappings)) {
           const workspaceDir = path.resolve(BASE_DIR, 'packages', workspace);
 
-          for (const packageName of await fs.readdir(path.resolve(workspaceDir))) {
-            const packageKey = workspaceMappings[workspace][packageName] || packageName;
+          for (const packageName of await fs.readdir(
+            path.resolve(workspaceDir),
+          )) {
+            const packageKey =
+              workspaceMappings[workspace][packageName] || packageName;
 
-            ctx.packageKeys.push([workspace, workspaceDir, packageKey, packageName]);
+            ctx.packageKeys.push([
+              workspace,
+              workspaceDir,
+              packageKey,
+              packageName,
+            ]);
           }
         }
       },
@@ -63,23 +74,28 @@ function sync(): Listr<SyncContext> {
       title: 'Fetching READMEs',
       task: (ctx: SyncContext) =>
         new Listr(
-          ctx.packageKeys.map(([workspace, workspaceDir, packageKey, packageName]) => ({
-            title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
-            task: async () => {
-              let rp: ReturnType<typeof fetch>;
-              if (workspace !== 'api') {
-                rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
-              } else {
-                rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
-              }
-              const r = await rp;
-              if (r.status !== 200) return;
+          ctx.packageKeys.map(
+            ([workspace, workspaceDir, packageKey, packageName]) => ({
+              title: `Fetching README for ${path.basename(workspaceDir)}/${packageKey}`,
+              task: async () => {
+                let rp: ReturnType<typeof fetch>;
+                if (workspace !== 'api') {
+                  rp = fetch(`${DOCS_BASE}/${workspace}s/${packageKey}.md`);
+                } else {
+                  rp = fetch(`${DOCS_BASE}/${packageKey}.md`);
+                }
+                const r = await rp;
+                if (r.status !== 200) return;
 
-              const md = sanitize(await r.text());
-              await fs.writeFile(path.resolve(workspaceDir, packageName, 'README.md'), md);
-            },
-          })),
-          { concurrent: 3 }
+                const md = sanitize(await r.text());
+                await fs.writeFile(
+                  path.resolve(workspaceDir, packageName, 'README.md'),
+                  md,
+                );
+              },
+            }),
+          ),
+          { concurrent: 3 },
         ),
     },
   ]);

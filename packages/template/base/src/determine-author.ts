@@ -21,4 +21,5 @@ const getAuthorFromGitConfig = async (dir: string): Promise<PackagePerson> => {
   }
 };
 
-export default async (dir: string): Promise<PackagePerson> => (await getAuthorFromGitConfig(dir)) || username();
+export default async (dir: string): Promise<PackagePerson> =>
+  (await getAuthorFromGitConfig(dir)) || username();

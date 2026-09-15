@@ -4,7 +4,7 @@ on:
   issues:
     types:
       - opened
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types:
       - opened
 
@@ -15,15 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate GitHub App token
-        uses: electron/github-app-auth-action@384fd19694fe7b6dcc9a684746c6976ad78228ae # v1.1.1
+        uses: electron/github-app-auth-action@5f70a3726af01b612f29aac96d05aa524389c9e9 # v2.1.0
         id: generate-token
         with:
           creds: ${{ secrets.ECOSYSTEM_ISSUE_TRIAGE_GH_APP_CREDS }}
           org: electron
       - name: Add to Project
-        uses: dsanders11/project-actions/add-item@eb760c48894b5702398529cbb8f6e98378e315d0 # v1.3.0
+        uses: dsanders11/project-actions/add-item@4b06452b0128cf601dac14399aa668a8eed2d684 # v2.0.1
         with:
-          field: Opened
-          field-value: ${{ github.event.pull_request.created_at || github.event.issue.created_at }}
           project-number: 89
           token: ${{ steps.generate-token.outputs.token }}
