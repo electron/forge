@@ -6,7 +6,6 @@ import { ElectronProcess } from '@electron-forge/shared-types';
 import boxen, { Options } from 'boxen';
 import chalk from 'chalk';
 import { Option, program } from 'commander';
-// eslint-disable-next-line n/no-unpublished-import
 import updateNotifier from 'update-notifier';
 
 import './util/terminate';
