@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
+    "@types/update-notifier": "6.0.8",
     "vitest": "^4.1.7"
   },
   "dependencies": {
@@ -21,13 +22,15 @@
     "@electron/get": "^3.0.0",
     "@inquirer/prompts": "^6.0.1",
     "@listr2/prompt-adapter-inquirer": "^2.0.22",
+    "boxen": "5.1.2",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
     "fs-extra": "^10.0.0",
     "listr2": "^7.0.2",
     "log-symbols": "^4.0.0",
-    "semver": "^7.2.1"
+    "semver": "^7.2.1",
+    "update-notifier": "5.1.0"
   },
   "engines": {
     "node": ">= 16.4.0"
