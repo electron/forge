@@ -57,7 +57,7 @@ describe('WebpackPlugin', async () => {
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = {
-        main: './.webpack/main',
+        main: './.webpack/main/index.cjs',
         config: { forge: 'config.js' },
       };
       await fs.promises.writeFile(
@@ -74,7 +74,7 @@ describe('WebpackPlugin', async () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { main: '.webpack/main' };
+      const packageJSON = { main: '.webpack/main/index.cjs' };
       await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(packageJSON),
@@ -101,7 +101,7 @@ describe('WebpackPlugin', async () => {
       ).rejects.toThrow(/entry point/);
     });
 
-    it('should fail if main in package.json does not end with .webpack/main', async () => {
+    it('should fail if main in package.json is not inside .webpack/main', async () => {
       const packageJSON = { main: 'src/main.js' };
       await fs.promises.writeFile(
         packageJSONPath,
@@ -112,6 +112,20 @@ describe('WebpackPlugin', async () => {
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
     });
+
+    it.each(['.webpack/main', './.webpack/main', '.webpack\\main\\'])(
+      'should fail with an upgrade hint if main is the bare directory %s',
+      async (main) => {
+        await fs.promises.writeFile(
+          packageJSONPath,
+          JSON.stringify({ main }),
+          'utf-8',
+        );
+        await expect(
+          plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+        ).rejects.toThrow(/"\.webpack\/main\/index\.cjs"/);
+      },
+    );
   });
 
   describe('resolveForgeConfig', () => {

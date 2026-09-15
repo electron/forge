@@ -33,7 +33,7 @@ describe('VitePlugin', async () => {
 
     it('should remove config.forge from package.json', async () => {
       const packageJSON = {
-        main: './.vite/build/main.js',
+        main: './.vite/build/main.cjs',
         config: { forge: 'config.js' },
       };
       await fs.promises.writeFile(
@@ -50,7 +50,7 @@ describe('VitePlugin', async () => {
     });
 
     it('should succeed if there is no config.forge', async () => {
-      const packageJSON = { main: '.vite/build/main.js' };
+      const packageJSON = { main: '.vite/build/main.cjs' };
       await fs.promises.writeFile(
         packageJSONPath,
         JSON.stringify(packageJSON),
@@ -87,6 +87,34 @@ describe('VitePlugin', async () => {
       await expect(
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
+    });
+
+    it('should fail with an upgrade hint if main points at the old .js bundle', async () => {
+      const buildDir = path.join(packagedPath, '.vite', 'build');
+      await fs.promises.mkdir(buildDir, { recursive: true });
+      await fs.promises.writeFile(path.join(buildDir, 'main.cjs'), '');
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.js' }),
+        'utf-8',
+      );
+      await expect(
+        plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+      ).rejects.toThrow(/"\.vite\/build\/main\.cjs"/);
+    });
+
+    it('should succeed if main points at a .js bundle that exists', async () => {
+      const buildDir = path.join(packagedPath, '.vite', 'build');
+      await fs.promises.mkdir(buildDir, { recursive: true });
+      await fs.promises.writeFile(path.join(buildDir, 'custom.js'), '');
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/custom.js' }),
+        'utf-8',
+      );
+      await expect(
+        plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+      ).resolves.toBeUndefined();
     });
 
     afterAll(async () => {

@@ -37,6 +37,36 @@ const d = debug('electron-forge:plugin:webpack');
 const DEFAULT_PORT = 3000;
 const DEFAULT_LOGGER_PORT = 9000;
 
+const MAIN_ENTRY = '.webpack/main/index.cjs';
+
+/**
+ * The main process bundle is emitted as `index.cjs` so that Electron parses it
+ * as CommonJS even when the project's `package.json` has `"type": "module"`.
+ * Node's directory lookup only finds `index.js`, so `main` has to name the file
+ * explicitly; projects created before that change still use the bare
+ * `.webpack/main` directory.
+ */
+function assertMainEntry(main: unknown): void {
+  const normalized =
+    typeof main === 'string'
+      ? main.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/$/, '')
+      : undefined;
+
+  if (normalized === '.webpack/main') {
+    throw new Error(
+      `The "main" entry point in "package.json" is ${JSON.stringify(main)}, but the webpack plugin now emits
+the main process bundle as "${MAIN_ENTRY}", which Node's directory lookup does not find.
+Update "main" in "package.json" to "${MAIN_ENTRY}".`,
+    );
+  }
+
+  if (!normalized?.startsWith('.webpack/main/')) {
+    throw new Error(`Electron Forge is configured to use the Webpack plugin. The plugin expects the
+"main" entry point in "package.json" to be "${MAIN_ENTRY}" (where the plugin outputs
+the generated files). Instead, it is ${JSON.stringify(main)}`);
+  }
+}
+
 type WebpackToJsonOptions = Parameters<webpack.Stats['toJson']>[0];
 type WebpackWatchHandler = Parameters<webpack.Compiler['watch']>[1];
 
@@ -201,6 +231,11 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         namedHookWithTaskFn<'preStart'>(async (task) => {
           if (this.alreadyStarted) return;
           this.alreadyStarted = true;
+
+          assertMainEntry(
+            (await readJson(path.resolve(this.projectDir, 'package.json')))
+              .main,
+          );
 
           await fsPromises.rm(this.baseDir, {
             recursive: true,
@@ -633,11 +668,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
   ): Promise<void> => {
     const pj = await readJson(path.resolve(this.projectDir, 'package.json'));
 
-    if (!pj.main?.endsWith('.webpack/main')) {
-      throw new Error(`Electron Forge is configured to use the Webpack plugin. The plugin expects the
-"main" entry point in "package.json" to be ".webpack/main" (where the plugin outputs
-the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
-    }
+    assertMainEntry(pj.main);
 
     if (pj.config) {
       delete pj.config.forge;
@@ -747,7 +778,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
       );
 
       const filename = entryConfig.output?.filename as string;
-      if (filename?.endsWith('preload.js')) {
+      if (filename?.endsWith('preload.cjs')) {
         let name = `entry-point-preload-${entryConfig.target}`;
         if (preloadPlugins.includes(name)) {
           name = `${name}-${++numPreloadEntriesWithConfig}`;
