@@ -1,6 +1,6 @@
 ## maker-deb
 
-`@electron-forge/maker-deb` builds .deb packages, which are the standard package format for Debian-based Linux distributions such as Ubuntu. You can only build the deb target on Linux or macOS machines with the fakeroot and dpkg packages installed.
+`@electron-forge/maker-deb` builds .deb packages, which are the standard package format for Debian-based Linux distributions such as Ubuntu. You can only build the deb target on Linux or macOS machines with the dpkg package installed.
 
 Configuration options are documented in [`MakerDebConfigOptions`](https://js.electronforge.io/interfaces/_electron-forge_maker-deb.MakerDebConfigOptions.html).
 

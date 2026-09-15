@@ -18,11 +18,11 @@
     "@electron-forge/template-vite": "workspace:*",
     "@electron-forge/template-webpack": "workspace:*",
     "@inquirer/prompts": "^6.0.1",
-    "@listr2/prompt-adapter-inquirer": "^2.0.22",
+    "@listr2/prompt-adapter-inquirer": "^4.2.7",
     "@malept/cross-spawn-promise": "^2.0.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "lodash-es": "^4.17.21",
     "semver": "^7.2.1"
   },

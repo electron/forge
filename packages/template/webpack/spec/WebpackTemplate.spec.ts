@@ -24,6 +24,7 @@ describe('WebpackTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });
@@ -156,6 +157,7 @@ describe('WebpackTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });

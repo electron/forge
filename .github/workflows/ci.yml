@@ -19,6 +19,41 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    name: Detect docs-only changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs-only: ${{ steps.filter.outputs.docs-only }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Check whether only docs/ changed
+        id: filter
+        # Only pull requests and merge groups have a base commit to diff against;
+        # pushes to main/next and tag builds always run the full suite.
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "$BASE_SHA" ]; then
+            echo "No base commit for this event; running the full suite."
+            echo "docs-only=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          changed=$(git diff --name-only "$BASE_SHA" HEAD)
+          echo "Changed files:"
+          echo "$changed"
+          if [ -n "$changed" ] && ! echo "$changed" | grep -qv '^docs/'; then
+            echo "Only files under docs/ changed; skipping the test jobs."
+            echo "docs-only=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs-only=false" >> "$GITHUB_OUTPUT"
+          fi
+
   lint-and-build:
     runs-on: ubuntu-22.04
     steps:
@@ -54,7 +89,10 @@ jobs:
           path: packages/*/*/dist/*
 
   fast-tests:
-    needs: lint-and-build
+    needs:
+      - changes
+      - lint-and-build
+    if: needs.changes.outputs.docs-only != 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -100,19 +138,6 @@ jobs:
         with:
           name: dist-files
           path: packages
-
-      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
-      # every run, so `--before` holds them to the same week-old floor the root
-      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
-      # than `min-release-age` because this step runs under the npm bundled with
-      # the Node version in `.nvmrc`, which is older than either age-gate
-      # setting and would ignore both without failing.
-      - name: Windows setup
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
 
       - name: Linux setup
         if: runner.os == 'Linux'
@@ -139,12 +164,21 @@ jobs:
           yarn test:fast --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
 
   slow-tests:
-    needs: lint-and-build
+    needs:
+      - changes
+      - lint-and-build
+    if: needs.changes.outputs.docs-only != 'true'
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-22.04, macos-latest]
         arch: [x64, arm64]
+        # The `slow` and `slow-verdaccio` vitest projects run in separate jobs,
+        # and the Verdaccio one, which takes about three times as long, is split
+        # into three shards that run in parallel. Vitest shards by test file and
+        # only balances the file count, not the duration, so check the job
+        # timings before assuming that another shard would help.
+        suite: [slow, verdaccio-1, verdaccio-2, verdaccio-3]
         exclude:
           - os: windows-latest
             arch: arm64
@@ -152,6 +186,13 @@ jobs:
             arch: arm64
           - os: macos-latest
             arch: x64
+        include:
+          - suite: verdaccio-1
+            shard: 1/3
+          - suite: verdaccio-2
+            shard: 2/3
+          - suite: verdaccio-3
+            shard: 3/3
 
     runs-on: ${{ matrix.os }}
 
@@ -185,19 +226,6 @@ jobs:
         with:
           name: dist-files
           path: packages
-
-      # `node-gyp` itself is pinned, but its dependencies are resolved fresh on
-      # every run, so `--before` holds them to the same week-old floor the root
-      # `.yarnrc.yml` applies to Yarn. It does that through `--before` rather
-      # than `min-release-age` because this step runs under the npm bundled with
-      # the Node version in `.nvmrc`, which is older than either age-gate
-      # setting and would ignore both without failing.
-      - name: Windows setup
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          cd "$PROGRAMFILES/nodejs/node_modules/npm/node_modules/@npmcli/run-script"
-          npm install node-gyp@9.4.0 --before "$(date -u -d '7 days ago' +%Y-%m-%d)"
 
       - name: Linux setup
         if: runner.os == 'Linux'
@@ -229,13 +257,20 @@ jobs:
         run: npm install -g npm@11.19.0
 
       - name: Run slow tests
+        if: matrix.suite == 'slow'
         run: |
           mkdir -p ./reports/out
           yarn test:slow --reporter=default --reporter=junit --outputFile="./reports/out/test_output.xml"
-          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml"
+
+      - name: Run Verdaccio tests
+        if: matrix.suite != 'slow'
+        run: |
+          mkdir -p ./reports/out
+          yarn test:verdaccio --reporter=default --reporter=junit --outputFile="./reports/out/test_output_verdaccio.xml" --shard=${{ matrix.shard }}
 
   required-ci:
     needs:
+      - changes
       - lint-and-build
       - fast-tests
       - slow-tests
@@ -245,11 +280,13 @@ jobs:
       - name: Fail if any required job failed or was cancelled
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
           LINT_AND_BUILD_RESULT: ${{ needs.lint-and-build.result }}
           FAST_TESTS_RESULT: ${{ needs.fast-tests.result }}
           SLOW_TESTS_RESULT: ${{ needs.slow-tests.result }}
         run: |
           echo "One or more required jobs did not succeed:"
+          echo "  changes:        $CHANGES_RESULT"
           echo "  lint-and-build: $LINT_AND_BUILD_RESULT"
           echo "  fast-tests:     $FAST_TESTS_RESULT"
           echo "  slow-tests:     $SLOW_TESTS_RESULT"

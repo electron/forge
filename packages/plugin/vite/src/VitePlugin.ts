@@ -24,6 +24,38 @@ import type { LibraryOptions } from 'vite';
 
 const d = debug('electron-forge:plugin:vite');
 
+async function exists(file: string): Promise<boolean> {
+  try {
+    await fs.access(file);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Main and preload bundles are emitted with a `.cjs` extension (or `.mjs` when
+ * `outputFormat` is `"es"`) so that Electron parses them with the intended
+ * module system regardless of the project's `package.json` `"type"`. Projects
+ * created before that change still point `main` at the old `.js` filename, so
+ * fail with a precise message instead of letting Electron fail with
+ * "Cannot find module".
+ */
+async function assertMainEntryExists(dir: string, main: string): Promise<void> {
+  if (await exists(path.resolve(dir, main))) return;
+
+  for (const ext of ['.cjs', '.mjs']) {
+    const candidate = main.replace(/\.js$/, ext);
+    if (candidate !== main && (await exists(path.resolve(dir, candidate)))) {
+      throw new Error(
+        `The "main" entry point in "package.json" is ${JSON.stringify(main)}, but the Vite plugin now emits
+the main process bundle as ${JSON.stringify(candidate)}. Update "main" in "package.json" to
+${JSON.stringify(candidate)}, and any preload script paths in your main process code to end in ${JSON.stringify(ext)}.`,
+      );
+    }
+  }
+}
+
 const subprocessWorkerPath = path.resolve(
   import.meta.dirname,
   'subprocess-worker.js',
@@ -242,6 +274,14 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
             { concurrent: false },
           );
         }, 'Preparing Vite bundles'),
+        async () => {
+          const pj = await readJson(
+            path.resolve(this.projectDir, 'package.json'),
+          );
+          if (typeof pj.main === 'string') {
+            await assertMainEntryExists(this.projectDir, pj.main);
+          }
+        },
       ],
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async (task) => {
@@ -335,14 +375,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
 
-    const expectedExt = this.config.outputFormat === 'es' ? '.mjs' : '.cjs';
-    if (!pj.main?.endsWith(expectedExt)) {
-      throw new Error(
-        `The Vite plugin is configured with outputFormat: "${this.config.outputFormat ?? 'cjs'}", ` +
-          `but your package.json "main" entry is ${JSON.stringify(pj.main)} which does not use the expected ` +
-          `"${expectedExt}" extension. Update your "main" field to match the output format.`,
-      );
-    }
+    await assertMainEntryExists(buildPath, pj.main);
 
     if (pj.config) {
       delete pj.config.forge;

@@ -76,7 +76,7 @@ const initCommand = program
                     message: 'Select a bundler',
                     choices: [
                       {
-                        name: 'Vite (Experimental)',
+                        name: 'Vite',
                         value: 'vite',
                       },
                       {
@@ -132,7 +132,7 @@ const initCommand = program
                     value: 'base',
                   },
                   {
-                    name: 'Vite (Experimental)',
+                    name: 'Vite',
                     value: 'vite',
                   },
                   {

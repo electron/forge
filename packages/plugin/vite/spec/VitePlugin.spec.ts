@@ -88,6 +88,48 @@ describe('VitePlugin', async () => {
         plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
       ).rejects.toThrow(/entry point/);
     });
+
+    it('should fail with an upgrade hint if main points at the old .js bundle', async () => {
+      const buildDir = path.join(packagedPath, '.vite', 'build');
+      await fs.promises.mkdir(buildDir, { recursive: true });
+      await fs.promises.writeFile(path.join(buildDir, 'main.cjs'), '');
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/main.js' }),
+        'utf-8',
+      );
+      await expect(
+        plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+      ).rejects.toThrow(/"\.vite\/build\/main\.cjs"/);
+    });
+
+    it('should fail with an upgrade hint if main points at a stale .js bundle next to an .mjs bundle', async () => {
+      const buildDir = path.join(packagedPath, '.vite', 'build');
+      await fs.promises.mkdir(buildDir, { recursive: true });
+      await fs.promises.writeFile(path.join(buildDir, 'esm-main.mjs'), '');
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/esm-main.js' }),
+        'utf-8',
+      );
+      await expect(
+        plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+      ).rejects.toThrow(/"\.vite\/build\/esm-main\.mjs"/);
+    });
+
+    it('should succeed if main points at a .js bundle that exists', async () => {
+      const buildDir = path.join(packagedPath, '.vite', 'build');
+      await fs.promises.mkdir(buildDir, { recursive: true });
+      await fs.promises.writeFile(path.join(buildDir, 'custom.js'), '');
+      await fs.promises.writeFile(
+        packageJSONPath,
+        JSON.stringify({ main: '.vite/build/custom.js' }),
+        'utf-8',
+      );
+      await expect(
+        plugin.packageAfterCopy({} as ResolvedForgeConfig, packagedPath),
+      ).resolves.toBeUndefined();
+    });
   });
 
   describe('resolveForgeConfig', () => {

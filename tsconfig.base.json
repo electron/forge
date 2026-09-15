@@ -8,7 +8,8 @@
     "declaration": true,
     "composite": true,
     "declarationMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["node"]
   },
   "exclude": ["node_modules", "dist", "test", "index.ts", "spec", "tmpl"]
 }
