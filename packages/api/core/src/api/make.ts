@@ -21,6 +21,7 @@ import filenamify from '../util/filenamify.js';
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
 import { importSearch } from '../util/import-search.js';
+import { getMakeResultsDir, saveMakeResults } from '../util/make-results.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import parseArchs from '../util/parse-archs.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';
@@ -412,6 +413,21 @@ export const listrMake = (
             receiveMakeResults?.(ctx.outputs);
 
             task.output = `Artifacts available at: ${styleText('green', outputLocations.join(', '))}`;
+          },
+        ),
+        rendererOptions: {
+          persistentOutput: true,
+        },
+      },
+      {
+        title: 'Saving make results',
+        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
+          { name: 'save-make-results', category: '@electron-forge/core' },
+          async (_, ctx, task) => {
+            // Persist the results next to the artifacts so that they can be
+            // released later (or on another machine) with `release --skip-make`.
+            await saveMakeResults(ctx.actualOutDir, ctx.outputs, ctx.dir);
+            task.output = `Make results saved to: ${styleText('green', getMakeResultsDir(ctx.actualOutDir))}`;
           },
         ),
         rendererOptions: {

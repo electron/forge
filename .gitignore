@@ -23,6 +23,7 @@ packages/**/tsconfig.tsbuildinfo
 packages/**/.swc
 .webpack
 packages/api/core/spec/fixture/app-with-scoped-name/out/make
+packages/api/core/spec/fixture/*/out/make-results
 packages/plugin/webpack/spec/fixtures/apps/native-modules/package-lock.json
 packages/plugin/fuses/spec/fixture/out
 .links

@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 
 import make from '../../src/api/make';
+import { loadMakeResults } from '../../src/util/make-results';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -27,6 +28,20 @@ describe('make', () => {
     expect(result).toHaveLength(1);
     expect(result[0].artifacts).toEqual([
       expect.stringContaining('@scope-package-linux-x64-1.0.0.zip'),
+    ]);
+  });
+
+  it('saves its results so they can be released later', async () => {
+    const dir = path.join(fixtureDir, 'app-with-scoped-name');
+    const results = await make({
+      arch: 'x64',
+      dir,
+      platform: 'linux',
+      skipPackage: true,
+    });
+
+    await expect(loadMakeResults(path.join(dir, 'out'), dir)).resolves.toEqual([
+      results,
     ]);
   });
 

@@ -123,6 +123,8 @@ This command will make distributables for your application based on your Forge c
 
 If you do not need to repackage your application between Make runs, use the `--skip-package` flag.
 
+Every Make run also saves a manifest of the distributables it produced to `out/make-results/`, next to the distributables themselves in `out/make/`. The [Release](#release) command can use this manifest to release those distributables later, or from another machine, without rebuilding them.
+
 #### Options
 
 All flags are optional.
@@ -151,29 +153,93 @@ Building for ia32 and x64 architectures:
 npm run make -- --arch="ia32,x64"
 ```
 
-### Publish
+### Release
 
-This command will attempt to package, make, and publish the Forge application to the publish targets defined in your Forge config.
+This command will attempt to package, make, and release the Forge application to the publish targets defined in your Forge config.
 
-If you want to verify artifacts from the Make step before publishing, you can use the Dry Run options explained below.
+If your distributables were already built by a previous Make run (for example, by other jobs in your CI pipeline), use the `--skip-make` flag to release them without rebuilding. See [Releasing from CI](#releasing-from-ci) below.
 
 #### Options
 
 All flags are optional.
 
-| Flag             | Value                                   | Description                                                              |
-| ---------------- | --------------------------------------- | ------------------------------------------------------------------------ |
-| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                               |
-| `--dry-run`      | N/A                                     | Triggers a publish dry run which saves state and doesn't upload anything |
-| `--from-dry-run` | N/A                                     | Attempts to publish artifacts from any dry runs saved on disk            |
+| Flag          | Value                                   | Description                                                                                                                                         |
+| ------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--target`    | Comma separated list of publisher names | Override your publish targets for this run                                                                                                          |
+| `--skip-make` | N/A                                     | Skip the Package and Make steps, and release the distributables saved by a previous Make run instead. By default, the Make step is **not** skipped. |
+
+:::warning Deprecated flags
+The `--dry-run` and `--from-dry-run` flags from earlier versions still work but print a deprecation warning, and they will be removed in a future major version.
+
+* `--dry-run` did the same work as running the [Make](#make) command, which now always saves its results.
+* `--from-dry-run` has been renamed to `--skip-make`.
+:::
 
 #### Usage
 
 ```bash {1}
-# By default, the publish command corresponds to a publish npm script:
-npm run publish -- --from-dry-run
-# If there is no publish script:
-npx electron-forge publish -- --from-dry-run
+# By default, the release command corresponds to a release npm script:
+npm run release
+# If there is no release script:
+npx electron-forge release
+```
+
+#### Releasing from CI
+
+Making distributables for a platform usually requires a machine running that platform, but releasing them does not. Because every Make run saves a manifest of its results to `out/make-results/`, you can split your pipeline into one Make job per platform and a single Release job that uploads everything at once:
+
+1. In each build job, run the `make` command and preserve the `out/make/` and `out/make-results/` directories (for example, as a CI artifact).
+2. In the release job, check out your project and restore those directories from every build job into its `out/` directory.
+3. Run the `release` command with the `--skip-make` flag.
+
+The manifests store the paths to your distributables relative to your project directory, so the release job needs to restore them at the same location within a checkout of your project. Each Make run replaces any previously saved results for the same platform and architecture, so results from different platforms can safely be merged into the same `out/` directory.
+
+The following GitHub Actions workflow makes distributables on macOS, Windows and Linux, then releases all of them from a single Linux job:
+
+```yaml
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  make:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: make-${{ matrix.os }}
+          path: |
+            out/make
+            out/make-results
+
+  release:
+    needs: make
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: make-*
+          path: out
+          merge-multiple: true
+      - run: npm run release -- --skip-make
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Dev commands

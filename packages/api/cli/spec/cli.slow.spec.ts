@@ -28,4 +28,18 @@ describe('cli', () => {
   it('should hide the deprecated publish alias from help output', async () => {
     await expect(runForgeCLI('help')).resolves.not.toMatch(/\bpublish\b/);
   });
+
+  describe('release', () => {
+    it('should list the --skip-make option in help output', async () => {
+      await expect(runForgeCLI('release', '--help')).resolves.toMatch(
+        /--skip-make/,
+      );
+    });
+
+    it('should hide the deprecated dry run options from help output', async () => {
+      await expect(runForgeCLI('release', '--help')).resolves.not.toMatch(
+        /dry-run/,
+      );
+    });
+  });
 });
