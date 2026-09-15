@@ -2,7 +2,7 @@
   "name": "native-app",
   "type": "commonjs",
   "version": "1.0.0",
-  "main": "./.webpack/main/index.js",
+  "main": "./.webpack/main/index.cjs",
   "license": "MIT",
   "scripts": {
     "start": "npx electron ."
