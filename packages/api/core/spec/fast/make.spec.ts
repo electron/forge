@@ -40,6 +40,7 @@ describe('make', () => {
       skipPackage: true,
     });
 
+    expect(results[0].maker).toEqual('zip');
     await expect(loadMakeResults(path.join(dir, 'out'), dir)).resolves.toEqual([
       results,
     ]);

@@ -276,8 +276,12 @@ export default autoTrace(
             },
             async (childTrace, ctx, task) => {
               const { dir, forgeConfig } = ctx;
+              // Resolve the out directory the same way make() does below,
+              // where makeOptions take precedence over the top-level option.
               const calculatedOutDir =
-                outDir || getCurrentOutDir(dir, forgeConfig);
+                makeOptions.outDir ||
+                outDir ||
+                getCurrentOutDir(dir, forgeConfig);
 
               if (skipMake) {
                 d('loading results of previous make runs');

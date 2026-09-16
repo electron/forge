@@ -232,6 +232,22 @@ describe('release', () => {
       ).toEqual(expect.arrayContaining(makeResults));
     });
 
+    it('looks for saved results in makeOptions.outDir when it is set', async () => {
+      await saveMakeResults(outDir, makeResults, tmpDir);
+      const { publisher, publish } = mockPublisher();
+
+      await release({
+        dir: import.meta.dirname,
+        interactive: false,
+        skipMake: true,
+        makeOptions: { outDir },
+        publishTargets: [publisher],
+      });
+
+      expect(publish).toHaveBeenCalledOnce();
+      expect(publish.mock.calls[0][0].makeResults).toEqual(makeResults);
+    });
+
     it('fails if a saved artifact is missing', async () => {
       await saveMakeResults(
         outDir,

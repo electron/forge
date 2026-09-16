@@ -27,6 +27,21 @@ function makeResult(
   } as ForgeMakeResult;
 }
 
+function makerResult(
+  rootDir: string,
+  maker: string,
+  ...artifacts: string[]
+): ForgeMakeResult {
+  return { ...makeResult(rootDir, 'linux', 'x64', ...artifacts), maker };
+}
+
+async function savedArtifactNames(outDir: string, rootDir: string) {
+  return (await loadMakeResults(outDir, rootDir))
+    .flat()
+    .flatMap((r) => r.artifacts.map((a) => path.basename(a)))
+    .sort();
+}
+
 describe('make-results', () => {
   let rootDir: string;
   let outDir: string;
@@ -173,6 +188,92 @@ describe('make-results', () => {
       .sort();
 
     expect(artifacts).toEqual(['new-arm64.dmg', 'old-x64.dmg']);
+  });
+
+  it('only replaces the results of the makers that were re-run', async () => {
+    await saveMakeResults(
+      outDir,
+      [
+        makerResult(rootDir, 'deb', 'old.deb'),
+        makerResult(rootDir, 'rpm', 'old.rpm'),
+        makerResult(rootDir, 'zip', 'old.zip'),
+      ],
+      rootDir,
+    );
+    // e.g. `make --targets @electron-forge/maker-zip` on the same machine
+    await saveMakeResults(
+      outDir,
+      [makerResult(rootDir, 'zip', 'new.zip')],
+      rootDir,
+    );
+
+    await expect(savedArtifactNames(outDir, rootDir)).resolves.toEqual([
+      'new.zip',
+      'old.deb',
+      'old.rpm',
+    ]);
+  });
+
+  it('replaces results without a maker name by platform and arch', async () => {
+    await saveMakeResults(
+      outDir,
+      [
+        makerResult(rootDir, 'deb', 'old.deb'),
+        makeResult(rootDir, 'linux', 'x64', 'old-unnamed.zip'),
+        makeResult(rootDir, 'darwin', 'arm64', 'old.dmg'),
+      ],
+      rootDir,
+    );
+    await saveMakeResults(
+      outDir,
+      [makeResult(rootDir, 'linux', 'x64', 'new-unnamed.zip')],
+      rootDir,
+    );
+
+    await expect(savedArtifactNames(outDir, rootDir)).resolves.toEqual([
+      'new-unnamed.zip',
+      'old.dmg',
+    ]);
+  });
+
+  it('removes manifests that can no longer be parsed instead of failing', async () => {
+    await saveMakeResults(
+      outDir,
+      [makeResult(rootDir, 'darwin', 'arm64', 'app.dmg')],
+      rootDir,
+    );
+    const dir = getMakeResultsDir(outDir);
+    const truncated = path.join(dir, 'truncated.forge-make.json');
+    await fs.writeFile(truncated, '[{"artifacts":["out/make/app.d');
+
+    await expect(
+      saveMakeResults(
+        outDir,
+        [makeResult(rootDir, 'linux', 'x64', 'app.deb')],
+        rootDir,
+      ),
+    ).resolves.toBeDefined();
+
+    await expect(fs.readdir(dir)).resolves.not.toContain(
+      'truncated.forge-make.json',
+    );
+    await expect(fs.readdir(dir)).resolves.not.toContainEqual(
+      expect.stringMatching(/\.tmp$/),
+    );
+    await expect(savedArtifactNames(outDir, rootDir)).resolves.toEqual([
+      'app.deb',
+      'app.dmg',
+    ]);
+  });
+
+  it('refuses to load a manifest that cannot be parsed', async () => {
+    const dir = getMakeResultsDir(outDir);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, 'truncated.forge-make.json'), '[{');
+
+    await expect(loadMakeResults(outDir, rootDir)).rejects.toThrowError(
+      /truncated\.forge-make\.json could not be read/,
+    );
   });
 
   it('throws a helpful error when nothing has been saved', async () => {

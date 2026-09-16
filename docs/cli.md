@@ -192,7 +192,7 @@ Making distributables for a platform usually requires a machine running that pla
 2. In the release job, check out your project and restore those directories from every build job into its `out/` directory.
 3. Run the `release` command with the `--skip-make` flag.
 
-The manifests store the paths to your distributables relative to your project directory, so the release job needs to restore them at the same location within a checkout of your project. Each Make run replaces any previously saved results for the same platform and architecture, so results from different platforms can safely be merged into the same `out/` directory.
+The manifests store the paths to your distributables relative to your project directory, so the release job needs to restore them at the same location within a checkout of your project. Each Make run replaces any previously saved results for the same platform, architecture and maker, so results from different platforms (or from re-running a subset of your makers) can safely be merged into the same `out/` directory.
 
 The following GitHub Actions workflow makes distributables on macOS, Windows and Linux, then releases all of them from a single Linux job:
 

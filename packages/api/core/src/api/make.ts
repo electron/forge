@@ -355,6 +355,7 @@ export const listrMake = (
                           packageJSON,
                           platform,
                           arch: targetArch,
+                          maker: uniqMaker.name,
                         });
                       } catch (err) {
                         if (err instanceof Error) {
