@@ -1,5 +1,5 @@
 {
-  "main": ".webpack/main",
+  "main": ".webpack/main/index.cjs",
   "scripts": {
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt --write",

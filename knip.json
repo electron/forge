@@ -150,6 +150,10 @@
       "entry": ["src/remote-rebuild.ts!", "spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
     },
+    "packages/utils/multi-logger": {
+      "entry": ["spec/**/*.spec.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}!", "spec/**/*.{ts,tsx}"]
+    },
     "packages/utils/test-utils": {
       "project": ["src/**/*.ts!"]
     },
@@ -157,9 +161,6 @@
       "project": ["src/**/*.ts!"]
     },
     "packages/utils/types": {
-      "project": ["src/**/*.ts!"]
-    },
-    "packages/utils/web-multi-logger": {
       "project": ["src/**/*.ts!"]
     }
   }

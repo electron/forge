@@ -27,6 +27,7 @@
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
+    "@electron-forge/multi-logger": "workspace:*",
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/publisher-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",

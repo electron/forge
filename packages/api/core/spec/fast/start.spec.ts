@@ -1,8 +1,13 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
-import { ElectronProcess } from '@electron-forge/shared-types';
+import {
+  ElectronProcess,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
+import { ensureSharedLogger } from '@electron-forge/multi-logger';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
@@ -10,6 +15,43 @@ import locateElectronExecutable from '../../src/util/electron-executable.js';
 import findConfig from '../../src/util/forge-config.js';
 import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
 import resolveDir from '../../src/util/resolve-dir.js';
+
+// A stand-in for the shared terminal UI logger. It only records tabs, but it
+// does read the attached streams, like the real one.
+const fakeLogger = vi.hoisted(() => {
+  type FakeTab = { name: string; log: ReturnType<typeof vi.fn> };
+  const tabs = new Map<string, FakeTab>();
+  let mode: 'ink' | 'plain' = 'ink';
+  return {
+    tabs,
+    get mode() {
+      return mode;
+    },
+    set mode(value: 'ink' | 'plain') {
+      mode = value;
+    },
+    forcePlain: vi.fn(() => {
+      mode = 'plain';
+    }),
+    getTab: vi.fn((name: string) => tabs.get(name)),
+    attachProcess: vi.fn((child: ElectronProcess, name: string) => {
+      child.stdout?.on('data', () => undefined);
+      child.stderr?.on('data', () => undefined);
+      let tab = tabs.get(name);
+      if (!tab) {
+        tab = { name, log: vi.fn() };
+        tabs.set(name, tab);
+      }
+      return tab;
+    }),
+    start: vi.fn(async () => undefined),
+    stop: vi.fn(),
+  };
+});
+
+vi.mock(import('@electron-forge/multi-logger'), () => ({
+  ensureSharedLogger: vi.fn(() => fakeLogger as never),
+}));
 
 vi.mock(import('node:child_process'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -74,6 +116,11 @@ vi.mock(import('../../src/util/hook'), async (importOriginal) => {
 });
 
 describe('start', () => {
+  beforeEach(() => {
+    fakeLogger.tabs.clear();
+    fakeLogger.mode = 'ink';
+  });
+
   it('spawns electron in the correct dir', async () => {
     await start({
       dir: import.meta.dirname,
@@ -85,6 +132,219 @@ describe('start', () => {
       expect.anything(),
       expect.anything(),
     );
+  });
+
+  describe('terminal UI', () => {
+    const childWithOutput = () =>
+      Object.assign(new EventEmitter(), {
+        stdout: new PassThrough(),
+        stderr: new PassThrough(),
+        kill: vi.fn(),
+      }) as unknown as ElectronProcess;
+
+    // Interactive starts touch the real stdin and signal handling; keep both
+    // out of the test process.
+    beforeEach(() => {
+      vi.spyOn(process.stdin, 'on').mockImplementation(() => process.stdin);
+      vi.spyOn(process.stdin, 'resume').mockImplementation(() => process.stdin);
+      vi.spyOn(process.stdin, 'pause').mockImplementation(() => process.stdin);
+      vi.spyOn(process, 'on').mockImplementation(() => process);
+      vi.spyOn(console, 'log').mockImplementation(() => undefined);
+      vi.spyOn(console, 'info').mockImplementation(() => undefined);
+    });
+
+    it('prints plugin tabs as plain lines and leaves the app alone for a programmatic start', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      await start({ dir: import.meta.dirname, interactive: false });
+
+      // Core still owns the logger, so tabs that plugins add are rendered
+      // (plain mode, whatever the terminal) and torn down with the app.
+      expect(vi.mocked(ensureSharedLogger)).toHaveBeenCalledWith(
+        expect.objectContaining({ interactive: false }),
+      );
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      // The app is not part of it: it inherits our stdio exactly as before,
+      // rather than being piped through a tab.
+      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty(
+        'stdio',
+        'inherit',
+      );
+      expect(fakeLogger.attachProcess).not.toHaveBeenCalled();
+      expect(process.stdin.on).not.toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+
+      child.emit('exit', 0);
+      expect(fakeLogger.stop).toHaveBeenCalledOnce();
+    });
+
+    it('shows the app in its own tab, attached before the postStart hooks run', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      const write = vi
+        .spyOn(process.stdout, 'write')
+        .mockImplementation(() => true);
+      let attachedWhenHookRan = 0;
+      vi.mocked(findConfig).mockResolvedValueOnce({
+        pluginInterface: {
+          triggerHook: vi.fn(),
+          getHookListrTasks: vi.fn(),
+          triggerMutatingHook: vi.fn(),
+          overrideStartLogic: vi.fn().mockResolvedValue(false),
+        },
+        hooks: {
+          postStart: async () => {
+            attachedWhenHookRan = fakeLogger.attachProcess.mock.calls.length;
+          },
+        },
+      } as unknown as ResolvedForgeConfig);
+
+      await start({ dir: import.meta.dirname, interactive: true });
+
+      expect(vi.mocked(ensureSharedLogger)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Electron Forge',
+          initialTab: 'App',
+          keys: [expect.objectContaining({ key: 'r' })],
+        }),
+      );
+      // Whether the UI can draw is left to the logger's own detection.
+      expect(vi.mocked(ensureSharedLogger).mock.calls[0][0]).not.toHaveProperty(
+        'interactive',
+      );
+      expect(vi.mocked(spawn).mock.calls[0][2]).toHaveProperty('stdio', [
+        'inherit',
+        'pipe',
+        'pipe',
+      ]);
+      expect(fakeLogger.attachProcess).toHaveBeenCalledWith(child, 'App');
+      expect(attachedWhenHookRan).toBe(1);
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+
+      // The App tab is reading the streams, so nothing is forwarded to stdout
+      // (which only sees listr's own task output).
+      child.stdout!.write('from the app\n');
+      await new Promise((resolve) => setImmediate(resolve));
+      expect(write.mock.calls.map(([chunk]) => String(chunk))).not.toContain(
+        'from the app\n',
+      );
+    });
+
+    it('keeps a restarted app in the same tab and reports the restart there', async () => {
+      const [first, second] = [childWithOutput(), childWithOutput()];
+      vi.mocked(first.kill).mockImplementation(() => {
+        first.emit('exit');
+        first.emit('close');
+        return true;
+      });
+      vi.mocked(spawn).mockReturnValueOnce(first).mockReturnValueOnce(second);
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: true,
+      });
+      const replaced = new Promise((resolve) =>
+        spawned.on('restarted', resolve),
+      );
+      expect(requestAppRestart()).toBe(true);
+      await expect(replaced).resolves.toBe(second);
+
+      expect(fakeLogger.attachProcess.mock.calls).toEqual([
+        [first, 'App'],
+        [second, 'App'],
+      ]);
+      const logged = fakeLogger.tabs
+        .get('App')!
+        .log.mock.calls.map(([line]) => String(line));
+      expect(logged).toEqual([
+        expect.stringContaining('Restarting Electron app'),
+        expect.stringContaining('--- restarted ---'),
+      ]);
+      // Straight to stdout it would paint over the UI's alternate screen.
+      expect(console.info).not.toHaveBeenCalled();
+      // A restart is not the end of the app.
+      expect(fakeLogger.stop).not.toHaveBeenCalled();
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+    });
+
+    it('tears the UI down once the app exits for good', async () => {
+      const child = childWithOutput();
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      await start({ dir: import.meta.dirname, interactive: true });
+
+      child.emit('exit', 0);
+      expect(fakeLogger.stop).toHaveBeenCalledOnce();
+    });
+
+    it('reads `rs` from stdin only when the UI is not drawing', async () => {
+      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
+      await start({ dir: import.meta.dirname, interactive: true });
+      expect(process.stdin.on).not.toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+
+      fakeLogger.mode = 'plain';
+      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
+      await start({ dir: import.meta.dirname, interactive: true });
+      expect(process.stdin.on).toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+    });
+
+    it('falls back to reading `rs` when the UI fails to start', async () => {
+      // The logger reports ink up front but ends up in plain mode once
+      // start() has actually tried to load the UI.
+      fakeLogger.start.mockImplementationOnce(async () => {
+        fakeLogger.mode = 'plain';
+      });
+      vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
+      await start({ dir: import.meta.dirname, interactive: true });
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      expect(process.stdin.on).toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+      expect(process.stdin.resume).toHaveBeenCalled();
+    });
+
+    it('prints plain lines rather than drawing over an app that inherited our stdio', async () => {
+      // A plugin's startLogic spawned the app itself, with `stdio: 'inherit'`:
+      // there is nothing to show in an App tab, and the UI would only hide
+      // the app's output.
+      const child = Object.assign(new EventEmitter(), {
+        stdout: null,
+        stderr: null,
+        kill: vi.fn(),
+      }) as unknown as ElectronProcess;
+      vi.mocked(findConfig).mockResolvedValueOnce({
+        pluginInterface: {
+          triggerHook: vi.fn(),
+          getHookListrTasks: vi.fn(),
+          triggerMutatingHook: vi.fn(),
+          overrideStartLogic: vi.fn().mockResolvedValue(child),
+        },
+      } as any);
+
+      const spawned = await start({
+        dir: import.meta.dirname,
+        interactive: true,
+      });
+
+      expect(spawned).toBe(child);
+      expect(vi.mocked(spawn)).not.toHaveBeenCalled();
+      expect(fakeLogger.attachProcess).not.toHaveBeenCalled();
+      expect(fakeLogger.forcePlain).toHaveBeenCalledOnce();
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+      // Plain output, so `rs` + Enter is the way to restart again.
+      expect(process.stdin.on).toHaveBeenCalledWith(
+        'data',
+        expect.any(Function),
+      );
+    });
   });
 
   it('allows plugin to override the start command with its own child process', async () => {
