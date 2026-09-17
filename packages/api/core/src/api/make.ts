@@ -104,6 +104,18 @@ export interface MakeOptions {
   outDir?: string;
 }
 
+/**
+ * Options for the internal make runner. Callers that have already resolved
+ * the Forge config (e.g. `release`) pass it through so the plugin lifecycle
+ * (`init`, `resolveForgeConfig`) runs once per command instead of once per
+ * nested runner.
+ *
+ * @internal
+ */
+export type ListrMakeOptions = MakeOptions & {
+  forgeConfig?: ResolvedForgeConfig;
+};
+
 export const listrMake = (
   childTrace: typeof autoTrace,
   {
@@ -114,7 +126,8 @@ export const listrMake = (
     platform = process.platform as ForgePlatform,
     overrideTargets,
     outDir,
-  }: MakeOptions,
+    forgeConfig: providedForgeConfig,
+  }: ListrMakeOptions,
   receiveMakeResults?: (results: ForgeMakeResult[]) => void,
 ) => {
   const listrOptions: ForgeListrOptions<MakeContext> = {
@@ -143,7 +156,8 @@ export const listrMake = (
             }
 
             ctx.dir = resolvedDir;
-            ctx.forgeConfig = await getForgeConfig(resolvedDir);
+            ctx.forgeConfig =
+              providedForgeConfig ?? (await getForgeConfig(resolvedDir));
           },
         ),
       },
@@ -256,6 +270,7 @@ export const listrMake = (
                   arch,
                   outDir: ctx.actualOutDir,
                   platform,
+                  forgeConfig: ctx.forgeConfig,
                 }),
                 'run',
               );
