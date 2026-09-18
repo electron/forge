@@ -6,6 +6,8 @@
 
 You can only build the AppX target on Windows machines with the Windows 10 SDK installed.
 
+When `devCert` is not set, `electron-windows-msix` signs the package with a self-signed development certificate, which the maker saves next to the `.msix` as `dev_cert.cer` and `dev_cert.pfx` so it can be trusted on a test device. The `.pfx` password is `WINDOWS_CERTIFICATE_PASSWORD` when that environment variable is set, otherwise a random one.
+
 Configuration options are documented in [`MakerAppXConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-appx.MakerAppXConfig.html).
 
 ```javascript

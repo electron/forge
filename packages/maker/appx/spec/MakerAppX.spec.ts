@@ -455,6 +455,22 @@ describe('MakerAppX', () => {
           expect(vi.mocked(move)).toHaveBeenCalledTimes(3);
         });
 
+        it('should still return the .msix when the certificate cannot be moved', async () => {
+          vi.mocked(move)
+            .mockResolvedValueOnce(undefined) // mytestapp.msix
+            .mockResolvedValueOnce(undefined) // dev_cert.cer
+            .mockRejectedValueOnce(new Error('EBUSY: resource busy')); // dev_cert.pfx
+
+          const output = await runMake({});
+
+          expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+          expect(vi.mocked(move)).toHaveBeenCalledTimes(3);
+          expect(console.warn).toHaveBeenCalledOnce();
+          expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+            'Could not keep the development certificate next to the package: EBUSY: resource busy',
+          );
+        });
+
         it('should not move certificates when devCert is configured', async () => {
           const output = await runMake({ devCert: 'C:\\certs\\my-cert.pfx' });
 

@@ -13,7 +13,7 @@ description: >-
 Since Electron Forge v8, this maker is a compatibility layer over the MSIX maker: it no longer depends on `electron-windows-store` and produces a `.msix` file (not `.appx`) in `make/appx/<arch>/`. Your existing `MakerAppXConfig` keeps working with these differences:
 
 - The `containerVirtualization`, `createConfigParams`, `createPriParams`, `deploy`, `desktopConverter`, `expandedBaseImage`, `flatten`, `finalSay` and `makeappxParams` options have no MSIX equivalent and are ignored with a warning.
-- When `devCert` is not set, the maker no longer creates a development certificate next to the output. Signing is left to `electron-windows-msix`, which signs the package with a throwaway self-signed certificate.
+- When `devCert` is not set, `electron-windows-msix` signs the package with a self-signed development certificate, which the maker saves next to the `.msix` as `dev_cert.cer` and `dev_cert.pfx` so it can be trusted on a test device. The `.pfx` password is `WINDOWS_CERTIFICATE_PASSWORD` when that environment variable is set, otherwise a random one.
 - A missing `publisher` (no `publisher` option and no `author.name` in `package.json`) is now an error.
 
 :::

@@ -196,13 +196,20 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       // Without a devCert, electron-windows-msix signs with a self-signed
       // certificate it writes next to the package in `outputDir`. Keep it
       // beside the .msix (like the old maker did) so it can be trusted on a
-      // test device; the temp folder is deleted below.
+      // test device; the temp folder is deleted below. The .msix is already in
+      // place, so a failure here (e.g. EBUSY on Windows) must not fail make().
       if (!this.config.devCert) {
-        for (const certFile of ['dev_cert.cer', 'dev_cert.pfx']) {
-          const certPath = path.resolve(tmpFolder, certFile);
-          if (await pathExists(certPath)) {
-            await move(certPath, path.resolve(outPath, certFile));
+        try {
+          for (const certFile of ['dev_cert.cer', 'dev_cert.pfx']) {
+            const certPath = path.resolve(tmpFolder, certFile);
+            if (await pathExists(certPath)) {
+              await move(certPath, path.resolve(outPath, certFile));
+            }
           }
+        } catch (err) {
+          this.warn(
+            `Could not keep the development certificate next to the package: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 
