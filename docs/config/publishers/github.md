@@ -32,6 +32,22 @@ module.exports = {
 
 Configuration options are documented in [`PublisherGitHubConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_github.PublisherGitHubConfig.html).
 
+### Publishing from GitHub Actions
+
+When the publisher runs inside a GitHub Actions workflow, `repository` can be omitted: it defaults to the repository the workflow is running in (read from the `GITHUB_REPOSITORY` environment variable). Forge can scaffold workflows that build your app on every platform and publish it with this publisher; see the [GitHub Actions](../../guides/github-actions.md) guide.
+
+```javascript title="forge.config.js"
+module.exports = {
+  // ...
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {}
+    }
+  ]
+};
+```
+
 ### Authentication
 
 We recommend using the `process.env.GITHUB_TOKEN` environment variable to authenticate the GitHub Publisher. This token requires write permissions to your repository's contents to create new releases.

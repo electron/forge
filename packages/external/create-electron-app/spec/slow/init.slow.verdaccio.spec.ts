@@ -218,7 +218,36 @@ describe('init', () => {
     });
   });
 
-  describe.todo('with CI files enabled');
+  describe('with CI files enabled', () => {
+    it('adds GitHub Actions workflows and the GitHub publisher', async () => {
+      await init({ dir, copyCIFiles: true });
+
+      for (const workflow of ['build.yml', 'release.yml']) {
+        expect(
+          fs.existsSync(path.join(dir, '.github', 'workflows', workflow)),
+        ).toBe(true);
+      }
+      expect(
+        fs.existsSync(
+          path.resolve(dir, 'node_modules/@electron-forge/publisher-github'),
+        ),
+      ).toBe(true);
+
+      const packageJSON = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
+      );
+      expect(packageJSON.devDependencies).toHaveProperty(
+        '@electron-forge/publisher-github',
+      );
+
+      const forgeConfig = await fs.promises.readFile(
+        path.join(dir, 'forge.config.js'),
+        'utf-8',
+      );
+      expect(forgeConfig).toContain("name: '@electron-forge/publisher-github'");
+      await expectLintToPass(dir);
+    });
+  });
 
   describe('package managers', () => {
     describe('with npm', () => {

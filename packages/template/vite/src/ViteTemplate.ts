@@ -68,6 +68,15 @@ class ViteTemplate extends BaseTemplate {
                 ),
             );
           }
+
+          if (options.copyCIFiles) {
+            await this.addGitHubPublisher(
+              path.resolve(
+                directory,
+                typescript ? 'forge.config.mts' : 'forge.config.mjs',
+              ),
+            );
+          }
         },
       },
       {

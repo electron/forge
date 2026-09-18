@@ -1,0 +1,95 @@
+name: Release
+
+# Makes distributables for every platform in parallel, then publishes all of
+# them to a single GitHub release using the publishers in your Forge config.
+#
+# To cut a release, bump the "version" field in package.json, commit, and push
+# a tag for it (for example, `v1.2.0` for version `1.2.0`). The workflow can
+# also be started by hand from the Actions tab.
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  make:
+    name: Make (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # The deb and rpm makers need these to build Linux distributables.
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fakeroot dpkg rpm
+
+      - name: Install dependencies
+        run: __FORGE_PM_INSTALL__
+
+      # A dry run makes the distributables and records what would be
+      # published without uploading anything. The publish job below picks up
+      # the recorded state from every platform.
+      - name: Make distributables
+        run: __FORGE_PM_RUN__ release --dry-run
+
+      - name: Upload distributables
+        uses: actions/upload-artifact@v7
+        with:
+          name: distributables-${{ matrix.os }}
+          # The dry-run state records where each distributable lives relative
+          # to the project root, so both directories are uploaded together to
+          # keep the `out/` layout intact.
+          path: |
+            out/make/
+            out/publish-dry-run/
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: make
+    runs-on: ubuntu-latest
+    permissions:
+      # Required to create the GitHub release and upload assets to it.
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: __FORGE_PM_INSTALL__
+
+      - name: Download distributables
+        uses: actions/download-artifact@v8
+        with:
+          pattern: distributables-*
+          path: out
+          merge-multiple: true
+
+      # Publishes every distributable from the dry runs above in one go, so a
+      # single release is created for all platforms.
+      - name: Publish distributables
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: __FORGE_PM_RUN__ release --from-dry-run

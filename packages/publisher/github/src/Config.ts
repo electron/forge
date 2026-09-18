@@ -14,9 +14,14 @@ export interface GitHubRepository {
 
 export interface PublisherGitHubConfig {
   /**
-   * Details that identify your repository (name and owner)
+   * Details that identify your repository (name and owner).
+   *
+   * When omitted, the publisher uses the repository that the current GitHub
+   * Actions workflow is running in (read from the `GITHUB_REPOSITORY`
+   * environment variable), so it only needs to be set when publishing from
+   * elsewhere or to a different repository.
    */
-  repository: GitHubRepository;
+  repository?: GitHubRepository;
   /**
    * An authorization token with permission to upload releases to this
    * repository.

@@ -13,7 +13,7 @@ import { RequestError } from '@octokit/request-error';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import mime from 'mime-types';
 
-import { PublisherGitHubConfig } from './Config.js';
+import { GitHubRepository, PublisherGitHubConfig } from './Config.js';
 import GitHub from './util/github.js';
 import NoReleaseError from './util/no-release-error.js';
 
@@ -62,6 +62,34 @@ function progressStream(
   });
 }
 
+// The repository to publish to: the configured one, or the repository that
+// the current GitHub Actions workflow runs in (`GITHUB_REPOSITORY` is set to
+// `owner/name` by the runner).
+function resolveRepository(config: PublisherGitHubConfig): GitHubRepository {
+  if (config.repository !== undefined) {
+    if (
+      typeof config.repository === 'object' &&
+      config.repository.owner &&
+      config.repository.name
+    ) {
+      return config.repository;
+    }
+    throw new Error(
+      'In order to publish to GitHub, you must set both the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info',
+    );
+  }
+
+  const [owner, name, ...rest] = (process.env.GITHUB_REPOSITORY ?? '').split(
+    '/',
+  );
+  if (owner && name && rest.length === 0) {
+    return { owner, name };
+  }
+  throw new Error(
+    'In order to publish to GitHub, you must set the "repository.owner" and "repository.name" properties in your Forge config, or run in a GitHub Actions workflow (where the GITHUB_REPOSITORY environment variable identifies the repository). See the docs for more info',
+  );
+}
+
 export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig> {
   name = 'github';
 
@@ -89,18 +117,7 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
       perReleaseArtifacts[release].push(makeResult);
     }
 
-    if (
-      !(
-        config.repository &&
-        typeof config.repository === 'object' &&
-        config.repository.owner &&
-        config.repository.name
-      )
-    ) {
-      throw new Error(
-        'In order to publish to GitHub, you must set the "repository.owner" and "repository.name" properties in your Forge config. See the docs for more info',
-      );
-    }
+    const repository = resolveRepository(config);
 
     const github = new GitHub(config.authToken, true, config.octokitOptions);
     github.getGitHub();
@@ -116,8 +133,8 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
           this.knownReleases.get(releaseName) ??
           (
             await github.getGitHub().repos.listReleases({
-              owner: config.repository.owner,
-              repo: config.repository.name,
+              owner: repository.owner,
+              repo: repository.name,
               per_page: 100,
             })
           ).data.find(
@@ -132,8 +149,8 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
           // Release does not exist, let's make it
           release = (
             await github.getGitHub().repos.createRelease({
-              owner: config.repository.owner,
-              repo: config.repository.name,
+              owner: repository.owner,
+              repo: repository.name,
               tag_name: releaseName,
               name: releaseName,
               draft: config.draft !== false,
@@ -196,8 +213,8 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
           if (asset !== undefined) {
             if (config.force === true) {
               await github.getGitHub().repos.deleteReleaseAsset({
-                owner: config.repository.owner,
-                repo: config.repository.name,
+                owner: repository.owner,
+                repo: repository.name,
                 asset_id: asset.id,
               });
             } else {
@@ -210,8 +227,8 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
             const { data: uploadedAsset } = await github
               .getGitHub()
               .repos.uploadReleaseAsset({
-                owner: config.repository.owner,
-                repo: config.repository.name,
+                owner: repository.owner,
+                repo: repository.name,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 release_id: release!.id,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

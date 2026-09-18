@@ -56,6 +56,10 @@ We highly recommend using these templates when initializing your app to take adv
 
 To learn more about authoring your own templates for Electron Forge, check out the [Writing Templates](advanced/extending-electron-forge/writing-templates.md) guide!
 
+### Adding GitHub Actions workflows
+
+`create-electron-app` can also add GitHub Actions workflows that build your app on macOS, Windows, and Linux and publish it to GitHub Releases. Answer **yes** when prompted, or pass the `--copy-ci-files` flag. See the [GitHub Actions](guides/github-actions.md) guide for details.
+
 ## Starting your app
 
 You should now have a directory called `my-app` with all the files you need for a basic Electron app.

@@ -285,6 +285,10 @@ export type StartResult =
   | { tasks: ForgeListrTaskDefinition[]; result: InnerStartResult };
 
 export interface InitTemplateOptions {
+  /**
+   * Whether to add GitHub Actions workflows (and a GitHub publisher) to the
+   * initialized project.
+   */
   copyCIFiles?: boolean;
   force?: boolean;
   typescript?: boolean;

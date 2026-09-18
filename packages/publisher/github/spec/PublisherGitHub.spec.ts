@@ -102,4 +102,64 @@ describe('PublisherGitHub', () => {
       expect(args.release_id).toEqual(123);
     }
   });
+
+  describe('repository', () => {
+    it('publishes to the configured repository', async () => {
+      vi.stubEnv('GITHUB_REPOSITORY', 'env-owner/env-repo');
+      const publisher = new PublisherGitHub({
+        repository: { owner: 'my-owner', name: 'my-repo' },
+        authToken: 'fake-token',
+      });
+
+      await publishFor(publisher, 'app-1.0.0-darwin.zip');
+
+      expect(mockOctokit.repos.createRelease).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'my-owner', repo: 'my-repo' }),
+      );
+      expect(mockOctokit.repos.uploadReleaseAsset).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'my-owner', repo: 'my-repo' }),
+      );
+    });
+
+    it('falls back to the GitHub Actions repository when none is configured', async () => {
+      vi.stubEnv('GITHUB_REPOSITORY', 'env-owner/env-repo');
+      const publisher = new PublisherGitHub({ authToken: 'fake-token' });
+
+      await publishFor(publisher, 'app-1.0.0-darwin.zip');
+
+      expect(mockOctokit.repos.createRelease).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'env-owner', repo: 'env-repo' }),
+      );
+      expect(mockOctokit.repos.uploadReleaseAsset).toHaveBeenCalledWith(
+        expect.objectContaining({ owner: 'env-owner', repo: 'env-repo' }),
+      );
+    });
+
+    it('throws when no repository is configured outside GitHub Actions', async () => {
+      vi.stubEnv('GITHUB_REPOSITORY', '');
+      const publisher = new PublisherGitHub({ authToken: 'fake-token' });
+
+      await expect(
+        publishFor(publisher, 'app-1.0.0-darwin.zip'),
+      ).rejects.toThrow(
+        'or run in a GitHub Actions workflow (where the GITHUB_REPOSITORY environment variable identifies the repository)',
+      );
+      expect(mockOctokit.repos.createRelease).not.toHaveBeenCalled();
+    });
+
+    it('throws when the configured repository is incomplete', async () => {
+      vi.stubEnv('GITHUB_REPOSITORY', 'env-owner/env-repo');
+      const publisher = new PublisherGitHub({
+        repository: { owner: 'my-owner' } as { owner: string; name: string },
+        authToken: 'fake-token',
+      });
+
+      await expect(
+        publishFor(publisher, 'app-1.0.0-darwin.zip'),
+      ).rejects.toThrow(
+        'you must set both the "repository.owner" and "repository.name" properties',
+      );
+      expect(mockOctokit.repos.createRelease).not.toHaveBeenCalled();
+    });
+  });
 });

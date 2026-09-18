@@ -27,7 +27,10 @@ const initCommand = program
     'Directory to initialize the project in. Defaults to the current directory.',
   )
   .option('-t, --template [name]', 'Name of the Forge template to use.')
-  .option('-c, --copy-ci-files', 'Whether to copy the templated CI files.')
+  .option(
+    '-c, --copy-ci-files',
+    'Add GitHub Actions workflows that build and release the app.',
+  )
   .option('-f, --force', 'Whether to overwrite an existing directory.')
   .option(
     '--skip-git',
@@ -191,6 +194,13 @@ const initCommand = program
               message: `Would you like to initialize Git in your new project?`,
               default: true,
             }));
+
+            if (!initOpts.skipGit) {
+              initOpts.copyCIFiles = await prompt.run(confirm, {
+                message: `Would you like to add GitHub Actions workflows that build and release your app?`,
+                default: true,
+              });
+            }
           },
         },
       ],

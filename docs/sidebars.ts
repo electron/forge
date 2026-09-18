@@ -103,6 +103,7 @@ const sidebars: SidebarsConfig = {
           ],
         },
         'guides/create-and-add-icons',
+        'guides/github-actions',
         {
           type: 'category',
           label: 'Framework Integration',

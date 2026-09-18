@@ -259,4 +259,55 @@ describe('WebpackTemplate', () => {
       expect(packageJSON).toHaveProperty('private', true);
     });
   });
+
+  describe.each([false, true])(
+    'with copyCIFiles: true and typescript: %s',
+    (typescript) => {
+      let dir: string;
+      const configFile = typescript ? 'forge.config.mts' : 'forge.config.mjs';
+
+      beforeAll(async () => {
+        dir = await testUtils.ensureTestDirIsNonexistent();
+        const tasks = await template.initializeTemplate(dir, {
+          copyCIFiles: true,
+          typescript,
+        });
+        const runner = new Listr(tasks, {
+          concurrent: false,
+          exitOnError: false,
+          collectErrors: true,
+          fallbackRendererCondition:
+            Boolean(process.env.DEBUG) || Boolean(process.env.CI),
+        });
+        await runner.run();
+        expect(runner.errors).toHaveLength(0);
+      });
+
+      afterAll(async () => {
+        await fs.promises.rm(dir, { recursive: true });
+      });
+
+      it.each(['build.yml', 'release.yml'])(
+        '.github/workflows/%s should exist',
+        (file) => {
+          expect(
+            fs.existsSync(path.join(dir, '.github', 'workflows', file)),
+          ).toBe(true);
+        },
+      );
+
+      it(`should add the GitHub publisher to ${configFile}`, async () => {
+        const config = await fs.promises.readFile(
+          path.join(dir, configFile),
+          'utf-8',
+        );
+        expect(config).toContain(
+          "import { PublisherGitHub } from '@electron-forge/publisher-github';",
+        );
+        expect(config).toMatch(
+          /publishers: \[[\s\S]*new PublisherGitHub\({}\)/,
+        );
+      });
+    },
+  );
 });

@@ -6,6 +6,7 @@ import * as nodeModule from 'node:module';
 import path from 'node:path';
 
 import {
+  PMDetails,
   readJson,
   readJsonSync,
   resolvePackageManager,
@@ -20,6 +21,7 @@ import debug from 'debug';
 import { format } from 'oxfmt';
 import semver from 'semver';
 
+import { CI_WORKFLOW_FILES, renderWorkflow } from './ci-files.js';
 import determineAuthor from './determine-author.js';
 
 const currentForgeVersion = readJsonSync(
@@ -68,8 +70,15 @@ export class BaseTemplate implements ForgeTemplate {
     return [];
   }
 
-  getDevDependencies(_options: InitTemplateOptions): string[] {
-    return this.devDependencies;
+  getDevDependencies({ copyCIFiles }: InitTemplateOptions): string[] {
+    const devDependencies = this.devDependencies;
+    if (copyCIFiles) {
+      // The `release` workflow publishes to GitHub Releases.
+      devDependencies.push(
+        `@electron-forge/publisher-github@^${currentForgeVersion}`,
+      );
+    }
+    return devDependencies;
   }
 
   public async initializeTemplate(
@@ -108,12 +117,6 @@ export class BaseTemplate implements ForgeTemplate {
             rootFiles.push('_yarnrc.yml');
           }
 
-          if (copyCIFiles) {
-            d(
-              `Copying CI files is currently not supported - this will be updated in a later version of Forge`,
-            );
-          }
-
           const srcFiles = [
             'index.css',
             'index.js',
@@ -136,6 +139,19 @@ export class BaseTemplate implements ForgeTemplate {
         },
       },
       {
+        title: 'Copying GitHub Actions workflows',
+        enabled: Boolean(copyCIFiles),
+        task: async () => {
+          const pm = await resolvePackageManager();
+          await this.copyCIFiles(directory, pm);
+          // Templates that replace `forge.config.js` with their own config
+          // call `addGitHubPublisher` again on the file they write.
+          await this.addGitHubPublisher(
+            path.resolve(directory, 'forge.config.js'),
+          );
+        },
+      },
+      {
         title: 'Initializing package.json',
         task: async () => {
           await this.initializePackageJSON(directory);
@@ -147,6 +163,82 @@ export class BaseTemplate implements ForgeTemplate {
   async copy(source: string, target: string): Promise<void> {
     d(`copying "${source}" --> "${target}"`);
     await fs.cp(source, target, { recursive: true });
+  }
+
+  /**
+   * Copies the GitHub Actions workflows to `.github/workflows` in the project,
+   * filling in the install and script commands for the package manager the
+   * project was initialized with.
+   */
+  async copyCIFiles(directory: string, pm: PMDetails): Promise<void> {
+    const workflowsDir = path.resolve(directory, '.github', 'workflows');
+    d('creating directory:', workflowsDir);
+    await fs.mkdir(workflowsDir, { recursive: true });
+    for (const file of CI_WORKFLOW_FILES) {
+      const source = path.resolve(tmplDir, '_github', 'workflows', file);
+      const target = path.resolve(workflowsDir, file);
+      d(`rendering "${source}" --> "${target}"`);
+      await fs.writeFile(
+        target,
+        renderWorkflow(await fs.readFile(source, 'utf8'), pm),
+      );
+    }
+  }
+
+  /**
+   * Adds the GitHub publisher to the Forge config at `configPath` so that the
+   * `release` workflow copied by `copyCIFiles` has somewhere to publish to.
+   *
+   * The publisher is inserted just before the `plugins` array. Configs that
+   * import their makers and plugins (the TypeScript-based templates) get a
+   * `PublisherGitHub` import and instance; the base `forge.config.js` gets a
+   * resolvable `{ name, config }` entry like its makers.
+   */
+  async addGitHubPublisher(configPath: string): Promise<void> {
+    const lines = (await fs.readFile(configPath, 'utf8')).split('\n');
+    const pluginsIndex = lines.findIndex((line) =>
+      /^\s*plugins: \[/.test(line),
+    );
+    if (pluginsIndex === -1) {
+      throw new Error(
+        `Could not find the "plugins" array in "${configPath}" to add the GitHub publisher before`,
+      );
+    }
+
+    const isForgeImport = (line: string) =>
+      /^import .* from '@electron-forge\//.test(line);
+    const lastImportIndex = lines.findLastIndex(isForgeImport);
+    const usesImports = lastImportIndex !== -1;
+
+    const publisherEntry = usesImports
+      ? ['    new PublisherGitHub({}),']
+      : [
+          '    {',
+          "      name: '@electron-forge/publisher-github',",
+          '      config: {},',
+          '    },',
+        ];
+    lines.splice(
+      pluginsIndex,
+      0,
+      '  publishers: [',
+      '    // Publishes distributables to GitHub Releases. When run from the GitHub',
+      '    // Actions workflows in `.github/workflows`, the repository is inferred',
+      '    // from the workflow environment, so no configuration is needed.',
+      ...publisherEntry,
+      '  ],',
+    );
+    if (usesImports) {
+      lines.splice(
+        lastImportIndex + 1,
+        0,
+        "import { PublisherGitHub } from '@electron-forge/publisher-github';",
+      );
+    }
+
+    d('adding the GitHub publisher to:', configPath);
+    await fs.writeFile(configPath, lines.join('\n'));
+    await this.formatFile(configPath);
   }
 
   async writeLintConfig(directory: string): Promise<void> {

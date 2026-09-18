@@ -1,0 +1,51 @@
+name: Build
+
+# Packages the app and makes distributables for every platform on each push
+# and pull request, so that packaging problems surface before you cut a
+# release. The distributables are attached to the workflow run as artifacts.
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  make:
+    name: Make (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      # The deb and rpm makers need these to build Linux distributables.
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends fakeroot dpkg rpm
+
+      - name: Install dependencies
+        run: __FORGE_PM_INSTALL__
+
+      - name: Make distributables
+        run: __FORGE_PM_RUN__ make
+
+      - name: Upload distributables
+        uses: actions/upload-artifact@v7
+        with:
+          name: distributables-${{ matrix.os }}
+          path: out/make/
+          if-no-files-found: error

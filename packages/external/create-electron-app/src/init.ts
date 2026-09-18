@@ -33,7 +33,9 @@ export interface InitOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to copy template CI files
+   * Whether to add GitHub Actions workflows that build the app on every push
+   * and pull request, and release it to GitHub Releases when a version tag is
+   * pushed. Also adds the GitHub publisher to the Forge config.
    */
   copyCIFiles?: boolean;
   /**

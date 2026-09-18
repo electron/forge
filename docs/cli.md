@@ -51,10 +51,10 @@ Please note if you want to use a non-builtin template, it must be installed glob
 
 All flags are optional.
 
-| Flag              | Value         | Description                                                |
-| ----------------- | ------------- | ---------------------------------------------------------- |
-| `--template`      | Template Name | Name of the template to use to make this new app           |
-| `--copy-ci-files` | N/A           | Set if you want to copy templated CI files _(coming soon)_ |
+| Flag              | Value         | Description                                                                                                         |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `--template`      | Template Name | Name of the template to use to make this new app                                                                    |
+| `--copy-ci-files` | N/A           | Set to add [GitHub Actions workflows](guides/github-actions.md) that build and release the app with GitHub Releases |
 
 #### Usage
 
