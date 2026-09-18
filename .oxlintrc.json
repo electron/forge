@@ -49,6 +49,7 @@
   ],
   "ignorePatterns": [
     "**/.claude/**",
+    ".yarn/",
     "api-docs/",
     "dist",
     "node_modules",
