@@ -253,7 +253,30 @@ describe('WebpackConfigGenerator', () => {
         );
       });
 
-      it('keeps JS-only entry points on file:// in production', () => {
+      it('resolves JS-only entry points root-relative when a window is served', () => {
+        // A window served from `app://` cannot load a `file://` script
+        // (cross-scheme fetches are blocked), and worker scripts must be
+        // same-origin — a root-relative URL resolves against whichever
+        // served origin loads it, all rooted at the shared renderer output.
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+              { name: 'hello', js: 'foo.js' },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'/hello/index.js'");
+      });
+
+      it('keeps JS-only entry points on file:// when no window is served', () => {
+        // With no served window there is no `app://` origin to be
+        // same-origin with; a `file://` URL keeps standalone use (e.g. a
+        // nodeIntegration window spawning the worker) working.
         const config = {
           appProtocol: true,
           renderer: {
@@ -545,7 +568,7 @@ describe('WebpackConfigGenerator', () => {
         expect(bannerPlugin!.options.banner).not.toContain('background worker');
       });
 
-      it('splits served and unserved entries into separate compilations in production', async () => {
+      it('serves a window-containing group as one compilation, JS-only entries included', async () => {
         const rendererOptions = {
           config: {},
           entryPoints: [
@@ -563,18 +586,35 @@ describe('WebpackConfigGenerator', () => {
           rendererOptions as WebpackPluginRendererConfig,
         );
         const webConfigs = configs.filter((config) => config.target === 'web');
-        expect(webConfigs).toHaveLength(2);
-        const servedConfig = webConfigs.find(
-          (config) => (config.entry as Entry)['main_window'],
+        // One compilation for the whole group: the served window loads the
+        // JS-only entry same-origin, and a split would break
+        // `additionalChunks` references across compilations.
+        expect(webConfigs).toHaveLength(1);
+        const entry = webConfigs[0].entry as Entry;
+        expect(entry['main_window']).toBeDefined();
+        expect(entry['background_worker']).toBeDefined();
+        expect(webConfigs[0].output?.publicPath).toEqual('/');
+      });
+
+      it('keeps a windowless Web-target group unserved', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [{ name: 'background_worker', js: 'worker.js' }],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
         );
-        const unservedConfig = webConfigs.find(
-          (config) => (config.entry as Entry)['background_worker'],
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
         );
-        // The served compilation needs root-relative asset URLs; the JS-only
-        // one must keep webpack's 'auto' script-relative resolution for
-        // file:// loading.
-        expect(servedConfig?.output?.publicPath).toEqual('/');
-        expect(unservedConfig?.output?.publicPath).toBeUndefined();
+        const webConfigs = configs.filter((config) => config.target === 'web');
+        expect(webConfigs).toHaveLength(1);
+        // No served window means nothing fetches over the scheme; keep
+        // webpack's 'auto' script-relative resolution for file:// loading.
+        expect(webConfigs[0].output?.publicPath).toBeUndefined();
       });
 
       it('uses root-relative publicPath for served renderers in production', async () => {

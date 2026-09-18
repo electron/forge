@@ -136,6 +136,30 @@ export default class WebpackConfigGenerator {
     return this.isProd ? 'source-map' : 'eval-source-map';
   }
 
+  /**
+   * Whether any window entry is served over `appProtocol` in this build —
+   * the condition under which JS-only entries must be reachable same-origin
+   * from a served window (worker scripts must be same-origin with the
+   * document that spawns them).
+   */
+  private get hasServedWindows(): boolean {
+    return (
+      this.isProd &&
+      !!this.pluginConfig.appProtocol &&
+      this.allPluginRendererOptions.some((rendererOptions) =>
+        (rendererOptions.entryPoints ?? []).some(
+          (entryPoint) =>
+            isLocalWindow(entryPoint) &&
+            !(
+              entryPoint.nodeIntegration ??
+              rendererOptions.nodeIntegration ??
+              false
+            ),
+        ),
+      )
+    );
+  }
+
   rendererEntryPoint(
     entryPoint: WebpackPluginEntryPoint,
     basename: string,
@@ -144,11 +168,10 @@ export default class WebpackConfigGenerator {
     if (this.isProd) {
       // With `appProtocol` enabled, HTML entry points are served over the
       // privileged `app://` scheme by the runtime injected into the main
-      // bundle. JS-only (no-window) entry points keep their `file://` paths —
-      // they are not window entry URLs. `nodeIntegration` entry points also
-      // stay on `file://`: Electron only derives the renderer's `__dirname`
-      // from `file:` page URLs, which AssetRelocatorPatch relies on for
-      // relocated native modules and assets in production.
+      // bundle. `nodeIntegration` entry points stay on `file://`: Electron
+      // only derives the renderer's `__dirname` from `file:` page URLs,
+      // which AssetRelocatorPatch relies on for relocated native modules
+      // and assets in production.
       if (
         this.pluginConfig.appProtocol &&
         basename === 'index.html' &&
@@ -161,6 +184,21 @@ export default class WebpackConfigGenerator {
         // directory (see `buildRendererBaseConfig`'s `publicPath`), so the
         // entry path carries the per-entry subdirectory.
         return `'${getAppProtocolEntryUrl(entryPoint.name, scheme, `${entryPoint.name}/index.html`)}'`;
+      }
+      // JS-only (no-window) entries are scripts a window loads itself, e.g.
+      // `new Worker(WORKER_WEBPACK_ENTRY)`. A window served from `app://`
+      // cannot load a `file://` script (cross-scheme fetches are blocked),
+      // and worker scripts must additionally be same-origin — so once any
+      // window is served, emit a root-relative URL: every served origin is
+      // rooted at the shared `.webpack/renderer/` directory, making the
+      // script same-origin from whichever window resolves it.
+      if (
+        this.pluginConfig.appProtocol &&
+        basename === 'index.js' &&
+        !nodeIntegration &&
+        this.hasServedWindows
+      ) {
+        return `'/${encodeURIComponent(entryPoint.name)}/index.js'`;
       }
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
@@ -271,10 +309,11 @@ export default class WebpackConfigGenerator {
     // comment) and `entryOnly` keeps it out of split chunks.
     const appProtocolBanner = this.pluginConfig.appProtocol
       ? getAppProtocolBanner(
-          // Only entries the scheme actually serves (the same predicate
-          // `rendererEntryPoint` uses): JS-only and `nodeIntegration` entries
-          // keep `file://`, so their names are neither validated as URL hosts
-          // nor added to the handler's origin allowlist.
+          // Only window entries the scheme serves become origins (the same
+          // predicate `rendererEntryPoint` uses for `app://` entry URLs):
+          // `nodeIntegration` windows keep `file://`, and JS-only entries
+          // need no hostname of their own — served windows load them
+          // same-origin through the shared root via root-relative URLs.
           this.allPluginRendererOptions.flatMap((rendererOptions) =>
             (rendererOptions.entryPoints ?? [])
               .filter(
@@ -401,10 +440,10 @@ export default class WebpackConfigGenerator {
    * Renderers served over `appProtocol` need root-relative asset URLs: the
    * handler roots every origin at `.webpack/renderer/`, so `publicPath: '/'`
    * makes html-webpack-plugin emit `/<name>/index.js` instead of the `'auto'`
-   * relative URLs that only resolve under `file://`. Only compilations whose
-   * every entry is actually served get it — JS-only and `nodeIntegration`
-   * entries stay on `file://` and rely on `'auto'` script-relative URLs, so
-   * served and unserved entries are built as separate compilations.
+   * relative URLs that only resolve under `file://`. Only compilations that
+   * are actually served get it — `nodeIntegration` groups and Web-target
+   * groups without any window stay on `file://` and rely on `'auto'`
+   * script-relative URLs.
    */
   private rendererPublicPath(servedOverAppProtocol: boolean) {
     if (!this.isProd) return { publicPath: '/' };
@@ -547,39 +586,26 @@ export default class WebpackConfigGenerator {
       target === RendererTarget.Web ||
       target === RendererTarget.ElectronRenderer
     ) {
-      // With `appProtocol`, only local-window Web-target entries are served
-      // over the scheme; JS-only entries keep `file://` URLs and `'auto'`
-      // script-relative asset resolution. The two need different prod
-      // `publicPath` values, so they build as separate compilations.
-      const splitServedEntries =
+      // With `appProtocol`, a Web-target group that contains a window is
+      // served as one compilation — JS-only entries included, since a served
+      // window loads them same-origin (`new Worker('/<name>/index.js')`) and
+      // splitting them out would also break `additionalChunks` references
+      // across compilations. A Web-target group with no window at all keeps
+      // the unserved `file://` + `'auto'` publicPath behavior, and
+      // `nodeIntegration` (ElectronRenderer) groups are never served.
+      const groupServedOverAppProtocol =
         this.isProd &&
         !!this.pluginConfig.appProtocol &&
-        target === RendererTarget.Web;
-      const served = splitServedEntries
-        ? entryPoints.filter((entryPoint) => isLocalWindow(entryPoint))
-        : [];
-      const unserved = splitServedEntries
-        ? entryPoints.filter((entryPoint) => !isLocalWindow(entryPoint))
-        : entryPoints;
-      if (served.length > 0) {
-        rendererConfigs.push(
-          this.buildRendererConfigForWebOrRendererTarget(
-            rendererOptions,
-            served,
-            target,
-            true,
-          ),
-        );
-      }
-      if (unserved.length > 0) {
-        rendererConfigs.push(
-          this.buildRendererConfigForWebOrRendererTarget(
-            rendererOptions,
-            unserved,
-            target,
-          ),
-        );
-      }
+        target === RendererTarget.Web &&
+        entryPoints.some((entryPoint) => isLocalWindow(entryPoint));
+      rendererConfigs.push(
+        this.buildRendererConfigForWebOrRendererTarget(
+          rendererOptions,
+          entryPoints,
+          target,
+          groupServedOverAppProtocol,
+        ),
+      );
       return rendererConfigs;
     } else if (
       target === RendererTarget.ElectronPreload ||
