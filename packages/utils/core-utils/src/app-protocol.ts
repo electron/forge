@@ -229,6 +229,14 @@ export function resolveAppProtocolConfig(
         `Every \`additionalPrivilegedSchemes\` entry must be a valid lowercase URI scheme (a letter followed by letters, digits, '+', '-', or '.'), got ${JSON.stringify(additional.scheme)}.`,
       );
     }
+    // Same blocklist as the serving scheme: these already carry built-in
+    // handling, so re-registering them as privileged custom schemes could
+    // only clash with it.
+    if (RESERVED_SCHEMES.has(additional.scheme)) {
+      throw new Error(
+        `\`additionalPrivilegedSchemes\` cannot include '${additional.scheme}' — that scheme is already claimed by Chromium/Electron.`,
+      );
+    }
     if (additional.scheme === scheme) {
       throw new Error(
         `The '${scheme}' scheme is reserved for serving renderer files when \`appProtocol\` is enabled — remove it from \`additionalPrivilegedSchemes\` (use \`appProtocol.privileges\` to adjust its privileges).`,

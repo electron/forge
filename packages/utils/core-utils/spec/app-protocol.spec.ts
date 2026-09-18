@@ -207,6 +207,19 @@ describe('app-protocol', () => {
     }
   });
 
+  it.each(['http', 'file', 'devtools'])(
+    'rejects the Chromium-claimed scheme %j as an additional scheme',
+    (scheme) => {
+      // Same blocklist as the serving scheme — re-registering a built-in
+      // scheme as privileged could only clash with its built-in handling.
+      expect(() =>
+        resolveAppProtocolConfig({
+          additionalPrivilegedSchemes: [{ scheme }],
+        }),
+      ).toThrow(/already claimed/);
+    },
+  );
+
   it('allows app as an additional scheme when the serving scheme differs', () => {
     const { additionalPrivilegedSchemes } = resolveAppProtocolConfig({
       scheme: 'myapp',
