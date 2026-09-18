@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     branches:
-      - next
+      - main
 
 permissions: {}
 
@@ -123,6 +123,14 @@ jobs:
           VERSION=$(jq -r '.version' lerna.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+          # Mark the GitHub release as a pre-release only when the version is
+          # one (e.g. `8.1.0-beta.0`), so stable releases show up as "Latest".
+          if [[ "$VERSION" == *-* ]]; then
+            echo "prerelease_flag=--prerelease" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease_flag=" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Get GitHub app token
         id: secret-service
         uses: electron/secret-service-action@3476425e8b30555aac15b1b7096938e254b0e155 # v1.0.0
@@ -131,4 +139,5 @@ jobs:
         env:
           GH_TOKEN: ${{ fromJSON(steps.secret-service.outputs.secrets).GITHUB_TOKEN }}
           STEPS_VERSION_OUTPUTS_VERSION: ${{ steps.version.outputs.version }}
-        run: gh release create "v${STEPS_VERSION_OUTPUTS_VERSION}" --target ${{ github.sha }} --generate-notes --prerelease
+          STEPS_VERSION_OUTPUTS_PRERELEASE_FLAG: ${{ steps.version.outputs.prerelease_flag }}
+        run: gh release create "v${STEPS_VERSION_OUTPUTS_VERSION}" --target ${{ github.sha }} --generate-notes $STEPS_VERSION_OUTPUTS_PRERELEASE_FLAG
