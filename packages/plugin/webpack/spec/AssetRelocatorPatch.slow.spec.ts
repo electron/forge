@@ -145,7 +145,11 @@ describe('AssetRelocatorPatch', () => {
       }
     }
 
-    await spawn(pmCmd, ['ci'], {
+    // --no-audit: a fixture install gains nothing from the security audit,
+    // and the audit round-trip is a hidden external dependency with no
+    // timeout — a hanging registry advisory endpoint turned this hook into a
+    // 90s timeout on every platform.
+    await spawn(pmCmd, ['ci', '--no-audit', '--no-fund'], {
       cwd: appPath,
       shell: true,
     });
