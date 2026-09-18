@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { resolvePackageManager } from '@electron-forge/core-utils';
+import * as testUtils from '@electron-forge/test-utils';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import template from '../src/BaseTemplate';
 
@@ -16,6 +18,46 @@ describe('BaseTemplate', () => {
         }),
       ).rejects.toThrowError(
         'The "base" template does not support TypeScript. Use "--template vite" or "--template webpack" with "--typescript".',
+      );
+    });
+
+    describe('.yarnrc.yml', () => {
+      let dir: string;
+
+      beforeEach(async () => {
+        dir = await testUtils.ensureTestDirIsNonexistent();
+      });
+
+      afterEach(async () => {
+        await fs.promises.rm(dir, { recursive: true, force: true });
+      });
+
+      const initialize = async () => {
+        const tasks = await template.initializeTemplate(dir, {});
+        for (const { task } of tasks) {
+          await (task as () => Promise<void>)();
+        }
+      };
+
+      it.each(['yarn@1', 'yarn@1.22', 'yarn@1.22.22'])(
+        'should not be written for %s',
+        async (packageManager) => {
+          await resolvePackageManager(packageManager);
+
+          await expect(initialize()).resolves.toBeUndefined();
+          expect(fs.existsSync(path.join(dir, '.yarnrc.yml'))).toBe(false);
+          expect(fs.existsSync(path.join(dir, 'package.json'))).toBe(true);
+        },
+      );
+
+      it.each(['yarn@4', 'yarn@4.18.0', 'yarn@latest'])(
+        'should be written for %s',
+        async (packageManager) => {
+          await resolvePackageManager(packageManager);
+
+          await expect(initialize()).resolves.toBeUndefined();
+          expect(fs.existsSync(path.join(dir, '.yarnrc.yml'))).toBe(true);
+        },
       );
     });
   });

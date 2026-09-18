@@ -103,7 +103,10 @@ export class BaseTemplate implements ForgeTemplate {
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
             pm.executable === 'yarn' &&
             pm.version &&
-            (pm.version === 'latest' || semver.gte(pm.version, '2.0.0'))
+            // An explicit package manager can carry a partial version (e.g. `yarn@1`),
+            // which `semver.gte` rejects, so coerce it first.
+            (pm.version === 'latest' ||
+              semver.gte(semver.coerce(pm.version) ?? '0.0.0', '2.0.0'))
           ) {
             rootFiles.push('_yarnrc.yml');
           }
