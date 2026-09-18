@@ -34,22 +34,25 @@ async function exists(file: string): Promise<boolean> {
 }
 
 /**
- * Main and preload bundles are emitted with a `.cjs` extension so that Electron
- * parses them as CommonJS even when the project's `package.json` has
- * `"type": "module"`. Projects created before that change still point `main`
- * at the old `.js` filename, so fail with a precise message instead of letting
- * Electron fail with "Cannot find module".
+ * Main and preload bundles are emitted with a `.cjs` extension (or `.mjs` when
+ * `outputFormat` is `"es"`) so that Electron parses them with the intended
+ * module system regardless of the project's `package.json` `"type"`. Projects
+ * created before that change still point `main` at the old `.js` filename, so
+ * fail with a precise message instead of letting Electron fail with
+ * "Cannot find module".
  */
 async function assertMainEntryExists(dir: string, main: string): Promise<void> {
   if (await exists(path.resolve(dir, main))) return;
 
-  const cjsMain = main.replace(/\.js$/, '.cjs');
-  if (cjsMain !== main && (await exists(path.resolve(dir, cjsMain)))) {
-    throw new Error(
-      `The "main" entry point in "package.json" is ${JSON.stringify(main)}, but the Vite plugin now emits
-the main process bundle as ${JSON.stringify(cjsMain)}. Update "main" in "package.json" to
-${JSON.stringify(cjsMain)}, and any preload script paths in your main process code to end in ".cjs".`,
-    );
+  for (const ext of ['.cjs', '.mjs']) {
+    const candidate = main.replace(/\.js$/, ext);
+    if (candidate !== main && (await exists(path.resolve(dir, candidate)))) {
+      throw new Error(
+        `The "main" entry point in "package.json" is ${JSON.stringify(main)}, but the Vite plugin now emits
+the main process bundle as ${JSON.stringify(candidate)}. Update "main" in "package.json" to
+${JSON.stringify(candidate)}, and any preload script paths in your main process code to end in ${JSON.stringify(ext)}.`,
+      );
+    }
   }
 }
 
@@ -59,7 +62,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'outputFormat'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -321,6 +324,17 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
   resolveForgeConfig = async (
     forgeConfig: ResolvedForgeConfig,
   ): Promise<ResolvedForgeConfig> => {
+    if (this.config.outputFormat === 'es') {
+      const pj = await readJson(path.resolve(this.projectDir, 'package.json'));
+      if (pj.type !== 'module' && !pj.main?.endsWith('.mjs')) {
+        throw new Error(
+          `The Vite plugin is configured with outputFormat: "es", but your package.json does not have "type": "module" ` +
+            `and the main entry point does not use an .mjs extension. Electron requires one of these for ESM support in the main process. ` +
+            `See https://www.electronjs.org/docs/latest/tutorial/esm for more details.`,
+        );
+      }
+    }
+
     forgeConfig.packagerConfig ??= {};
 
     if (forgeConfig.packagerConfig.ignore) {
@@ -380,11 +394,12 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'outputFormat'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      outputFormat: this.config.outputFormat ?? 'cjs',
     };
   }
 
