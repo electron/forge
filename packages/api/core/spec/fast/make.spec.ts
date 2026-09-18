@@ -1,8 +1,18 @@
 import * as path from 'node:path';
 
-import { describe, expect, it, vi } from 'vitest';
+import { PluginBase } from '@electron-forge/plugin-base';
+import {
+  ForgeMultiHookMap,
+  ResolvedForgeConfig,
+} from '@electron-forge/shared-types';
+import { packager } from '@electron/packager';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import make from '../../src/api/make';
+import {
+  registerForgeConfigForDirectory,
+  unregisterForgeConfigForDirectory,
+} from '../../src/util/forge-config';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -12,10 +22,76 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   };
 });
 
+vi.mock(import('@electron/packager'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    packager: vi.fn(),
+  };
+});
+
 describe('make', () => {
   const fixtureDir = path.resolve(import.meta.dirname, '../fixture');
 
-  it.todo('should call "package"');
+  describe('plugin lifecycle', () => {
+    const appDir = path.join(fixtureDir, 'dummy_app');
+
+    class LifecyclePlugin extends PluginBase<Record<string, never>> {
+      name = 'lifecycle';
+
+      init = vi.fn((dir: string, config: ResolvedForgeConfig) =>
+        super.init(dir, config),
+      );
+
+      resolveForgeConfig = vi.fn(async (config: ResolvedForgeConfig) => config);
+
+      prePackage = vi.fn(async (_config: ResolvedForgeConfig) => undefined);
+
+      getHooks(): ForgeMultiHookMap {
+        return {
+          resolveForgeConfig: this.resolveForgeConfig,
+          prePackage: this.prePackage,
+        };
+      }
+    }
+
+    afterEach(() => {
+      unregisterForgeConfigForDirectory(appDir);
+    });
+
+    // Regression test for https://github.com/electron/forge/issues/3452.
+    // `make` runs `package` as a nested step; the config it resolved must be
+    // reused there rather than resolved a second time, otherwise every plugin
+    // is initialized twice and `resolveForgeConfig` mutations are applied twice.
+    it('initializes plugins once when running the nested package step', async () => {
+      const plugin = new LifecyclePlugin({});
+      registerForgeConfigForDirectory(appDir, {
+        plugins: [plugin],
+        makers: [{ name: '../custom-maker', config: {} }],
+      });
+      // Both duplicate lifecycle calls happen before packaging starts, so the
+      // packager itself can abort the run once it is reached.
+      vi.mocked(packager).mockRejectedValue(new Error('stop at packager'));
+
+      await expect(
+        make({
+          arch: 'x64',
+          dir: appDir,
+          platform: 'linux',
+          outDir: path.join(appDir, 'out'),
+        }),
+      ).rejects.toThrow('stop at packager');
+
+      expect(packager).toHaveBeenCalledOnce();
+      expect(plugin.init).toHaveBeenCalledOnce();
+      expect(plugin.resolveForgeConfig).toHaveBeenCalledOnce();
+      expect(plugin.prePackage).toHaveBeenCalledOnce();
+      // The package step's hooks run against the config that make resolved.
+      expect(plugin.prePackage.mock.calls[0][0]).toBe(
+        plugin.resolveForgeConfig.mock.calls[0][0],
+      );
+    });
+  });
 
   it('works with @scoped package names', { timeout: 10_000 }, async () => {
     const result = await make({

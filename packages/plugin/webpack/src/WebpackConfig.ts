@@ -181,9 +181,9 @@ export default class WebpackConfigGenerator {
   getPreloadDefine(entryPoint: WebpackPluginEntryPoint): string {
     if (!isNoWindow(entryPoint)) {
       if (this.isProd) {
-        return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.js')`;
+        return `require('path').resolve(__dirname, '../renderer', '${entryPoint.name}', 'preload.cjs')`;
       }
-      return `'${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.js').replace(/\\/g, '\\\\')}'`;
+      return `'${path.resolve(this.webpackDir, 'renderer', entryPoint.name, 'preload.cjs').replace(/\\/g, '\\\\')}'`;
     } else {
       // If this entry-point has no configured preload script just map this constant to `undefined`
       // so that any code using it still works.  This makes quick-start / docs simpler.
@@ -317,7 +317,7 @@ export default class WebpackConfigGenerator {
         mode: this.mode,
         output: {
           path: path.resolve(this.webpackDir, 'main'),
-          filename: 'index.js',
+          filename: 'index.cjs',
           libraryTarget: 'commonjs2',
         },
         plugins: [new DefinePlugin(this.getDefines()), ...appProtocolPlugins],
@@ -522,7 +522,7 @@ export default class WebpackConfigGenerator {
       entry,
       output: {
         path: path.resolve(this.webpackDir, 'renderer'),
-        filename: '[name]/preload.js',
+        filename: '[name]/preload.cjs',
         globalObject: 'self',
         ...(this.isProd ? { publicPath: '' } : { publicPath: '/' }),
       },

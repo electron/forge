@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-      - next
-    tags:
+    tags: # zizmor: ignore[cache-poisoning] this isn't used in a release workflow
       - v[0-9]+.[0-9]+.[0-9]+*
   pull_request:
   merge_group:

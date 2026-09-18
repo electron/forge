@@ -324,11 +324,11 @@ describe('WebpackConfigGenerator', () => {
 
         if (process.platform === 'win32') {
           expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
-            String.raw`'C:\\path\\.webpack\\renderer\\window\\preload.js'`,
+            String.raw`'C:\\path\\.webpack\\renderer\\window\\preload.cjs'`,
           );
         } else {
           expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
-            `'${mockProjectDir}/.webpack/renderer/window/preload.js'`,
+            `'${mockProjectDir}/.webpack/renderer/window/preload.cjs'`,
           );
         }
       });
@@ -342,7 +342,7 @@ describe('WebpackConfigGenerator', () => {
         );
         const defines = generator.getDefines();
         expect(defines.WINDOW_PRELOAD_WEBPACK_ENTRY).toEqual(
-          "require('path').resolve(__dirname, '../renderer', 'window', 'preload.js')",
+          "require('path').resolve(__dirname, '../renderer', 'window', 'preload.cjs')",
         );
       });
     });
@@ -380,7 +380,7 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.entry).toEqual('main.js');
       expect(webpackConfig.output).toEqual({
         path: path.join(mockProjectDir, '.webpack', 'main'),
-        filename: 'index.js',
+        filename: 'index.cjs',
         libraryTarget: 'commonjs2',
       });
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
@@ -825,7 +825,7 @@ describe('WebpackConfigGenerator', () => {
       });
       expect(webpackConfig[0].output).toEqual({
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
-        filename: '[name]/preload.js',
+        filename: '[name]/preload.cjs',
         globalObject: 'self',
         publicPath: '/',
       });
@@ -900,7 +900,7 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig[0].entry).toEqual({ main: ['preload.js'] });
       expect(webpackConfig[0].output).toEqual({
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
-        filename: '[name]/preload.js',
+        filename: '[name]/preload.cjs',
         globalObject: 'self',
         publicPath: '',
       });
@@ -940,7 +940,7 @@ describe('WebpackConfigGenerator', () => {
       });
       expect(webpackConfig[0].output).toEqual({
         path: path.join(mockProjectDir, '.webpack', 'renderer'),
-        filename: '[name]/preload.js',
+        filename: '[name]/preload.cjs',
         globalObject: 'self',
         publicPath: '',
       });
