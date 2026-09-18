@@ -107,6 +107,13 @@ export default autoTrace(
         "Can't release from a previous make run and dry run at the same time: there would be nothing to do",
       );
     }
+    // `skipPackage` is the deprecated name for `fromPackage`
+    if (fromMake && (makeOptions.fromPackage || makeOptions.skipPackage)) {
+      throw new Error(
+        'The fromMake and fromPackage options (--from-make and --from-package on the command line) cannot be combined. ' +
+          'Releasing from a previous make run already reuses the packaged app, so use one or the other.',
+      );
+    }
 
     const listrOptions: ForgeListrOptions<ReleaseContext> = {
       concurrent: false,

@@ -322,6 +322,30 @@ describe('release', () => {
       expect(publish).toHaveBeenCalledOnce();
     });
 
+    it('rejects fromMake combined with fromPackage', async () => {
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          interactive: false,
+          fromMake: true,
+          makeOptions: { fromPackage: true },
+        }),
+      ).rejects.toThrowError(
+        /fromMake and fromPackage options .* cannot be combined/,
+      );
+    });
+
+    it('rejects fromMake combined with the deprecated skipPackage alias', async () => {
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          interactive: false,
+          fromMake: true,
+          makeOptions: { skipPackage: true },
+        }),
+      ).rejects.toThrowError(/cannot be combined/);
+    });
+
     it('rejects dryRun combined with fromMake', async () => {
       await expect(
         release({

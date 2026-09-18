@@ -167,11 +167,11 @@ If your distributables were already built by a previous Make run (for example, b
 
 All flags are optional.
 
-| Flag             | Value                                   | Description                                                                                                                                                      |
-| ---------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                                                                                                                       |
-| `--from-make`    | N/A                                     | Release the distributables saved by a previous Make run, instead of packaging and making them again. By default, the app is packaged and made again.             |
-| `--from-package` | N/A                                     | Make and release distributables from the output of a previous Package run, instead of packaging again. Accepts the same make flags as the [Make](#make) command. |
+| Flag             | Value                                   | Description                                                                                                                                                                                    |
+| ---------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                                                                                                                                                     |
+| `--from-make`    | N/A                                     | Release the distributables saved by a previous Make run, instead of packaging and making them again. By default, the app is packaged and made again. Cannot be combined with `--from-package`. |
+| `--from-package` | N/A                                     | Make and release distributables from the output of a previous Package run, instead of packaging again. Accepts the same make flags as the [Make](#make) command.                               |
 
 :::warning Deprecated flags
 The `--dry-run` and `--from-dry-run` flags from earlier versions still work but print a deprecation warning, and they will be removed in a future major version.
