@@ -29,6 +29,19 @@ const currentForgeVersion = readJsonSync(
 const d = debug('electron-forge:template:base');
 const tmplDir = path.resolve(import.meta.dirname, '../tmpl');
 
+/**
+ * Whether a resolved Yarn version is Yarn 2+. An explicitly requested package
+ * manager can carry a partial version (e.g. `yarn@1`), which `semver.gte` rejects,
+ * so the version is coerced first. A version that can't be parsed is not Berry.
+ */
+function isYarnBerry(version: string | undefined): boolean {
+  if (version === 'latest') {
+    return true;
+  }
+  const yarnVersion = semver.coerce(version);
+  return yarnVersion !== null && semver.gte(yarnVersion, '2.0.0');
+}
+
 export class BaseTemplate implements ForgeTemplate {
   public templateDir = tmplDir;
 
@@ -99,15 +112,8 @@ export class BaseTemplate implements ForgeTemplate {
 
           if (pm.executable === 'pnpm') {
             rootFiles.push('pnpm-workspace.yaml');
-          } else if (
+          } else if (pm.executable === 'yarn' && isYarnBerry(pm.version)) {
             // Support Yarn 2+ by default by initializing with nodeLinker: node-modules
-            pm.executable === 'yarn' &&
-            pm.version &&
-            // An explicit package manager can carry a partial version (e.g. `yarn@1`),
-            // which `semver.gte` rejects, so coerce it first.
-            (pm.version === 'latest' ||
-              semver.gte(semver.coerce(pm.version) ?? '0.0.0', '2.0.0'))
-          ) {
             rootFiles.push('_yarnrc.yml');
           }
 
