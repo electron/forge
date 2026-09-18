@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
+    "@electron-forge/multi-logger": "workspace:*",
     "@electron-forge/plugin-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
     "debug": "^4.3.1",
