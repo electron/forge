@@ -1,94 +1,81 @@
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
-import { getNameFromAuthor, pathExists } from '@electron-forge/core-utils';
-import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
-import { ForgePlatform } from '@electron-forge/shared-types';
-// eslint-disable-next-line n/no-missing-import
-import resolveCommand from 'cross-spawn/lib/util/resolveCommand.js';
-import windowsStore from 'electron-windows-store';
 import {
-  isValidPublisherName,
-  makeCert,
-  // eslint-disable-next-line n/no-missing-import
-} from 'electron-windows-store/lib/sign.js';
+  getNameFromAuthor,
+  move,
+  pathExists,
+} from '@electron-forge/core-utils';
+import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
+import { toMsixArch } from '@electron-forge/maker-msix';
+import { ForgePlatform } from '@electron-forge/shared-types';
+import { packageMSIX } from 'electron-windows-msix';
 
 import { MakerAppXConfig } from './Config.js';
 
-// NB: This is not a typo, we require AppXs to be built on 64-bit
-// but if we're running in a 32-bit node.js process, we're going to
-// be Wow64 redirected
-const windowsSdkPaths = [
-  'C:\\Program Files\\Windows Kits\\10\\bin\\x64',
-  'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64',
-];
+/**
+ * `electron-windows-store` options that have no `electron-windows-msix`
+ * equivalent. They are ignored with a warning.
+ */
+const UNSUPPORTED_OPTIONS = [
+  'containerVirtualization',
+  'createConfigParams',
+  'createPriParams',
+  'deploy',
+  'desktopConverter',
+  'expandedBaseImage',
+  'finalSay',
+  'flatten',
+  'makeappxParams',
+] as const satisfies readonly (keyof MakerAppXConfig)[];
 
-async function findSdkTool(exe: string) {
-  let sdkTool: string | undefined;
-  for (const testPath of windowsSdkPaths) {
-    if (await pathExists(testPath)) {
-      let testExe = path.resolve(testPath, exe);
-      if (await pathExists(testExe)) {
-        sdkTool = testExe;
-        break;
-      }
-      const topDir = path.dirname(testPath);
-      for (const subVersion of await fs.readdir(topDir)) {
-        if (!(await fs.stat(path.resolve(topDir, subVersion))).isDirectory())
-          continue;
-        if (subVersion.substr(0, 2) !== '10') continue;
+// Ported from electron-windows-store/lib/sign.js: the subset of RFC 1779 /
+// X.500 distinguished names that MakeCert accepted (no comma/space escaping).
+const validDNRegex = (() => {
+  const validKeyPattern = [
+    'CN',
+    'OU',
+    'O',
+    'STREET',
+    'L',
+    'ST',
+    'C',
+    'DC',
+    'SN',
+    'GN',
+    'E',
+    'S',
+    'T',
+    'G',
+    'I',
+    'SERIALNUMBER',
+    '(?:OID\\.(0|[1-9][0-9]*)(?:\\.(0|[1-9][0-9]*))+)',
+  ].join('|');
+  // Every character is consumed by exactly one sub-pattern so the regex cannot
+  // backtrack catastrophically: unquoted values exclude the RDN separators (and
+  // `=`/`"`), and whitespace before a separator belongs to the unquoted value
+  // or to the quoted alternative, never to the separator as well.
+  const doubleQuotedValue = '"[^"]*"\\s*';
+  const unquotedValue = '[^,;="]*';
+  const keyValuePair = `(${validKeyPattern})=(${doubleQuotedValue}|${unquotedValue})`;
+  return new RegExp(`^${keyValuePair}(?:[,;]\\s*${keyValuePair})*,?$`, 'i');
+})();
 
-        testExe = path.resolve(topDir, subVersion, 'x64', 'makecert.exe');
-        if (await pathExists(testExe)) {
-          sdkTool = testExe;
-          break;
-        }
-      }
-    }
-  }
-  if (!sdkTool || !(await pathExists(sdkTool))) {
-    sdkTool = resolveCommand({ command: exe, options: { cwd: null } }, true);
-  }
-
-  if (!sdkTool || !(await pathExists(sdkTool))) {
-    throw new Error(
-      `Can't find ${exe} in PATH. You probably need to install the Windows SDK.`,
-    );
-  }
-
-  return sdkTool;
-}
-
-export interface CreateDefaultCertOpts {
-  certFilePath?: string;
-  certFileName?: string;
-  program?: MakerAppXConfig;
-  install?: boolean;
-}
-
-export async function createDefaultCertificate(
-  publisherName: string,
-  { certFilePath, certFileName, install, program }: CreateDefaultCertOpts,
-): Promise<string> {
-  const makeCertOptions = {
-    publisherName,
-    certFilePath: certFilePath || process.cwd(),
-    certFileName: certFileName || 'default',
-    install: typeof install === 'boolean' ? install : false,
-    program: program || {
-      windowsKit: path.dirname(await findSdkTool('makecert.exe')),
-    },
-  };
-
-  if (!isValidPublisherName(publisherName)) {
-    throw new Error(
-      `Received invalid publisher name: '${publisherName}' did not conform to X.500 distinguished name syntax for MakeCert.`,
-    );
-  }
-
-  return makeCert(makeCertOptions);
-}
-
+/**
+ * Builds a Microsoft Store package from a legacy `@electron-forge/maker-appx`
+ * configuration using the MSIX tooling (`electron-windows-msix`).
+ *
+ * @deprecated Use `@electron-forge/maker-msix` instead. This maker is a
+ * compatibility layer over the MSIX packaging code path: it maps
+ * {@link MakerAppXConfig} onto `electron-windows-msix` options and writes a
+ * `.msix` (not `.appx`) file to `make/appx/<arch>/`. Options without an MSIX
+ * equivalent are ignored with a warning, and the maker no longer creates a
+ * development certificate itself: when `devCert` is not set, signing is left
+ * to `electron-windows-msix`, which generates a self-signed certificate that
+ * is kept next to the `.msix` (`dev_cert.cer` / `dev_cert.pfx`).
+ */
 export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   name = 'appx';
 
@@ -105,42 +92,49 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
     packageJSON,
     targetArch,
   }: MakerOptions): Promise<string[]> {
-    const outPath = path.resolve(makeDir, `appx/${targetArch}`);
-    await this.ensureDirectory(outPath);
+    for (const option of UNSUPPORTED_OPTIONS) {
+      if (this.config[option] !== undefined) {
+        this.warn(
+          `The "${option}" option is not supported by @electron-forge/maker-appx anymore and will be ignored. ` +
+            'Migrate to @electron-forge/maker-msix.',
+        );
+      }
+    }
 
-    const opts = {
-      publisher: `CN=${getNameFromAuthor(packageJSON.author)}`,
-      flatten: false,
-      deploy: false,
-      packageVersion: `${packageJSON.version}.0`,
-      packageName: packageJSON.name.replace(/-/g, ''),
-      packageDisplayName: appName,
-      packageDescription: packageJSON.description || appName,
-      packageExecutable: `app\\${appName}.exe`,
-      windowsKit:
-        this.config.windowsKit ||
-        path.dirname(await findSdkTool('makeappx.exe')),
-      ...this.config,
-      inputDirectory: dir,
-      outputDirectory: outPath,
-    };
+    // Signing options are only forwarded together with a devCert; without
+    // one, electron-windows-msix signs with its own development certificate.
+    if (!this.config.devCert) {
+      for (const option of ['certPass', 'signtoolParams'] as const) {
+        if (this.config[option] !== undefined) {
+          this.warn(
+            `The "${option}" option is ignored by @electron-forge/maker-appx because "devCert" is not set. ` +
+              'Set "devCert" to sign with your own certificate.',
+          );
+        }
+      }
+    }
 
-    if (!opts.publisher) {
+    const authorName = getNameFromAuthor(packageJSON.author);
+    const publisher =
+      this.config.publisher ?? (authorName && `CN=${authorName}`);
+    if (!publisher) {
       throw new Error(
-        'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target',
+        'Please set the "publisher" option in the maker config or "author.name" in package.json for the appx target',
+      );
+    }
+    // Like electron-windows-store, only validate the publisher when Forge has
+    // no user-supplied certificate; with a devCert it is forwarded verbatim.
+    if (!this.config.devCert && !validDNRegex.test(publisher)) {
+      throw new Error(
+        `Received invalid publisher name: '${publisher}' did not conform to X.500 distinguished name syntax.`,
       );
     }
 
-    if (!opts.devCert) {
-      opts.devCert = await createDefaultCertificate(opts.publisher, {
-        certFilePath: outPath,
-        program: opts,
-      });
-    }
-
-    if (/[-+]/.test(opts.packageVersion)) {
-      if (opts.makeVersionWinStoreCompatible) {
-        opts.packageVersion = this.normalizeWindowsVersion(opts.packageVersion);
+    let packageVersion =
+      this.config.packageVersion ?? `${packageJSON.version}.0`;
+    if (/[-+]/.test(packageVersion)) {
+      if (this.config.makeVersionWinStoreCompatible) {
+        packageVersion = this.normalizeWindowsVersion(packageVersion);
       } else {
         throw new Error(
           "Windows Store version numbers don't support semver beta tags. To " +
@@ -150,11 +144,94 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
       }
     }
 
-    delete opts.makeVersionWinStoreCompatible;
+    const packageName =
+      this.config.packageName ?? packageJSON.name.replace(/-/g, '');
 
-    await windowsStore(opts);
+    // Clear the previous artifact so a re-run does not fail in `move()`.
+    const outPath = path.resolve(makeDir, 'appx', targetArch);
+    await this.ensureDirectory(outPath);
 
-    return [path.resolve(outPath, `${opts.packageName}.appx`)];
+    // Do all the scratch work in a temporary folder (outside of outPath)
+    const tmpFolder = await fs.mkdtemp(
+      path.resolve(os.tmpdir(), 'appx-maker-'),
+    );
+
+    try {
+      const result = await packageMSIX({
+        appDir: dir,
+        outputDir: tmpFolder,
+        packageName: `${packageName}.msix`,
+        appManifest: this.config.manifest,
+        packageAssets: this.config.assets,
+        windowsKitPath: this.config.windowsKit,
+        createPri: this.config.makePri ?? false,
+        windowsSignOptions: this.config.devCert
+          ? {
+              certificateFile: this.config.devCert,
+              certificatePassword: this.config.certPass,
+              signWithParams: this.config.signtoolParams,
+            }
+          : undefined,
+        manifestVariables: {
+          packageIdentity: packageName,
+          publisher,
+          packageVersion,
+          packageDisplayName: this.config.packageDisplayName ?? appName,
+          packageDescription:
+            this.config.packageDescription ??
+            (packageJSON.description || appName),
+          packageBackgroundColor: this.config.packageBackgroundColor,
+          // electron-windows-store took the executable relative to the package
+          // root (`app\\Name.exe`); electron-windows-msix prepends `app\\` itself.
+          appExecutable:
+            this.config.packageExecutable?.replace(/^app[\\/]/i, '') ??
+            `${appName}.exe`,
+          targetArch: toMsixArch(targetArch),
+        },
+      });
+
+      const outputPath = path.resolve(outPath, `${packageName}.msix`);
+      await move(result.msixPackage, outputPath);
+
+      // Without a devCert, electron-windows-msix signs with a self-signed
+      // certificate it writes next to the package in `outputDir`. Keep it
+      // beside the .msix (like the old maker did) so it can be trusted on a
+      // test device; the temp folder is deleted below. The .msix is already in
+      // place, so a failure here (e.g. EBUSY on Windows) must not fail make().
+      if (!this.config.devCert) {
+        try {
+          for (const certFile of ['dev_cert.cer', 'dev_cert.pfx']) {
+            const certPath = path.resolve(tmpFolder, certFile);
+            if (await pathExists(certPath)) {
+              await move(certPath, path.resolve(outPath, certFile));
+            }
+          }
+        } catch (err) {
+          this.warn(
+            `Could not keep the development certificate next to the package: ${err instanceof Error ? err.message : String(err)}`,
+          );
+        }
+      }
+
+      return [outputPath];
+    } finally {
+      // A failed cleanup (e.g. a lingering handle on Windows) must not turn a
+      // successful make() into an error: the .msix has already been moved.
+      try {
+        await fs.rm(tmpFolder, { recursive: true, force: true });
+      } catch (err) {
+        this.warn(
+          `Could not remove the temporary folder "${tmpFolder}": ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
+    }
+  }
+
+  private warn(message: string): void {
+    console.warn(
+      styleText('yellow', '⚠'),
+      styleText('yellow', `WARNING: ${message}`),
+    );
   }
 }
 

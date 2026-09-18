@@ -14,7 +14,6 @@ const OPTIONAL_DEPS = [
   'electron-installer-snap',
   'electron-installer-debian',
   'electron-windows-msix',
-  'electron-windows-store',
   'electron-winstaller',
   '@malept/electron-installer-flatpak',
 ];
