@@ -29,11 +29,25 @@ describe('cli', () => {
     await expect(runForgeCLI('help')).resolves.not.toMatch(/\bpublish\b/);
   });
 
-  describe('release', () => {
-    it('should list the --skip-make option in help output', async () => {
-      await expect(runForgeCLI('release', '--help')).resolves.toMatch(
-        /--skip-make/,
+  describe('make', () => {
+    it('should list the --from-package option in help output', async () => {
+      await expect(runForgeCLI('make', '--help')).resolves.toMatch(
+        /--from-package/,
       );
+    });
+
+    it('should hide the deprecated --skip-package option from help output', async () => {
+      await expect(runForgeCLI('make', '--help')).resolves.not.toMatch(
+        /skip-package/,
+      );
+    });
+  });
+
+  describe('release', () => {
+    it('should list the --from-make and --from-package options in help output', async () => {
+      const help = await runForgeCLI('release', '--help');
+      expect(help).toMatch(/--from-make/);
+      expect(help).toMatch(/--from-package/);
     });
 
     it('should hide the deprecated dry run options from help output', async () => {

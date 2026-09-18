@@ -168,7 +168,7 @@ describe('release', () => {
     expect(mockPublish).toHaveBeenCalledOnce();
   });
 
-  describe('skipMake', () => {
+  describe('fromMake', () => {
     // The project directory: artifact paths in the saved manifests are
     // relative to it, so `release` must resolve the same directory.
     let tmpDir: string;
@@ -220,7 +220,7 @@ describe('release', () => {
         dir: import.meta.dirname,
         outDir,
         interactive: false,
-        skipMake: true,
+        fromMake: true,
         publishTargets: [publisher],
       });
 
@@ -238,7 +238,7 @@ describe('release', () => {
         dir: import.meta.dirname,
         outDir,
         interactive: false,
-        skipMake: true,
+        fromMake: true,
         publishTargets: [publisher],
       });
 
@@ -255,7 +255,7 @@ describe('release', () => {
       await release({
         dir: import.meta.dirname,
         interactive: false,
-        skipMake: true,
+        fromMake: true,
         makeOptions: { outDir },
         publishTargets: [publisher],
       });
@@ -283,7 +283,7 @@ describe('release', () => {
           dir: import.meta.dirname,
           outDir,
           interactive: false,
-          skipMake: true,
+          fromMake: true,
           publishTargets: [publisher],
         }),
       ).rejects.toThrowError(/artifact-missing.*could not be found/);
@@ -299,7 +299,7 @@ describe('release', () => {
           dir: import.meta.dirname,
           outDir: emptyOutDir,
           interactive: false,
-          skipMake: true,
+          fromMake: true,
           publishTargets: [publisher],
         }),
       ).rejects.toThrowError(/No saved make results were found/);
@@ -322,15 +322,17 @@ describe('release', () => {
       expect(publish).toHaveBeenCalledOnce();
     });
 
-    it('rejects dryRun combined with skipMake', async () => {
+    it('rejects dryRun combined with fromMake', async () => {
       await expect(
         release({
           dir: import.meta.dirname,
           interactive: false,
-          skipMake: true,
+          fromMake: true,
           dryRun: true,
         }),
-      ).rejects.toThrowError(/Can't skip the make step and dry run/);
+      ).rejects.toThrowError(
+        /Can't release from a previous make run and dry run/,
+      );
     });
   });
 

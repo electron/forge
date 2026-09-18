@@ -28,8 +28,14 @@ export async function runRelease(): Promise<void> {
       'A comma-separated list of deployment targets. (default: all publishers in your Forge config)',
     )
     .option(
-      '--skip-make',
-      `Skip making the Electron application, and release the artifacts from a previous ${styleText('green', 'make')} run instead.`,
+      '--from-make',
+      `Release the distributables from a previous ${styleText('green', 'make')} run, instead of packaging and making the Electron application again.`,
+    )
+    // `--from-package` is declared here so that it shows up in the help
+    // output; it is parsed with the other make options by getMakeOptions().
+    .option(
+      '--from-package',
+      `Make and release distributables from the output of a previous ${styleText('green', 'package')} run, instead of packaging the Electron application again.`,
     )
     // `--dry-run` and `--from-dry-run` are deprecated. They are hidden from
     // the help output and print a deprecation warning when used.
@@ -42,7 +48,7 @@ export async function runRelease(): Promise<void> {
     .addOption(
       new Option(
         '--from-dry-run',
-        'Deprecated: use --skip-make instead.',
+        'Deprecated: use --from-make instead.',
       ).hideHelp(),
     )
     .allowUnknownOption(true)
@@ -53,13 +59,13 @@ export async function runRelease(): Promise<void> {
       if (options.dryRun) {
         console.error(
           styleText('yellow', '⚠'),
-          '`--dry-run` is deprecated and will be removed in a future major version. The `make` command now always saves its results, so run `electron-forge make` instead and then `electron-forge release --skip-make` to release them.',
+          '`--dry-run` is deprecated and will be removed in a future major version. The `make` command now always saves its results, so run `electron-forge make` instead and then `electron-forge release --from-make` to release them.',
         );
       }
       if (options.fromDryRun) {
         console.error(
           styleText('yellow', '⚠'),
-          '`--from-dry-run` is deprecated and will be removed in a future major version; use `--skip-make` instead.',
+          '`--from-dry-run` is deprecated and will be removed in a future major version; use `--from-make` instead.',
         );
       }
 
@@ -68,7 +74,7 @@ export async function runRelease(): Promise<void> {
       const releaseOpts: ReleaseOptions = {
         dir,
         interactive: true,
-        skipMake: Boolean(options.skipMake || options.fromDryRun),
+        fromMake: Boolean(options.fromMake || options.fromDryRun),
         dryRun: Boolean(options.dryRun),
       };
       if (options.target)

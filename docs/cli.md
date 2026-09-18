@@ -121,7 +121,7 @@ When packaging your Electron app, Forge crawls your project's `node_modules` fol
 
 This command will make distributables for your application based on your Forge config and the parameters you pass in.
 
-If you do not need to repackage your application between Make runs, use the `--skip-package` flag.
+If you do not need to repackage your application between Make runs, use the `--from-package` flag to make distributables from the output of the previous Package run.
 
 Every Make run also saves a manifest of the distributables it produced to `out/make-results/`, next to the distributables themselves in `out/make/`. The [Release](#release) command can use this manifest to release those distributables later, or from another machine, without rebuilding them.
 
@@ -134,7 +134,11 @@ All flags are optional.
 | `--arch`         | Architecture, e.g. `x64`            | Target architecture to make for. Defaults to the arch that you're running on (the "host" arch). Allowed values are: "ia32", "x64", "armv7l", "arm64", "universal", or "mips64el". Multiple values should be comma-separated. |
 | `--platform`     | Platform, e.g. `mas`                | Target platform to make for, please note you normally can only target platform X from platform X. This defaults to the platform you're running on (the "host" platform).                                                     |
 | `--targets`      | Comma separated list of maker names | Override your make targets for this run. The maker name is the full node module name, e.g. `@electron-forge/maker-deb`. By default, the make targets used are the ones available and configured for the given platform.      |
-| `--skip-package` | N/A                                 | Set if you want to skip the packaging step, useful if you are running sequential makes and want to save time. By default, packaging is **not** skipped.                                                                      |
+| `--from-package` | N/A                                 | Make distributables from the output of a previous Package run instead of packaging again, useful if you are running sequential makes and want to save time. By default, the app is packaged again.                           |
+
+:::warning Deprecated flag
+The `--skip-package` flag from earlier versions still works but prints a deprecation warning, and it will be removed in a future major version. It has been renamed to `--from-package`.
+:::
 
 #### Usage
 
@@ -157,22 +161,23 @@ npm run make -- --arch="ia32,x64"
 
 This command will attempt to package, make, and release the Forge application to the publish targets defined in your Forge config.
 
-If your distributables were already built by a previous Make run (for example, by other jobs in your CI pipeline), use the `--skip-make` flag to release them without rebuilding. See [Releasing from CI](#releasing-from-ci) below.
+If your distributables were already built by a previous Make run (for example, by other jobs in your CI pipeline), use the `--from-make` flag to release them without rebuilding. See [Releasing from CI](#releasing-from-ci) below.
 
 #### Options
 
 All flags are optional.
 
-| Flag          | Value                                   | Description                                                                                                                                         |
-| ------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--target`    | Comma separated list of publisher names | Override your publish targets for this run                                                                                                          |
-| `--skip-make` | N/A                                     | Skip the Package and Make steps, and release the distributables saved by a previous Make run instead. By default, the Make step is **not** skipped. |
+| Flag             | Value                                   | Description                                                                                                                                                      |
+| ---------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                                                                                                                       |
+| `--from-make`    | N/A                                     | Release the distributables saved by a previous Make run, instead of packaging and making them again. By default, the app is packaged and made again.             |
+| `--from-package` | N/A                                     | Make and release distributables from the output of a previous Package run, instead of packaging again. Accepts the same make flags as the [Make](#make) command. |
 
 :::warning Deprecated flags
 The `--dry-run` and `--from-dry-run` flags from earlier versions still work but print a deprecation warning, and they will be removed in a future major version.
 
 * `--dry-run` did the same work as running the [Make](#make) command, which now always saves its results.
-* `--from-dry-run` has been renamed to `--skip-make`.
+* `--from-dry-run` has been renamed to `--from-make`.
 :::
 
 #### Usage
@@ -190,7 +195,7 @@ Making distributables for a platform usually requires a machine running that pla
 
 1. In each build job, run the `make` command and preserve the `out/make/` and `out/make-results/` directories (for example, as a CI artifact).
 2. In the release job, check out your project and restore those directories from every build job into its `out/` directory.
-3. Run the `release` command with the `--skip-make` flag.
+3. Run the `release` command with the `--from-make` flag.
 
 The manifests store the paths to your distributables relative to your project directory, so the release job needs to restore them at the same location within a checkout of your project. Each Make run replaces any previously saved results for the same platform, architecture and maker, so results from different platforms (or from re-running a subset of your makers) can safely be merged into the same `out/` directory.
 
@@ -237,7 +242,7 @@ jobs:
           pattern: make-*
           path: out
           merge-multiple: true
-      - run: npm run release -- --skip-make
+      - run: npm run release -- --from-make
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```

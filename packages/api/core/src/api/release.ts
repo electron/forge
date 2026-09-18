@@ -56,16 +56,20 @@ export interface ReleaseOptions {
    */
   outDir?: string;
   /**
-   * Skip the package and make steps, and release the artifacts saved by a
-   * previous `make` run instead.
+   * Release the artifacts saved by a previous `make` run, instead of packaging
+   * and making the application again.
    *
    * Every `make` run saves a manifest of its results in `<outDir>/make-results`
    * next to the artifacts in `<outDir>/make`. Setting this to true loads those
    * manifests (from every platform and architecture that was made) and
    * releases them without rebuilding, e.g. from a CI job that only has the
    * artifacts other jobs built.
+   *
+   * To reuse only the packaged app and still run the makers, set
+   * {@link MakeOptions.fromPackage} in {@link ReleaseOptions.makeOptions}
+   * instead.
    */
-  skipMake?: boolean;
+  fromMake?: boolean;
   /**
    * Run the package and make steps but do not release anything.
    *
@@ -75,7 +79,7 @@ export interface ReleaseOptions {
    */
   dryRun?: boolean;
   /**
-   * @deprecated Use {@link ReleaseOptions.skipMake} instead. This alias will be
+   * @deprecated Use {@link ReleaseOptions.fromMake} instead. This alias will be
    * removed in a future major version.
    */
   dryRunResume?: boolean;
@@ -90,17 +94,17 @@ export default autoTrace(
       interactive = false,
       makeOptions = {},
       publishTargets = undefined,
-      skipMake = false,
+      fromMake = false,
       dryRun = false,
       dryRunResume = false,
       outDir,
     }: ReleaseOptions,
   ): Promise<void> => {
-    // `dryRunResume` is the deprecated name for `skipMake`
-    skipMake = skipMake || dryRunResume;
-    if (dryRun && skipMake) {
+    // `dryRunResume` is the deprecated name for `fromMake`
+    fromMake = fromMake || dryRunResume;
+    if (dryRun && fromMake) {
       throw new Error(
-        "Can't skip the make step and dry run at the same time: there would be nothing to do",
+        "Can't release from a previous make run and dry run at the same time: there would be nothing to do",
       );
     }
 
@@ -266,12 +270,12 @@ export default autoTrace(
           },
         },
         {
-          title: skipMake
+          title: fromMake
             ? `Loading results from previous ${styleText('yellow', 'make')} run`
             : `Running ${styleText('yellow', 'make')} command`,
           task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
             {
-              name: skipMake ? 'load-make-results' : 'make()',
+              name: fromMake ? 'load-make-results' : 'make()',
               category: '@electron-forge/core',
             },
             async (childTrace, ctx, task) => {
@@ -283,7 +287,7 @@ export default autoTrace(
                 outDir ||
                 getCurrentOutDir(dir, forgeConfig);
 
-              if (skipMake) {
+              if (fromMake) {
                 d('loading results of previous make runs');
                 const makeRuns = await loadMakeResults(calculatedOutDir, dir);
                 task.title = `Loaded results from ${makeRuns.length} previous ${styleText('yellow', 'make')} ${makeRuns.length === 1 ? 'run' : 'runs'}`;
@@ -367,10 +371,10 @@ export default autoTrace(
             },
           ),
         },
-        // When skipping make, the publishers run per restored make run in the
-        // task above. When dry running, make has already saved its results
-        // and there is nothing left to do.
-        ...(skipMake || dryRun ? [] : publishDistributablesTasks(childTrace)),
+        // When releasing from a previous make run, the publishers run per
+        // restored make run in the task above. When dry running, make has
+        // already saved its results and there is nothing left to do.
+        ...(fromMake || dryRun ? [] : publishDistributablesTasks(childTrace)),
       ],
       listrOptions,
     );

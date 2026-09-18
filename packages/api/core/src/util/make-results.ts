@@ -89,7 +89,7 @@ function fromPortablePath(rootDir: string, artifactPath: string): string {
 
 /**
  * Saves the results of a `make` run to `<outDir>/make-results` so that a later
- * `release` with `skipMake` (possibly on a different machine) can release them
+ * `release` with `fromMake` (possibly on a different machine) can release them
  * without rebuilding.
  *
  * Results previously saved for the same platform, arch and maker are removed
@@ -172,7 +172,7 @@ export async function loadMakeResults(
 
   if (makeRuns.length === 0) {
     throw new Error(
-      `No saved make results were found in ${dir}. Run the make command first, and make sure its output is available before releasing with skipMake.`,
+      `No saved make results were found in ${dir}. Run the make command first, and make sure its output is available before releasing with fromMake.`,
     );
   }
   return makeRuns;
