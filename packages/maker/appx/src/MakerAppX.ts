@@ -3,7 +3,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { styleText } from 'node:util';
 
-import { getNameFromAuthor, move } from '@electron-forge/core-utils';
+import {
+  getNameFromAuthor,
+  move,
+  pathExists,
+} from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { toMsixArch } from '@electron-forge/maker-msix';
 import { ForgePlatform } from '@electron-forge/shared-types';
@@ -49,12 +53,14 @@ const validDNRegex = (() => {
     'SERIALNUMBER',
     '(?:OID\\.(0|[1-9][0-9]*)(?:\\.(0|[1-9][0-9]*))+)',
   ].join('|');
-  // Each character of a value is consumed by exactly one alternative so the
-  // pattern cannot backtrack catastrophically on unterminated quoted values.
-  const doubleQuotedValue = '"[^"]*"';
-  const unquotedValue = '[^,"]*';
+  // Every character is consumed by exactly one sub-pattern so the regex cannot
+  // backtrack catastrophically: unquoted values exclude the RDN separators (and
+  // `=`/`"`), and whitespace before a separator belongs to the unquoted value
+  // or to the quoted alternative, never to the separator as well.
+  const doubleQuotedValue = '"[^"]*"\\s*';
+  const unquotedValue = '[^,;="]*';
   const keyValuePair = `(${validKeyPattern})=(${doubleQuotedValue}|${unquotedValue})`;
-  return new RegExp(`^${keyValuePair}(?:\\s*[,;]\\s*${keyValuePair})*,?$`, 'i');
+  return new RegExp(`^${keyValuePair}(?:[,;]\\s*${keyValuePair})*,?$`, 'i');
 })();
 
 /**
@@ -67,8 +73,8 @@ const validDNRegex = (() => {
  * `.msix` (not `.appx`) file to `make/appx/<arch>/`. Options without an MSIX
  * equivalent are ignored with a warning, and the maker no longer creates a
  * development certificate itself: when `devCert` is not set, signing is left
- * to `electron-windows-msix`, which generates a throwaway self-signed
- * certificate.
+ * to `electron-windows-msix`, which generates a self-signed certificate that
+ * is kept next to the `.msix` (`dev_cert.cer` / `dev_cert.pfx`).
  */
 export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   name = 'appx';
@@ -169,7 +175,7 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
           // electron-windows-store took the executable relative to the package
           // root (`app\\Name.exe`); electron-windows-msix prepends `app\\` itself.
           appExecutable:
-            this.config.packageExecutable?.replace(/^app[\\/]/, '') ??
+            this.config.packageExecutable?.replace(/^app[\\/]/i, '') ??
             `${appName}.exe`,
           targetArch: toMsixArch(targetArch),
         },
@@ -177,6 +183,20 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
 
       const outputPath = path.resolve(outPath, `${packageName}.msix`);
       await move(result.msixPackage, outputPath);
+
+      // Without a devCert, electron-windows-msix signs with a self-signed
+      // certificate it writes next to the package in `outputDir`. Keep it
+      // beside the .msix (like the old maker did) so it can be trusted on a
+      // test device; the temp folder is deleted below.
+      if (!this.config.devCert) {
+        for (const certFile of ['dev_cert.cer', 'dev_cert.pfx']) {
+          const certPath = path.resolve(tmpFolder, certFile);
+          if (await pathExists(certPath)) {
+            await move(certPath, path.resolve(outPath, certFile));
+          }
+        }
+      }
+
       return [outputPath];
     } finally {
       await fs.rm(tmpFolder, { recursive: true, force: true });

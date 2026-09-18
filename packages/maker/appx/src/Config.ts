@@ -75,8 +75,9 @@ export interface MakerAppXConfig {
   windowsKit?: string;
   /**
    * Path to a `.pfx` certificate to sign the package with. When unset,
-   * `electron-windows-msix` signs the package with a throwaway self-signed
-   * development certificate.
+   * `electron-windows-msix` signs the package with a self-signed development
+   * certificate, which is written next to the `.msix` as `dev_cert.cer` and
+   * `dev_cert.pfx` so it can be trusted on a test device.
    */
   devCert?: string;
   /**

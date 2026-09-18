@@ -1,3 +1,5 @@
+import fs, { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 
 import { move } from '@electron-forge/core-utils';
@@ -254,6 +256,8 @@ describe('MakerAppX', () => {
       it.each([
         { configured: 'app\\custom.exe', expected: 'custom.exe' },
         { configured: 'app/custom.exe', expected: 'custom.exe' },
+        { configured: 'App\\MyApp.exe', expected: 'MyApp.exe' },
+        { configured: 'APP/MyApp.exe', expected: 'MyApp.exe' },
         { configured: 'custom.exe', expected: 'custom.exe' },
         { configured: 'bin\\custom.exe', expected: 'bin\\custom.exe' },
       ])(
@@ -336,17 +340,32 @@ describe('MakerAppX', () => {
         });
       });
 
-      it('should reject an unterminated quoted value without catastrophic backtracking', async () => {
-        const publisher = 'CN="' + 'a'.repeat(50_000);
-        const start = performance.now();
+      it.each([
+        {
+          shape: 'unterminated quoted value',
+          publisher: 'CN="' + 'a'.repeat(50_000),
+        },
+        {
+          shape: 'repeated ;KEY= separators',
+          publisher: 'C=' + ';C='.repeat(50_000) + '"',
+        },
+        {
+          shape: 'whitespace around separators',
+          publisher: 'C=' + ' , C='.repeat(50_000) + '"',
+        },
+      ])(
+        'should reject an $shape without catastrophic backtracking',
+        async ({ publisher }) => {
+          const start = performance.now();
 
-        await expect(runMake({ publisher })).rejects.toThrow(
-          'did not conform to X.500 distinguished name syntax.',
-        );
+          await expect(runMake({ publisher })).rejects.toThrow(
+            'did not conform to X.500 distinguished name syntax.',
+          );
 
-        expect(performance.now() - start).toBeLessThan(1000);
-        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
-      });
+          expect(performance.now() - start).toBeLessThan(1000);
+          expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+        },
+      );
     });
 
     describe('signing', () => {
@@ -361,6 +380,51 @@ describe('MakerAppX', () => {
 
         expect(packagingOptions()).toMatchObject({
           windowsSignOptions: { certificateFile: 'C:\\certs\\my-cert.pfx' },
+        });
+      });
+
+      describe('generated dev certificate', () => {
+        const certFiles = ['dev_cert.cer', 'dev_cert.pfx'];
+        let tmpDir: string;
+
+        beforeEach(async () => {
+          tmpDir = await mkdtemp(path.join(os.tmpdir(), 'appx-maker-spec-'));
+          vi.mocked(fs.mkdtemp).mockResolvedValueOnce(tmpDir);
+          vi.mocked(packageMSIX).mockImplementationOnce(
+            async ({ outputDir }) => {
+              for (const certFile of certFiles) {
+                await writeFile(path.join(outputDir, certFile), '');
+              }
+              return { msixPackage: path.join(outputDir, 'mytestapp.msix') };
+            },
+          );
+        });
+
+        afterEach(async () => {
+          await rm(tmpDir, { recursive: true, force: true });
+        });
+
+        it('should keep the certificate electron-windows-msix generated next to the .msix', async () => {
+          const output = await runMake({});
+
+          expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+          for (const certFile of certFiles) {
+            expect(vi.mocked(move)).toHaveBeenCalledWith(
+              path.resolve(tmpDir, certFile),
+              path.resolve(outPath, certFile),
+            );
+          }
+          expect(vi.mocked(move)).toHaveBeenCalledTimes(3);
+        });
+
+        it('should not move certificates when devCert is configured', async () => {
+          const output = await runMake({ devCert: 'C:\\certs\\my-cert.pfx' });
+
+          expect(vi.mocked(move)).toHaveBeenCalledOnce();
+          expect(vi.mocked(move)).toHaveBeenCalledWith(
+            path.join(tmpDir, 'mytestapp.msix'),
+            output[0],
+          );
         });
       });
     });
