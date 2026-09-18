@@ -1,6 +1,5 @@
 import { createReadStream } from 'node:fs';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import { ReadableStream } from 'node:stream/web';
 import { styleText } from 'node:util';
 
@@ -16,6 +15,10 @@ import mime from 'mime-types';
 import { PublisherGitHubConfig } from './Config.js';
 import GitHub from './util/github.js';
 import NoReleaseError from './util/no-release-error.js';
+import {
+  hasMultipleSquirrelArches,
+  uploadEntriesForMakeResult,
+} from './util/squirrel-arch.js';
 
 import type { Octokit } from '@octokit/rest';
 
@@ -150,9 +153,23 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.knownReleases.set(releaseName, release!);
 
-      const artifactPaths = artifacts.flatMap((artifact) => artifact.artifacts);
+      // GitHub only allows one asset per name, but Squirrel.Windows names its
+      // RELEASES and .nupkg files identically for every arch, so when this
+      // release contains Squirrel.Windows builds for several arches the
+      // non-x64 ones are uploaded under `{arch}.`-prefixed names.
+      const prefixNonX64Squirrel = hasMultipleSquirrelArches(artifacts);
+      const uploadEntries = (
+        await Promise.all(
+          artifacts.map((artifact) =>
+            uploadEntriesForMakeResult(artifact, prefixNonX64Squirrel),
+          ),
+        )
+      ).flat();
       const artifactSizes = await Promise.all(
-        artifactPaths.map(async (p) => (await fs.stat(p)).size),
+        uploadEntries.map(
+          async (entry) =>
+            entry.data?.byteLength ?? (await fs.stat(entry.path)).size,
+        ),
       );
       const totalBytes = artifactSizes.reduce((sum, size) => sum + size, 0);
 
@@ -163,7 +180,7 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
           ? Math.floor((uploadedBytes / totalBytes) * 100)
           : 100;
         setStatusLine(
-          `Uploading distributables to ${releaseName} (${uploaded}/${artifactPaths.length}, ${percent}%)`,
+          `Uploading distributables to ${releaseName} (${uploaded}/${uploadEntries.length}, ${percent}%)`,
         );
       };
       updateUploadStatus();
@@ -182,12 +199,13 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
       };
 
       await Promise.all(
-        artifactPaths.map(async (artifactPath, index) => {
+        uploadEntries.map(async (entry, index) => {
           const done = () => {
             uploaded += 1;
             updateUploadStatus();
           };
-          const artifactName = path.basename(artifactPath);
+          const artifactPath = entry.path;
+          const artifactName = entry.name;
           const sanitizedArtifactName = GitHub.sanitizeName(artifactName);
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const asset = release!.assets.find(
@@ -201,6 +219,13 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
                 asset_id: asset.id,
               });
             } else {
+              console.warn(
+                styleText('yellow', '⚠'),
+                styleText(
+                  'yellow',
+                  `Skipping upload of '${artifactName}' - an asset with that name already exists on ${releaseName}. Set "force: true" in the publisher config to overwrite it.`,
+                ),
+              );
               // Count skipped assets as fully uploaded so the percentage still totals 100%.
               reportProgress(artifactSizes[index]);
               return done();
@@ -217,10 +242,11 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 url: release!.upload_url,
                 // https://github.com/octokit/rest.js/issues/1645
-                data: progressStream(
-                  artifactPath,
-                  reportProgress,
-                ) as unknown as string,
+                data: (entry.data ??
+                  progressStream(
+                    artifactPath,
+                    reportProgress,
+                  )) as unknown as string,
                 headers: {
                   'content-type':
                     mime.lookup(artifactPath) || 'application/octet-stream',
@@ -228,6 +254,10 @@ export default class PublisherGitHub extends PublisherBase<PublisherGitHubConfig
                 },
                 name: artifactName,
               });
+            if (entry.data !== undefined) {
+              // In-memory bodies are handed to fetch whole, so report them once.
+              reportProgress(entry.data.byteLength);
+            }
             if (uploadedAsset.name !== sanitizedArtifactName) {
               // There's definitely a bug with GitHub.sanitizeName
               console.warn(
