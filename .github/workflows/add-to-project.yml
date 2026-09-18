@@ -23,7 +23,5 @@ jobs:
       - name: Add to Project
         uses: dsanders11/project-actions/add-item@5767984408ccc6742f83acc8b8d8ea5e09f329af # v2.0.0
         with:
-          field: Opened
-          field-value: ${{ github.event.pull_request.created_at || github.event.issue.created_at }}
           project-number: 89
           token: ${{ steps.generate-token.outputs.token }}
