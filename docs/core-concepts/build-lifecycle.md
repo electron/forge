@@ -11,7 +11,7 @@ Each one of these steps is a separate command exposed through Forge's `electron-
 :::info
 **Cascading build steps**
 
-Running each of these tasks will also run the previous ones in the sequence (i.e. running the `electron-forge publish` script will first run `package` and `make` as prerequisite steps).
+Running each of these tasks will also run the previous ones in the sequence (i.e. running the `electron-forge release` script will first run `package` and `make` as prerequisite steps).
 :::
 
 ```mermaid
@@ -71,12 +71,14 @@ After the Make step, distributable archives or installers are generated for your
 ## Step 3: Publish
 
 :::info
-For command usage, see the [Publish](../cli.md#publish) CLI command documentation.
+For command usage, see the [Release](../cli.md#release) CLI command documentation.
 :::
 
-Forge's **Publish** step takes the distributable build artifacts from the Make step and uploads for distribution to your app's end users (e.g. to GitHub Releases or AWS S3 static storage). Publishing is an optional step in the Electron Forge pipeline, since the artifacts from the Make step are already in their final format.
+Forge's **Publish** step (run with the `release` command) takes the distributable build artifacts from the Make step and uploads for distribution to your app's end users (e.g. to GitHub Releases or AWS S3 static storage). Publishing is an optional step in the Electron Forge pipeline, since the artifacts from the Make step are already in their final format.
 
 You can choose which platforms you want to target by adding [Publishers](../config/publishers/index.md) to your Forge config.
+
+Unlike the Make step, the Publish step does not need to run on the same machine (or even the same operating system) that built the artifacts. See [Releasing from CI](../cli.md#releasing-from-ci) for how to make distributables on one machine per platform and release all of them from a single job.
 
 :::tip
 After the Publish step, your app distributables will be available to download by users.

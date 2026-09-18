@@ -201,6 +201,10 @@ export interface ForgeMakeResult {
    * The arch this make run was for
    */
   arch: ForgeArch;
+  /**
+   * The name of the maker that generated these artifacts
+   */
+  maker?: string;
 }
 
 export interface IForgeResolvablePlugin {

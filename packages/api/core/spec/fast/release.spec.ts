@@ -6,12 +6,22 @@ import {
   ForgeMakeResult,
   ResolvedForgeConfig,
 } from '@electron-forge/shared-types';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { listrMake } from '../../src/api/make';
 import release from '../../src/api/release';
 import findConfig from '../../src/util/forge-config.js';
 import { importSearch } from '../../src/util/import-search.js';
+import { saveMakeResults } from '../../src/util/make-results.js';
+import resolveDir from '../../src/util/resolve-dir.js';
 
 vi.mock(import('../../src/api/make'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -158,76 +168,212 @@ describe('release', () => {
     expect(mockPublish).toHaveBeenCalledOnce();
   });
 
-  describe('dry run', () => {
+  describe('fromMake', () => {
+    // The project directory: artifact paths in the saved manifests are
+    // relative to it, so `release` must resolve the same directory.
     let tmpDir: string;
+    // A fresh out directory for every test so saved manifests don't leak
+    let outDir: string;
+    let makeResults: ForgeMakeResult[];
 
     beforeAll(async () => {
-      const tmp = os.tmpdir();
-      const tmpdir = path.join(tmp, 'electron-forge-test-');
-      tmpDir = await fs.mkdtemp(tmpdir);
+      tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'electron-forge-test-'));
+      vi.mocked(resolveDir).mockResolvedValue(tmpDir);
       await fs.writeFile(path.join(tmpDir, 'artifact-1'), 'beep');
       await fs.writeFile(path.join(tmpDir, 'artifact-2'), 'boop');
-      vi.mocked(listrMake).mockImplementationOnce((_childTrace, _opts, cb) => {
-        cb!([
-          {
-            artifacts: [path.join(tmpDir, 'artifact-1')],
-          },
-          {
-            artifacts: [path.join(tmpDir, 'artifact-2')],
-          },
-        ] as ForgeMakeResult[]);
+      makeResults = [
+        {
+          artifacts: [path.join(tmpDir, 'artifact-1')],
+          platform: 'linux',
+          arch: 'x64',
+        },
+        {
+          artifacts: [path.join(tmpDir, 'artifact-2')],
+          platform: 'linux',
+          arch: 'arm64',
+        },
+      ] as ForgeMakeResult[];
+    });
 
-        return {
-          run: vi.fn(),
-        } as any;
-      });
+    beforeEach(async () => {
+      outDir = await fs.mkdtemp(path.join(tmpDir, 'out-'));
     });
 
     afterAll(async () => {
+      vi.mocked(resolveDir).mockResolvedValue('fake-target-dir');
       await fs.rm(tmpDir, { recursive: true });
     });
 
-    it('dryRun creates hash JSON files', async () => {
-      await release({
-        dir: import.meta.dirname,
-        outDir: tmpDir,
-        interactive: false,
-        dryRun: true,
-      });
-      const folder = [tmpDir, 'publish-dry-run'];
-      const dryRunFolder = await fs.readdir(path.join(...folder));
-      expect(dryRunFolder).toHaveLength(1);
-      folder.push(dryRunFolder.pop() as string);
-      const hashFolder = await fs.readdir(path.join(...folder));
-      expect(hashFolder).toEqual([
-        expect.stringContaining('.forge.publish'),
-        expect.stringContaining('.forge.publish'),
-      ]);
-
-      for (const file of hashFolder) {
-        const hashFile = await fs.readFile(path.join(...folder, file), 'utf8');
-        expect(JSON.parse(hashFile)).toEqual({
-          artifacts: [expect.stringContaining('artifact-')],
-        });
-      }
-    });
-
-    // Note: you need to run this entire describe() block together for this test to pass
-    it('dryRunResume consumes hash files', async () => {
+    function mockPublisher() {
       const MockPublisher = vi.fn();
       const mockPublish = vi.fn();
       MockPublisher.prototype.publish = mockPublish;
       MockPublisher.prototype.__isElectronForgePublisher = true;
+      return { publisher: new MockPublisher(), publish: mockPublish };
+    }
+
+    it('releases the results saved by a previous make run without calling make', async () => {
+      await saveMakeResults(outDir, makeResults, tmpDir);
+      const { publisher, publish } = mockPublisher();
 
       await release({
         dir: import.meta.dirname,
-        outDir: tmpDir,
+        outDir,
         interactive: false,
-        dryRunResume: true,
-        publishTargets: [new MockPublisher()],
+        fromMake: true,
+        publishTargets: [publisher],
       });
 
-      expect(mockPublish).toHaveBeenCalledOnce();
+      expect(vi.mocked(listrMake)).not.toHaveBeenCalled();
+      expect(publish).toHaveBeenCalledOnce();
+      expect(publish.mock.calls[0][0].makeResults).toEqual(makeResults);
     });
+
+    it('releases each saved make run separately', async () => {
+      await saveMakeResults(outDir, [makeResults[0]], tmpDir);
+      await saveMakeResults(outDir, [makeResults[1]], tmpDir);
+      const { publisher, publish } = mockPublisher();
+
+      await release({
+        dir: import.meta.dirname,
+        outDir,
+        interactive: false,
+        fromMake: true,
+        publishTargets: [publisher],
+      });
+
+      expect(publish).toHaveBeenCalledTimes(2);
+      expect(
+        publish.mock.calls.map((call) => call[0].makeResults).flat(),
+      ).toEqual(expect.arrayContaining(makeResults));
+    });
+
+    it('looks for saved results in makeOptions.outDir when it is set', async () => {
+      await saveMakeResults(outDir, makeResults, tmpDir);
+      const { publisher, publish } = mockPublisher();
+
+      await release({
+        dir: import.meta.dirname,
+        interactive: false,
+        fromMake: true,
+        makeOptions: { outDir },
+        publishTargets: [publisher],
+      });
+
+      expect(publish).toHaveBeenCalledOnce();
+      expect(publish.mock.calls[0][0].makeResults).toEqual(makeResults);
+    });
+
+    it('fails if a saved artifact is missing', async () => {
+      await saveMakeResults(
+        outDir,
+        [
+          {
+            artifacts: [path.join(tmpDir, 'artifact-missing')],
+            platform: 'linux',
+            arch: 'x64',
+          },
+        ] as ForgeMakeResult[],
+        tmpDir,
+      );
+      const { publisher, publish } = mockPublisher();
+
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          outDir,
+          interactive: false,
+          fromMake: true,
+          publishTargets: [publisher],
+        }),
+      ).rejects.toThrowError(/artifact-missing.*could not be found/);
+      expect(publish).not.toHaveBeenCalled();
+    });
+
+    it('fails if nothing has been made yet', async () => {
+      const emptyOutDir = path.join(outDir, 'empty');
+      const { publisher, publish } = mockPublisher();
+
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          outDir: emptyOutDir,
+          interactive: false,
+          fromMake: true,
+          publishTargets: [publisher],
+        }),
+      ).rejects.toThrowError(/No saved make results were found/);
+      expect(publish).not.toHaveBeenCalled();
+    });
+
+    it('accepts the deprecated dryRunResume alias', async () => {
+      await saveMakeResults(outDir, makeResults, tmpDir);
+      const { publisher, publish } = mockPublisher();
+
+      await release({
+        dir: import.meta.dirname,
+        outDir,
+        interactive: false,
+        dryRunResume: true,
+        publishTargets: [publisher],
+      });
+
+      expect(vi.mocked(listrMake)).not.toHaveBeenCalled();
+      expect(publish).toHaveBeenCalledOnce();
+    });
+
+    it('rejects fromMake combined with fromPackage', async () => {
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          interactive: false,
+          fromMake: true,
+          makeOptions: { fromPackage: true },
+        }),
+      ).rejects.toThrowError(
+        /fromMake and fromPackage options .* cannot be combined/,
+      );
+    });
+
+    it('rejects fromMake combined with the deprecated skipPackage alias', async () => {
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          interactive: false,
+          fromMake: true,
+          makeOptions: { skipPackage: true },
+        }),
+      ).rejects.toThrowError(/cannot be combined/);
+    });
+
+    it('rejects dryRun combined with fromMake', async () => {
+      await expect(
+        release({
+          dir: import.meta.dirname,
+          interactive: false,
+          fromMake: true,
+          dryRun: true,
+        }),
+      ).rejects.toThrowError(
+        /Can't release from a previous make run and dry run/,
+      );
+    });
+  });
+
+  it('runs make but does not publish with the deprecated dryRun option', async () => {
+    const MockPublisher = vi.fn();
+    const mockPublish = vi.fn();
+    MockPublisher.prototype.publish = mockPublish;
+    MockPublisher.prototype.__isElectronForgePublisher = true;
+
+    await release({
+      dir: import.meta.dirname,
+      interactive: false,
+      dryRun: true,
+      publishTargets: [new MockPublisher()],
+    });
+
+    expect(vi.mocked(listrMake)).toHaveBeenCalledOnce();
+    expect(mockPublish).not.toHaveBeenCalled();
   });
 });
