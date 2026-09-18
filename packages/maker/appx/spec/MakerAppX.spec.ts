@@ -156,6 +156,18 @@ describe('MakerAppX', () => {
       ).toBeLessThan(vi.mocked(move).mock.invocationCallOrder[0]);
     });
 
+    it('should still return the .msix when the temporary folder cannot be removed', async () => {
+      vi.mocked(fs.rm).mockRejectedValueOnce(new Error('EBUSY: resource busy'));
+
+      const output = await runMake({});
+
+      expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+      expect(console.warn).toHaveBeenCalledOnce();
+      expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+        `Could not remove the temporary folder "${mockTmpDir}": EBUSY: resource busy`,
+      );
+    });
+
     it('should fall back to the app name when package.json has no description', async () => {
       await runMake(
         {},
@@ -373,6 +385,32 @@ describe('MakerAppX', () => {
         await runMake({ certPass: 'ignored', signtoolParams: ['/debug'] });
 
         expect(packagingOptions().windowsSignOptions).toBeUndefined();
+      });
+
+      it.each([
+        { option: 'certPass', value: 'hunter2' },
+        { option: 'signtoolParams', value: ['/debug'] },
+      ] satisfies { option: keyof MakerAppXConfig; value: unknown }[])(
+        'should warn that $option is ignored when devCert is not configured',
+        async ({ option, value }) => {
+          await runMake({ [option]: value });
+
+          expect(console.warn).toHaveBeenCalledOnce();
+          expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+            `The "${option}" option is ignored by @electron-forge/maker-appx because "devCert" is not set.`,
+          );
+          expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+        },
+      );
+
+      it('should not warn about certPass or signtoolParams when devCert is configured', async () => {
+        await runMake({
+          devCert: 'C:\\certs\\my-cert.pfx',
+          certPass: 'hunter2',
+          signtoolParams: ['/debug'],
+        });
+
+        expect(console.warn).not.toHaveBeenCalled();
       });
 
       it('should sign with the configured devCert', async () => {

@@ -94,14 +94,23 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
   }: MakerOptions): Promise<string[]> {
     for (const option of UNSUPPORTED_OPTIONS) {
       if (this.config[option] !== undefined) {
-        console.warn(
-          styleText('yellow', '⚠'),
-          styleText(
-            'yellow',
-            `WARNING: The "${option}" option is not supported by @electron-forge/maker-appx anymore and will be ignored. ` +
-              'Migrate to @electron-forge/maker-msix.',
-          ),
+        this.warn(
+          `The "${option}" option is not supported by @electron-forge/maker-appx anymore and will be ignored. ` +
+            'Migrate to @electron-forge/maker-msix.',
         );
+      }
+    }
+
+    // Signing options are only forwarded together with a devCert; without
+    // one, electron-windows-msix signs with its own development certificate.
+    if (!this.config.devCert) {
+      for (const option of ['certPass', 'signtoolParams'] as const) {
+        if (this.config[option] !== undefined) {
+          this.warn(
+            `The "${option}" option is ignored by @electron-forge/maker-appx because "devCert" is not set. ` +
+              'Set "devCert" to sign with your own certificate.',
+          );
+        }
       }
     }
 
@@ -199,8 +208,23 @@ export default class MakerAppX extends MakerBase<MakerAppXConfig> {
 
       return [outputPath];
     } finally {
-      await fs.rm(tmpFolder, { recursive: true, force: true });
+      // A failed cleanup (e.g. a lingering handle on Windows) must not turn a
+      // successful make() into an error: the .msix has already been moved.
+      try {
+        await fs.rm(tmpFolder, { recursive: true, force: true });
+      } catch (err) {
+        this.warn(
+          `Could not remove the temporary folder "${tmpFolder}": ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
+  }
+
+  private warn(message: string): void {
+    console.warn(
+      styleText('yellow', '⚠'),
+      styleText('yellow', `WARNING: ${message}`),
+    );
   }
 }
 
