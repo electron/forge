@@ -156,7 +156,7 @@ describe('subprocess-worker', () => {
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code, stderr).toBe(0);
 
-    const outFile = path.join(viteOutDir, 'build', 'main-with-entry.js');
+    const outFile = path.join(viteOutDir, 'build', 'main-with-entry.cjs');
     const contents = fs.readFileSync(outFile, 'utf8');
     // The app protocol runtime should be prepended to the bundle. Only assert
     // on markers that survive minification (property names and string
@@ -201,7 +201,7 @@ describe('subprocess-worker', () => {
     expect(code, stderr).toBe(0);
 
     const contents = fs.readFileSync(
-      path.join(viteOutDir, 'build', 'main.js'),
+      path.join(viteOutDir, 'build', 'main.cjs'),
       'utf8',
     );
     expect(contents).toContain('registerSchemesAsPrivileged');
@@ -234,7 +234,7 @@ describe('subprocess-worker', () => {
     expect(code, stderr).toBe(0);
 
     const contents = fs.readFileSync(
-      path.join(viteOutDir, 'build', 'main.js'),
+      path.join(viteOutDir, 'build', 'main.cjs'),
       'utf8',
     );
     expect(contents).not.toContain('registerSchemesAsPrivileged');
