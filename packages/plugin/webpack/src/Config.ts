@@ -161,9 +161,11 @@ export interface WebpackPluginConfig {
    * carries the per-entry subdirectory; it is a dev server URL in development
    * either way, so `mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)` keeps
    * working unchanged). JS-only (no-window) entry points resolve to a
-   * root-relative `/<entry-name>/index.js` URL instead, so a served window
-   * loads them same-origin (worker scripts must be same-origin with the
-   * window that spawns them). `nodeIntegration: true` entry points keep
+   * relative `../<entry-name>/index.js` URL instead, which resolves against
+   * whichever window loads it — same-origin from a served window (worker
+   * scripts must be same-origin with the window that spawns them), and still
+   * a valid `file://` sibling from a `nodeIntegration` window.
+   * `nodeIntegration: true` entry points keep
    * their `file://` paths —
    * Electron only derives the renderer's `__dirname` from `file:` URLs, which
    * relocated native modules rely on.

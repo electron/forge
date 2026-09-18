@@ -253,16 +253,25 @@ describe('WebpackConfigGenerator', () => {
         );
       });
 
-      it('resolves JS-only entry points root-relative when a window is served', () => {
+      it('resolves JS-only entry points relative when a window is served', () => {
         // A window served from `app://` cannot load a `file://` script
         // (cross-scheme fetches are blocked), and worker scripts must be
-        // same-origin — a root-relative URL resolves against whichever
-        // served origin loads it, all rooted at the shared renderer output.
+        // same-origin. Every window document sits one level below the shared
+        // renderer root, so a `../<name>/index.js` URL resolves to the right
+        // sibling from a served window and from a `nodeIntegration` window
+        // that stays on `file://` alike — the define is global, so a mixed
+        // app needs one form that is correct from both origins.
         const config = {
           appProtocol: true,
           renderer: {
             entryPoints: [
               { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+              {
+                name: 'legacy_window',
+                html: 'index.html',
+                js: 'renderer.js',
+                nodeIntegration: true,
+              },
               { name: 'hello', js: 'foo.js' },
             ],
           },
@@ -270,7 +279,7 @@ describe('WebpackConfigGenerator', () => {
         const generator = new WebpackConfigGenerator(config, '/', true, 3000);
         const defines = generator.getDefines();
 
-        expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'/hello/index.js'");
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'../hello/index.js'");
       });
 
       it('keeps JS-only entry points on file:// when no window is served', () => {

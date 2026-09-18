@@ -189,16 +189,20 @@ export default class WebpackConfigGenerator {
       // `new Worker(WORKER_WEBPACK_ENTRY)`. A window served from `app://`
       // cannot load a `file://` script (cross-scheme fetches are blocked),
       // and worker scripts must additionally be same-origin — so once any
-      // window is served, emit a root-relative URL: every served origin is
-      // rooted at the shared `.webpack/renderer/` directory, making the
-      // script same-origin from whichever window resolves it.
+      // window is served, emit a *relative* URL. Every window document sits
+      // at `<renderer-root>/<window-name>/index.html`, one level below the
+      // shared output root, so `../<name>/index.js` resolves to the right
+      // sibling from a served window (`app://win/<name>/index.js`, served
+      // through the shared root) and from a `nodeIntegration` window that
+      // stays on `file://` alike — a root-relative or absolute URL could
+      // only be correct for one of the two.
       if (
         this.pluginConfig.appProtocol &&
         basename === 'index.js' &&
         !nodeIntegration &&
         this.hasServedWindows
       ) {
-        return `'/${encodeURIComponent(entryPoint.name)}/index.js'`;
+        return `'../${encodeURIComponent(entryPoint.name)}/index.js'`;
       }
       return `\`file://$\{require('path').resolve(__dirname, '..', 'renderer', '${entryPoint.name}', '${basename}')}\``;
     }
