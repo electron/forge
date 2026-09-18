@@ -354,6 +354,7 @@ export default autoTrace(
                     dir,
                     interactive,
                     ...makeOptions,
+                    forgeConfig: ctx.forgeConfig,
                   },
                   (results) => {
                     ctx.makeResults = results;

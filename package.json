@@ -81,9 +81,9 @@
     "electron-wix-msi": "^5.1.3"
   },
   "lint-staged": {
-    "*.{html,json,md,yml}": "oxfmt --write",
-    "*.{js,ts, cjs, mjs, cts, mts}": [
-      "oxfmt --write",
+    "*.{html,json,md,yml}": "oxfmt --write --no-error-on-unmatched-pattern",
+    "*.{js,ts,cjs,mjs,cts,mts}": [
+      "oxfmt --write --no-error-on-unmatched-pattern",
       "oxlint --fix"
     ]
   },
