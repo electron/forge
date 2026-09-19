@@ -13,6 +13,7 @@ import {
   registerForgeConfigForDirectory,
   unregisterForgeConfigForDirectory,
 } from '../../src/util/forge-config';
+import { loadMakeResults } from '../../src/util/make-results';
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -98,11 +99,37 @@ describe('make', () => {
       arch: 'x64',
       dir: path.join(fixtureDir, 'app-with-scoped-name'),
       platform: 'linux',
-      skipPackage: true,
+      fromPackage: true,
     });
     expect(result).toHaveLength(1);
     expect(result[0].artifacts).toEqual([
       expect.stringContaining('@scope-package-linux-x64-1.0.0.zip'),
+    ]);
+  });
+
+  it('accepts the deprecated skipPackage alias', async () => {
+    const result = await make({
+      arch: 'x64',
+      dir: path.join(fixtureDir, 'app-with-scoped-name'),
+      platform: 'linux',
+      skipPackage: true,
+    });
+    expect(packager).not.toHaveBeenCalled();
+    expect(result).toHaveLength(1);
+  });
+
+  it('saves its results so they can be released later', async () => {
+    const dir = path.join(fixtureDir, 'app-with-scoped-name');
+    const results = await make({
+      arch: 'x64',
+      dir,
+      platform: 'linux',
+      fromPackage: true,
+    });
+
+    expect(results[0].maker).toEqual('zip');
+    await expect(loadMakeResults(path.join(dir, 'out'), dir)).resolves.toEqual([
+      results,
     ]);
   });
 
@@ -112,7 +139,7 @@ describe('make', () => {
       dir: path.join(fixtureDir, 'app-with-custom-maker-config'),
       overrideTargets: ['../custom-maker'],
       platform: 'linux',
-      skipPackage: true,
+      fromPackage: true,
     });
 
     expect(results[0].artifacts).toEqual(['from config']);
@@ -124,7 +151,7 @@ describe('make', () => {
         arch: 'x64',
         dir: path.join(fixtureDir, 'maker-name-wrong-type'),
         platform: 'linux',
-        skipPackage: true,
+        fromPackage: true,
       }),
     ).rejects.toThrowError(
       /^The following maker config has a maker name that is not a string:/,
@@ -137,7 +164,7 @@ describe('make', () => {
         arch: 'x64',
         dir: path.join(fixtureDir, 'maker-sans-name'),
         platform: 'linux',
-        skipPackage: true,
+        fromPackage: true,
       }),
     ).rejects.toThrowError(
       /^The following maker config is missing a maker name:/,
@@ -150,7 +177,7 @@ describe('make', () => {
         arch: 'x64',
         dir: path.join(fixtureDir, 'app-with-maker-disable'),
         platform: 'linux',
-        skipPackage: true,
+        fromPackage: true,
       }),
     ).rejects.toThrowError(
       /Could not find any make targets configured for the "linux" platform./,
@@ -162,7 +189,7 @@ describe('make', () => {
       arch: 'x64',
       dir: path.join(fixtureDir, 'app-with-custom-maker-config'),
       platform: 'linux',
-      skipPackage: true,
+      fromPackage: true,
     };
 
     await expect(make(opts)).rejects.toThrowError(
