@@ -4,7 +4,7 @@
 
 Configuration options are documented in [`MakerDMGConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-dmg.MakerDMGConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-dmg',
   config: {

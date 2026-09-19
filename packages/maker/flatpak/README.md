@@ -6,7 +6,7 @@ You can only build the Flatpak target if you have `flatpak`, `flatpak-builder`, 
 
 Configuration options are documented in [`MakerFlatpakOptionsConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-flatpak.MakerFlatpakConfigOptions.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-flatpak',
   config: {

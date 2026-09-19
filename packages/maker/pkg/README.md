@@ -4,7 +4,7 @@
 
 Configuration options are documented in [`MakerPkgConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-pkg.MakerPKGConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-pkg',
   config: {

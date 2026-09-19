@@ -9,7 +9,7 @@ Pre-requisites:
 
 Configuration options are documented in [`MakerSquirrelConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-squirrel.MakerSquirrelConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-squirrel',
   config: {

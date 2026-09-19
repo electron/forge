@@ -4,7 +4,7 @@
 
 Configuration options are documented in [`MakerZIPConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-zip'
 }

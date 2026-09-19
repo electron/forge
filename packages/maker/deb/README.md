@@ -4,7 +4,7 @@
 
 Configuration options are documented in [`MakerDebConfigOptions`](https://js.electronforge.io/interfaces/_electron-forge_maker-deb.MakerDebConfigOptions.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-deb',
   config: {

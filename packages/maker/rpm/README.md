@@ -6,7 +6,7 @@ You can only build the RPM target on Linux machines with the `rpm` or `rpm-build
 
 Configuration options are documented in [`MakerRpmConfigOptions`](https://js.electronforge.io/interfaces/_electron-forge_maker-rpm.MakerRpmConfigOptions.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-rpm',
   config: {

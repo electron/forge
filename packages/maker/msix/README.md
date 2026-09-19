@@ -12,7 +12,7 @@ Configuration options are documented in [`MakerMSIXConfig`](https://js.electronf
 
 maker-msix utilizes @electron/windows-sign via the `windowsSignOptions` property. See the [windows-sign documentation](https://github.com/electron/windows-sign/blob/main/README.md) for details.
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-msix',
   config: {
