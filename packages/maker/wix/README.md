@@ -9,7 +9,7 @@ Pre-requisites:
 
 Configuration options are documented in [`MakerWixConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-wix.MakerWixConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-wix',
   config: {
