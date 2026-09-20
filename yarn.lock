@@ -8268,7 +8268,7 @@ __metadata:
     listr2: "npm:^11.1.0"
     markdownlint-cli2: "npm:^0.19.1"
     oxfmt: "npm:^0.41.0"
-    oxlint: "npm:^1.65.0"
+    oxlint: "npm:^1.80.0"
     ref-napi: "npm:^3.0.3"
     tsx: "npm:^4.21.0"
     typedoc: "npm:~0.28.0"
@@ -13826,7 +13826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oxlint@npm:^1.65.0":
+"oxlint@npm:^1.80.0":
   version: 1.82.0
   resolution: "oxlint@npm:1.82.0"
   dependencies:
