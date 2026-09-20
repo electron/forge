@@ -6,7 +6,7 @@ You can only build the Snapcraft target on Linux systems with the `snapcraft` pa
 
 Configuration options are documented in [`MakerSnapConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-snap.MakerSnapConfig.html).
 
-```javascript
+```json5
 {
   name: '@electron-forge/maker-snap',
   config: {
