@@ -52,18 +52,18 @@ class ViteTemplate extends BaseTemplate {
               path.resolve(directory, 'forge.config.mts'),
               forgeConfigPath,
             );
-            // Patch entry/config paths from .ts to .js/.mjs
+            // Patch entry/config paths from .ts/.mts to .js/.mjs
             await this.updateFileByLine(forgeConfigPath, (line) =>
               line
                 .replace(/src\/main\.ts/g, 'src/main.js')
                 .replace(/src\/preload\.ts/g, 'src/preload.js')
-                .replace(/vite\.main\.config\.ts/g, 'vite.main.config.mjs')
+                .replace(/vite\.main\.config\.mts/g, 'vite.main.config.mjs')
                 .replace(
-                  /vite\.preload\.config\.ts/g,
+                  /vite\.preload\.config\.mts/g,
                   'vite.preload.config.mjs',
                 )
                 .replace(
-                  /vite\.renderer\.config\.ts/g,
+                  /vite\.renderer\.config\.mts/g,
                   'vite.renderer.config.mjs',
                 ),
             );
@@ -75,18 +75,18 @@ class ViteTemplate extends BaseTemplate {
         task: async () => {
           // Copy Vite config files
           if (typescript) {
-            await this.copyTemplateFile(directory, 'vite.main.config.ts');
-            await this.copyTemplateFile(directory, 'vite.preload.config.ts');
-            await this.copyTemplateFile(directory, 'vite.renderer.config.ts');
+            await this.copyTemplateFile(directory, 'vite.main.config.mts');
+            await this.copyTemplateFile(directory, 'vite.preload.config.mts');
+            await this.copyTemplateFile(directory, 'vite.renderer.config.mts');
           } else {
             for (const name of [
               'vite.main.config',
               'vite.preload.config',
               'vite.renderer.config',
             ]) {
-              await this.copyTemplateFile(directory, `${name}.ts`);
+              await this.copyTemplateFile(directory, `${name}.mts`);
               await this.stripAndRename(
-                path.resolve(directory, `${name}.ts`),
+                path.resolve(directory, `${name}.mts`),
                 path.resolve(directory, `${name}.mjs`),
               );
             }
