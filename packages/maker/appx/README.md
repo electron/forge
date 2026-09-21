@@ -7,12 +7,18 @@ You can only build the AppX target on Windows machines with the Windows 10 SDK i
 Configuration options are documented in [`MakerAppXConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-appx.MakerAppXConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-appx',
-  config: {
-    publisher: 'CN=developmentca',
-    devCert: 'C:\\devcert.pfx',
-    certPass: 'abcd'
-  }
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-appx',
+      config: {
+        publisher: 'CN=developmentca',
+        devCert: 'C:\\devcert.pfx',
+        certPass: 'abcd'
+      }
+    }
+  ]
+};
 ```

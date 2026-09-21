@@ -5,7 +5,13 @@
 Configuration options are documented in [`MakerZIPConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-zip'
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-zip'
+    }
+  ]
+};
 ```
