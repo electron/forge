@@ -11,12 +11,18 @@ When `devCert` is not set, `electron-windows-msix` signs the package with a self
 Configuration options are documented in [`MakerAppXConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-appx.MakerAppXConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-appx',
-  config: {
-    publisher: 'CN=developmentca',
-    devCert: 'C:\\devcert.pfx',
-    certPass: 'abcd'
-  }
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-appx',
+      config: {
+        publisher: 'CN=developmentca',
+        devCert: 'C:\\devcert.pfx',
+        certPass: 'abcd'
+      }
+    }
+  ]
+};
 ```

@@ -7,13 +7,19 @@ You can only build the Flatpak target if you have `flatpak`, `flatpak-builder`, 
 Configuration options are documented in [`MakerFlatpakOptionsConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-flatpak.MakerFlatpakConfigOptions.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-flatpak',
-  config: {
-    options: {
-      categories: ['Video'],
-      mimeType: ['video/h264']
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-flatpak',
+      config: {
+        options: {
+          categories: ['Video'],
+          mimeType: ['video/h264']
+        }
+      }
     }
-  }
-}
+  ]
+};
 ```
