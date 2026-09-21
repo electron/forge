@@ -64,6 +64,22 @@ export async function expectTypecheckToPass(dir: string): Promise<void> {
 }
 
 /**
+ * Runs the `typecheck` script and expects it to fail.
+ * Returns the script's stdout, where `tsc` reports its diagnostics.
+ */
+export async function expectTypecheckToFail(dir: string): Promise<string> {
+  try {
+    await runNPM(dir, 'run', 'typecheck');
+  } catch (err) {
+    if (err instanceof ExitError) {
+      return err.stdout.toString();
+    }
+    throw err;
+  }
+  throw new Error('Expected typecheck to fail, but it passed');
+}
+
+/**
  * Mutates the `package.json` file in a directory.
  * Use the return value to later restore the original `package.json` value
  * in a subsequent call of this function.
