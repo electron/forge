@@ -50,9 +50,9 @@ describe('ViteTemplate', () => {
       const unexpectedFiles = [
         'forge.config.mts',
         'tsconfig.json',
-        'vite.main.config.ts',
-        'vite.preload.config.ts',
-        'vite.renderer.config.ts',
+        'vite.main.config.mts',
+        'vite.preload.config.mts',
+        'vite.renderer.config.mts',
         path.join('src', 'declarations.d.ts'),
         path.join('src', 'main.ts'),
         path.join('src', 'renderer.ts'),
@@ -153,9 +153,9 @@ describe('ViteTemplate', () => {
         'package.json',
         'forge.config.mts',
         'tsconfig.json',
-        'vite.main.config.ts',
-        'vite.preload.config.ts',
-        'vite.renderer.config.ts',
+        'vite.main.config.mts',
+        'vite.preload.config.mts',
+        'vite.renderer.config.mts',
         path.join('src', 'declarations.d.ts'),
         path.join('src', 'main.ts'),
         path.join('src', 'renderer.ts'),
@@ -203,13 +203,15 @@ describe('ViteTemplate', () => {
       ).toMatch(/src="\/src\/renderer\.ts"/);
     });
 
-    it('should reference .ts paths in forge.config.mts', async () => {
+    it('should reference .ts/.mts paths in forge.config.mts', async () => {
       const config = (
         await fs.promises.readFile(path.join(dir, 'forge.config.mts'))
       ).toString();
       expect(config).toMatch(/src\/main\.ts/);
       expect(config).toMatch(/src\/preload\.ts/);
-      expect(config).toMatch(/vite\.main\.config\.ts/);
+      expect(config).toMatch(/vite\.main\.config\.mts/);
+      expect(config).toMatch(/vite\.preload\.config\.mts/);
+      expect(config).toMatch(/vite\.renderer\.config\.mts/);
     });
 
     it('should include typecheck script in package.json', async () => {
