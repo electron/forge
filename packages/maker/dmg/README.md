@@ -4,12 +4,18 @@
 
 Configuration options are documented in [`MakerDMGConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-dmg.MakerDMGConfig.html).
 
-```json5
-{
-  name: '@electron-forge/maker-dmg',
-  config: {
-    background: './assets/dmg-background.png',
-    format: 'ULFO'
-  }
-}
+```javascript
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        background: './assets/dmg-background.png',
+        format: 'ULFO'
+      }
+    }
+  ]
+};
 ```

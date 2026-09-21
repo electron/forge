@@ -12,16 +12,22 @@ Configuration options are documented in [`MakerMSIXConfig`](https://js.electronf
 
 maker-msix utilizes @electron/windows-sign via the `windowsSignOptions` property. See the [windows-sign documentation](https://github.com/electron/windows-sign/blob/main/README.md) for details.
 
-```json5
-{
-  name: '@electron-forge/maker-msix',
-  config: {
-    manifestVariables: {
-      publisher: 'Electron Dev'
-    },
-    windowsSignOptions: {
-      certificatePassword: '12345'
+```javascript
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-msix',
+      config: {
+        manifestVariables: {
+          publisher: 'Electron Dev'
+        },
+        windowsSignOptions: {
+          certificatePassword: '12345'
+        }
+      }
     }
-  }
-}
+  ]
+};
 ```

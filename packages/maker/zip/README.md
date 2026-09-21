@@ -4,8 +4,14 @@
 
 Configuration options are documented in [`MakerZIPConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html).
 
-```json5
-{
-  name: '@electron-forge/maker-zip'
-}
+```javascript
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-zip'
+    }
+  ]
+};
 ```

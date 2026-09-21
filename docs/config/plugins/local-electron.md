@@ -24,8 +24,8 @@ Once you have a working build of Electron, point the plugin's `electronPath` con
 
 All possible configuration options are documented in [`LocalElectronPluginConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_plugin\_local\_electron.LocalElectronPluginConfig.html).
 
-```json5 title="forge.config.js"
-{
+```javascript title="forge.config.js"
+module.exports = {
   plugins: [
     {
       name: '@electron-forge/plugin-local-electron',
@@ -34,7 +34,7 @@ All possible configuration options are documented in [`LocalElectronPluginConfig
       }
     }
   ]
-}
+};
 ```
 
 :::info
