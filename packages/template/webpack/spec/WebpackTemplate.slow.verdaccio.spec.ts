@@ -83,6 +83,28 @@ describe('WebpackTemplate (TypeScript)', () => {
     it('should initially pass the typechecking process', async () => {
       await testUtils.expectTypecheckToPass(dir);
     });
+
+    it.each([
+      'forge.config.mts',
+      'webpack.main.config.ts',
+      'webpack.renderer.config.ts',
+      'webpack.plugins.ts',
+      'webpack.rules.ts',
+    ])('should catch type errors in %s', async (filename) => {
+      const filePath = path.join(dir, filename);
+      const original = await fs.promises.readFile(filePath, 'utf-8');
+      try {
+        await fs.promises.writeFile(
+          filePath,
+          `${original}\nexport const typeError: number = 'not a number';\n`,
+        );
+        const output = await testUtils.expectTypecheckToFail(dir);
+        expect(output).toContain(filename);
+        expect(output).toContain('TS2322');
+      } finally {
+        await fs.promises.writeFile(filePath, original);
+      }
+    });
   });
 
   describe('package', () => {
