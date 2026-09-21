@@ -89,9 +89,9 @@ describe('ViteTemplate (TypeScript)', () => {
 
     it.each([
       'forge.config.mts',
-      'vite.main.config.ts',
-      'vite.preload.config.ts',
-      'vite.renderer.config.ts',
+      'vite.main.config.mts',
+      'vite.preload.config.mts',
+      'vite.renderer.config.mts',
     ])('should catch type errors in %s', async (filename) => {
       const filePath = path.join(dir, filename);
       const original = await fs.promises.readFile(filePath, 'utf-8');
