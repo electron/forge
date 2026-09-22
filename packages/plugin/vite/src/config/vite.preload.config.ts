@@ -5,6 +5,7 @@ import {
   getBuildConfig,
   pluginHotRestart,
 } from './vite.base.config.js';
+import { pluginValidateConfig } from './vite.validate.config.js';
 
 export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
@@ -28,7 +29,10 @@ export function getConfig(
         },
       },
     },
-    plugins: [pluginHotRestart('reload')],
+    plugins: [
+      pluginHotRestart('reload'),
+      pluginValidateConfig('preload', forgeEnv),
+    ],
   };
   const buildConfig = getBuildConfig(forgeEnv);
 

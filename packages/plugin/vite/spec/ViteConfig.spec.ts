@@ -46,8 +46,10 @@ describe('ViteConfigGenerator', () => {
       'electron/main',
     ]);
     expect(buildConfig.clearScreen).toBe(false);
-    // Hot restart is opt-in, so the main config carries no plugins by default.
-    expect(buildConfig.plugins).toEqual([]);
+    // Hot restart is opt-in, so the validator is the only default plugin.
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:validate-main']);
     expect(buildConfig.define).toEqual({});
     expect(buildConfig.resolve).toEqual({
       conditions: ['node'],
@@ -72,7 +74,10 @@ describe('ViteConfigGenerator', () => {
 
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    ).toEqual([
+      '@electron-forge/plugin-vite:hot-restart',
+      '@electron-forge/plugin-vite:validate-main',
+    ]);
   });
 
   it('getBuildConfigs:preload', async () => {
@@ -111,7 +116,10 @@ describe('ViteConfigGenerator', () => {
     // Preload scripts are reloaded, never restarted, regardless of `hotRestart`.
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-reload']);
+    ).toEqual([
+      '@electron-forge/plugin-vite:hot-reload',
+      '@electron-forge/plugin-vite:validate-preload',
+    ]);
   });
 
   it('getRendererConfig:renderer', async () => {
@@ -133,7 +141,10 @@ describe('ViteConfigGenerator', () => {
     expect(rendererConfig.build?.outDir).toEqual('.vite/renderer/main_window');
     expect(
       rendererConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:expose-renderer']);
+    ).toEqual([
+      '@electron-forge/plugin-vite:expose-renderer',
+      '@electron-forge/plugin-vite:validate-renderer',
+    ]);
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
   });

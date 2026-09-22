@@ -201,6 +201,29 @@ describe('subprocess-worker', () => {
     expect(stderr).toMatch(/does-not-exist/);
   });
 
+  it('surfaces config validation errors from a bad user config', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.esm.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+
+    // `spawnViteBuild` folds the worker's stderr into the error it rejects
+    // with, so this is what the user ends up reading.
+    expect(code).not.toBe(0);
+    expect(stderr).toContain('[@electron-forge/plugin-vite]');
+    expect(stderr).toContain('The main target "src/main.js"');
+    expect(stderr).toContain('vite.main.esm.config.mjs');
+    expect(stderr).toMatch(/ESM main bundles are not supported yet/);
+  });
+
   it('exits nonzero when required env vars are missing', async () => {
     const { code, stderr } = await new Promise<{
       code: number | null;

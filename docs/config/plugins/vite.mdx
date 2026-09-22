@@ -121,6 +121,26 @@ If using the Vite template, this should be automatically set up for you.
 The main process and preload bundles are emitted with a `.cjs` extension, so Electron parses them as CommonJS even if your `package.json` has `"type": "module"`. Any preload path you build in the main process needs to use that extension too, for example `path.join(__dirname, 'preload.cjs')`.
 :::
 
+### Configuration validation
+
+Before each build starts, the plugin inspects the fully resolved Vite config for
+each target — after your own config file and plugins have been applied — and
+fails with a message naming the target, its config file and the offending value
+instead of letting the build fail later with a generic error.
+
+For main and preload targets, the plugin errors when:
+
+* there is no entry to build (neither `build.lib.entry` nor `build.rollupOptions.input`);
+* an entry does not exist on disk, relative to the Vite `root`;
+* `build.target` is set to something that is not a `node*` target, since this code runs in Electron's Node.js runtime;
+* more than one output is configured, since Electron loads a single bundle per target;
+* the output format is not `cjs`. ESM main and preload bundles are not supported yet: Forge writes them with a `.cjs` extension, so Electron would parse them as CommonJS.
+
+For renderer targets, the plugin errors when there is no `index.html` in the
+Vite `root` and no `build.rollupOptions.input`. It warns — without failing the
+build — when `base` is neither `./` nor `/`, or when `build.target` is set to
+something other than a `chrome*` or `es20xx`/`esnext` target.
+
 ## Advanced configuration
 
 ### Build concurrency

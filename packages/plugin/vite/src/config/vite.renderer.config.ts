@@ -1,6 +1,7 @@
 import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
 
 import { pluginExposeRenderer } from './vite.base.config.js';
+import { pluginValidateConfig } from './vite.validate.config.js';
 
 // https://vitejs.dev/config
 export function getConfig(
@@ -18,7 +19,10 @@ export function getConfig(
       copyPublicDir: true,
       outDir: `.vite/renderer/${name}`,
     },
-    plugins: [pluginExposeRenderer(name)],
+    plugins: [
+      pluginExposeRenderer(name),
+      pluginValidateConfig('renderer', forgeEnv),
+    ],
     resolve: {
       preserveSymlinks: true,
     },
