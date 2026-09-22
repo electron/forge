@@ -7467,7 +7467,7 @@ __metadata:
     "@yarnpkg/types": "npm:^4.0.1"
     cross-spawn: "npm:^7.0.3"
     debug: "npm:^4.3.1"
-    electron: "npm:^42.3.3"
+    electron: "npm:^44.4.3"
     electron-installer-debian: "npm:^4.0.0"
     electron-installer-dmg: "npm:^5.0.1"
     electron-installer-redhat: "npm:^4.0.0"
@@ -7666,9 +7666,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^42.3.3":
-  version: 42.11.6
-  resolution: "electron@npm:42.11.6"
+"electron@npm:^44.4.3":
+  version: 44.4.3
+  resolution: "electron@npm:44.4.3"
   dependencies:
     "@electron-internal/extract-zip": "npm:^1.0.1"
     "@electron/get": "npm:^5.0.0"
@@ -7676,7 +7676,7 @@ __metadata:
   bin:
     electron: cli.js
     install-electron: install.js
-  checksum: 10c0/2bf3fbcd78fd37d5e0051c8a010d1f2c1514eecb17c33b0d662a0215a52069e14d56317eed3e9825a0145ee1ed6c624fb601ebe8ceccdab1980cb44a11f7cf39
+  checksum: 10c0/6c26e1d9c4351ebee7a4e3ceff189a7112f408600ff21f37ac345e42fe643b366f60d44fce0b4ebf4c5bdd9b1923e98298340b1263036c9e29565bf9e713b6c9
   languageName: node
   linkType: hard
 
@@ -12265,11 +12265,11 @@ __metadata:
   linkType: hard
 
 "node-abi@npm:^4.2.0":
-  version: 4.24.0
-  resolution: "node-abi@npm:4.24.0"
+  version: 4.35.0
+  resolution: "node-abi@npm:4.35.0"
   dependencies:
     semver: "npm:^7.6.3"
-  checksum: 10c0/9bf9f4e79c875b98f8026f2ad80150b2d5077f48529444232c9574cfd82e45d42a3ab2dcf6fb374cf7775becbf58e7c1b8704596ad3bef27cdeab7bc93eca7a3
+  checksum: 10c0/5b83a74866888bbced1d2286551168ce006e3e1fc1ac41dc79cab213a39669bba3d67f500a1a964aab3f4b4692b8a7eda69e0a67256b307fca6c8d8f5fd1f9be
   languageName: node
   linkType: hard
 
