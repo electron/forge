@@ -4,7 +4,7 @@ import { styleText } from 'node:util';
 import { initializeProxy } from '@electron/get';
 import { api, ReleaseOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
-import { program } from 'commander';
+import { Option, program } from 'commander';
 
 import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
@@ -28,22 +28,54 @@ export async function runRelease(): Promise<void> {
       'A comma-separated list of deployment targets. (default: all publishers in your Forge config)',
     )
     .option(
-      '--dry-run',
-      `Run the ${styleText('green', 'make')} command and save release metadata without uploading anything.`,
+      '--from-make',
+      `Release the distributables from a previous ${styleText('green', 'make')} run, instead of packaging and making the Electron application again.`,
     )
-    .option('--from-dry-run', 'Release artifacts from the last saved dry run.')
+    // `--from-package` is declared here so that it shows up in the help
+    // output; it is parsed with the other make options by getMakeOptions().
+    .option(
+      '--from-package',
+      `Make and release distributables from the output of a previous ${styleText('green', 'package')} run, instead of packaging the Electron application again.`,
+    )
+    // `--dry-run` and `--from-dry-run` are deprecated. They are hidden from
+    // the help output and print a deprecation warning when used.
+    .addOption(
+      new Option(
+        '--dry-run',
+        `Deprecated: run the ${styleText('green', 'make')} command instead.`,
+      ).hideHelp(),
+    )
+    .addOption(
+      new Option(
+        '--from-dry-run',
+        'Deprecated: use --from-make instead.',
+      ).hideHelp(),
+    )
     .allowUnknownOption(true)
     .action(async (targetDir) => {
       const dir = resolveWorkingDir(targetDir);
       const options = program.opts();
+
+      if (options.dryRun) {
+        console.error(
+          styleText('yellow', '⚠'),
+          '`--dry-run` is deprecated and will be removed in a future major version. The `make` command now always saves its results, so run `electron-forge make` instead and then `electron-forge release --from-make` to release them.',
+        );
+      }
+      if (options.fromDryRun) {
+        console.error(
+          styleText('yellow', '⚠'),
+          '`--from-dry-run` is deprecated and will be removed in a future major version; use `--from-make` instead.',
+        );
+      }
 
       initializeProxy();
 
       const releaseOpts: ReleaseOptions = {
         dir,
         interactive: true,
-        dryRun: options.dryRun,
-        dryRunResume: options.fromDryRun,
+        fromMake: Boolean(options.fromMake || options.fromDryRun),
+        dryRun: Boolean(options.dryRun),
       };
       if (options.target)
         releaseOpts.publishTargets = options.target.split(',');

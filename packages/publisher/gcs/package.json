@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherGCS.js",
   "typings": "dist/PublisherGCS.d.ts",
   "engines": {
-    "node": ">= 22.12.0"
+    "node": ">= 22.13.0"
   },
   "dependencies": {
     "@electron-forge/publisher-static": "workspace:*",

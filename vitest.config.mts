@@ -9,7 +9,7 @@ export default defineConfig({
       {
         extends: './vitest.config.mts',
         test: {
-          include: ['**/spec/**/*.spec.ts'],
+          include: ['**/spec/**/*.spec.{ts,tsx}'],
           exclude: [
             '**/spec/**/*.slow.spec.ts',
             '**/spec/**/*.slow.verdaccio.spec.ts',

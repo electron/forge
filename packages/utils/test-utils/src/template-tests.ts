@@ -8,13 +8,7 @@ import os from 'node:os';
 
 type SupportedPackageManager = 'npm' | 'pnpm' | 'yarn';
 
-const supportedTemplates = [
-  'base',
-  'vite',
-  'vite-typescript',
-  'webpack',
-  'webpack-typescript',
-] as const;
+const supportedTemplates = ['base', 'vite', 'webpack'] as const;
 
 type ModuleFormat = 'es' | 'cjs';
 

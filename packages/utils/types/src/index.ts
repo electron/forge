@@ -201,6 +201,10 @@ export interface ForgeMakeResult {
    * The arch this make run was for
    */
   arch: ForgeArch;
+  /**
+   * The name of the maker that generated these artifacts
+   */
+  maker?: string;
 }
 
 export interface IForgeResolvablePlugin {
@@ -287,6 +291,7 @@ export type StartResult =
 export interface InitTemplateOptions {
   copyCIFiles?: boolean;
   force?: boolean;
+  typescript?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -297,6 +302,11 @@ export interface ForgeTemplate {
   requiredForgeVersion?: string;
   dependencies?: string[];
   devDependencies?: string[];
+  /**
+   * Computes dev dependencies for the given init options. Takes precedence
+   * over `devDependencies` when defined.
+   */
+  getDevDependencies?: (options: InitTemplateOptions) => string[];
   initializeTemplate?: (
     dir: string,
     options: InitTemplateOptions,

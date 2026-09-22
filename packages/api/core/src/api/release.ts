@@ -1,5 +1,3 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { styleText } from 'node:util';
 
 import { pathExists } from '@electron-forge/core-utils';
@@ -20,8 +18,8 @@ import { Listr } from 'listr2';
 
 import getForgeConfig from '../util/forge-config.js';
 import { importSearch } from '../util/import-search.js';
+import { loadMakeResults } from '../util/make-results.js';
 import getCurrentOutDir from '../util/out-dir.js';
-import PublishState from '../util/publish-state.js';
 import resolveDir from '../util/resolve-dir.js';
 
 import { listrMake, MakeOptions } from './make.js';
@@ -58,13 +56,31 @@ export interface ReleaseOptions {
    */
   outDir?: string;
   /**
-   * Whether to generate dry run meta data but not actually publish
+   * Release the artifacts saved by a previous `make` run, instead of packaging
+   * and making the application again.
+   *
+   * Every `make` run saves a manifest of its results in `<outDir>/make-results`
+   * next to the artifacts in `<outDir>/make`. Setting this to true loads those
+   * manifests (from every platform and architecture that was made) and
+   * releases them without rebuilding, e.g. from a CI job that only has the
+   * artifacts other jobs built.
+   *
+   * To reuse only the packaged app and still run the makers, set
+   * {@link MakeOptions.fromPackage} in {@link ReleaseOptions.makeOptions}
+   * instead.
+   */
+  fromMake?: boolean;
+  /**
+   * Run the package and make steps but do not release anything.
+   *
+   * @deprecated `make()` now always saves its results, so this is equivalent
+   * to calling `make()` instead of `release()`. This option will be removed in
+   * a future major version.
    */
   dryRun?: boolean;
   /**
-   * Whether or not to attempt to resume a previously saved `dryRun` and publish
-   *
-   * You can't use this combination at the same time as dryRun=true
+   * @deprecated Use {@link ReleaseOptions.fromMake} instead. This alias will be
+   * removed in a future major version.
    */
   dryRunResume?: boolean;
 }
@@ -78,13 +94,25 @@ export default autoTrace(
       interactive = false,
       makeOptions = {},
       publishTargets = undefined,
+      fromMake = false,
       dryRun = false,
       dryRunResume = false,
       outDir,
     }: ReleaseOptions,
   ): Promise<void> => {
-    if (dryRun && dryRunResume) {
-      throw new Error("Can't dry run and resume a dry run at the same time");
+    // `dryRunResume` is the deprecated name for `fromMake`
+    fromMake = fromMake || dryRunResume;
+    if (dryRun && fromMake) {
+      throw new Error(
+        "Can't release from a previous make run and dry run at the same time: there would be nothing to do",
+      );
+    }
+    // `skipPackage` is the deprecated name for `fromPackage`
+    if (fromMake && (makeOptions.fromPackage || makeOptions.skipPackage)) {
+      throw new Error(
+        'The fromMake and fromPackage options (--from-make and --from-package on the command line) cannot be combined. ' +
+          'Releasing from a previous make run already reuses the packaged app, so use one or the other.',
+      );
     }
 
     const listrOptions: ForgeListrOptions<ReleaseContext> = {
@@ -249,70 +277,54 @@ export default autoTrace(
           },
         },
         {
-          title: dryRunResume
-            ? 'Resuming from dry run...'
+          title: fromMake
+            ? `Loading results from previous ${styleText('yellow', 'make')} run`
             : `Running ${styleText('yellow', 'make')} command`,
           task: childTrace<Parameters<ForgeListrTaskFn<ReleaseContext>>>(
             {
-              name: dryRunResume ? 'resume-dry-run' : 'make()',
+              name: fromMake ? 'load-make-results' : 'make()',
               category: '@electron-forge/core',
             },
             async (childTrace, ctx, task) => {
               const { dir, forgeConfig } = ctx;
+              // Resolve the out directory the same way make() does below,
+              // where makeOptions take precedence over the top-level option.
               const calculatedOutDir =
-                outDir || getCurrentOutDir(dir, forgeConfig);
-              const dryRunDir = path.resolve(
-                calculatedOutDir,
-                'publish-dry-run',
-              );
+                makeOptions.outDir ||
+                outDir ||
+                getCurrentOutDir(dir, forgeConfig);
 
-              if (dryRunResume) {
-                d('attempting to resume from dry run');
-                const publishes = await PublishState.loadFromDirectory(
-                  dryRunDir,
-                  dir,
-                );
-                task.title = `Resuming ${publishes.length} found dry runs...`;
+              if (fromMake) {
+                d('loading results of previous make runs');
+                const makeRuns = await loadMakeResults(calculatedOutDir, dir);
+                task.title = `Loaded results from ${makeRuns.length} previous ${styleText('yellow', 'make')} ${makeRuns.length === 1 ? 'run' : 'runs'}`;
 
                 return delayTraceTillSignal(
                   childTrace,
                   task.newListr<ReleaseContext>(
-                    publishes.map((publishStates, index) => {
+                    makeRuns.map((restoredMakeResults, index) => {
                       return {
-                        title: `Publishing dry-run ${styleText('blue', `#${index + 1}`)}`,
+                        title: `Releasing artifacts from ${styleText('yellow', 'make')} run ${styleText('blue', `#${index + 1}`)}`,
                         task: childTrace<
                           Parameters<ForgeListrTaskFn<ReleaseContext>>
                         >(
                           {
-                            name: `publish-dry-run-${index + 1}`,
+                            name: `release-make-run-${index + 1}`,
                             category: '@electron-forge/core',
                           },
                           async (childTrace, ctx, task) => {
-                            const restoredMakeResults = publishStates.map(
-                              ({ state }) => state,
-                            );
-                            d('restoring publish settings from dry run');
-
+                            d('verifying artifacts from previous make run');
                             for (const makeResult of restoredMakeResults) {
-                              makeResult.artifacts = await Promise.all(
-                                makeResult.artifacts.map(
-                                  async (makePath: string) => {
-                                    // standardize the path to artifacts across platforms
-                                    const normalizedPath = makePath
-                                      .split(/\/|\\/)
-                                      .join(path.sep);
-                                    if (!(await pathExists(normalizedPath))) {
-                                      throw new Error(
-                                        `Attempted to resume a dry run, but an artifact (${normalizedPath}) could not be found`,
-                                      );
-                                    }
-                                    return normalizedPath;
-                                  },
-                                ),
-                              );
+                              for (const artifact of makeResult.artifacts) {
+                                if (!(await pathExists(artifact))) {
+                                  throw new Error(
+                                    `Attempted to release the artifacts from a previous make run, but ${artifact} could not be found. Make sure the make output (the "make" and "make-results" directories in ${calculatedOutDir}) is available.`,
+                                  );
+                                }
+                              }
                             }
 
-                            d('publishing for given state set');
+                            d('releasing the restored make results');
                             return delayTraceTillSignal(
                               childTrace,
                               task.newListr(
@@ -353,7 +365,9 @@ export default autoTrace(
                   {
                     dir,
                     interactive,
+                    outDir,
                     ...makeOptions,
+                    forgeConfig: ctx.forgeConfig,
                   },
                   (results) => {
                     ctx.makeResults = results;
@@ -364,39 +378,10 @@ export default autoTrace(
             },
           ),
         },
-        ...(dryRunResume
-          ? []
-          : dryRun
-            ? [
-                {
-                  title: 'Saving dry-run state',
-                  task: childTrace<
-                    Parameters<ForgeListrTaskFn<ReleaseContext>>
-                  >(
-                    { name: 'save-dry-run', category: '@electron-forge/core' },
-                    async (childTrace, { dir, forgeConfig, makeResults }) => {
-                      d('saving results of make in dry run state', makeResults);
-                      const calculatedOutDir =
-                        outDir || getCurrentOutDir(dir, forgeConfig);
-                      const dryRunDir = path.resolve(
-                        calculatedOutDir,
-                        'publish-dry-run',
-                      );
-
-                      await fs.rm(dryRunDir, {
-                        recursive: true,
-                        force: true,
-                      });
-                      await PublishState.saveToDirectory(
-                        dryRunDir,
-                        makeResults!,
-                        dir,
-                      );
-                    },
-                  ),
-                },
-              ]
-            : publishDistributablesTasks(childTrace)),
+        // When releasing from a previous make run, the publishers run per
+        // restored make run in the task above. When dry running, make has
+        // already saved its results and there is nothing left to do.
+        ...(fromMake || dryRun ? [] : publishDistributablesTasks(childTrace)),
       ],
       listrOptions,
     );

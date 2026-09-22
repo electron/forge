@@ -97,15 +97,19 @@ You need to do two things in your project files in order to make this plugin wor
 
 #### package.json
 
-First, your `main` entry in your `package.json` file needs to point at `"./.webpack/main"` like so:
+First, your `main` entry in your `package.json` file needs to point at `"./.webpack/main/index.cjs"` like so:
 
 ```jsonc title="package.json"
 {
   "name": "my-app",
-  "main": "./.webpack/main",
+  "main": "./.webpack/main/index.cjs",
   // ...
 }
 ```
+
+:::info Bundles are always CommonJS
+The main process and preload bundles are emitted with a `.cjs` extension, so Electron parses them as CommonJS even if your `package.json` has `"type": "module"`. The `main` field has to name the file explicitly because Node's directory lookup only finds `index.js`.
+:::
 
 #### Main process code
 
@@ -239,6 +243,18 @@ If you only need full Node.js access in the preload but want to keep it as a sta
 The generated global for this entry is derived from its `name` with the `_PRELOAD_WEBPACK_ENTRY` suffix — so the entry named `main_window_preload` above is exposed to the main process as `MAIN_WINDOW_PRELOAD_PRELOAD_WEBPACK_ENTRY`.
 
 ## Advanced configuration
+
+### Compiler output
+
+While `electron-forge start` is running, the plugin adds a tab for every
+webpack compiler (main process, each renderer and preload target) to Forge's
+[terminal UI](../../cli.md#terminal-ui), next to the `App` tab that shows the
+Electron app's own output. Use `←`/`→` or the tab numbers to switch tabs, `a`
+for a merged view, `↑`/`↓` to scroll back, `r` to restart the Electron app and
+`q` (or `Ctrl+C`) to quit. When a compiler fails, the view switches to its tab
+automatically (at most once every 15 seconds). When the terminal is not
+interactive, or `CI` is set, the same output is written as plain lines prefixed
+with the tab name instead.
 
 ### webpack-dev-server
 
@@ -390,7 +406,7 @@ In development mode, all your renderer processes in development will have [Hot M
 
 However, it is impossible for HMR to work inside preload scripts. However, webpack is constantly watching and recompiling those files so reload the renderer to get updates for preload scripts.
 
-For the main process, type `rs` in the console you launched `electron-forge` from and Forge will restart your app for you with the new main process code.
+For the main process, press `r` in the compiler output view (or type `rs` when the interactive view is not active) in the console you launched `electron-forge` from and Forge will restart your app for you with the new main process code.
 
 ### Hot reload caching
 

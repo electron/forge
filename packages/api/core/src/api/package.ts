@@ -34,6 +34,7 @@ import { getHookListrTasks, runHook } from '../util/hook.js';
 import { importSearch } from '../util/import-search.js';
 import { warn } from '../util/messages.js';
 import getCurrentOutDir from '../util/out-dir.js';
+import parseArchs from '../util/parse-archs.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';
 import resolveDir from '../util/resolve-dir.js';
 
@@ -96,6 +97,18 @@ export interface PackageOptions {
   outDir?: string;
 }
 
+/**
+ * Options for the internal package runner. Callers that have already resolved
+ * the Forge config (e.g. `make`) pass it through so the plugin lifecycle
+ * (`init`, `resolveForgeConfig`) runs once per command instead of once per
+ * nested runner.
+ *
+ * @internal
+ */
+export type ListrPackageOptions = PackageOptions & {
+  forgeConfig?: ResolvedForgeConfig;
+};
+
 export const listrPackage = (
   childTrace: typeof autoTrace,
   {
@@ -104,7 +117,8 @@ export const listrPackage = (
     arch = getHostArch() as ForgeArch,
     platform = process.platform as ForgePlatform,
     outDir,
-  }: PackageOptions,
+    forgeConfig: providedForgeConfig,
+  }: ListrPackageOptions,
 ) => {
   const runner = new Listr<PackageContext>(
     [
@@ -121,7 +135,8 @@ export const listrPackage = (
             }
             ctx.dir = resolvedDir;
 
-            ctx.forgeConfig = await getForgeConfig(resolvedDir);
+            ctx.forgeConfig =
+              providedForgeConfig ?? (await getForgeConfig(resolvedDir));
             ctx.packageJSON = await readMutatedPackageJson(
               resolvedDir,
               ctx.forgeConfig,
@@ -387,6 +402,18 @@ export const listrPackage = (
               )),
             );
 
+            const electronVersion = await getElectronVersion(
+              ctx.dir,
+              packageJSON,
+            );
+
+            // Expand `--arch=all` in Forge (rather than deferring to
+            // @electron/packager) so that architectures that this Electron
+            // version no longer publishes are filtered out of the expansion,
+            // and explicit requests for them fail with a descriptive error
+            // instead of an opaque download 404.
+            const targetArchs = parseArchs(platform, arch, electronVersion);
+
             const packageOpts: PackagerOptions = {
               asar: false,
               overwrite: true,
@@ -394,7 +421,7 @@ export const listrPackage = (
               quiet: true,
               ...forgeConfig.packagerConfig,
               dir: ctx.dir,
-              arch: arch,
+              arch: targetArchs,
               platform,
               afterFinalizePackageTargets: serialHooks(
                 afterFinalizePackageTargetsHooks,
@@ -404,7 +431,7 @@ export const listrPackage = (
               afterExtract: serialHooks(afterExtractHooks),
               afterPrune: serialHooks(afterPruneHooks),
               out: calculatedOutDir,
-              electronVersion: await getElectronVersion(ctx.dir, packageJSON),
+              electronVersion,
             };
 
             if (packageOpts.all) {

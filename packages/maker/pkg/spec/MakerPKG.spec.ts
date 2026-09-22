@@ -64,6 +64,31 @@ describe('MakerPKG', () => {
     expect(vi.mocked(notarize)).not.toHaveBeenCalled();
   });
 
+  it('should output to an arch-specific subdirectory to avoid conflicts between parallel makers', async () => {
+    const maker = new MakerPKG({}, []);
+    maker.ensureFile = vi.fn();
+    await maker.prepareConfig(targetArch);
+    const outPaths = await (maker.make as MakeFunction)({
+      packageJSON,
+      dir,
+      makeDir,
+      appName,
+      targetArch,
+      targetPlatform: 'darwin',
+      forgeConfig: makeForgeConfig(),
+    });
+    const expectedPath = path.resolve(
+      makeDir,
+      'pkg',
+      targetArch,
+      `My Test App-1.2.3-${targetArch}.pkg`,
+    );
+    expect(outPaths).toEqual([expectedPath]);
+    expect(vi.mocked(flat)).toHaveBeenCalledWith(
+      expect.objectContaining({ pkg: expectedPath }),
+    );
+  });
+
   it('should throw an error on invalid platform', async () => {
     const maker = new MakerPKG({}, []);
     maker.ensureFile = vi.fn();
