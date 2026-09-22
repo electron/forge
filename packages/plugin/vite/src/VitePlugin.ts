@@ -12,7 +12,7 @@ import * as vite from 'vite';
 import { viteDevServerUrls } from './config/vite.base.config.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
-import type { VitePluginConfig } from './Config.js';
+import type { VitePluginBuildConfig, VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
@@ -20,7 +20,6 @@ import type {
 } from '@electron-forge/shared-types';
 import type { ChildProcess } from 'node:child_process';
 import type { AddressInfo } from 'node:net';
-import type { LibraryOptions } from 'vite';
 
 const d = debug('electron-forge:plugin:vite');
 
@@ -174,7 +173,7 @@ function spawnViteBuildWatch(
   return { child, firstBuild };
 }
 
-function entryToDisplay(entry: LibraryOptions['entry']): string {
+function entryToDisplay(entry: VitePluginBuildConfig['entry']): string {
   if (typeof entry === 'string') return entry;
   if (Array.isArray(entry)) return entry.join(' ');
   return Object.keys(entry).join(' ');
