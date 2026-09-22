@@ -22,14 +22,15 @@ function runWorker(
   kind: 'build' | 'renderer',
   index: number,
   config: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  dir: string = projectDir,
 ) {
   return new Promise<{ code: number | null; stderr: string }>(
     (resolve, reject) => {
       const child = spawn(process.execPath, [workerPath], {
-        cwd: projectDir,
+        cwd: dir,
         env: {
           ...process.env,
-          FORGE_VITE_PROJECT_DIR: projectDir,
+          FORGE_VITE_PROJECT_DIR: dir,
           FORGE_VITE_KIND: kind,
           FORGE_VITE_INDEX: String(index),
           FORGE_VITE_CONFIG: JSON.stringify(config),
@@ -219,5 +220,85 @@ describe('subprocess-worker', () => {
 
     expect(code).toBe(1);
     expect(stderr).toContain('missing');
+  });
+});
+
+// The project pins an exact `electron` devDependency, so the generator can
+// derive `build.target` from it without Electron being installed.
+const electronProjectDir = path.join(
+  import.meta.dirname,
+  'fixtures',
+  'subprocess-build-electron',
+);
+
+describe('subprocess-worker with a resolvable Electron version', () => {
+  const viteOutDir = path.join(electronProjectDir, '.vite');
+
+  afterEach(() => {
+    fs.rmSync(viteOutDir, { recursive: true, force: true });
+  });
+
+  it('builds a main target against the derived Node target', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(electronProjectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker(
+      'build',
+      0,
+      config,
+      electronProjectDir,
+    );
+    expect(code, stderr).toBe(0);
+
+    const contents = fs.readFileSync(
+      path.join(viteOutDir, 'build', 'main.cjs'),
+      'utf8',
+    );
+    // `using` declarations only survive when `build.target` is recent enough;
+    // Vite's default target rewrites them into `SuppressedError` helpers.
+    expect(contents).toMatch(/\busing\s+\w+\s*=/);
+    expect(contents).not.toContain('SuppressedError');
+  });
+
+  it('builds a renderer target against the derived Chrome target', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(electronProjectDir, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+
+    const { code, stderr } = await runWorker(
+      'renderer',
+      0,
+      config,
+      electronProjectDir,
+    );
+    expect(code, stderr).toBe(0);
+
+    const assetsDir = path.join(
+      viteOutDir,
+      'renderer',
+      'main_window',
+      'assets',
+    );
+    const contents = fs
+      .readdirSync(assetsDir)
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => fs.readFileSync(path.join(assetsDir, file), 'utf8'))
+      .join('\n');
+    expect(contents).toMatch(/\busing\s+\w+\s*=/);
+    expect(contents).not.toContain('SuppressedError');
   });
 });

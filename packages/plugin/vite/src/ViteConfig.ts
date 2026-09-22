@@ -1,6 +1,10 @@
+import path from 'node:path';
+
+import { getElectronVersion, readJson } from '@electron-forge/core-utils';
 import debug from 'debug';
 import { loadConfigFromFile } from 'vite';
 
+import { getElectronTargets } from './config/electron-targets.js';
 import { getConfig as getMainViteConfig } from './config/vite.main.config.js';
 import { getConfig as getPreloadViteConfig } from './config/vite.preload.config.js';
 import { getConfig as getRendererViteConfig } from './config/vite.renderer.config.js';
@@ -10,6 +14,7 @@ import type {
   VitePluginConfig,
   VitePluginRendererConfig,
 } from './Config.js';
+import type { ElectronTargets } from './config/electron-targets.js';
 import type { ConfigEnv, UserConfig } from 'vite';
 
 const d = debug('@electron-forge/plugin-vite:ViteConfig');
@@ -17,12 +22,42 @@ const d = debug('@electron-forge/plugin-vite:ViteConfig');
 type Target = NonNullable<VitePluginBuildConfig['target']> | 'renderer';
 
 export default class ViteConfigGenerator {
+  private electronTargets?: Promise<ElectronTargets>;
+
   constructor(
     private readonly pluginConfig: VitePluginConfig,
     private readonly projectDir: string,
     private readonly isProd: boolean,
   ) {
     d('Config mode:', this.mode);
+  }
+
+  /**
+   * Build targets matching the Electron version installed in the project.
+   * If that version cannot be determined (no `package.json`, no Electron
+   * dependency, or Electron not installed) no target is derived and Vite's own
+   * default applies.
+   */
+  private resolveElectronTargets(): Promise<ElectronTargets> {
+    this.electronTargets ??= (async () => {
+      try {
+        const packageJSON = await readJson(
+          path.join(this.projectDir, 'package.json'),
+        );
+        const version = await getElectronVersion(this.projectDir, packageJSON);
+        const targets = getElectronTargets(version);
+        d('Derived build targets from Electron %s:', version, targets);
+        return targets;
+      } catch (err) {
+        d(
+          'Could not determine the Electron version, leaving build.target unset:',
+          err,
+        );
+        return {};
+      }
+    })();
+
+    return this.electronTargets;
   }
 
   async resolveConfig(
@@ -39,6 +74,7 @@ export default class ViteConfigGenerator {
       root: this.projectDir,
       forgeConfig: this.pluginConfig,
       forgeConfigSelf: buildConfig,
+      electronTargets: await this.resolveElectronTargets(),
     };
 
     // `configEnv` is to be passed as an arguments when the user export a function in `vite.config.js`.

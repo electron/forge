@@ -189,3 +189,19 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 ```
 
 :::
+
+### Build targets
+
+The plugin derives Vite's [`build.target`](https://vite.dev/config/build-options.html#build-target) from the Electron version installed in your project, so your code is only downleveled for the engines Electron actually runs. Main process and preload bundles are built for the Node.js version that Electron ships (for example `node22.20`), and renderer bundles are built for the Chromium version it ships (for example `chrome142`). If the Electron version cannot be determined, Vite's own default target is used instead.
+
+To pick a different target, set `build.target` in the relevant Vite config file — a value you provide always wins over the derived one:
+
+```javascript title="vite.renderer.config.js"
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    target: 'chrome120'
+  }
+});
+```

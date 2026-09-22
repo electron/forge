@@ -9,6 +9,11 @@ import type { VitePluginConfig } from '../src/Config';
 import type { Plugin } from 'vite';
 
 const configRoot = path.join(import.meta.dirname, 'fixtures/vite-configs');
+// Same Vite config files, but in a project whose package.json pins Electron 38.
+const electronConfigRoot = path.join(
+  import.meta.dirname,
+  'fixtures/vite-configs-electron',
+);
 
 describe('ViteConfigGenerator', () => {
   it('getBuildConfigs:main', async () => {
@@ -136,5 +141,138 @@ describe('ViteConfigGenerator', () => {
     ).toEqual(['@electron-forge/plugin-vite:expose-renderer']);
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
+  });
+
+  it('getBuildConfigs:main derives build.target from the installed Electron version', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(electronConfigRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(
+      forgeConfig,
+      electronConfigRoot,
+      true,
+    );
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.target).toEqual('node22.19');
+  });
+
+  it('getBuildConfigs:preload derives build.target from the installed Electron version', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(electronConfigRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(
+      forgeConfig,
+      electronConfigRoot,
+      true,
+    );
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.target).toEqual('node22.19');
+  });
+
+  it('getRendererConfig:renderer derives build.target from the installed Electron version', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(electronConfigRoot, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+    const generator = new ViteConfigGenerator(
+      forgeConfig,
+      electronConfigRoot,
+      true,
+    );
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    expect(rendererConfig.build?.target).toEqual('chrome140');
+  });
+
+  it('leaves build.target unset when the Electron version cannot be resolved', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+        {
+          entry: 'src/preload.js',
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+    // `configRoot` has no package.json, so there is no Electron to resolve.
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const [mainConfig, preloadConfig] = await generator.getBuildConfigs();
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    expect(mainConfig.build).not.toHaveProperty('target');
+    expect(preloadConfig.build).not.toHaveProperty('target');
+    expect(rendererConfig.build).not.toHaveProperty('target');
+  });
+
+  it('lets the user Vite config override the derived build.target', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(electronConfigRoot, 'vite.main.config.target.mjs'),
+          target: 'main',
+        },
+        {
+          entry: 'src/preload.js',
+          config: path.join(
+            electronConfigRoot,
+            'vite.preload.config.target.mjs',
+          ),
+          target: 'preload',
+        },
+      ],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(
+            electronConfigRoot,
+            'vite.renderer.config.target.mjs',
+          ),
+        },
+      ],
+    };
+    const generator = new ViteConfigGenerator(
+      forgeConfig,
+      electronConfigRoot,
+      true,
+    );
+    const [mainConfig, preloadConfig] = await generator.getBuildConfigs();
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    expect(mainConfig.build?.target).toEqual('node20');
+    expect(preloadConfig.build?.target).toEqual('node20');
+    expect(rendererConfig.build?.target).toEqual('chrome100');
   });
 });
