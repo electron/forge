@@ -8,6 +8,10 @@ describe('getElectronTargets', () => {
       node: 'node22.19',
       chrome: 'chrome140',
     });
+    expect(getElectronTargets('40.0.0')).toEqual({
+      node: 'node24.11',
+      chrome: 'chrome144',
+    });
     expect(getElectronTargets('28.3.1')).toEqual({
       node: 'node18.18',
       chrome: 'chrome120',
@@ -25,8 +29,22 @@ describe('getElectronTargets', () => {
     });
   });
 
-  it('falls back to the newest known entry for newer Electron majors', () => {
-    expect(getElectronTargets('999.0.0')).toEqual(getElectronTargets('41.0.0'));
+  it('reuses the newest known Node entry for newer Electron majors, but still maps their Chrome version', () => {
+    // Electron 42 is past the Node table, yet electron-to-chromium knows it.
+    expect(getElectronTargets('42.3.3')).toEqual({
+      node: 'node24.14',
+      chrome: 'chrome148',
+    });
+  });
+
+  it('falls back to the newest known entries for Electron majors nothing knows about', () => {
+    const targets = getElectronTargets('999.0.0');
+
+    expect(targets.node).toEqual(getElectronTargets('41.0.0').node);
+    // Whatever Chromium the installed mapping tops out at, never an older one.
+    expect(
+      Number(targets.chrome?.replace('chrome', '')),
+    ).toBeGreaterThanOrEqual(146);
   });
 
   it('returns no targets for Electron majors older than the table', () => {

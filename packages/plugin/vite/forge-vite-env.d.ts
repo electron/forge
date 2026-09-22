@@ -23,6 +23,8 @@ declare module 'vite' {
     /**
      * Build targets derived from the Electron version installed in the project.
      * Empty when that version cannot be determined.
+     *
+     * @internal
      */
     electronTargets?: ElectronTargets;
   }
