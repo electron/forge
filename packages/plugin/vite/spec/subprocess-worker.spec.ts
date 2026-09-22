@@ -1,6 +1,8 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -132,6 +134,112 @@ describe('subprocess-worker', () => {
     // MAIN_WINDOW_VITE_NAME should be statically replaced with "main_window"
     expect(contents).toMatch(/["'`]main_window["'`]/);
     expect(contents).not.toContain('MAIN_WINDOW_VITE_NAME');
+  });
+
+  it('builds main targets as Node bundles', async () => {
+    // The main process is built with `build.ssr`, so Vite must not treat the
+    // bundle as browser code: `process.env` reads stay live, `import.meta.*`
+    // lowers to real CommonJS instead of the browser shims that used to leave
+    // `{}.url` (and `self`) behind, and no module-preload polyfill is emitted.
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main-node-globals.js',
+          config: path.join(projectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'main-node-globals.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+
+    // `process.env.FOO` must be read at runtime, not inlined to `undefined`.
+    expect(contents).toContain('process.env.FOO');
+    expect(contents).toContain('__dirname');
+    // A `.cjs` file cannot contain `import.meta`, and the browser lowering of
+    // it references `self`.
+    expect(contents).not.toContain('import.meta');
+    expect(contents).not.toMatch(/\bself\b/);
+    // No module-preload polyfill helper, even though the entry code-splits.
+    expect(contents).not.toContain('__vitePreload');
+    expect(contents).not.toContain('modulepreload');
+
+    // Actually run the bundle to prove the lowering works.
+    const require = createRequire(import.meta.url);
+    process.env.FOO = 'forge-test-env';
+    try {
+      const built = require(outFile);
+      expect(built.fromEnv).toBe('forge-test-env');
+      expect(built.dir).toBe(path.dirname(outFile));
+      expect(built.metaUrl).toBe(pathToFileURL(outFile).href);
+      expect(built.metaDirname).toBe(path.dirname(outFile));
+      await expect(built.lazy()).resolves.toMatchObject({
+        lazyMarker: 'from-lazy',
+      });
+    } finally {
+      delete process.env.FOO;
+    }
+  });
+
+  it('still substitutes the dev server URL define under the Node build', async () => {
+    // The `process.env` self-defines must not shadow Forge's own defines. In a
+    // production build the URL define resolves to `undefined`, which is what
+    // main-process code checks for to decide between `loadURL` and `loadFile`.
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main-dev-server-url.js',
+          config: path.join(projectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(projectDir, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'main-dev-server-url.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).not.toContain('MAIN_WINDOW_VITE_DEV_SERVER_URL');
+
+    const require = createRequire(import.meta.url);
+    expect(require(outFile).devServerUrl).toBeUndefined();
+  });
+
+  it('resolves browser entry points for preload targets', async () => {
+    // Preload scripts are a hybrid environment, so `ssr.resolve` overrides the
+    // Node-first defaults of Vite's `ssr` environment with browser-first ones.
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload-browser-field.js',
+          config: path.join(projectDir, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'preload-browser-field.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).toContain('resolved-browser-entry');
+    expect(contents).not.toContain('resolved-node-entry');
+    expect(contents).not.toContain('__vitePreload');
+    expect(contents).not.toContain('modulepreload');
   });
 
   it('builds a preload target', async () => {
