@@ -14,7 +14,11 @@ Since Electron Forge v8, this maker is a compatibility layer over the MSIX maker
 
 - The `containerVirtualization`, `createConfigParams`, `createPriParams`, `deploy`, `desktopConverter`, `expandedBaseImage`, `flatten`, `finalSay` and `makeappxParams` options have no MSIX equivalent and are ignored with a warning.
 - When `devCert` is not set, `electron-windows-msix` signs the package with a self-signed development certificate, which the maker saves next to the `.msix` as `dev_cert.cer` and `dev_cert.pfx` so it can be trusted on a test device. The `.pfx` password is `WINDOWS_CERTIFICATE_PASSWORD` when that environment variable is set, otherwise a random one.
+- When `devCert` is set, `certPass` is required unless you pass `signtoolParams`. Certificates created by the old maker had no password, so add one or sign with `signtoolParams`.
+- Signing timestamps the package against `http://timestamp.digicert.com` by default. Set the `WINDOWS_TIMESTAMP_SERVER` environment variable to use another server. Builds without network access must pass their own `signtoolParams`.
+- A custom `assets` folder must contain the files the generated manifest refers to: `icon.png`, `Square44x44Logo.png` and `Square150x150Logo.png`. The old `SampleAppx.*.png` names are no longer used; rename your files or provide a custom `manifest` that references them.
 - A missing `publisher` (no `publisher` option and no `author.name` in `package.json`) is now an error.
+- Set `windowsKit` explicitly if your Windows SDK is installed outside the default `Windows Kits\10\bin` folders.
 
 :::
 

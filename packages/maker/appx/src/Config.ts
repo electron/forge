@@ -49,7 +49,10 @@ export interface MakerAppXConfig {
   packageExecutable?: string;
   /**
    * Path to a folder of visual assets (icons and tile images) for the
-   * package manifest.
+   * package manifest. Unless a custom {@link MakerAppXConfig.manifest} is
+   * set, the folder must contain the files the generated manifest refers to:
+   * `icon.png`, `Square44x44Logo.png` and `Square150x150Logo.png`. These
+   * differ from the `SampleAppx.*.png` names used by `electron-windows-store`.
    */
   assets?: string;
   /**
@@ -70,7 +73,9 @@ export interface MakerAppXConfig {
   publisher?: string;
   /**
    * Path to the Windows Kit `bin` folder containing `makeappx.exe`,
-   * `makepri.exe` and `signtool.exe`. Located automatically when unset.
+   * `makepri.exe` and `signtool.exe`. When unset, the maker searches the
+   * default Windows Kits install locations (preferring the newest SDK) and
+   * otherwise leaves the lookup to `electron-windows-msix`.
    */
   windowsKit?: string;
   /**
@@ -80,10 +85,16 @@ export interface MakerAppXConfig {
    * `dev_cert.pfx` so it can be trusted on a test device. The `.pfx` password
    * is `WINDOWS_CERTIFICATE_PASSWORD` when that environment variable is set,
    * otherwise a random one.
+   *
+   * Signing timestamps against `http://timestamp.digicert.com` unless the
+   * `WINDOWS_TIMESTAMP_SERVER` environment variable names another server.
    */
   devCert?: string;
   /**
-   * Password for {@link MakerAppXConfig.devCert}.
+   * Password for {@link MakerAppXConfig.devCert}. Required by
+   * `@electron/windows-sign` unless {@link MakerAppXConfig.signtoolParams}
+   * is set, so a password-less certificate needs `signtoolParams`. Ignored
+   * when `devCert` is unset.
    */
   certPass?: string;
   /**

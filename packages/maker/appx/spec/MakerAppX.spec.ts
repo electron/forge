@@ -2,7 +2,7 @@ import fs, { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import { move } from '@electron-forge/core-utils';
+import { move, pathExists } from '@electron-forge/core-utils';
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
 import { packageMSIX } from 'electron-windows-msix';
@@ -28,6 +28,7 @@ vi.mock(import('node:fs/promises'), async (importOriginal) => {
       ...mod.default,
       mkdtemp: vi.fn().mockResolvedValue('/tmp/appx-maker-mock'),
       mkdir: vi.fn(),
+      readdir: vi.fn(mod.default.readdir),
       rm: vi.fn(),
     },
   };
@@ -38,8 +39,30 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   return {
     ...mod,
     move: vi.fn(),
+    pathExists: vi.fn(mod.pathExists),
   };
 });
+
+const windowsKitRoots = {
+  x64: 'C:\\Program Files\\Windows Kits\\10\\bin',
+  x86: 'C:\\Program Files (x86)\\Windows Kits\\10\\bin',
+};
+
+/**
+ * Makes `pathExists` report the MSIX tooling as present in the given Windows
+ * Kit `bin` folders only.
+ */
+function installWindowsKits(...kitPaths: string[]) {
+  vi.mocked(pathExists).mockImplementation(async (filePath) =>
+    kitPaths.some(
+      (kitPath) =>
+        path.dirname(filePath) === kitPath &&
+        ['makeappx.exe', 'makepri.exe', 'signtool.exe'].includes(
+          path.basename(filePath),
+        ),
+    ),
+  );
+}
 
 describe('MakerAppX', () => {
   const mockTmpDir = '/tmp/appx-maker-mock';
@@ -225,6 +248,7 @@ describe('MakerAppX', () => {
         },
       });
       expect(output).toEqual([path.resolve(outPath, 'custompackage.msix')]);
+      expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
     });
 
     it('should not forward Forge-only options to electron-windows-msix', async () => {
@@ -480,6 +504,163 @@ describe('MakerAppX', () => {
             output[0],
           );
         });
+      });
+    });
+
+    describe('windowsKit', () => {
+      afterEach(() => {
+        vi.mocked(pathExists).mockReset();
+        vi.mocked(fs.readdir).mockReset();
+        vi.unstubAllEnvs();
+      });
+
+      it('should leave the lookup to electron-windows-msix when no Windows Kit is found', async () => {
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBeUndefined();
+      });
+
+      it('should use the unversioned x64 bin folder when it has the MSIX tools', async () => {
+        const kit = path.join(windowsKitRoots.x64, 'x64');
+        installWindowsKits(kit);
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(kit);
+        expect(vi.mocked(fs.readdir)).not.toHaveBeenCalled();
+      });
+
+      it('should pick the newest versioned SDK folder that has the MSIX tools', async () => {
+        vi.mocked(fs.readdir).mockImplementation(async (dir) => {
+          if (dir === windowsKitRoots.x86) {
+            return [
+              '10.0.19041.0',
+              '10.0.22621.0',
+              '10.0.26100.0',
+              'arm64',
+            ] as never;
+          }
+          throw new Error('ENOENT');
+        });
+        installWindowsKits(
+          path.join(windowsKitRoots.x86, '10.0.19041.0', 'x64'),
+          path.join(windowsKitRoots.x86, '10.0.22621.0', 'x64'),
+        );
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, '10.0.22621.0', 'x64'),
+        );
+      });
+
+      it('should skip folders that are missing one of the MSIX tools', async () => {
+        const kit = path.join(windowsKitRoots.x64, 'x64');
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) =>
+            path.dirname(filePath) === kit &&
+            path.basename(filePath) === 'makeappx.exe',
+        );
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBeUndefined();
+      });
+
+      it('should prefer arm64 tools on ARM64 hosts', async () => {
+        vi.stubEnv('PROCESSOR_ARCHITECTURE', 'ARM64');
+        installWindowsKits(
+          path.join(windowsKitRoots.x86, 'arm64'),
+          path.join(windowsKitRoots.x86, 'x64'),
+        );
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, 'arm64'),
+        );
+      });
+
+      it('should fall back to x64 tools on ARM64 hosts', async () => {
+        vi.stubEnv('PROCESSOR_ARCHITECTURE', 'ARM64');
+        installWindowsKits(path.join(windowsKitRoots.x86, 'x64'));
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, 'x64'),
+        );
+      });
+
+      it('should not search when windowsKit is configured', async () => {
+        installWindowsKits(path.join(windowsKitRoots.x86, 'x64'));
+
+        // devCert skips the dev certificate copy, which also uses pathExists
+        await runMake({
+          windowsKit: 'D:\\Custom\\Kits',
+          devCert: 'C:\\certs\\custom.pfx',
+        });
+
+        expect(packagingOptions().windowsKitPath).toBe('D:\\Custom\\Kits');
+        expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('assets', () => {
+      const assets = 'C:\\my\\assets';
+      const requiredAssets = [
+        'icon.png',
+        'Square44x44Logo.png',
+        'Square150x150Logo.png',
+      ];
+
+      afterEach(() => {
+        vi.mocked(pathExists).mockReset();
+      });
+
+      it('should throw when a custom assets folder lacks the files the generated manifest refers to', async () => {
+        await expect(runMake({ assets })).rejects.toThrow(
+          `The "assets" folder '${assets}' is missing icon.png, Square44x44Logo.png, Square150x150Logo.png, which the generated AppxManifest.xml refers to.`,
+        );
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+      });
+
+      it('should only list the missing asset files', async () => {
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) => path.basename(filePath) === 'icon.png',
+        );
+
+        await expect(runMake({ assets })).rejects.toThrow(
+          'is missing Square44x44Logo.png, Square150x150Logo.png, which',
+        );
+      });
+
+      it('should forward a custom assets folder that has the required files', async () => {
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) =>
+            path.dirname(filePath) === assets &&
+            requiredAssets.includes(path.basename(filePath)),
+        );
+
+        await runMake({ assets });
+
+        expect(packagingOptions().packageAssets).toBe(assets);
+      });
+
+      it('should not check the assets folder when a custom manifest is set', async () => {
+        // devCert skips the dev certificate copy, which also uses pathExists
+        await runMake({
+          assets,
+          manifest: 'C:\\my\\AppxManifest.xml',
+          windowsKit: 'D:\\Custom\\Kits',
+          devCert: 'C:\\certs\\custom.pfx',
+        });
+
+        expect(packagingOptions()).toMatchObject({
+          packageAssets: assets,
+          appManifest: 'C:\\my\\AppxManifest.xml',
+        });
+        expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
       });
     });
 
