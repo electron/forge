@@ -161,7 +161,7 @@ describe('ViteConfigGenerator', () => {
     );
     const buildConfig = (await generator.getBuildConfigs())[0];
 
-    expect(buildConfig.build?.target).toEqual('node22.19');
+    expect(buildConfig.build?.target).toEqual('node22.18');
   });
 
   it('getBuildConfigs:preload derives the Chrome build.target from the installed Electron version', async () => {
