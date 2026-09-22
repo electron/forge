@@ -52,7 +52,7 @@
     "@yarnpkg/types": "^4.0.1",
     "cross-spawn": "^7.0.3",
     "debug": "^4.3.1",
-    "electron": "^42.3.3",
+    "electron": "^44.4.3",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
     "husky": "^7.0.1",
     "knip": "^5.87.0",
