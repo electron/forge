@@ -4,7 +4,7 @@ export interface VitePluginBuildConfig {
   /**
    * Alias of `build.lib.entry` in `config`.
    */
-  entry: LibraryOptions['entry'];
+  entry: NonNullable<LibraryOptions['entry']>;
   /**
    * Vite config file path.
    */
