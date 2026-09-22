@@ -27,8 +27,6 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
-      // Target the Node.js version Electron ships instead of downleveling for
-      // engines it never runs. Left unset when Electron cannot be resolved.
       ...(electronTargets?.node ? { target: electronTargets.node } : {}),
       watch: command === 'serve' ? { exclude: '**/.git/**' } : null,
       minify: command === 'build',

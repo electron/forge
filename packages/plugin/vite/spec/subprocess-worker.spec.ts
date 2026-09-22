@@ -223,8 +223,6 @@ describe('subprocess-worker', () => {
   });
 });
 
-// The project pins an exact `electron` devDependency, so the generator can
-// derive `build.target` from it without Electron being installed.
 const electronProjectDir = path.join(
   import.meta.dirname,
   'fixtures',
@@ -262,8 +260,7 @@ describe('subprocess-worker with a resolvable Electron version', () => {
       path.join(viteOutDir, 'build', 'main.cjs'),
       'utf8',
     );
-    // `using` declarations only survive when `build.target` is recent enough;
-    // Vite's default target rewrites them into `SuppressedError` helpers.
+    // Vite's default target would lower `using` into SuppressedError helpers.
     expect(contents).toMatch(/\busing\s+\w+\s*=/);
     expect(contents).not.toContain('SuppressedError');
   });
@@ -288,8 +285,6 @@ describe('subprocess-worker with a resolvable Electron version', () => {
     );
     expect(code, stderr).toBe(0);
 
-    // Preload scripts run in the renderer process, so they get the Chrome
-    // target rather than the Node.js one the main process gets.
     const contents = fs.readFileSync(
       path.join(viteOutDir, 'build', 'preload.cjs'),
       'utf8',

@@ -14,9 +14,7 @@ export function getConfig(
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
-      // Preload scripts run in the renderer process, so they execute on
-      // Chromium's V8 rather than on Electron's Node.js build. This overrides
-      // the Node.js target that `getBuildConfig` sets for the main process.
+      // Preload scripts run in the renderer process, on Chromium.
       ...(electronTargets?.chrome ? { target: electronTargets.chrome } : {}),
       rollupOptions: {
         external: [...external, 'electron/renderer'],

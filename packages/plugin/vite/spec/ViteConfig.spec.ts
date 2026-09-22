@@ -182,7 +182,6 @@ describe('ViteConfigGenerator', () => {
     );
     const buildConfig = (await generator.getBuildConfigs())[0];
 
-    // Preload scripts run in the renderer process, on Chromium's V8.
     expect(buildConfig.build?.target).toEqual('chrome140');
   });
 
@@ -227,7 +226,6 @@ describe('ViteConfigGenerator', () => {
         },
       ],
     };
-    // `configRoot` has no package.json, so there is no Electron to resolve.
     const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
     const [mainConfig, preloadConfig] = await generator.getBuildConfigs();
     const rendererConfig = (await generator.getRendererConfig())[0];

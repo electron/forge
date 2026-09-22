@@ -32,12 +32,6 @@ export default class ViteConfigGenerator {
     d('Config mode:', this.mode);
   }
 
-  /**
-   * Build targets matching the Electron version installed in the project.
-   * If that version cannot be determined (no `package.json`, no Electron
-   * dependency, or Electron not installed) no target is derived and Vite's own
-   * default applies.
-   */
   private resolveElectronTargets(): Promise<ElectronTargets> {
     this.electronTargets ??= (async () => {
       try {

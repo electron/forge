@@ -19,16 +19,7 @@ declare module 'vite' {
     root: string;
     forgeConfig: VitePluginConfig;
     forgeConfigSelf: VitePluginConfig[K][number];
-    /**
-     * Build targets derived from the Electron version installed in the project.
-     * Empty when that version cannot be determined.
-     *
-     * Mirrors `ElectronTargets` from `src/config/electron-targets.ts`, which is
-     * deliberately not imported here: that would pull the plugin's sources into
-     * every consumer's TypeScript program.
-     *
-     * @internal
-     */
+    /** @internal */
     electronTargets?: { node?: string; chrome?: string };
   }
 }

@@ -683,10 +683,8 @@ __metadata:
     "@electron-forge/plugin-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@electron/packager": "npm:^20.3.0"
-    "@types/electron-to-chromium": "npm:^1.5.0"
     "@types/node": "npm:^22.10.7"
     debug: "npm:^4.3.1"
-    electron-to-chromium: "npm:^1.5.428"
     listr2: "npm:^11.1.0"
     vite: "npm:^8.0.0"
     vitest: "catalog:"
@@ -4098,13 +4096,6 @@ __metadata:
   version: 4.0.2
   resolution: "@types/deep-eql@npm:4.0.2"
   checksum: 10c0/bf3f811843117900d7084b9d0c852da9a044d12eb40e6de73b552598a6843c21291a8a381b0532644574beecd5e3491c5ff3a0365ab86b15d59862c025384844
-  languageName: node
-  linkType: hard
-
-"@types/electron-to-chromium@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@types/electron-to-chromium@npm:1.5.0"
-  checksum: 10c0/f5c4f20c7efc195a6a4c948c7e24f427cc75fd2ebe708e22db1829affa56098a4f12f9d60751eaf26404f6ff2fa116c15918bd3ca4ae5cbea7379fc01273ae8c
   languageName: node
   linkType: hard
 
@@ -7660,7 +7651,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.5.420, electron-to-chromium@npm:^1.5.428":
+"electron-to-chromium@npm:^1.5.420":
   version: 1.5.428
   resolution: "electron-to-chromium@npm:1.5.428"
   checksum: 10c0/714cdc7bd2153a4ab90773d06fed65370c74dbd481502d6f9a61cd4c0c64630b57b6c3faccc3fb5578c7fedf6e82d296f18c8d0cf334c9f9b2746a7c7fabbdd6
