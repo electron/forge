@@ -164,7 +164,7 @@ describe('ViteConfigGenerator', () => {
     expect(buildConfig.build?.target).toEqual('node22.19');
   });
 
-  it('getBuildConfigs:preload derives build.target from the installed Electron version', async () => {
+  it('getBuildConfigs:preload derives the Chrome build.target from the installed Electron version', async () => {
     const forgeConfig: VitePluginConfig = {
       build: [
         {
@@ -182,7 +182,8 @@ describe('ViteConfigGenerator', () => {
     );
     const buildConfig = (await generator.getBuildConfigs())[0];
 
-    expect(buildConfig.build?.target).toEqual('node22.19');
+    // Preload scripts run in the renderer process, on Chromium's V8.
+    expect(buildConfig.build?.target).toEqual('chrome140');
   });
 
   it('getRendererConfig:renderer derives build.target from the installed Electron version', async () => {

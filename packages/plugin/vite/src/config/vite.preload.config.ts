@@ -10,10 +10,14 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
+  const { forgeConfigSelf, electronTargets } = forgeEnv;
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
+      // Preload scripts run in the renderer process, so they execute on
+      // Chromium's V8 rather than on Electron's Node.js build. This overrides
+      // the Node.js target that `getBuildConfig` sets for the main process.
+      ...(electronTargets?.chrome ? { target: electronTargets.chrome } : {}),
       rollupOptions: {
         external: [...external, 'electron/renderer'],
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.

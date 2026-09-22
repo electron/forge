@@ -268,6 +268,36 @@ describe('subprocess-worker with a resolvable Electron version', () => {
     expect(contents).not.toContain('SuppressedError');
   });
 
+  it('builds a preload target against the derived Chrome target', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(electronProjectDir, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker(
+      'build',
+      0,
+      config,
+      electronProjectDir,
+    );
+    expect(code, stderr).toBe(0);
+
+    // Preload scripts run in the renderer process, so they get the Chrome
+    // target rather than the Node.js one the main process gets.
+    const contents = fs.readFileSync(
+      path.join(viteOutDir, 'build', 'preload.cjs'),
+      'utf8',
+    );
+    expect(contents).toMatch(/\busing\s+\w+\s*=/);
+    expect(contents).not.toContain('SuppressedError');
+  });
+
   it('builds a renderer target against the derived Chrome target', async () => {
     const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
       build: [],
