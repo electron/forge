@@ -21,6 +21,7 @@ import filenamify from '../util/filenamify.js';
 import getForgeConfig from '../util/forge-config.js';
 import { getHookListrTasks, runMutatingHook } from '../util/hook.js';
 import { importSearch } from '../util/import-search.js';
+import { getMakeResultsDir, saveMakeResults } from '../util/make-results.js';
 import getCurrentOutDir from '../util/out-dir.js';
 import parseArchs from '../util/parse-archs.js';
 import { readMutatedPackageJson } from '../util/read-package-json.js';
@@ -82,7 +83,13 @@ export interface MakeOptions {
    */
   interactive?: boolean;
   /**
-   * Whether to skip the pre-make packaging step
+   * Make distributables from the output of a previous `package` run in the
+   * out directory, instead of packaging the application again.
+   */
+  fromPackage?: boolean;
+  /**
+   * @deprecated Use {@link MakeOptions.fromPackage} instead. This alias will
+   * be removed in a future major version.
    */
   skipPackage?: boolean;
   /**
@@ -120,6 +127,7 @@ export const listrMake = (
   {
     dir: providedDir = process.cwd(),
     interactive = false,
+    fromPackage = false,
     skipPackage = false,
     arch = getHostArch() as ForgeArch,
     platform = process.platform as ForgePlatform,
@@ -129,6 +137,9 @@ export const listrMake = (
   }: ListrMakeOptions,
   receiveMakeResults?: (results: ForgeMakeResult[]) => void,
 ) => {
+  // `skipPackage` is the deprecated name for `fromPackage`
+  fromPackage = fromPackage || skipPackage;
+
   const listrOptions: ForgeListrOptions<MakeContext> = {
     concurrent: false,
     rendererOptions: {
@@ -260,7 +271,7 @@ export const listrMake = (
         task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
           { name: 'package()', category: '@electron-forge/core' },
           async (childTrace, ctx, task) => {
-            if (!skipPackage) {
+            if (!fromPackage) {
               return delayTraceTillSignal(
                 childTrace,
                 listrPackage(childTrace, {
@@ -369,6 +380,7 @@ export const listrMake = (
                           packageJSON,
                           platform,
                           arch: targetArch,
+                          maker: uniqMaker.name,
                         });
                       } catch (err) {
                         if (err instanceof Error) {
@@ -427,6 +439,21 @@ export const listrMake = (
             receiveMakeResults?.(ctx.outputs);
 
             task.output = `Artifacts available at: ${styleText('green', outputLocations.join(', '))}`;
+          },
+        ),
+        rendererOptions: {
+          persistentOutput: true,
+        },
+      },
+      {
+        title: 'Saving make results',
+        task: childTrace<Parameters<ForgeListrTaskFn<MakeContext>>>(
+          { name: 'save-make-results', category: '@electron-forge/core' },
+          async (_, ctx, task) => {
+            // Persist the results next to the artifacts so that they can be
+            // released later (or on another machine) with `release --from-make`.
+            await saveMakeResults(ctx.actualOutDir, ctx.outputs, ctx.dir);
+            task.output = `Make results saved to: ${styleText('green', getMakeResultsDir(ctx.actualOutDir))}`;
           },
         ),
         rendererOptions: {

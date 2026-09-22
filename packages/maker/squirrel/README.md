@@ -10,11 +10,17 @@ Pre-requisites:
 Configuration options are documented in [`MakerSquirrelConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-squirrel.MakerSquirrelConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-squirrel',
-  config: {
-    certificateFile: './cert.pfx',
-    certificatePassword: 'this-is-a-secret'
-  }
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        certificateFile: './cert.pfx',
+        certificatePassword: 'this-is-a-secret'
+      }
+    }
+  ]
+};
 ```

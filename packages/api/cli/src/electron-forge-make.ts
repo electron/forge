@@ -4,7 +4,7 @@ import { styleText } from 'node:util';
 import { initializeProxy } from '@electron/get';
 import { api, MakeOptions } from '@electron-forge/core';
 import { resolveWorkingDir } from '@electron-forge/core-utils';
-import { program } from 'commander';
+import { Option, program } from 'commander';
 
 import './util/terminate.js';
 import packageJSON from '../package.json' with { type: 'json' };
@@ -23,8 +23,16 @@ export async function getMakeOptions(): Promise<MakeOptions> {
       'Directory to run the command in. (default: current directory)',
     )
     .option(
-      '--skip-package',
-      `Skip packaging the Electron application, and use the output from a previous ${styleText('green', 'package')} run instead.`,
+      '--from-package',
+      `Make distributables from the output of a previous ${styleText('green', 'package')} run, instead of packaging the Electron application again.`,
+    )
+    // `--skip-package` is deprecated. It is hidden from the help output and
+    // prints a deprecation warning when used.
+    .addOption(
+      new Option(
+        '--skip-package',
+        'Deprecated: use --from-package instead.',
+      ).hideHelp(),
     )
     .option('-a, --arch [arch]', 'Target build architecture.', process.arch)
     .option(
@@ -44,10 +52,17 @@ export async function getMakeOptions(): Promise<MakeOptions> {
 
   const options = program.opts();
 
+  if (options.skipPackage) {
+    console.error(
+      styleText('yellow', '⚠'),
+      '`--skip-package` is deprecated and will be removed in a future major version; use `--from-package` instead.',
+    );
+  }
+
   const makeOpts: MakeOptions = {
     dir: workingDir!,
     interactive: true,
-    skipPackage: options.skipPackage,
+    fromPackage: Boolean(options.fromPackage || options.skipPackage),
   };
   if (options.targets) makeOpts.overrideTargets = options.targets.split(',');
   if (options.arch) makeOpts.arch = options.arch;

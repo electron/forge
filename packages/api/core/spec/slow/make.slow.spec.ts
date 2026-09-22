@@ -47,7 +47,7 @@ describe('Make', () => {
   });
 
   it('makes from a custom outDir without errors', async () => {
-    await api.make({ dir, skipPackage: true, outDir });
+    await api.make({ dir, fromPackage: true, outDir });
 
     // out/make/zip/darwin/arm64/api-tester-darwin-arm64-1.0.0.zip
     const artifactPath = path.join(
@@ -86,7 +86,7 @@ describe('Make', () => {
             name: makerPath,
           } as IForgeResolvableMaker,
         ],
-        skipPackage: true,
+        fromPackage: true,
       }),
     ).rejects.toThrow(/incompatible with this version/);
   });
@@ -104,7 +104,7 @@ describe('Make', () => {
           } as IForgeResolvableMaker,
         ],
         platform: 'linux',
-        skipPackage: true,
+        fromPackage: true,
       }),
     ).rejects.toThrow(
       'Could not find any make targets configured for the "linux" platform.',
@@ -213,7 +213,7 @@ describe('Make', () => {
 
         if (shouldPass) {
           it(`makes the correct artifact`, async () => {
-            const outputs = await api.make({ dir, outDir, skipPackage: true });
+            const outputs = await api.make({ dir, outDir, fromPackage: true });
             for (const outputResult of outputs) {
               for (const output of outputResult.artifacts) {
                 expect(fs.existsSync(output)).toEqual(true);
@@ -224,7 +224,7 @@ describe('Make', () => {
         } else {
           it(`fails`, async () => {
             await expect(
-              api.make({ dir, outDir, skipPackage: true }),
+              api.make({ dir, outDir, fromPackage: true }),
             ).rejects.toThrow();
           });
         }

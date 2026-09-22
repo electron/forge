@@ -5,7 +5,6 @@ import type { VitePluginBuildConfig } from './Config.js';
 import type Logger from '@electron-forge/multi-logger';
 import type { Tab } from '@electron-forge/multi-logger';
 import type {
-  LibraryOptions,
   LogErrorOptions,
   LogLevel,
   LogOptions,
@@ -13,7 +12,7 @@ import type {
   Logger as ViteLogger,
 } from 'vite';
 
-export function entryToDisplay(entry: LibraryOptions['entry']): string {
+export function entryToDisplay(entry: VitePluginBuildConfig['entry']): string {
   if (typeof entry === 'string') return entry;
   if (Array.isArray(entry)) return entry.join(' ');
   return Object.keys(entry).join(' ');
