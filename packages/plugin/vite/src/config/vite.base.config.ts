@@ -29,6 +29,8 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       outDir: '.vite/build',
       watch: command === 'serve' ? { exclude: '**/.git/**' } : null,
       minify: command === 'build',
+      // Gzip sizes are meaningless for code shipped inside an asar.
+      reportCompressedSize: false,
     },
     clearScreen: false,
   };

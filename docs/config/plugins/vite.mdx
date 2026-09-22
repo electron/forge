@@ -101,6 +101,28 @@ module.exports = {
 
 Config options will largely follow the same standards as non-Electron Vite projects. You can reference [Vite's documentation here](https://vitejs.dev/config/) for more examples of how to configure each of your entry point's config files.
 
+### Renderer defaults
+
+The plugin tweaks a few Vite defaults for renderers before merging in your own config, which always wins:
+
+* `base` is set to `'./'` for production builds only, because the packaged app loads `index.html` off disk with `loadFile`. The dev server is served over HTTP, so it keeps Vite's default `/` base.
+* `build.modulePreload.polyfill` is turned off, since Electron's Chromium supports `<link rel="modulepreload">` natively.
+* `build.reportCompressedSize` is turned off for renderer, main and preload builds, since gzip sizes say nothing about code shipped inside an asar.
+
+Set any of them explicitly in your renderer's Vite config to override the default:
+
+```javascript title="vite.renderer.config.js"
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  base: '/',
+  build: {
+    modulePreload: { polyfill: true },
+    reportCompressedSize: true
+  }
+});
+```
+
 ### Project files
 
 Vite's build config generates a separate entry for the main process and preload script, as well as each renderer process.

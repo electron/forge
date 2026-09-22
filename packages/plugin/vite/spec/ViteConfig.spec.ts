@@ -137,4 +137,79 @@ describe('ViteConfigGenerator', () => {
     expect(rendererConfig.resolve).toEqual({ preserveSymlinks: true });
     expect(rendererConfig.clearScreen).toBe(false);
   });
+
+  it('getRendererConfig:renderer applies the relative base to production builds only', async () => {
+    const forgeConfig = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+
+    // Packaged renderers are loaded from disk with `loadFile`.
+    const prodConfig = (
+      await new ViteConfigGenerator(
+        forgeConfig,
+        configRoot,
+        true,
+      ).getRendererConfig()
+    )[0];
+    expect(prodConfig.base).toEqual('./');
+
+    // The dev server is served over HTTP, where Vite's default `/` base applies.
+    const devConfig = (
+      await new ViteConfigGenerator(
+        forgeConfig,
+        configRoot,
+        false,
+      ).getRendererConfig()
+    )[0];
+    expect(devConfig.base).toBeUndefined();
+  });
+
+  it('getRendererConfig:renderer opts out of the module preload polyfill and compressed size reporting', async () => {
+    const forgeConfig = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(configRoot, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const rendererConfig = (await generator.getRendererConfig())[0];
+
+    // Electron's Chromium supports `<link rel="modulepreload">` natively.
+    expect(rendererConfig.build?.modulePreload).toEqual({ polyfill: false });
+    expect(rendererConfig.build?.reportCompressedSize).toBe(false);
+  });
+
+  it('getBuildConfigs skips compressed size reporting for main and preload', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+        {
+          entry: 'src/preload.js',
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfigs = await generator.getBuildConfigs();
+
+    for (const buildConfig of buildConfigs) {
+      // Gzip sizes are meaningless for code shipped inside an asar.
+      expect(buildConfig.build?.reportCompressedSize).toBe(false);
+    }
+  });
 });

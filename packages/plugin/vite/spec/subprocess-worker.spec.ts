@@ -102,6 +102,40 @@ describe('subprocess-worker', () => {
     expect(fs.existsSync(outHtml)).toBe(true);
   });
 
+  it('builds a renderer target with relative asset URLs and no module preload polyfill', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [],
+      renderer: [
+        {
+          name: 'main_window',
+          config: path.join(projectDir, 'vite.renderer.config.mjs'),
+        },
+      ],
+    };
+
+    const { code, stderr } = await runWorker('renderer', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const rendererDir = path.join(viteOutDir, 'renderer', 'main_window');
+    const html = fs.readFileSync(path.join(rendererDir, 'index.html'), 'utf8');
+    // The packaged app loads this file off disk, so URLs have to be relative.
+    expect(html).toMatch(/src="\.\/assets\/[^"]+\.js"/);
+    expect(html).not.toMatch(/(?:src|href)="\/assets\//);
+
+    const assetsDir = path.join(rendererDir, 'assets');
+    const emittedJs = fs
+      .readdirSync(assetsDir)
+      .filter((file) => file.endsWith('.js'))
+      .map((file) => fs.readFileSync(path.join(assetsDir, file), 'utf8'))
+      .join('\n');
+    // Vite's `__vitePreload` helper probes `relList.supports('modulepreload')`
+    // too, so only the polyfill's own body identifies it: it scans for and
+    // observes `link[rel="modulepreload"]` elements.
+    expect(emittedJs).toMatch(/supports\(.modulepreload.\)/);
+    expect(emittedJs).not.toMatch(/link\[rel=.?modulepreload/);
+    expect(emittedJs).not.toContain('MutationObserver');
+  });
+
   it('injects renderer name defines into main targets', async () => {
     // This validates that the worker receives the FULL renderer list, not just
     // the single build spec. getBuildDefine() reads forgeConfig.renderer to
