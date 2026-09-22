@@ -1,4 +1,3 @@
-/* eslint-disable */
 class Handle {
   [Symbol.dispose]() {}
 }
