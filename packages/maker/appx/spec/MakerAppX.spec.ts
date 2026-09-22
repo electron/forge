@@ -12,6 +12,24 @@ import { MakerAppX, MakerAppXConfig } from '../src/MakerAppX';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
+// The Windows CI runners have a real Windows SDK installed (e.g.
+// C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64), which the
+// maker would find. Keep the lookup hermetic: by default nothing exists under
+// the Windows Kit roots, and tests install fake kits with installWindowsKits()
+// or mock fs.readdir explicitly. Hoisted because the mock factories below run
+// before this module's top-level code.
+const { windowsKitRoots, isUnderWindowsKitRoot } = vi.hoisted(() => {
+  const windowsKitRoots = {
+    x64: 'C:\\Program Files\\Windows Kits\\10\\bin',
+    x86: 'C:\\Program Files (x86)\\Windows Kits\\10\\bin',
+  };
+  return {
+    windowsKitRoots,
+    isUnderWindowsKitRoot: (filePath: string) =>
+      Object.values(windowsKitRoots).some((root) => filePath.startsWith(root)),
+  };
+});
+
 vi.mock(import('electron-windows-msix'), () => {
   return {
     packageMSIX: vi.fn().mockResolvedValue({
@@ -28,7 +46,17 @@ vi.mock(import('node:fs/promises'), async (importOriginal) => {
       ...mod.default,
       mkdtemp: vi.fn().mockResolvedValue('/tmp/appx-maker-mock'),
       mkdir: vi.fn(),
-      readdir: vi.fn(mod.default.readdir),
+      readdir: vi.fn(((dir, options) =>
+        isUnderWindowsKitRoot(String(dir))
+          ? Promise.reject(
+              Object.assign(
+                new Error(
+                  `ENOENT: no such file or directory, scandir '${dir}'`,
+                ),
+                { code: 'ENOENT' },
+              ),
+            )
+          : mod.default.readdir(dir, options)) as typeof mod.default.readdir),
       rm: vi.fn(),
     },
   };
@@ -39,14 +67,11 @@ vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   return {
     ...mod,
     move: vi.fn(),
-    pathExists: vi.fn(mod.pathExists),
+    pathExists: vi.fn(async (filePath: string) =>
+      isUnderWindowsKitRoot(filePath) ? false : mod.pathExists(filePath),
+    ),
   };
 });
-
-const windowsKitRoots = {
-  x64: 'C:\\Program Files\\Windows Kits\\10\\bin',
-  x86: 'C:\\Program Files (x86)\\Windows Kits\\10\\bin',
-};
 
 /**
  * Makes `pathExists` report the MSIX tooling as present in the given Windows
