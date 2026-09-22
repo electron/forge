@@ -11,6 +11,11 @@ import which from 'which';
 
 export type EmptyConfig = Record<string, never>;
 
+/**
+ * A function that resolves a maker's configuration for a given target architecture
+ */
+export type MakerConfigFetcher<C> = (arch: ForgeArch) => C | Promise<C>;
+
 export interface MakerOptions {
   /**
    * The directory containing the packaged Electron application
@@ -55,14 +60,21 @@ export default abstract class Maker<C> implements IForgeMaker {
   /** @internal */
   __isElectronForgeMaker!: true;
 
+  private readonly configFetcher?: MakerConfigFetcher<C>;
+
   /**
-   * @param configOrConfigFetcher - Either a configuration object for this maker or a simple method that returns such a configuration for a given target architecture
+   * @param configOrConfigFetcher - Either a configuration object for this maker or a function that returns (or resolves to) such a configuration for a given target architecture
    * @param platformsToMakeOn - If you want this maker to run on platforms different from `defaultPlatforms` you can provide those platforms here
    */
   constructor(
-    private configOrConfigFetcher: C | ((arch: ForgeArch) => C) = {} as C,
+    configOrConfigFetcher: C | MakerConfigFetcher<C> = {} as C,
     protected platformsToMakeOn?: ForgePlatform[],
   ) {
+    if (typeof configOrConfigFetcher === 'function') {
+      this.configFetcher = configOrConfigFetcher as MakerConfigFetcher<C>;
+    } else {
+      this.config = configOrConfigFetcher;
+    }
     Object.defineProperty(this, '__isElectronForgeMaker', {
       value: true,
       enumerable: false,
@@ -75,15 +87,15 @@ export default abstract class Maker<C> implements IForgeMaker {
     return this.defaultPlatforms;
   }
 
-  // TODO: Remove this, it is an eye-sore and is a nasty hack to provide forge
-  //       v5 style functionality in the new API
+  /**
+   * Resolves `this.config` for the given target architecture. Electron Forge
+   * calls this before `make`, so makers can rely on `this.config` being set.
+   *
+   * If the maker was given a plain configuration object this is a no-op.
+   */
   async prepareConfig(targetArch: ForgeArch): Promise<void> {
-    if (typeof this.configOrConfigFetcher === 'function') {
-      this.config = await Promise.resolve(
-        (this.configOrConfigFetcher as (arch: ForgeArch) => C)(targetArch),
-      );
-    } else {
-      this.config = this.configOrConfigFetcher as C;
+    if (this.configFetcher) {
+      this.config = await this.configFetcher(targetArch);
     }
   }
 
@@ -110,7 +122,10 @@ export default abstract class Maker<C> implements IForgeMaker {
 
   clone(): Maker<C> {
     const MakerClass = (this as any).constructor;
-    return new MakerClass(this.configOrConfigFetcher, this.platformsToMakeOn);
+    return new MakerClass(
+      this.configFetcher ?? this.config,
+      this.platformsToMakeOn,
+    );
   }
 
   /**

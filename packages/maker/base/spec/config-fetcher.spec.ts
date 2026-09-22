@@ -43,10 +43,24 @@ describe('prepareConfig', () => {
       },
       [],
     );
-    expect(maker.config).toBeUndefined();
+    expect(maker.config).toEqual({
+      a: 234,
+    });
     await maker.prepareConfig('x64');
     expect(maker.config).toEqual({
       a: 234,
     });
+  });
+
+  it('should resolve the config per architecture on clones', async () => {
+    const fetcher = vi.fn((arch: string) => ({ a: arch === 'x64' ? 1 : 2 }));
+    const maker = new MakerImpl(fetcher, []);
+    const x64Maker = maker.clone();
+    const arm64Maker = maker.clone();
+    await x64Maker.prepareConfig('x64');
+    await arm64Maker.prepareConfig('arm64');
+    expect(x64Maker.config).toEqual({ a: 1 });
+    expect(arm64Maker.config).toEqual({ a: 2 });
+    expect(maker.config).toBeUndefined();
   });
 });
