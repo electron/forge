@@ -31,7 +31,7 @@
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
     "test:clear": "tsx tools/test-clear",
-    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts && tsx ./tools/gen-ts-glue.ts",
+    "postinstall": "husky install && node -e \"try { fs.rmSync('node_modules/.bin/*.ps1', { recursive: true, force: true }) } catch (e) {}\" && tsx ./tools/gen-tsconfigs.ts",
     "spawn-verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts"
   },
   "devDependencies": {
@@ -58,7 +58,6 @@
     "knip": "^5.87.0",
     "lerna": "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch",
     "lint-staged": "^17.4.1",
-    "listr2": "^11.1.0",
     "markdownlint-cli2": "^0.19.1",
     "oxfmt": "^0.41.0",
     "oxlint": "^1.80.0",
