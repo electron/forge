@@ -45,12 +45,14 @@ function filterDupes<T>(arr: readonly T[]): T[] {
       const pkgManifest = pkg.manifest as {
         dependencies?: Record<string, string>;
         devDependencies?: Record<string, string>;
+        optionalDependencies?: Record<string, string>;
       };
 
       // Figure out which other local packages this package references
       const pkgDeps = [
         pkgManifest.dependencies,
         pkgManifest.devDependencies,
+        pkgManifest.optionalDependencies,
       ].flatMap((deps) => (deps === undefined ? [] : Object.keys(deps)));
       const refs = filterDupes(
         pkgDeps.flatMap((depName) => {
