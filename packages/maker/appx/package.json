@@ -9,7 +9,7 @@
   "exports": "./dist/MakerAppX.js",
   "typings": "dist/MakerAppX.d.ts",
   "devDependencies": {
-    "vite": "^8.0.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

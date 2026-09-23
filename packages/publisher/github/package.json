@@ -9,7 +9,7 @@
   "exports": "./dist/PublisherGitHub.js",
   "typings": "dist/PublisherGitHub.d.ts",
   "devDependencies": {
-    "vite": "^8.0.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
