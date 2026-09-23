@@ -1,19 +1,12 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import type { ReadableStream } from 'node:stream/web';
 
 import { spawn } from '@malept/cross-spawn-promise';
-
-// Squirrel.Mac pins Sparkle at this tag (79bc9e872948e47877e76f194cb0c8e0412b0b90).
-const SPARKLE_VERSION = '2.9.5';
-const SPARKLE_ARCHIVE_URL = `https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz`;
-const SPARKLE_ARCHIVE_SHA256 =
-  '015336b601493e05c237964954bff6191370003d94edefe663724c88840d73cc';
 
 // Squirrel.Mac applies format 3 and 4 patches with any compression but bzip2.
 const DELTA_FORMAT_VERSION = '4';
@@ -117,68 +110,31 @@ export async function findGroupOrOtherWritable(
   return writable;
 }
 
-// Makes for several architectures run concurrently in one process, so they
-// share a single download rather than each writing the cache.
-const binaryDeltaDownloads = new Map<string, Promise<string>>();
-
 /**
- * Return the path to Sparkle's `BinaryDelta`, downloading and caching it if
- * needed.
+ * Return the path to Sparkle's `BinaryDelta`: `configuredPath` if given, or
+ * the executable shipped in `@electron-forge/binary-delta`.
  */
-export async function getBinaryDelta(binaryDeltaPath?: string) {
-  if (binaryDeltaPath) return binaryDeltaPath;
+export async function getBinaryDelta(configuredPath?: string): Promise<string> {
+  if (configuredPath) return configuredPath;
 
-  const cacheDir = path.join(
-    os.homedir(),
-    'Library',
-    'Caches',
-    'electron-forge',
-    `sparkle-${SPARKLE_VERSION}`,
-  );
-  const cachedPath = path.join(cacheDir, 'BinaryDelta');
+  let binaryDeltaPath: string;
   try {
-    await fs.access(cachedPath, fs.constants.X_OK);
-    return cachedPath;
-  } catch {
-    // Not cached yet
-  }
-
-  let download = binaryDeltaDownloads.get(cachedPath);
-  if (!download) {
-    download = downloadBinaryDelta(cacheDir, cachedPath).finally(() =>
-      binaryDeltaDownloads.delete(cachedPath),
+    ({ binaryDeltaPath } = await import('@electron-forge/binary-delta'));
+  } catch (err) {
+    throw new Error(
+      '@electron-forge/binary-delta is not installed. It is an optional dependency of @electron-forge/maker-zip ' +
+        'that only installs on macOS; make sure optional dependencies are installed, or set macUpdateDelta.binaryDeltaPath.',
+      { cause: err },
     );
-    binaryDeltaDownloads.set(cachedPath, download);
   }
-  return download;
-}
-
-async function downloadBinaryDelta(
-  cacheDir: string,
-  cachedPath: string,
-): Promise<string> {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'forge-sparkle-'));
   try {
-    const archivePath = path.join(tmpDir, path.basename(SPARKLE_ARCHIVE_URL));
-    await downloadFile(SPARKLE_ARCHIVE_URL, archivePath, {
-      sha256: SPARKLE_ARCHIVE_SHA256,
+    await fs.access(binaryDeltaPath, fs.constants.X_OK);
+  } catch (err) {
+    throw new Error(`${binaryDeltaPath} is missing or not executable`, {
+      cause: err,
     });
-    await spawn('tar', ['-xf', archivePath, '-C', tmpDir, './bin/BinaryDelta']);
-    await fs.mkdir(cacheDir, { recursive: true });
-    // Copy to a unique name then rename, so that other processes making at
-    // the same time never see or write a partial file
-    const partialPath = `${cachedPath}.${randomUUID()}.partial`;
-    try {
-      await fs.copyFile(path.join(tmpDir, 'bin', 'BinaryDelta'), partialPath);
-      await fs.chmod(partialPath, 0o755);
-      await fs.rename(partialPath, cachedPath);
-    } finally {
-      await fs.rm(partialPath, { force: true });
-    }
-    return cachedPath;
-  } finally {
-    await fs.rm(tmpDir, { recursive: true, force: true });
   }
+  return binaryDeltaPath;
 }
 
 /**

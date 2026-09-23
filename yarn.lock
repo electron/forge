@@ -390,6 +390,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@electron-forge/binary-delta@workspace:*, @electron-forge/binary-delta@workspace:packages/utils/binary-delta":
+  version: 0.0.0-use.local
+  resolution: "@electron-forge/binary-delta@workspace:packages/utils/binary-delta"
+  dependencies:
+    vitest: "catalog:"
+  languageName: unknown
+  linkType: soft
+
 "@electron-forge/cli@workspace:packages/api/cli":
   version: 0.0.0-use.local
   resolution: "@electron-forge/cli@workspace:packages/api/cli"
@@ -611,12 +619,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/maker-zip@workspace:packages/maker/zip"
   dependencies:
+    "@electron-forge/binary-delta": "workspace:*"
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/maker-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     cross-zip: "npm:^4.0.0"
     vitest: "catalog:"
+  dependenciesMeta:
+    "@electron-forge/binary-delta":
+      optional: true
   languageName: unknown
   linkType: soft
 

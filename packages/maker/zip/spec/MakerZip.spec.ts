@@ -9,7 +9,6 @@ import { spawn } from '@malept/cross-spawn-promise';
 import { zip } from 'cross-zip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getBinaryDelta } from '../src/mac-delta';
 import { MakerZIP, MakerZIPConfig } from '../src/MakerZIP';
 
 const { FAKE_ZIP_CONTENTS } = vi.hoisted(() => ({
@@ -44,6 +43,15 @@ vi.mock(import('@malept/cross-spawn-promise'), async (importOriginal) => {
     spawn: vi.fn(),
   };
 });
+
+const packagedBinaryDelta = vi.hoisted(() => ({ path: '' }));
+
+vi.mock(import('@electron-forge/binary-delta'), () => ({
+  SPARKLE_VERSION: '2.9.5',
+  get binaryDeltaPath() {
+    return packagedBinaryDelta.path;
+  },
+}));
 
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
@@ -624,62 +632,45 @@ describe('MakerZip', () => {
       );
     });
 
-    it('should verify the downloaded Sparkle archive', async () => {
-      const homeDir = path.join(tmpDir, 'home');
-      const homedirSpy = vi.spyOn(os, 'homedir').mockReturnValue(homeDir);
-      const fetchPreviousOnly = mockFetch.getMockImplementation()!;
-      mockFetch.mockImplementation(async (url: string) =>
-        url.startsWith('https://github.com/sparkle-project/Sparkle/')
-          ? new Response('not sparkle', { status: 200 })
-          : fetchPreviousOnly(url),
-      );
+    describe('without binaryDeltaPath', () => {
+      beforeEach(() => {
+        packagedBinaryDelta.path = path.join(tmpDir, 'bin', 'BinaryDelta');
+        fs.mkdirSync(path.dirname(packagedBinaryDelta.path));
+        fs.writeFileSync(packagedBinaryDelta.path, 'binary');
+        fs.chmodSync(packagedBinaryDelta.path, 0o755);
+        vi.mocked(spawn).mockImplementation(async (cmd, args = []) => {
+          if (cmd === 'ditto') {
+            writeApp(path.join(args[3], 'My Old App.app'));
+          } else if (cmd === 'plutil') {
+            return '412';
+          } else if (cmd === packagedBinaryDelta.path && args[0] === 'create') {
+            fs.writeFileSync(args[args.length - 1], deltaContents);
+          }
+          return '';
+        });
+      });
 
-      try {
+      it('should use BinaryDelta from @electron-forge/binary-delta', async () => {
+        await make(makeMaker(true));
+
+        expect(spawn).toHaveBeenCalledWith(
+          packagedBinaryDelta.path,
+          expect.arrayContaining(['create']),
+        );
+        expect(writtenRelease().updateTo.delta.from_version).toEqual('412');
+      });
+
+      it('should skip the delta if the packaged BinaryDelta is missing', async () => {
+        fs.rmSync(packagedBinaryDelta.path);
         const output = await make(makeMaker(true));
 
         expect(output).toHaveLength(2);
-        expect(mockFetch).toHaveBeenCalledWith(
-          'https://github.com/sparkle-project/Sparkle/releases/download/2.9.5/Sparkle-2.9.5.tar.xz',
-        );
-        expect(spawn).not.toHaveBeenCalledWith('tar', expect.anything());
+        expect(writtenRelease().updateTo.delta).toBeUndefined();
         expect(warnSpy).toHaveBeenCalledWith(
           expect.anything(),
-          expect.stringContaining('SHA-256 mismatch'),
+          expect.stringContaining('missing or not executable'),
         );
-      } finally {
-        homedirSpy.mockRestore();
-      }
-    });
-
-    it('should share one Sparkle download between concurrent makes', async () => {
-      const homedirSpy = vi
-        .spyOn(os, 'homedir')
-        .mockReturnValue(path.join(tmpDir, 'home'));
-      const sparkleUrl =
-        'https://github.com/sparkle-project/Sparkle/releases/download/2.9.5/Sparkle-2.9.5.tar.xz';
-      mockFetch.mockImplementation(
-        async () => new Response('not sparkle', { status: 200 }),
-      );
-      const sparkleFetches = () =>
-        mockFetch.mock.calls.filter(([url]) => url === sparkleUrl).length;
-
-      try {
-        const results = await Promise.allSettled([
-          getBinaryDelta(),
-          getBinaryDelta(),
-        ]);
-        expect(results.map((result) => result.status)).toEqual([
-          'rejected',
-          'rejected',
-        ]);
-        expect(sparkleFetches()).toEqual(1);
-
-        // A failed download is not remembered, so a later make retries it
-        await expect(getBinaryDelta()).rejects.toThrow('SHA-256 mismatch');
-        expect(sparkleFetches()).toEqual(2);
-      } finally {
-        homedirSpy.mockRestore();
-      }
+      });
     });
   });
 });

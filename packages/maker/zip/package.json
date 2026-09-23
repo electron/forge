@@ -21,6 +21,9 @@
     "@malept/cross-spawn-promise": "^2.0.0",
     "cross-zip": "^4.0.0"
   },
+  "optionalDependencies": {
+    "@electron-forge/binary-delta": "workspace:*"
+  },
   "publishConfig": {
     "access": "public"
   },

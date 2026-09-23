@@ -111,7 +111,7 @@ When you make a new release, the maker:
 
 Publishers upload the `.delta` file next to the ZIP. Squirrel.Mac checks the delta's size and SHA-256, applies it to a copy of the running app and verifies its code signature. If any step fails, it falls back to the full ZIP in the same update check.
 
-Delta creation only runs on a macOS host; on other hosts the maker logs a warning and makes the release without a delta. By default, `BinaryDelta` is downloaded from the Sparkle 2.9.5 release on GitHub and cached in `~/Library/Caches/electron-forge`. Set `macUpdateDelta: { binaryDeltaPath: '/path/to/BinaryDelta' }` to use your own copy instead. If the delta can't be created, the maker logs a warning and publishes the release without one. Set `macUpdateDelta: { strict: true }` to fail the build instead.
+Delta creation only runs on a macOS host; on other hosts the maker logs a warning and makes the release without a delta. By default, the maker uses the Sparkle 2.9.5 `BinaryDelta` from [`@electron-forge/binary-delta`](https://www.npmjs.com/package/@electron-forge/binary-delta), an optional dependency of the ZIP maker that npm installs on macOS. Set `macUpdateDelta: { binaryDeltaPath: '/path/to/BinaryDelta' }` to use your own copy instead. If the delta can't be created, the maker logs a warning and publishes the release without one. Set `macUpdateDelta: { strict: true }` to fail the build instead.
 
 #### Remove group and other write permissions before signing
 

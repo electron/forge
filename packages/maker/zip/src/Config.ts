@@ -1,12 +1,12 @@
 export interface MakerZIPDeltaConfig {
   /**
-   * Path to a Sparkle `BinaryDelta` executable to use instead of the one this
-   * maker downloads. It must create format 3 or 4 patches (Sparkle 2.x);
+   * Path to a Sparkle `BinaryDelta` executable to use instead of the packaged
+   * one. It must create format 3 or 4 patches (Sparkle 2.x);
    * this maker always asks for format 4 with LZMA compression.
    *
-   * By default, the maker downloads the Sparkle 2.9.5 release from GitHub,
-   * verifies its checksum, and caches `bin/BinaryDelta` in
-   * `~/Library/Caches/electron-forge/`.
+   * By default, the maker uses the Sparkle 2.9.5 `BinaryDelta` from
+   * `@electron-forge/binary-delta`, an optional dependency of this maker
+   * that is installed on macOS.
    */
   binaryDeltaPath?: string;
   /**
