@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -117,6 +117,10 @@ export async function findGroupOrOtherWritable(
   return writable;
 }
 
+// Makes for several architectures run concurrently in one process, so they
+// share a single download rather than each writing the cache.
+const binaryDeltaDownloads = new Map<string, Promise<string>>();
+
 /**
  * Return the path to Sparkle's `BinaryDelta`, downloading and caching it if
  * needed.
@@ -139,6 +143,20 @@ export async function getBinaryDelta(binaryDeltaPath?: string) {
     // Not cached yet
   }
 
+  let download = binaryDeltaDownloads.get(cachedPath);
+  if (!download) {
+    download = downloadBinaryDelta(cacheDir, cachedPath).finally(() =>
+      binaryDeltaDownloads.delete(cachedPath),
+    );
+    binaryDeltaDownloads.set(cachedPath, download);
+  }
+  return download;
+}
+
+async function downloadBinaryDelta(
+  cacheDir: string,
+  cachedPath: string,
+): Promise<string> {
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'forge-sparkle-'));
   try {
     const archivePath = path.join(tmpDir, path.basename(SPARKLE_ARCHIVE_URL));
@@ -147,11 +165,16 @@ export async function getBinaryDelta(binaryDeltaPath?: string) {
     });
     await spawn('tar', ['-xf', archivePath, '-C', tmpDir, './bin/BinaryDelta']);
     await fs.mkdir(cacheDir, { recursive: true });
-    // Copy then rename so that a concurrent make never sees a partial file
-    const partialPath = `${cachedPath}.${process.pid}.partial`;
-    await fs.copyFile(path.join(tmpDir, 'bin', 'BinaryDelta'), partialPath);
-    await fs.chmod(partialPath, 0o755);
-    await fs.rename(partialPath, cachedPath);
+    // Copy to a unique name then rename, so that other processes making at
+    // the same time never see or write a partial file
+    const partialPath = `${cachedPath}.${randomUUID()}.partial`;
+    try {
+      await fs.copyFile(path.join(tmpDir, 'bin', 'BinaryDelta'), partialPath);
+      await fs.chmod(partialPath, 0o755);
+      await fs.rename(partialPath, cachedPath);
+    } finally {
+      await fs.rm(partialPath, { force: true });
+    }
     return cachedPath;
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });

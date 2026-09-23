@@ -9,6 +9,7 @@ import { spawn } from '@malept/cross-spawn-promise';
 import { zip } from 'cross-zip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { getBinaryDelta } from '../src/mac-delta';
 import { MakerZIP, MakerZIPConfig } from '../src/MakerZIP';
 
 const { FAKE_ZIP_CONTENTS } = vi.hoisted(() => ({
@@ -645,6 +646,37 @@ describe('MakerZip', () => {
           expect.anything(),
           expect.stringContaining('SHA-256 mismatch'),
         );
+      } finally {
+        homedirSpy.mockRestore();
+      }
+    });
+
+    it('should share one Sparkle download between concurrent makes', async () => {
+      const homedirSpy = vi
+        .spyOn(os, 'homedir')
+        .mockReturnValue(path.join(tmpDir, 'home'));
+      const sparkleUrl =
+        'https://github.com/sparkle-project/Sparkle/releases/download/2.9.5/Sparkle-2.9.5.tar.xz';
+      mockFetch.mockImplementation(
+        async () => new Response('not sparkle', { status: 200 }),
+      );
+      const sparkleFetches = () =>
+        mockFetch.mock.calls.filter(([url]) => url === sparkleUrl).length;
+
+      try {
+        const results = await Promise.allSettled([
+          getBinaryDelta(),
+          getBinaryDelta(),
+        ]);
+        expect(results.map((result) => result.status)).toEqual([
+          'rejected',
+          'rejected',
+        ]);
+        expect(sparkleFetches()).toEqual(1);
+
+        // A failed download is not remembered, so a later make retries it
+        await expect(getBinaryDelta()).rejects.toThrow('SHA-256 mismatch');
+        expect(sparkleFetches()).toEqual(2);
       } finally {
         homedirSpy.mockRestore();
       }
