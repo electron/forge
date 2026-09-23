@@ -18,6 +18,7 @@
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
+    "@malept/cross-spawn-promise": "^2.0.0",
     "cross-zip": "^4.0.0"
   },
   "publishConfig": {

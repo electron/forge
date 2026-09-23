@@ -614,6 +614,7 @@ __metadata:
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/maker-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
+    "@malept/cross-spawn-promise": "npm:^2.0.0"
     cross-zip: "npm:^4.0.0"
     vitest: "catalog:"
   languageName: unknown
