@@ -9,6 +9,7 @@
   "exports": "./dist/MakerDeb.js",
   "typings": "dist/MakerDeb.d.ts",
   "devDependencies": {
+    "vite": "^8.0.0",
     "vitest": "catalog:"
   },
   "engines": {

@@ -16,6 +16,7 @@
     "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
+    "vite": "^8.0.0",
     "vitest": "catalog:"
   },
   "publishConfig": {

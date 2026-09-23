@@ -10,6 +10,7 @@
   "typings": "dist/PublisherERS.d.ts",
   "devDependencies": {
     "msw": "^2.7.0",
+    "vite": "^8.0.0",
     "vitest": "catalog:"
   },
   "engines": {

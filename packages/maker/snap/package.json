@@ -8,6 +8,7 @@
   "exports": "./dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
   "devDependencies": {
+    "vite": "^8.0.0",
     "vitest": "catalog:"
   },
   "engines": {
