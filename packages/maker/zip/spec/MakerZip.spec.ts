@@ -302,7 +302,9 @@ describe('MakerZip', () => {
       });
     });
   });
-  describe('macUpdateDelta', () => {
+  // Deltas are only made on macOS hosts, and these tests use real POSIX file
+  // modes, which Windows does not have (every writable file reports 0o666).
+  describe.skipIf(process.platform === 'win32')('macUpdateDelta', () => {
     const originalPlatform = Object.getOwnPropertyDescriptor(
       process,
       'platform',
