@@ -302,9 +302,8 @@ describe('MakerZip', () => {
       });
     });
   });
-  // Deltas are only made on macOS hosts, and these tests use real POSIX file
-  // modes, which Windows does not have (every writable file reports 0o666).
-  describe.skipIf(process.platform === 'win32')('macUpdateDelta', () => {
+
+  describe('macUpdateDelta', () => {
     const originalPlatform = Object.getOwnPropertyDescriptor(
       process,
       'platform',
@@ -331,14 +330,15 @@ describe('MakerZip', () => {
     let deltaMakeDir: string;
     let manifest: object | null;
     let warnSpy: ReturnType<typeof vi.spyOn>;
+    let lstatSpy: ReturnType<typeof vi.spyOn>;
+    // Paths reported as group-writable. Every other path gets a 0o755 or
+    // 0o644 mode, whatever the host file system says (Windows has no POSIX
+    // permission bits and reports every writable file as 0o666).
+    let groupWritable: Set<string>;
 
     const writeApp = (appPath: string) => {
       fs.mkdirSync(path.join(appPath, 'Contents'), { recursive: true });
       fs.writeFileSync(path.join(appPath, 'Contents', 'Info.plist'), 'plist');
-      for (const dirPath of [appPath, path.join(appPath, 'Contents')]) {
-        fs.chmodSync(dirPath, 0o755);
-      }
-      fs.chmodSync(path.join(appPath, 'Contents', 'Info.plist'), 0o644);
     };
 
     const makeMaker = (macUpdateDelta: MakerZIPConfig['macUpdateDelta']) => {
@@ -383,6 +383,20 @@ describe('MakerZip', () => {
         value: 'darwin',
       });
       warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      groupWritable = new Set();
+      const realLstat = fs.promises.lstat;
+      lstatSpy = vi.spyOn(fs.promises, 'lstat').mockImplementation((async (
+        filePath: fs.PathLike,
+      ) => {
+        const stat = await realLstat(filePath);
+        const permissions = groupWritable.has(path.resolve(filePath.toString()))
+          ? 0o664
+          : stat.isDirectory()
+            ? 0o755
+            : 0o644;
+        stat.mode = (stat.mode & fs.constants.S_IFMT) | permissions;
+        return stat;
+      }) as typeof fs.promises.lstat);
 
       tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-zip-delta-spec-'));
       packagedDir = path.join(tmpDir, 'fake-darwin-app');
@@ -418,6 +432,7 @@ describe('MakerZip', () => {
     afterEach(() => {
       Object.defineProperty(process, 'platform', originalPlatform);
       warnSpy.mockRestore();
+      lstatSpy.mockRestore();
       fs.rmSync(tmpDir, { recursive: true, force: true });
     });
 
@@ -571,7 +586,7 @@ describe('MakerZip', () => {
     });
 
     it('should refuse to create a delta for an app with group-writable files', async () => {
-      fs.chmodSync(path.join(newApp, 'Contents', 'Info.plist'), 0o664);
+      groupWritable.add(path.join(newApp, 'Contents', 'Info.plist'));
       const output = await make(makeMaker({ binaryDeltaPath }));
 
       expect(output).toHaveLength(2);
