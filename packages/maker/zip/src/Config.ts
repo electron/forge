@@ -12,11 +12,15 @@ export interface MakerZIPConfig {
    * Publishing this RELEASES.json will result in clients downloading this version
    * as an update.
    *
+   * Each new entry also records the `sha256` and `size` of the ZIP, which
+   * Squirrel.Mac verifies before installing the update (Electron versions
+   * without that check ignore the extra keys).
+   *
    * If this option is not set no RELEASES.json file will be generated.
    */
   macUpdateManifestBaseUrl?: string;
   /**
-   * Only used if `squirrelMacManifestBaseUrl` is provided. Used to populate
+   * Only used if `macUpdateManifestBaseUrl` is provided. Used to populate
    * the "notes" field of the releases manifest for macOS updates.
    */
   macUpdateReleaseNotes?: string;

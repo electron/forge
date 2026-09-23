@@ -1,4 +1,8 @@
+import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import { promisify } from 'node:util';
 
 import { writeJson } from '@electron-forge/core-utils';
@@ -16,6 +20,16 @@ type SquirrelMacRelease = {
     notes: string;
     name: string;
     url: string;
+    /**
+     * Lowercase hex SHA-256 of the file at `url`, verified by Squirrel.Mac
+     * before installing.
+     */
+    sha256?: string;
+    /**
+     * Size in bytes of the file at `url`, verified by Squirrel.Mac before
+     * installing.
+     */
+    size?: number;
   };
 };
 
@@ -23,6 +37,12 @@ type SquirrelMacReleases = {
   currentRelease: string;
   releases: SquirrelMacRelease[];
 };
+
+async function sha256File(filePath: string): Promise<string> {
+  const hash = createHash('sha256');
+  await pipeline(createReadStream(filePath), hash);
+  return hash.digest('hex');
+}
 
 export default class MakerZIP extends MakerBase<MakerZIPConfig> {
   name = 'zip';
@@ -86,6 +106,8 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
           pub_date: new Date().toISOString(),
           url: updateUrl.toString(),
           notes: this.config.macUpdateReleaseNotes || '',
+          sha256: await sha256File(zipPath),
+          size: (await fs.stat(zipPath)).size,
         },
       });
 

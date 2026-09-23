@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -8,13 +10,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MakerZIP } from '../src/MakerZIP';
 
+const { FAKE_ZIP_CONTENTS } = vi.hoisted(() => ({
+  FAKE_ZIP_CONTENTS: 'fake zip contents',
+}));
+const FAKE_ZIP_SHA256 = createHash('sha256')
+  .update(FAKE_ZIP_CONTENTS)
+  .digest('hex');
+const FAKE_ZIP_SIZE = Buffer.byteLength(FAKE_ZIP_CONTENTS);
+
 vi.mock(import('cross-zip'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
     ...mod,
     // We pass the cross-zip functions through util.promisify, so we need to implement
     // a dummy callback call so that the promise resolves.
-    zip: vi.fn().mockImplementation((_in, _out, callback) => {
+    zip: vi.fn().mockImplementation((_in, out, callback) => {
+      fs.mkdirSync(path.dirname(out), { recursive: true });
+      fs.writeFileSync(out, FAKE_ZIP_CONTENTS);
       callback();
     }),
   };
@@ -171,6 +183,8 @@ describe('MakerZip', () => {
                 pub_date: expect.anything(),
                 url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
                 version: '1.2.3',
+                sha256: FAKE_ZIP_SHA256,
+                size: FAKE_ZIP_SIZE,
               },
               version: '1.2.3',
             },
@@ -209,6 +223,8 @@ describe('MakerZip', () => {
                 pub_date: expect.anything(),
                 url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
                 version: '1.2.3',
+                sha256: FAKE_ZIP_SHA256,
+                size: FAKE_ZIP_SIZE,
               },
               version: '1.2.3',
             },
@@ -265,6 +281,8 @@ describe('MakerZip', () => {
                 url: 'fake://test/foo/fake-darwin-app-1.2.3.zip',
                 notes: 'my-notes',
                 pub_date: expect.anything(),
+                sha256: FAKE_ZIP_SHA256,
+                size: FAKE_ZIP_SIZE,
               },
             },
           ],
