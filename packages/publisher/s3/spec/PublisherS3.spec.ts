@@ -490,6 +490,93 @@ describe('PublisherS3', () => {
         forcePathStyle: true,
       });
     });
+
+    describe('RELEASES files', () => {
+      const makeResultsWithReleases = (): ForgeMakeResult[] => [
+        {
+          artifacts: [
+            path.join(tmpDir, 'RELEASES'),
+            path.join(tmpDir, 'test-app-1.0.0.exe'),
+          ],
+          packageJSON: { name: 'test-app', version: '1.0.0' },
+          platform: 'win32',
+          arch: 'x64',
+        },
+        {
+          artifacts: [
+            path.join(tmpDir, 'RELEASES.json'),
+            path.join(tmpDir, 'test-app-1.0.0.dmg'),
+          ],
+          packageJSON: { name: 'test-app', version: '1.0.0' },
+          platform: 'darwin',
+          arch: 'x64',
+        },
+      ];
+
+      const uploadedKeys = () =>
+        vi
+          .mocked(Upload)
+          .mock.calls.map(([options]) => path.basename(options.params.Key!));
+
+      it('should upload RELEASES files only after every other artifact has been uploaded', async () => {
+        // Each upload gets its own promise, so the test can finish them one at a time.
+        const finishUpload: Array<() => void> = [];
+        mockUploadDone.mockImplementation(
+          () =>
+            new Promise<void>((resolve) => {
+              finishUpload.push(resolve);
+            }),
+        );
+        publisher = new PublisherS3({ bucket: 'test-bucket' });
+
+        const publishing = publisher.publish({
+          makeResults: makeResultsWithReleases(),
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        });
+        await vi.waitFor(() => expect(finishUpload).toHaveLength(2));
+
+        expect(uploadedKeys()).toEqual(
+          expect.arrayContaining(['test-app-1.0.0.exe', 'test-app-1.0.0.dmg']),
+        );
+
+        finishUpload[0]();
+        await new Promise((resolve) => setImmediate(resolve));
+
+        expect(Upload).toHaveBeenCalledTimes(2);
+
+        finishUpload[1]();
+        await vi.waitFor(() => expect(finishUpload).toHaveLength(4));
+        finishUpload[2]();
+        finishUpload[3]();
+        await publishing;
+
+        expect(uploadedKeys()).toHaveLength(4);
+        expect(uploadedKeys().slice(2).sort()).toEqual([
+          'RELEASES',
+          'RELEASES.json',
+        ]);
+      });
+
+      it('should not upload RELEASES files when an artifact upload fails', async () => {
+        mockUploadDone.mockImplementation(() =>
+          Promise.reject(new Error('upload failed')),
+        );
+        publisher = new PublisherS3({ bucket: 'test-bucket' });
+
+        await expect(
+          publisher.publish({
+            makeResults: makeResultsWithReleases(),
+            dir: tmpDir,
+            forgeConfig: mockForgeConfig,
+            setStatusLine: mockSetStatusLine,
+          }),
+        ).rejects.toThrow('upload failed');
+        expect(uploadedKeys()).not.toContain('RELEASES');
+        expect(uploadedKeys()).not.toContain('RELEASES.json');
+      });
+    });
   });
 
   describe('s3KeySafe', () => {

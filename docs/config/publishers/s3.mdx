@@ -108,6 +108,8 @@ module.exports = {
 };
 ```
 
+The publisher uploads `RELEASES` and `RELEASES.json` only after every other artifact has finished uploading, so an app checking for updates never sees a release whose files are not there yet.
+
 With Forge configured correctly, the second step is to configure the `autoUpdater` module inside your app's main process. The simplest form is shown below but you might want to hook additional events to show UI to your user or ask them if they want to update your app right now.
 
 ```javascript title="main.js"
