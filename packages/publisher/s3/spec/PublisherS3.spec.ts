@@ -518,45 +518,102 @@ describe('PublisherS3', () => {
           .mocked(Upload)
           .mock.calls.map(([options]) => path.basename(options.params.Key!));
 
-      it('should upload RELEASES files only after every other artifact has been uploaded', async () => {
-        // Each upload gets its own promise, so the test can finish them one at a time.
-        const finishUpload: Array<() => void> = [];
-        mockUploadDone.mockImplementation(
-          () =>
-            new Promise<void>((resolve) => {
-              finishUpload.push(resolve);
-            }),
-        );
+      // Gives every upload its own promise, keyed by S3 key, so a test can
+      // finish them one at a time.
+      const holdUploads = () => {
+        const finishUpload = new Map<string, () => void>();
+        vi.mocked(Upload).mockImplementation(function (this: Upload, options) {
+          return {
+            on: mockUploadOn,
+            done: () =>
+              new Promise<void>((resolve) => {
+                finishUpload.set(options.params.Key!, resolve);
+              }),
+          } as unknown as Upload;
+        });
+        return finishUpload;
+      };
+
+      it('should upload RELEASES files only after every other artifact for the same platform and arch', async () => {
+        const finishUpload = holdUploads();
         publisher = new PublisherS3({ bucket: 'test-bucket' });
 
         const publishing = publisher.publish({
-          makeResults: makeResultsWithReleases(),
+          makeResults: [
+            {
+              artifacts: [
+                path.join(tmpDir, 'RELEASES'),
+                path.join(tmpDir, 'test-app-1.0.0-full.nupkg'),
+                path.join(tmpDir, 'test-app-1.0.0.exe'),
+              ],
+              packageJSON: { name: 'test-app', version: '1.0.0' },
+              platform: 'win32',
+              arch: 'x64',
+            },
+          ],
           dir: tmpDir,
           forgeConfig: mockForgeConfig,
           setStatusLine: mockSetStatusLine,
         });
-        await vi.waitFor(() => expect(finishUpload).toHaveLength(2));
+        await vi.waitFor(() => expect(finishUpload.size).toBe(2));
 
-        expect(uploadedKeys()).toEqual(
-          expect.arrayContaining(['test-app-1.0.0.exe', 'test-app-1.0.0.dmg']),
-        );
-
-        finishUpload[0]();
+        finishUpload.get('test-app/win32/x64/test-app-1.0.0-full.nupkg')!();
         await new Promise((resolve) => setImmediate(resolve));
 
-        expect(Upload).toHaveBeenCalledTimes(2);
+        expect(finishUpload.has('test-app/win32/x64/RELEASES')).toBe(false);
 
-        finishUpload[1]();
-        await vi.waitFor(() => expect(finishUpload).toHaveLength(4));
-        finishUpload[2]();
-        finishUpload[3]();
+        finishUpload.get('test-app/win32/x64/test-app-1.0.0.exe')!();
+        await vi.waitFor(() =>
+          expect(finishUpload.has('test-app/win32/x64/RELEASES')).toBe(true),
+        );
+        finishUpload.get('test-app/win32/x64/RELEASES')!();
         await publishing;
+      });
 
-        expect(uploadedKeys()).toHaveLength(4);
-        expect(uploadedKeys().slice(2).sort()).toEqual([
-          'RELEASES',
-          'RELEASES.json',
-        ]);
+      it("should not hold a platform's RELEASES files back on another platform's uploads", async () => {
+        const finishUpload = holdUploads();
+        publisher = new PublisherS3({ bucket: 'test-bucket' });
+
+        const publishing = publisher.publish({
+          makeResults: (['x64', 'arm64'] as const).map((arch) => ({
+            artifacts: [
+              path.join(tmpDir, 'RELEASES.json'),
+              path.join(tmpDir, `test-app-darwin-${arch}-1.0.0.zip`),
+            ],
+            packageJSON: { name: 'test-app', version: '1.0.0' },
+            platform: 'darwin',
+            arch,
+          })),
+          dir: tmpDir,
+          forgeConfig: mockForgeConfig,
+          setStatusLine: mockSetStatusLine,
+        });
+        await vi.waitFor(() => expect(finishUpload.size).toBe(2));
+
+        finishUpload.get(
+          'test-app/darwin/arm64/test-app-darwin-arm64-1.0.0.zip',
+        )!();
+        await vi.waitFor(() =>
+          expect(finishUpload.has('test-app/darwin/arm64/RELEASES.json')).toBe(
+            true,
+          ),
+        );
+
+        expect(finishUpload.has('test-app/darwin/x64/RELEASES.json')).toBe(
+          false,
+        );
+
+        finishUpload.get(
+          'test-app/darwin/x64/test-app-darwin-x64-1.0.0.zip',
+        )!();
+        await vi.waitFor(() =>
+          expect(finishUpload.has('test-app/darwin/x64/RELEASES.json')).toBe(
+            true,
+          ),
+        );
+        finishUpload.get('test-app/darwin/arm64/RELEASES.json')!();
+        finishUpload.get('test-app/darwin/x64/RELEASES.json')!();
+        await publishing;
       });
 
       it('should not upload RELEASES files when an artifact upload fails', async () => {

@@ -112,18 +112,29 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
       updateStatusLine();
     };
 
-    // RELEASES and RELEASES.json list the other artifacts, and clients read them to
-    // find updates. Upload them last, so they never point at a package that is not
-    // there yet, and a failed package upload leaves the previous RELEASES files untouched.
+    // RELEASES and RELEASES.json list the other artifacts of their platform and
+    // arch, and clients read them to find updates. Upload them after the rest of
+    // their platform and arch, so they never point at a package that is not there
+    // yet, and a failed package upload leaves the previous RELEASES files untouched.
+    // Different platforms and arches don't wait on each other.
+    const groups = new Map<string, S3Artifact[]>();
+    for (const artifact of artifacts) {
+      const group = `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}`;
+      groups.set(group, [...(groups.get(group) ?? []), artifact]);
+    }
     await Promise.all(
-      artifacts
-        .filter((artifact) => !artifact.isReleaseFile)
-        .map(uploadArtifact),
-    );
-    await Promise.all(
-      artifacts
-        .filter((artifact) => artifact.isReleaseFile)
-        .map(uploadArtifact),
+      [...groups.values()].map(async (group) => {
+        await Promise.all(
+          group
+            .filter((artifact) => !artifact.isReleaseFile)
+            .map(uploadArtifact),
+        );
+        await Promise.all(
+          group
+            .filter((artifact) => artifact.isReleaseFile)
+            .map(uploadArtifact),
+        );
+      }),
     );
   }
 
