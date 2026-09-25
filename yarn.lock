@@ -7521,7 +7521,6 @@ __metadata:
     knip: "npm:^5.87.0"
     lerna: "patch:lerna@npm%3A9.0.6#~/.yarn/patches/lerna-npm-9.0.6-162b638d8c.patch"
     lint-staged: "npm:^17.4.1"
-    listr2: "npm:^11.1.0"
     markdownlint-cli2: "npm:^0.19.1"
     oxfmt: "npm:^0.41.0"
     oxlint: "npm:^1.80.0"
