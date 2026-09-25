@@ -1,0 +1,8 @@
+{
+  "name": "vite-configs-electron-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "electron": "38.0.0"
+  }
+}

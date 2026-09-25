@@ -17,7 +17,7 @@ const viteDevServers: Record<string, ViteDevServer> = {};
 export const viteDevServerUrls: Record<string, string> = {};
 
 export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
-  const { root, mode, command } = env;
+  const { root, mode, command, electronTargets } = env;
 
   return {
     root,
@@ -27,6 +27,7 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       emptyOutDir: false,
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
+      ...(electronTargets?.node ? { target: electronTargets.node } : {}),
       watch: command === 'serve' ? { exclude: '**/.git/**' } : null,
       minify: command === 'build',
     },
