@@ -9,6 +9,7 @@
   "exports": "./dist/MakerRpm.js",
   "typings": "dist/MakerRpm.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

@@ -13,6 +13,7 @@
     "@electron-forge/shared-types": "workspace:*"
   },
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

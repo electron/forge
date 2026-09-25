@@ -12,6 +12,7 @@
     "@electron/packager": "^20.3.0",
     "@malept/cross-spawn-promise": "^2.0.0",
     "@types/node": "^22.10.7",
+    "vite": "catalog:",
     "vitest": "catalog:",
     "which": "^6.0.0",
     "xvfb-maybe": "^0.2.1"

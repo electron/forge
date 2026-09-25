@@ -9,6 +9,7 @@
   "exports": "./dist/MakerMSIX.js",
   "typings": "dist/MakerMSIX.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

@@ -9,6 +9,7 @@
   "exports": "./dist/MakerZIP.js",
   "typings": "dist/MakerZIP.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
