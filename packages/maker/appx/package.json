@@ -2,7 +2,7 @@
   "name": "@electron-forge/maker-appx",
   "version": "8.0.0-alpha.10",
   "type": "module",
-  "description": "AppX maker for Electron Forge",
+  "description": "Legacy AppX maker for Electron Forge, built on the MSIX maker",
   "repository": "https://github.com/electron/forge",
   "author": "Samuel Attard",
   "license": "MIT",
@@ -17,11 +17,9 @@
   "dependencies": {
     "@electron-forge/core-utils": "workspace:*",
     "@electron-forge/maker-base": "workspace:*",
+    "@electron-forge/maker-msix": "workspace:*",
     "@electron-forge/shared-types": "workspace:*",
-    "cross-spawn": "^7.0.3"
-  },
-  "optionalDependencies": {
-    "electron-windows-store": "^2.1.0"
+    "electron-windows-msix": "^2.0.4"
   },
   "publishConfig": {
     "access": "public"
