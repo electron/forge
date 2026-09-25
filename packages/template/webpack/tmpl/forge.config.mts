@@ -39,6 +39,10 @@ const config: ForgeConfig = {
           },
         ],
       },
+      // Serve the built renderer over a privileged `app://` custom scheme in
+      // packaged apps instead of loading it from `file://`, per Electron's
+      // security recommendations.
+      appProtocol: true,
     }),
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
