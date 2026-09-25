@@ -26,7 +26,7 @@
     "lint:fix": "oxfmt --write . && oxlint --fix",
     "knip": "knip --no-config-hints && knip --production --no-config-hints",
     "prepack": "yarn build",
-    "test": "xvfb-maybe vitest run --project fast --project slow --project slow-verdaccio",
+    "test": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project fast --project slow --project slow-verdaccio",
     "test:fast": "xvfb-maybe vitest run --project fast",
     "test:slow": "xvfb-maybe vitest run --project slow",
     "test:verdaccio": "tsx tools/verdaccio/spawn-verdaccio.ts xvfb-maybe vitest run --project slow-verdaccio",
