@@ -1,0 +1,32 @@
+{
+  "name": "@electron-forge/binary-delta",
+  "version": "8.0.0-alpha.10",
+  "type": "module",
+  "description": "Sparkle's BinaryDelta tool for creating Squirrel.Mac delta updates",
+  "repository": "https://github.com/electron/forge",
+  "author": "Samuel Attard",
+  "license": "MIT",
+  "exports": "./dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "prepack": "node dist/fetch-binary-delta.js"
+  },
+  "devDependencies": {
+    "vitest": "catalog:"
+  },
+  "os": [
+    "darwin"
+  ],
+  "engines": {
+    "node": ">= 22.13.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src",
+    "SPARKLE-LICENSE"
+  ]
+}
