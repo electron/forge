@@ -73,4 +73,5 @@ export default class MakerMSIX extends MakerBase<MakerMSIXConfig> {
 }
 
 export { MakerMSIX, MakerMSIXConfig };
+export { toMsixArch } from './util/arch.js';
 export type { MakerMSIXConfigManifestVariables } from './Config.ts';

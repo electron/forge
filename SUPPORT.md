@@ -20,7 +20,7 @@ feature. Known modules include:
 - `electron-installer-snap:*`
 - `electron-rebuild`
 - `electron-windows-installer:main`
-- `electron-windows-store`
+- `electron-windows-msix`
 - `extract-zip`
 - `get-package-info`
 

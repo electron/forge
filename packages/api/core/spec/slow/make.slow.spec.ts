@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createDefaultCertificate } from '@electron-forge/maker-appx';
 import { IForgeResolvableMaker } from '@electron-forge/shared-types';
 import {
   ensureTestDirIsNonexistent,
@@ -15,27 +14,11 @@ describe('Make', () => {
   const dir = path.resolve(import.meta.dirname, '..', 'fixture', 'api-tester');
   let outDir: string;
   let makeDir: string;
-  let devCert: string;
 
   beforeAll(async () => {
     outDir = await ensureTestDirIsNonexistent();
     makeDir = path.join(outDir, 'make');
     await api.package({ dir, outDir });
-
-    if (process.platform === 'win32') {
-      await fs.promises.copyFile(
-        path.join(
-          import.meta.dirname,
-          '..',
-          'fixture',
-          'bogus-private-key.pvk',
-        ),
-        path.join(outDir, 'default.pvk'),
-      );
-      devCert = await createDefaultCertificate('CN=Test Author', {
-        certFilePath: outDir,
-      });
-    }
 
     return async () => {
       await fs.promises.rm(outDir, { recursive: true, force: true });
@@ -166,9 +149,7 @@ describe('Make', () => {
           const makerDefinition = {
             name: makerPath,
             platforms: [process.platform],
-            config: {
-              devCert,
-            },
+            config: {},
           };
 
           if (process.platform === 'win32') {
