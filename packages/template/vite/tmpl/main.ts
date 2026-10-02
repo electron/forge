@@ -17,14 +17,10 @@ const createWindow = () => {
     },
   });
 
-  // and load the index.html of the app.
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-    );
-  }
+  // and load the index.html of the app. In development this is the Vite
+  // dev server URL; in production it is an `app://` URL served by Forge's
+  // Vite plugin.
+  mainWindow.loadURL(MAIN_WINDOW_VITE_ENTRY);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();

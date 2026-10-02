@@ -183,6 +183,150 @@ describe('WebpackConfigGenerator', () => {
       );
     });
 
+    describe('appProtocol', () => {
+      it('sets HTML renderer entry points to app:// URLs in production', () => {
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        // The per-entry subdirectory is part of the path: every origin is
+        // rooted at the shared `.webpack/renderer/` directory so that
+        // `publicPath: '/'` asset URLs resolve.
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "'app://hello/hello/index.html'",
+        );
+      });
+
+      it('keeps nodeIntegration entry points on file:// in production', () => {
+        // Electron only derives renderer __dirname from file: URLs, which
+        // AssetRelocatorPatch relies on for nodeIntegration renderers.
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+                nodeIntegration: true,
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.html')}`",
+        );
+      });
+
+      it('uses a custom scheme for entry URLs when configured', () => {
+        const config = {
+          appProtocol: { scheme: 'myapp' },
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "'myapp://hello/hello/index.html'",
+        );
+      });
+
+      it('resolves JS-only entry points relative when a window is served', () => {
+        // A window served from `app://` cannot load a `file://` script
+        // (cross-scheme fetches are blocked), and worker scripts must be
+        // same-origin. Every window document sits one level below the shared
+        // renderer root, so a `../<name>/index.js` URL resolves to the right
+        // sibling from a served window and from a `nodeIntegration` window
+        // that stays on `file://` alike — the define is global, so a mixed
+        // app needs one form that is correct from both origins.
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+              {
+                name: 'legacy_window',
+                html: 'index.html',
+                js: 'renderer.js',
+                nodeIntegration: true,
+              },
+              { name: 'hello', js: 'foo.js' },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual("'../hello/index.js'");
+      });
+
+      it('keeps JS-only entry points on file:// when no window is served', () => {
+        // With no served window there is no `app://` origin to be
+        // same-origin with; a `file://` URL keeps standalone use (e.g. a
+        // nodeIntegration window spawning the worker) working.
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                js: 'foo.js',
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', true, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "`file://${require('path').resolve(__dirname, '..', 'renderer', 'hello', 'index.js')}`",
+        );
+      });
+
+      it('keeps dev server URLs in development', () => {
+        const config = {
+          appProtocol: true,
+          renderer: {
+            entryPoints: [
+              {
+                name: 'hello',
+                html: 'foo.html',
+                js: 'foo.js',
+              },
+            ],
+          },
+        } as WebpackPluginConfig;
+        const generator = new WebpackConfigGenerator(config, '/', false, 3000);
+        const defines = generator.getDefines();
+
+        expect(defines.HELLO_WEBPACK_ENTRY).toEqual(
+          "'http://localhost:3000/hello/index.html'",
+        );
+      });
+    });
+
     describe('PRELOAD_WEBPACK_ENTRY', () => {
       const config = {
         mainConfig: {},
@@ -296,6 +440,226 @@ describe('WebpackConfigGenerator', () => {
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
         false,
       );
+    });
+
+    describe('appProtocol runtime injection', () => {
+      const appProtocolConfig = {
+        mainConfig: {
+          entry: 'main.js',
+        },
+        renderer: {
+          entryPoints: [
+            {
+              name: 'main_window',
+              html: 'index.html',
+              js: 'renderer.js',
+            },
+            {
+              name: 'worker',
+              preload: {
+                js: 'preload.js',
+              },
+            },
+          ],
+        },
+        appProtocol: true,
+      } as WebpackPluginConfig;
+
+      const findBannerPlugin = (plugins: unknown[] | undefined) =>
+        plugins?.find(
+          (plugin) => plugin?.constructor?.name === 'BannerPlugin',
+        ) as { options: { banner: string; raw: boolean } } | undefined;
+
+      it('injects the runtime banner into production main configs', async () => {
+        const generator = new WebpackConfigGenerator(
+          appProtocolConfig,
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin).toBeDefined();
+        expect(bannerPlugin!.options.raw).toBe(true);
+        expect(bannerPlugin!.options.banner).toContain(
+          'registerSchemesAsPrivileged',
+        );
+        // Window entry points are served; preload-only entries are not.
+        expect(bannerPlugin!.options.banner).toContain('["main_window"]');
+      });
+
+      it('includes additional privileged schemes from the object form', async () => {
+        const generator = new WebpackConfigGenerator(
+          {
+            ...appProtocolConfig,
+            appProtocol: {
+              additionalPrivilegedSchemes: [
+                { scheme: 'media', privileges: { stream: true } },
+              ],
+            },
+          },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin!.options.banner).toContain('"media"');
+        expect(bannerPlugin!.options.banner).toContain('"stream":true');
+      });
+
+      it('only registers privileged schemes in development', async () => {
+        // Schemes must carry the same privileges under `electron-forge start`
+        // as in the packaged app, but the dev server serves the renderers, so
+        // the protocol handler itself is production-only.
+        const generator = new WebpackConfigGenerator(
+          appProtocolConfig,
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin).toBeDefined();
+        expect(bannerPlugin!.options.banner).toContain(
+          'registerSchemesAsPrivileged',
+        );
+        expect(bannerPlugin!.options.banner).not.toContain('protocol.handle');
+      });
+
+      it('injects only the serving handler with registerSchemes: false', async () => {
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, appProtocol: { registerSchemes: false } },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin!.options.banner).toContain('protocol.handle');
+        expect(bannerPlugin!.options.banner).not.toContain(
+          'registerSchemesAsPrivileged',
+        );
+      });
+
+      it('injects nothing in development with registerSchemes: false', async () => {
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, appProtocol: { registerSchemes: false } },
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(findBannerPlugin(webpackConfig.plugins)).toBeUndefined();
+      });
+
+      it('tolerates unservable names on entries the scheme never serves', async () => {
+        // `toEnvironmentVariable` supports names with spaces and file://
+        // tolerated them; JS-only entries stay on file://, so their names
+        // must be neither host-validated nor allowlisted.
+        const generator = new WebpackConfigGenerator(
+          {
+            ...appProtocolConfig,
+            renderer: {
+              entryPoints: [
+                { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+                { name: 'background worker', js: 'worker.js' },
+              ],
+            },
+          },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        const bannerPlugin = findBannerPlugin(webpackConfig.plugins);
+        expect(bannerPlugin!.options.banner).toContain('["main_window"]');
+        expect(bannerPlugin!.options.banner).not.toContain('background worker');
+      });
+
+      it('serves a window-containing group as one compilation, JS-only entries included', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [
+            { name: 'main_window', html: 'index.html', js: 'renderer.js' },
+            { name: 'background_worker', js: 'worker.js' },
+          ],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
+        );
+        const webConfigs = configs.filter((config) => config.target === 'web');
+        // One compilation for the whole group: the served window loads the
+        // JS-only entry same-origin, and a split would break
+        // `additionalChunks` references across compilations.
+        expect(webConfigs).toHaveLength(1);
+        const entry = webConfigs[0].entry as Entry;
+        expect(entry['main_window']).toBeDefined();
+        expect(entry['background_worker']).toBeDefined();
+        expect(webConfigs[0].output?.publicPath).toEqual('/');
+      });
+
+      it('keeps a windowless Web-target group unserved', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [{ name: 'background_worker', js: 'worker.js' }],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
+        );
+        const webConfigs = configs.filter((config) => config.target === 'web');
+        expect(webConfigs).toHaveLength(1);
+        // No served window means nothing fetches over the scheme; keep
+        // webpack's 'auto' script-relative resolution for file:// loading.
+        expect(webConfigs[0].output?.publicPath).toBeUndefined();
+      });
+
+      it('uses root-relative publicPath for served renderers in production', async () => {
+        const rendererOptions = {
+          config: {},
+          entryPoints: [
+            {
+              name: 'main_window',
+              html: 'index.html',
+              js: 'renderer.js',
+            },
+          ],
+        };
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, renderer: rendererOptions },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const configs = await generator.getRendererConfig(
+          rendererOptions as WebpackPluginRendererConfig,
+        );
+        const webConfig = configs.find((config) => config.target === 'web');
+        expect(webConfig?.output?.publicPath).toEqual('/');
+      });
+
+      it('does not inject the banner when appProtocol is not enabled', async () => {
+        const generator = new WebpackConfigGenerator(
+          { ...appProtocolConfig, appProtocol: undefined },
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(findBannerPlugin(webpackConfig.plugins)).toBeUndefined();
+      });
     });
 
     it('generates a config with a relative entry path', async () => {
