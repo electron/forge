@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "dependencies": {
