@@ -10,10 +10,12 @@ export function getConfig(
   forgeEnv: ConfigEnv<'build'>,
   userConfig: UserConfig = {},
 ): UserConfig {
-  const { forgeConfigSelf } = forgeEnv;
+  const { forgeConfigSelf, electronTargets } = forgeEnv;
   const config: UserConfig = {
     build: {
       copyPublicDir: false,
+      // Preload scripts run in the renderer process, on Chromium.
+      ...(electronTargets?.chrome ? { target: electronTargets.chrome } : {}),
       rollupOptions: {
         external: [...external, 'electron/renderer'],
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
