@@ -1,5 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+  "name": "Electron Forge",
   "out": "api-docs",
   "entryPointStrategy": "packages",
   "entryPoints": [
@@ -24,6 +25,7 @@
       "MacOSProtocol": "https://packages.electronjs.org/packager/v20.0.3/interfaces/MacOSProtocol.html",
       "Win32MetadataOptions": "https://packages.electronjs.org/packager/v20.0.3/interfaces/Win32MetadataOptions.html",
       "PackagerWindowsSignOptions": "https://packages.electronjs.org/packager/v20.0.3/interfaces/PackagerWindowsSignOptions.html",
+      "Options.electronVersion": "https://packages.electronjs.org/packager/v20.0.3/interfaces/Options.html#electronversion",
       // Ignored as not part of Forge for API consumers
       "Options.dir": "#",
       "Options.arch": "#",
