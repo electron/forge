@@ -144,22 +144,21 @@ module.exports = {
 
 ### Native Node modules
 
-If you used the [Vite](../../templates/vite.md) template to create your application, native modules will mostly work out of the box. However, to avoid possible build issues, we recommend instructing Vite to load them as external packages:
+The plugin expects your main process dependencies to be **bundled into** the output it writes to `.vite/build`, not shipped alongside it. It externalizes Electron and Node.js built-ins and nothing else, and it sets `packagerConfig.ignore` so that everything except `.vite` (including `node_modules`) is left out of the packaged app.
 
-```javascript title="vite.main.config.js"
-import { defineConfig } from 'vite';
+This is why the [Vite](../../templates/vite.md) template lists your app's packages in `devDependencies`: they are still resolvable at build time, so Vite inlines them, and there is nothing left to copy at package time.
 
-export default defineConfig({
-  build: {
-    rollupOptions: {
-      external: [
-        'serialport',
-        'sqlite3'
-      ]
-    }
-  }
-});
-```
+:::warning Do not add packages to `rollupOptions.external`
+Marking a package external tells Vite to leave a `require()` for it in the bundle, but the plugin no longer copies that package into your app, so it will fail at runtime with an error like `Cannot find module 'serialport'`. Forge merges your Vite config into its defaults with `mergeConfig`, which **concatenates** arrays rather than replacing them, so anything you add to `build.rollupOptions.external` stays external.
+:::
+
+#### If a package cannot be bundled
+
+Some packages genuinely cannot be inlined, such as a native module that ships a prebuilt `.node` binary. There is no first-class, supported way to ship such a package from the Vite plugin today, and the plugin will not warn you when the resulting app is missing it. The long-running discussion is tracked in [electron/forge#3738](https://github.com/electron/forge/issues/3738). Until it is resolved, your options are to bundle what you can and, for the rest, drive packaging yourself by setting your own [`packagerConfig.ignore`](https://electron.github.io/packager/main/interfaces/Options.html#ignore) (which replaces the plugin's default and logs a warning) or an `afterCopy` callback in `packagerConfig` that copies the packages in. Both work by opting out of the plugin's packaging behavior, so you own the result.
+
+:::info Upgrading a project created before v7.5.0
+Up to and including Forge v7.4.0, the template externalized your `dependencies` and the plugin copied every one of them into the packaged app, so the two halves worked together. v7.5.0 removed the copy step and switched the expectation to bundling. A version range such as `^7.4.0` crosses that boundary without any change to your `package.json`, so if your app was scaffolded before v7.5.0 and still builds `external` from its `dependencies`, move those packages to `devDependencies` and delete the `external` entry to have Vite bundle them instead.
+:::
 
 ### Hot Module Replacement (HMR)
 
