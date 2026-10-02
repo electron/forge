@@ -1,5 +1,13 @@
 import { spawn } from '@malept/cross-spawn-promise';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { findUp } from '../src/find-up';
 import {
@@ -182,6 +190,10 @@ describe('package-manager', () => {
   });
 
   describe('spawnPackageManager', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
     it('should trim the output', async () => {
       vi.mocked(spawn).mockResolvedValue(' foo \n');
       const result = await spawnPackageManager({
@@ -191,6 +203,37 @@ describe('package-manager', () => {
         exact: '--save-exact',
       });
       expect(result).toBe('foo');
+    });
+
+    it('should strip leaked npm allow-scripts config from the child env', async () => {
+      vi.stubEnv('npm_config_allow_scripts', 'foo');
+      vi.stubEnv('NPM_CONFIG_STRICT_ALLOW_SCRIPTS', 'true');
+      vi.stubEnv('npm_config_dangerously_allow_all_scripts', 'true');
+      vi.stubEnv('FORGE_UNRELATED_VAR', 'keep');
+      vi.mocked(spawn).mockResolvedValue('');
+
+      await spawnPackageManager(
+        {
+          executable: 'npm',
+          install: 'install',
+          dev: '--save-dev',
+          exact: '--save-exact',
+        },
+        ['install'],
+        { cwd: 'mydir', env: { FORGE_CALLER_VAR: 'caller' } },
+      );
+
+      const opts = vi.mocked(spawn).mock.lastCall?.[2];
+      expect(opts).toHaveProperty('cwd', 'mydir');
+      expect(opts?.env).toMatchObject({
+        FORGE_UNRELATED_VAR: 'keep',
+        FORGE_CALLER_VAR: 'caller',
+      });
+      expect(opts?.env).not.toHaveProperty('npm_config_allow_scripts');
+      expect(opts?.env).not.toHaveProperty('NPM_CONFIG_STRICT_ALLOW_SCRIPTS');
+      expect(opts?.env).not.toHaveProperty(
+        'npm_config_dangerously_allow_all_scripts',
+      );
     });
   });
 });
