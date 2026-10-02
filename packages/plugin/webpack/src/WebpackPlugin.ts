@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fsPromises, { glob } from 'node:fs/promises';
 import http from 'node:http';
+import net from 'node:net';
 import path from 'node:path';
 import { styleText } from 'node:util';
 import { pipeline } from 'stream/promises';
@@ -82,6 +83,30 @@ function uniqueTabName(logger: Logger, name: string): string {
     candidate = `${name} #${n}`;
   }
   return candidate;
+}
+
+/**
+ * Check that the dev server can bind to its host and port.
+ *
+ * webpack-dev-server throws listen errors (such as `EADDRINUSE`) from an
+ * event handler instead of rejecting `start()`, which ends the process without
+ * surfacing the error through Forge's task output.
+ */
+async function assertPortAvailable(host: string | undefined, port: number) {
+  await new Promise<void>((resolve, reject) => {
+    const server = net.createServer();
+    server.once('error', (err: NodeJS.ErrnoException) => {
+      const address = `Port ${port}${host ? ` on ${host}` : ''}`;
+      reject(
+        new Error(
+          err.code === 'EADDRINUSE'
+            ? `${address} is already in use by another process. Stop that process or set the \`port\` option in the webpack plugin config.`
+            : `${address} could not be used by the webpack dev server: ${err.message}`,
+        ),
+      );
+    });
+    server.listen({ host, port }, () => server.close(() => resolve()));
+  });
 }
 
 export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
@@ -776,6 +801,13 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       return;
     }
 
+    const devServerOptions = this.devServerOptions();
+    const { host } = devServerOptions;
+    await assertPortAvailable(
+      host ? await WebpackDevServer.getHostname(host) : undefined,
+      this.port,
+    );
+
     const preloadPlugins: string[] = [];
     let numPreloadEntriesWithConfig = 0;
     for (const entryConfig of configs) {
@@ -826,10 +858,7 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       });
     });
 
-    const webpackDevServer = new WebpackDevServer(
-      this.devServerOptions(),
-      compiler,
-    );
+    const webpackDevServer = new WebpackDevServer(devServerOptions, compiler);
     await webpackDevServer.start();
     this.servers.push(webpackDevServer.server!);
     await Promise.all(promises);
