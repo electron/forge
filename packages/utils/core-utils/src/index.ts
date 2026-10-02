@@ -1,4 +1,5 @@
 export * from './rebuild.js';
+export * from './devtron.js';
 export * from './electron-version.js';
 export * from './fs.js';
 export * from './package-manager.js';
