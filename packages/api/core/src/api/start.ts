@@ -447,6 +447,11 @@ export default autoTrace(
       handleTerminationSignal('SIGUSR2');
     }
 
+    // Use the plain logger if the user asked for it.
+    if (forgeConfig.logger.interactive === false) {
+      logger.forcePlain();
+    }
+
     const spawned = await forgeSpawnWrapper();
 
     // Idempotent, so the restart path (which respawns through the wrapper

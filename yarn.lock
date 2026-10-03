@@ -825,6 +825,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@electron-forge/shared-types@workspace:packages/utils/types"
   dependencies:
+    "@electron-forge/multi-logger": "workspace:*"
     "@electron-forge/tracer": "workspace:*"
     "@electron/packager": "npm:^20.3.0"
     "@electron/rebuild": "npm:^4.2.0"

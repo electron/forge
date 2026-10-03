@@ -138,8 +138,8 @@ equivalent hotkey via `keys` instead.
 
 ## Plain mode
 
-When stdout or stdin is not a TTY, or `CI` is set, lines are written as they
-arrive:
+When stdout or stdin is not a TTY, `CI` is set, or the `interactive` option is
+set to `false`, lines are written as they arrive:
 
 ```text
 [Main Process]   asset index.js 1.2 KiB [emitted] (name: main)
