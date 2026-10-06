@@ -36,3 +36,26 @@ module.exports = {
   ]
 };
 ```
+
+### Node.js integration
+
+Set `nodeIntegration: true` on a renderer entry to make Electron and Node.js
+imports available in both the Vite development server and production builds.
+The option configures Vite only; the matching `BrowserWindow` must also use
+`webPreferences: { nodeIntegration: true, contextIsolation: false }`.
+
+```javascript
+renderer: [
+  {
+    name: 'main_window',
+    config: 'vite.renderer.config.mjs',
+    nodeIntegration: true
+  }
+];
+```
+
+Enabling Node.js integration gives renderer code direct access to the local
+system. Do not use it for remote or otherwise untrusted content. Prefer a
+preload script and `contextBridge` when possible. See Electron's
+[security recommendations](https://www.electronjs.org/docs/latest/tutorial/security)
+for more information.
