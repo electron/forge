@@ -45,6 +45,10 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
     await fs.copy(dir, tmpFolder);
 
     try {
+      // Squirrel.Windows (NuGet) only accepts 4-part version numbers, so a
+      // semver prerelease like 1.0.1-0 must be normalized before it reaches
+      // the installer.
+      const version = this.normalizeWindowsVersion(packageJSON.version);
       const winstallerConfig: ElectronWinstallerOptions = {
         name:
           typeof packageJSON.name === 'string'
@@ -55,13 +59,14 @@ export default class MakerSquirrel extends MakerBase<MakerSquirrelConfig> {
         exe: `${forgeConfig.packagerConfig.executableName || appName}.exe`,
         setupExe: `${appName}-${packageJSON.version} Setup.exe`,
         ...this.config,
+        version,
         appDirectory: tmpFolder,
         outputDirectory: outPath,
       };
 
       await createWindowsInstaller(winstallerConfig);
 
-      const nupkgVersion = convertVersion(packageJSON.version);
+      const nupkgVersion = convertVersion(version);
 
       const artifacts = [
         path.resolve(outPath, 'RELEASES'),
