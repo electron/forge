@@ -1,15 +1,64 @@
+import { createRequire } from 'node:module';
+import path from 'node:path';
+
 import { api, StartOptions } from '@electron-forge/core';
 import { ElectronProcess } from '@electron-forge/shared-types';
+import boxen, { Options } from 'boxen';
+import chalk from 'chalk';
 import { Option, program } from 'commander';
+import updateNotifier from 'update-notifier';
 
 import './util/terminate';
 import packageJSON from '../package.json';
 
 import { resolveWorkingDir } from './util/resolve-working-dir';
 
+let userPackage;
+try {
+  userPackage = createRequire(path.resolve('package.json'))('./package.json');
+} catch {
+  console.warn(
+    `path=${'package.json'} file not found at CWD: path=${process.cwd()}.`,
+  );
+}
 (async () => {
   let commandArgs = process.argv;
   let appArgs;
+  const notifier = updateNotifier({
+    pkg: packageJSON,
+    // Use 0 for debugging.
+    updateCheckInterval: 1000 * 60 * 60,
+  });
+  if (notifier.update) {
+    const sitePackagesForUpdate = Object.keys({
+      ...userPackage.devDependencies,
+    })
+      .filter((p) => p.startsWith('@electron-forge'))
+      .map((p) => p.concat('@latest'))
+      .join(' ');
+    const boxenOptions: Options = {
+      padding: 1,
+      margin: 1,
+      align: 'center',
+      borderColor: 'cyan',
+      borderStyle: {
+        topLeft: '╭',
+        topRight: '╮',
+        bottomLeft: '╰',
+        bottomRight: '╯',
+        horizontal: '─',
+        vertical: '│',
+      },
+    };
+    const forgeUpdateMessage = boxen(
+      `Update available ${chalk.dim(`${notifier.update.current}`)} → ${chalk.green(`${notifier.update.latest}`)}
+
+      To upgrade Electron Forge packages to the latest version, execute the following command:
+    ${chalk.cyanBright(`npm i ${sitePackagesForUpdate}`)}`,
+      boxenOptions,
+    );
+    console.log(forgeUpdateMessage);
+  }
 
   const doubleDashIndex = process.argv.indexOf('--');
   if (doubleDashIndex !== -1) {
