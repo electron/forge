@@ -149,6 +149,7 @@ describe('start', () => {
       vi.spyOn(process.stdin, 'resume').mockImplementation(() => process.stdin);
       vi.spyOn(process.stdin, 'pause').mockImplementation(() => process.stdin);
       vi.spyOn(process, 'on').mockImplementation(() => process);
+      vi.spyOn(process, 'prependListener').mockImplementation(() => process);
       vi.spyOn(console, 'log').mockImplementation(() => undefined);
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
     });
@@ -276,6 +277,40 @@ describe('start', () => {
 
       child.emit('exit', 0);
       expect(fakeLogger.stop).toHaveBeenCalledOnce();
+    });
+
+    it("signals the app before a plugin's SIGINT handler can exit Forge", async () => {
+      // Mirror Node's listener order: `on` appends, `prependListener` goes
+      // first.
+      const sigint: (() => void)[] = [];
+      vi.mocked(process.on).mockImplementation(((event, listener) => {
+        if (event === 'SIGINT') sigint.push(listener);
+        return process;
+      }) as typeof process.on);
+      vi.mocked(process.prependListener).mockImplementation(((
+        event,
+        listener,
+      ) => {
+        if (event === 'SIGINT') sigint.unshift(listener);
+        return process;
+      }) as typeof process.prependListener);
+
+      // The bundler plugins hook SIGINT in `init()`, while the config loads,
+      // and call `process.exit()` from it.
+      const events: string[] = [];
+      process.on('SIGINT', () => events.push('plugin exits Forge'));
+
+      const child = childWithOutput();
+      vi.mocked(child.kill).mockImplementation(((signal) => {
+        events.push(`app gets ${signal}`);
+        return true;
+      }) as typeof child.kill);
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      await start({ dir: import.meta.dirname, interactive: true });
+
+      // What the UI does on `q` or Ctrl+C.
+      for (const listener of sigint) listener();
+      expect(events).toEqual(['app gets SIGINT', 'plugin exits Forge']);
     });
 
     it('reads `rs` from stdin only when the UI is not drawing', async () => {

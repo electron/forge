@@ -436,8 +436,15 @@ export default autoTrace(
     setAppRestartHandler(restartRunningApp);
 
     if (interactive) {
+      // Prepended, so the app is signalled before any other listener runs.
+      // Plugins hook these signals in `init()`, long before this point, and
+      // the bundler plugins call `process.exit()` from their SIGINT handler,
+      // which would otherwise end Forge before the app was ever told to quit.
+      // That matters because the terminal UI holds stdin in raw mode: Ctrl+C
+      // and `q` reach us as a SIGINT the UI re-raises, not one the terminal
+      // also delivers to the app.
       const handleTerminationSignal = function (signal: NodeJS.Signals) {
-        process.on(signal, function signalHandler() {
+        process.prependListener(signal, function signalHandler() {
           lastSpawned?.kill(signal);
         });
       };
