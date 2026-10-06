@@ -63,6 +63,38 @@ export interface PublisherS3Config {
    */
   s3ForcePathStyle?: boolean;
   /**
+   * Controls whether checksums are calculated for requests sent to S3.
+   *
+   * Possible values:
+   * - "WHEN_SUPPORTED" - Calculate checksums for all requests
+   * - "WHEN_REQUIRED" - Only calculate checksums when required by the service
+   *
+   * See:
+   * https://github.com/aws/aws-sdk-js-v3/blob/main/packages/middleware-flexible-checksums/src/constants.ts
+   *
+   * Default: "WHEN_SUPPORTED"
+   */
+  requestChecksumCalculation?:
+    | import('@aws-sdk/middleware-flexible-checksums').RequestChecksumCalculation
+    | import('@aws-sdk/types').Provider<import('@aws-sdk/middleware-flexible-checksums').RequestChecksumCalculation>
+    | undefined;
+  /**
+   * Controls whether checksums in responses from S3 are validated.
+   *
+   * Possible values:
+   * - "WHEN_SUPPORTED" - Validate checksums for all responses
+   * - "WHEN_REQUIRED" - Only validate checksums when provided by the service
+   *
+   * See:
+   * https://github.com/aws/aws-sdk-js-v3/blob/main/packages/middleware-flexible-checksums/src/constants.ts
+   *
+   * Default: "WHEN_SUPPORTED"
+   */
+  responseChecksumValidation?:
+    | import('@aws-sdk/middleware-flexible-checksums').ResponseChecksumValidation
+    | import('@aws-sdk/types').Provider<import('@aws-sdk/middleware-flexible-checksums').ResponseChecksumValidation>
+    | undefined;
+  /**
    * Custom function to provide the key to upload a given file to
    */
   keyResolver?: (fileName: string, platform: string, arch: string) => string;
