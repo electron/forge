@@ -9,6 +9,7 @@
   "exports": "./dist/PublisherGitHub.js",
   "typings": "dist/PublisherGitHub.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

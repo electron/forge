@@ -23,6 +23,7 @@
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
     "listr2": "^11.1.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "publishConfig": {

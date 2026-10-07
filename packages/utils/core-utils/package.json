@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "files": [

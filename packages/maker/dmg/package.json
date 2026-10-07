@@ -9,6 +9,7 @@
   "exports": "./dist/MakerDMG.js",
   "typings": "dist/MakerDMG.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

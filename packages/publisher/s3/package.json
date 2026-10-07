@@ -20,6 +20,7 @@
     "debug": "^4.3.1"
   },
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "publishConfig": {
