@@ -1,8 +1,10 @@
 import fs from 'node:fs';
+import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 
 import { IgnoreFunction } from '@electron/packager';
+import Logger from '@electron-forge/multi-logger';
 import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -40,6 +42,31 @@ describe('WebpackPlugin', async () => {
       expect(() => new WebpackPlugin({ ...baseConfig, port: 99999 })).toThrow(
         /not a valid TCP port/,
       );
+    });
+  });
+
+  describe('launchRendererDevServers', () => {
+    it('rejects with a clear error when the dev server port is in use', async () => {
+      const blocker = net.createServer();
+      await new Promise<void>((resolve) => blocker.listen(0, resolve));
+      const { port } = blocker.address() as net.AddressInfo;
+
+      const entry = path.join(webpackTestDir, 'renderer.js');
+      await fs.promises.writeFile(entry, '', 'utf-8');
+      const plugin = new WebpackPlugin({
+        ...baseConfig,
+        port,
+        renderer: { config: {}, entryPoints: [{ name: 'main', js: entry }] },
+      });
+      plugin.setDirectories(webpackTestDir);
+
+      try {
+        await expect(
+          plugin.launchRendererDevServers(new Logger()),
+        ).rejects.toThrow(`Port ${port} is already in use by another process`);
+      } finally {
+        await new Promise((resolve) => blocker.close(resolve));
+      }
     });
   });
 
