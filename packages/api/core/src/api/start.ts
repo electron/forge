@@ -292,12 +292,11 @@ export default autoTrace(
 
       const spawnOpts = {
         cwd: dir,
-        // Interactively, stdout/stderr are piped so that the App tab can show
-        // them (stdin stays inherited so the app can be interacted with).
-        // Otherwise the app keeps our real stdio, as it always did: nothing
-        // would read the pipes, and the app should still see a TTY when we
-        // have one.
-        stdio: interactive ? ['inherit', 'pipe', 'pipe'] : 'inherit',
+        // When the interactive logger is enabled, stdout/stderr are piped so
+        // that the App tab can show them (stdin stays inherited so the app can
+        // be interacted with). Otherwise the app inherits our real stdio and
+        // will see accurate `isTTY` values.
+        stdio: logger.mode === 'ink' ? ['inherit', 'pipe', 'pipe'] : 'inherit',
         env: {
           ...process.env,
           ...(enableLogging
@@ -460,9 +459,9 @@ export default autoTrace(
     // above) never has to care. The logger stops itself on process exit.
     await logger.start();
 
-    // Only now is it known whether the UI is really drawing (see above).
-    const usesInkUI = logger.mode === 'ink';
-    readsRestartCommand = interactive && !usesInkUI;
+    // If we didn't end up using Ink, we're responsible for listening for the
+    // `rs` command to restart the app.
+    readsRestartCommand = interactive && logger.mode !== 'ink';
     if (readsRestartCommand) {
       process.stdin.on('data', (data) => {
         if (data.toString().trim() !== 'rs') return;
