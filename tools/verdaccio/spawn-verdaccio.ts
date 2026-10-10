@@ -22,6 +22,8 @@ import path from 'node:path';
 import { spawn as spawnPromise } from '@malept/cross-spawn-promise';
 import debug from 'debug';
 
+import { getPackageInfoSync } from '../utils';
+
 const FORGE_ROOT_DIR = path.resolve(import.meta.dirname, '../..');
 /**
  * Path to the Verdaccio configuration file.
@@ -122,11 +124,59 @@ function stopVerdaccio(): void {
 }
 
 /**
+ * Contents of the root and workspace `package.json` files from before
+ * publishing, keyed by path, or `null` when there is nothing to restore.
+ */
+let manifestSnapshot: Map<string, string> | null = null;
+
+/**
+ * Records the current contents of every `package.json` that `lerna publish`
+ * rewrites.
+ */
+function snapshotManifests(): void {
+  const manifestPaths = [
+    path.resolve(FORGE_ROOT_DIR, 'package.json'),
+    ...getPackageInfoSync().map((pkg) =>
+      path.resolve(pkg.path, 'package.json'),
+    ),
+  ];
+  manifestSnapshot = new Map(
+    manifestPaths.map((manifestPath) => [
+      manifestPath,
+      fs.readFileSync(manifestPath, 'utf8'),
+    ]),
+  );
+}
+
+/**
+ * Puts back the `package.json` contents recorded by {@link snapshotManifests}.
+ *
+ * Synchronous so that the signal handlers can call it before exiting.
+ */
+function restoreManifests(): void {
+  if (!manifestSnapshot) return;
+  for (const [manifestPath, contents] of manifestSnapshot) {
+    if (fs.readFileSync(manifestPath, 'utf8') !== contents) {
+      fs.writeFileSync(manifestPath, contents);
+    }
+  }
+  manifestSnapshot = null;
+}
+
+/**
  * Publishes all `@electron-forge/` packages to the localhost Verdaccio registry.
  */
 async function publishPackages(): Promise<void> {
   console.log('📦 Publishing monorepo packages to Verdaccio registry...');
 
+  /**
+   * `lerna publish` rewrites every manifest while it publishes (adding
+   * `gitHead`, replacing `workspace:*` ranges with exact versions), and by
+   * default undoes that with `git checkout -- <manifests>`. That also throws
+   * away any uncommitted changes to those files, so we pass `--no-git-reset`
+   * and restore the manifests ourselves.
+   */
+  snapshotManifests();
   try {
     await spawnPromise(
       `yarn`,
@@ -140,6 +190,7 @@ async function publishPackages(): Promise<void> {
         '--no-git-tag-version',
         '--no-push',
         '--skip-check-working-tree',
+        '--no-git-reset',
       ],
       {
         cwd: FORGE_ROOT_DIR,
@@ -151,6 +202,8 @@ async function publishPackages(): Promise<void> {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('❌ Failed to publish packages:', errorMessage);
     throw error;
+  } finally {
+    restoreManifests();
   }
 }
 
@@ -385,10 +438,12 @@ async function main(): Promise<void> {
 
   // Handle signals
   process.on('SIGINT', () => {
+    restoreManifests();
     stopVerdaccio();
     process.exit(0);
   });
   process.on('SIGTERM', () => {
+    restoreManifests();
     stopVerdaccio();
     process.exit(0);
   });
