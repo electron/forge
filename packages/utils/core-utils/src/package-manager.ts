@@ -46,6 +46,12 @@ export const PACKAGE_MANAGERS: Record<SupportedPackageManager, PMDetails> = {
   },
 };
 
+const LEAKED_NPM_CONFIG_ENV = new Set([
+  'npm_config_allow_scripts',
+  'npm_config_strict_allow_scripts',
+  'npm_config_dangerously_allow_all_scripts',
+]);
+
 const PM_FROM_LOCKFILE: Record<string, SupportedPackageManager> = {
   'package-lock.json': 'npm',
   'yarn.lock': 'yarn',
@@ -169,5 +175,20 @@ export const spawnPackageManager = async (
   args?: CrossSpawnArgs,
   opts?: CrossSpawnOptions,
 ): Promise<string> => {
-  return (await spawn(pm.executable, args, opts)).trim();
+  // Some npm versions (e.g. 11.19) leak user-level install-script policy config
+  // into child processes as `npm_config_*` env vars, which nested project
+  // installs then reject with EALLOWSCRIPTS.
+  // @see https://github.com/electron/forge/issues/4420
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([key]) =>
+        !LEAKED_NPM_CONFIG_ENV.has(key.toLowerCase().replace(/-/g, '_')),
+    ),
+  );
+  return (
+    await spawn(pm.executable, args, {
+      ...opts,
+      env: { ...env, ...opts?.env },
+    })
+  ).trim();
 };
