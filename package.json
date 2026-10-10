@@ -60,7 +60,7 @@
     "lint-staged": "^17.4.1",
     "listr2": "^11.1.0",
     "markdownlint-cli2": "^0.19.1",
-    "oxfmt": "^0.41.0",
+    "oxfmt": "^0.71.0",
     "oxlint": "^1.80.0",
     "ref-napi": "^3.0.3",
     "tsx": "^4.21.0",
