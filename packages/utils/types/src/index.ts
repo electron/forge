@@ -19,6 +19,8 @@ import type {
   OfficialPlatform,
 } from '@electron/packager';
 
+import type { LoggerOptions } from '@electron-forge/multi-logger';
+
 export type ForgeListrOptions<T> = ListrBaseClassOptions<
   T,
   ListrDefaultRendererValue,
@@ -138,6 +140,10 @@ export interface ForgePackagerOptions extends Omit<
   ElectronPackagerOptions,
   'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'
 > {}
+export interface ForgeLoggerOptions extends Pick<
+  LoggerOptions,
+  'interactive'
+> {}
 export interface ResolvedForgeConfig {
   /**
    * A string to uniquely identify artifacts of this build, will be appended
@@ -163,6 +169,7 @@ export interface ResolvedForgeConfig {
   packagerConfig: ForgePackagerOptions;
   makers: ForgeConfigMaker[];
   publishers: ForgeConfigPublisher[];
+  logger: ForgeLoggerOptions;
 }
 export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
 

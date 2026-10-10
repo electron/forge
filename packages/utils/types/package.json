@@ -9,6 +9,7 @@
   "exports": "./dist/index.js",
   "typings": "dist/index.d.ts",
   "dependencies": {
+    "@electron-forge/multi-logger": "workspace:*",
     "@electron-forge/tracer": "workspace:*",
     "@electron/packager": "^20.3.0",
     "@electron/rebuild": "^4.2.0",

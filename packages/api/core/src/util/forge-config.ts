@@ -138,6 +138,15 @@ export function forgeConfigIsValidFilePath(
 type MaybeESM<T> = T | { default: T };
 type AsyncForgeConfigGenerator = () => Promise<ForgeConfig>;
 
+export const defaultForgeConfig = Object.freeze({
+  rebuildConfig: {},
+  packagerConfig: {},
+  makers: [],
+  publishers: [],
+  plugins: [],
+  logger: {},
+});
+
 export default async (dir: string): Promise<ResolvedForgeConfig> => {
   let forgeConfig: ForgeConfig | string | null | undefined =
     registeredForgeConfigs.get(dir);
@@ -193,13 +202,6 @@ export default async (dir: string): Promise<ResolvedForgeConfig> => {
       'Expected `config.forge` in package.json to be an object or point to a Forge config file',
     );
   }
-  const defaultForgeConfig = {
-    rebuildConfig: {},
-    packagerConfig: {},
-    makers: [],
-    publishers: [],
-    plugins: [],
-  };
   let resolvedForgeConfig: ResolvedForgeConfig = {
     ...defaultForgeConfig,
     ...forgeConfig,
