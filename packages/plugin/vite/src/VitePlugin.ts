@@ -4,12 +4,16 @@ import path from 'node:path';
 import { styleText } from 'node:util';
 
 import { readJson, writeJson } from '@electron-forge/core-utils';
+import { requestAppRestart } from '@electron-forge/core-utils/restart';
 import { namedHookWithTaskFn, PluginBase } from '@electron-forge/plugin-base';
 import debug from 'debug';
 import { Listr, PRESET_TIMER } from 'listr2';
 import * as vite from 'vite';
 
-import { viteDevServerUrls } from './config/vite.base.config.js';
+import {
+  viteDevServerUrls,
+  warnAppNotRestarted,
+} from './config/vite.base.config.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
 import type { VitePluginBuildConfig, VitePluginConfig } from './Config.js';
@@ -58,7 +62,7 @@ const subprocessWorkerPath = path.resolve(
 );
 
 function spawnViteBuild(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'hotRestart'>,
   kind: 'build' | 'renderer',
   index: number,
   projectDir: string,
@@ -108,7 +112,7 @@ function spawnViteBuild(
 }
 
 function spawnViteBuildWatch(
-  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  pluginConfig: Pick<VitePluginConfig, 'build' | 'renderer' | 'hotRestart'>,
   index: number,
   projectDir: string,
   devServerUrls: Record<string, string>,
@@ -153,6 +157,10 @@ function spawnViteBuildWatch(
         settle(() => reject(new Error(msg.message)));
       } else if (msg.type === 'reload-renderers') {
         onReloadRenderers();
+      } else if (msg.type === 'restart' && !requestAppRestart()) {
+        // `pluginHotRestart('restart')` can't reach the app from the worker, so
+        // it forwards rebuilds of the main process bundle here.
+        warnAppNotRestarted();
       }
     });
     child.on('error', (err) => settle(() => reject(err)));
@@ -373,17 +381,18 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
 
   /**
    * Serializable snapshot of the plugin config to pass to subprocess workers.
-   * We only include build[] and renderer[] — the worker needs the full renderer
-   * list for defines even when building a single main target. `hotRestart` is
-   * moot here: workers only run when packaging.
+   * We only include build[], renderer[] and hotRestart — the worker needs the
+   * full renderer list for defines even when building a single main target,
+   * and `hotRestart` for the watch builds of `electron-forge start`.
    */
   private get serializableConfig(): Pick<
     VitePluginConfig,
-    'build' | 'renderer'
+    'build' | 'renderer' | 'hotRestart'
   > {
     return {
       build: this.config.build,
       renderer: this.config.renderer,
+      hotRestart: this.config.hotRestart,
     };
   }
 

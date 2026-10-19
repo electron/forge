@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { setAppRestartHandler } from '@electron-forge/core-utils/restart';
 import { createServer } from 'vite';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getBuildDefine,
@@ -234,6 +234,79 @@ describe('vite.base.config', () => {
       closeBundle(plugin)();
 
       expect(consoleWarn).not.toHaveBeenCalled();
+    });
+
+    describe('in the watch subprocess', () => {
+      const originalSend = process.send;
+      let send: ReturnType<typeof vi.fn>;
+
+      beforeEach(() => {
+        vi.stubEnv('FORGE_VITE_WATCH', '1');
+        send = vi.fn(() => true);
+        process.send = send as unknown as typeof process.send;
+      });
+
+      afterEach(() => {
+        vi.unstubAllEnvs();
+        process.send = originalSend;
+      });
+
+      it('asks the parent process to restart the app after a rebuild', () => {
+        const consoleWarn = vi
+          .spyOn(console, 'warn')
+          .mockImplementation(() => undefined);
+        // No restart handler is registered here: it lives in the parent.
+        const plugin = pluginHotRestart('restart');
+
+        // The first build runs before the parent spawns the app.
+        closeBundle(plugin)();
+        expect(send).not.toHaveBeenCalled();
+
+        closeBundle(plugin)();
+        expect(send).toHaveBeenCalledExactlyOnceWith({ type: 'restart' });
+        // Whether the restart happened is only known in the parent.
+        expect(consoleWarn).not.toHaveBeenCalled();
+      });
+
+      it('does not ask for a restart when the rebuild failed', () => {
+        const plugin = pluginHotRestart('restart');
+
+        closeBundle(plugin)();
+        closeBundle(plugin)(new Error('syntax error'));
+
+        expect(send).not.toHaveBeenCalled();
+      });
+
+      it('does not ask for a restart in reload mode', () => {
+        const plugin = pluginHotRestart('reload');
+
+        closeBundle(plugin)();
+        closeBundle(plugin)();
+
+        expect(send).not.toHaveBeenCalled();
+      });
+    });
+
+    it('warns instead of messaging an IPC parent outside the watch subprocess', () => {
+      // `process.send` alone is no sign of the watch subprocess: Forge itself
+      // may be running with an IPC channel to whatever spawned it.
+      const originalSend = process.send;
+      const send = vi.fn(() => true);
+      process.send = send as unknown as typeof process.send;
+      const consoleWarn = vi
+        .spyOn(console, 'warn')
+        .mockImplementation(() => undefined);
+      try {
+        const plugin = pluginHotRestart('restart');
+
+        closeBundle(plugin)();
+        closeBundle(plugin)();
+
+        expect(send).not.toHaveBeenCalled();
+        expect(consoleWarn).toHaveBeenCalledOnce();
+      } finally {
+        process.send = originalSend;
+      }
     });
   });
 });

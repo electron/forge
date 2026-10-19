@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { VitePluginConfig } from '../src/Config';
 
@@ -219,5 +220,114 @@ describe('subprocess-worker', () => {
 
     expect(code).toBe(1);
     expect(stderr).toContain('missing');
+  });
+
+  describe('watch mode', () => {
+    let watchDir: string;
+    let kill: (() => void) | undefined;
+
+    // Work in a copy of the fixture so that tests can edit its sources.
+    beforeEach(() => {
+      watchDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-vite-watch-'));
+      fs.cpSync(projectDir, watchDir, { recursive: true });
+    });
+
+    afterEach(() => {
+      kill?.();
+      kill = undefined;
+      fs.rmSync(watchDir, { recursive: true, force: true });
+    });
+
+    // Starts a watch-mode worker the way `electron-forge start` does.
+    function startWatchWorker(
+      config: Pick<VitePluginConfig, 'build' | 'renderer' | 'hotRestart'>,
+    ) {
+      const child = spawn(process.execPath, [workerPath], {
+        cwd: watchDir,
+        env: {
+          ...process.env,
+          FORGE_VITE_PROJECT_DIR: watchDir,
+          FORGE_VITE_KIND: 'build',
+          FORGE_VITE_INDEX: '0',
+          FORGE_VITE_CONFIG: JSON.stringify(config),
+          FORGE_VITE_WATCH: '1',
+          FORGE_VITE_DEV_SERVER_URLS: '{}',
+        },
+        stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
+      });
+      kill = () => child.kill();
+
+      const messages: string[] = [];
+      const waiters: { type: string; resolve: () => void }[] = [];
+      child.on('message', (msg: { type: string; message?: string }) => {
+        messages.push(msg.type);
+        for (const waiter of waiters.filter((w) => w.type === msg.type)) {
+          waiter.resolve();
+        }
+      });
+      let stderr = '';
+      child.stderr!.setEncoding('utf8');
+      child.stderr!.on('data', (c) => (stderr += c));
+
+      const waitFor = (type: string) =>
+        new Promise<void>((resolve, reject) => {
+          if (messages.includes(type)) return resolve();
+          waiters.push({ type, resolve });
+          child.once('close', (code) =>
+            reject(
+              new Error(
+                `worker exited with ${code} before "${type}":\n${stderr}`,
+              ),
+            ),
+          );
+        });
+
+      return { messages, waitFor };
+    }
+
+    const mainConfig = () => ({
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(watchDir, 'vite.main.config.mjs'),
+          target: 'main' as const,
+        },
+      ],
+      renderer: [],
+    });
+
+    it('asks the parent to restart the app when hotRestart is set and main is rebuilt', async () => {
+      const { messages, waitFor } = startWatchWorker({
+        ...mainConfig(),
+        hotRestart: true,
+      });
+      await waitFor('first-build-done');
+      // The first build finishes before the app is spawned.
+      expect(messages).not.toContain('restart');
+
+      fs.appendFileSync(
+        path.join(watchDir, 'src', 'main.js'),
+        "export const edited = 'yes';\n",
+      );
+      await waitFor('restart');
+    }, 30_000);
+
+    it('never asks for a restart without hotRestart', async () => {
+      const { messages, waitFor } = startWatchWorker(mainConfig());
+      await waitFor('first-build-done');
+
+      const outFile = path.join(watchDir, '.vite', 'build', 'main.cjs');
+      const before = fs.readFileSync(outFile, 'utf8');
+      fs.appendFileSync(
+        path.join(watchDir, 'src', 'main.js'),
+        "export const edited = 'yes';\n",
+      );
+      // Wait for the rebuild to land on disk.
+      await expect
+        .poll(() => fs.readFileSync(outFile, 'utf8'), { timeout: 20_000 })
+        .not.toEqual(before);
+
+      expect(messages).not.toContain('restart');
+    }, 30_000);
   });
 });

@@ -129,14 +129,28 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
         }
       } else if (command === 'restart' && !requestAppRestart() && isRebuild) {
         // The first build finishes before the app is spawned, so only a rebuild
-        // that fails to reach it is worth warning about.
-        console.warn(
-          styleText(
-            'yellow',
-            '[@electron-forge/plugin-vite] Rebuilt the main process bundle, but the running app was not restarted, so it is still running the previous code.',
-          ),
-        );
+        // that fails to reach it is worth acting on.
+        if (process.env.FORGE_VITE_WATCH === '1' && process.send) {
+          // `electron-forge start` builds this bundle in a watch subprocess,
+          // but the restart handler is registered in the parent process; ask
+          // it to restart the app.
+          process.send({ type: 'restart' });
+        } else {
+          warnAppNotRestarted();
+        }
       }
     },
   };
+}
+
+/**
+ * Warn that a rebuilt main process bundle never reached the running app.
+ */
+export function warnAppNotRestarted(): void {
+  console.warn(
+    styleText(
+      'yellow',
+      '[@electron-forge/plugin-vite] Rebuilt the main process bundle, but the running app was not restarted, so it is still running the previous code.',
+    ),
+  );
 }
