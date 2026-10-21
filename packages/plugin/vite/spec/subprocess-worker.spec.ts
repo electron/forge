@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -182,6 +183,60 @@ describe('subprocess-worker', () => {
     expect(fs.existsSync(mainOut)).toBe(false);
     const contents = fs.readFileSync(secondaryOut, 'utf8');
     expect(contents).toContain('from-secondary');
+  });
+
+  it('asks the parent to restart the app after a main rebuild with hotRestart', async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'forge-vite-watch-'));
+    fs.cpSync(projectDir, tmpDir, { recursive: true });
+    const config: Pick<VitePluginConfig, 'build' | 'renderer' | 'hotRestart'> =
+      {
+        build: [
+          {
+            entry: 'src/main.js',
+            config: path.join(tmpDir, 'vite.main.config.mjs'),
+            target: 'main',
+          },
+        ],
+        renderer: [],
+        hotRestart: true,
+      };
+
+    const child = spawn(process.execPath, [workerPath], {
+      cwd: tmpDir,
+      env: {
+        ...process.env,
+        FORGE_VITE_PROJECT_DIR: tmpDir,
+        FORGE_VITE_KIND: 'build',
+        FORGE_VITE_INDEX: '0',
+        FORGE_VITE_CONFIG: JSON.stringify(config),
+        FORGE_VITE_WATCH: '1',
+      },
+      stdio: ['ignore', 'ignore', 'pipe', 'ipc'],
+    });
+    const messages: string[] = [];
+    const waitFor = (type: string) =>
+      new Promise<void>((resolve) => {
+        child.on('message', (msg: { type: string }) => {
+          if (msg.type === type) resolve();
+        });
+      });
+    child.on('message', (msg: { type: string }) => messages.push(msg.type));
+
+    try {
+      await waitFor('first-build-done');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      expect(messages).toEqual(['first-build-done']);
+
+      const restarted = waitFor('restart');
+      fs.appendFileSync(path.join(tmpDir, 'src', 'main.js'), '\n// rebuild\n');
+      await restarted;
+      expect(messages).toEqual(['first-build-done', 'restart']);
+    } finally {
+      const closed = new Promise((resolve) => child.once('close', resolve));
+      child.kill();
+      await closed;
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 
   it('exits nonzero and surfaces error when build fails', async () => {

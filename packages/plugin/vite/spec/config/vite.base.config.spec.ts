@@ -235,5 +235,41 @@ describe('vite.base.config', () => {
 
       expect(consoleWarn).not.toHaveBeenCalled();
     });
+
+    describe('in the watch subprocess of electron-forge start', () => {
+      afterEach(() => {
+        vi.unstubAllEnvs();
+        process.send = undefined;
+      });
+
+      it('asks the parent to restart the app after a rebuild', () => {
+        const handler = handleRestarts();
+        vi.stubEnv('FORGE_VITE_WATCH', '1');
+        const send = vi.fn(() => true);
+        process.send = send;
+        const plugin = pluginHotRestart('restart');
+
+        // The first build runs before the parent spawns the app.
+        closeBundle(plugin)();
+        expect(send).not.toHaveBeenCalled();
+
+        closeBundle(plugin)();
+        expect(send).toHaveBeenCalledExactlyOnceWith({ type: 'restart' });
+        // The restart handler is registered in the parent, not here.
+        expect(handler).not.toHaveBeenCalled();
+      });
+
+      it('does not ask the parent to restart the app when the rebuild failed', () => {
+        vi.stubEnv('FORGE_VITE_WATCH', '1');
+        const send = vi.fn(() => true);
+        process.send = send;
+        const plugin = pluginHotRestart('restart');
+
+        closeBundle(plugin)();
+        closeBundle(plugin)(new Error('syntax error'));
+
+        expect(send).not.toHaveBeenCalled();
+      });
+    });
   });
 });
