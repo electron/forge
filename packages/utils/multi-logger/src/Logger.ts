@@ -253,33 +253,24 @@ export default class Logger {
     this.started = true;
 
     if (this.activeMode === 'ink') {
-      try {
-        const { startInk } = await import('./ink/render.js');
-        if (this.hasStopped) return;
-        this.renderer = startInk({
-          logger: this,
-          stdout: this.stdout,
-          stdin: this.stdin,
-          title: this.options.title,
-          keys: this.options.keys ?? [],
-          initialTab: this.options.initialTab,
-          errorSwitchDebounceMs: this.options.errorSwitchDebounceMs,
-          onQuit: () => this.quit(),
-        });
-        this.inkActive = true;
-        return;
-      } catch (err) {
-        d(
-          'failed to start the interactive UI, falling back to plain output',
-          err,
-        );
-        this.activeMode = 'plain';
-      }
+      const { startInk } = await import('./ink/render.js');
+      if (this.hasStopped) return;
+      this.renderer = startInk({
+        logger: this,
+        stdout: this.stdout,
+        stdin: this.stdin,
+        title: this.options.title,
+        keys: this.options.keys ?? [],
+        initialTab: this.options.initialTab,
+        errorSwitchDebounceMs: this.options.errorSwitchDebounceMs,
+        onQuit: () => this.quit(),
+      });
+      this.inkActive = true;
+    } else {
+      const plain = new PlainRenderer(this, this.stdout);
+      plain.start();
+      this.renderer = plain;
     }
-
-    const plain = new PlainRenderer(this, this.stdout);
-    plain.start();
-    this.renderer = plain;
   }
 
   /**
