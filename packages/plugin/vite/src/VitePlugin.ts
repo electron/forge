@@ -210,7 +210,8 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
       this.exitHandler({ cleanup: true });
     });
     process.on('SIGINT' as NodeJS.Signals, (_signal) => {
-      this.exitHandler({ exit: true });
+      // Let Forge's other SIGINT listeners forward the signal before exiting.
+      setImmediate(() => this.exitHandler({ exit: true }));
     });
   };
 
