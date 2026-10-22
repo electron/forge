@@ -18,12 +18,9 @@ type ResolutionError = Error & {
  *
  * Resolution order for each entry in {@link paths}:
  *
- * 1. Local monorepo short-circuit: when running from a Forge checkout and the
- *    path is a single `@electron-forge/*` specifier, derives the package location
- *    within the monorepo and attempts a direct import (skips node_modules).
- * 2. The raw path as-is (relies on Node's own resolution).
- * 3. `path.resolve(relativeTo, path)` — resolved against the given directory.
- * 4. `path.resolve(relativeTo, 'node_modules', path)` — explicit node_modules lookup.
+ * 1. The raw path as-is (relies on Node's own resolution).
+ * 2. `path.resolve(relativeTo, path)` — resolved against the given directory.
+ * 3. `path.resolve(relativeTo, 'node_modules', path)` — explicit node_modules lookup.
  *
  * Only `ERR_MODULE_NOT_FOUND` errors are swallowed; any other error is re-thrown.
  *
@@ -33,31 +30,6 @@ async function importSearchRaw<T>(
   relativeTo: string,
   paths: string[],
 ): Promise<T | null> {
-  // Attempt to locally short-circuit if we're running from a checkout of forge
-  if (
-    import.meta.dirname.includes('forge/packages/api/core/') &&
-    paths.length === 1 &&
-    paths[0].startsWith('@electron-forge/')
-  ) {
-    const [moduleType, moduleName] = paths[0].split('/')[1].split('-');
-    try {
-      const localPath = path.resolve(
-        import.meta.dirname,
-        '..',
-        '..',
-        '..',
-        '..',
-        moduleType,
-        moduleName,
-      );
-      d('testing local forge build', { moduleType, moduleName, localPath });
-      return await import(pathToFileURL(localPath).toString());
-    } catch {
-      // Ignore
-    }
-  }
-
-  // Load via normal search paths
   const testPaths = paths
     .concat(paths.map((mapPath) => path.resolve(relativeTo, mapPath)))
     .concat(
