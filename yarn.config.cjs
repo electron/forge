@@ -16,6 +16,7 @@ const OPTIONAL_DEPS = [
   'electron-windows-msix',
   'electron-winstaller',
   '@malept/electron-installer-flatpak',
+  '@electron-forge/binary-delta',
 ];
 
 /**
