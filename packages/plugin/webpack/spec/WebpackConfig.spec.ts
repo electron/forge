@@ -1,7 +1,7 @@
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
-import { Configuration, Entry } from 'webpack';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import webpackPkg, { Configuration, Entry } from 'webpack';
 
 import {
   WebpackConfiguration,
@@ -13,7 +13,22 @@ import WebpackConfigGenerator, {
   ConfigurationFactory,
 } from '../src/WebpackConfig';
 
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return { ...mod, canInjectDevtron: vi.fn(async () => true) };
+});
+
+const { canInjectDevtron } = await import('@electron-forge/core-utils');
+
 const mockProjectDir = process.platform === 'win32' ? 'C:\\path' : '/path';
+
+function hasDevtronBannerPlugin(
+  plugins?: Required<Configuration>['plugins'],
+): boolean {
+  return (plugins || []).some(
+    (plugin) => plugin instanceof webpackPkg.BannerPlugin,
+  );
+}
 
 function hasAssetRelocatorPatchPlugin(
   plugins?: Required<Configuration>['plugins'],
@@ -296,6 +311,71 @@ describe('WebpackConfigGenerator', () => {
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
         false,
       );
+    });
+
+    describe('devtron', () => {
+      beforeEach(() => {
+        vi.mocked(canInjectDevtron).mockClear();
+        vi.mocked(canInjectDevtron).mockResolvedValue(true);
+      });
+
+      const devtronConfig = (devtron?: boolean) =>
+        ({
+          mainConfig: {
+            entry: 'main.js',
+          },
+          renderer: {
+            entryPoints: [] as WebpackPluginEntryPoint[],
+          },
+          devtron,
+        }) as WebpackPluginConfig;
+
+      it('injects the bootstrap banner in development when enabled', async () => {
+        const generator = new WebpackConfigGenerator(
+          devtronConfig(true),
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(hasDevtronBannerPlugin(webpackConfig.plugins)).toEqual(true);
+      });
+
+      it('does not inject the bootstrap in production', async () => {
+        const generator = new WebpackConfigGenerator(
+          devtronConfig(true),
+          mockProjectDir,
+          true,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(hasDevtronBannerPlugin(webpackConfig.plugins)).toEqual(false);
+        expect(canInjectDevtron).not.toHaveBeenCalled();
+      });
+
+      it('does not inject the bootstrap when not enabled', async () => {
+        const generator = new WebpackConfigGenerator(
+          devtronConfig(),
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(hasDevtronBannerPlugin(webpackConfig.plugins)).toEqual(false);
+        expect(canInjectDevtron).not.toHaveBeenCalled();
+      });
+
+      it('does not inject the bootstrap when the environment does not support it', async () => {
+        vi.mocked(canInjectDevtron).mockResolvedValue(false);
+        const generator = new WebpackConfigGenerator(
+          devtronConfig(true),
+          mockProjectDir,
+          false,
+          3000,
+        );
+        const webpackConfig = await generator.getMainConfig();
+        expect(hasDevtronBannerPlugin(webpackConfig.plugins)).toEqual(false);
+      });
     });
 
     it('generates a config with a relative entry path', async () => {
