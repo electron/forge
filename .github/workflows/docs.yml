@@ -1,0 +1,48 @@
+name: Publish API documentation
+
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    environment: docs-publish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build API documentation
+        run: yarn docs
+
+      - name: Azure login
+        uses: azure/login@f5d393ae46f8fde4be8b75f32e3fc50e654ad0ca # v3.0.1
+        with:
+          client-id: ${{ secrets.AZURE_OIDC_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_OIDC_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_OIDC_SUBSCRIPTION_ID }}
+
+      - name: Upload to Azure Blob Storage
+        uses: azure/cli@9eb25b8360668fb0ecbafa808d40e2197b2f5f52 # v3.0.0
+        env:
+          STORAGE_ACCOUNT: ${{ secrets.AZURE_ECOSYSTEM_PACKAGES_STORAGE_ACCOUNT_NAME }}
+          TAG: ${{ github.ref_name }}
+        with:
+          inlineScript: |
+            az storage blob upload-batch --account-name "$STORAGE_ACCOUNT" -d "\$web/forge/$TAG" -s ./api-docs --overwrite --auth-mode login
