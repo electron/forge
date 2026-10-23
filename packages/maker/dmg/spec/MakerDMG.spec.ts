@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { MakerOptions } from '@electron-forge/maker-base';
-import { ForgeArch } from '@electron-forge/shared-types';
+import { ForgeArch, ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { createDMG } from 'electron-installer-dmg';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -33,6 +33,50 @@ describe('MakerDMG', () => {
   const appName = 'My Test App';
   const targetArch = process.arch as ForgeArch;
   const packageJSON = { version: '1.2.3' };
+  const makeForgeConfig = (
+    packagerConfig: ResolvedForgeConfig['packagerConfig'] = {},
+  ) => ({ packagerConfig }) as ResolvedForgeConfig;
+
+  it.each([
+    ['darwin', 'x64'],
+    ['darwin', 'arm64'],
+    ['mas', 'x64'],
+    ['mas', 'arm64'],
+  ] as const)(
+    'should use appVersion in the default DMG artifact path for %s/%s',
+    async (targetPlatform, targetArch) => {
+      const maker = new MakerDMG({}, []);
+      maker.ensureFile = vi.fn();
+      await maker.prepareConfig(targetArch);
+      const artifacts = await (maker.make as MakeFunction)({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform,
+        packageJSON,
+        forgeConfig: makeForgeConfig({ appVersion: '2.0.0-beta.1' }),
+      });
+      const expectedPath = path.resolve(
+        makeDir,
+        'dmg',
+        targetArch,
+        `${appName}-2.0.0-beta.1-${targetArch}.dmg`,
+      );
+      expect(artifacts).toEqual([expectedPath]);
+      expect(vi.mocked(fs.rename)).toHaveBeenCalledExactlyOnceWith(
+        path.resolve(makeDir, 'dmg', targetArch, `${appName}.dmg`),
+        expectedPath,
+      );
+      expect(maker.ensureFile).toHaveBeenLastCalledWith(expectedPath);
+      expect(vi.mocked(createDMG)).toHaveBeenCalledExactlyOnceWith({
+        overwrite: true,
+        name: appName,
+        appPath: path.resolve(dir, `${appName}.app`),
+        out: path.resolve(makeDir, 'dmg', targetArch),
+      });
+    },
+  );
 
   it('should pass through correct defaults', async () => {
     const maker = new MakerDMG({}, []);
@@ -44,6 +88,7 @@ describe('MakerDMG', () => {
       appName,
       targetArch,
       packageJSON,
+      forgeConfig: makeForgeConfig(),
     });
     expect(vi.mocked(createDMG)).toHaveBeenCalledOnce();
   });
@@ -59,6 +104,7 @@ describe('MakerDMG', () => {
       appName,
       targetArch,
       packageJSON,
+      forgeConfig: makeForgeConfig(),
     });
     expect(vi.mocked(createDMG)).toHaveBeenCalledWith(
       expect.objectContaining({ out: expectedDir }),
@@ -69,35 +115,63 @@ describe('MakerDMG', () => {
     );
   });
 
-  it('should attempt to rename the DMG file with version if no custom name is set', async () => {
-    const maker = new MakerDMG({}, []);
-    maker.ensureFile = vi.fn();
-    await maker.prepareConfig(targetArch);
-    await (maker.make as MakeFunction)({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-    });
-    expect(vi.mocked(fs.rename)).toHaveBeenCalledOnce();
-    expect(vi.mocked(fs.rename)).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.stringContaining(`1.2.3-${targetArch}`),
-    );
-  });
+  it.each([undefined, ''])(
+    'should use package.json version when appVersion is %j',
+    async (appVersion) => {
+      const maker = new MakerDMG({}, []);
+      maker.ensureFile = vi.fn();
+      await maker.prepareConfig(targetArch);
+      const artifacts = await (maker.make as MakeFunction)({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        packageJSON,
+        forgeConfig: makeForgeConfig({ appVersion }),
+      });
+      const expectedPath = path.resolve(
+        makeDir,
+        'dmg',
+        targetArch,
+        `${appName}-${packageJSON.version}-${targetArch}.dmg`,
+      );
+      expect(artifacts).toEqual([expectedPath]);
+      expect(vi.mocked(fs.rename)).toHaveBeenCalledExactlyOnceWith(
+        path.resolve(makeDir, 'dmg', targetArch, `${appName}.dmg`),
+        expectedPath,
+      );
+    },
+  );
 
-  it('should not attempt to rename the DMG file if a custom name is set', async () => {
-    const maker = new MakerDMG({ name: 'custom-app-name' }, []);
-    maker.ensureFile = vi.fn();
-    await maker.prepareConfig(targetArch);
-    await (maker.make as MakeFunction)({
-      dir,
-      makeDir,
-      appName,
-      targetArch,
-      packageJSON,
-    });
-    expect(vi.mocked(fs.rename)).not.toHaveBeenCalled();
-  });
+  it.each([undefined, '2.0.0-beta.1'])(
+    'should preserve a custom DMG name when appVersion is %j',
+    async (appVersion) => {
+      const maker = new MakerDMG({ name: 'custom-app-name' }, []);
+      maker.ensureFile = vi.fn();
+      await maker.prepareConfig(targetArch);
+      const artifacts = await (maker.make as MakeFunction)({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        packageJSON,
+        forgeConfig: makeForgeConfig({ appVersion }),
+      });
+      const expectedPath = path.resolve(
+        makeDir,
+        'dmg',
+        targetArch,
+        'custom-app-name.dmg',
+      );
+      expect(artifacts).toEqual([expectedPath]);
+      expect(vi.mocked(fs.rename)).not.toHaveBeenCalled();
+      expect(maker.ensureFile).toHaveBeenCalledExactlyOnceWith(expectedPath);
+      expect(vi.mocked(createDMG)).toHaveBeenCalledExactlyOnceWith({
+        overwrite: true,
+        name: 'custom-app-name',
+        appPath: path.resolve(dir, `${appName}.app`),
+        out: path.resolve(makeDir, 'dmg', targetArch),
+      });
+    },
+  );
 });
