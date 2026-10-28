@@ -183,6 +183,52 @@ describe('WebpackConfigGenerator', () => {
       );
     });
 
+    describe('with a preload-only entry that has the same name as a window', () => {
+      const windowGroup = {
+        config: {},
+        entryPoints: [
+          {
+            name: 'main_window',
+            html: 'index.html',
+            js: 'renderer.js',
+          },
+        ],
+      };
+      const preloadGroup = {
+        config: {},
+        entryPoints: [
+          {
+            name: 'main_window',
+            preload: { js: 'preload.js' },
+          },
+        ],
+      };
+
+      it.each([
+        ['after', [windowGroup, preloadGroup]],
+        ['before', [preloadGroup, windowGroup]],
+      ])(
+        'keeps the HTML entry point when the preload-only group comes %s the window group',
+        (_order, renderer) => {
+          const config = { renderer } as WebpackPluginConfig;
+          const generator = new WebpackConfigGenerator(
+            config,
+            '/',
+            false,
+            3000,
+          );
+          const defines = generator.getDefines();
+
+          expect(defines.MAIN_WINDOW_WEBPACK_ENTRY).toEqual(
+            "'http://localhost:3000/main_window/index.html'",
+          );
+          expect(defines['process.env.MAIN_WINDOW_WEBPACK_ENTRY']).toEqual(
+            "'http://localhost:3000/main_window/index.html'",
+          );
+        },
+      );
+    });
+
     describe('PRELOAD_WEBPACK_ENTRY', () => {
       const config = {
         mainConfig: {},
