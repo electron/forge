@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
@@ -162,4 +163,117 @@ export async function createBinaryDelta(
   const patchedApp = path.join(scratchDir, path.basename(newApp));
   await spawn(binaryDelta, ['apply', oldApp, patchedApp, deltaPath]);
   await spawn('codesign', ['--verify', '--deep', '--strict', patchedApp]);
+}
+
+/**
+ * The release a delta updates from: its signed `.app` bundle, a ZIP of it,
+ * or the URL of that ZIP. A downloaded ZIP is checked against `sha256` and
+ * `size` where given.
+ */
+export type MacDeltaSource =
+  | { app: string }
+  | { zip: string }
+  | { url: string; sha256?: string; size?: number };
+
+export interface CreateMacDeltaOptions {
+  /**
+   * The release users update from, exactly as it was published.
+   */
+  from: MacDeltaSource;
+  /**
+   * Path to the signed `.app` bundle of the release users update to.
+   */
+  to: string;
+  /**
+   * Path to write the delta to.
+   */
+  output: string;
+  /**
+   * Path to a Sparkle `BinaryDelta` executable to use instead of the one
+   * in `@electron-forge/binary-delta`.
+   */
+  binaryDeltaPath?: string;
+}
+
+/**
+ * The fields of a Squirrel.Mac `delta` manifest entry other than `url`,
+ * which depends on where the delta is published.
+ */
+export interface MacDelta extends FileDigest {
+  /**
+   * `CFBundleVersion` of the app the delta applies to.
+   */
+  from_version: string;
+}
+
+/**
+ * Create a Squirrel.Mac binary delta from one signed release of an app to
+ * another, check that it applies and yields a validly signed app, and
+ * return its manifest fields. Requires a macOS host.
+ *
+ * This is the delta step of the ZIP maker's `macUpdateDelta` option, for
+ * apps that sign or publish outside Forge, or that offer deltas from more
+ * than one earlier release. Unlike the maker, it throws on any failure and
+ * leaves no file at `output`.
+ */
+export async function createMacDelta({
+  from,
+  to,
+  output,
+  binaryDeltaPath,
+}: CreateMacDeltaOptions): Promise<MacDelta> {
+  if (process.platform !== 'darwin') {
+    throw new Error('Creating a macOS delta update requires a macOS host');
+  }
+
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'forge-zip-delta-'));
+  try {
+    let previousApp: string;
+    if ('app' in from) {
+      previousApp = from.app;
+    } else {
+      let previousZip: string;
+      if ('zip' in from) {
+        previousZip = from.zip;
+      } else {
+        previousZip = path.join(tmpDir, 'previous.zip');
+        await downloadFile(from.url, previousZip, {
+          sha256: from.sha256,
+          size: from.size,
+        });
+      }
+      const previousDir = path.join(tmpDir, 'previous');
+      await spawn('ditto', ['-x', '-k', previousZip, previousDir]);
+      previousApp = await findAppBundle(previousDir);
+    }
+
+    for (const app of [previousApp, to]) {
+      const writable = await findGroupOrOtherWritable(app);
+      if (writable.length > 0) {
+        throw new Error(
+          `${app} contains group- or other-writable files, so a delta would stop applying after the first update ` +
+            `(Squirrel.Mac removes those permissions on install). Remove them before signing, ` +
+            `e.g. with "chmod -R go-w" on the bundle in a packageAfterCopy hook. Files:\n` +
+            writable.slice(0, 10).join('\n') +
+            (writable.length > 10
+              ? `\n...and ${writable.length - 10} more`
+              : ''),
+        );
+      }
+    }
+
+    const fromVersion = await readBundleVersion(previousApp);
+    const binaryDelta = await getBinaryDelta(binaryDeltaPath);
+    await fs.mkdir(path.dirname(output), { recursive: true });
+    const scratchDir = path.join(tmpDir, 'check');
+    await fs.mkdir(scratchDir);
+    await createBinaryDelta(binaryDelta, previousApp, to, output, scratchDir);
+
+    return { from_version: fromVersion, ...(await digestFile(output)) };
+  } catch (err) {
+    await fs.rm(output, { force: true });
+    throw err;
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
 }

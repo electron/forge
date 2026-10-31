@@ -137,8 +137,27 @@ module.exports = {
 
 Packager creates some files after this hook, such as `app.asar`, so build with a umask of `022` (the macOS default). Extra resources and icons are copied after this hook with their permissions kept, so make sure their source files aren't group-writable either.
 
+#### Creating deltas outside the maker
+
+If you sign or publish your app outside Forge, or want to offer deltas from more than one earlier release, call `createMacDelta` from `@electron-forge/maker-zip` yourself. It runs the same steps as `macUpdateDelta`: the permission check, `BinaryDelta create`, then the apply and `codesign` self-check. It returns the delta's manifest fields except `url`, which depends on where you upload it:
+
+```javascript
+const { createMacDelta } = require('@electron-forge/maker-zip');
+
+const delta = await createMacDelta({
+  // The release users update from: { app }, { zip } or { url, sha256, size }
+  from: { url: 'https://my-bucket.s3.amazonaws.com/my-app-updates/darwin/arm64/my-app-darwin-arm64-1.2.1.zip' },
+  // The signed app bundle users update to
+  to: 'out/my-app-darwin-arm64/my-app.app',
+  output: 'out/deltas/my-app-darwin-arm64-1.2.1-to-1.2.2.delta'
+});
+// { from_version: '1.2.1', sha256: '…', size: 7340032 }
+```
+
+Unlike the maker, `createMacDelta` throws if the delta can't be created, and it requires a macOS host.
+
 #### Limitations
 
-* A `RELEASES.json` file can only offer one delta, from the release immediately before the current one. Users on older releases download the full ZIP.
+* A `RELEASES.json` file can only offer one delta, from the release immediately before the current one. Users on older releases download the full ZIP. An update server that answers per client version can offer more, made with [`createMacDelta`](#creating-deltas-outside-the-maker).
 * The delta is created from the previous release's ZIP as published, so that ZIP must contain the exact signed (and stapled) app that users installed.
 * Files outside `app.asar` with non-ASCII names can fail code signature verification after the delta is applied. Squirrel.Mac then falls back to the full ZIP.

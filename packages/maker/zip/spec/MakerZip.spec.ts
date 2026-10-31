@@ -9,7 +9,7 @@ import { spawn } from '@malept/cross-spawn-promise';
 import { zip } from 'cross-zip';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MakerZIP, MakerZIPConfig } from '../src/MakerZIP';
+import { createMacDelta, MakerZIP, MakerZIPConfig } from '../src/MakerZIP';
 
 const { FAKE_ZIP_CONTENTS } = vi.hoisted(() => ({
   FAKE_ZIP_CONTENTS: 'fake zip contents',
@@ -630,6 +630,112 @@ describe('MakerZip', () => {
         expect.anything(),
         expect.stringContaining('SHA-256 mismatch'),
       );
+    });
+
+    describe('createMacDelta', () => {
+      const output = () => path.join(tmpDir, 'deltas', 'custom.delta');
+
+      it('should create a delta from a previous app bundle', async () => {
+        const oldApp = path.join(tmpDir, 'old', 'My Old App.app');
+        writeApp(oldApp);
+
+        await expect(
+          createMacDelta({
+            from: { app: oldApp },
+            to: newApp,
+            output: output(),
+            binaryDeltaPath,
+          }),
+        ).resolves.toEqual({
+          from_version: '412',
+          sha256: sha256(deltaContents),
+          size: Buffer.byteLength(deltaContents),
+        });
+        expect(spawn).not.toHaveBeenCalledWith('ditto', expect.anything());
+        expect(spawn).toHaveBeenCalledWith(binaryDeltaPath, [
+          'create',
+          '--version',
+          '4',
+          '--compression',
+          'lzma',
+          oldApp,
+          newApp,
+          output(),
+        ]);
+      });
+
+      it('should extract a previous ZIP on disk', async () => {
+        const previousZip = path.join(tmpDir, 'previous.zip');
+        fs.writeFileSync(previousZip, previousZipContents);
+
+        const delta = await createMacDelta({
+          from: { zip: previousZip },
+          to: newApp,
+          output: output(),
+          binaryDeltaPath,
+        });
+
+        expect(delta.from_version).toEqual('412');
+        expect(mockFetch).not.toHaveBeenCalled();
+        expect(spawn).toHaveBeenCalledWith('ditto', [
+          '-x',
+          '-k',
+          previousZip,
+          expect.any(String),
+        ]);
+      });
+
+      it('should download and verify a previous ZIP from a URL', async () => {
+        await expect(
+          createMacDelta({
+            from: { url: previousZipUrl, sha256: sha256('other') },
+            to: newApp,
+            output: output(),
+            binaryDeltaPath,
+          }),
+        ).rejects.toThrow('SHA-256 mismatch');
+        expect(spawn).not.toHaveBeenCalled();
+      });
+
+      it('should throw and remove the partial delta when BinaryDelta fails', async () => {
+        vi.mocked(spawn).mockImplementation(async (cmd, args = []) => {
+          if (cmd === 'plutil') return '412';
+          if (cmd === binaryDeltaPath) {
+            fs.writeFileSync(args[args.length - 1], 'partial');
+            throw new Error('BinaryDelta exploded');
+          }
+          return '';
+        });
+        const oldApp = path.join(tmpDir, 'old', 'My Old App.app');
+        writeApp(oldApp);
+
+        await expect(
+          createMacDelta({
+            from: { app: oldApp },
+            to: newApp,
+            output: output(),
+            binaryDeltaPath,
+          }),
+        ).rejects.toThrow('BinaryDelta exploded');
+        expect(fs.existsSync(output())).toBe(false);
+      });
+
+      it('should throw on a non-macOS host', async () => {
+        Object.defineProperty(process, 'platform', {
+          ...originalPlatform,
+          value: 'linux',
+        });
+
+        await expect(
+          createMacDelta({
+            from: { app: newApp },
+            to: newApp,
+            output: output(),
+            binaryDeltaPath,
+          }),
+        ).rejects.toThrow('requires a macOS host');
+        expect(spawn).not.toHaveBeenCalled();
+      });
     });
 
     describe('without binaryDeltaPath', () => {

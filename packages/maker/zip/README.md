@@ -39,3 +39,5 @@ module.exports = {
 ```
 
 Deltas only apply to an app that is byte-for-byte identical to the one they were made from, including file permissions. Squirrel.Mac removes group and other write permissions when it installs an update, so remove them before your app is signed, or deltas will stop applying after the first update. The maker refuses to create a delta if it finds such files. See [`MakerZIPConfig.macUpdateDelta`](https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html#macupdatedelta) for how, and for the other limitations.
+
+To create deltas outside the maker, for example after signing the app yourself or from several earlier releases, call `createMacDelta({ from, to, output })`. It runs the same checks and returns the delta's `from_version`, `sha256` and `size`, and throws instead of warning when it fails.

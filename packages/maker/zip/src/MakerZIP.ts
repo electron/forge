@@ -1,23 +1,18 @@
-import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import { promisify, styleText } from 'node:util';
 
 import { writeJson } from '@electron-forge/core-utils';
 import { MakerBase, MakerOptions } from '@electron-forge/maker-base';
 import { ForgePlatform } from '@electron-forge/shared-types';
-import { spawn } from '@malept/cross-spawn-promise';
 import { zip } from 'cross-zip';
 
 import { MakerZIPConfig, MakerZIPDeltaConfig } from './Config.js';
 import {
-  createBinaryDelta,
+  createMacDelta,
+  CreateMacDeltaOptions,
   digestFile,
-  downloadFile,
-  findAppBundle,
-  findGroupOrOtherWritable,
-  getBinaryDelta,
-  readBundleVersion,
+  MacDelta,
+  MacDeltaSource,
 } from './mac-delta.js';
 
 type SquirrelMacRelease = {
@@ -47,12 +42,7 @@ type SquirrelMacRelease = {
   };
 };
 
-type SquirrelMacDelta = {
-  from_version: string;
-  url: string;
-  sha256: string;
-  size: number;
-};
+type SquirrelMacDelta = MacDelta & { url: string };
 
 type SquirrelMacReleases = {
   currentRelease: string;
@@ -214,57 +204,24 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
 
     const deltaName = `${baseName}-${previousRelease.version}-to-${version}.delta`;
     const deltaPath = path.resolve(outDir, deltaName);
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'forge-zip-delta-'));
     try {
-      const previousZip = path.join(tmpDir, 'previous.zip');
-      await downloadFile(previousRelease.updateTo.url, previousZip, {
-        sha256: previousRelease.updateTo.sha256,
-        size: previousRelease.updateTo.size,
+      const delta = await createMacDelta({
+        from: {
+          url: previousRelease.updateTo.url,
+          sha256: previousRelease.updateTo.sha256,
+          size: previousRelease.updateTo.size,
+        },
+        to: appPath,
+        output: deltaPath,
+        binaryDeltaPath: options.binaryDeltaPath,
       });
-      const previousDir = path.join(tmpDir, 'previous');
-      await spawn('ditto', ['-x', '-k', previousZip, previousDir]);
-      const previousApp = await findAppBundle(previousDir);
-
-      for (const app of [previousApp, appPath]) {
-        const writable = await findGroupOrOtherWritable(app);
-        if (writable.length > 0) {
-          throw new Error(
-            `${app} contains group- or other-writable files, so a delta would stop applying after the first update ` +
-              `(Squirrel.Mac removes those permissions on install). Remove them before signing, ` +
-              `e.g. with "chmod -R go-w" on the bundle in a packageAfterCopy hook. Files:\n` +
-              writable.slice(0, 10).join('\n') +
-              (writable.length > 10
-                ? `\n...and ${writable.length - 10} more`
-                : ''),
-          );
-        }
-      }
-
-      const fromVersion = await readBundleVersion(previousApp);
-      const binaryDelta = await getBinaryDelta(options.binaryDeltaPath);
-      await this.ensureFile(deltaPath);
-      const scratchDir = path.join(tmpDir, 'check');
-      await fs.mkdir(scratchDir);
-      await createBinaryDelta(
-        binaryDelta,
-        previousApp,
-        appPath,
-        deltaPath,
-        scratchDir,
-      );
-
       const deltaUrl = new URL(baseUrl);
       deltaUrl.pathname += `/${deltaName}`;
       return {
-        delta: {
-          from_version: fromVersion,
-          url: deltaUrl.toString(),
-          ...(await digestFile(deltaPath)),
-        },
+        delta: { ...delta, url: deltaUrl.toString() },
         deltaPath,
       };
     } catch (err) {
-      await fs.rm(deltaPath, { force: true });
       const message = `Failed to create a delta update from ${previousRelease.version} to ${version}`;
       if (options.strict) {
         throw new Error(message, { cause: err });
@@ -273,10 +230,16 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
         `${message}; publishing this release without one.\n${err instanceof Error ? err.message : err}`,
       );
       return undefined;
-    } finally {
-      await fs.rm(tmpDir, { recursive: true, force: true });
     }
   }
 }
 
-export { MakerZIP, MakerZIPConfig, MakerZIPDeltaConfig };
+export {
+  createMacDelta,
+  CreateMacDeltaOptions,
+  MacDelta,
+  MacDeltaSource,
+  MakerZIP,
+  MakerZIPConfig,
+  MakerZIPDeltaConfig,
+};
