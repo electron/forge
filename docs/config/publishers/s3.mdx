@@ -58,8 +58,8 @@ To avoid this problem, you can use the `keyResolver` option to generate the S3 k
   name: '@electron-forge/publisher-s3',
   config: {
     // ...
-    keyResolver: (filename, platform, arch) => {
-      return `some-prefix/${platform}/${arch}/${filename}`
+    keyResolver: ({ fileName, platform, arch, version }) => {
+      return `some-prefix/${version}/${platform}/${arch}/${fileName}`
     }
     // ...
   }

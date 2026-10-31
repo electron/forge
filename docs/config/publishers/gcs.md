@@ -33,7 +33,10 @@ module.exports = {
         },
         bucket: 'my-bucket',
         folder: 'custom-folder-name',
-        public: true
+        uploadOptions: {
+          // passed to the Google Cloud Storage SDK's upload call
+          predefinedAcl: 'publicRead'
+        }
       }
     }
   ]
@@ -41,6 +44,8 @@ module.exports = {
 ```
 
 Additional configuration options are documented in [`PublisherGCSConfig`](http://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_gcs.PublisherGCSConfig.html).
+
+In Forge 7, uploads were made public or private with the `public` and `private` options and were gzipped automatically. Forge 8 removes those options: set `uploadOptions.predefinedAcl` instead, and set `uploadOptions.gzip: true` if you want compressed uploads.
 
 To pass options into the Google Cloud Storage SDK's [Storage constructor](https://cloud.google.com/nodejs/docs/reference/storage/latest/storage/storageoptions), use the `config.storageOptions` parameter.
 

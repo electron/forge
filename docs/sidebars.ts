@@ -4,6 +4,7 @@ const sidebars: SidebarsConfig = {
   docs: [
     'index',
     'import-existing-project',
+    'upgrading-from-forge-7',
     'cli',
     {
       type: 'category',
@@ -36,7 +37,6 @@ const sidebars: SidebarsConfig = {
           items: [
             'config/plugins/webpack',
             'config/plugins/vite',
-            'config/plugins/electronegativity',
             'config/plugins/auto-unpack-natives',
             'config/plugins/local-electron',
             'config/plugins/fuses',
@@ -82,10 +82,8 @@ const sidebars: SidebarsConfig = {
       label: 'Built-in Templates',
       collapsible: false,
       items: [
-        'templates/webpack-template',
-        'templates/typescript-+-webpack-template',
         'templates/vite',
-        'templates/vite-+-typescript',
+        'templates/webpack-template',
       ],
     },
     {

@@ -22,59 +22,19 @@ To use the Forge CLI, install the `@electron-forge/cli` module into your project
 npm install --save-dev @electron-forge/cli
 ```
 
-## Bootstrap commands
+## Creating and importing projects
 
-These commands help you get started with Forge. If you're just getting started with Electron Forge, we recommend you follow the [Getting Started](index.md) or [Importing an Existing Project](import-existing-project.md) guides.
-
-:::info
-By default, Electron Forge will use `yarn` if it's available on your system when bootstrapping your application.\
-\
-To run Forge commands with a specific package manager, use the `NODE_INSTALLER` environment variable.
-
-```sh {1}
-NODE_INSTALLER=npm npx create-electron-app my-app-dir
-```
-
-:::
-
-### Init
-
-:::info
-We recommend using the `create-electron-app` script (which uses this command) to get started rather than running Init directly.
-:::
-
-This command will initialize a new Forge-powered application in the given directory (defaults to `.`, the current directory).
-
-Please note if you want to use a non-builtin template, it must be installed globally before running the `init` command.
-
-#### Options
-
-All flags are optional.
-
-| Flag              | Value         | Description                                                |
-| ----------------- | ------------- | ---------------------------------------------------------- |
-| `--template`      | Template Name | Name of the template to use to make this new app           |
-| `--copy-ci-files` | N/A           | Set if you want to copy templated CI files _(coming soon)_ |
-
-#### Usage
+As of Forge 8, the `init` and `import` commands are no longer part of the Forge CLI or `@electron-forge/core`. They live in the `create-electron-app` package. See the [Getting Started](index.md) and [Importing an Existing Project](import-existing-project.md) guides.
 
 ```bash
-npx electron-forge init --template=webpack
+# Create a new app (optionally with --template, --typescript, --package-manager)
+npx create-electron-app@latest my-app
+
+# Add Forge to an existing Electron app
+npx create-electron-app@latest import my-existing-app
 ```
 
-### Import
-
-This command will attempt to take an existing Electron app and make it compatible with Forge. Normally, this just creates a base Electron Forge configuration and adds the required dependencies.
-
-#### Options
-
-There are no options for the Import command.
-
-#### Usage
-
-```bash
-npx electron-forge import
-```
+Run `npx create-electron-app@latest --help` for the full list of options.
 
 ## Build commands
 

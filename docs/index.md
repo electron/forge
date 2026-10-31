@@ -27,7 +27,7 @@ When packaging your Electron app, Forge crawls your project's `node_modules` fol
 
 ## Creating a new app
 
-To get started with Electron Forge, we first need to initialize a new project with `create-electron-app`. This script is a convenient wrapper around Forge's [Init](cli.md#init) command.
+To get started with Electron Forge, we first need to initialize a new project with `create-electron-app`. This script sets up the project, installs Forge's dependencies, and lets you pick a package manager and template.
 
 ```bash
 npx create-electron-app@latest my-app
@@ -41,14 +41,13 @@ Forge's initialization scripts can add additional template code with the `--temp
 npx create-electron-app@latest my-app --template=webpack
 ```
 
-There are currently four first-party templates:
+There are currently two first-party templates, [`vite`](templates/vite.md) and [`webpack`](templates/webpack-template.md). Add the `--typescript` flag to either one to use TypeScript:
 
-* `webpack`
-* `webpack-typescript`
-* `vite`
-* `vite-typescript`
+```bash
+npx create-electron-app@latest my-app --template=vite --typescript
+```
 
-All of these templates are built around plugins that bundle your JavaScript code for production and includes a dev server to provide a better developer experience.
+Both templates are built around plugins that bundle your JavaScript code for production and includes a dev server to provide a better developer experience.
 
 :::info
 We highly recommend using these templates when initializing your app to take advantage of modern front-end JavaScript tooling.

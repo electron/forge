@@ -1,33 +1,25 @@
 ---
 description: Import an existing Electron project to use Electron Forge.
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: true
 ---
 
 # Importing an Existing Project
 
-If you already have an Electron app and want to try out Electron Forge, you can either use Forge's `import` script or manually configure Forge yourself.
+If you already have an Electron app and want to try out Electron Forge, you can either use the `import` command from `create-electron-app` or manually configure Forge yourself.
 
 These steps will get you set up with a basic build pipeline that can create [Squirrel.Windows](config/makers/squirrel.windows.md) (Windows), [ZIP](config/makers/zip.md) (macOS), and [deb](config/makers/deb.md) (Linux) installers when running `electron-forge make`.
 
 ## Using the import script
 
-Importing an existing Electron app into the Electron Forge workflow can be done automatically using Forge's `import` command.
+Importing an existing Electron app into the Electron Forge workflow can be done automatically using the `import` command from `create-electron-app`.
 
 ```shell
 cd my-app
-npm install --save-dev @electron-forge/cli
-npm exec --package=@electron-forge/cli -c "electron-forge import"
+npx create-electron-app@latest import
 ```
+
+:::info
+In Forge 7 and earlier, this was the `electron-forge import` command. It moved to `create-electron-app` in Forge 8.
+:::
 
 This script will set up Forge to package your app and build installers for it.
 
