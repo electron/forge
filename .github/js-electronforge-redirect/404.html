@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Electron Forge API documentation has moved</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://packages.electronjs.org/forge/" />
+    <noscript>
+      <meta
+        http-equiv="refresh"
+        content="0; url=https://packages.electronjs.org/forge/"
+      />
+    </noscript>
+    <script>
+      // js.electronforge.io used TypeDoc slugs like `_electron_forge_shared_types`.
+      // packages.electronjs.org uses `_electron-forge_shared-types`.
+      (function () {
+        var base = 'https://packages.electronjs.org/forge/';
+        var path = window.location.pathname.replace(/^\/+/, '');
+        var target = base;
+        if (path && path !== 'index.html') {
+          path = path.replace(/_electron_forge_([a-z_]+)/g, function (_, name) {
+            return '_electron-forge_' + name.replace(/_/g, '-');
+          });
+          target = base + 'latest/' + path + window.location.hash;
+        }
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>
+      The Electron Forge API documentation has moved to
+      <a href="https://packages.electronjs.org/forge/"
+        >packages.electronjs.org/forge</a
+      >.
+    </p>
+  </body>
+</html>

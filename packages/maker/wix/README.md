@@ -7,7 +7,7 @@ Pre-requisites:
 
 * `light` and `candle` installed from [the WiX toolkit](https://github.com/felixrieseberg/electron-wix-msi#prerequisites).
 
-Configuration options are documented in [`MakerWixConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-wix.MakerWixConfig.html).
+Configuration options are documented in [`MakerWixConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-wix.MakerWixConfig.html).
 
 ```javascript
 // forge.config.js

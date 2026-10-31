@@ -309,4 +309,4 @@ const main = async () => {
 main();
 ```
 
-For more information, see the [API documentation](https://js.electronforge.io/classes/_electron_forge_core.ForgeAPI.html).
+For more information, see the [API documentation](https://packages.electronjs.org/forge/latest/classes/_electron-forge_core.ForgeAPI.html).

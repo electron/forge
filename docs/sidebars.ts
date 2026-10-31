@@ -138,7 +138,7 @@ const sidebars: SidebarsConfig = {
         {
           type: 'link',
           label: 'API Docs',
-          href: 'https://js.electronforge.io/modules/_electron_forge_core.html',
+          href: 'https://packages.electronjs.org/forge/latest/modules/_electron-forge_core.html',
         },
       ],
     },

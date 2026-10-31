@@ -22,7 +22,7 @@ npm install --save-dev @electron-forge/plugin-local-electron
 
 Once you have a working build of Electron, point the plugin's `electronPath` config option to the folder containing the built Electron binary.
 
-All possible configuration options are documented in [`LocalElectronPluginConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_plugin\_local\_electron.LocalElectronPluginConfig.html).
+All possible configuration options are documented in [`LocalElectronPluginConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_plugin-local-electron.LocalElectronPluginConfig.html).
 
 ```javascript title="forge.config.js"
 module.exports = {

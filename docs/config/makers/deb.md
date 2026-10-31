@@ -38,7 +38,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`MakerDebConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_maker\_deb.MakerDebConfig.html).
+Configuration options are documented in [`MakerDebConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-deb.MakerDebConfig.html).
 
 ## Debugging
 

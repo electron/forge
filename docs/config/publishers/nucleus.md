@@ -29,4 +29,4 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`PublisherNucleusConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_nucleus.PublisherNucleusConfig.html).
+Configuration options are documented in [`PublisherNucleusConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_publisher-nucleus.PublisherNucleusConfig.html).
