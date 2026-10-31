@@ -11,6 +11,10 @@ const config: Config = {
 
   url: 'https://forge.electronjs.org',
   baseUrl: '/',
+  // Azure static websites only serve `<dir>/index.html` reliably for requests
+  // ending in `/`, and paths with a dot (e.g. `makers/squirrel.windows`) would
+  // otherwise look like files. Emit and link every route with a trailing slash.
+  trailingSlash: true,
 
   organizationName: 'electron',
   projectName: 'forge',
@@ -19,7 +23,7 @@ const config: Config = {
   onBrokenAnchors: 'warn',
   markdown: {
     hooks: {
-      onBrokenMarkdownLinks: 'warn',
+      onBrokenMarkdownLinks: 'throw',
     },
   },
 
@@ -46,7 +50,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // `docPath` is relative to `docs.path`, so this maps to `docs/<file>` in the repo.
           editUrl: ({ docPath }) =>
-            `https://github.com/electron/forge/edit/next/docs/${docPath}`,
+            `https://github.com/electron/forge/edit/main/docs/${docPath}`,
           showLastUpdateTime: false,
         },
         blog: false,
@@ -55,6 +59,22 @@ const config: Config = {
           customCss: './src/css/custom.css',
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  themes: [
+    [
+      // Offline (build-time) search index; no external search service needed.
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        indexBlog: false,
+        indexPages: false,
+        docsRouteBasePath: '/',
+        docsDir: '../docs',
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+      },
     ],
   ],
 
@@ -67,7 +87,9 @@ const config: Config = {
       items: [
         { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '.*' },
         {
-          href: 'https://packages.electronjs.org/forge/latest/',
+          // TODO: switch to packages.electronjs.org/forge/latest/ once the API
+          // docs move there (electron/forge#4385)
+          href: 'https://js.electronforge.io/',
           label: 'API',
           position: 'right',
         },
