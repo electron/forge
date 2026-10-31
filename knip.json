@@ -146,6 +146,10 @@
       "entry": ["spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
     },
+    "packages/utils/binary-delta": {
+      "entry": ["src/fetch-binary-delta.ts!", "spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts!", "spec/**/*.ts"]
+    },
     "packages/utils/core-utils": {
       "entry": ["src/remote-rebuild.ts!", "spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
