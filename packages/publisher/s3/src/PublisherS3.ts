@@ -74,44 +74,66 @@ export default class PublisherS3 extends PublisherStatic<PublisherS3Config> {
       );
 
     updateStatusLine();
+
+    const uploadArtifact = async (artifact: S3Artifact) => {
+      d('uploading:', artifact.path);
+      const params: PutObjectCommandInput = {
+        Body: fs.createReadStream(artifact.path),
+        Bucket: this.config.bucket,
+        Key: this.keyForArtifact(artifact),
+      };
+      if (!this.config.omitAcl) {
+        params.ACL = this.config.public ? 'public-read' : 'private';
+      }
+      // Cache-Control must be an integer number of seconds to cache and should not be negative.
+      if (
+        artifact.isReleaseFile &&
+        typeof this.config.releaseFileCacheControlMaxAge !== 'undefined' &&
+        Number.isInteger(this.config.releaseFileCacheControlMaxAge) &&
+        this.config.releaseFileCacheControlMaxAge >= 0
+      ) {
+        params.CacheControl = `max-age=${this.config.releaseFileCacheControlMaxAge}`;
+      }
+      const uploader = new Upload({
+        client: s3Client,
+        leavePartsOnError: true,
+        params,
+      });
+
+      uploader.on('httpUploadProgress', (progress: Progress) => {
+        if (progress.total) {
+          const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
+          d(`Upload Progress (${path.basename(artifact.path)}) ${percentage}`);
+        }
+      });
+
+      await uploader.done();
+      uploaded += 1;
+      updateStatusLine();
+    };
+
+    // RELEASES and RELEASES.json list the other artifacts of their platform and
+    // arch, and clients read them to find updates. Upload them after the rest of
+    // their platform and arch, so they never point at a package that is not there
+    // yet, and a failed package upload leaves the previous RELEASES files untouched.
+    // Different platforms and arches don't wait on each other.
+    const groups = new Map<string, S3Artifact[]>();
+    for (const artifact of artifacts) {
+      const group = `${artifact.keyPrefix}/${artifact.platform}/${artifact.arch}`;
+      groups.set(group, [...(groups.get(group) ?? []), artifact]);
+    }
     await Promise.all(
-      artifacts.map(async (artifact) => {
-        d('uploading:', artifact.path);
-        const params: PutObjectCommandInput = {
-          Body: fs.createReadStream(artifact.path),
-          Bucket: this.config.bucket,
-          Key: this.keyForArtifact(artifact),
-        };
-        if (!this.config.omitAcl) {
-          params.ACL = this.config.public ? 'public-read' : 'private';
-        }
-        // Cache-Control must be an integer number of seconds to cache and should not be negative.
-        if (
-          artifact.isReleaseFile &&
-          typeof this.config.releaseFileCacheControlMaxAge !== 'undefined' &&
-          Number.isInteger(this.config.releaseFileCacheControlMaxAge) &&
-          this.config.releaseFileCacheControlMaxAge >= 0
-        ) {
-          params.CacheControl = `max-age=${this.config.releaseFileCacheControlMaxAge}`;
-        }
-        const uploader = new Upload({
-          client: s3Client,
-          leavePartsOnError: true,
-          params,
-        });
-
-        uploader.on('httpUploadProgress', (progress: Progress) => {
-          if (progress.total) {
-            const percentage = `${Math.round(((progress.loaded || 0) / progress.total) * 100)}%`;
-            d(
-              `Upload Progress (${path.basename(artifact.path)}) ${percentage}`,
-            );
-          }
-        });
-
-        await uploader.done();
-        uploaded += 1;
-        updateStatusLine();
+      [...groups.values()].map(async (group) => {
+        await Promise.all(
+          group
+            .filter((artifact) => !artifact.isReleaseFile)
+            .map(uploadArtifact),
+        );
+        await Promise.all(
+          group
+            .filter((artifact) => artifact.isReleaseFile)
+            .map(uploadArtifact),
+        );
       }),
     );
   }
