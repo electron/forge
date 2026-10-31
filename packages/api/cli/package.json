@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/cli",
-  "version": "8.0.0-alpha.10",
+  "version": "8.0.1",
   "type": "module",
   "description": "A complete tool for building modern Electron applications",
   "repository": "https://github.com/electron/forge",
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@malept/cross-spawn-promise": "^2.0.0",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "dependencies": {
@@ -22,7 +23,7 @@
     "@electron/get": "^5.1.0",
     "commander": "^11.1.0",
     "debug": "^4.3.1",
-    "listr2": "^7.0.2",
+    "listr2": "^11.1.0",
     "semver": "^7.2.1"
   },
   "engines": {

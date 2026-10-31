@@ -121,7 +121,9 @@ When packaging your Electron app, Forge crawls your project's `node_modules` fol
 
 This command will make distributables for your application based on your Forge config and the parameters you pass in.
 
-If you do not need to repackage your application between Make runs, use the `--skip-package` flag.
+If you do not need to repackage your application between Make runs, use the `--from-package` flag to make distributables from the output of the previous Package run.
+
+Every Make run also saves a manifest of the distributables it produced to `out/make-results/`, next to the distributables themselves in `out/make/`. The [Release](#release) command can use this manifest to release those distributables later, or from another machine, without rebuilding them.
 
 #### Options
 
@@ -132,7 +134,11 @@ All flags are optional.
 | `--arch`         | Architecture, e.g. `x64`            | Target architecture to make for. Defaults to the arch that you're running on (the "host" arch). Allowed values are: "ia32", "x64", "armv7l", "arm64", "universal", or "mips64el". Multiple values should be comma-separated. |
 | `--platform`     | Platform, e.g. `mas`                | Target platform to make for, please note you normally can only target platform X from platform X. This defaults to the platform you're running on (the "host" platform).                                                     |
 | `--targets`      | Comma separated list of maker names | Override your make targets for this run. The maker name is the full node module name, e.g. `@electron-forge/maker-deb`. By default, the make targets used are the ones available and configured for the given platform.      |
-| `--skip-package` | N/A                                 | Set if you want to skip the packaging step, useful if you are running sequential makes and want to save time. By default, packaging is **not** skipped.                                                                      |
+| `--from-package` | N/A                                 | Make distributables from the output of a previous Package run instead of packaging again, useful if you are running sequential makes and want to save time. By default, the app is packaged again.                           |
+
+:::warning Deprecated flag
+The `--skip-package` flag from earlier versions still works but prints a deprecation warning, and it will be removed in a future major version. It has been renamed to `--from-package`.
+:::
 
 #### Usage
 
@@ -151,29 +157,94 @@ Building for ia32 and x64 architectures:
 npm run make -- --arch="ia32,x64"
 ```
 
-### Publish
+### Release
 
-This command will attempt to package, make, and publish the Forge application to the publish targets defined in your Forge config.
+This command will attempt to package, make, and release the Forge application to the publish targets defined in your Forge config.
 
-If you want to verify artifacts from the Make step before publishing, you can use the Dry Run options explained below.
+If your distributables were already built by a previous Make run (for example, by other jobs in your CI pipeline), use the `--from-make` flag to release them without rebuilding. See [Releasing from CI](#releasing-from-ci) below.
 
 #### Options
 
 All flags are optional.
 
-| Flag             | Value                                   | Description                                                              |
-| ---------------- | --------------------------------------- | ------------------------------------------------------------------------ |
-| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                               |
-| `--dry-run`      | N/A                                     | Triggers a publish dry run which saves state and doesn't upload anything |
-| `--from-dry-run` | N/A                                     | Attempts to publish artifacts from any dry runs saved on disk            |
+| Flag             | Value                                   | Description                                                                                                                                                                                    |
+| ---------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--target`       | Comma separated list of publisher names | Override your publish targets for this run                                                                                                                                                     |
+| `--from-make`    | N/A                                     | Release the distributables saved by a previous Make run, instead of packaging and making them again. By default, the app is packaged and made again. Cannot be combined with `--from-package`. |
+| `--from-package` | N/A                                     | Make and release distributables from the output of a previous Package run, instead of packaging again. Accepts the same make flags as the [Make](#make) command.                               |
+
+:::warning Deprecated flags
+The `--dry-run` and `--from-dry-run` flags from earlier versions still work but print a deprecation warning, and they will be removed in a future major version.
+
+* `--dry-run` did the same work as running the [Make](#make) command, which now always saves its results.
+* `--from-dry-run` has been renamed to `--from-make`.
+:::
 
 #### Usage
 
 ```bash {1}
-# By default, the publish command corresponds to a publish npm script:
-npm run publish -- --from-dry-run
-# If there is no publish script:
-npx electron-forge publish -- --from-dry-run
+# By default, the release command corresponds to a release npm script:
+npm run release
+# If there is no release script:
+npx electron-forge release
+```
+
+#### Releasing from CI
+
+Making distributables for a platform usually requires a machine running that platform, but releasing them does not. Because every Make run saves a manifest of its results to `out/make-results/`, you can split your pipeline into one Make job per platform and a single Release job that uploads everything at once:
+
+1. In each build job, run the `make` command and preserve the `out/make/` and `out/make-results/` directories (for example, as a CI artifact).
+2. In the release job, check out your project and restore those directories from every build job into its `out/` directory.
+3. Run the `release` command with the `--from-make` flag.
+
+The manifests store the paths to your distributables relative to your project directory, so the release job needs to restore them at the same location within a checkout of your project. Each Make run replaces any previously saved results for the same platform, architecture and maker, so results from different platforms (or from re-running a subset of your makers) can safely be merged into the same `out/` directory.
+
+The following GitHub Actions workflow makes distributables on macOS, Windows and Linux, then releases all of them from a single Linux job:
+
+```yaml
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  make:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: make-${{ matrix.os }}
+          path: |
+            out/make
+            out/make-results
+
+  release:
+    needs: make
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: make-*
+          path: out
+          merge-multiple: true
+      - run: npm run release -- --from-make
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Dev commands
@@ -182,9 +253,24 @@ npx electron-forge publish -- --from-dry-run
 
 This command will launch your app in dev mode with the `electron` binary in the given directory (defaults to `.`).
 
-If you type `rs` (and hit enter) in the same terminal where you ran the start command, the running app will be terminated and restarted.
-
 Forge plugins can override this command to run custom development logic. For example, the [Webpack Plugin](config/plugins/webpack.mdx) runs a webpack-dev-server instance to provide live reloading and HMR.
+
+#### Terminal UI
+
+When run from an interactive terminal, `start` takes over the window with a tabbed view of everything going on. The **App** tab shows the Electron app's own output and is selected by default; bundler plugins (the [Webpack Plugin](config/plugins/webpack.mdx) today) add a tab per compiler. When a build fails, its tab is switched to automatically so the error is not missed.
+
+| Key                        | Action                                                  |
+| -------------------------- | ------------------------------------------------------- |
+| `←` / `→`, `1`–`9`         | Switch tabs                                             |
+| `a`                        | Merged view of every tab, each line tagged with its tab |
+| `c`                        | Clear the current tab (or every tab in the merged view) |
+| `f`                        | Toggle following the newest output                      |
+| `↑` / `↓`, `PgUp` / `PgDn` | Scroll back through the buffer                          |
+| `End`                      | Jump back to the newest output                          |
+| `r`                        | Restart the Electron app                                |
+| `q`, `Ctrl+C`              | Quit                                                    |
+
+When stdout is not a terminal, or the `CI` environment variable is set, the same output is written as plain lines prefixed with the tab name (for example `[App]`) instead, and typing `rs` (and hitting enter) in the terminal restarts the app. When stdin is not a terminal either (piped input, or a programmatic `api.start()`), only the plugins' tabs are printed that way: the app itself inherits Forge's stdout and stderr, and nothing reads `rs`.
 
 #### Options
 

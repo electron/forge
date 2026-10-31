@@ -22,8 +22,8 @@ export function getConfig(
           format: 'cjs',
           // Preload scripts require a single entrypoint.
           codeSplitting: false,
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
+          entryFileNames: '[name].cjs',
+          chunkFileNames: '[name].cjs',
           assetFileNames: '[name].[ext]',
         },
       },

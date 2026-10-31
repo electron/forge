@@ -151,10 +151,6 @@ export interface WebpackPluginConfig {
    */
   port?: number;
   /**
-   * The TCP port for web-multi-logger. Defaults to 9000.
-   */
-  loggerPort?: number;
-  /**
    * In the event that webpack has been configured with `devtool: sourcemap` (or any other option
    * which results in `.map` files being generated), this option will cause the source map files be
    * packaged with your app. By default they are not included.

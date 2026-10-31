@@ -5,10 +5,16 @@
 Configuration options are documented in [`MakerPkgConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-pkg.MakerPKGConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-pkg',
-  config: {
-    keychain: 'my-secret-ci-keychain'
-  }
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-pkg',
+      config: {
+        keychain: 'my-secret-ci-keychain'
+      }
+    }
+  ]
+};
 ```

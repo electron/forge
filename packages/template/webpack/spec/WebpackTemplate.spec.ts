@@ -24,6 +24,7 @@ describe('WebpackTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });
@@ -156,6 +157,7 @@ describe('WebpackTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });
@@ -248,6 +250,17 @@ describe('WebpackTemplate', () => {
         await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
       );
       expect(packageJSON.scripts.typecheck).toBeDefined();
+    });
+
+    it('should typecheck the root-level config files', async () => {
+      const tsconfig = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'tsconfig.json'), 'utf-8'),
+      );
+      expect(tsconfig.include).toEqual(
+        expect.arrayContaining(['src/**/*', '*.ts', '*.mts']),
+      );
+      // A `rootDir` of `src` would reject the root-level files with TS6059
+      expect(tsconfig.compilerOptions.rootDir).toBeUndefined();
     });
 
     it('should contain `private:true` in package.json', async () => {

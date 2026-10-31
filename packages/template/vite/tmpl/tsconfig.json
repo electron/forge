@@ -8,9 +8,7 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "dist",
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "*.ts", "*.mts"]
 }

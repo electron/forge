@@ -12,7 +12,7 @@ import * as vite from 'vite';
 import { viteDevServerUrls } from './config/vite.base.config.js';
 import ViteConfigGenerator from './ViteConfig.js';
 
-import type { VitePluginConfig } from './Config.js';
+import type { VitePluginBuildConfig, VitePluginConfig } from './Config.js';
 import type {
   ForgeListrTask,
   ForgeMultiHookMap,
@@ -20,9 +20,37 @@ import type {
 } from '@electron-forge/shared-types';
 import type { ChildProcess } from 'node:child_process';
 import type { AddressInfo } from 'node:net';
-import type { LibraryOptions } from 'vite';
 
 const d = debug('electron-forge:plugin:vite');
+
+async function exists(file: string): Promise<boolean> {
+  try {
+    await fs.access(file);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Main and preload bundles are emitted with a `.cjs` extension so that Electron
+ * parses them as CommonJS even when the project's `package.json` has
+ * `"type": "module"`. Projects created before that change still point `main`
+ * at the old `.js` filename, so fail with a precise message instead of letting
+ * Electron fail with "Cannot find module".
+ */
+async function assertMainEntryExists(dir: string, main: string): Promise<void> {
+  if (await exists(path.resolve(dir, main))) return;
+
+  const cjsMain = main.replace(/\.js$/, '.cjs');
+  if (cjsMain !== main && (await exists(path.resolve(dir, cjsMain)))) {
+    throw new Error(
+      `The "main" entry point in "package.json" is ${JSON.stringify(main)}, but the Vite plugin now emits
+the main process bundle as ${JSON.stringify(cjsMain)}. Update "main" in "package.json" to
+${JSON.stringify(cjsMain)}, and any preload script paths in your main process code to end in ".cjs".`,
+    );
+  }
+}
 
 const subprocessWorkerPath = path.resolve(
   import.meta.dirname,
@@ -145,7 +173,7 @@ function spawnViteBuildWatch(
   return { child, firstBuild };
 }
 
-function entryToDisplay(entry: LibraryOptions['entry']): string {
+function entryToDisplay(entry: VitePluginBuildConfig['entry']): string {
   if (typeof entry === 'string') return entry;
   if (Array.isArray(entry)) return entry.join(' ');
   return Object.keys(entry).join(' ');
@@ -242,6 +270,14 @@ export default class VitePlugin extends PluginBase<VitePluginConfig> {
             { concurrent: false },
           );
         }, 'Preparing Vite bundles'),
+        async () => {
+          const pj = await readJson(
+            path.resolve(this.projectDir, 'package.json'),
+          );
+          if (typeof pj.main === 'string') {
+            await assertMainEntryExists(this.projectDir, pj.main);
+          }
+        },
       ],
       prePackage: [
         namedHookWithTaskFn<'prePackage'>(async (task) => {
@@ -323,6 +359,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
 "main" entry point in "package.json" to be ".vite/*" (where the plugin outputs
 the generated files). Instead, it is ${JSON.stringify(pj.main)}.`);
     }
+
+    await assertMainEntryExists(buildPath, pj.main);
 
     if (pj.config) {
       delete pj.config.forge;

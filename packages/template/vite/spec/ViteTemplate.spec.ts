@@ -24,6 +24,7 @@ describe('ViteTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });
@@ -49,9 +50,9 @@ describe('ViteTemplate', () => {
       const unexpectedFiles = [
         'forge.config.mts',
         'tsconfig.json',
-        'vite.main.config.ts',
-        'vite.preload.config.ts',
-        'vite.renderer.config.ts',
+        'vite.main.config.mts',
+        'vite.preload.config.mts',
+        'vite.renderer.config.mts',
         path.join('src', 'declarations.d.ts'),
         path.join('src', 'main.ts'),
         path.join('src', 'renderer.ts'),
@@ -139,6 +140,7 @@ describe('ViteTemplate', () => {
       const runner = new Listr(tasks, {
         concurrent: false,
         exitOnError: false,
+        collectErrors: true,
         fallbackRendererCondition:
           Boolean(process.env.DEBUG) || Boolean(process.env.CI),
       });
@@ -151,9 +153,9 @@ describe('ViteTemplate', () => {
         'package.json',
         'forge.config.mts',
         'tsconfig.json',
-        'vite.main.config.ts',
-        'vite.preload.config.ts',
-        'vite.renderer.config.ts',
+        'vite.main.config.mts',
+        'vite.preload.config.mts',
+        'vite.renderer.config.mts',
         path.join('src', 'declarations.d.ts'),
         path.join('src', 'main.ts'),
         path.join('src', 'renderer.ts'),
@@ -201,13 +203,15 @@ describe('ViteTemplate', () => {
       ).toMatch(/src="\/src\/renderer\.ts"/);
     });
 
-    it('should reference .ts paths in forge.config.mts', async () => {
+    it('should reference .ts/.mts paths in forge.config.mts', async () => {
       const config = (
         await fs.promises.readFile(path.join(dir, 'forge.config.mts'))
       ).toString();
       expect(config).toMatch(/src\/main\.ts/);
       expect(config).toMatch(/src\/preload\.ts/);
-      expect(config).toMatch(/vite\.main\.config\.ts/);
+      expect(config).toMatch(/vite\.main\.config\.mts/);
+      expect(config).toMatch(/vite\.preload\.config\.mts/);
+      expect(config).toMatch(/vite\.renderer\.config\.mts/);
     });
 
     it('should include typecheck script in package.json', async () => {
@@ -215,6 +219,17 @@ describe('ViteTemplate', () => {
         await fs.promises.readFile(path.join(dir, 'package.json'), 'utf-8'),
       );
       expect(packageJSON.scripts.typecheck).toBeDefined();
+    });
+
+    it('should typecheck the root-level config files', async () => {
+      const tsconfig = JSON.parse(
+        await fs.promises.readFile(path.join(dir, 'tsconfig.json'), 'utf-8'),
+      );
+      expect(tsconfig.include).toEqual(
+        expect.arrayContaining(['src/**/*', '*.ts', '*.mts']),
+      );
+      // A `rootDir` of `src` would reject the root-level files with TS6059
+      expect(tsconfig.compilerOptions.rootDir).toBeUndefined();
     });
 
     it('should contain `private:true` in package.json', async () => {

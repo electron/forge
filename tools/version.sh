@@ -7,14 +7,18 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
+# Any extra arguments are forwarded to `lerna version`, e.g.
+# `yarn lerna:version --conventional-graduate` to promote a pre-release to a
+# stable version.
 echo "Running lerna version..."
-lerna version prerelease \
+lerna version \
   --force-publish \
-  --preid=alpha \
   --no-changelog \
+  --conventional-commits \
   --exact \
   --no-git-tag-version \
-  --no-push
+  --no-push \
+  "$@"
 
 # Releaser may decline to apply version changes. Exit early in that case.
 if [ -z "$(git status --porcelain)" ]; then
@@ -22,7 +26,7 @@ if [ -z "$(git status --porcelain)" ]; then
   exit 0
 fi
 
-BRANCH_NAME="alpha-release/$(date +'%y%m%d-%I-%M')"
+BRANCH_NAME="v8/$(date +'%y%m%d-%I-%M')"
 echo "Creating branch: $BRANCH_NAME"
 git checkout -b "$BRANCH_NAME"
 

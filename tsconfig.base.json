@@ -9,7 +9,8 @@
     "composite": true,
     "declarationMap": true,
     "resolveJsonModule": true,
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx"
   },
   "exclude": ["node_modules", "dist", "test", "index.ts", "spec", "tmpl"]
 }

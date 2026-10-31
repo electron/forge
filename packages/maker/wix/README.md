@@ -10,11 +10,17 @@ Pre-requisites:
 Configuration options are documented in [`MakerWixConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-wix.MakerWixConfig.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-wix',
-  config: {
-    language: 1033,
-    manufacturer: 'My Awesome Company'
-  }
-}
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-wix',
+      config: {
+        language: 1033,
+        manufacturer: 'My Awesome Company'
+      }
+    }
+  ]
+};
 ```

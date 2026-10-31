@@ -4,6 +4,7 @@
   "sortPackageJson": false,
   "ignorePatterns": [
     "**/.claude/**",
+    ".yarn/",
     ".nyc_output",
     "dist/",
     "docs/",

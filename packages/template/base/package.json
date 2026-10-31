@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/template-base",
-  "version": "8.0.0-alpha.10",
+  "version": "8.0.1",
   "type": "module",
   "description": "Base template for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -16,12 +16,13 @@
     "@electron-forge/shared-types": "workspace:*",
     "@malept/cross-spawn-promise": "^2.0.0",
     "debug": "^4.3.1",
-    "oxfmt": "^0.41.0",
+    "oxfmt": "^0.71.0",
     "semver": "^7.2.1",
     "username": "^5.1.0"
   },
   "devDependencies": {
     "@electron-forge/test-utils": "workspace:*",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "publishConfig": {

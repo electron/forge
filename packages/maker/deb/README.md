@@ -5,14 +5,20 @@
 Configuration options are documented in [`MakerDebConfigOptions`](https://js.electronforge.io/interfaces/_electron-forge_maker-deb.MakerDebConfigOptions.html).
 
 ```javascript
-{
-  name: '@electron-forge/maker-deb',
-  config: {
-    options: {
-      maintainer: 'The Forgers',
-      homepage: 'https://example.com',
-      icon: 'path/to/icon.svg'
+// forge.config.js
+
+module.exports = {
+  makers: [
+    {
+      name: '@electron-forge/maker-deb',
+      config: {
+        options: {
+          maintainer: 'The Forgers',
+          homepage: 'https://example.com',
+          icon: 'path/to/icon.svg'
+        }
+      }
     }
-  }
-}
+  ]
+};
 ```

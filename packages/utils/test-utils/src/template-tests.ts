@@ -8,6 +8,19 @@ import os from 'node:os';
 
 type SupportedPackageManager = 'npm' | 'pnpm' | 'yarn';
 
+/**
+ * The pnpm that the tests which create pnpm projects ask for, instead of the
+ * `pnpm@latest` that `create-electron-app` would otherwise pin in them. pnpm
+ * 12.9.0 and 12.9.1 added a `#!/usr/bin/env node` shebang to the package's
+ * `pnpm` entry file, which pnpm's install script later replaces with the native
+ * binary, so on Linux and macOS the bin shim runs that binary through Node and
+ * every pnpm command fails with `SyntaxError: Invalid or unexpected token`.
+ * https://github.com/electron/forge/pull/4437#issuecomment-5999054680
+ *
+ * Go back to plain `pnpm` once a pnpm release fixes this.
+ */
+export const PINNED_PNPM = 'pnpm@12.8.2';
+
 const supportedTemplates = ['base', 'vite', 'webpack'] as const;
 
 type ModuleFormat = 'es' | 'cjs';
@@ -159,7 +172,7 @@ export function testForgeTemplate({
           ),
           tmpDir,
           `--template=${templateName}`,
-          `--package-manager=${packageManager}`,
+          `--package-manager=${packageManager === 'pnpm' ? PINNED_PNPM : packageManager}`,
 
           // Electron 41 is the last version that downloads its binary from a
           // `postinstall` script. Yarn 4.18 disables install scripts by

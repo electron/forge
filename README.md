@@ -5,11 +5,6 @@
 [![license](https://img.shields.io/github/license/electron/forge.svg)](https://github.com/electron/forge/blob/main/LICENSE)
 ![status](https://img.shields.io/badge/Status-%20Ready%20for%20Awesome-red.svg)
 
-> [!IMPORTANT]
-> We're currently beginning feature development for the next major version of Electron Forge, which is being done in the [`next`](https://github.com/electron/forge/tree/next) branch.
-> To try out experimental pre-releases, install the `@alpha` dist-tag of the `@electron-forge/*` packages via npm.
-> For more details, see issue https://github.com/electron/forge/issues/4082.
-
 A complete tool for building modern Electron applications.
 
 Electron Forge unifies the existing (and well maintained) build tools for
@@ -31,7 +26,7 @@ jump right in to Electron development.
 
 Pre-requisites:
 
-- Node 16.4.0 or higher
+- Node 22.17.0 or higher
 - Git
 
 You can initialize an Electron Forge project with the [`create-electron-app`](https://www.npmjs.com/package/create-electron-app)

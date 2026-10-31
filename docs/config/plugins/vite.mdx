@@ -105,17 +105,21 @@ Config options will largely follow the same standards as non-Electron Vite proje
 
 Vite's build config generates a separate entry for the main process and preload script, as well as each renderer process.
 
-Your `main` entry in your `package.json` file needs to point at `".vite/build/main"`, like so:
+Your `main` entry in your `package.json` file needs to point at `".vite/build/main.cjs"`, like so:
 
 ```json title="package.json"
 {
   "name": "my-vite-app",
-  "main": ".vite/build/main.js",
+  "main": ".vite/build/main.cjs",
   // ...
 }
 ```
 
 If using the Vite template, this should be automatically set up for you.
+
+:::info Bundles are always CommonJS
+The main process and preload bundles are emitted with a `.cjs` extension, so Electron parses them as CommonJS even if your `package.json` has `"type": "module"`. Any preload path you build in the main process needs to use that extension too, for example `path.join(__dirname, 'preload.cjs')`.
+:::
 
 ## Advanced configuration
 
