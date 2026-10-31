@@ -114,6 +114,61 @@ describe('ViteConfigGenerator', () => {
     ).toEqual(['@electron-forge/plugin-vite:hot-reload']);
   });
 
+  describe('devtron', () => {
+    const devtronForgeConfig = (devtron?: boolean): VitePluginConfig => ({
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+      devtron,
+    });
+
+    const mainOutput = (config: {
+      build?: { rollupOptions?: { output?: unknown } };
+    }) =>
+      config.build?.rollupOptions?.output as { banner?: string } | undefined;
+
+    it('injects the bootstrap banner into dev main builds when enabled', async () => {
+      const generator = new ViteConfigGenerator(
+        devtronForgeConfig(true),
+        configRoot,
+        false,
+      );
+      const buildConfig = (await generator.getBuildConfigs())[0];
+      expect(mainOutput(buildConfig)?.banner).toContain('@electron/devtron');
+      expect(buildConfig.build?.rollupOptions?.external).toContain(
+        '@electron/devtron',
+      );
+    });
+
+    it('does not inject the bootstrap into production builds', async () => {
+      const generator = new ViteConfigGenerator(
+        devtronForgeConfig(true),
+        configRoot,
+        true,
+      );
+      const buildConfig = (await generator.getBuildConfigs())[0];
+      expect(mainOutput(buildConfig)?.banner).toBeUndefined();
+      expect(buildConfig.build?.rollupOptions?.external).not.toContain(
+        '@electron/devtron',
+      );
+    });
+
+    it('does not inject the bootstrap when not enabled', async () => {
+      const generator = new ViteConfigGenerator(
+        devtronForgeConfig(),
+        configRoot,
+        false,
+      );
+      const buildConfig = (await generator.getBuildConfigs())[0];
+      expect(mainOutput(buildConfig)?.banner).toBeUndefined();
+    });
+  });
+
   it('getRendererConfig:renderer', async () => {
     const forgeConfig = {
       build: [],
