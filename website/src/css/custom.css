@@ -1,0 +1,30 @@
+/**
+ * Global styles for forge.electronjs.org.
+ * Colours are derived from the Electron brand palette (#2f3241 slate, #9feaf9 teal).
+ */
+
+:root {
+  --ifm-color-primary: #1e7a90;
+  --ifm-color-primary-dark: #1b6e82;
+  --ifm-color-primary-darker: #19687a;
+  --ifm-color-primary-darkest: #155565;
+  --ifm-color-primary-light: #21869e;
+  --ifm-color-primary-lighter: #238ca6;
+  --ifm-color-primary-lightest: #279fbb;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #9feaf9;
+  --ifm-color-primary-dark: #7fe3f7;
+  --ifm-color-primary-darker: #6fdff6;
+  --ifm-color-primary-darkest: #3fd4f3;
+  --ifm-color-primary-light: #bff1fb;
+  --ifm-color-primary-lighter: #cff5fc;
+  --ifm-color-primary-lightest: #ffffff;
+  --ifm-background-color: #2f3241;
+  --ifm-navbar-background-color: #2f3241;
+  --ifm-footer-background-color: #262837;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
