@@ -1,0 +1,8 @@
+{
+  "name": "subprocess-build-electron-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "electron": "42.3.3"
+  }
+}

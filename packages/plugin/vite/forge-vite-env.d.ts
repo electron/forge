@@ -19,5 +19,7 @@ declare module 'vite' {
     root: string;
     forgeConfig: VitePluginConfig;
     forgeConfigSelf: VitePluginConfig[K][number];
+    /** @internal */
+    electronTargets?: { node?: string; chrome?: string };
   }
 }
