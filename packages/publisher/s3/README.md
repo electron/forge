@@ -8,7 +8,7 @@ By default, all files are positioned at the following key:
 ${config.folder || appVersion}/${artifactName}
 ```
 
-Configuration options are documented in [PublisherS3Config](https://js.electronforge.io/interfaces/_electron-forge_publisher-s3.PublisherS3Config.html).
+Configuration options are documented in [PublisherS3Config](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_publisher-s3.PublisherS3Config.html).
 
 ```javascript title=forge.config.js
 module.exports = {

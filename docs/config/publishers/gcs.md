@@ -40,7 +40,7 @@ module.exports = {
 };
 ```
 
-Additional configuration options are documented in [`PublisherGCSConfig`](http://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_gcs.PublisherGCSConfig.html).
+Additional configuration options are documented in [`PublisherGCSConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_publisher-gcs.PublisherGCSConfig.html).
 
 To pass options into the Google Cloud Storage SDK's [Storage constructor](https://cloud.google.com/nodejs/docs/reference/storage/latest/storage/storageoptions), use the `config.storageOptions` parameter.
 

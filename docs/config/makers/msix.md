@@ -47,7 +47,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`MakerMSIXConfig`](https://js.electronforge.io/types/_electron_forge_maker_msix.MakerMSIXConfig.html).
+Configuration options are documented in [`MakerMSIXConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-msix.MakerMSIXConfig.html).
 
 For advanced code-signing use-cases, this maker utilizes @electron/windows-sign via the `windowsSignOptions` property. see the [windows-sign](https://github.com/electron/windows-sign/blob/main/README.md) README for more details.
 

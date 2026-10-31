@@ -23,7 +23,7 @@ In Electron Forge, most hooks are **simple hooks**, which perform side effects d
 ### **`generateAssets`**
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html) - Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html) - Forge configuration object
   * **`platform: string`** - Operating system platform
   * **`arch: string`** - CPU architecture
 * **Returns: `Promise<void>`**
@@ -37,7 +37,7 @@ For instance, you could use this hook to generate a license file containing the 
 ### `preStart`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html) - Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html) - Forge configuration object
 * **Returns: `Promise<void>`**
 
 `preStart()` is invoked before Forge's **`start`** command launches the app in dev mode.
@@ -57,7 +57,7 @@ module.exports = {
 ### `postStart`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html) - Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html) - Forge configuration object
   * **`appProcess:`**[**`ChildProcess`**](https://nodejs.org/api/child_process.html#class-childprocess) **-** Node.js child process instance
 * **Returns: `Promise<void>`**
 
@@ -87,7 +87,7 @@ module.exports = {
 ### `prePackage`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html) - Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html) - Forge configuration object
   * **`platform: string`** - Operating system platform
   * **`arch: string`** - CPU architecture
 * **Returns: `Promise<void>`**
@@ -97,7 +97,7 @@ module.exports = {
 ### `packageAfterCopy`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html) - Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html) - Forge configuration object
   * **`buildPath: string`**- the app's temporary folder path
   * **`electronVersion: string`**- the app's Electron version
   * **`platform: string`** - Operating system platform
@@ -113,7 +113,7 @@ The `afterCopy` hook runs after this copy step.
 ### `packageAfterPrune`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
   * **`buildPath: string`**- the app's temporary folder path
   * **`electronVersion: string`**- the app's Electron version
   * **`platform: string`** - Operating system platform
@@ -133,7 +133,7 @@ The `afterPrune` hook runs after this prune step.
 ### `packageAfterExtract`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
   * **`buildPath: string`**- the Electron binary's temporary folder path
   * **`electronVersion: string`**- the app's Electron version
   * **`platform: string`** - Operating system platform
@@ -149,7 +149,7 @@ The `afterExtract` hook runs after this extract step.
 ### `postPackage`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
   * **`packageResult: Object`**
     * **`platform: string`** - Operating system platform
     * **`arch: string`** - CPU architecture
@@ -174,7 +174,7 @@ module.exports = {
 ### `preMake`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
 * **Returns: `Promise<void>`**
 
 `preMake()` is called before the **`make`** step runs.
@@ -188,18 +188,18 @@ The returned value will replace the original parameter's value for subsequent st
 ### `postMake`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
-  * **`makeResults:`**[**`MakeResult`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ForgeMakeResult.html)**`[]`**
-* **Returns: `Promise<`**[**`MakeResult`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ForgeMakeResult.html)**`[] | void>`**
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`makeResults:`**[**`MakeResult`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ForgeMakeResult.html)**`[]`**
+* **Returns: `Promise<`**[**`MakeResult`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ForgeMakeResult.html)**`[] | void>`**
 
 `postMake()`is called after Forge's **`make`** step has successfully completed.
 
-It is passed an array of [`MakeResult`](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ForgeMakeResult.html) objects that are output from the `make` step. If you wish to mutate the array of Make results, you can return a new array of [`MakeResult`](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ForgeMakeResult.html) objects that Electron Forge can use for future steps.
+It is passed an array of [`MakeResult`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ForgeMakeResult.html) objects that are output from the `make` step. If you wish to mutate the array of Make results, you can return a new array of [`MakeResult`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ForgeMakeResult.html) objects that Electron Forge can use for future steps.
 
 ### `readPackageJson`
 
 * **Arguments:**
-  * **`config:`**[**`ResolvedForgeConfig`**](https://js.electronforge.io/interfaces/_electron_forge_shared_types.ResolvedForgeConfig.html)- Forge configuration object
+  * **`config:`**[**`ResolvedForgeConfig`**](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ResolvedForgeConfig.html)- Forge configuration object
   * **`packageJson: Record<string, unknown>`** - Full package.json object
 * **Returns: `Promise<Record<string, unknown> | void>`**
 

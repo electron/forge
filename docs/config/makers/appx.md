@@ -53,7 +53,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`MakerAppXConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_maker\_appx.MakerAppXConfig.html).
+Configuration options are documented in [`MakerAppXConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-appx.MakerAppXConfig.html).
 
 ## Debugging
 

@@ -38,7 +38,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`MakerSnapConfig`](https://js.electronforge.io/types/_electron_forge_maker_snap.MakerSnapConfig.html).
+Configuration options are documented in [`MakerSnapConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-snap.MakerSnapConfig.html).
 
 ## Debugging
 

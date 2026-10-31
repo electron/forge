@@ -1,10 +1,10 @@
-name: API Documentation
+# js.electronforge.io is retired: the API docs are published to
+# packages.electronjs.org/forge by docs.yml. This replaces the gh-pages branch
+# with a page that redirects old URLs there. Run it manually.
+name: Redirect js.electronforge.io
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - v8.**
 
 permissions: {}
 
@@ -24,7 +24,6 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          submodules: true
           fetch-depth: 0
           token: ${{ steps.generate-token.outputs.token }}
           persist-credentials: false
@@ -33,26 +32,16 @@ jobs:
         id: get-short-sha
         run: echo "sha=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version-file: .nvmrc
-          package-manager-cache: false
-
-      - name: Build
-        shell: bash
-        run: |
-          yarn
-          yarn docs
+      - name: Prepare redirect page
+        run: cp -r .github/js-electronforge-redirect redirect-site
 
       - name: Prepare docs
         uses: malept/github-action-gh-pages@650f950700faa00064f6fc9d2c4c801ec89b75b7 # tag: v1.4.1
         with:
           cname: js.electronforge.io
           defaultBranch: main
-          docsPath: api-docs
+          docsPath: redirect-site
           noCommit: true
-          showUnderscoreFiles: true
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
@@ -60,5 +49,5 @@ jobs:
         uses: dsanders11/github-app-commit-action@2bbcd331016d8c950b05a24b56e7eb9cb50d545e # v2.1.0
         with:
           fail-on-no-changes: false
-          message: 'deploy: ${{ steps.get-short-sha.outputs.sha }}'
+          message: 'redirect to packages.electronjs.org: ${{ steps.get-short-sha.outputs.sha }}'
           token: ${{ steps.generate-token.outputs.token }}

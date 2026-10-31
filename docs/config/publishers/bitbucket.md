@@ -37,7 +37,7 @@ module.exports = {
 };
 ```
 
-Full configuration options are documented in [`PublisherBitbucketConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_bitbucket.PublisherBitbucketConfig.html).
+Full configuration options are documented in [`PublisherBitbucketConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_publisher-bitbucket.PublisherBitbucketConfig.html).
 
 :::info
 Your artifacts can be found under the `Downloads` tab of your Bitbucket repository.

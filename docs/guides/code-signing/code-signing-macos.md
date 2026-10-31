@@ -69,7 +69,7 @@ module.exports = {
 
 The `osxSign` config comes with defaults that work out of the box in most cases, so we recommend you start with an empty configuration object.
 
-For a full list of configuration options, see the [`OsxSignOptions`](https://js.electronforge.io/modules/\_electron\_forge\_shared\_types.InternalOptions.html#OsxSignOptions) type in the Forge API docs. For more detailed information on how to configure these options, see the [`@electron/osx-sign` documentation](https://github.com/electron/osx-sign).
+For a full list of configuration options, see the [`OsxSignOptions`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_shared-types.ForgePackagerOptions.html#osxsign) type in the Forge API docs. For more detailed information on how to configure these options, see the [`@electron/osx-sign` documentation](https://github.com/electron/osx-sign).
 
 #### Customizing entitlements
 

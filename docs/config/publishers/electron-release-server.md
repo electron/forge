@@ -30,4 +30,4 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`PublisherERSConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_electron\_release\_server.PublisherERSConfig.html).
+Configuration options are documented in [`PublisherERSConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_publisher-electron-release-server.PublisherERSConfig.html).

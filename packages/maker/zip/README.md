@@ -2,7 +2,7 @@
 
 `@electron-forge/maker-zip` builds basic `.zip` files containing your packaged application. There are no platform specific dependencies for using this maker and it will run on any platform.
 
-Configuration options are documented in [`MakerZIPConfig`](https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html).
+Configuration options are documented in [`MakerZIPConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html).
 
 ```javascript
 // forge.config.js

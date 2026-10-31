@@ -44,7 +44,7 @@ module.exports = {
 
 The Squirrel.Windows maker inherits all of its config options from the [`electron-winstaller`](https://github.com/electron/windows-installer) module, _except_ for `appDirectory` and `outputDirectory`, which are set by the maker.
 
-Complete configuration options are documented in the [`MakerSquirrelConfig`](https://js.electronforge.io/types/_electron_forge_maker_squirrel.MakerSquirrelConfig.html) types.
+Complete configuration options are documented in the [`MakerSquirrelConfig`](https://packages.electronjs.org/forge/latest/interfaces/_electron-forge_maker-squirrel.MakerSquirrelConfig.html) types.
 
 ### Mandatory metadata
 
