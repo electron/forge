@@ -2,8 +2,13 @@ name: Website
 
 on:
   push:
+    # Stable release tags only (`v8.0.2`, not `v8.1.0-beta.0`): filter patterns
+    # must match the whole tag, so prerelease suffixes are excluded.
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  # Re-publish without cutting a release. Run it from a stable release tag (the
+  # `website-publish` environment only admits `v*` tags).
+  workflow_dispatch:
   pull_request:
     paths:
       - 'docs/**'
@@ -51,8 +56,11 @@ jobs:
   deploy:
     name: Publish forge.electronjs.org
     needs: build
-    # Publishes on every version tag, not on pushes to `next`
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && github.repository == 'electron/forge'
+    # Publishes from stable version tags only, on release or manual dispatch
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-') &&
+      github.repository == 'electron/forge'
     runs-on: ubuntu-latest
     # Holds the OIDC federated credential for the forge.electronjs.org storage
     # account; its deployment policy only allows tags matching `v*`
