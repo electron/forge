@@ -29,6 +29,27 @@
   --lu-code-sheet: var(--lu-window);
 }
 
+/* Light from the Lucent direction (felixrieseberg/fiddle-design, #dir=electron),
+   which Fiddle's tokens don't carry: the aura behind the glass, the lit rim on
+   glass edges, and the gradient for page titles. */
+:root {
+  --lu-aura-a: rgba(71, 168, 255, 0.26);
+  --lu-aura-b: rgba(159, 234, 249, 0.42);
+  --lu-aura-c: rgba(27, 28, 38, 0.08);
+  --lu-sheen-glass: rgba(255, 255, 255, 0.34);
+  --lu-title-b: #006f85;
+  --lu-title-c: #1f5fd1;
+}
+
+[data-theme='dark'] {
+  --lu-aura-a: rgba(47, 107, 255, 0.3);
+  --lu-aura-b: rgba(159, 234, 249, 0.16);
+  --lu-aura-c: rgba(27, 28, 38, 0.5);
+  --lu-sheen-glass: rgba(255, 255, 255, 0.05);
+  --lu-title-b: #9feaf9;
+  --lu-title-c: #5aa7ff;
+}
+
 /* ---------- Infima, mapped to Lucent ---------- */
 
 :root {
@@ -155,16 +176,90 @@ body {
 
 /* ---------- Window: glass chrome over the window ground, content on a sheet ---------- */
 
-html,
-.main-wrapper {
-  background: var(--lu-window);
+/* The window ground: an aura of Electron blue and cyan at the top, fixed so the
+   glass chrome always has light to pick up. */
+html {
+  background:
+    radial-gradient(
+      1100px 620px at 92% -160px,
+      var(--lu-aura-b),
+      transparent 70%
+    ),
+    radial-gradient(
+      1000px 640px at 4% -200px,
+      var(--lu-aura-a),
+      transparent 70%
+    ),
+    radial-gradient(
+      800px 480px at 55% -240px,
+      var(--lu-aura-c),
+      transparent 70%
+    ),
+    var(--lu-window);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
+body,
+.main-wrapper {
+  background: transparent;
+}
+
+/* Glass: a soft sheen from the top left, and a lit rim along the bottom edge. */
 .navbar {
-  background: var(--lu-material-chrome);
+  background:
+    radial-gradient(
+      760px circle at 16% -120%,
+      var(--lu-sheen-glass),
+      transparent 62%
+    ),
+    var(--lu-material-chrome);
   -webkit-backdrop-filter: var(--lu-blur-chrome);
   backdrop-filter: var(--lu-blur-chrome);
-  box-shadow: inset 0 calc(-1 * var(--lu-size-hairline)) 0 var(--lu-line);
+  box-shadow:
+    inset 0 calc(-1 * var(--lu-size-hairline)) 0 var(--lu-rim-soft),
+    0 var(--lu-size-hairline) 0 var(--lu-line);
+}
+
+/* Navbar controls gather into one glass capsule. */
+@media (min-width: 997px) {
+  .navbar__items--right {
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--lu-radius-capsule);
+    background: var(--lu-capsule);
+    box-shadow: var(--lu-shadow-capsule);
+  }
+
+  .navbar__items--right > .navbar__item {
+    padding: 0;
+  }
+
+  .navbar__items--right .navbar__link,
+  .navbar__items--right [class*='toggleButton'] {
+    height: var(--lu-size-toolbar-inner);
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: var(--lu-radius-capsule);
+    transition: background-color var(--lu-dur-fast) var(--lu-ease);
+  }
+
+  .navbar__items--right [class*='toggleButton'] {
+    width: var(--lu-size-toolbar-inner);
+    padding: 0;
+    justify-content: center;
+  }
+
+  .navbar__items--right .navbar__link:hover,
+  .navbar__items--right [class*='toggleButton']:hover {
+    background: var(--lu-capsule-hover);
+  }
+
+  .navbar__items--right .navbar__search {
+    margin-left: 2px;
+  }
 }
 
 .navbar__title {
@@ -185,6 +280,17 @@ html,
 /* The docs sidebar is chrome: it sits on the window ground with no divider. */
 .theme-doc-sidebar-container {
   border-right: none !important;
+}
+
+/* The current page is a raised thumb on the glass, like a selected segment. */
+.theme-doc-sidebar-menu .menu__link[aria-current='page'] {
+  background: var(--lu-thumb);
+  box-shadow: var(--lu-shadow-lift);
+  color: var(--lu-ink);
+}
+
+.theme-doc-sidebar-menu .menu__link:not(.menu__link--active):hover {
+  background: var(--lu-capsule);
 }
 
 .theme-doc-sidebar-menu .menu__link {
@@ -216,7 +322,9 @@ html,
       var(--lu-size-sheet-inset) 0;
     background: var(--lu-surface);
     border-radius: var(--lu-radius-sheet);
-    box-shadow: var(--lu-shadow-island);
+    box-shadow:
+      var(--lu-shadow-island),
+      inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
   }
 }
 
@@ -231,6 +339,23 @@ html,
 .markdown h1:first-child {
   --ifm-h1-font-size: 2.5rem;
   letter-spacing: -0.028em;
+}
+
+/* Page titles fade from ink into Electron cyan and blue. */
+.markdown header h1,
+.markdown > h1:first-child {
+  width: fit-content;
+  padding-bottom: 0.06em;
+  padding-right: 0.04em;
+  background: linear-gradient(
+    100deg,
+    var(--lu-ink) 0 42%,
+    var(--lu-title-b) 78%,
+    var(--lu-title-c) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .markdown h2 {
@@ -416,7 +541,10 @@ code {
 .pagination-nav__link {
   border: none;
   border-radius: var(--lu-radius-panel);
-  background: var(--lu-surface-sunken);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-surface-sunken);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
   transition: background-color var(--lu-dur-fast) var(--lu-ease);
 }
 
@@ -450,16 +578,60 @@ code {
   color: var(--lu-ink);
 }
 
+.navbar .navbar__items--right [class*='searchBar'] input {
+  border-radius: var(--lu-radius-capsule);
+  background-color: var(--lu-field-on-glass);
+  box-shadow: none;
+}
+
+/* Focus: the assist ring, Lucent's one gradient border. */
 .navbar [class*='searchBar'] input:focus {
-  box-shadow:
-    inset 0 0 0 var(--lu-size-hairline) var(--lu-accent),
-    var(--lu-ring-focus);
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--lu-field), var(--lu-field)) padding-box,
+    var(--lu-assist-ring) border-box;
+  box-shadow: 0 0 18px -4px
+    color-mix(in srgb, var(--lu-accent) 45%, transparent);
+}
+
+/* Search results: a glass menu; the selected hit is a soft accent row, not a fill. */
+:root {
+  /* Solid: a blur can't reach through the navbar's own glass. */
+  --search-local-modal-background: var(--lu-surface-raised);
+  --search-local-modal-shadow:
+    var(--lu-shadow-popover),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  --search-local-hit-background: transparent;
+  --search-local-hit-shadow: none;
+  --search-local-hit-color: var(--lu-ink);
+  --search-local-hit-active-color: var(--lu-ink);
+  --search-local-muted-color: var(--lu-ink-faint);
+  --search-local-highlight-color: var(--lu-accent);
+  --search-local-input-active-border-color: transparent;
+}
+
+[class*='dropdownMenu'] {
+  border-radius: var(--lu-radius-panel);
+}
+
+[class*='dropdownMenu'] [class*='suggestion'] {
+  border-radius: var(--lu-radius-item);
+}
+
+[class*='dropdownMenu'] [class*='suggestion'][class*='cursor'] {
+  background: var(--lu-accent-soft) !important;
 }
 
 /* ---------- Accessibility fallbacks (from Lucent's extensions) ---------- */
 
 /* Reduce transparency: the glass goes opaque and drops its blur. */
 @media (prefers-reduced-transparency: reduce) {
+  html {
+    background: var(--lu-window);
+  }
+  .navbar {
+    background: var(--lu-material-chrome);
+  }
   .navbar,
   .navbar-sidebar,
   .dropdown__menu {
@@ -486,5 +658,14 @@ code {
   .dropdown__menu {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* Gradient titles go solid wherever contrast matters more than light. */
+@media (prefers-contrast: more), (forced-colors: active) {
+  .markdown header h1,
+  .markdown > h1:first-child {
+    background: none;
+    color: var(--lu-ink);
   }
 }
