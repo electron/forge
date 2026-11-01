@@ -118,7 +118,8 @@
 .file {
   color: var(--lu-ink);
   font: 500 12px/17px var(--lu-font-mono);
-  overflow-wrap: anywhere;
+  /* Names break only where the data marks it (a zero-width space). */
+  overflow-wrap: normal;
 }
 
 .platform {

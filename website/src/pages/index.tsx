@@ -192,7 +192,7 @@ function Embers() {
 /** What `npm run make` leaves in out/make, one per platform, using the makers' default names. */
 const CASTINGS = [
   { file: 'my-app-1.0.0 Setup.exe', format: 'EXE', platform: 'Windows' },
-  { file: 'my-app_1.0.0_amd64.deb', format: 'DEB', platform: 'Linux' },
+  { file: 'my-app_1.0.0_\u200Bamd64.deb', format: 'DEB', platform: 'Linux' },
   { file: 'My App.dmg', format: 'DMG', platform: 'macOS' },
 ];
 
