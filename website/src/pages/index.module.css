@@ -35,9 +35,11 @@
   z-index: -2;
   inset: 0 0 -120px 35%;
   background: radial-gradient(
-    48% 70% at 55% 85%,
-    color-mix(in srgb, var(--lu-accent) 18%, transparent),
-    transparent 72%
+    56% 80% at 55% 88%,
+    color-mix(in srgb, var(--lu-accent) 16%, transparent),
+    color-mix(in srgb, var(--lu-accent) 6%, transparent) 38%,
+    color-mix(in srgb, var(--lu-accent) 2%, transparent) 58%,
+    transparent 76%
   );
   pointer-events: none;
 }
@@ -215,9 +217,10 @@
   z-index: -1;
   inset: -200px 0 40% 0;
   background: radial-gradient(
-    34% 60% at 70% 72%,
-    color-mix(in srgb, var(--lu-accent) 20%, transparent),
-    transparent 72%
+    36% 65% at 70% 74%,
+    color-mix(in srgb, var(--lu-accent) 16%, transparent),
+    color-mix(in srgb, var(--lu-accent) 6%, transparent) 40%,
+    transparent 76%
   );
   pointer-events: none;
 }
