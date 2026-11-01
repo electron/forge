@@ -109,8 +109,7 @@
   font-weight: 600;
 }
 
-/* macOS and GNOME centre the window title. */
-.casting[data-os='mac'] .windowTitle,
+/* GNOME centres the window title. */
 .casting[data-os='linux'] .windowTitle {
   position: absolute;
   left: 50%;
@@ -121,10 +120,16 @@
   justify-content: flex-end;
 }
 
-/* The card is narrower than a real window, so centre the title in the space
-   right of the traffic lights. */
+/* The card is narrower than a real window, so the title follows the traffic
+   lights instead of centring, like a compact toolbar window. */
+.casting[data-os='mac'] .titleBar {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
 .casting[data-os='mac'] .windowTitle {
-  left: calc(50% + 14px);
+  position: static;
+  transform: none;
 }
 
 .casting[data-slot='2'] .windowTitle {
