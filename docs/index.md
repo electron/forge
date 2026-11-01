@@ -1,4 +1,5 @@
 ---
+slug: /getting-started
 description: Quickly scaffold an Electron project with a full build pipeline
 ---
 

@@ -1,0 +1,316 @@
+/* The homepage, in Lucent: content on the window ground under the aura, the
+   pipeline on a solid sheet, features on glass. Values come from --lu-* tokens. */
+
+/* No docs sheet here: the page sits straight on the window ground. */
+.home main {
+  margin: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hero {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lu-space-6);
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 96px var(--lu-space-6) var(--lu-space-8);
+  text-align: center;
+}
+
+.badge {
+  padding: 5px 14px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-capsule);
+  box-shadow: var(--lu-shadow-capsule);
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.badge:hover {
+  background: var(--lu-capsule-hover);
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 8px 1px 0;
+  border-radius: var(--lu-radius-round, 50%);
+  background: var(--lu-accent);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+}
+
+.title {
+  margin: 0;
+  font: 650 64px/68px var(--lu-font-sans);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 620px;
+  margin: 0;
+  color: var(--lu-ink-muted);
+  font: 400 18px/28px var(--lu-font-sans);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--lu-space-3);
+}
+
+.actions :global(.button) {
+  padding: 10px 22px;
+  font: var(--lu-type-label);
+  font-size: 15px;
+}
+
+/* The create command: a field on glass. */
+.command {
+  display: flex;
+  align-items: center;
+  gap: var(--lu-space-3);
+  max-width: 100%;
+  padding: 6px 6px 6px 18px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-material-chrome);
+  -webkit-backdrop-filter: var(--lu-blur-chrome);
+  backdrop-filter: var(--lu-blur-chrome);
+  box-shadow: var(--lu-shadow-capsule);
+}
+
+.command code {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  background: none;
+  font: var(--lu-type-code);
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.prompt {
+  color: var(--lu-ink-faint);
+  font: var(--lu-type-code);
+  user-select: none;
+}
+
+.copy {
+  flex: none;
+  height: var(--lu-size-control);
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-button);
+  box-shadow: var(--lu-shadow-button);
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  cursor: pointer;
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.copy:hover {
+  background: var(--lu-button-hover);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--lu-space-6);
+  font: var(--lu-type-title);
+  letter-spacing: var(--lu-type-title-tracking);
+  text-align: center;
+}
+
+/* The pipeline: the one solid sheet on the page. */
+.sheet {
+  max-width: 1120px;
+  margin: var(--lu-space-8) auto 0;
+  padding: var(--lu-space-8);
+  border-radius: var(--lu-radius-sheet);
+  background: var(--lu-surface);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--lu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+  height: 100%;
+  padding: var(--lu-space-4);
+  border-radius: var(--lu-radius-panel);
+  color: var(--lu-ink);
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.step:hover {
+  background: var(--lu-hover);
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.stepIndex {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+  font: var(--lu-type-caption);
+}
+
+.stepTitle {
+  font: var(--lu-type-headline);
+  letter-spacing: var(--lu-type-headline-tracking);
+}
+
+.stepCommand {
+  width: fit-content;
+  font-size: 12.5px;
+}
+
+.stepBody {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Features: glass cards over the aura. */
+.features {
+  max-width: 1120px;
+  margin: 72px auto 96px;
+  padding: 0 var(--lu-space-6);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--lu-space-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+  padding: var(--lu-space-6);
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-material-thin);
+  -webkit-backdrop-filter: var(--lu-blur-thin);
+  backdrop-filter: var(--lu-blur-thin);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  color: var(--lu-ink);
+  transition:
+    background-color var(--lu-dur-fast) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.card:hover {
+  color: var(--lu-ink);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+.cardTitle {
+  font: var(--lu-type-headline);
+  letter-spacing: var(--lu-type-headline-tracking);
+}
+
+.cardBody {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--lu-space-2);
+}
+
+.chip {
+  padding: 2px 9px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  font-weight: 500;
+}
+
+@media (max-width: 996px) {
+  .hero {
+    padding-top: 64px;
+  }
+
+  .title {
+    font: var(--lu-type-display);
+    letter-spacing: var(--lu-type-display-tracking);
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sheet {
+    margin-inline: var(--lu-space-4);
+    padding: var(--lu-space-6) var(--lu-space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .steps,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .command,
+  .card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card {
+    background: var(--lu-surface-raised);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

@@ -55,7 +55,8 @@ const config: Config = {
           showLastUpdateTime: false,
         },
         blog: false,
-        pages: false,
+        // Only the homepage (src/pages/index.tsx); docs live at the root too.
+        pages: {},
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -86,7 +87,13 @@ const config: Config = {
     navbar: {
       title: 'Electron Forge',
       items: [
-        { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '.*' },
+        {
+          to: '/getting-started/',
+          label: 'Docs',
+          position: 'left',
+          // Every route but the homepage is a docs page.
+          activeBaseRegex: '^/.+',
+        },
         {
           // TODO: switch to packages.electronjs.org/forge/latest/ once the API
           // docs move there (electron/forge#4385)

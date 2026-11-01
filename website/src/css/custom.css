@@ -648,6 +648,7 @@ code {
   --ifm-button-border-color: transparent;
   --ifm-button-color: var(--lu-ink);
   box-shadow: var(--lu-shadow-button);
+  color: var(--lu-ink);
 }
 
 .pagination-nav__link {
@@ -732,6 +733,32 @@ code {
 
 [class*='dropdownMenu'] [class*='suggestion'][class*='cursor'] {
   background: var(--lu-accent-soft) !important;
+}
+
+/* Footer: quiet chrome on the window ground, not Infima's slate block. */
+.footer,
+.footer--dark {
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--lu-ink-muted);
+  --ifm-footer-link-color: var(--lu-ink-muted);
+  --ifm-footer-title-color: var(--lu-ink);
+  background: transparent;
+  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
+  font: var(--lu-type-body);
+}
+
+.footer__title {
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  color: var(--lu-ink-faint);
+}
+
+.footer__link-item:hover {
+  color: var(--lu-accent);
+}
+
+.footer__copyright {
+  color: var(--lu-ink-faint);
 }
 
 /* ---------- Accessibility fallbacks (from Lucent's extensions) ---------- */
