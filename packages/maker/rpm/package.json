@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-rpm",
-  "version": "8.0.0-alpha.10",
+  "version": "8.0.1",
   "type": "module",
   "description": "Rpm maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -9,6 +9,7 @@
   "exports": "./dist/MakerRpm.js",
   "typings": "dist/MakerRpm.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

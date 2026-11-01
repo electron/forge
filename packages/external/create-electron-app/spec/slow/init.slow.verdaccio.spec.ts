@@ -4,6 +4,7 @@ import path from 'node:path';
 import {
   ensureTestDirIsNonexistent,
   expectLintToPass,
+  PINNED_PNPM,
 } from '@electron-forge/test-utils';
 import semver from 'semver';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -270,7 +271,7 @@ describe('init', () => {
       });
 
       it('initializes with correct nodeLinker value', async () => {
-        await init({ dir, packageManager: 'pnpm' });
+        await init({ dir, packageManager: PINNED_PNPM });
 
         expect(
           fs.readFileSync(path.join(dir, 'pnpm-workspace.yaml'), 'utf-8'),

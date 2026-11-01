@@ -1,95 +1,102 @@
-import fs from 'node:fs/promises';
+import fs, { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
+import { move, pathExists } from '@electron-forge/core-utils';
 import { MakerOptions } from '@electron-forge/maker-base';
 import { ForgeArch } from '@electron-forge/shared-types';
-import windowsStore from 'electron-windows-store';
-import { makeCert } from 'electron-windows-store/lib/sign.js';
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest';
+import { packageMSIX } from 'electron-windows-msix';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  createDefaultCertificate,
-  MakerAppX,
-  MakerAppXConfig,
-} from '../src/MakerAppX';
+import { MakerAppX, MakerAppXConfig } from '../src/MakerAppX';
 
 type MakeFunction = (opts: Partial<MakerOptions>) => Promise<string[]>;
 
-vi.mock('electron-windows-store', () => {
+// The Windows CI runners have a real Windows SDK installed (e.g.
+// C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64), which the
+// maker would find. Keep the lookup hermetic: by default nothing exists under
+// the Windows Kit roots, and tests install fake kits with installWindowsKits()
+// or mock fs.readdir explicitly. Hoisted because the mock factories below run
+// before this module's top-level code.
+const { windowsKitRoots, isUnderWindowsKitRoot } = vi.hoisted(() => {
+  const windowsKitRoots = {
+    x64: 'C:\\Program Files\\Windows Kits\\10\\bin',
+    x86: 'C:\\Program Files (x86)\\Windows Kits\\10\\bin',
+  };
   return {
-    default: vi.fn().mockResolvedValue(undefined),
+    windowsKitRoots,
+    isUnderWindowsKitRoot: (filePath: string) =>
+      Object.values(windowsKitRoots).some((root) => filePath.startsWith(root)),
   };
 });
 
-// Only wrap `makeCert` so that the real `isValidPublisherName` still runs and
-// the Windows-only `createDefaultCertificate` test below keeps exercising the
-// real Windows SDK tooling. The unit tests for `make()` swap in a resolved
-// value per-test and reset it afterwards.
-vi.mock('electron-windows-store/lib/sign.js', async (importOriginal) => {
-  const mod =
-    await importOriginal<typeof import('electron-windows-store/lib/sign.js')>();
+vi.mock(import('electron-windows-msix'), () => {
+  return {
+    packageMSIX: vi.fn().mockResolvedValue({
+      msixPackage: '/tmp/appx-maker-mock/mytestapp.msix',
+    }),
+  };
+});
+
+vi.mock(import('node:fs/promises'), async (importOriginal) => {
+  const mod = await importOriginal();
   return {
     ...mod,
-    makeCert: vi.fn(mod.makeCert),
+    default: {
+      ...mod.default,
+      mkdtemp: vi.fn().mockResolvedValue('/tmp/appx-maker-mock'),
+      mkdir: vi.fn(),
+      readdir: vi.fn(((dir, options) =>
+        isUnderWindowsKitRoot(String(dir))
+          ? Promise.reject(
+              Object.assign(
+                new Error(
+                  `ENOENT: no such file or directory, scandir '${dir}'`,
+                ),
+                { code: 'ENOENT' },
+              ),
+            )
+          : mod.default.readdir(dir, options)) as typeof mod.default.readdir),
+      rm: vi.fn(),
+    },
   };
 });
 
-describe.runIf(process.platform === 'win32')('MakerAppX', function () {
-  describe('createDefaultCertificate', () => {
-    let tmpDir: string;
-
-    beforeAll(async () => {
-      const tmp = os.tmpdir();
-      const tmpdir = path.join(tmp, 'electron-forge-test-');
-      tmpDir = await fs.mkdtemp(tmpdir);
-    });
-
-    afterAll(async () => {
-      await fs.rm(tmpDir, { recursive: true });
-    });
-
-    it('should create a .pfx file', async () => {
-      await fs.copyFile(
-        path.join(
-          import.meta.dirname,
-          '../../../api/core/spec/fixture',
-          'bogus-private-key.pvk',
-        ),
-        path.join(tmpDir, 'dummy.pvk'),
-      );
-      const outputCertPath = await createDefaultCertificate('CN=Test', {
-        certFilePath: tmpDir,
-        certFileName: 'dummy',
-        install: false,
-      });
-
-      const fileContents = await fs.readFile(outputCertPath);
-      expect(fileContents).toBeInstanceOf(Buffer);
-      expect(fileContents.length).toBeGreaterThan(0);
-    });
-  });
+vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
+  const mod = await importOriginal();
+  return {
+    ...mod,
+    move: vi.fn(),
+    pathExists: vi.fn(async (filePath: string) =>
+      isUnderWindowsKitRoot(filePath) ? false : mod.pathExists(filePath),
+    ),
+  };
 });
 
+/**
+ * Makes `pathExists` report the MSIX tooling as present in the given Windows
+ * Kit `bin` folders only.
+ */
+function installWindowsKits(...kitPaths: string[]) {
+  vi.mocked(pathExists).mockImplementation(async (filePath) =>
+    kitPaths.some(
+      (kitPath) =>
+        path.dirname(filePath) === kitPath &&
+        ['makeappx.exe', 'makepri.exe', 'signtool.exe'].includes(
+          path.basename(filePath),
+        ),
+    ),
+  );
+}
+
 describe('MakerAppX', () => {
+  const mockTmpDir = '/tmp/appx-maker-mock';
+  const mockMsixPath = `${mockTmpDir}/mytestapp.msix`;
   const dir = '/my/test/dir/out';
   const makeDir = path.resolve('/my/test/dir/make');
   const appName = 'My Test App';
   const targetArch: ForgeArch = 'x64';
   const outPath = path.resolve(makeDir, 'appx', targetArch);
-  // `make()` falls back to locating makeappx.exe in the Windows SDK when this
-  // is not configured, which is not available on non-Windows CI runners.
-  const windowsKit = 'C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64';
-  const mockCertPath = '/my/test/dir/make/appx/x64/default.pfx';
   const packageJSON = {
     name: 'my-test-app',
     version: '1.2.3',
@@ -98,28 +105,31 @@ describe('MakerAppX', () => {
   };
 
   const expectedDefaults = {
-    publisher: 'CN=Test Author',
-    flatten: false,
-    deploy: false,
-    packageVersion: '1.2.3.0',
-    packageName: 'mytestapp',
-    packageDisplayName: appName,
-    packageDescription: 'A test app',
-    packageExecutable: 'app\\My Test App.exe',
-    windowsKit,
-    devCert: mockCertPath,
-    inputDirectory: dir,
-    outputDirectory: outPath,
+    appDir: dir,
+    outputDir: mockTmpDir,
+    packageName: 'mytestapp.msix',
+    createPri: false,
+    manifestVariables: {
+      packageIdentity: 'mytestapp',
+      publisher: 'CN=Test Author',
+      packageVersion: '1.2.3.0',
+      packageDisplayName: appName,
+      packageDescription: 'A test app',
+      appExecutable: 'My Test App.exe',
+      targetArch: 'x64',
+    },
   };
+
+  let maker: MakerAppX;
 
   async function runMake(
     config: MakerAppXConfig,
     overrides: Partial<MakerOptions> = {},
   ) {
-    const maker = new MakerAppX(config, []);
+    maker = new MakerAppX(config, []);
     maker.ensureDirectory = vi.fn();
-    await maker.prepareConfig(targetArch);
-    const output = await (maker.make as MakeFunction)({
+    await maker.prepareConfig(overrides.targetArch ?? targetArch);
+    return (maker.make as MakeFunction)({
       dir,
       makeDir,
       appName,
@@ -127,7 +137,10 @@ describe('MakerAppX', () => {
       packageJSON,
       ...overrides,
     });
-    return { maker, output };
+  }
+
+  function packagingOptions() {
+    return vi.mocked(packageMSIX).mock.calls[0][0];
   }
 
   describe('isSupportedOnCurrentPlatform', () => {
@@ -161,78 +174,169 @@ describe('MakerAppX', () => {
 
   describe('make', () => {
     beforeEach(() => {
-      vi.mocked(makeCert).mockResolvedValue(mockCertPath);
-    });
-
-    afterEach(() => {
-      vi.mocked(makeCert).mockReset();
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
     });
 
     it('should pass through correct defaults derived from package.json', async () => {
-      const { maker, output } = await runMake({ windowsKit });
+      const output = await runMake({});
 
+      expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+      expect(vi.mocked(packageMSIX)).toHaveBeenCalledWith(expectedDefaults);
+      expect(packagingOptions().windowsSignOptions).toBeUndefined();
+      expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('should move the generated .msix into make/appx/<arch>', async () => {
+      const output = await runMake({});
+
+      expect(vi.mocked(move)).toHaveBeenCalledWith(mockMsixPath, output[0]);
+      expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+    });
+
+    it('should clear the arch output directory before moving the .msix', async () => {
+      await runMake({});
+
+      expect(maker.ensureDirectory).toHaveBeenCalledOnce();
       expect(maker.ensureDirectory).toHaveBeenCalledWith(outPath);
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledOnce();
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(expectedDefaults);
-      expect(output).toEqual([path.resolve(outPath, 'mytestapp.appx')]);
+      expect(
+        vi.mocked(maker.ensureDirectory).mock.invocationCallOrder[0],
+      ).toBeLessThan(vi.mocked(move).mock.invocationCallOrder[0]);
+    });
+
+    it('should still return the .msix when the temporary folder cannot be removed', async () => {
+      vi.mocked(fs.rm).mockRejectedValueOnce(new Error('EBUSY: resource busy'));
+
+      const output = await runMake({});
+
+      expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+      expect(console.warn).toHaveBeenCalledOnce();
+      expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+        `Could not remove the temporary folder "${mockTmpDir}": EBUSY: resource busy`,
+      );
     });
 
     it('should fall back to the app name when package.json has no description', async () => {
       await runMake(
-        { windowsKit },
+        {},
         { packageJSON: { ...packageJSON, description: undefined } },
       );
 
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-        expect.objectContaining({ packageDescription: appName }),
-      );
+      expect(packagingOptions().manifestVariables).toMatchObject({
+        packageDescription: appName,
+      });
     });
 
-    it('should have config cascade correctly', async () => {
-      const finalSay = vi.fn().mockResolvedValue(undefined);
+    it('should map every supported option onto electron-windows-msix', async () => {
       const config: MakerAppXConfig = {
         windowsKit: 'D:\\Custom\\Kits',
         publisher: 'CN=Custom Publisher, O=Custom Org',
-        flatten: true,
-        deploy: true,
         packageVersion: '4.3.2.1',
         packageName: 'custompackage',
         packageDisplayName: 'Custom Display Name',
         packageDescription: 'Custom description',
-        packageExecutable: 'app\\custom.exe',
+        packageBackgroundColor: '#464646',
+        packageExecutable: 'custom.exe',
         devCert: 'C:\\certs\\custom.pfx',
         certPass: 'hunter2',
         assets: 'C:\\my\\assets',
-        makeappxParams: ['/verbose'],
+        manifest: 'C:\\my\\AppxManifest.xml',
         signtoolParams: ['/debug'],
         makePri: true,
-        finalSay,
       };
 
-      const { output } = await runMake(config);
+      const output = await runMake(config);
 
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledOnce();
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledWith({
-        ...config,
-        inputDirectory: dir,
-        outputDirectory: outPath,
+      expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+      expect(vi.mocked(packageMSIX)).toHaveBeenCalledWith({
+        appDir: dir,
+        outputDir: mockTmpDir,
+        packageName: 'custompackage.msix',
+        appManifest: 'C:\\my\\AppxManifest.xml',
+        packageAssets: 'C:\\my\\assets',
+        windowsKitPath: 'D:\\Custom\\Kits',
+        createPri: true,
+        windowsSignOptions: {
+          certificateFile: 'C:\\certs\\custom.pfx',
+          certificatePassword: 'hunter2',
+          signWithParams: ['/debug'],
+        },
+        manifestVariables: {
+          packageIdentity: 'custompackage',
+          publisher: 'CN=Custom Publisher, O=Custom Org',
+          packageVersion: '4.3.2.1',
+          packageDisplayName: 'Custom Display Name',
+          packageDescription: 'Custom description',
+          packageBackgroundColor: '#464646',
+          appExecutable: 'custom.exe',
+          targetArch: 'x64',
+        },
       });
-      expect(output).toEqual([path.resolve(outPath, 'custompackage.appx')]);
+      expect(output).toEqual([path.resolve(outPath, 'custompackage.msix')]);
+      expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
     });
 
-    it('should forward finalSay when provided', async () => {
-      const finalSay = vi.fn().mockResolvedValue(undefined);
-      await runMake({ windowsKit, finalSay });
+    it('should not forward Forge-only options to electron-windows-msix', async () => {
+      await runMake({
+        makeVersionWinStoreCompatible: true,
+        makePri: true,
+        devCert: 'C:\\certs\\custom.pfx',
+      });
 
-      expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-        expect.objectContaining({ finalSay }),
+      const options = packagingOptions();
+      for (const key of [
+        'makeVersionWinStoreCompatible',
+        'makePri',
+        'devCert',
+        'certPass',
+        'signtoolParams',
+      ]) {
+        expect(options).not.toHaveProperty(key);
+      }
+    });
+
+    it.each([
+      { arch: 'x64', expected: 'x64' },
+      { arch: 'arm64', expected: 'arm64' },
+      { arch: 'ia32', expected: 'x86' },
+    ] as const)(
+      'should convert $arch to the MSIX arch $expected',
+      async ({ arch, expected }) => {
+        const output = await runMake({}, { targetArch: arch });
+
+        expect(packagingOptions().manifestVariables).toMatchObject({
+          targetArch: expected,
+        });
+        expect(output).toEqual([
+          path.resolve(makeDir, 'appx', arch, 'mytestapp.msix'),
+        ]);
+      },
+    );
+
+    describe('packageExecutable', () => {
+      it.each([
+        { configured: 'app\\custom.exe', expected: 'custom.exe' },
+        { configured: 'app/custom.exe', expected: 'custom.exe' },
+        { configured: 'App\\MyApp.exe', expected: 'MyApp.exe' },
+        { configured: 'APP/MyApp.exe', expected: 'MyApp.exe' },
+        { configured: 'custom.exe', expected: 'custom.exe' },
+        { configured: 'bin\\custom.exe', expected: 'bin\\custom.exe' },
+      ])(
+        'should map $configured to appExecutable $expected',
+        async ({ configured, expected }) => {
+          await runMake({ packageExecutable: configured });
+
+          expect(packagingOptions().manifestVariables).toMatchObject({
+            appExecutable: expected,
+          });
+        },
       );
     });
 
     describe('publisher', () => {
       it('should derive the publisher from package.json author when not configured', async () => {
         await runMake(
-          { windowsKit },
+          {},
           {
             packageJSON: {
               ...packageJSON,
@@ -241,56 +345,363 @@ describe('MakerAppX', () => {
           },
         );
 
-        expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-          expect.objectContaining({ publisher: 'CN=Object Author' }),
+        expect(packagingOptions().manifestVariables).toMatchObject({
+          publisher: 'CN=Object Author',
+        });
+      });
+
+      it('should throw when neither publisher nor package.json author is set', async () => {
+        await expect(
+          runMake({}, { packageJSON: { ...packageJSON, author: undefined } }),
+        ).rejects.toThrow(
+          'Please set the "publisher" option in the maker config or "author.name" in package.json for the appx target',
         );
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
       });
 
       it('should throw when the configured publisher is empty', async () => {
-        await expect(runMake({ windowsKit, publisher: '' })).rejects.toThrow(
-          'Please set config.forge.windowsStoreConfig.publisher or author.name in package.json for the appx target',
+        await expect(runMake({ publisher: '' })).rejects.toThrow(
+          'Please set the "publisher" option in the maker config or "author.name" in package.json for the appx target',
         );
-        expect(vi.mocked(windowsStore)).not.toHaveBeenCalled();
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
       });
 
-      it('should throw when the publisher is not an X.500 distinguished name', async () => {
+      it('should throw when the publisher is not an X.500 distinguished name and no devCert is set', async () => {
         await expect(
-          runMake({ windowsKit, publisher: 'Not A Distinguished Name' }),
+          runMake({ publisher: 'Not A Distinguished Name' }),
         ).rejects.toThrow(
-          "Received invalid publisher name: 'Not A Distinguished Name' did not conform to X.500 distinguished name syntax for MakeCert.",
+          "Received invalid publisher name: 'Not A Distinguished Name' did not conform to X.500 distinguished name syntax.",
         );
-        expect(vi.mocked(makeCert)).not.toHaveBeenCalled();
-        expect(vi.mocked(windowsStore)).not.toHaveBeenCalled();
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+      });
+
+      it.each([
+        'CN=Test Author',
+        'CN="Quoted, Inc.", O=Org',
+        'CN=Foo; OU=Bar',
+        'OID.1.2.840.113549.1.9.1=test@example.com',
+        'cn=lowercase,',
+      ])(
+        'should accept the well-formed distinguished name %s',
+        async (publisher) => {
+          await runMake({ publisher });
+
+          expect(packagingOptions().manifestVariables).toMatchObject({
+            publisher,
+          });
+        },
+      );
+
+      it('should forward an unusual publisher unchanged when devCert is set', async () => {
+        const publisher = 'Not A Distinguished Name';
+        await runMake({ publisher, devCert: 'C:\\certs\\custom.pfx' });
+
+        expect(packagingOptions().manifestVariables).toMatchObject({
+          publisher,
+        });
+      });
+
+      it.each([
+        {
+          shape: 'unterminated quoted value',
+          publisher: 'CN="' + 'a'.repeat(50_000),
+        },
+        {
+          shape: 'repeated ;KEY= separators',
+          publisher: 'C=' + ';C='.repeat(50_000) + '"',
+        },
+        {
+          shape: 'whitespace around separators',
+          publisher: 'C=' + ' , C='.repeat(50_000) + '"',
+        },
+      ])(
+        'should reject an $shape without catastrophic backtracking',
+        async ({ publisher }) => {
+          const start = performance.now();
+
+          await expect(runMake({ publisher })).rejects.toThrow(
+            'did not conform to X.500 distinguished name syntax.',
+          );
+
+          expect(performance.now() - start).toBeLessThan(1000);
+          expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+        },
+      );
+    });
+
+    describe('signing', () => {
+      it('should leave signing to electron-windows-msix when devCert is not configured', async () => {
+        await runMake({ certPass: 'ignored', signtoolParams: ['/debug'] });
+
+        expect(packagingOptions().windowsSignOptions).toBeUndefined();
+      });
+
+      it.each([
+        { option: 'certPass', value: 'hunter2' },
+        { option: 'signtoolParams', value: ['/debug'] },
+      ] satisfies { option: keyof MakerAppXConfig; value: unknown }[])(
+        'should warn that $option is ignored when devCert is not configured',
+        async ({ option, value }) => {
+          await runMake({ [option]: value });
+
+          expect(console.warn).toHaveBeenCalledOnce();
+          expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+            `The "${option}" option is ignored by @electron-forge/maker-appx because "devCert" is not set.`,
+          );
+          expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+        },
+      );
+
+      it('should not warn about certPass or signtoolParams when devCert is configured', async () => {
+        await runMake({
+          devCert: 'C:\\certs\\my-cert.pfx',
+          certPass: 'hunter2',
+          signtoolParams: ['/debug'],
+        });
+
+        expect(console.warn).not.toHaveBeenCalled();
+      });
+
+      it('should sign with the configured devCert', async () => {
+        await runMake({ devCert: 'C:\\certs\\my-cert.pfx' });
+
+        expect(packagingOptions()).toMatchObject({
+          windowsSignOptions: { certificateFile: 'C:\\certs\\my-cert.pfx' },
+        });
+      });
+
+      describe('generated dev certificate', () => {
+        const certFiles = ['dev_cert.cer', 'dev_cert.pfx'];
+        let tmpDir: string;
+
+        beforeEach(async () => {
+          tmpDir = await mkdtemp(path.join(os.tmpdir(), 'appx-maker-spec-'));
+          vi.mocked(fs.mkdtemp).mockResolvedValueOnce(tmpDir);
+          vi.mocked(packageMSIX).mockImplementationOnce(
+            async ({ outputDir }) => {
+              for (const certFile of certFiles) {
+                await writeFile(path.join(outputDir, certFile), '');
+              }
+              return { msixPackage: path.join(outputDir, 'mytestapp.msix') };
+            },
+          );
+        });
+
+        afterEach(async () => {
+          await rm(tmpDir, { recursive: true, force: true });
+        });
+
+        it('should keep the certificate electron-windows-msix generated next to the .msix', async () => {
+          const output = await runMake({});
+
+          expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+          for (const certFile of certFiles) {
+            expect(vi.mocked(move)).toHaveBeenCalledWith(
+              path.resolve(tmpDir, certFile),
+              path.resolve(outPath, certFile),
+            );
+          }
+          expect(vi.mocked(move)).toHaveBeenCalledTimes(3);
+        });
+
+        it('should still return the .msix when the certificate cannot be moved', async () => {
+          vi.mocked(move)
+            .mockResolvedValueOnce(undefined) // mytestapp.msix
+            .mockResolvedValueOnce(undefined) // dev_cert.cer
+            .mockRejectedValueOnce(new Error('EBUSY: resource busy')); // dev_cert.pfx
+
+          const output = await runMake({});
+
+          expect(output).toEqual([path.resolve(outPath, 'mytestapp.msix')]);
+          expect(vi.mocked(move)).toHaveBeenCalledTimes(3);
+          expect(console.warn).toHaveBeenCalledOnce();
+          expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+            'Could not keep the development certificate next to the package: EBUSY: resource busy',
+          );
+        });
+
+        it('should not move certificates when devCert is configured', async () => {
+          const output = await runMake({ devCert: 'C:\\certs\\my-cert.pfx' });
+
+          expect(vi.mocked(move)).toHaveBeenCalledOnce();
+          expect(vi.mocked(move)).toHaveBeenCalledWith(
+            path.join(tmpDir, 'mytestapp.msix'),
+            output[0],
+          );
+        });
       });
     });
 
-    describe('devCert', () => {
-      it('should create a default certificate next to the output when devCert is not configured', async () => {
-        await runMake({ windowsKit });
+    describe('windowsKit', () => {
+      afterEach(() => {
+        vi.mocked(pathExists).mockReset();
+        vi.mocked(fs.readdir).mockReset();
+        vi.unstubAllEnvs();
+      });
 
-        expect(vi.mocked(makeCert)).toHaveBeenCalledOnce();
-        expect(vi.mocked(makeCert)).toHaveBeenCalledWith(
-          expect.objectContaining({
-            publisherName: 'CN=Test Author',
-            certFilePath: outPath,
-            certFileName: 'default',
-            install: false,
-          }),
+      it('should leave the lookup to electron-windows-msix when no Windows Kit is found', async () => {
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBeUndefined();
+      });
+
+      it('should use the unversioned x64 bin folder when it has the MSIX tools', async () => {
+        const kit = path.join(windowsKitRoots.x64, 'x64');
+        installWindowsKits(kit);
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(kit);
+        expect(vi.mocked(fs.readdir)).not.toHaveBeenCalled();
+      });
+
+      it('should pick the newest versioned SDK folder that has the MSIX tools', async () => {
+        vi.mocked(fs.readdir).mockImplementation(async (dir) => {
+          if (dir === windowsKitRoots.x86) {
+            return [
+              '10.0.19041.0',
+              '10.0.22621.0',
+              '10.0.26100.0',
+              'arm64',
+            ] as never;
+          }
+          throw new Error('ENOENT');
+        });
+        installWindowsKits(
+          path.join(windowsKitRoots.x86, '10.0.19041.0', 'x64'),
+          path.join(windowsKitRoots.x86, '10.0.22621.0', 'x64'),
         );
-        expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-          expect.objectContaining({ devCert: mockCertPath }),
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, '10.0.22621.0', 'x64'),
         );
       });
 
-      it('should forward the configured devCert without creating a certificate', async () => {
-        const devCert = 'C:\\certs\\my-cert.pfx';
-        await runMake({ windowsKit, devCert });
+      it('should skip folders that are missing one of the MSIX tools', async () => {
+        const kit = path.join(windowsKitRoots.x64, 'x64');
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) =>
+            path.dirname(filePath) === kit &&
+            path.basename(filePath) === 'makeappx.exe',
+        );
 
-        expect(vi.mocked(makeCert)).not.toHaveBeenCalled();
-        expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-          expect.objectContaining({ devCert }),
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBeUndefined();
+      });
+
+      it('should prefer arm64 tools on ARM64 hosts', async () => {
+        vi.stubEnv('PROCESSOR_ARCHITECTURE', 'ARM64');
+        installWindowsKits(
+          path.join(windowsKitRoots.x86, 'arm64'),
+          path.join(windowsKitRoots.x86, 'x64'),
+        );
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, 'arm64'),
         );
       });
+
+      it('should fall back to x64 tools on ARM64 hosts', async () => {
+        vi.stubEnv('PROCESSOR_ARCHITECTURE', 'ARM64');
+        installWindowsKits(path.join(windowsKitRoots.x86, 'x64'));
+
+        await runMake({});
+
+        expect(packagingOptions().windowsKitPath).toBe(
+          path.join(windowsKitRoots.x86, 'x64'),
+        );
+      });
+
+      it('should not search when windowsKit is configured', async () => {
+        installWindowsKits(path.join(windowsKitRoots.x86, 'x64'));
+
+        // devCert skips the dev certificate copy, which also uses pathExists
+        await runMake({
+          windowsKit: 'D:\\Custom\\Kits',
+          devCert: 'C:\\certs\\custom.pfx',
+        });
+
+        expect(packagingOptions().windowsKitPath).toBe('D:\\Custom\\Kits');
+        expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('assets', () => {
+      const assets = 'C:\\my\\assets';
+      const requiredAssets = [
+        'icon.png',
+        'Square44x44Logo.png',
+        'Square150x150Logo.png',
+      ];
+
+      afterEach(() => {
+        vi.mocked(pathExists).mockReset();
+      });
+
+      it('should throw when a custom assets folder lacks the files the generated manifest refers to', async () => {
+        await expect(runMake({ assets })).rejects.toThrow(
+          `The "assets" folder '${assets}' is missing icon.png, Square44x44Logo.png, Square150x150Logo.png, which the generated AppxManifest.xml refers to.`,
+        );
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
+      });
+
+      it('should only list the missing asset files', async () => {
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) => path.basename(filePath) === 'icon.png',
+        );
+
+        await expect(runMake({ assets })).rejects.toThrow(
+          'is missing Square44x44Logo.png, Square150x150Logo.png, which',
+        );
+      });
+
+      it('should forward a custom assets folder that has the required files', async () => {
+        vi.mocked(pathExists).mockImplementation(
+          async (filePath) =>
+            path.dirname(filePath) === assets &&
+            requiredAssets.includes(path.basename(filePath)),
+        );
+
+        await runMake({ assets });
+
+        expect(packagingOptions().packageAssets).toBe(assets);
+      });
+
+      it('should not check the assets folder when a custom manifest is set', async () => {
+        // devCert skips the dev certificate copy, which also uses pathExists
+        await runMake({
+          assets,
+          manifest: 'C:\\my\\AppxManifest.xml',
+          windowsKit: 'D:\\Custom\\Kits',
+          devCert: 'C:\\certs\\custom.pfx',
+        });
+
+        expect(packagingOptions()).toMatchObject({
+          packageAssets: assets,
+          appManifest: 'C:\\my\\AppxManifest.xml',
+        });
+        expect(vi.mocked(pathExists)).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('makePri', () => {
+      it.each([
+        { makePri: undefined, createPri: false },
+        { makePri: false, createPri: false },
+        { makePri: true, createPri: true },
+      ])(
+        'should map makePri $makePri to createPri $createPri',
+        async ({ makePri, createPri }) => {
+          await runMake({ makePri });
+
+          expect(packagingOptions()).toMatchObject({ createPri });
+        },
+      );
     });
 
     describe('packageVersion', () => {
@@ -301,29 +712,26 @@ describe('MakerAppX', () => {
         'should throw for a $kind version when makeVersionWinStoreCompatible is not set',
         async ({ version }) => {
           await expect(
-            runMake(
-              { windowsKit },
-              { packageJSON: { ...packageJSON, version } },
-            ),
+            runMake({}, { packageJSON: { ...packageJSON, version } }),
           ).rejects.toThrow(
             "Windows Store version numbers don't support semver beta tags. To " +
               'automatically fix this, set makeVersionWinStoreCompatible to true or ' +
               'explicitly set packageVersion to a version of the format X.Y.Z.A',
           );
-          expect(vi.mocked(windowsStore)).not.toHaveBeenCalled();
+          expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
         },
       );
 
       it('should throw for a prerelease version when makeVersionWinStoreCompatible is false', async () => {
         await expect(
           runMake(
-            { windowsKit, makeVersionWinStoreCompatible: false },
+            { makeVersionWinStoreCompatible: false },
             { packageJSON: { ...packageJSON, version: '1.0.0-beta.1' } },
           ),
         ).rejects.toThrow(
           "Windows Store version numbers don't support semver beta tags.",
         );
-        expect(vi.mocked(windowsStore)).not.toHaveBeenCalled();
+        expect(vi.mocked(packageMSIX)).not.toHaveBeenCalled();
       });
 
       it.each([
@@ -334,23 +742,57 @@ describe('MakerAppX', () => {
         'should normalize $version to $expected when makeVersionWinStoreCompatible is true',
         async ({ version, expected }) => {
           await runMake(
-            { windowsKit, makeVersionWinStoreCompatible: true },
+            { makeVersionWinStoreCompatible: true },
             { packageJSON: { ...packageJSON, version } },
           );
 
-          expect(vi.mocked(windowsStore)).toHaveBeenCalledWith(
-            expect.objectContaining({ packageVersion: expected }),
-          );
+          expect(packagingOptions().manifestVariables).toMatchObject({
+            packageVersion: expected,
+          });
         },
       );
 
-      it('should not forward makeVersionWinStoreCompatible to electron-windows-store', async () => {
-        await runMake({ windowsKit, makeVersionWinStoreCompatible: true });
+      it('should normalize an explicitly configured prerelease packageVersion', async () => {
+        await runMake({
+          makeVersionWinStoreCompatible: true,
+          packageVersion: '3.0.0-rc.1',
+        });
 
-        expect(vi.mocked(windowsStore)).toHaveBeenCalledOnce();
-        expect(vi.mocked(windowsStore).mock.calls[0][0]).not.toHaveProperty(
-          'makeVersionWinStoreCompatible',
-        );
+        expect(packagingOptions().manifestVariables).toMatchObject({
+          packageVersion: '3.0.0.0',
+        });
+      });
+    });
+
+    describe('unsupported options', () => {
+      it.each([
+        { option: 'containerVirtualization', value: true },
+        { option: 'createConfigParams', value: ['/verbose'] },
+        { option: 'createPriParams', value: ['/verbose'] },
+        { option: 'deploy', value: false },
+        { option: 'desktopConverter', value: 'C:\\DesktopAppConverter' },
+        { option: 'expandedBaseImage', value: 'C:\\BaseImage' },
+        { option: 'finalSay', value: async () => {} },
+        { option: 'flatten', value: false },
+        { option: 'makeappxParams', value: ['/verbose'] },
+      ] satisfies { option: keyof MakerAppXConfig; value: unknown }[])(
+        'should warn about and ignore $option',
+        async ({ option, value }) => {
+          await runMake({ [option]: value });
+
+          expect(console.warn).toHaveBeenCalledOnce();
+          expect(vi.mocked(console.warn).mock.calls[0].join(' ')).toContain(
+            `The "${option}" option is not supported by @electron-forge/maker-appx anymore and will be ignored.`,
+          );
+          expect(vi.mocked(packageMSIX)).toHaveBeenCalledOnce();
+          expect(packagingOptions()).not.toHaveProperty(option);
+        },
+      );
+
+      it('should warn once per unsupported option', async () => {
+        await runMake({ deploy: true, flatten: true, makeappxParams: [] });
+
+        expect(console.warn).toHaveBeenCalledTimes(3);
       });
     });
   });

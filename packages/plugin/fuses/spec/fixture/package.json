@@ -7,7 +7,7 @@
     "@electron/fuses": "^2.0.0"
   },
   "devDependencies": {
-    "electron": "39.2.3",
+    "electron": "file:../../../../../node_modules/electron",
     "@electron-forge/core": "portal:../../../../api/core"
   }
 }

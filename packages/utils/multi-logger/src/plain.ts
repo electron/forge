@@ -5,9 +5,10 @@ import Logger from './Logger.js';
 import Tab from './Tab.js';
 
 /**
- * Append-only renderer for non-interactive terminals and CI: every line is
- * prefixed with a colored, fixed-width `[Tab Name]` tag and status changes are
- * written as single lines.
+ * Append-only renderer: every line is prefixed with a colored, fixed-width
+ * `[Tab Name]` tag and status changes are written as single lines. This is
+ * used when `process.env.CI` is set, the logger is not attached to a TTY, or
+ * the `interactive` option is disabled.
  */
 export default class PlainRenderer {
   private unsubscribe: (() => void) | null = null;

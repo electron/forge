@@ -3,16 +3,13 @@ import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
-import {
-  ElectronProcess,
-  ResolvedForgeConfig,
-} from '@electron-forge/shared-types';
+import { ElectronProcess } from '@electron-forge/shared-types';
 import { ensureSharedLogger } from '@electron-forge/multi-logger';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
 import locateElectronExecutable from '../../src/util/electron-executable.js';
-import findConfig from '../../src/util/forge-config.js';
+import findConfig, { defaultForgeConfig } from '../../src/util/forge-config.js';
 import { readMutatedPackageJson } from '../../src/util/read-package-json.js';
 import resolveDir from '../../src/util/resolve-dir.js';
 
@@ -87,6 +84,7 @@ vi.mock(import('../../src/util/forge-config'), async (importOriginal) => {
   return {
     ...mod,
     default: vi.fn().mockReturnValue({
+      ...mod.defaultForgeConfig,
       pluginInterface: {
         triggerHook: vi.fn(),
         getHookListrTasks: vi.fn(),
@@ -149,6 +147,7 @@ describe('start', () => {
       vi.spyOn(process.stdin, 'resume').mockImplementation(() => process.stdin);
       vi.spyOn(process.stdin, 'pause').mockImplementation(() => process.stdin);
       vi.spyOn(process, 'on').mockImplementation(() => process);
+      vi.spyOn(process, 'prependListener').mockImplementation(() => process);
       vi.spyOn(console, 'log').mockImplementation(() => undefined);
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
     });
@@ -188,6 +187,7 @@ describe('start', () => {
         .mockImplementation(() => true);
       let attachedWhenHookRan = 0;
       vi.mocked(findConfig).mockResolvedValueOnce({
+        ...defaultForgeConfig,
         pluginInterface: {
           triggerHook: vi.fn(),
           getHookListrTasks: vi.fn(),
@@ -199,7 +199,7 @@ describe('start', () => {
             attachedWhenHookRan = fakeLogger.attachProcess.mock.calls.length;
           },
         },
-      } as unknown as ResolvedForgeConfig);
+      });
 
       await start({ dir: import.meta.dirname, interactive: true });
 
@@ -278,6 +278,40 @@ describe('start', () => {
       expect(fakeLogger.stop).toHaveBeenCalledOnce();
     });
 
+    it("signals the app before a plugin's SIGINT handler can exit Forge", async () => {
+      // Mirror Node's listener order: `on` appends, `prependListener` goes
+      // first.
+      const sigint: (() => void)[] = [];
+      vi.mocked(process.on).mockImplementation(((event, listener) => {
+        if (event === 'SIGINT') sigint.push(listener);
+        return process;
+      }) as typeof process.on);
+      vi.mocked(process.prependListener).mockImplementation(((
+        event,
+        listener,
+      ) => {
+        if (event === 'SIGINT') sigint.unshift(listener);
+        return process;
+      }) as typeof process.prependListener);
+
+      // The bundler plugins hook SIGINT in `init()`, while the config loads,
+      // and call `process.exit()` from it.
+      const events: string[] = [];
+      process.on('SIGINT', () => events.push('plugin exits Forge'));
+
+      const child = childWithOutput();
+      vi.mocked(child.kill).mockImplementation(((signal) => {
+        events.push(`app gets ${signal}`);
+        return true;
+      }) as typeof child.kill);
+      vi.mocked(spawn).mockReturnValueOnce(child);
+      await start({ dir: import.meta.dirname, interactive: true });
+
+      // What the UI does on `q` or Ctrl+C.
+      for (const listener of sigint) listener();
+      expect(events).toEqual(['app gets SIGINT', 'plugin exits Forge']);
+    });
+
     it('reads `rs` from stdin only when the UI is not drawing', async () => {
       vi.mocked(spawn).mockReturnValueOnce(childWithOutput());
       await start({ dir: import.meta.dirname, interactive: true });
@@ -321,13 +355,14 @@ describe('start', () => {
         kill: vi.fn(),
       }) as unknown as ElectronProcess;
       vi.mocked(findConfig).mockResolvedValueOnce({
+        ...defaultForgeConfig,
         pluginInterface: {
           triggerHook: vi.fn(),
           getHookListrTasks: vi.fn(),
           triggerMutatingHook: vi.fn(),
           overrideStartLogic: vi.fn().mockResolvedValue(child),
         },
-      } as any);
+      });
 
       const spawned = await start({
         dir: import.meta.dirname,
@@ -345,10 +380,36 @@ describe('start', () => {
         expect.any(Function),
       );
     });
+
+    it('uses the plain logger when the user disables `interactive`', async () => {
+      const child = childWithOutput();
+
+      vi.mocked(findConfig).mockResolvedValueOnce({
+        ...defaultForgeConfig,
+        pluginInterface: {
+          triggerHook: vi.fn(),
+          getHookListrTasks: vi.fn(),
+          triggerMutatingHook: vi.fn(),
+          overrideStartLogic: vi.fn().mockResolvedValue(child),
+        },
+        logger: {
+          interactive: false,
+        },
+      });
+
+      await start({
+        dir: import.meta.dirname,
+        interactive: true,
+      });
+
+      expect(fakeLogger.forcePlain).toHaveBeenCalledOnce();
+      expect(fakeLogger.start).toHaveBeenCalledOnce();
+    });
   });
 
   it('allows plugin to override the start command with its own child process', async () => {
     vi.mocked(findConfig).mockResolvedValueOnce({
+      ...defaultForgeConfig,
       pluginInterface: {
         triggerHook: vi.fn(),
         getHookListrTasks: vi.fn(),
@@ -358,7 +419,7 @@ describe('start', () => {
           result: new ChildProcess() as ElectronProcess,
         }),
       },
-    } as any);
+    });
 
     await start({
       dir: import.meta.dirname,
