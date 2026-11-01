@@ -122,7 +122,6 @@
   box-shadow:
     var(--lu-shadow-island),
     inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft),
-    inset 0 -2px 0 color-mix(in srgb, var(--lu-accent) 45%, transparent),
     0 26px 50px -24px color-mix(in srgb, var(--lu-accent) 65%, transparent);
 }
 
