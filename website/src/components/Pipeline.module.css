@@ -386,6 +386,57 @@
   }
 }
 
+/* Sparks: on each zap, embers burst off the top of the housing, arc out and
+   fall away as they cool from white-hot to the accent. */
+.spark {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: #fff3d6;
+  box-shadow:
+    0 0 4px 1px
+      color-mix(in srgb, var(--hearth, var(--lu-accent)) 80%, transparent),
+    0 0 10px 2px color-mix(in srgb, var(--lu-accent) 40%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: spark calc(var(--period) / 3) cubic-bezier(0.2, 0.7, 0.4, 1)
+    infinite;
+  animation-delay: calc(
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30 + var(--lag) *
+      var(--period) / 60
+  );
+}
+
+@keyframes spark {
+  0%,
+  8.9% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.3);
+    background: #fff3d6;
+  }
+  17% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.7), var(--dy)) scale(1);
+    background: #ffb36b;
+  }
+  27% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--dy) + 18px)) scale(0.4);
+    background: var(--lu-accent);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* ---------- The steps ---------- */
 
 .steps {
@@ -547,6 +598,7 @@
   }
 
   .station::after,
+  .spark,
   .tile {
     animation: none !important;
   }

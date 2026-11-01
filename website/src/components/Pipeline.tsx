@@ -201,6 +201,21 @@ function FormIcon({ icon }: { icon: Icon }) {
  * next form (template, source, app bundle, installers, release). Pure CSS, so
  * it runs without JavaScript and pauses under reduced motion.
  */
+/**
+ * Sparks thrown off a station as it zaps an app: where each one lands
+ * (x, y in px from the top of the housing) and how late it leaves, as a share
+ * of the zap. Alternate stations mirror them, so the line doesn't look stamped.
+ */
+const SPARKS: [number, number, number][] = [
+  [-30, -18, 0],
+  [-16, -34, 0.3],
+  [-2, -40, 0.1],
+  [12, -36, 0.5],
+  [26, -28, 0.2],
+  [40, -14, 0.4],
+  [8, -22, 0.7],
+];
+
 export default function Pipeline(): React.ReactElement {
   return (
     <div className={styles.pipeline}>
@@ -239,6 +254,19 @@ export default function Pipeline(): React.ReactElement {
             style={{ '--s': i } as React.CSSProperties}
           >
             <span className={styles.stationLight} />
+            {SPARKS.map(([dx, dy, lag], k) => (
+              <span
+                key={k}
+                className={styles.spark}
+                style={
+                  {
+                    '--dx': `${(i % 2 ? -1 : 1) * dx}px`,
+                    '--dy': `${dy}px`,
+                    '--lag': lag,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
           </div>
         ))}
       </div>
