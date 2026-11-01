@@ -13,15 +13,33 @@
   position: relative;
   isolation: isolate;
   box-sizing: border-box;
-  width: 100%;
+  /* Same width and gutters as the pipeline sheet, so the text shares its
+     left edge. The text keeps to a 640px column; the hearth fills the right. */
+  width: min(1120px, 100% - 2 * var(--lu-space-6));
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--lu-space-6);
-  max-width: 880px;
   margin: 0 auto;
-  padding: 96px var(--lu-space-6) var(--lu-space-8);
-  text-align: center;
+  padding: 96px 0 var(--lu-space-8);
+}
+
+.hero > :not(.embers) {
+  max-width: min(640px, 100%);
+}
+
+/* The hearth: warm light from the lower right, behind the embers. */
+.hero::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: 0 0 -120px 35%;
+  background: radial-gradient(
+    48% 70% at 55% 85%,
+    color-mix(in srgb, var(--lu-accent) 18%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
 }
 
 /* Embers drifting up from the hearth, behind the hero's content. Kept to a
@@ -108,7 +126,6 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: var(--lu-space-3);
 }
 
@@ -171,7 +188,6 @@
   margin: 0 0 var(--lu-space-6);
   font: var(--lu-type-title);
   letter-spacing: var(--lu-type-title-tracking);
-  text-align: center;
 }
 
 /* The homepage trades the site's overhead aura for hearth light: one warm glow
@@ -199,7 +215,7 @@
   z-index: -1;
   inset: -200px 0 40% 0;
   background: radial-gradient(
-    70% 60% at 50% 72%,
+    34% 60% at 70% 72%,
     color-mix(in srgb, var(--lu-accent) 20%, transparent),
     transparent 72%
   );
@@ -303,7 +319,12 @@
 
 @media (max-width: 996px) {
   .hero {
+    width: calc(100% - 2 * var(--lu-space-4));
     padding-top: 64px;
+  }
+
+  .hero::before {
+    inset: 0 0 -120px 0;
   }
 
   .title {
