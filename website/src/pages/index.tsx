@@ -1,11 +1,13 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import { useState } from 'react';
 
 import Pipeline from '../components/Pipeline';
-import Terminal from '../components/Terminal';
 
 import styles from './index.module.css';
+
+const CREATE_COMMAND = 'npx create-electron-app@latest my-app';
 
 const FEATURES = [
   {
@@ -131,16 +133,38 @@ function Icon({ icon }: { icon: FeatureIcon }) {
   );
 }
 
+function CopyCommand() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className={styles.command}>
+      <span className={styles.prompt} aria-hidden="true">
+        $
+      </span>
+      <code>{CREATE_COMMAND}</code>
+      <button
+        type="button"
+        className={styles.copy}
+        onClick={() => {
+          void navigator.clipboard.writeText(CREATE_COMMAND).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1600);
+          });
+        }}
+      >
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+    </div>
+  );
+}
+
 /** A few embers rising off the hearth: left %, size px, seconds, delay, drift px. */
 const EMBERS = [
-  [18, 3, 11, 0, 18],
-  [27, 2, 9, 4.5, -14],
-  [39, 3, 12, 2, 10],
-  [52, 2, 10, 7, -20],
-  [61, 3, 13, 1, 16],
-  [70, 2, 9, 5.5, -10],
-  [79, 3, 11, 3, 22],
-  [86, 2, 12, 8.5, -16],
+  [14, 3, 11, 0, 18],
+  [24, 2, 9, 4.5, -14],
+  [36, 3, 12, 2, 10],
+  [63, 2, 10, 7, -20],
+  [74, 3, 13, 1, 16],
+  [85, 2, 12, 5.5, -12],
 ];
 
 function Embers() {
@@ -169,45 +193,42 @@ export default function Home(): React.ReactElement {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout description={siteConfig.tagline} wrapperClassName={styles.home}>
-      <div className={styles.stage}>
+      <header className={styles.hero}>
         <Embers />
-        <header className={styles.hero}>
-          <div className={styles.intro}>
-            <Link
-              className={styles.badge}
-              href="https://github.com/electron/forge/releases"
-            >
-              Electron Forge 8 is out
-            </Link>
-            <h1 className={styles.title}>
-              Build, package and ship Electron apps.
-            </h1>
-            <p className={styles.lead}>
-              Forge is the all-in-one toolchain for Electron. Scaffold a
-              project, then package, sign, make installers for every platform
-              and publish, with one command each.
-            </p>
-            <div className={styles.actions}>
-              <Link className="button button--primary" to="/getting-started/">
-                Get started
-              </Link>
-              <Link
-                className="button button--secondary"
-                href="https://github.com/electron/forge"
-              >
-                View on GitHub
-              </Link>
-            </div>
-          </div>
-          <Terminal />
-        </header>
-
-        <section className={styles.sheet} aria-label="The build pipeline">
-          <Pipeline />
-        </section>
-      </div>
+        <Link
+          className={styles.badge}
+          href="https://github.com/electron/forge/releases"
+        >
+          Electron Forge 8 is out
+        </Link>
+        <h1 className={styles.title}>Build, package and ship Electron apps.</h1>
+        <p className={styles.lead}>
+          Forge is the all-in-one toolchain for Electron. Scaffold a project,
+          then package, sign, make installers for every platform and publish,
+          with one command each.
+        </p>
+        <div className={styles.actions}>
+          <Link className="button button--primary" to="/getting-started/">
+            Get started
+          </Link>
+          <Link
+            className="button button--secondary"
+            href="https://github.com/electron/forge"
+          >
+            View on GitHub
+          </Link>
+        </div>
+        <CopyCommand />
+      </header>
 
       <main>
+        <section className={styles.sheet} aria-labelledby="pipeline">
+          <h2 id="pipeline" className={styles.sectionTitle}>
+            One pipeline, from first run to release
+          </h2>
+          <Pipeline />
+        </section>
+
         <section className={styles.features} aria-labelledby="features">
           <h2 id="features" className={styles.sectionTitle}>
             Everything a desktop release needs
