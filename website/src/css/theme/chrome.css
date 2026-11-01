@@ -130,10 +130,123 @@ body,
   backdrop-filter: none;
 }
 
+/* The mobile menu: a floating glass sheet, inset from the screen's edges,
+   over a soft scrim. */
 .navbar-sidebar {
+  top: var(--lu-space-2);
+  bottom: var(--lu-space-2);
+  left: var(--lu-space-2);
+  /* Infima sizes both menu panels (main and docs) from this variable. */
+  --ifm-navbar-sidebar-width: min(320px, 100vw - 2 * var(--lu-space-6));
+  width: var(--ifm-navbar-sidebar-width);
+  height: auto;
+  overflow: hidden;
+  border-radius: var(--lu-radius-sheet);
   background: var(--lu-material-overlay);
   -webkit-backdrop-filter: var(--lu-blur-overlay);
   backdrop-filter: var(--lu-blur-overlay);
+  box-shadow:
+    var(--lu-shadow-popover),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+}
+
+.navbar-sidebar__backdrop {
+  background: rgba(20, 22, 40, 0.18);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+[data-theme='dark'] .navbar-sidebar__backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.navbar-sidebar__brand {
+  height: auto;
+  min-height: 52px;
+  padding: var(--lu-space-2) var(--lu-space-2) var(--lu-space-2)
+    var(--lu-space-4);
+  box-shadow: none;
+}
+
+/* The theme toggle and close button: round controls, like the navbar's. */
+.navbar-sidebar__brand [class*='toggleButton'],
+.navbar-sidebar__close {
+  display: grid;
+  place-items: center;
+  width: var(--lu-size-toolbar-inner);
+  height: var(--lu-size-toolbar-inner);
+  border-radius: 50%;
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.navbar-sidebar__brand [class*='toggleButton']:hover,
+.navbar-sidebar__close:hover {
+  background: var(--nav-hover);
+}
+
+.navbar-sidebar__brand > [class*='toggle'] {
+  margin-right: var(--lu-space-1) !important;
+}
+
+.navbar-sidebar__close {
+  margin-left: 0;
+  color: var(--lu-ink-muted);
+}
+
+.navbar-sidebar__close svg {
+  width: 14px;
+  height: 14px;
+}
+
+.navbar-sidebar__items .menu {
+  padding: var(--lu-space-1) var(--lu-space-2) var(--lu-space-4);
+}
+
+/* Main menu rows: the docs sidebar's rows, with the current section as the
+   raised chip. */
+.navbar-sidebar .menu__link {
+  min-height: var(--lu-size-row);
+  padding: 6px 10px;
+  border-radius: var(--lu-radius-item);
+  font: var(--lu-type-label);
+  font-size: 14px;
+  color: var(--lu-ink-muted);
+}
+
+.navbar-sidebar .menu__link:hover {
+  background: var(--nav-hover);
+  color: var(--lu-ink);
+}
+
+.navbar-sidebar
+  .menu__list:not(.theme-doc-sidebar-menu)
+  > .menu__list-item
+  > .menu__link--active {
+  background: var(--lu-chip);
+  box-shadow: var(--lu-shadow-lift);
+  color: var(--lu-ink);
+}
+
+.navbar-sidebar .menu__link svg {
+  color: var(--lu-ink-faint);
+}
+
+/* "Back to main menu": a quiet row, not an accent bar. */
+.navbar-sidebar__back {
+  width: 100%;
+  margin: 0 0 var(--lu-space-2);
+  padding: 6px 10px;
+  border-radius: var(--lu-radius-item);
+  background: none;
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-label);
+  text-align: left;
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.navbar-sidebar__back:hover {
+  background: var(--nav-hover);
+  color: var(--lu-ink);
 }
 
 /* The docs sidebar is chrome: it sits on the window ground with no divider. */
