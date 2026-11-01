@@ -18,9 +18,15 @@
 :root {
   /* Code blocks sit in the sheet, so they take the sunken surface. */
   --lu-code-sheet: var(--lu-surface-sunken);
-  /* Docs are read at length: body text is larger than Fiddle's 13px desktop UI. */
-  --lu-docs-font-size: 16px;
-  --lu-docs-line-height: 1.65;
+  /* Docs type: Lucent's scale, with body and code one step up from Fiddle's
+     13px desktop UI because docs are read at length. Same weights and tracking. */
+  --lu-docs-font-size: 15px;
+  --lu-docs-line-height: 24px;
+  --lu-type-docs-body: 400 var(--lu-docs-font-size) / var(--lu-docs-line-height)
+    var(--lu-font-sans);
+  --lu-type-docs-h2: 650 22px/28px var(--lu-font-sans);
+  --lu-type-docs-h3: 600 17px/24px var(--lu-font-sans);
+  --lu-type-docs-h4: 600 15px/20px var(--lu-font-sans);
   --lu-ring-focus: 0 0 0 3.5px
     color-mix(in srgb, var(--lu-accent) 26%, transparent);
 }
@@ -30,15 +36,13 @@
 }
 
 /* Light from the Lucent direction (felixrieseberg/fiddle-design, #dir=electron),
-   which Fiddle's tokens don't carry: the aura behind the glass, the lit rim on
-   glass edges, and the gradient for page titles. */
+   which Fiddle's tokens don't carry: the aura behind the glass and the lit rim
+   on glass edges. */
 :root {
   --lu-aura-a: rgba(71, 168, 255, 0.26);
   --lu-aura-b: rgba(159, 234, 249, 0.42);
   --lu-aura-c: rgba(27, 28, 38, 0.08);
   --lu-sheen-glass: rgba(255, 255, 255, 0.34);
-  --lu-title-b: #006f85;
-  --lu-title-c: #1f5fd1;
 }
 
 [data-theme='dark'] {
@@ -46,8 +50,6 @@
   --lu-aura-b: rgba(159, 234, 249, 0.16);
   --lu-aura-c: rgba(27, 28, 38, 0.5);
   --lu-sheen-glass: rgba(255, 255, 255, 0.05);
-  --lu-title-b: #9feaf9;
-  --lu-title-c: #5aa7ff;
 }
 
 /* ---------- Infima, mapped to Lucent ---------- */
@@ -112,6 +114,11 @@
   --ifm-font-family-monospace: var(--lu-font-mono);
   --ifm-font-size-base: var(--lu-docs-font-size);
   --ifm-line-height-base: var(--lu-docs-line-height);
+  --ifm-spacing-vertical: var(--lu-space-3);
+  --ifm-paragraph-margin-bottom: var(--lu-space-3);
+  --ifm-list-item-margin: var(--lu-space-1);
+  --ifm-list-paragraph-margin: var(--lu-space-1);
+  --ifm-leading: var(--lu-space-3);
   --ifm-heading-font-weight: 650;
   --ifm-font-weight-semibold: 600;
 
@@ -128,7 +135,7 @@
   --ifm-transition-timing-default: var(--lu-ease);
 
   --ifm-code-background: var(--lu-fill);
-  --ifm-code-font-size: 88%;
+  --ifm-code-font-size: 13px;
   --ifm-code-padding-horizontal: 0.35rem;
   --ifm-pre-background: var(--lu-code-sheet);
   --docusaurus-highlighted-code-line-bg: color-mix(
@@ -294,9 +301,19 @@ body,
 }
 
 .theme-doc-sidebar-menu .menu__link {
+  min-height: var(--lu-size-row);
+  padding: 4px 10px;
   border-radius: var(--lu-radius-item);
-  font-size: 14px;
-  line-height: 20px;
+  font: var(--lu-type-label);
+  font-weight: 400;
+}
+
+.theme-doc-sidebar-menu .menu__list {
+  --ifm-menu-link-padding-horizontal: 10px;
+}
+
+.theme-doc-sidebar-menu .menu__list-item:not(:first-child) {
+  margin-top: 1px;
 }
 
 .theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
@@ -307,12 +324,17 @@ body,
   border-radius: var(--lu-radius-item);
 }
 
-/* Category heads: Lucent's caption style, sentence case, never shouted. */
+/* Top-level groups: Lucent's caption style, sentence case, never shouted. */
+.theme-doc-sidebar-item-category-level-1 {
+  margin-top: var(--lu-space-4) !important;
+}
+
 .theme-doc-sidebar-item-category-level-1
   > .menu__list-item-collapsible
   > .menu__link {
-  color: var(--lu-ink);
-  font-weight: 600;
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  color: var(--lu-ink-faint);
 }
 
 /* The page: one solid sheet, inset from the chrome, lifted by shadow rather than a border. */
@@ -336,26 +358,84 @@ body,
 
 /* ---------- Content ---------- */
 
-.markdown h1:first-child {
-  --ifm-h1-font-size: 2.5rem;
-  letter-spacing: -0.028em;
+/* Content type and rhythm: Lucent's scale on Lucent's 4px spacing grid. */
+.markdown {
+  /* About 80 characters a line. */
+  max-width: 720px;
+  font: var(--lu-type-docs-body);
+  --ifm-h1-vertical-rhythm-bottom: 1;
 }
 
-/* Page titles fade from ink into Electron cyan and blue. */
 .markdown header h1,
 .markdown > h1:first-child {
-  width: fit-content;
-  padding-bottom: 0.06em;
-  padding-right: 0.04em;
-  background: linear-gradient(
-    100deg,
-    var(--lu-ink) 0 42%,
-    var(--lu-title-b) 78%,
-    var(--lu-title-c) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font: var(--lu-type-display);
+  letter-spacing: var(--lu-type-display-tracking);
+  margin-bottom: var(--lu-space-4);
+}
+
+.markdown h2 {
+  font: var(--lu-type-docs-h2);
+  margin: var(--lu-space-8) 0 var(--lu-space-2);
+}
+
+.markdown h3 {
+  font: var(--lu-type-docs-h3);
+  margin: var(--lu-space-6) 0 var(--lu-space-2);
+}
+
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  font: var(--lu-type-docs-h4);
+  margin: var(--lu-space-4) 0 var(--lu-space-1);
+}
+
+.markdown > p,
+.markdown > ul,
+.markdown > ol,
+.markdown li {
+  text-wrap: pretty;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 22px;
+}
+
+.markdown .theme-code-block,
+.markdown .theme-admonition,
+.markdown .tabs-container,
+.markdown table {
+  margin-bottom: var(--lu-space-4);
+}
+
+/* Supporting text: breadcrumbs, table of contents, pager, footer. */
+.breadcrumbs__link {
+  font: var(--lu-type-label);
+  font-weight: 400;
+  padding: 4px 10px;
+}
+
+.table-of-contents {
+  font: var(--lu-type-label);
+  font-weight: 400;
+}
+
+.table-of-contents__link {
+  color: var(--lu-ink-muted);
+}
+
+.table-of-contents li {
+  margin: 6px var(--ifm-toc-padding-vertical);
+}
+
+.theme-doc-footer,
+.pagination-nav__label {
+  font: var(--lu-type-label);
+}
+
+.footer {
+  font: var(--lu-type-body);
 }
 
 .markdown h2 {
@@ -395,8 +475,6 @@ code {
 
 .theme-code-block pre code {
   font: var(--lu-type-code);
-  font-size: 14px;
-  line-height: 22px;
 }
 
 /* Tables: hairlines between rows only. */
@@ -658,14 +736,5 @@ code {
   .dropdown__menu {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-  }
-}
-
-/* Gradient titles go solid wherever contrast matters more than light. */
-@media (prefers-contrast: more), (forced-colors: active) {
-  .markdown header h1,
-  .markdown > h1:first-child {
-    background: none;
-    color: var(--lu-ink);
   }
 }
