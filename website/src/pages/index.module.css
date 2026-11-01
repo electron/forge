@@ -366,19 +366,29 @@
   box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
 }
 
+/* Lucent's display style (650, -0.028em), scaled up for the hero. */
 .title {
   margin-top: 0;
-  font: 650 64px/68px var(--lu-font-sans);
-  letter-spacing: -0.035em;
+  font: 650 56px/60px var(--lu-font-sans);
+  letter-spacing: -0.028em;
   text-wrap: balance;
 }
 
+.title > span {
+  display: block;
+}
+
+/* The second line is the quieter half of the statement. */
+.titleQuiet {
+  color: var(--lu-ink-muted);
+}
+
 .lead {
-  max-width: 620px;
+  max-width: 34em;
   margin-top: 0;
   color: var(--lu-ink-muted);
-  font: 400 18px/28px var(--lu-font-sans);
-  text-wrap: pretty;
+  font: 400 19px/28px var(--lu-font-sans);
+  text-wrap: balance;
 }
 
 .actions {

@@ -292,12 +292,12 @@ export default function Home(): React.ReactElement {
             Electron Forge 8 is out
           </Link>
           <h1 className={styles.title}>
-            Build, package and ship Electron apps.
+            <span>Ship your Electron app.</span>{' '}
+            <span className={styles.titleQuiet}>Everywhere it runs.</span>
           </h1>
           <p className={styles.lead}>
-            Forge is the all-in-one toolchain for Electron. Scaffold a project,
-            then package, sign, make installers for every platform and publish,
-            with one command each.
+            One tool takes it from your first run to signed installers on macOS,
+            Windows and Linux.
           </p>
           <div className={styles.actions}>
             <Link className="button button--primary" to="/getting-started/">
