@@ -323,7 +323,7 @@ export default function Home(): React.ReactElement {
       <main>
         <section className={styles.pipeline} aria-labelledby="pipeline">
           <h2 id="pipeline" className={styles.sectionTitle}>
-            A full build pipeline that works out of the box
+            One pipeline, from first run to release
           </h2>
           <div className={styles.sheet}>
             <Pipeline />
