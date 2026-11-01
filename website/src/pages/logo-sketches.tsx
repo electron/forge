@@ -381,6 +381,59 @@ function Mark({ svg, size }: { svg: React.ReactNode; size: number }) {
   );
 }
 
+const FLICK =
+  'M40 3c-3 2-4.2 5.6-3 10C40.5 18 45 22.5 45 30a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8C29 17.5 31.5 7.5 40 3Z';
+
+const SPARK_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] = [
+  {
+    name: 'Flick + sparks',
+    note: 'Two sparks rise off the flicked tip, following its direction.',
+    svg: (
+      <Interlocked
+        id="flickspark"
+        dot
+        shape={
+          <path
+            d={
+              FLICK +
+              ' M47.5 11a2.2 2.2 0 1 0 .01 0Z M51.5 4a1.4 1.4 0 1 0 .01 0Z'
+            }
+          />
+        }
+      />
+    ),
+  },
+  {
+    name: 'Flick + spark',
+    note: 'One round spark, the quietest option.',
+    svg: (
+      <Interlocked
+        id="flickspark1"
+        dot
+        shape={<path d={FLICK + ' M47 9.5a2.2 2.2 0 1 0 .01 0Z'} />}
+      />
+    ),
+  },
+  {
+    name: 'Flick + star spark',
+    note: 'A four-point glint instead of a dot.',
+    svg: (
+      <Interlocked
+        id="flickspark3"
+        dot
+        shape={
+          <path
+            d={
+              FLICK +
+              ' M48 6l1.6 3.4L53 11l-3.4 1.6L48 16l-1.6-3.4L43 11l3.4-1.6Z'
+            }
+          />
+        }
+      />
+    ),
+  },
+];
+
 const TIP_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] = [
   {
     name: 'Tip 5: lean',
@@ -559,6 +612,7 @@ export default function LogoSketches(): React.ReactElement {
         }}
       >
         {[
+          ...SPARK_VARIANTS,
           HEARTH_VARIANTS[1],
           ...TIP_VARIANTS,
           ...FORGE_VARIANTS,
