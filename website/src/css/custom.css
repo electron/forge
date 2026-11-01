@@ -21,7 +21,7 @@
   /* Docs type: Lucent's scale, with body and code one step up from Fiddle's
      13px desktop UI because docs are read at length. Same weights and tracking. */
   --lu-docs-font-size: 15px;
-  --lu-docs-line-height: 26px;
+  --lu-docs-line-height: 24px;
   --lu-type-docs-body: 400 var(--lu-docs-font-size) / var(--lu-docs-line-height)
     var(--lu-font-sans);
   --lu-type-docs-h2: 650 22px/28px var(--lu-font-sans);
@@ -114,11 +114,11 @@
   --ifm-font-family-monospace: var(--lu-font-mono);
   --ifm-font-size-base: var(--lu-docs-font-size);
   --ifm-line-height-base: var(--lu-docs-line-height);
-  --ifm-spacing-vertical: var(--lu-space-4);
-  --ifm-paragraph-margin-bottom: var(--lu-space-4);
-  --ifm-list-item-margin: var(--lu-space-2);
-  --ifm-list-paragraph-margin: var(--lu-space-2);
-  --ifm-leading: var(--lu-space-4);
+  --ifm-spacing-vertical: var(--lu-space-3);
+  --ifm-paragraph-margin-bottom: var(--lu-space-3);
+  --ifm-list-item-margin: var(--lu-space-1);
+  --ifm-list-paragraph-margin: var(--lu-space-1);
+  --ifm-leading: var(--lu-space-3);
   --ifm-heading-font-weight: 650;
   --ifm-font-weight-semibold: 600;
 
@@ -384,24 +384,24 @@ body,
 .markdown > h1:first-child {
   font: var(--lu-type-display);
   letter-spacing: var(--lu-type-display-tracking);
-  margin: var(--lu-space-2) 0 var(--lu-space-6);
+  margin-bottom: var(--lu-space-4);
 }
 
 .markdown h2 {
   font: var(--lu-type-docs-h2);
-  margin: 48px 0 var(--lu-space-4);
+  margin: var(--lu-space-8) 0 var(--lu-space-2);
 }
 
 .markdown h3 {
   font: var(--lu-type-docs-h3);
-  margin: var(--lu-space-8) 0 var(--lu-space-3);
+  margin: var(--lu-space-6) 0 var(--lu-space-2);
 }
 
 .markdown h4,
 .markdown h5,
 .markdown h6 {
   font: var(--lu-type-docs-h4);
-  margin: var(--lu-space-6) 0 var(--lu-space-2);
+  margin: var(--lu-space-4) 0 var(--lu-space-1);
 }
 
 .markdown > p,
@@ -420,7 +420,7 @@ body,
 .markdown .theme-admonition,
 .markdown .tabs-container,
 .markdown table {
-  margin-bottom: var(--lu-space-6);
+  margin-bottom: var(--lu-space-4);
 }
 
 /* Supporting text: breadcrumbs, table of contents, pager, footer. */
