@@ -420,6 +420,15 @@
   font-weight: 500;
 }
 
+/* Between the mobile layout and full width, the fan is wider than its
+   column, so it shrinks to fit. */
+@media (max-width: 1180px) {
+  .castings {
+    transform: scale(0.76);
+    transform-origin: 50% 0;
+  }
+}
+
 @media (max-width: 996px) {
   .hero {
     width: calc(100% - 2 * var(--lu-space-4));
