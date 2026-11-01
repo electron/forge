@@ -45,7 +45,15 @@ const FRONT = `M${END_L[0]} ${END_L[1]}A${ORBIT.rx} ${ORBIT.ry} ${ORBIT.tilt} 0 
 /** The half behind it. */
 const BACK = `M${END_R[0]} ${END_R[1]}A${ORBIT.rx} ${ORBIT.ry} ${ORBIT.tilt} 0 0 ${END_L[0]} ${END_L[1]}`;
 
-function Interlocked({ id, dot }: { id: string; dot?: boolean }) {
+function Interlocked({
+  id,
+  dot,
+  shape = <path d={HEARTH_FLAME} />,
+}: {
+  id: string;
+  dot?: boolean;
+  shape?: React.ReactNode;
+}) {
   return (
     <>
       <defs>
@@ -55,7 +63,9 @@ function Interlocked({ id, dot }: { id: string; dot?: boolean }) {
         </mask>
       </defs>
       <path d={BACK} fill="none" stroke="currentColor" strokeWidth={3} />
-      <path d={HEARTH_FLAME} fill="currentColor" mask={`url(#${id})`} />
+      <g fill="currentColor" mask={`url(#${id})`}>
+        {shape}
+      </g>
       <path
         d={FRONT}
         fill="none"
@@ -67,6 +77,92 @@ function Interlocked({ id, dot }: { id: string; dot?: boolean }) {
     </>
   );
 }
+
+const ANVIL =
+  'M7 15c5 0 9 1 13 1h33v7h-8c-2 4-5 6-9 7v5h6v6H21v-6h6v-5c-4-1-7-3-8-6-5-1-9-4-12-9Z';
+
+const FORGE_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] = [
+  {
+    name: 'A. Orbit + anvil',
+    note: 'The 5b orbit around an anvil.',
+    svg: (
+      <Interlocked
+        id="fa"
+        dot
+        shape={<path d={ANVIL} transform="translate(0 -3)" />}
+      />
+    ),
+  },
+  {
+    name: 'B. Orbit + hammer',
+    note: 'A tilted smithing hammer inside the orbit.',
+    svg: (
+      <Interlocked
+        id="fb"
+        dot
+        shape={
+          <g transform="rotate(-35 32 26)">
+            <rect x="17" y="6" width="30" height="11" rx="2.5" />
+            <rect x="29" y="17" width="6" height="28" rx="2" />
+          </g>
+        }
+      />
+    ),
+  },
+  {
+    name: 'C. Orbit + anvil and spark',
+    note: 'The anvil with a spark struck off it.',
+    svg: (
+      <Interlocked
+        id="fc"
+        dot
+        shape={
+          <>
+            <path d={ANVIL} transform="translate(0 1)" />
+            <path d="M40 0c.8 4.6 2.6 6.4 7 7.2-4.4.8-6.2 2.6-7 7.2-.8-4.6-2.6-6.4-7-7.2 4.4-.8 6.2-2.6 7-7.2Z" />
+          </>
+        }
+      />
+    ),
+  },
+  {
+    name: 'D. Orbit + crucible',
+    note: 'A crucible of molten metal, with a flame over it.',
+    svg: (
+      <Interlocked
+        id="fd"
+        dot
+        shape={
+          <>
+            <path d="M16 20h32l-4 18a6 6 0 0 1-6 4.5H26a6 6 0 0 1-6-4.5Z" />
+            <path d="M32 3c3.5 4 6 7 6 10.5a6 6 0 0 1-12 0c0-2.5 1.3-4.3 2.8-5.5.2 2 1.1 3.2 2.3 3.6-.6-3-.2-6 .9-8.6Z" />
+          </>
+        }
+      />
+    ),
+  },
+  {
+    name: 'E. Orbit + hammer over anvil',
+    note: 'Both, smaller: the hammer raised above the anvil.',
+    svg: (
+      <Interlocked
+        id="fe"
+        dot
+        shape={
+          <>
+            <path d={ANVIL} transform="translate(8 10) scale(0.75)" />
+            <g transform="translate(16 -4) scale(0.55)">
+              <g transform="rotate(-35 32 26)">
+                <rect x="17" y="6" width="30" height="11" rx="2.5" />
+                <rect x="29" y="17" width="6" height="28" rx="2" />
+              </g>
+            </g>
+          </>
+        }
+      />
+    ),
+  },
+];
 
 const HEARTH_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] =
   [
@@ -295,49 +391,51 @@ export default function LogoSketches(): React.ReactElement {
           gap: 16,
         }}
       >
-        {[...HEARTH_VARIANTS, ...SKETCHES].map(({ name, note, svg }) => (
-          <section
-            key={name}
-            style={{
-              display: 'grid',
-              gap: 12,
-              padding: 20,
-              borderRadius: 16,
-              background: 'var(--lu-surface-raised)',
-              boxShadow: 'var(--lu-shadow-lift)',
-            }}
-          >
-            <div
+        {[HEARTH_VARIANTS[1], ...FORGE_VARIANTS, ...SKETCHES].map(
+          ({ name, note, svg }) => (
+            <section
+              key={name}
               style={{
-                color: 'var(--lu-accent)',
-                display: 'flex',
-                alignItems: 'end',
+                display: 'grid',
                 gap: 12,
+                padding: 20,
+                borderRadius: 16,
+                background: 'var(--lu-surface-raised)',
+                boxShadow: 'var(--lu-shadow-lift)',
               }}
             >
-              <Mark svg={svg} size={96} />
-              <Mark svg={svg} size={32} />
-              <Mark svg={svg} size={16} />
-              <span
+              <div
                 style={{
-                  display: 'grid',
-                  placeItems: 'center',
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  background: 'var(--lu-action)',
-                  color: 'var(--lu-on-action)',
+                  color: 'var(--lu-accent)',
+                  display: 'flex',
+                  alignItems: 'end',
+                  gap: 12,
                 }}
               >
-                <Mark svg={svg} size={26} />
+                <Mark svg={svg} size={96} />
+                <Mark svg={svg} size={32} />
+                <Mark svg={svg} size={16} />
+                <span
+                  style={{
+                    display: 'grid',
+                    placeItems: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: 'var(--lu-action)',
+                    color: 'var(--lu-on-action)',
+                  }}
+                >
+                  <Mark svg={svg} size={26} />
+                </span>
+              </div>
+              <strong>{name}</strong>
+              <span style={{ color: 'var(--lu-ink-muted)', fontSize: 14 }}>
+                {note}
               </span>
-            </div>
-            <strong>{name}</strong>
-            <span style={{ color: 'var(--lu-ink-muted)', fontSize: 14 }}>
-              {note}
-            </span>
-          </section>
-        ))}
+            </section>
+          ),
+        )}
       </main>
     </Layout>
   );
