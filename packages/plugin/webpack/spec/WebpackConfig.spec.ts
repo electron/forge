@@ -444,7 +444,7 @@ describe('WebpackConfigGenerator', () => {
         publicPath: '/',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(1);
+      expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );
@@ -475,7 +475,7 @@ describe('WebpackConfigGenerator', () => {
         main: ['rendererScript.js'],
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(2);
+      expect(webpackConfig[0].plugins!.length).toEqual(3);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );
@@ -515,7 +515,7 @@ describe('WebpackConfigGenerator', () => {
         publicPath: '/',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(2);
+      expect(webpackConfig[0].plugins!.length).toEqual(3);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );
@@ -552,7 +552,7 @@ describe('WebpackConfigGenerator', () => {
         globalObject: 'self',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(1);
+      expect(webpackConfig[0].plugins!.length).toEqual(2);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );
@@ -590,7 +590,7 @@ describe('WebpackConfigGenerator', () => {
         publicPath: '',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(2);
+      expect(webpackConfig[0].plugins!.length).toEqual(3);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );
@@ -630,7 +630,7 @@ describe('WebpackConfigGenerator', () => {
         publicPath: '',
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      expect(webpackConfig[0].plugins!.length).toEqual(2);
+      expect(webpackConfig[0].plugins!.length).toEqual(3);
       expect(hasAssetRelocatorPatchPlugin(webpackConfig[0].plugins)).toEqual(
         true,
       );

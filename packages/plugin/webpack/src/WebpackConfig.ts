@@ -16,6 +16,7 @@ import {
   WebpackPluginRendererConfig,
 } from './Config.js';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
+import AssetRelocatorRebuildPatch from './util/AssetRelocatorRebuildPatch.js';
 import processConfig from './util/processConfig.js';
 import {
   isLocalOrNoWindowEntries,
@@ -234,7 +235,10 @@ export default class WebpackConfigGenerator {
           filename: 'index.cjs',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins: [
+          new AssetRelocatorRebuildPatch(),
+          new DefinePlugin(this.getDefines()),
+        ],
         node: {
           __dirname: false,
           __filename: false,
@@ -327,6 +331,7 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       plugins: [
+        new AssetRelocatorRebuildPatch(),
         new AssetRelocatorPatch(
           this.isProd,
           target === RendererTarget.ElectronRenderer ||

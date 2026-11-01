@@ -103,6 +103,39 @@ async function expectOutputFileToHaveTheCorrectNativeModulePath({
   expect(jsContents).toEqual(expect.stringContaining(nativePathString));
 }
 
+/**
+ * Builds in watch mode, edits `fileToEdit` after the first build so webpack
+ * rebuilds with the unchanged node_modules restored from its cache, and
+ * resolves once the rebuild is done.
+ */
+async function watchAndRebuild(
+  config: Configuration,
+  fileToEdit: string,
+): Promise<void> {
+  const original = await fs.promises.readFile(fileToEdit, 'utf8');
+  const compiler = webpack(config);
+  let builds = 0;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      compiler.watch({}, (err, stats) => {
+        if (err || stats?.hasErrors()) {
+          reject(err ?? stats?.compilation.errors);
+          return;
+        }
+        builds += 1;
+        if (builds === 1) {
+          fs.promises.appendFile(fileToEdit, '\n// edited\n').catch(reject);
+        } else {
+          resolve();
+        }
+      });
+    });
+  } finally {
+    await new Promise<void>((resolve) => compiler.close(() => resolve()));
+    await fs.promises.writeFile(fileToEdit, original);
+  }
+}
+
 async function runApp(): Promise<string> {
   const env = {
     ...process.env,
@@ -219,6 +252,38 @@ describe('AssetRelocatorPatch', () => {
       for (const rendererEntryConfig of rendererConfig) {
         await asyncWebpack(rendererEntryConfig);
       }
+
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: rendererOut,
+        jsPath: path.join(rendererOut, 'main_window/index.js'),
+        nativeModulesString: `__webpack_require__.ab = ${JSON.stringify(rendererOut)} + "/native_modules/"`,
+        nativePathString: `require(__webpack_require__.ab + \\"${nativePathSuffix}\\")`,
+      });
+    });
+
+    it('keeps the native module path in main after a watch rebuild', async () => {
+      await watchAndRebuild(
+        await generator.getMainConfig(),
+        path.join(appPath, 'src/index.js'),
+      );
+
+      await expectOutputFileToHaveTheCorrectNativeModulePath({
+        outDir: mainOut,
+        jsPath: path.join(mainOut, 'index.cjs'),
+        nativeModulesString:
+          '__webpack_require__.ab = __dirname + "/native_modules/"',
+        nativePathString: `require(__webpack_require__.ab + "${nativePathSuffix}")`,
+      });
+    });
+
+    it('keeps the native module path in renderer after a watch rebuild', async () => {
+      const rendererConfig = await generator.getRendererConfig(
+        safeFirstRendererConfig(config.renderer),
+      );
+      await watchAndRebuild(
+        rendererConfig[rendererConfig.length - 1],
+        path.join(appPath, 'src/renderer.js'),
+      );
 
       await expectOutputFileToHaveTheCorrectNativeModulePath({
         outDir: rendererOut,
