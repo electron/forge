@@ -246,6 +246,10 @@ body,
 @media (min-width: 997px) {
   .navbar__items--right {
     flex: 0 0 auto;
+    /* Wrap the 30px items with an even 3px, so each hover pill sits
+       concentric with the capsule's rounded ends. */
+    align-self: center;
+    height: auto;
     gap: 2px;
     padding: 3px;
     border-radius: var(--lu-radius-capsule);
