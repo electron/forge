@@ -62,7 +62,6 @@ const config: Config = {
         theme: {
           customCss: [
             // Mermaid's `fa:` node icons are Font Awesome classes it doesn't ship.
-            require.resolve('@fortawesome/fontawesome-free/css/all.min.css'),
             './src/css/custom.css',
           ],
         },

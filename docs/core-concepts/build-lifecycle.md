@@ -17,8 +17,8 @@ Running each of these tasks will also run the previous ones in the sequence (i.e
 ```mermaid
 graph TB
  dev["fa:fa-folder-open development Electron app"] --> package
- package["fa:fa-box Package"] -->|executable app bundle| make
- make["fa:fa-compact-disc Make"] -->|installers or archives| publish
+ package["fa:fa-package Package"] -->|executable app bundle| make
+ make["fa:fa-disc-3 Make"] -->|installers or archives| publish
  publish["fa:fa-upload Publish"] -->|uploaded to cloud storage for distribution| cloud["fa:fa-cloud Users"]
  make -.->|depends on| package
  publish -.->|depends on| make

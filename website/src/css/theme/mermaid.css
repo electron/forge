@@ -37,9 +37,21 @@
   font: var(--lu-type-label);
 }
 
-.docusaurus-mermaid-container .nodeLabel i {
+/* Lucide icons (src/theme/Mermaid), in the accent, sized to the label. */
+.docusaurus-mermaid-container .label-icon {
+  width: 16px;
+  height: 16px;
   margin-right: 6px;
+  vertical-align: -3px;
   color: var(--lu-accent);
+}
+
+/* The node shape rules above reach the icon's paths too; give them back. */
+.docusaurus-mermaid-container .node .label-icon :is(path, circle) {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2px !important;
+  filter: none;
 }
 
 .docusaurus-mermaid-container .flowchart-link {
