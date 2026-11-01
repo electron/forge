@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import { useState } from 'react';
 
-import Pipeline from '../components/Pipeline';
+import Pipeline, { ElectronMark } from '../components/Pipeline';
 
 import styles from './index.module.css';
 
@@ -189,36 +189,66 @@ function Embers() {
   );
 }
 
+/** What `npm run make` leaves in out/make, one per platform, using the makers' default names. */
+const CASTINGS = [
+  { file: 'my-app-1.0.0 Setup.exe', format: 'EXE', platform: 'Windows' },
+  { file: 'my-app_1.0.0_amd64.deb', format: 'DEB', platform: 'Linux' },
+  { file: 'My App.dmg', format: 'DMG', platform: 'macOS' },
+];
+
+/** The hero's right side: fresh installers, fanned out on the hearth. */
+function Castings() {
+  return (
+    <div className={styles.castings} aria-hidden="true">
+      {CASTINGS.map(({ file, format, platform }, i) => (
+        <div key={format} className={styles.casting} data-slot={i}>
+          <span className={styles.format}>{format}</span>
+          <span className={styles.mark}>
+            <ElectronMark size={44} />
+          </span>
+          <span className={styles.file}>{file}</span>
+          <span className={styles.platform}>{platform}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home(): React.ReactElement {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout description={siteConfig.tagline} wrapperClassName={styles.home}>
       <header className={styles.hero}>
         <Embers />
-        <Link
-          className={styles.badge}
-          href="https://github.com/electron/forge/releases"
-        >
-          Electron Forge 8 is out
-        </Link>
-        <h1 className={styles.title}>Build, package and ship Electron apps.</h1>
-        <p className={styles.lead}>
-          Forge is the all-in-one toolchain for Electron. Scaffold a project,
-          then package, sign, make installers for every platform and publish,
-          with one command each.
-        </p>
-        <div className={styles.actions}>
-          <Link className="button button--primary" to="/getting-started/">
-            Get started
-          </Link>
+        <div className={styles.intro}>
           <Link
-            className="button button--secondary"
-            href="https://github.com/electron/forge"
+            className={styles.badge}
+            href="https://github.com/electron/forge/releases"
           >
-            View on GitHub
+            Electron Forge 8 is out
           </Link>
+          <h1 className={styles.title}>
+            Build, package and ship Electron apps.
+          </h1>
+          <p className={styles.lead}>
+            Forge is the all-in-one toolchain for Electron. Scaffold a project,
+            then package, sign, make installers for every platform and publish,
+            with one command each.
+          </p>
+          <div className={styles.actions}>
+            <Link className="button button--primary" to="/getting-started/">
+              Get started
+            </Link>
+            <Link
+              className="button button--secondary"
+              href="https://github.com/electron/forge"
+            >
+              View on GitHub
+            </Link>
+          </div>
+          <CopyCommand />
         </div>
-        <CopyCommand />
+        <Castings />
       </header>
 
       <main>

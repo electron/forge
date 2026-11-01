@@ -16,16 +16,110 @@
   /* Same width and gutters as the pipeline sheet, so the text shares its
      left edge. The text keeps to a 640px column; the hearth fills the right. */
   width: min(1120px, 100% - 2 * var(--lu-space-6));
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--lu-space-6);
+  display: grid;
+  grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--lu-space-8);
   margin: 0 auto;
   padding: 96px 0 var(--lu-space-8);
 }
 
-.hero > :not(.embers) {
-  max-width: min(640px, 100%);
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lu-space-6);
+  min-width: 0;
+}
+
+.intro > * {
+  max-width: 100%;
+}
+
+/* What Forge makes: three installers fanned out on the hearth, the front one
+   catching the light. */
+.castings {
+  position: relative;
+  height: 280px;
+}
+
+.casting {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 140px;
+  height: 180px;
+  padding: 14px;
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  transform-origin: 50% 100%;
+}
+
+.casting[data-slot='0'] {
+  transform: translateX(-50%) translateX(-86px) rotate(-9deg);
+  opacity: 0.85;
+}
+
+.casting[data-slot='1'] {
+  transform: translateX(-50%) translateX(86px) rotate(9deg);
+  opacity: 0.85;
+}
+
+.casting[data-slot='2'] {
+  z-index: 1;
+  transform: translateX(-50%) translateY(-14px);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft),
+    inset 0 -2px 0 color-mix(in srgb, var(--lu-accent) 45%, transparent),
+    0 26px 50px -24px color-mix(in srgb, var(--lu-accent) 65%, transparent);
+}
+
+.format {
+  align-self: flex-start;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+  font: 700 11px/1 var(--lu-font-mono);
+  letter-spacing: 0.04em;
+}
+
+.casting[data-slot='2'] .format {
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+}
+
+.mark {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  color: var(--lu-ink-faint);
+  opacity: 0.6;
+}
+
+.casting[data-slot='2'] .mark {
+  color: var(--lu-accent);
+  opacity: 0.85;
+}
+
+.file {
+  color: var(--lu-ink);
+  font: 500 12px/17px var(--lu-font-mono);
+  overflow-wrap: anywhere;
+}
+
+.platform {
+  color: var(--lu-ink-faint);
+  font: var(--lu-type-caption);
 }
 
 /* The hearth: warm light from the lower right, behind the embers. */
@@ -33,9 +127,9 @@
   content: '';
   position: absolute;
   z-index: -2;
-  inset: 0 0 -120px 35%;
+  inset: 0 0 -120px 45%;
   background: radial-gradient(
-    56% 80% at 55% 88%,
+    46% 50% at 62% 92%,
     color-mix(in srgb, var(--lu-accent) 16%, transparent),
     color-mix(in srgb, var(--lu-accent) 6%, transparent) 38%,
     color-mix(in srgb, var(--lu-accent) 2%, transparent) 58%,
@@ -323,7 +417,12 @@
 @media (max-width: 996px) {
   .hero {
     width: calc(100% - 2 * var(--lu-space-4));
+    grid-template-columns: minmax(0, 1fr);
     padding-top: 64px;
+  }
+
+  .castings {
+    display: none;
   }
 
   .hero::before {
