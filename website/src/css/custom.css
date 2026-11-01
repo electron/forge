@@ -289,7 +289,8 @@ body,
 }
 
 .navbar__link {
-  font-weight: 500;
+  font: var(--lu-type-label);
+  letter-spacing: var(--lu-type-label-tracking);
 }
 
 .navbar-sidebar {
@@ -303,9 +304,9 @@ body,
   border-right: none !important;
 }
 
-/* The current page is a raised thumb on the glass, like a selected segment. */
+/* The current page is a raised chip on the glass, like a selected row in Fiddle's tree. */
 .theme-doc-sidebar-menu .menu__link[aria-current='page'] {
-  background: var(--lu-thumb);
+  background: var(--lu-chip);
   box-shadow: var(--lu-shadow-lift);
   color: var(--lu-ink);
 }
@@ -383,6 +384,12 @@ body,
 }
 
 /* ---------- Content ---------- */
+
+/* Lucent's heaviest weight is 650 (titles); bold text in prose is 600. */
+.markdown strong,
+.markdown b {
+  font-weight: 600;
+}
 
 /* Content type and rhythm: Lucent's scale on Lucent's 4px spacing grid. */
 .markdown {
@@ -578,6 +585,7 @@ code {
 
 .theme-admonition [class*='admonitionHeading'] {
   font: var(--lu-type-label);
+  font-weight: 600;
   /* Sentence case: "Warning", not "WARNING". */
   text-transform: capitalize;
   color: var(--lu-intent);
