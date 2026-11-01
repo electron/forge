@@ -268,9 +268,17 @@
 }
 
 .file {
-  color: var(--lu-ink);
-  font: 500 13px/18px var(--lu-font-mono);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+  font: 600 12px/16px var(--lu-font-mono);
   white-space: nowrap;
+}
+
+.casting[data-slot='2'] .file {
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
 }
 
 /* The hearth: warm light behind the cards, brightest under the front one. */
