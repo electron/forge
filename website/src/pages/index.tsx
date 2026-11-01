@@ -295,9 +295,8 @@ export default function Home(): React.ReactElement {
             Build, package and ship Electron apps.
           </h1>
           <p className={styles.lead}>
-            Forge is the all-in-one toolchain for Electron. Scaffold a project,
-            then package, sign, make installers for every platform and publish,
-            with one command each.
+            The all-in-one toolchain for Electron. Scaffold, package, sign and
+            publish, one command each.
           </p>
           <div className={styles.actions}>
             <Link className="button button--primary" to="/getting-started/">
