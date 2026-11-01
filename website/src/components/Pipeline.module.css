@@ -73,32 +73,33 @@
   animation-delay: calc(var(--i) * var(--period) / -3);
 }
 
-/* Apps fade in at the start of the line, out as they go into a station and
-   back in as they come out, and out at the end, so a still frame never shows
-   one cut off. Station centres are at 12.5%, 37.5%, 62.5% and 87.5%. */
+/* Apps fade in at the start of the line, out just as they reach a station
+   and back in as they come out, and out at the end, so a still frame never
+   shows one cut off. Station centres are at 12.5%, 37.5%, 62.5% and 87.5%;
+   the fade spans the last 2.5% (about a tile's width) before each. */
 @keyframes dip {
   3%,
-  6%,
-  19%,
-  31%,
-  44%,
-  56%,
-  69%,
-  81%,
-  94%,
+  7.5%,
+  17.5%,
+  32.5%,
+  42.5%,
+  57.5%,
+  67.5%,
+  82.5%,
+  92.5%,
   97% {
     opacity: 1;
   }
   0%,
-  100%,
-  9.5%,
-  15.5%,
-  34.5%,
-  40.5%,
-  59.5%,
-  65.5%,
-  84.5%,
-  90.5% {
+  10%,
+  15%,
+  35%,
+  40%,
+  60%,
+  65%,
+  85%,
+  90%,
+  100% {
     opacity: 0;
   }
 }
