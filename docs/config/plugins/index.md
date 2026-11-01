@@ -22,4 +22,7 @@ If you want to write your own Forge plugin, check out the [Writing Plugins](../.
 - [Auto Unpack Native Modules Plugin](auto-unpack-natives.md) - Unpack native Node.js modules from your Forge app's ASAR archive.
 - [Local Electron Plugin](local-electron.md) - Integrate a local build of Electron into your Forge app.
 - [Fuses Plugin](fuses.mdx) - Toggle Electron functionality at package-time with Electron Fuses.
+- [Security Audit Plugin](security-audit.md) - Check your packaged app for insecure Electron settings and fuses.
+- [Checksums Plugin](checksums.md) - Add checksum files and a software bill of materials (SBOM) to your releases.
+- [Icons Plugin](icons.md) - Generate macOS, Windows and Linux app icons from a single PNG.
 - [Electronegativity Plugin](electronegativity.md) - Check for misconfigurations and security anti-patterns with the Electronegativity tool.

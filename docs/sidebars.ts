@@ -40,6 +40,9 @@ const sidebars: SidebarsConfig = {
             'config/plugins/auto-unpack-natives',
             'config/plugins/local-electron',
             'config/plugins/fuses',
+            'config/plugins/security-audit',
+            'config/plugins/checksums',
+            'config/plugins/icons',
           ],
         },
         {

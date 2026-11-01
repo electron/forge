@@ -85,12 +85,24 @@
     "packages/plugin/base": {
       "project": ["src/**/*.ts!"]
     },
+    "packages/plugin/checksums": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts!", "spec/**/*.ts"]
+    },
     "packages/plugin/fuses": {
       "entry": ["spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"],
       "ignore": ["spec/fixture/**"]
     },
+    "packages/plugin/icons": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts!", "spec/**/*.ts"]
+    },
     "packages/plugin/local-electron": {
+      "entry": ["spec/**/*.spec.ts"],
+      "project": ["src/**/*.ts!", "spec/**/*.ts"]
+    },
+    "packages/plugin/security-audit": {
       "entry": ["spec/**/*.spec.ts"],
       "project": ["src/**/*.ts!", "spec/**/*.ts"]
     },

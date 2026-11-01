@@ -662,6 +662,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@electron-forge/plugin-checksums@workspace:packages/plugin/checksums":
+  version: 0.0.0-use.local
+  resolution: "@electron-forge/plugin-checksums@workspace:packages/plugin/checksums"
+  dependencies:
+    "@electron-forge/plugin-base": "workspace:*"
+    "@electron-forge/shared-types": "workspace:*"
+    debug: "npm:^4.3.1"
+  languageName: unknown
+  linkType: soft
+
 "@electron-forge/plugin-fuses@workspace:packages/plugin/fuses":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-fuses@workspace:packages/plugin/fuses"
@@ -676,6 +686,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@electron-forge/plugin-icons@workspace:packages/plugin/icons":
+  version: 0.0.0-use.local
+  resolution: "@electron-forge/plugin-icons@workspace:packages/plugin/icons"
+  dependencies:
+    "@electron-forge/plugin-base": "workspace:*"
+    "@electron-forge/shared-types": "workspace:*"
+    debug: "npm:^4.3.1"
+  languageName: unknown
+  linkType: soft
+
 "@electron-forge/plugin-local-electron@workspace:packages/plugin/local-electron":
   version: 0.0.0-use.local
   resolution: "@electron-forge/plugin-local-electron@workspace:packages/plugin/local-electron"
@@ -684,6 +704,17 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     vite: "catalog:"
     vitest: "catalog:"
+  languageName: unknown
+  linkType: soft
+
+"@electron-forge/plugin-security-audit@workspace:packages/plugin/security-audit":
+  version: 0.0.0-use.local
+  resolution: "@electron-forge/plugin-security-audit@workspace:packages/plugin/security-audit"
+  dependencies:
+    "@electron-forge/plugin-base": "workspace:*"
+    "@electron-forge/shared-types": "workspace:*"
+    "@electron/fuses": "npm:^2.1.3"
+    debug: "npm:^4.3.1"
   languageName: unknown
   linkType: soft
 

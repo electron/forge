@@ -1,0 +1,26 @@
+{
+  "name": "@electron-forge/plugin-icons",
+  "version": "8.0.1",
+  "type": "module",
+  "description": "Electron Forge plugin that generates macOS, Windows and Linux app icons from a single PNG",
+  "repository": "https://github.com/electron/forge",
+  "author": "Erick Zhao",
+  "license": "MIT",
+  "exports": "./dist/IconsPlugin.js",
+  "typings": "dist/IconsPlugin.d.ts",
+  "engines": {
+    "node": ">= 22.13.0"
+  },
+  "dependencies": {
+    "@electron-forge/plugin-base": "workspace:*",
+    "@electron-forge/shared-types": "workspace:*",
+    "debug": "^4.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
