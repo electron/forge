@@ -10,6 +10,7 @@ import {
   WebpackPluginEntryPoint,
 } from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
+import RspackAssetRelocatorShim from '../src/util/RspackAssetRelocatorShim';
 import WebpackConfigGenerator, {
   ConfigurationFactory,
 } from '../src/WebpackConfig';
@@ -316,22 +317,16 @@ describe('WebpackConfigGenerator', () => {
         3000,
       );
       const webpackConfig = await generator.getMainConfig();
-      expect(webpackConfig.plugins?.[0]).toBeInstanceOf(rspack.DefinePlugin);
+      expect(webpackConfig.plugins?.[0]).toBeInstanceOf(
+        RspackAssetRelocatorShim,
+      );
+      expect(webpackConfig.plugins?.[1]).toBeInstanceOf(rspack.DefinePlugin);
     });
 
-    it('rejects the asset relocator loader in Rspack mode', async () => {
+    it('does not add the Rspack shim in webpack mode', async () => {
       const config = {
-        bundler: 'rspack',
         mainConfig: {
           entry: 'main.js',
-          module: {
-            rules: [
-              {
-                test: /node_modules/,
-                use: { loader: '@vercel/webpack-asset-relocator-loader' },
-              },
-            ],
-          },
         },
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
@@ -343,9 +338,12 @@ describe('WebpackConfigGenerator', () => {
         true,
         3000,
       );
-      await expect(generator.getMainConfig()).rejects.toThrow(
-        /does not work with Rspack/,
-      );
+      const webpackConfig = await generator.getMainConfig();
+      expect(
+        webpackConfig.plugins?.some(
+          (plugin) => plugin instanceof RspackAssetRelocatorShim,
+        ),
+      ).toEqual(false);
     });
 
     it('generates a config with a relative entry path', async () => {

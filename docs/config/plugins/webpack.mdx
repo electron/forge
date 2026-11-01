@@ -423,10 +423,10 @@ npm install --save-dev @rspack/core
 }
 ```
 
-Your existing webpack configs are passed to Rspack unchanged, and the dev server is still `webpack-dev-server`, with hot module replacement provided by Rspack. Loaders and plugins in your configs need to be ones that Rspack supports. `ts-loader`, `css-loader`, `style-loader`, `node-loader` and `fork-ts-checker-webpack-plugin` from Forge's webpack templates all work. See Rspack's [compatibility list](https://rspack.rs/guide/compatibility/plugin) for others.
+Your existing webpack configs are passed to Rspack unchanged, and the dev server is still `webpack-dev-server`, with hot module replacement provided by Rspack. Loaders and plugins in your configs need to be ones that Rspack supports. Everything in Forge's webpack templates works, including `ts-loader`, `css-loader`, `style-loader`, `fork-ts-checker-webpack-plugin` and the [native module](#native-node-modules) setup. See Rspack's [compatibility list](https://rspack.rs/guide/compatibility/plugin) for others.
 
-:::warning
-`@vercel/webpack-asset-relocator-loader` does not work with Rspack, so the [native module](#native-node-modules) setup above is not supported in Rspack mode yet. Remove that rule from your configs before switching; the plugin stops with an error if it finds it. If your app uses native modules, keep using webpack for now.
+:::info
+`@vercel/webpack-asset-relocator-loader` relies on a webpack internal that Rspack does not have. In Rspack mode, the plugin provides a stand-in for it, so native modules work the same way as with webpack.
 :::
 
 ## Hot module replacement

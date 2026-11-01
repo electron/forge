@@ -13,12 +13,9 @@ import {
   WebpackPluginRendererConfig,
 } from './Config.js';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
-import {
-  assertRspackCompatible,
-  Bundler,
-  loadBundler,
-} from './util/bundler.js';
+import { Bundler, loadBundler } from './util/bundler.js';
 import processConfig from './util/processConfig.js';
+import RspackAssetRelocatorShim from './util/RspackAssetRelocatorShim.js';
 import {
   isLocalOrNoWindowEntries,
   isLocalWindow,
@@ -101,6 +98,15 @@ export default class WebpackConfigGenerator {
     return loadBundler(this.pluginConfig.bundler, this.projectDir);
   }
 
+  /**
+   * Plugins that make webpack loaders work under Rspack. Empty for webpack.
+   */
+  private get bundlerCompatPlugins(): webpack.WebpackPluginInstance[] {
+    return this.pluginConfig.bundler === 'rspack'
+      ? [new RspackAssetRelocatorShim()]
+      : [];
+  }
+
   async resolveConfig(
     config: webpack.Configuration | ConfigurationFactory | string,
   ): Promise<webpack.Configuration> {
@@ -117,11 +123,7 @@ export default class WebpackConfigGenerator {
       rawConfig = rawConfig.default;
     }
 
-    const resolved = await processConfig(this.preprocessConfig, rawConfig);
-    if (this.pluginConfig.bundler === 'rspack') {
-      assertRspackCompatible(resolved);
-    }
-    return resolved;
+    return processConfig(this.preprocessConfig, rawConfig);
   }
 
   // Users can override this method in a subclass to provide custom logic or
@@ -248,7 +250,10 @@ export default class WebpackConfigGenerator {
           filename: 'index.cjs',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins: [
+          ...this.bundlerCompatPlugins,
+          new DefinePlugin(this.getDefines()),
+        ],
         node: {
           __dirname: false,
           __filename: false,
@@ -341,6 +346,7 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       plugins: [
+        ...this.bundlerCompatPlugins,
         new AssetRelocatorPatch(
           this.isProd,
           target === RendererTarget.ElectronRenderer ||

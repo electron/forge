@@ -26,8 +26,8 @@ export default class AssetRelocatorPatch {
     compiler.hooks.compilation.tap(
       'asset-relocator-forge-patch',
       (compilation) => {
-        // Rspack has no `mainTemplate`, and the Vercel loader does not run
-        // under Rspack either, so there is nothing to patch.
+        // Rspack has no `mainTemplate`. RspackAssetRelocatorShim adds a
+        // stand-in for it; without that, there is nothing to patch.
         if (!compilation.mainTemplate) return;
 
         // We intercept the Vercel loader code injection and replace __dirname with
