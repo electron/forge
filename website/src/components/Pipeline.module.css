@@ -185,6 +185,15 @@
   color: var(--lu-accent);
 }
 
+/* The packaged app: an app icon, Electron's mark on Electron navy in both modes. */
+.form[data-form='2'] .tile {
+  background: radial-gradient(120% 90% at 30% 0%, #3a3e55, #2f3242 60%);
+  color: #a2ecfb;
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 rgba(255, 255, 255, 0.18);
+}
+
 .form[data-form='4'] .tile {
   background: var(--lu-action);
   color: var(--lu-on-action);
