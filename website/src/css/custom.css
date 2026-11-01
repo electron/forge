@@ -46,15 +46,15 @@
      are amber). */
   --lu-info: #006f85;
   --lu-info-soft: #dcf3f8;
-  /* 5.2:1 on white. */
-  --lu-accent: #c2410c;
-  --lu-accent-soft: #fdeadc;
-  --lu-on-action: #ffb27a;
+  /* A red-leaning orange, 5.3:1 on white. */
+  --lu-accent: #c8350c;
+  --lu-accent-soft: #feede6;
+  --lu-on-action: #ff9a76;
   --lu-assist-ring: linear-gradient(
     100deg,
-    #ff4d1f,
-    #ff7a1a 38%,
-    #ffc06a 70%,
+    #ff3d1f,
+    #ff5a2a 38%,
+    #ffa06a 70%,
     #1b1c26
   );
 }
@@ -62,16 +62,16 @@
 :root[data-theme='dark'] {
   --lu-info: #9feaf9;
   --lu-info-soft: #1c3945;
-  --lu-accent: #ffab70;
-  --lu-accent-soft: #3d2618;
-  --lu-action: #ffab70;
-  --lu-on-action: #3a1806;
+  --lu-accent: #ff9270;
+  --lu-accent-soft: #42211a;
+  --lu-action: #ff9270;
+  --lu-on-action: #3d1206;
   --lu-assist-ring: linear-gradient(
     100deg,
-    #ffab70,
-    #ff7a3d 38%,
-    #ff4d3d 70%,
-    #ffd08a
+    #ff9270,
+    #ff5a3d 38%,
+    #ff3d4d 70%,
+    #ffc08a
   );
 }
 
@@ -79,8 +79,8 @@
    which Fiddle's tokens don't carry: the aura behind the glass and the lit rim
    on glass edges. */
 :root {
-  --lu-aura-a: rgba(255, 122, 61, 0.22);
-  --lu-aura-b: rgba(255, 190, 120, 0.4);
+  --lu-aura-a: rgba(255, 90, 50, 0.22);
+  --lu-aura-b: rgba(255, 160, 120, 0.38);
   --lu-aura-c: rgba(27, 28, 38, 0.08);
   --lu-sheen-glass: rgba(255, 255, 255, 0.34);
   /* The primary button's sheen. Light mode's action is near-black, so white
@@ -98,8 +98,8 @@
 }
 
 [data-theme='dark'] {
-  --lu-aura-a: rgba(255, 92, 41, 0.2);
-  --lu-aura-b: rgba(255, 171, 112, 0.12);
+  --lu-aura-a: rgba(255, 70, 40, 0.2);
+  --lu-aura-b: rgba(255, 140, 110, 0.12);
   --lu-aura-c: rgba(27, 28, 38, 0.5);
   --lu-sheen-glass: rgba(255, 255, 255, 0.05);
   /* Dark mode's action is a pale orange, which a faint white sheen vanishes
@@ -109,13 +109,13 @@
     180deg,
     rgba(255, 255, 255, 0.5),
     rgba(255, 255, 255, 0) 50%,
-    rgba(58, 24, 6, 0.16)
+    rgba(64, 18, 8, 0.16)
   );
   --lu-sheen-action-hover: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.62),
     rgba(255, 255, 255, 0.08) 50%,
-    rgba(58, 24, 6, 0.12)
+    rgba(64, 18, 8, 0.12)
   );
 }
 
@@ -614,16 +614,23 @@ code {
   color: var(--lu-ink-muted);
 }
 
-/* Tabs: a segmented control. */
-.tabs {
+/* Tabs: a segmented control. `.markdown ul` would add list padding on the
+   left, so the selector needs the extra class to keep the inset even. */
+.tabs,
+.markdown .tabs {
   gap: 2px;
+  margin: 0;
   padding: 3px;
   border-radius: var(--lu-radius-control);
   background: var(--lu-fill);
   display: inline-flex;
+  list-style: none;
 }
 
 .tabs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: none;
   border-radius: calc(var(--lu-radius-control) - 3px);
   padding: 4px 12px;
@@ -642,28 +649,111 @@ code {
   box-shadow: var(--lu-shadow-lift);
 }
 
-/* ---------- Admonitions: soft fills, no side rule ---------- */
+/* File-type badges on tabs named after a file (set by src/theme/Tabs). Each
+   language keeps its own colour, muted until the tab is selected. */
+.tabs__item[data-filetype]::before {
+  content: var(--filetype-label);
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: var(--filetype-color);
+  color: var(--filetype-ink, #fff);
+  font: 700 8.5px/1 var(--lu-font-mono);
+  letter-spacing: 0;
+  opacity: 0.55;
+  transition: opacity var(--lu-dur-fast) var(--lu-ease);
+}
+
+.tabs__item--active[data-filetype]::before,
+.tabs__item[data-filetype]:hover::before {
+  opacity: 1;
+}
+
+.tabs__item[data-filetype='js'] {
+  --filetype-label: 'JS';
+  --filetype-color: #f0d23c;
+  --filetype-ink: #24231f;
+}
+.tabs__item[data-filetype='ts'] {
+  --filetype-label: 'TS';
+  --filetype-color: #3178c6;
+}
+.tabs__item[data-filetype='jsx'],
+.tabs__item[data-filetype='tsx'] {
+  --filetype-label: '</>';
+  --filetype-color: #149eca;
+}
+.tabs__item[data-filetype='json'] {
+  --filetype-label: '{}';
+  --filetype-color: #8a90aa;
+}
+.tabs__item[data-filetype='html'] {
+  --filetype-label: '<>';
+  --filetype-color: #e34c26;
+}
+.tabs__item[data-filetype='vue'] {
+  --filetype-label: 'V';
+  --filetype-color: #41b883;
+}
+
+/* ---------- Admonitions: Lucent callouts ----------
+   Fiddle's Callout: no border or side rule, a quiet fill, the icon in its own
+   column, a 600-weight title and muted body text. Only the icon (and the fill,
+   faintly) carries the intent; danger also tints its title. */
 
 .theme-admonition.alert {
   --ifm-alert-border-width: 0;
   --ifm-alert-border-left-width: 0;
-  --ifm-alert-foreground-color: var(--lu-ink);
+  --ifm-alert-foreground-color: var(--lu-ink-muted);
   --ifm-alert-shadow: none;
   --lu-intent: var(--lu-ink-muted);
-  background: color-mix(in srgb, var(--lu-intent) 10%, var(--lu-surface));
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 12px 14px;
   border-radius: var(--lu-radius-control);
+  background: color-mix(in srgb, var(--lu-intent) 8%, var(--lu-surface));
+  color: var(--lu-ink-muted);
 }
 
+/* The heading's icon takes the first column; its text becomes the title. */
 .theme-admonition [class*='admonitionHeading'] {
+  display: contents;
+  color: var(--lu-ink);
   font: var(--lu-type-label);
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 600;
   /* Sentence case: "Warning", not "WARNING". */
   text-transform: capitalize;
-  color: var(--lu-intent);
+}
+
+.theme-admonition [class*='admonitionIcon'] {
+  display: grid;
+  grid-row: 1 / span 2;
+  margin: 2px 0 0;
+  align-self: start;
 }
 
 .theme-admonition [class*='admonitionIcon'] svg {
+  width: 16px;
+  height: 16px;
   fill: var(--lu-intent);
+}
+
+.theme-admonition [class*='admonitionContent'] {
+  grid-column: 2;
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+.theme-admonition [class*='admonitionContent'] strong,
+.theme-admonition [class*='admonitionContent'] code {
+  color: var(--lu-ink);
 }
 
 .theme-admonition.alert--secondary {
@@ -677,7 +767,7 @@ code {
 
 .theme-admonition.alert--info {
   --lu-intent: var(--lu-info);
-  background: var(--lu-info-soft);
+  background: color-mix(in srgb, var(--lu-info-soft) 70%, var(--lu-surface));
 }
 
 .theme-admonition.alert--warning {
@@ -687,6 +777,10 @@ code {
 .theme-admonition.alert--danger {
   --lu-intent: var(--lu-spark);
   background: var(--lu-spark-soft);
+}
+
+.theme-admonition.alert--danger [class*='admonitionHeading'] {
+  color: var(--lu-spark);
 }
 
 /* ---------- Controls ---------- */
