@@ -9,6 +9,9 @@
   /* The hearth's colour: warmer than the accent in light mode, where a glow
      of the deep red-orange reads pink. */
   --hearth: #ff7a2f;
+  /* The hearth's glow and embers spill past the cards; clip them at the
+     window's edge (clip, not hidden, so nothing becomes a scroll box). */
+  overflow-x: clip;
 }
 
 :global(html[data-theme='dark']) .home {
@@ -486,6 +489,7 @@
 @media (max-width: 1180px) {
   .hero {
     grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+    gap: var(--lu-space-6);
   }
 
   .castings {
@@ -494,8 +498,18 @@
     transform-origin: 50% 0;
   }
 
+  /* Tighter, so the whole command still fits under the fan. */
+  .command {
+    gap: var(--lu-space-2);
+    padding-left: 14px;
+  }
+
   .command code {
-    font-size: 13px;
+    font-size: 12px;
+  }
+
+  .copy {
+    padding: 0 10px;
   }
 }
 
