@@ -40,7 +40,8 @@
    catching the light. */
 .castings {
   position: relative;
-  height: 280px;
+  align-self: start;
+  height: 260px;
 }
 
 .casting {
@@ -134,7 +135,7 @@
   z-index: -2;
   inset: 0 0 -120px 45%;
   background: radial-gradient(
-    46% 50% at 62% 92%,
+    46% 46% at 62% 60%,
     color-mix(in srgb, var(--lu-accent) 16%, transparent),
     color-mix(in srgb, var(--lu-accent) 6%, transparent) 38%,
     color-mix(in srgb, var(--lu-accent) 2%, transparent) 58%,
