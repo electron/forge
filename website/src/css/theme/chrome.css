@@ -130,24 +130,27 @@ body,
   backdrop-filter: none;
 }
 
-/* The mobile menu: a floating glass sheet, inset from the screen's edges,
-   over a soft scrim. */
+/* The mobile menu: the docs sidebar as a drawer, on the same window ground
+   (and aura) the desktop sidebar sits on, with a hairline edge over a scrim. */
 .navbar-sidebar {
-  top: var(--lu-space-2);
-  bottom: var(--lu-space-2);
-  left: var(--lu-space-2);
   /* Infima sizes both menu panels (main and docs) from this variable. */
   --ifm-navbar-sidebar-width: min(320px, 100vw - 2 * var(--lu-space-6));
   width: var(--ifm-navbar-sidebar-width);
-  height: auto;
-  overflow: hidden;
-  border-radius: var(--lu-radius-sheet);
-  background: var(--lu-material-overlay);
-  -webkit-backdrop-filter: var(--lu-blur-overlay);
-  backdrop-filter: var(--lu-blur-overlay);
+  background:
+    radial-gradient(
+      520px 360px at 0% -120px,
+      var(--lu-aura-a),
+      transparent 70%
+    ),
+    radial-gradient(
+      420px 300px at 100% -140px,
+      var(--lu-aura-b),
+      transparent 70%
+    ),
+    var(--lu-window);
   box-shadow:
-    var(--lu-shadow-popover),
-    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+    var(--lu-size-hairline) 0 0 var(--lu-line),
+    0 0 32px rgba(20, 22, 40, 0.12);
 }
 
 .navbar-sidebar__backdrop {
@@ -206,16 +209,15 @@ body,
    raised chip. */
 .navbar-sidebar .menu__link {
   min-height: var(--lu-size-row);
-  padding: 6px 10px;
+  padding: 4px 10px;
   border-radius: var(--lu-radius-item);
   font: var(--lu-type-label);
-  font-size: 14px;
+  font-weight: 400;
   color: var(--lu-ink-muted);
 }
 
-.navbar-sidebar .menu__link:hover {
-  background: var(--nav-hover);
-  color: var(--lu-ink);
+.navbar-sidebar .menu__link:not(.menu__link--active):hover {
+  background: var(--lu-capsule);
 }
 
 .navbar-sidebar
@@ -225,6 +227,7 @@ body,
   background: var(--lu-chip);
   box-shadow: var(--lu-shadow-lift);
   color: var(--lu-ink);
+  font-weight: 500;
 }
 
 .navbar-sidebar .menu__link svg {
@@ -235,7 +238,7 @@ body,
 .navbar-sidebar__back {
   width: 100%;
   margin: 0 0 var(--lu-space-2);
-  padding: 6px 10px;
+  padding: 4px 10px;
   border-radius: var(--lu-radius-item);
   background: none;
   color: var(--lu-ink-muted);
@@ -245,7 +248,7 @@ body,
 }
 
 .navbar-sidebar__back:hover {
-  background: var(--nav-hover);
+  background: var(--lu-capsule);
   color: var(--lu-ink);
 }
 
