@@ -1,6 +1,5 @@
 import path from 'node:path';
 
-import { rspack } from '@rspack/core';
 import { describe, expect, it } from 'vitest';
 import { Configuration, Entry } from 'webpack';
 
@@ -300,12 +299,10 @@ describe('WebpackConfigGenerator', () => {
       );
     });
 
-    it('uses the Rspack DefinePlugin in Rspack mode', async () => {
+    it('adds the Rspack shim to renderer configs in Rspack mode', () => {
       const config = {
         bundler: 'rspack',
-        mainConfig: {
-          entry: 'main.js',
-        },
+        mainConfig: {},
         renderer: {
           entryPoints: [] as WebpackPluginEntryPoint[],
         },
@@ -316,11 +313,9 @@ describe('WebpackConfigGenerator', () => {
         true,
         3000,
       );
-      const webpackConfig = await generator.getMainConfig();
-      expect(webpackConfig.plugins?.[0]).toBeInstanceOf(
-        RspackAssetRelocatorShim,
-      );
-      expect(webpackConfig.plugins?.[1]).toBeInstanceOf(rspack.DefinePlugin);
+      const { plugins } = generator.buildRendererBaseConfig(0);
+      expect(plugins?.[0]).toBeInstanceOf(RspackAssetRelocatorShim);
+      expect(hasAssetRelocatorPatchPlugin(plugins)).toEqual(true);
     });
 
     it('does not add the Rspack shim in webpack mode', async () => {

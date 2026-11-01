@@ -1,4 +1,3 @@
-import { rspack } from '@rspack/core';
 import webpack from 'webpack';
 import { describe, expect, it } from 'vitest';
 
@@ -12,12 +11,11 @@ describe('loadBundler', () => {
     expect(bundler.DefinePlugin).toBe(webpack.DefinePlugin);
   });
 
-  it('loads Rspack when asked for', async () => {
-    const bundler = await loadBundler('rspack', process.cwd());
-    expect(bundler.name).toEqual('rspack');
-    expect(bundler.compile).toBe(rspack);
-    expect(bundler.DefinePlugin).toBe(rspack.DefinePlugin);
-    expect(bundler.ExternalsPlugin).toBe(rspack.ExternalsPlugin);
+  // `@rspack/core` is deliberately not installed in this repo.
+  it('explains how to install Rspack when it is missing', async () => {
+    await expect(loadBundler('rspack', process.cwd())).rejects.toThrow(
+      /"@rspack\/core" could not be loaded/,
+    );
   });
 
   it('rejects an unknown bundler', async () => {
