@@ -16,66 +16,16 @@
   /* Same width and gutters as the pipeline sheet, so the text shares its
      left edge. The text keeps to a 640px column; the hearth fills the right. */
   width: min(1120px, 100% - 2 * var(--lu-space-6));
-  display: grid;
-  grid-template-columns: minmax(0, 640px) minmax(0, 1fr);
-  align-items: center;
-  gap: var(--lu-space-8);
-  margin: 0 auto;
-  padding: 96px 0 var(--lu-space-8);
-}
-
-.intro {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--lu-space-6);
-  min-width: 0;
+  margin: 0 auto;
+  padding: 96px 0 var(--lu-space-8);
 }
 
-.intro > * {
-  max-width: 100%;
-}
-
-/* The thing in the forge: the packaged app from the pipeline, large, sitting
-   in the hearth light and lit from below. */
-.art {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--lu-space-4);
-  margin: 0;
-  padding-top: var(--lu-space-6);
-}
-
-.appIcon {
-  display: grid;
-  place-items: center;
-  width: 176px;
-  height: 176px;
-  border-radius: 40px;
-  background: radial-gradient(120% 90% at 30% 0%, #3a3e55, #2f3242 60%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -2px 0 color-mix(in srgb, var(--lu-accent) 55%, transparent),
-    0 2px 4px rgba(20, 12, 8, 0.2),
-    0 28px 60px -22px color-mix(in srgb, var(--lu-accent) 70%, transparent),
-    0 40px 90px -30px rgba(20, 12, 8, 0.45);
-  color: #a2ecfb;
-  animation: float 6s var(--lu-ease) infinite alternate;
-}
-
-@keyframes float {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-6px);
-  }
-}
-
-.appName {
-  color: var(--lu-ink-muted);
-  font: var(--lu-type-label);
+.hero > :not(.embers) {
+  max-width: min(640px, 100%);
 }
 
 /* The hearth: warm light from the lower right, behind the embers. */
@@ -83,9 +33,9 @@
   content: '';
   position: absolute;
   z-index: -2;
-  inset: 0 0 -120px 45%;
+  inset: 0 0 -120px 35%;
   background: radial-gradient(
-    46% 52% at 64% 78%,
+    56% 80% at 55% 88%,
     color-mix(in srgb, var(--lu-accent) 16%, transparent),
     color-mix(in srgb, var(--lu-accent) 6%, transparent) 38%,
     color-mix(in srgb, var(--lu-accent) 2%, transparent) 58%,
@@ -373,12 +323,7 @@
 @media (max-width: 996px) {
   .hero {
     width: calc(100% - 2 * var(--lu-space-4));
-    grid-template-columns: minmax(0, 1fr);
     padding-top: 64px;
-  }
-
-  .art {
-    display: none;
   }
 
   .hero::before {
@@ -421,10 +366,6 @@
 @media (prefers-reduced-motion: reduce) {
   .embers {
     display: none;
-  }
-
-  .appIcon {
-    animation: none;
   }
 
   .card:hover,
