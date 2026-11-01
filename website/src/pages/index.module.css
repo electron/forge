@@ -118,7 +118,7 @@
 
 .casting[data-slot='2'] {
   z-index: 1;
-  transform: translateX(-50%) translateY(-14px);
+  transform: translateX(-50%) translateY(-4px);
   box-shadow:
     var(--lu-shadow-island),
     inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft),
