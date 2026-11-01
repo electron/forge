@@ -122,6 +122,14 @@ body,
   letter-spacing: var(--lu-type-label-tracking);
 }
 
+/* A backdrop-filter makes the navbar the containing block for its fixed
+   children, which would trap the mobile menu inside the 56px bar. Drop the
+   blur while the menu is open. */
+.navbar.navbar-sidebar--show {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .navbar-sidebar {
   background: var(--lu-material-overlay);
   -webkit-backdrop-filter: var(--lu-blur-overlay);
