@@ -186,6 +186,26 @@
 }
 
 /* The packaged app: an app icon, Electron's mark on Electron navy in both modes. */
+/* The afterglow: each new form comes out of its station still charged, and
+   settles back. Form 0 is the template, which no station made. */
+.form:not([data-form='0']) .tile {
+  animation: charge var(--period) var(--lu-ease) infinite;
+  animation-delay: calc(
+    var(--i) * var(--period) / -3 + (var(--f) - 0.5) * var(--period) / 4
+  );
+}
+
+@keyframes charge {
+  0% {
+    filter: brightness(1.35)
+      drop-shadow(0 0 8px color-mix(in srgb, var(--lu-accent) 70%, transparent));
+  }
+  9%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
+  }
+}
+
 .form[data-form='2'] .tile {
   background: radial-gradient(120% 90% at 30% 0%, #3a3e55, #2f3242 60%);
   color: #a2ecfb;
@@ -257,6 +277,49 @@
   10% {
     opacity: 1;
     transform: scale(1.25);
+  }
+}
+
+/* The zap: as an app changes form inside, the housing flickers once and
+   flashes with accent light, in step with the working light. */
+.station::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    70% 90% at 50% 40%,
+    color-mix(in srgb, var(--lu-accent) 20%, transparent),
+    transparent 70%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--lu-accent) 55%, transparent),
+    0 0 28px 2px color-mix(in srgb, var(--lu-accent) 35%, transparent);
+  opacity: 0;
+  animation: zap calc(var(--period) / 3) linear infinite;
+  animation-delay: calc(
+    (var(--s) + 0.5) * var(--period) / 4 - var(--period) / 30
+  );
+}
+
+@keyframes zap {
+  0%,
+  6% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 0.55;
+  }
+  8% {
+    opacity: 0.15;
+  }
+  10% {
+    opacity: 1;
+  }
+  28%,
+  100% {
+    opacity: 0;
   }
 }
 
@@ -356,6 +419,11 @@
   .form,
   .stationLight {
     animation-play-state: paused;
+  }
+
+  .station::after,
+  .tile {
+    animation: none !important;
   }
 }
 

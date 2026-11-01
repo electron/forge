@@ -142,7 +142,12 @@ export default function Pipeline(): React.ReactElement {
             style={{ '--i': i } as React.CSSProperties}
           >
             {FORMS.map((form, f) => (
-              <span key={form.icon} className={styles.form} data-form={f}>
+              <span
+                key={form.icon}
+                className={styles.form}
+                data-form={f}
+                style={{ '--f': f } as React.CSSProperties}
+              >
                 <span className={styles.tile}>
                   <FormIcon icon={form.icon} />
                 </span>
