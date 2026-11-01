@@ -9,17 +9,90 @@
   box-shadow: none;
 }
 
+/* The homepage trades the site's overhead aura for hearth light: a warm glow
+   rising from behind the pipeline, with a few embers drifting up. */
+:global(html):has(.home) {
+  background: var(--lu-window);
+}
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: var(--lu-space-4);
+}
+
+.stage::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 55% at 50% 58%,
+      color-mix(in srgb, var(--lu-accent) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      90% 70% at 50% 64%,
+      color-mix(in srgb, var(--lu-accent) 9%, transparent),
+      transparent 75%
+    );
+  pointer-events: none;
+}
+
+.embers {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 35% 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.embers span {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lu-accent) 70%, #ffd9a0);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--lu-accent) 60%, transparent);
+  opacity: 0;
+  animation-name: rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -420px);
+  }
+}
+
 .hero {
   box-sizing: border-box;
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: 56px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 72px var(--lu-space-6) var(--lu-space-8);
+}
+
+.intro {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--lu-space-6);
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 96px var(--lu-space-6) var(--lu-space-8);
-  text-align: center;
 }
 
 .badge {
@@ -51,7 +124,7 @@
 
 .title {
   margin: 0;
-  font: 650 64px/68px var(--lu-font-sans);
+  font: 650 56px/60px var(--lu-font-sans);
   letter-spacing: -0.035em;
   text-wrap: balance;
 }
@@ -77,55 +150,6 @@
   font-size: 15px;
 }
 
-/* The create command: a field on glass. */
-.command {
-  display: flex;
-  align-items: center;
-  gap: var(--lu-space-3);
-  max-width: 100%;
-  padding: 6px 6px 6px 18px;
-  border-radius: var(--lu-radius-capsule);
-  background: var(--lu-material-chrome);
-  -webkit-backdrop-filter: var(--lu-blur-chrome);
-  backdrop-filter: var(--lu-blur-chrome);
-  box-shadow: var(--lu-shadow-capsule);
-}
-
-.command code {
-  min-width: 0;
-  overflow: hidden;
-  padding: 0;
-  background: none;
-  font: var(--lu-type-code);
-  font-size: 14px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.prompt {
-  color: var(--lu-ink-faint);
-  font: var(--lu-type-code);
-  user-select: none;
-}
-
-.copy {
-  flex: none;
-  height: var(--lu-size-control);
-  padding: 0 14px;
-  border: none;
-  border-radius: var(--lu-radius-capsule);
-  background: var(--lu-button);
-  box-shadow: var(--lu-shadow-button);
-  color: var(--lu-ink);
-  font: var(--lu-type-label);
-  cursor: pointer;
-  transition: background-color var(--lu-dur-fast) var(--lu-ease);
-}
-
-.copy:hover {
-  background: var(--lu-button-hover);
-}
-
 .sectionTitle {
   margin: 0 0 var(--lu-space-6);
   font: var(--lu-type-title);
@@ -133,10 +157,10 @@
   text-align: center;
 }
 
-/* The pipeline: the one solid sheet on the page. */
+/* The pipeline: the one solid sheet on the page, sitting on the hearth. */
 .sheet {
-  max-width: 1120px;
-  margin: var(--lu-space-8) auto 0;
+  max-width: 1152px;
+  margin: var(--lu-space-4) auto 0;
   padding: var(--lu-space-8);
   border-radius: var(--lu-radius-sheet);
   background: var(--lu-surface);
@@ -242,7 +266,9 @@
 
 @media (max-width: 996px) {
   .hero {
-    padding-top: 64px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--lu-space-8);
+    padding-top: 48px;
   }
 
   .title {
@@ -267,7 +293,6 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .command,
   .card {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -279,6 +304,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .embers {
+    display: none;
+  }
+
   .card:hover,
   .card:hover .cardIcon {
     transform: none;
