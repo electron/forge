@@ -20,7 +20,7 @@ const FEATURES = [
   {
     title: 'Makers',
     icon: 'makers',
-    body: 'Native installers and archives for every desktop platform.',
+    body: 'Generate platform-specific distributables like DMG, MSIX or Flatpak files.',
     items: [
       'DMG',
       'pkg',
@@ -38,21 +38,21 @@ const FEATURES = [
   {
     title: 'Publishers',
     icon: 'publishers',
-    body: 'Ship builds and update feeds to the storage you already use.',
+    body: 'Send the artifacts from Make to a service to distribute them, or to use as updates.',
     items: ['GitHub', 'S3', 'Google Cloud Storage', 'Bitbucket', 'Snapcraft'],
     to: '/config/publishers/',
   },
   {
     title: 'Code signing',
     icon: 'signing',
-    body: 'Sign and notarize on macOS, and sign installers on Windows.',
+    body: "Certify that your app was created by you, so it doesn't trigger operating system security checks.",
     items: ['macOS notarization', 'Windows signing'],
     to: '/guides/code-signing/',
   },
   {
     title: 'Plugins',
     icon: 'plugins',
-    body: 'Hook into every step of the build, or use the first-party plugins.',
+    body: "Extend Forge's core functionality with custom logic during any of its build hooks.",
     items: ['Vite', 'webpack', 'Fuses', 'Auto unpack natives'],
     to: '/config/plugins/',
   },
@@ -236,9 +236,10 @@ export default function Home(): React.ReactElement {
             Build, package and ship Electron apps.
           </h1>
           <p className={styles.lead}>
-            Forge is the all-in-one toolchain for Electron. Scaffold a project,
-            then package, sign, make installers for every platform and publish,
-            with one command each.
+            Forge is an all-in-one tool for packaging and distributing Electron
+            applications. It combines many single-purpose packages into a full
+            build pipeline that works out of the box, complete with code
+            signing, installers, and artifact publishing.
           </p>
           <div className={styles.actions}>
             <Link className="button button--primary" to="/getting-started/">
@@ -263,7 +264,7 @@ export default function Home(): React.ReactElement {
       <main>
         <section className={styles.pipeline} aria-labelledby="pipeline">
           <h2 id="pipeline" className={styles.sectionTitle}>
-            One pipeline, from first run to release
+            A full build pipeline that works out of the box
           </h2>
           <div className={styles.sheet}>
             <Pipeline />

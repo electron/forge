@@ -6,25 +6,25 @@ const STEPS = [
   {
     command: 'start',
     title: 'Develop',
-    body: 'Run your app with live reload for the main and renderer processes.',
+    body: 'Launch your app in dev mode. The Vite and webpack plugins add live reloading and HMR.',
     to: '/cli/#start',
   },
   {
     command: 'package',
     title: 'Package',
-    body: 'Bundle an executable for each platform, with native modules rebuilt and macOS signing handled.',
+    body: 'Create an executable bundle for a target operating system, such as .app on macOS or .exe on Windows.',
     to: '/core-concepts/build-lifecycle/#step-1-package',
   },
   {
     command: 'make',
     title: 'Make',
-    body: 'Turn that bundle into installers and archives your users can download.',
+    body: 'Create distributables from that bundle: an OS-specific installer such as .dmg or .msi, or a .zip archive.',
     to: '/core-concepts/build-lifecycle/#step-2-make',
   },
   {
     command: 'release',
     title: 'Release',
-    body: 'Upload the results to wherever you distribute updates.',
+    body: "Upload your distributables for your app's users, such as to GitHub Releases or AWS S3.",
     to: '/core-concepts/build-lifecycle/#step-3-publish',
   },
 ];
