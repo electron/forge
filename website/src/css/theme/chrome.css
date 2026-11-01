@@ -45,6 +45,16 @@ body,
     0 var(--lu-size-hairline) 0 var(--lu-line);
 }
 
+/* Hover fill for navbar links. Lucent's capsule hover is a brighter white,
+   which vanishes on the light capsule, so light mode darkens instead. */
+:root {
+  --nav-hover: var(--lu-fill);
+}
+
+[data-theme='dark'] {
+  --nav-hover: var(--lu-capsule-hover);
+}
+
 /* Navbar controls gather into one glass capsule. */
 @media (min-width: 997px) {
   .navbar__items--right {
@@ -82,7 +92,19 @@ body,
 
   .navbar__items--right .navbar__link:hover,
   .navbar__items--right [class*='toggleButton']:hover {
-    background: var(--lu-capsule-hover);
+    background: var(--nav-hover);
+    color: var(--lu-ink);
+  }
+
+  /* Links outside the capsule get the same pill on hover. */
+  .navbar__items:not(.navbar__items--right) .navbar__link {
+    padding: 6px 12px;
+    border-radius: var(--lu-radius-capsule);
+    transition: background-color var(--lu-dur-fast) var(--lu-ease);
+  }
+
+  .navbar__items:not(.navbar__items--right) .navbar__link:hover {
+    background: var(--nav-hover);
   }
 
   .navbar__items--right .navbar__search {
