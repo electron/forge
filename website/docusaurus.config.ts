@@ -1,6 +1,7 @@
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config } from '@docusaurus/types';
-import { themes as prismThemes } from 'prism-react-renderer';
+
+import lucentPrism from './src/prism/lucent';
 
 // This site renders the Markdown/MDX content in `../docs` at the site root.
 // It is a standalone Yarn project (own lockfile) and not a monorepo workspace.
@@ -119,8 +120,9 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} OpenJS Foundation and Electron contributors.`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      // One theme for both modes: its colours are Lucent CSS variables.
+      theme: lucentPrism,
+      darkTheme: lucentPrism,
       additionalLanguages: ['bash', 'json', 'diff'],
     },
   } satisfies Preset.ThemeConfig,

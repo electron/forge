@@ -8,6 +8,7 @@
     ".nyc_output",
     "dist/",
     "docs/",
+    "website/src/css/lucent/",
     "packages/tsconfig.json",
     "packages/*/*/dist",
     "packages/*/*/doc",
