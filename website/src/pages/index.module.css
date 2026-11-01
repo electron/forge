@@ -8,7 +8,7 @@
   --home-width: min(1120px, 100% - 2 * var(--lu-space-6));
   /* The hearth's colour: warmer than the accent in light mode, where a glow
      of the deep red-orange reads pink. */
-  --hearth: #ff7a2f;
+  --hearth: #ff6430;
   /* The hearth's glow and embers spill past the cards; clip them at the
      window's edge (clip, not hidden, so nothing becomes a scroll box). */
   overflow-x: clip;

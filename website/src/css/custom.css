@@ -46,12 +46,12 @@
      are amber). */
   --lu-info: #006f85;
   --lu-info-soft: #dcf3f8;
-  /* A red-leaning orange, 5.3:1 on white. */
-  --lu-accent: #c8350c;
+  /* A red-leaning orange, 5.6:1 on white. */
+  --lu-accent: #c62a14;
   --lu-accent-soft: #feede6;
-  /* The primary action is the accent itself, with white text (5.3:1). */
-  --lu-action: #c8350c;
-  --lu-action-pressed: #a82b09;
+  /* The primary action is the accent itself, with white text (5.6:1). */
+  --lu-action: #c62a14;
+  --lu-action-pressed: #a82110;
   --lu-on-action: #ffffff;
   --lu-assist-ring: linear-gradient(
     100deg,
@@ -65,16 +65,16 @@
 :root[data-theme='dark'] {
   --lu-info: #9feaf9;
   --lu-info-soft: #1c3945;
-  --lu-accent: #ff9270;
+  --lu-accent: #ff8268;
   --lu-accent-soft: #42211a;
   /* A hotter orange than the accent for the primary action, with dark text
-     (6.6:1). */
-  --lu-action: #ff6a3d;
-  --lu-action-pressed: #f05a2e;
+     (5.9:1). */
+  --lu-action: #ff5a3d;
+  --lu-action-pressed: #f04a2e;
   --lu-on-action: #2a0b03;
   --lu-assist-ring: linear-gradient(
     100deg,
-    #ff9270,
+    #ff8268,
     #ff5a3d 38%,
     #ff3d4d 70%,
     #ffc08a
