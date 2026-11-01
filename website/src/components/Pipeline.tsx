@@ -46,18 +46,19 @@ type Icon = (typeof FORMS)[number]['icon'];
 /** Apps on the line at once, evenly spaced. */
 const ITEMS = 3;
 
-/** What comes out of Make: each app off the line gets the next maker in turn. */
+/** What comes out of Make: each app off the line gets the next maker's file
+    extension in turn (.exe is Squirrel, .msi is WiX). */
 const MAKERS = [
-  'DMG',
-  'MSIX',
-  'deb',
-  'pkg',
-  'Squirrel',
-  'RPM',
-  'ZIP',
-  'WiX MSI',
-  'Flatpak',
-  'Snap',
+  '.dmg',
+  '.msix',
+  '.deb',
+  '.pkg',
+  '.exe',
+  '.rpm',
+  '.zip',
+  '.msi',
+  '.flatpak',
+  '.snap',
 ];
 
 /**
