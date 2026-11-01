@@ -121,6 +121,12 @@
   justify-content: flex-end;
 }
 
+/* The card is narrower than a real window, so centre the title in the space
+   right of the traffic lights. */
+.casting[data-os='mac'] .windowTitle {
+  left: calc(50% + 14px);
+}
+
 .casting[data-slot='2'] .windowTitle {
   color: var(--lu-ink);
 }
