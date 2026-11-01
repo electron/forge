@@ -296,7 +296,7 @@ export default function Home(): React.ReactElement {
           </h1>
           <p className={styles.lead}>
             The all-in-one toolchain for Electron. Scaffold, package, sign and
-            publish, one command each.
+            publish your app for every platform.
           </p>
           <div className={styles.actions}>
             <Link className="button button--primary" to="/getting-started/">
