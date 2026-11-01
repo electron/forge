@@ -77,6 +77,10 @@
 /* What Forge makes: three installers fanned out on the hearth, the front one
    catching the light. */
 .castings {
+  /* The command's centre, below the cards' base: the gap plus half the
+     command's height. */
+  --fan-pivot: calc(var(--lu-space-8) + 26px);
+  --fan-angle: 30deg;
   position: relative;
   align-self: stretch;
   height: 260px;
@@ -228,16 +232,22 @@
   color: var(--lu-ink);
 }
 
-.casting[data-slot='0'] {
-  transform: translateX(-50%) translateX(-108px) rotate(-8deg) scale(0.88);
+/* The cards fan out like a hand from the create command under them: each
+   turns about a pivot at the command's centre. */
+.casting[data-slot='0'],
+.casting[data-slot='1'] {
+  transform-origin: 50% calc(100% + var(--fan-pivot));
   opacity: 0.85;
+}
+
+.casting[data-slot='0'] {
+  transform: translateX(-50%) rotate(calc(-1 * var(--fan-angle))) scale(0.88);
 }
 
 .casting[data-slot='1'] {
   /* Its left edge sits behind the front card, so its text hugs the right. */
   text-align: right;
-  transform: translateX(-50%) translateX(108px) rotate(8deg) scale(0.88);
-  opacity: 0.85;
+  transform: translateX(-50%) rotate(var(--fan-angle)) scale(0.88);
 }
 
 .casting[data-slot='2'] {
@@ -281,19 +291,32 @@
   color: var(--lu-accent);
 }
 
-/* The hearth: warm light behind the cards, brightest under the front one. */
+/* The hearth: a cone of warm light rising from the command through the
+   cards, widest where they fan out and fading with height. */
 .castings::before {
   content: '';
   position: absolute;
   z-index: -2;
-  inset: -80px -140px -120px;
-  background: radial-gradient(
-    50% 50% at 50% 62%,
-    color-mix(in srgb, var(--hearth) 22%, transparent),
-    color-mix(in srgb, var(--hearth) 8%, transparent) 40%,
-    color-mix(in srgb, var(--hearth) 2%, transparent) 62%,
-    transparent 80%
+  inset: -80px -160px calc(-1 * var(--fan-pivot));
+  background: conic-gradient(
+    from calc(-1.5 * var(--fan-angle)) at 50% 100%,
+    transparent,
+    color-mix(in srgb, var(--hearth) 16%, transparent)
+      calc(0.6 * var(--fan-angle)),
+    color-mix(in srgb, var(--hearth) 26%, transparent)
+      calc(1.5 * var(--fan-angle)),
+    color-mix(in srgb, var(--hearth) 16%, transparent)
+      calc(2.4 * var(--fan-angle)),
+    transparent calc(3 * var(--fan-angle))
   );
+  /* Fades with distance from the command. */
+  -webkit-mask-image: radial-gradient(
+    50% 100% at 50% 100%,
+    #000 30%,
+    transparent
+  );
+  mask-image: radial-gradient(50% 100% at 50% 100%, #000 30%, transparent);
+  filter: blur(14px);
   pointer-events: none;
 }
 
