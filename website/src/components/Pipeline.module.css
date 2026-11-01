@@ -343,6 +343,8 @@
 }
 
 .step {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: var(--lu-space-2);
@@ -350,13 +352,46 @@
   padding: var(--lu-space-4);
   border-radius: var(--lu-radius-panel);
   color: var(--lu-ink);
-  transition: background-color var(--lu-dur-base) var(--lu-ease);
+  transition:
+    transform var(--lu-dur-base) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease);
+}
+
+/* The hover surface: a raised glass card with a sheen, faded in rather than
+   switched on. */
+.step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    radial-gradient(
+      120% 80% at 0% 0%,
+      color-mix(in srgb, var(--lu-accent) 10%, transparent),
+      transparent 60%
+    ),
+    var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  opacity: 0;
+  transition: opacity var(--lu-dur-base) var(--lu-ease);
 }
 
 .step:hover {
-  background: var(--lu-hover);
+  transform: translateY(-3px);
   color: var(--lu-ink);
   text-decoration: none;
+}
+
+.step:hover::before {
+  opacity: 1;
+}
+
+.step:active {
+  transform: translateY(-1px) scale(0.99);
 }
 
 .stepIndex {
@@ -370,22 +405,69 @@
   font: var(--lu-type-caption);
   transition:
     background-color var(--lu-dur-base) var(--lu-ease),
-    color var(--lu-dur-base) var(--lu-ease);
+    color var(--lu-dur-base) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
 }
 
 .step:hover .stepIndex {
   background: var(--lu-action);
   color: var(--lu-on-action);
+  box-shadow:
+    var(--lu-shadow-primary),
+    0 0 0 4px color-mix(in srgb, var(--lu-accent) 16%, transparent);
+  transform: scale(1.08);
 }
 
 .stepTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   font: var(--lu-type-headline);
   letter-spacing: var(--lu-type-headline-tracking);
+}
+
+.stepArrow {
+  color: var(--lu-accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover .stepArrow {
+  opacity: 1;
+  transform: none;
 }
 
 .stepCommand {
   width: fit-content;
   font-size: 12.5px;
+  transition:
+    background-color var(--lu-dur-base) var(--lu-ease),
+    color var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover .stepCommand {
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+}
+
+/* Hovering a step lights up its station on the line. */
+.station {
+  transition: box-shadow var(--lu-dur-base) var(--lu-ease);
+}
+
+.pipeline:has(.step[data-step='0']:hover) .station[data-step='0'],
+.pipeline:has(.step[data-step='1']:hover) .station[data-step='1'],
+.pipeline:has(.step[data-step='2']:hover) .station[data-step='2'],
+.pipeline:has(.step[data-step='3']:hover) .station[data-step='3'] {
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim),
+    0 0 0 1px color-mix(in srgb, var(--lu-accent) 50%, transparent),
+    0 0 20px color-mix(in srgb, var(--lu-accent) 28%, transparent);
 }
 
 .stepBody {
@@ -427,6 +509,14 @@
   .station::after,
   .tile {
     animation: none !important;
+  }
+
+  .step,
+  .step:hover,
+  .step:active,
+  .step:hover .stepIndex,
+  .step:hover .stepArrow {
+    transform: none;
   }
 }
 

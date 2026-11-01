@@ -160,6 +160,7 @@ export default function Pipeline(): React.ReactElement {
           <div
             key={step.command}
             className={styles.station}
+            data-step={i}
             style={{ '--s': i } as React.CSSProperties}
           >
             <span className={styles.stationLight} />
@@ -171,9 +172,14 @@ export default function Pipeline(): React.ReactElement {
       <ol className={styles.steps}>
         {STEPS.map((step, i) => (
           <li key={step.command}>
-            <Link className={styles.step} to={step.to}>
+            <Link className={styles.step} to={step.to} data-step={i}>
               <span className={styles.stepIndex}>{i + 1}</span>
-              <span className={styles.stepTitle}>{step.title}</span>
+              <span className={styles.stepTitle}>
+                {step.title}
+                <span className={styles.stepArrow} aria-hidden="true">
+                  →
+                </span>
+              </span>
               <code className={styles.stepCommand}>
                 electron-forge {step.command}
               </code>
