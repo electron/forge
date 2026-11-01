@@ -136,6 +136,9 @@ body,
   /* Infima sizes both menu panels (main and docs) from this variable. */
   --ifm-navbar-sidebar-width: min(320px, 100vw - 2 * var(--lu-space-6));
   width: var(--ifm-navbar-sidebar-width);
+  overflow: hidden;
+  /* Its open edge is rounded like the content sheet. */
+  border-radius: 0 var(--lu-radius-sheet) var(--lu-radius-sheet) 0;
   background:
     radial-gradient(
       520px 360px at 0% -120px,
