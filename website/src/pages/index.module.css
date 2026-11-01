@@ -2,6 +2,19 @@
    pipeline on a solid sheet, features on glass. Values come from --lu-* tokens. */
 
 /* No docs sheet here: the page sits straight on the window ground. */
+.home {
+  /* One container for every section, so the hero, the pipeline, the features
+     and the footer share a left edge. */
+  --home-width: min(1120px, 100% - 2 * var(--lu-space-6));
+  /* The hearth's colour: warmer than the accent in light mode, where a glow
+     of the deep red-orange reads pink. */
+  --hearth: #ff7a2f;
+}
+
+:global(html[data-theme='dark']) .home {
+  --hearth: var(--lu-accent);
+}
+
 .home main {
   margin: 0;
   background: none;
@@ -13,23 +26,39 @@
   position: relative;
   isolation: isolate;
   box-sizing: border-box;
-  /* Same width and gutters as the pipeline sheet, so the text shares its
-     left edge. The text keeps to a 640px column; the hearth fills the right. */
-  width: min(1120px, 100% - 2 * var(--lu-space-6));
+  /* The text keeps to a 600px column; the hearth fills the right. */
+  width: var(--home-width);
   display: grid;
   grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
   align-items: center;
   gap: var(--lu-space-8);
   margin: 0 auto;
-  padding: 96px 0 var(--lu-space-8);
+  padding: 96px 0 64px;
 }
 
+/* Grouped spacing: the headline and lead belong together, then the actions,
+   with the create command tucked under the buttons. */
 .intro {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--lu-space-6);
   min-width: 0;
+}
+
+.badge {
+  margin-bottom: var(--lu-space-6);
+}
+
+.title {
+  margin-bottom: var(--lu-space-4);
+}
+
+.lead {
+  margin-bottom: var(--lu-space-8);
+}
+
+.actions {
+  margin-bottom: var(--lu-space-3);
 }
 
 .intro > * {
@@ -118,9 +147,8 @@
 
 .file {
   color: var(--lu-ink);
-  font: 500 12px/17px var(--lu-font-mono);
-  /* Names break only where the data marks it (a zero-width space). */
-  overflow-wrap: normal;
+  font: 500 13px/18px var(--lu-font-mono);
+  white-space: nowrap;
 }
 
 .platform {
@@ -128,28 +156,31 @@
   font: var(--lu-type-caption);
 }
 
-/* The hearth: warm light from the lower right, behind the embers. */
-.hero::before {
+/* The hearth: warm light behind the cards, brightest under the front one. */
+.castings::before {
   content: '';
   position: absolute;
   z-index: -2;
-  inset: 0 0 -120px 45%;
+  inset: -80px -140px -120px;
   background: radial-gradient(
-    46% 46% at 62% 60%,
-    color-mix(in srgb, var(--lu-accent) 16%, transparent),
-    color-mix(in srgb, var(--lu-accent) 6%, transparent) 38%,
-    color-mix(in srgb, var(--lu-accent) 2%, transparent) 58%,
-    transparent 76%
+    50% 50% at 50% 62%,
+    color-mix(in srgb, var(--hearth) 22%, transparent),
+    color-mix(in srgb, var(--hearth) 8%, transparent) 40%,
+    color-mix(in srgb, var(--hearth) 2%, transparent) 62%,
+    transparent 80%
   );
   pointer-events: none;
 }
 
-/* Embers drifting up from the hearth, behind the hero's content. Kept to a
-   handful, slow, and to the sides of the headline. */
+/* Embers drifting up from the cards' base, behind them. Kept to a handful
+   and slow. */
 .embers {
   position: absolute;
   z-index: -1;
-  inset: 0;
+  left: -90px;
+  right: -90px;
+  bottom: 0;
+  height: 380px;
   overflow: hidden;
   pointer-events: none;
 }
@@ -158,8 +189,8 @@
   position: absolute;
   bottom: 0;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--lu-accent) 70%, #ffd9a0);
-  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--lu-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--hearth) 70%, #ffd9a0);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--hearth) 60%, transparent);
   opacity: 0;
   animation-name: rise;
   animation-timing-function: linear;
@@ -179,7 +210,7 @@
   }
   100% {
     opacity: 0;
-    transform: translate(var(--drift), -380px);
+    transform: translate(var(--drift), -360px);
   }
 }
 
@@ -211,7 +242,7 @@
 }
 
 .title {
-  margin: 0;
+  margin-top: 0;
   font: 650 64px/68px var(--lu-font-sans);
   letter-spacing: -0.035em;
   text-wrap: balance;
@@ -219,7 +250,7 @@
 
 .lead {
   max-width: 620px;
-  margin: 0;
+  margin-top: 0;
   color: var(--lu-ink-muted);
   font: 400 18px/28px var(--lu-font-sans);
   text-wrap: pretty;
@@ -288,8 +319,9 @@
 
 .sectionTitle {
   margin: 0 0 var(--lu-space-6);
-  font: var(--lu-type-title);
-  letter-spacing: var(--lu-type-title-tracking);
+  font: 650 32px/38px var(--lu-font-sans);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 /* The homepage trades the site's overhead aura for hearth light: one warm glow
@@ -298,11 +330,16 @@
   background: var(--lu-window);
 }
 
-/* The pipeline: the one solid sheet on the page, sitting on the hearth. */
+/* The pipeline: the one solid sheet on the page, sitting on the hearth. Its
+   title sits above it, on the shared left edge. */
+.pipeline {
+  position: relative;
+  width: var(--home-width);
+  margin: var(--lu-space-8) auto 0;
+}
+
 .sheet {
   position: relative;
-  max-width: 1120px;
-  margin: var(--lu-space-8) auto 0;
   padding: var(--lu-space-8);
   border-radius: var(--lu-radius-sheet);
   background: var(--lu-surface);
@@ -318,8 +355,8 @@
   inset: -200px 0 40% 0;
   background: radial-gradient(
     36% 65% at 70% 74%,
-    color-mix(in srgb, var(--lu-accent) 16%, transparent),
-    color-mix(in srgb, var(--lu-accent) 6%, transparent) 40%,
+    color-mix(in srgb, var(--hearth) 16%, transparent),
+    color-mix(in srgb, var(--hearth) 6%, transparent) 40%,
     transparent 76%
   );
   pointer-events: none;
@@ -327,9 +364,8 @@
 
 /* Features: glass cards over the aura. */
 .features {
-  max-width: 1120px;
-  margin: 72px auto 96px;
-  padding: 0 var(--lu-space-6);
+  width: var(--home-width);
+  margin: 72px auto 64px;
 }
 
 .grid {
@@ -393,8 +429,27 @@
 }
 
 .cardTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   font: var(--lu-type-headline);
   letter-spacing: var(--lu-type-headline-tracking);
+}
+
+/* The arrow slides in on hover, so the card reads as a link. */
+.cardArrow {
+  color: var(--lu-accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: none;
 }
 
 .cardBody {
@@ -423,15 +478,22 @@
 /* Between the mobile layout and full width, the fan is wider than its
    column, so it shrinks to fit. */
 @media (max-width: 1180px) {
+  .hero {
+    grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+  }
+
   .castings {
-    transform: scale(0.76);
+    transform: scale(0.86);
     transform-origin: 50% 0;
   }
 }
 
 @media (max-width: 996px) {
+  .home {
+    --home-width: calc(100% - 2 * var(--lu-space-4));
+  }
+
   .hero {
-    width: calc(100% - 2 * var(--lu-space-4));
     grid-template-columns: minmax(0, 1fr);
     padding-top: 64px;
   }
@@ -440,8 +502,18 @@
     display: none;
   }
 
+  /* No cards here, so the hearth glows behind the text instead. */
   .hero::before {
-    inset: 0 0 -120px 0;
+    content: '';
+    position: absolute;
+    z-index: -2;
+    inset: 0 0 -120px;
+    background: radial-gradient(
+      60% 46% at 70% 60%,
+      color-mix(in srgb, var(--hearth) 14%, transparent),
+      transparent 76%
+    );
+    pointer-events: none;
   }
 
   .title {
@@ -449,12 +521,16 @@
     letter-spacing: var(--lu-type-display-tracking);
   }
 
+  .sectionTitle {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .sheet {
-    margin-inline: var(--lu-space-4);
     padding: var(--lu-space-6) var(--lu-space-4);
   }
 }
@@ -483,7 +559,8 @@
   }
 
   .card:hover,
-  .card:hover .cardIcon {
+  .card:hover .cardIcon,
+  .cardArrow {
     transform: none;
   }
 }

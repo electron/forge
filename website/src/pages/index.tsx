@@ -157,13 +157,14 @@ function CopyCommand() {
   );
 }
 
-/** A few embers rising off the hearth: left %, size px, seconds, delay, drift px. */
+/** A few embers rising off the hearth from the cards' base: left %, size px,
+    seconds, delay, drift px. */
 const EMBERS = [
-  [58, 2, 10, 7, -16],
-  [66, 3, 11, 0, 18],
-  [73, 2, 9, 4.5, -14],
-  [80, 3, 12, 2, 10],
-  [87, 2, 13, 1, 16],
+  [6, 2, 10, 7, -16],
+  [20, 3, 11, 0, 18],
+  [36, 2, 9, 4.5, -14],
+  [62, 3, 12, 2, 10],
+  [78, 2, 13, 1, 16],
   [94, 3, 12, 5.5, -12],
 ];
 
@@ -189,14 +190,14 @@ function Embers() {
   );
 }
 
-/** What `npm run make` leaves in out/make, one per platform, using the makers' default names. */
+/** What `npm run make` leaves in out/make, one per platform. */
 const CASTINGS = [
   {
-    file: 'my-app-win32-\u200Bx64-1.0.0.msix',
+    file: 'My App.msix',
     format: 'MSIX',
     platform: 'Windows',
   },
-  { file: 'my-app_1.0.0_\u200Bamd64.deb', format: 'DEB', platform: 'Linux' },
+  { file: 'my-app.deb', format: 'DEB', platform: 'Linux' },
   { file: 'My App.dmg', format: 'DMG', platform: 'macOS' },
 ];
 
@@ -204,6 +205,7 @@ const CASTINGS = [
 function Castings() {
   return (
     <div className={styles.castings} aria-hidden="true">
+      <Embers />
       {CASTINGS.map(({ file, format, platform }, i) => (
         <div key={format} className={styles.casting} data-slot={i}>
           <span className={styles.format}>{format}</span>
@@ -223,7 +225,6 @@ export default function Home(): React.ReactElement {
   return (
     <Layout description={siteConfig.tagline} wrapperClassName={styles.home}>
       <header className={styles.hero}>
-        <Embers />
         <div className={styles.intro}>
           <Link
             className={styles.badge}
@@ -256,11 +257,13 @@ export default function Home(): React.ReactElement {
       </header>
 
       <main>
-        <section className={styles.sheet} aria-labelledby="pipeline">
+        <section className={styles.pipeline} aria-labelledby="pipeline">
           <h2 id="pipeline" className={styles.sectionTitle}>
             One pipeline, from first run to release
           </h2>
-          <Pipeline />
+          <div className={styles.sheet}>
+            <Pipeline />
+          </div>
         </section>
 
         <section className={styles.features} aria-labelledby="features">
@@ -271,7 +274,12 @@ export default function Home(): React.ReactElement {
             {FEATURES.map((feature) => (
               <Link key={feature.title} className={styles.card} to={feature.to}>
                 <Icon icon={feature.icon} />
-                <span className={styles.cardTitle}>{feature.title}</span>
+                <span className={styles.cardTitle}>
+                  {feature.title}
+                  <span className={styles.cardArrow} aria-hidden="true">
+                    →
+                  </span>
+                </span>
                 <span className={styles.cardBody}>{feature.body}</span>
                 <span className={styles.chips}>
                   {feature.items.map((item) => (

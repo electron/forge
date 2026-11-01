@@ -97,6 +97,11 @@ const config: Config = {
     },
     navbar: {
       title: 'Electron Forge',
+      logo: {
+        alt: '',
+        src: 'img/mark.svg',
+        srcDark: 'img/mark-dark.svg',
+      },
       items: [
         {
           to: '/getting-started/',
@@ -128,10 +133,25 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Links',
+          title: 'Docs',
+          items: [
+            { label: 'Getting started', to: '/getting-started/' },
+            { label: 'CLI', to: '/cli/' },
+            { label: 'Configuration', to: '/config/configuration/' },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            { label: 'GitHub', href: 'https://github.com/electron/forge' },
+            { label: 'Discord', href: 'https://discord.gg/electronjs' },
+          ],
+        },
+        {
+          title: 'Electron',
           items: [
             { label: 'electronjs.org', href: 'https://www.electronjs.org/' },
-            { label: 'GitHub', href: 'https://github.com/electron/forge' },
+            { label: 'Fiddle', href: 'https://www.electronjs.org/fiddle' },
           ],
         },
       ],

@@ -37,7 +37,7 @@ const FORMS = [
   { label: 'template', icon: 'template' },
   { label: 'src/', icon: 'source' },
   { label: 'My App.app', icon: 'bundle' },
-  { label: '.dmg .exe .deb', icon: 'installers' },
+  { label: 'installers', icon: 'installers' },
   { label: 'v1.0.0', icon: 'release' },
 ] as const;
 
@@ -188,7 +188,6 @@ export default function Pipeline(): React.ReactElement {
             style={{ '--s': i } as React.CSSProperties}
           >
             <span className={styles.stationLight} />
-            <span className={styles.stationName}>{step.title}</span>
           </div>
         ))}
       </div>
@@ -197,7 +196,6 @@ export default function Pipeline(): React.ReactElement {
         {STEPS.map((step, i) => (
           <li key={step.command}>
             <Link className={styles.step} to={step.to} data-step={i}>
-              <span className={styles.stepIndex}>{i + 1}</span>
               <span className={styles.stepTitle}>
                 {step.title}
                 <span className={styles.stepArrow} aria-hidden="true">

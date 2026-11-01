@@ -49,7 +49,10 @@
   /* A red-leaning orange, 5.3:1 on white. */
   --lu-accent: #c8350c;
   --lu-accent-soft: #feede6;
-  --lu-on-action: #ff9a76;
+  /* The primary action is the accent itself, with white text (5.3:1). */
+  --lu-action: #c8350c;
+  --lu-action-pressed: #a82b09;
+  --lu-on-action: #ffffff;
   --lu-assist-ring: linear-gradient(
     100deg,
     #ff3d1f,
@@ -64,8 +67,11 @@
   --lu-info-soft: #1c3945;
   --lu-accent: #ff9270;
   --lu-accent-soft: #42211a;
-  --lu-action: #ff9270;
-  --lu-on-action: #3d1206;
+  /* A hotter orange than the accent for the primary action, with dark text
+     (6.6:1). */
+  --lu-action: #ff6a3d;
+  --lu-action-pressed: #f05a2e;
+  --lu-on-action: #2a0b03;
   --lu-assist-ring: linear-gradient(
     100deg,
     #ff9270,
@@ -83,17 +89,18 @@
   --lu-aura-b: rgba(255, 160, 120, 0.38);
   --lu-aura-c: rgba(27, 28, 38, 0.08);
   --lu-sheen-glass: rgba(255, 255, 255, 0.34);
-  /* The primary button's sheen. Light mode's action is near-black, so white
-     on top is enough. */
+  /* The primary button's sheen: white on top, an ember shade at the bottom. */
   --lu-sheen-action: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0) 55%
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0) 55%,
+    rgba(64, 12, 0, 0.12)
   );
   --lu-sheen-action-hover: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.28),
-    rgba(255, 255, 255, 0.04) 55%
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0.06) 55%,
+    rgba(64, 12, 0, 0.08)
   );
 }
 
@@ -102,18 +109,18 @@
   --lu-aura-b: rgba(255, 140, 110, 0.12);
   --lu-aura-c: rgba(27, 28, 38, 0.5);
   --lu-sheen-glass: rgba(255, 255, 255, 0.05);
-  /* Dark mode's action is a pale orange, which a faint white sheen vanishes
+  /* Dark mode's action is a bright orange, which a faint white sheen vanishes
      into. A brighter top and an ember shade at the bottom give it the same
      curve. */
   --lu-sheen-action: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.42),
     rgba(255, 255, 255, 0) 50%,
     rgba(64, 18, 8, 0.16)
   );
   --lu-sheen-action-hover: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.62),
+    rgba(255, 255, 255, 0.52),
     rgba(255, 255, 255, 0.08) 50%,
     rgba(64, 18, 8, 0.12)
   );
@@ -903,6 +910,12 @@ code {
   box-shadow: none;
 }
 
+/* Light mode's faint ink vanishes on the glass field. */
+.navbar [class*='searchBar'] input::placeholder {
+  color: var(--lu-ink-muted);
+  opacity: 1;
+}
+
 /* Focus: the assist ring, Lucent's one gradient border. */
 .navbar [class*='searchBar'] input:focus {
   border: 1.5px solid transparent;
@@ -953,10 +966,64 @@ code {
   font: var(--lu-type-body);
 }
 
+/* Columns on the homepage's 1120px edge, with the copyright under them on
+   the left. */
+.footer .container {
+  max-width: min(1120px, 100% - 2 * var(--lu-space-6));
+  padding: 0;
+}
+
+.footer__links {
+  margin: 0;
+  gap: var(--lu-space-8);
+}
+
+.footer__links {
+  flex-wrap: wrap;
+}
+
+.footer__col {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+  min-width: 140px;
+  padding: 0;
+}
+
+.footer__bottom {
+  margin-top: var(--lu-space-8);
+  padding-top: var(--lu-space-6);
+  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
+  text-align: left;
+}
+
+@media (max-width: 996px) {
+  .footer .container {
+    max-width: calc(100% - 2 * var(--lu-space-4));
+  }
+
+  .footer__col {
+    flex-basis: 40%;
+    margin-bottom: 0;
+  }
+}
+
 .footer__title {
+  margin-bottom: var(--lu-space-3);
   font: var(--lu-type-caption);
+  font-weight: 600;
   letter-spacing: var(--lu-type-caption-tracking);
-  color: var(--lu-ink-faint);
+  color: var(--lu-ink);
+}
+
+.footer__item {
+  padding: 3px 0;
+}
+
+/* The navbar mark, sized to the wordmark. */
+.navbar__logo {
+  height: 22px;
+  margin-right: 8px;
 }
 
 .footer__link-item:hover {
