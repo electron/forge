@@ -213,8 +213,8 @@ const glyph = {
  * macOS, caption buttons on Windows 11, a round close button in GNOME's
  * header bar.
  */
-function TitleBar({ os, format }: { os: Os; format: string }) {
-  const chip = <span className={styles.format}>{format}</span>;
+function TitleBar({ os, platform }: { os: Os; platform: string }) {
+  const chip = <span className={styles.windowTitle}>{platform}</span>;
   switch (os) {
     case 'mac':
       return (
@@ -266,13 +266,12 @@ function Castings() {
       <Embers />
       {CASTINGS.map(({ file, format, platform, os }, i) => (
         <div key={format} className={styles.casting} data-slot={i} data-os={os}>
-          <TitleBar os={os} format={format} />
+          <TitleBar os={os} platform={platform} />
           <span className={styles.castingBody}>
             <span className={styles.mark}>
               <ElectronMark size={44} />
             </span>
             <span className={styles.file}>{file}</span>
-            <span className={styles.platform}>{platform}</span>
           </span>
         </div>
       ))}

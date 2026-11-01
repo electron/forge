@@ -102,7 +102,31 @@
 }
 
 /* A title bar in each platform's style, and the platform's system font. */
+.windowTitle {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  font-family: inherit;
+  font-weight: 600;
+}
+
+/* macOS and GNOME centre the window title. */
+.casting[data-os='mac'] .windowTitle,
+.casting[data-os='linux'] .windowTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.casting[data-os='linux'] .titleBar {
+  justify-content: flex-end;
+}
+
+.casting[data-slot='2'] .windowTitle {
+  color: var(--lu-ink);
+}
+
 .titleBar {
+  position: relative;
   display: flex;
   flex: none;
   align-items: center;
@@ -214,22 +238,8 @@
     0 26px 50px -24px color-mix(in srgb, var(--lu-accent) 65%, transparent);
 }
 
-.format {
-  padding: 3px 7px;
-  border-radius: 6px;
-  background: var(--lu-fill);
-  color: var(--lu-ink-muted);
-  font: 700 11px/1 var(--lu-font-mono);
-  letter-spacing: 0.04em;
-}
-
 .casting[data-slot='1'] .castingBody {
   align-items: flex-end;
-}
-
-.casting[data-slot='2'] .format {
-  background: var(--lu-accent-soft);
-  color: var(--lu-accent);
 }
 
 .mark {
@@ -250,12 +260,6 @@
   color: var(--lu-ink);
   font: 500 13px/18px var(--lu-font-mono);
   white-space: nowrap;
-}
-
-.platform {
-  color: var(--lu-ink-faint);
-  font: var(--lu-type-caption);
-  font-family: inherit;
 }
 
 /* The hearth: warm light behind the cards, brightest under the front one. */
