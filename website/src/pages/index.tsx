@@ -236,10 +236,9 @@ export default function Home(): React.ReactElement {
             Build, package and ship Electron apps.
           </h1>
           <p className={styles.lead}>
-            Forge is an all-in-one tool for packaging and distributing Electron
-            applications. It combines many single-purpose packages into a full
-            build pipeline that works out of the box, complete with code
-            signing, installers, and artifact publishing.
+            Forge is the all-in-one toolchain for Electron. Scaffold a project,
+            then package, sign, make installers for every platform and publish,
+            with one command each.
           </p>
           <div className={styles.actions}>
             <Link className="button button--primary" to="/getting-started/">
