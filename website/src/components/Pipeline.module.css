@@ -11,10 +11,13 @@
 .line {
   /* One trip across the line. Items move at a constant speed: no stops. */
   --period: 18s;
-  --belt-y: 40px;
+  /* 32px of headroom above and below, so the stations' glow isn't clipped by
+     the mask; the negative margins keep the layout where it was. */
+  --belt-y: 72px;
   container-type: inline-size;
   position: relative;
-  height: 112px;
+  height: 176px;
+  margin-block: -32px;
   overflow: hidden;
   /* Fade the belt in and out at the edges, so apps arrive and leave. */
   -webkit-mask-image: linear-gradient(
@@ -295,7 +298,7 @@
   );
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--lu-accent) 55%, transparent),
-    0 0 28px 2px color-mix(in srgb, var(--lu-accent) 35%, transparent);
+    0 0 24px 2px color-mix(in srgb, var(--lu-accent) 35%, transparent);
   opacity: 0;
   animation: zap calc(var(--period) / 3) linear infinite;
   animation-delay: calc(
