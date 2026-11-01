@@ -23,6 +23,7 @@ const config: Config = {
   onBrokenLinks: 'throw',
   onBrokenAnchors: 'warn',
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'throw',
     },
@@ -58,13 +59,18 @@ const config: Config = {
         // Only the homepage (src/pages/index.tsx); docs live at the root too.
         pages: {},
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: [
+            // Mermaid's `fa:` node icons are Font Awesome classes it doesn't ship.
+            require.resolve('@fortawesome/fontawesome-free/css/all.min.css'),
+            './src/css/custom.css',
+          ],
         },
       } satisfies Preset.Options,
     ],
   ],
 
   themes: [
+    '@docusaurus/theme-mermaid',
     [
       // Offline (build-time) search index; no external search service needed.
       '@easyops-cn/docusaurus-search-local',
@@ -81,6 +87,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    // Lucent colours come from custom.css; these only set Mermaid's layout
+    // defaults and the base each mode starts from.
+    mermaid: {
+      theme: { light: 'neutral', dark: 'dark' },
+    },
     colorMode: {
       respectPrefersColorScheme: true,
     },
