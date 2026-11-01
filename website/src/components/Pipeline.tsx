@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Link from '@docusaurus/Link';
 
 import styles from './Pipeline.module.css';
@@ -216,9 +217,31 @@ const SPARKS: [number, number, number][] = [
   [8, -22, 0.7],
 ];
 
+/** True while the element is scrolled out of view, so its animations can
+    stop instead of running for nobody. */
+export function useOffscreen(ref: React.RefObject<Element | null>): boolean {
+  const [offscreen, setOffscreen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) =>
+      setOffscreen(!entry.isIntersecting),
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref]);
+  return offscreen;
+}
+
 export default function Pipeline(): React.ReactElement {
+  const ref = useRef<HTMLDivElement>(null);
+  const paused = useOffscreen(ref);
   return (
-    <div className={styles.pipeline}>
+    <div
+      ref={ref}
+      className={styles.pipeline}
+      data-paused={paused || undefined}
+    >
       <div className={styles.line} aria-hidden="true">
         <div className={styles.belt} />
         {Array.from({ length: ITEMS }, (_, i) => (

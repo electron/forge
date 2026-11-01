@@ -1,9 +1,9 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-import Pipeline, { ElectronMark } from '../components/Pipeline';
+import Pipeline, { ElectronMark, useOffscreen } from '../components/Pipeline';
 
 import styles from './index.module.css';
 
@@ -281,9 +281,15 @@ function Castings() {
 
 export default function Home(): React.ReactElement {
   const { siteConfig } = useDocusaurusContext();
+  const hero = useRef<HTMLElement>(null);
+  const heroOffscreen = useOffscreen(hero);
   return (
     <Layout description={siteConfig.tagline} wrapperClassName={styles.home}>
-      <header className={styles.hero}>
+      <header
+        ref={hero}
+        className={styles.hero}
+        data-paused={heroOffscreen || undefined}
+      >
         <div className={styles.intro}>
           <Link
             className={styles.badge}

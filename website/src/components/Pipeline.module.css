@@ -27,13 +27,8 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--lu-line-strong) 0 8px,
-    transparent 8px 16px
-  );
+  overflow: hidden;
   opacity: 0.6;
-  animation: belt var(--period) linear infinite;
   /* The belt fades in and out at the edges; apps fade on their own (see dip),
      so a label is never cut mid-word. */
   -webkit-mask-image: linear-gradient(
@@ -52,12 +47,27 @@
   );
 }
 
+/* The dashes run on a strip twice the belt's width, moved by transform so
+   the compositor animates it without repainting. */
+.belt::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--lu-line-strong) 0 8px,
+    transparent 8px 16px
+  );
+  animation: belt var(--period) linear infinite;
+}
+
 @keyframes belt {
   from {
-    background-position-x: 0;
+    transform: translateX(-50%);
   }
   to {
-    background-position-x: 100cqw;
+    transform: translateX(0);
   }
 }
 
@@ -230,7 +240,21 @@
 /* The packaged app: an app icon, Electron's mark on Electron navy in both modes. */
 /* The afterglow: each new form comes out of its station still charged, and
    settles back. Form 0 is the template, which no station made. */
-.form:not([data-form='0']) .tile {
+.tile {
+  position: relative;
+}
+
+/* A brightening wash and a glow over the tile that fade out: only opacity
+   animates, so it stays off the main thread. */
+.form:not([data-form='0']) .tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--lu-accent) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
   animation: charge var(--period) var(--lu-ease) infinite;
   animation-delay: calc(
     var(--i) * var(--period) / -3 + (var(--f) * 0.24 - 0.08) * var(--period)
@@ -239,12 +263,11 @@
 
 @keyframes charge {
   0% {
-    filter: brightness(1.35)
-      drop-shadow(0 0 8px color-mix(in srgb, var(--lu-accent) 70%, transparent));
+    opacity: 1;
   }
   9%,
   100% {
-    filter: brightness(1) drop-shadow(0 0 0 transparent);
+    opacity: 0;
   }
 }
 
@@ -396,7 +419,9 @@
   height: 3px;
   margin-left: -1.5px;
   border-radius: 50%;
-  background: #fff3d6;
+  /* A white-hot core cooling to orange at the rim; only transform and
+     opacity animate. */
+  background: radial-gradient(circle, #fff3d6 30%, #ffb36b 75%);
   box-shadow: 0 0 2px color-mix(in srgb, var(--lu-accent) 50%, transparent);
   opacity: 0;
   pointer-events: none;
@@ -425,17 +450,14 @@
   9% {
     opacity: 1;
     transform: translate(0, 0) scale(1.3);
-    background: #fff3d6;
   }
   17% {
     opacity: 1;
     transform: translate(calc(var(--dx) * 0.7), var(--dy)) scale(1);
-    background: #ffb36b;
   }
   27% {
     opacity: 0;
     transform: translate(var(--dx), calc(var(--dy) + 18px)) scale(0.4);
-    background: var(--lu-accent);
   }
   100% {
     opacity: 0;
@@ -591,11 +613,18 @@
   }
 }
 
+/* Off screen, the line stops (see Pipeline.tsx). */
+.pipeline[data-paused] *,
+.pipeline[data-paused] *::before,
+.pipeline[data-paused] *::after {
+  animation-play-state: paused !important;
+}
+
 /* ---------- Preferences ---------- */
 
 /* Reduced motion: the line stands still, with apps stopped at different steps. */
 @media (prefers-reduced-motion: reduce) {
-  .belt,
+  .belt::before,
   .item,
   .form,
   .stationLight {
@@ -604,7 +633,7 @@
 
   .station::after,
   .spark,
-  .tile {
+  .tile::after {
     animation: none !important;
   }
 

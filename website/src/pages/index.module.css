@@ -315,6 +315,11 @@
   pointer-events: none;
 }
 
+/* Off screen, the embers stop. */
+.hero[data-paused] .embers span {
+  animation-play-state: paused;
+}
+
 /* Embers drifting up from the cards' base, behind them. Kept to a handful
    and slow. */
 .embers {

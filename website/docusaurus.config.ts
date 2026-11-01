@@ -101,6 +101,8 @@ const config: Config = {
         alt: '',
         src: 'img/mark.svg',
         srcDark: 'img/mark-dark.svg',
+        width: 30,
+        height: 30,
       },
       items: [
         {
