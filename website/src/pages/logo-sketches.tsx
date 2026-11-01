@@ -1,5 +1,7 @@
 import Layout from '@theme/Layout';
 
+import { ILLUSTRATOR_SVGS } from './_logo-illustrator';
+
 /** Temporary: fire-based Forge logo sketches. Not linked from anywhere. */
 
 const ORBITS = (
@@ -379,6 +381,91 @@ function Mark({ svg, size }: { svg: React.ReactNode; size: number }) {
   );
 }
 
+const ILLUSTRATOR = [
+  [
+    'A',
+    'Illustrator A: lean, inner tongue',
+    'Two outer tongues; a negative inner tongue opens into the orbit’s gap.',
+  ],
+  [
+    'B',
+    'Illustrator B: hooked tip (recommended)',
+    'One tongue whose tip flicks right with the orbit, and an inner tongue.',
+  ],
+  [
+    'C',
+    'Illustrator C: hooked tip, left tongue',
+    'B’s hooked tip with a small left tongue and no hole. Strongest small.',
+  ],
+] as const;
+
+function Svg({ id, size }: { id: string; size: number }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        width: size,
+        height: size,
+        lineHeight: 0,
+      }}
+      dangerouslySetInnerHTML={{
+        __html: ILLUSTRATOR_SVGS[id].replaceAll('SIZE', String(size)),
+      }}
+    />
+  );
+}
+
+function IllustratorCard({
+  id,
+  name,
+  note,
+}: {
+  id: string;
+  name: string;
+  note: string;
+}) {
+  return (
+    <section
+      style={{
+        display: 'grid',
+        gap: 12,
+        padding: 20,
+        borderRadius: 16,
+        background: 'var(--lu-surface-raised)',
+        boxShadow: 'var(--lu-shadow-lift)',
+      }}
+    >
+      <div
+        style={{
+          color: 'var(--lu-accent)',
+          display: 'flex',
+          alignItems: 'end',
+          gap: 12,
+        }}
+      >
+        <Svg id={id} size={96} />
+        <Svg id={id} size={32} />
+        <Svg id={`${id}-16`} size={16} />
+        <span
+          style={{
+            display: 'grid',
+            placeItems: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            background: 'var(--lu-action)',
+            color: 'var(--lu-on-action)',
+          }}
+        >
+          <Svg id={id} size={26} />
+        </span>
+      </div>
+      <strong>{name}</strong>
+      <span style={{ color: 'var(--lu-ink-muted)', fontSize: 14 }}>{note}</span>
+    </section>
+  );
+}
+
 export default function LogoSketches(): React.ReactElement {
   return (
     <Layout title="Logo sketches" noFooter>
@@ -391,6 +478,9 @@ export default function LogoSketches(): React.ReactElement {
           gap: 16,
         }}
       >
+        {ILLUSTRATOR.map(([id, name, note]) => (
+          <IllustratorCard key={id} id={id} name={name} note={note} />
+        ))}
         {[HEARTH_VARIANTS[1], ...FORGE_VARIANTS, ...SKETCHES].map(
           ({ name, note, svg }) => (
             <section
