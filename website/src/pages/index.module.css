@@ -49,6 +49,7 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
   width: 140px;
   height: 180px;
@@ -64,12 +65,15 @@
 }
 
 .casting[data-slot='0'] {
-  transform: translateX(-50%) translateX(-86px) rotate(-9deg);
+  transform: translateX(-50%) translateX(-116px) rotate(-8deg);
   opacity: 0.85;
 }
 
 .casting[data-slot='1'] {
-  transform: translateX(-50%) translateX(86px) rotate(9deg);
+  /* Its left edge sits behind the front card, so its text hugs the right. */
+  align-items: flex-end;
+  text-align: right;
+  transform: translateX(-50%) translateX(116px) rotate(8deg);
   opacity: 0.85;
 }
 
@@ -84,7 +88,6 @@
 }
 
 .format {
-  align-self: flex-start;
   padding: 3px 7px;
   border-radius: 6px;
   background: var(--lu-fill);
@@ -101,6 +104,7 @@
 .mark {
   display: grid;
   flex: 1;
+  align-self: stretch;
   place-items: center;
   color: var(--lu-ink-faint);
   opacity: 0.6;
