@@ -57,8 +57,14 @@
   margin-bottom: var(--lu-space-8);
 }
 
-.actions {
-  margin-bottom: var(--lu-space-3);
+/* The right column: the installer fan with the create command under it. */
+.forge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: start;
+  gap: var(--lu-space-8);
+  min-width: 0;
 }
 
 .intro > * {
@@ -69,7 +75,7 @@
    catching the light. */
 .castings {
   position: relative;
-  align-self: start;
+  align-self: stretch;
   height: 260px;
 }
 
@@ -483,8 +489,13 @@
   }
 
   .castings {
+    height: 224px;
     transform: scale(0.86);
     transform-origin: 50% 0;
+  }
+
+  .command code {
+    font-size: 13px;
   }
 }
 
@@ -495,11 +506,16 @@
 
   .hero {
     grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--lu-space-3);
     padding-top: 64px;
   }
 
   .castings {
     display: none;
+  }
+
+  .forge {
+    align-items: flex-start;
   }
 
   /* No cards here, so the hearth glows behind the text instead. */

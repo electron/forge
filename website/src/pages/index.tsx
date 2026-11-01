@@ -251,9 +251,13 @@ export default function Home(): React.ReactElement {
               View on GitHub
             </Link>
           </div>
+        </div>
+        {/* The right side: run this, get these. On small screens the cards
+            hide and the command sits under the buttons. */}
+        <div className={styles.forge}>
+          <Castings />
           <CopyCommand />
         </div>
-        <Castings />
       </header>
 
       <main>

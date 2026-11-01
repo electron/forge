@@ -964,6 +964,8 @@ code {
   background: transparent;
   box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
   font: var(--lu-type-body);
+  /* The container sets the side margins. */
+  padding-inline: 0;
 }
 
 /* Columns on the homepage's 1120px edge, with the copyright under them on
