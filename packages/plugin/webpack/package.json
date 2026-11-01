@@ -11,6 +11,7 @@
   "devDependencies": {
     "@electron/packager": "^20.3.0",
     "@malept/cross-spawn-promise": "^2.0.0",
+    "@rspack/core": "^2.2.9",
     "@types/node": "^22.10.7",
     "vite": "catalog:",
     "vitest": "catalog:",
@@ -32,6 +33,14 @@
     "webpack": "^5.69.1",
     "webpack-dev-server": "^5.2.4",
     "webpack-merge": "^5.7.3"
+  },
+  "peerDependencies": {
+    "@rspack/core": "^1.0.0 || ^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

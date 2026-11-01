@@ -27,3 +27,7 @@ module.exports = {
   ]
 };
 ```
+
+### Rspack
+
+To build with [Rspack](https://rspack.rs) instead of webpack, install `@rspack/core` in your app and set `bundler: 'rspack'` in the plugin config. Rspack is an optional peer dependency, so it is never installed unless you add it yourself. `@vercel/webpack-asset-relocator-loader` does not work with Rspack, so native Node modules are not supported in Rspack mode yet.

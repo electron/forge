@@ -3,9 +3,6 @@ import path from 'node:path';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type * as webpack from 'webpack';
-import webpackPkg from 'webpack';
-
-const { DefinePlugin, ExternalsPlugin } = webpackPkg;
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -16,6 +13,11 @@ import {
   WebpackPluginRendererConfig,
 } from './Config.js';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
+import {
+  assertRspackCompatible,
+  Bundler,
+  loadBundler,
+} from './util/bundler.js';
 import processConfig from './util/processConfig.js';
 import {
   isLocalOrNoWindowEntries,
@@ -92,6 +94,13 @@ export default class WebpackConfigGenerator {
     d('Config mode:', this.mode);
   }
 
+  /**
+   * Load the bundler (webpack or Rspack) that the plugin config asks for.
+   */
+  getBundler(): Promise<Bundler> {
+    return loadBundler(this.pluginConfig.bundler, this.projectDir);
+  }
+
   async resolveConfig(
     config: webpack.Configuration | ConfigurationFactory | string,
   ): Promise<webpack.Configuration> {
@@ -108,7 +117,11 @@ export default class WebpackConfigGenerator {
       rawConfig = rawConfig.default;
     }
 
-    return processConfig(this.preprocessConfig, rawConfig);
+    const resolved = await processConfig(this.preprocessConfig, rawConfig);
+    if (this.pluginConfig.bundler === 'rspack') {
+      assertRspackCompatible(resolved);
+    }
+    return resolved;
   }
 
   // Users can override this method in a subclass to provide custom logic or
@@ -223,6 +236,7 @@ export default class WebpackConfigGenerator {
       return ret;
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
+    const { DefinePlugin } = await this.getBundler();
 
     return webpackMerge(
       {
@@ -405,6 +419,7 @@ export default class WebpackConfigGenerator {
     const rendererConfig = await this.resolveConfig(
       entryPoints[0].preload?.config || rendererOptions.config,
     );
+    const { ExternalsPlugin } = await this.getBundler();
 
     for (const entryPoint of entryPoints) {
       entry[entryPoint.name] = (entryPoint.prefixedEntries || []).concat([

@@ -400,6 +400,35 @@ In the below configuration example, webpack will compile to the `electron-render
 It is important that you enable `nodeIntegration` in **both** in the main process code and the webpack plugin configuration. This option duplication is necessary because webpack targets are fixed upon compilation, but BrowserWindow's web preferences are determined on run time.
 :::
 
+### Building with Rspack
+
+The plugin can build your code with [Rspack](https://rspack.rs), a bundler that implements webpack's API, instead of webpack. Rspack is opt-in: it is not installed with the plugin, and the plugin only loads it when you ask for it.
+
+To switch, install `@rspack/core` (version 1 or 2) in your app and set `bundler` to `'rspack'`:
+
+```shell
+npm install --save-dev @rspack/core
+```
+
+```javascript title="forge.config.js"
+{
+  name: '@electron-forge/plugin-webpack',
+  config: {
+    bundler: 'rspack',
+    mainConfig: './webpack.main.config.js',
+    renderer: {
+      /* renderer config here, see above section */
+    }
+  }
+}
+```
+
+Your existing webpack configs are passed to Rspack unchanged, and the dev server is still `webpack-dev-server`, with hot module replacement provided by Rspack. Loaders and plugins in your configs need to be ones that Rspack supports. `ts-loader`, `css-loader`, `style-loader`, `node-loader` and `fork-ts-checker-webpack-plugin` from Forge's webpack templates all work. See Rspack's [compatibility list](https://rspack.rs/guide/compatibility/plugin) for others.
+
+:::warning
+`@vercel/webpack-asset-relocator-loader` does not work with Rspack, so the [native module](#native-node-modules) setup above is not supported in Rspack mode yet. Remove that rule from your configs before switching; the plugin stops with an error if it finds it. If your app uses native modules, keep using webpack for now.
+:::
+
 ## Hot module replacement
 
 In development mode, all your renderer processes in development will have [Hot Module Replacement (HMR)](https://webpack.js.org/concepts/hot-module-replacement/) enabled by default thanks to `webpack-dev-server`.

@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { rspack } from '@rspack/core';
 import { describe, expect, it } from 'vitest';
 import { Configuration, Entry } from 'webpack';
 
@@ -295,6 +296,55 @@ describe('WebpackConfigGenerator', () => {
       expect(webpackConfig.mode).toEqual('production');
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
         false,
+      );
+    });
+
+    it('uses the Rspack DefinePlugin in Rspack mode', async () => {
+      const config = {
+        bundler: 'rspack',
+        mainConfig: {
+          entry: 'main.js',
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getMainConfig();
+      expect(webpackConfig.plugins?.[0]).toBeInstanceOf(rspack.DefinePlugin);
+    });
+
+    it('rejects the asset relocator loader in Rspack mode', async () => {
+      const config = {
+        bundler: 'rspack',
+        mainConfig: {
+          entry: 'main.js',
+          module: {
+            rules: [
+              {
+                test: /node_modules/,
+                use: { loader: '@vercel/webpack-asset-relocator-loader' },
+              },
+            ],
+          },
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      await expect(generator.getMainConfig()).rejects.toThrow(
+        /does not work with Rspack/,
       );
     });
 

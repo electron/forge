@@ -24,7 +24,7 @@ import {
 import debug from 'debug';
 import fs from 'graceful-fs';
 import { PRESET_TIMER } from 'listr2';
-import webpack from 'webpack';
+import type webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 import { merge } from 'webpack-merge';
 
@@ -197,9 +197,10 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
   private runWebpack = async (
     options: webpack.Configuration[],
     rendererOptions: WebpackPluginRendererConfig | null,
-  ): Promise<webpack.MultiStats | undefined> =>
-    new Promise((resolve, reject) => {
-      webpack(options).run(async (err, stats) => {
+  ): Promise<webpack.MultiStats | undefined> => {
+    const { compile } = await this.configGenerator.getBundler();
+    return new Promise((resolve, reject) => {
+      compile(options).run(async (err, stats) => {
         if (rendererOptions && rendererOptions.jsonStats) {
           for (const [index, entryStats] of (stats?.stats ?? []).entries()) {
             const name = rendererOptions.entryPoints[index].name;
@@ -217,6 +218,7 @@ export default class WebpackPlugin extends PluginBase<WebpackPluginConfig> {
         return resolve(stats);
       });
     });
+  };
 
   init = (dir: string): void => {
     this.setDirectories(dir);
@@ -714,8 +716,9 @@ Your packaged app may be larger than expected if you dont ignore everything othe
     }
 
     const mainConfig = await this.configGenerator.getMainConfig();
+    const { compile } = await this.configGenerator.getBundler();
     await new Promise((resolve, reject) => {
-      const compiler = webpack(mainConfig);
+      const compiler = compile(mainConfig);
       if (tab) {
         compiler.hooks.watchRun.tap('ElectronForgeLogging', () => {
           tab.setStatus({ state: 'building' });
@@ -841,7 +844,8 @@ Your packaged app may be larger than expected if you dont ignore everything othe
       entryConfig.stats = 'none';
     }
 
-    const compiler = webpack(configs);
+    const { compile } = await this.configGenerator.getBundler();
+    const compiler = compile(configs);
 
     const promises = preloadPlugins.map((preloadPlugin) => {
       return new Promise((resolve, reject) => {
