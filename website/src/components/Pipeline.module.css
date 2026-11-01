@@ -269,6 +269,33 @@
   white-space: nowrap;
 }
 
+/* Make's output: one maker name per pass, stacked and shown in turn. Each
+   name shows for one of its app's loops out of every ten. */
+.makers {
+  display: grid;
+  justify-items: center;
+}
+
+.makers > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: maker calc(var(--period) * 10) linear infinite;
+  animation-delay: calc(
+    var(--i) * var(--period) / -3 - var(--loops) * var(--period)
+  );
+}
+
+@keyframes maker {
+  0%,
+  9.99% {
+    opacity: 1;
+  }
+  10%,
+  100% {
+    opacity: 0;
+  }
+}
+
 /* A station: a solid housing over the belt, centred over its step's column.
    Apps go in on the left and come out on the right in their next form. */
 .station {

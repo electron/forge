@@ -46,6 +46,52 @@ type Icon = (typeof FORMS)[number]['icon'];
 /** Apps on the line at once, evenly spaced. */
 const ITEMS = 3;
 
+/** What comes out of Make: each app off the line gets the next maker in turn. */
+const MAKERS = [
+  'DMG',
+  'MSIX',
+  'deb',
+  'pkg',
+  'Squirrel',
+  'RPM',
+  'ZIP',
+  'WiX MSI',
+  'Flatpak',
+  'Snap',
+];
+
+/**
+ * Which loop of its own an app is on when it shows maker `k`. Apps pass Make
+ * in the order 1, 0, 2 within a period, and app 2 is a loop ahead by then, so
+ * pass n = 3 * loop + OFFSET[i]. Solving for the loop (3 * 7 = 21, so 7
+ * undoes the 3 mod 10) gives each maker its turn, one pass after another.
+ */
+const MAKER_OFFSET = [1, 0, MAKERS.length - 1];
+
+function makerLoop(item: number, k: number) {
+  const n = MAKERS.length;
+  return (((7 * (k - MAKER_OFFSET[item])) % n) + n) % n;
+}
+
+function MakerLabel({ item }: { item: number }) {
+  return (
+    <span className={`${styles.label} ${styles.makers}`}>
+      {MAKERS.map((maker, k) => (
+        <span
+          key={maker}
+          style={
+            {
+              '--loops': (MAKERS.length - makerLoop(item, k)) % MAKERS.length,
+            } as React.CSSProperties
+          }
+        >
+          {maker}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /**
  * The Electron mark, from electron/website (static/assets/img/logo.svg): every
  * path of it except the background circle. Drawn in currentColor.
@@ -175,7 +221,11 @@ export default function Pipeline(): React.ReactElement {
                 <span className={styles.tile}>
                   <FormIcon icon={form.icon} />
                 </span>
-                <span className={styles.label}>{form.label}</span>
+                {form.icon === 'installers' ? (
+                  <MakerLabel item={i} />
+                ) : (
+                  <span className={styles.label}>{form.label}</span>
+                )}
               </span>
             ))}
           </div>
