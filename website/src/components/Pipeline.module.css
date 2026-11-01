@@ -75,40 +75,45 @@
 
 /* Apps fade in at the start of the line, out just as they reach a station
    and back in as they come out, and out at the end, so a still frame never
-   shows one cut off. Station centres are at 12.5%, 37.5%, 62.5% and 87.5%;
-   the fade spans the last 2.5% (about a tile's width) before each. */
+   shows one cut off. Each fade covers about a tile's width before a station. */
 @keyframes dip {
-  3%,
-  7.5%,
-  17.5%,
-  32.5%,
-  42.5%,
-  57.5%,
-  67.5%,
-  82.5%,
-  92.5%,
+  4%,
+  13%,
+  19%,
+  37%,
+  43%,
+  61%,
+  67%,
+  85%,
+  91%,
   97% {
     opacity: 1;
   }
   0%,
-  10%,
   15%,
-  35%,
-  40%,
-  60%,
+  17%,
+  39%,
+  41%,
+  63%,
   65%,
-  85%,
-  90%,
+  87%,
+  89%,
   100% {
     opacity: 0;
   }
 }
 
+/* The trip, in time: apps appear in place near the left end and take the
+   first stretch a little slower, so the input is seen before Develop. They
+   pass the stations at 16%, 40%, 64% and 88% of the period. */
 @keyframes travel {
-  from {
-    transform: translateX(-60px);
+  0% {
+    transform: translateX(-28px);
   }
-  to {
+  16% {
+    transform: translateX(calc(12.5cqw - 60px));
+  }
+  100% {
     transform: translateX(calc(100cqw - 60px));
   }
 }
@@ -145,65 +150,65 @@
   animation-name: form4;
 }
 
-/* Station centres are at 12.5%, 37.5%, 62.5% and 87.5% of the trip. */
+/* Apps pass the stations at 16%, 40%, 64% and 88% of the period. */
 @keyframes form0 {
   0%,
-  12.5% {
+  16% {
     opacity: 1;
   }
-  12.51%,
+  16.01%,
   100% {
     opacity: 0;
   }
 }
 @keyframes form1 {
   0%,
-  12.49% {
+  15.99% {
     opacity: 0;
   }
-  12.5%,
-  37.5% {
+  16%,
+  40% {
     opacity: 1;
   }
-  37.51%,
+  40.01%,
   100% {
     opacity: 0;
   }
 }
 @keyframes form2 {
   0%,
-  37.49% {
+  39.99% {
     opacity: 0;
   }
-  37.5%,
-  62.5% {
+  40%,
+  64% {
     opacity: 1;
   }
-  62.51%,
+  64.01%,
   100% {
     opacity: 0;
   }
 }
 @keyframes form3 {
   0%,
-  62.49% {
+  63.99% {
     opacity: 0;
   }
-  62.5%,
-  87.5% {
+  64%,
+  88% {
     opacity: 1;
   }
-  87.51%,
+  88.01%,
   100% {
     opacity: 0;
   }
 }
 @keyframes form4 {
   0%,
-  87.49% {
+  87.99% {
     opacity: 0;
   }
-  87.5%,
+  88%,
   100% {
     opacity: 1;
   }
@@ -228,7 +233,7 @@
 .form:not([data-form='0']) .tile {
   animation: charge var(--period) var(--lu-ease) infinite;
   animation-delay: calc(
-    var(--i) * var(--period) / -3 + (var(--f) - 0.5) * var(--period) / 4
+    var(--i) * var(--period) / -3 + (var(--f) * 0.24 - 0.08) * var(--period)
   );
 }
 
@@ -294,7 +299,7 @@
   box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
   animation: work calc(var(--period) / 3) var(--lu-ease) infinite;
   animation-delay: calc(
-    (var(--s) + 0.5) * var(--period) / 4 - var(--period) / 30
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30
   );
 }
 
@@ -330,7 +335,7 @@
   opacity: 0;
   animation: zap calc(var(--period) / 3) linear infinite;
   animation-delay: calc(
-    (var(--s) + 0.5) * var(--period) / 4 - var(--period) / 30
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30
   );
 }
 
