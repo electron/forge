@@ -408,6 +408,14 @@
   );
 }
 
+/* Dark mode keeps the full ember glow; on light it reads as a smudge. */
+[data-theme='dark'] .spark {
+  box-shadow:
+    0 0 4px 1px
+      color-mix(in srgb, var(--hearth, var(--lu-accent)) 80%, transparent),
+    0 0 10px 2px color-mix(in srgb, var(--lu-accent) 40%, transparent);
+}
+
 @keyframes spark {
   0%,
   8.9% {
