@@ -5,7 +5,9 @@
  * `lucent/lucent-tokens.css` is a verbatim copy of Fiddle's tokens; this file only
  * points Infima's variables at them and adds the few rules Infima has no variable
  * for. Lucent's rules, in short: glass for chrome, a solid sheet for anything you
- * read; cyan for links, focus and action; depth instead of borders.
+ * read; one accent for links, focus and action; depth instead of borders.
+ * Forge's accent is orange (Fiddle's is Electron cyan), so the site reads as
+ * its own product next to electronjs.org.
  * The classic theme sets data-theme="light|dark" on <html>, which is the same
  * switch the tokens use.
  */
@@ -35,12 +37,50 @@
   --lu-code-sheet: var(--lu-window);
 }
 
+/* ---------- Forge's accent: orange, for the fire in "Forge" ----------
+   Replaces Lucent's cyan in every token built from it. The selectors match the
+   token file's so these win by order. Syntax colours stay Lucent's. */
+
+:root {
+  /* Info notes keep Lucent's cyan, so they don't read as warnings (which
+     are amber). */
+  --lu-info: #006f85;
+  --lu-info-soft: #dcf3f8;
+  /* 5.2:1 on white. */
+  --lu-accent: #c2410c;
+  --lu-accent-soft: #fdeadc;
+  --lu-on-action: #ffb27a;
+  --lu-assist-ring: linear-gradient(
+    100deg,
+    #ff4d1f,
+    #ff7a1a 38%,
+    #ffc06a 70%,
+    #1b1c26
+  );
+}
+
+:root[data-theme='dark'] {
+  --lu-info: #9feaf9;
+  --lu-info-soft: #1c3945;
+  --lu-accent: #ffab70;
+  --lu-accent-soft: #3d2618;
+  --lu-action: #ffab70;
+  --lu-on-action: #3a1806;
+  --lu-assist-ring: linear-gradient(
+    100deg,
+    #ffab70,
+    #ff7a3d 38%,
+    #ff4d3d 70%,
+    #ffd08a
+  );
+}
+
 /* Light from the Lucent direction (felixrieseberg/fiddle-design, #dir=electron),
    which Fiddle's tokens don't carry: the aura behind the glass and the lit rim
    on glass edges. */
 :root {
-  --lu-aura-a: rgba(71, 168, 255, 0.26);
-  --lu-aura-b: rgba(159, 234, 249, 0.42);
+  --lu-aura-a: rgba(255, 122, 61, 0.22);
+  --lu-aura-b: rgba(255, 190, 120, 0.4);
   --lu-aura-c: rgba(27, 28, 38, 0.08);
   --lu-sheen-glass: rgba(255, 255, 255, 0.34);
   /* The primary button's sheen. Light mode's action is near-black, so white
@@ -58,24 +98,24 @@
 }
 
 [data-theme='dark'] {
-  --lu-aura-a: rgba(47, 107, 255, 0.3);
-  --lu-aura-b: rgba(159, 234, 249, 0.16);
+  --lu-aura-a: rgba(255, 92, 41, 0.2);
+  --lu-aura-b: rgba(255, 171, 112, 0.12);
   --lu-aura-c: rgba(27, 28, 38, 0.5);
   --lu-sheen-glass: rgba(255, 255, 255, 0.05);
-  /* Dark mode's action is pale cyan, which a faint white sheen vanishes
-     into. A brighter top and a teal shade at the bottom give it the same
+  /* Dark mode's action is a pale orange, which a faint white sheen vanishes
+     into. A brighter top and an ember shade at the bottom give it the same
      curve. */
   --lu-sheen-action: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.5),
     rgba(255, 255, 255, 0) 50%,
-    rgba(13, 42, 49, 0.16)
+    rgba(58, 24, 6, 0.16)
   );
   --lu-sheen-action-hover: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.62),
     rgba(255, 255, 255, 0.08) 50%,
-    rgba(13, 42, 49, 0.12)
+    rgba(58, 24, 6, 0.12)
   );
 }
 
@@ -224,7 +264,7 @@ body {
 
 /* ---------- Window: glass chrome over the window ground, content on a sheet ---------- */
 
-/* The window ground: an aura of Electron blue and cyan at the top, fixed so the
+/* The window ground: an aura of ember and orange at the top, fixed so the
    glass chrome always has light to pick up. */
 html {
   background:
@@ -636,8 +676,8 @@ code {
 }
 
 .theme-admonition.alert--info {
-  --lu-intent: var(--lu-accent);
-  background: var(--lu-accent-soft);
+  --lu-intent: var(--lu-info);
+  background: var(--lu-info-soft);
 }
 
 .theme-admonition.alert--warning {
