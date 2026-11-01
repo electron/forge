@@ -13,6 +13,118 @@ const ORBITS = (
 const SMALL_FLAME =
   'M32 22c4 5 7 8 7 12.5a7 7 0 0 1-14 0c0-3 1.5-5 3.2-6.4.2 2.6 1.4 4 2.8 4.4-.8-3.8-.4-7.4 1-10.5Z';
 
+const HEARTH_FLAME =
+  'M32 7c7 8 13 14 13 23a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8-1.6-6-.8-12.5 1.5-18.3Z';
+
+/** The orbit: tilted like Electron's, centred under the flame. */
+const ORBIT = { cx: 32, cy: 33, rx: 28, ry: 9.5, tilt: -18 };
+const rad = (ORBIT.tilt * Math.PI) / 180;
+/** A point on the orbit, `t` degrees round from its right end. */
+function onOrbit(t: number) {
+  const a = (t * Math.PI) / 180;
+  return [
+    ORBIT.cx +
+      ORBIT.rx * Math.cos(a) * Math.cos(rad) -
+      ORBIT.ry * Math.sin(a) * Math.sin(rad),
+    ORBIT.cy +
+      ORBIT.rx * Math.cos(a) * Math.sin(rad) +
+      ORBIT.ry * Math.sin(a) * Math.cos(rad),
+  ];
+}
+const DOT = onOrbit(130);
+const END_L = [
+  ORBIT.cx - ORBIT.rx * Math.cos(rad),
+  ORBIT.cy - ORBIT.rx * Math.sin(rad),
+];
+const END_R = [
+  ORBIT.cx + ORBIT.rx * Math.cos(rad),
+  ORBIT.cy + ORBIT.rx * Math.sin(rad),
+];
+/** The half of the orbit in front of the flame (its lower edge). */
+const FRONT = `M${END_L[0]} ${END_L[1]}A${ORBIT.rx} ${ORBIT.ry} ${ORBIT.tilt} 0 0 ${END_R[0]} ${END_R[1]}`;
+/** The half behind it. */
+const BACK = `M${END_R[0]} ${END_R[1]}A${ORBIT.rx} ${ORBIT.ry} ${ORBIT.tilt} 0 0 ${END_L[0]} ${END_L[1]}`;
+
+function Interlocked({ id, dot }: { id: string; dot?: boolean }) {
+  return (
+    <>
+      <defs>
+        <mask id={id}>
+          <rect width="64" height="64" fill="#fff" />
+          <path d={FRONT} stroke="#000" strokeWidth={9} fill="none" />
+        </mask>
+      </defs>
+      <path d={BACK} fill="none" stroke="currentColor" strokeWidth={3} />
+      <path d={HEARTH_FLAME} fill="currentColor" mask={`url(#${id})`} />
+      <path
+        d={FRONT}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={3.5}
+        strokeLinecap="round"
+      />
+      {dot && <circle cx={DOT[0]} cy={DOT[1]} r={3.6} fill="currentColor" />}
+    </>
+  );
+}
+
+const HEARTH_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] =
+  [
+    {
+      name: '5a. Hearth orbit, interlocked',
+      note: 'A full tilted orbit: the back half behind the flame, the front half passing in front of it.',
+      svg: <Interlocked id="h5a" />,
+    },
+    {
+      name: '5b. Hearth orbit with an electron',
+      note: 'The same orbit, with an electron riding it, like the dots on Electron’s mark.',
+      svg: <Interlocked id="h5b" dot />,
+    },
+    {
+      name: '5c. Open orbit, Electron ends',
+      note: 'Only the front half, tilted, ending in the open ring Electron’s orbits end in.',
+      svg: (
+        <>
+          <path d={HEARTH_FLAME} fill="currentColor" />
+          <path
+            d={FRONT}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3.5}
+            strokeLinecap="round"
+          />
+          <circle
+            cx={END_R[0]}
+            cy={END_R[1]}
+            r={3.4}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3}
+          />
+        </>
+      ),
+    },
+    {
+      name: '5. Hearth arc (original)',
+      note: 'For comparison.',
+      svg: (
+        <>
+          <path
+            d="M5 38a27 11 0 0 0 54 0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={3.5}
+            strokeLinecap="round"
+          />
+          <path
+            d="M32 6c7 8 13 14 13 23a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8-1.6-6-.8-12.5 1.5-18.3Z"
+            fill="currentColor"
+          />
+        </>
+      ),
+    },
+  ];
+
 const SKETCHES: { name: string; note: string; svg: React.ReactNode }[] = [
   {
     name: '1. Flame nucleus',
@@ -183,7 +295,7 @@ export default function LogoSketches(): React.ReactElement {
           gap: 16,
         }}
       >
-        {SKETCHES.map(({ name, note, svg }) => (
+        {[...HEARTH_VARIANTS, ...SKETCHES].map(({ name, note, svg }) => (
           <section
             key={name}
             style={{
