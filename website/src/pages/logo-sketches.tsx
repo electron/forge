@@ -381,6 +381,86 @@ function Mark({ svg, size }: { svg: React.ReactNode; size: number }) {
   );
 }
 
+const TIP_VARIANTS: { name: string; note: string; svg: React.ReactNode }[] = [
+  {
+    name: 'Tip 5: lean',
+    note: 'The tip leans right with the orbit’s rise, with a taller left lick.',
+    svg: (
+      <Interlocked
+        id="tip5"
+        dot
+        shape={
+          <path d="M41 3C40 11 47 18 47 29C47 37.5 40.5 44 32 44C23.5 44 17 37.5 17 29.5C17 23.5 19.5 19 23 15.5C23 20 24.5 23 27 24.5C26 15.5 32 8 41 3Z" />
+        }
+      />
+    ),
+  },
+  {
+    name: 'Tip 1: flick',
+    note: 'The tip curls back to the right, like a flame caught in a draught.',
+    svg: (
+      <Interlocked
+        id="tip0"
+        dot
+        shape={
+          <path
+            d="M40 3c-3 2-4.2 5.6-3 10C40.5 18 45 22.5 45 30a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8C29 17.5 31.5 7.5 40 3Z"
+            fillRule="evenodd"
+          />
+        }
+      />
+    ),
+  },
+  {
+    name: 'Tip 2: forked',
+    note: 'A second, shorter tongue to the right of the main tip.',
+    svg: (
+      <Interlocked
+        id="tip1"
+        dot
+        shape={
+          <path
+            d="M31 3.5C32.5 9 35 12 37.6 15.2 38.6 13 39.6 11.3 41.2 9.4 44 15 45 21.5 45 30a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8C29 18.5 28.5 10.5 31 3.5Z"
+            fillRule="evenodd"
+          />
+        }
+      />
+    ),
+  },
+  {
+    name: 'Tip 3: S-curve',
+    note: 'The tip leans left and sweeps back, with a sharper apex.',
+    svg: (
+      <Interlocked
+        id="tip2"
+        dot
+        shape={
+          <path
+            d="M27.5 3.5C29 9 32.5 12 36.5 15.4 41.6 19.6 45 24 45 30a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8C31 18 25.5 11 27.5 3.5Z"
+            fillRule="evenodd"
+          />
+        }
+      />
+    ),
+  },
+  {
+    name: 'Tip 4: spark',
+    note: 'The original tip, with a spark breaking off it.',
+    svg: (
+      <Interlocked
+        id="tip3"
+        dot
+        shape={
+          <path
+            d="M32 7c7 8 13 14 13 23a13 13 0 0 1-26 0c0-6 3-10 6.5-12.5.4 4.5 2.4 7 5 7.8-1.6-6-.8-12.5 1.5-18.3Z M42 4.5a2 2 0 1 0 .01 0Z"
+            fillRule="evenodd"
+          />
+        }
+      />
+    ),
+  },
+];
+
 const ILLUSTRATOR = [
   [
     'A',
@@ -478,54 +558,57 @@ export default function LogoSketches(): React.ReactElement {
           gap: 16,
         }}
       >
+        {[
+          HEARTH_VARIANTS[1],
+          ...TIP_VARIANTS,
+          ...FORGE_VARIANTS,
+          ...SKETCHES,
+        ].map(({ name, note, svg }) => (
+          <section
+            key={name}
+            style={{
+              display: 'grid',
+              gap: 12,
+              padding: 20,
+              borderRadius: 16,
+              background: 'var(--lu-surface-raised)',
+              boxShadow: 'var(--lu-shadow-lift)',
+            }}
+          >
+            <div
+              style={{
+                color: 'var(--lu-accent)',
+                display: 'flex',
+                alignItems: 'end',
+                gap: 12,
+              }}
+            >
+              <Mark svg={svg} size={96} />
+              <Mark svg={svg} size={32} />
+              <Mark svg={svg} size={16} />
+              <span
+                style={{
+                  display: 'grid',
+                  placeItems: 'center',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'var(--lu-action)',
+                  color: 'var(--lu-on-action)',
+                }}
+              >
+                <Mark svg={svg} size={26} />
+              </span>
+            </div>
+            <strong>{name}</strong>
+            <span style={{ color: 'var(--lu-ink-muted)', fontSize: 14 }}>
+              {note}
+            </span>
+          </section>
+        ))}
         {ILLUSTRATOR.map(([id, name, note]) => (
           <IllustratorCard key={id} id={id} name={name} note={note} />
         ))}
-        {[HEARTH_VARIANTS[1], ...FORGE_VARIANTS, ...SKETCHES].map(
-          ({ name, note, svg }) => (
-            <section
-              key={name}
-              style={{
-                display: 'grid',
-                gap: 12,
-                padding: 20,
-                borderRadius: 16,
-                background: 'var(--lu-surface-raised)',
-                boxShadow: 'var(--lu-shadow-lift)',
-              }}
-            >
-              <div
-                style={{
-                  color: 'var(--lu-accent)',
-                  display: 'flex',
-                  alignItems: 'end',
-                  gap: 12,
-                }}
-              >
-                <Mark svg={svg} size={96} />
-                <Mark svg={svg} size={32} />
-                <Mark svg={svg} size={16} />
-                <span
-                  style={{
-                    display: 'grid',
-                    placeItems: 'center',
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    background: 'var(--lu-action)',
-                    color: 'var(--lu-on-action)',
-                  }}
-                >
-                  <Mark svg={svg} size={26} />
-                </span>
-              </div>
-              <strong>{name}</strong>
-              <span style={{ color: 'var(--lu-ink-muted)', fontSize: 14 }}>
-                {note}
-              </span>
-            </section>
-          ),
-        )}
       </main>
     </Layout>
   );
