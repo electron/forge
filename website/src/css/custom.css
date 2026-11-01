@@ -353,14 +353,26 @@ body,
 
 /* The page: one solid sheet, inset from the chrome, lifted by shadow rather than a border. */
 @media (min-width: 997px) {
+  /* Room around the sheet: the chrome reads as a frame, not a wall. */
   .main-wrapper main {
-    margin: var(--lu-size-sheet-inset) var(--lu-size-sheet-inset)
-      var(--lu-size-sheet-inset) 0;
+    margin: var(--lu-space-4) var(--lu-space-4) var(--lu-space-4)
+      var(--lu-space-2);
     background: var(--lu-surface);
     border-radius: var(--lu-radius-sheet);
     box-shadow:
       var(--lu-shadow-island),
       inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  }
+}
+
+@media (min-width: 997px) {
+  /* Inside the sheet: generous padding from its edges to the content. */
+  .main-wrapper main > .container {
+    padding: var(--lu-space-8) 40px var(--lu-space-8) 48px !important;
+  }
+
+  .theme-doc-sidebar-menu {
+    padding: var(--lu-space-2) var(--lu-space-2) var(--lu-space-6);
   }
 }
 
