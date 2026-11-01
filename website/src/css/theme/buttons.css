@@ -1,0 +1,73 @@
+/* Controls */
+
+.button {
+  font-weight: 500;
+  transition:
+    background-color var(--lu-dur-fast) var(--lu-ease),
+    background-image var(--lu-dur-fast) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease),
+    color var(--lu-dur-fast) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+/* Hover lifts a button a pixel and lights it; press sinks it (Lucent's press scale). */
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: scale(var(--lu-press-scale));
+  transition-duration: var(--lu-dur-instant);
+}
+
+.button--primary {
+  --ifm-button-background-color: var(--lu-action);
+  --ifm-button-border-color: transparent;
+  --ifm-button-color: var(--lu-on-action);
+  background-image: var(--lu-sheen-action);
+  box-shadow: var(--lu-shadow-primary);
+}
+
+.button--secondary {
+  --ifm-button-background-color: var(--lu-button);
+  --ifm-button-border-color: transparent;
+  --ifm-button-color: var(--lu-ink);
+  box-shadow: var(--lu-shadow-button);
+  color: var(--lu-ink);
+}
+
+/* Primary: the sheen brightens and the glow under it grows. */
+.button--primary:hover {
+  --ifm-button-background-color: var(--lu-action);
+  --ifm-button-border-color: transparent;
+  color: var(--lu-on-action);
+  background-image: var(--lu-sheen-action-hover);
+  box-shadow:
+    var(--lu-shadow-primary),
+    0 8px 22px -8px color-mix(in srgb, var(--lu-action) 70%, transparent);
+}
+
+.button--primary:active {
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.06), transparent);
+  --ifm-button-background-color: var(--lu-action-pressed, var(--lu-action));
+}
+
+.button--secondary:hover {
+  --ifm-button-background-color: var(--lu-button-hover);
+  --ifm-button-border-color: transparent;
+  color: var(--lu-ink);
+  box-shadow:
+    var(--lu-shadow-button),
+    0 6px 16px -8px rgba(20, 24, 48, 0.35);
+}
+
+.button--secondary:active {
+  --ifm-button-background-color: var(--lu-fill-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button:hover,
+  .button:active {
+    transform: none;
+  }
+}

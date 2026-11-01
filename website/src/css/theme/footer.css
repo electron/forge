@@ -1,0 +1,72 @@
+/* Footer: quiet chrome on the window ground, not Infima's slate block. */
+.footer,
+.footer--dark {
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--lu-ink-muted);
+  --ifm-footer-link-color: var(--lu-ink-muted);
+  --ifm-footer-title-color: var(--lu-ink);
+  background: transparent;
+  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
+  font: var(--lu-type-body);
+  /* The container sets the side margins. */
+  padding-inline: 0;
+}
+
+/* Columns on the homepage's 1120px edge, with the copyright under them on
+   the left. */
+.footer .container {
+  max-width: min(1120px, 100% - 2 * var(--lu-space-6));
+  padding: 0;
+}
+
+.footer__links {
+  margin: 0;
+  gap: var(--lu-space-8);
+  flex-wrap: wrap;
+}
+
+.footer__col {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: none;
+  min-width: 140px;
+  padding: 0;
+}
+
+.footer__bottom {
+  margin-top: var(--lu-space-8);
+  padding-top: var(--lu-space-6);
+  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
+  text-align: left;
+}
+
+@media (max-width: 996px) {
+  .footer .container {
+    max-width: calc(100% - 2 * var(--lu-space-4));
+  }
+
+  .footer__col {
+    flex-basis: 40%;
+    margin-bottom: 0;
+  }
+}
+
+.footer__title {
+  margin-bottom: var(--lu-space-3);
+  font: var(--lu-type-caption);
+  font-weight: 600;
+  letter-spacing: var(--lu-type-caption-tracking);
+  color: var(--lu-ink);
+}
+
+.footer__item {
+  padding: 3px 0;
+}
+
+.footer__link-item:hover {
+  color: var(--lu-accent);
+}
+
+.footer__copyright {
+  color: var(--lu-ink-faint);
+}

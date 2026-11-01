@@ -1,0 +1,167 @@
+/* Content */
+
+/* Lucent's heaviest weight is 650 (titles); bold text in prose is 600. */
+.markdown strong,
+.markdown b {
+  font-weight: 600;
+}
+
+/* Content type and rhythm: Lucent's scale on Lucent's 4px spacing grid. */
+.markdown {
+  /* About 80 characters a line. */
+  max-width: 720px;
+  font: var(--lu-type-docs-body);
+  --ifm-h1-vertical-rhythm-bottom: 1;
+}
+
+.markdown header h1 {
+  font: var(--lu-type-display);
+  letter-spacing: var(--lu-type-display-tracking);
+  margin-bottom: var(--lu-space-4);
+}
+
+.markdown h2 {
+  font: var(--lu-type-docs-h2);
+  letter-spacing: -0.018em;
+  margin: var(--lu-space-8) 0 var(--lu-space-2);
+}
+
+.markdown h3 {
+  font: var(--lu-type-docs-h3);
+  letter-spacing: -0.01em;
+  margin: var(--lu-space-6) 0 var(--lu-space-2);
+}
+
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  font: var(--lu-type-docs-h4);
+  margin: var(--lu-space-4) 0 var(--lu-space-1);
+}
+
+.markdown > p,
+.markdown > ul,
+.markdown > ol,
+.markdown li {
+  text-wrap: pretty;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 22px;
+}
+
+.markdown .theme-code-block,
+.markdown .theme-admonition,
+.markdown .tabs-container,
+.markdown table {
+  margin-bottom: var(--lu-space-4);
+}
+
+/* Supporting text: breadcrumbs, table of contents, pager, footer. */
+.breadcrumbs__link {
+  font: var(--lu-type-label);
+  font-weight: 400;
+  padding: 4px 10px;
+}
+
+.table-of-contents {
+  font: var(--lu-type-label);
+  font-weight: 400;
+}
+
+.table-of-contents__link {
+  color: var(--lu-ink-muted);
+}
+
+.table-of-contents li {
+  margin: 6px var(--ifm-toc-padding-vertical);
+}
+
+.theme-doc-footer,
+.pagination-nav__label {
+  font: var(--lu-type-label);
+}
+
+.markdown a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--lu-accent) 40%, transparent);
+  text-underline-offset: 0.18em;
+}
+
+.markdown a:hover {
+  text-decoration-color: var(--lu-accent);
+}
+
+/* Inline code: a quiet fill, no border. */
+code {
+  border: none;
+  vertical-align: baseline;
+}
+
+/* Code blocks: a sunken panel inside the sheet. */
+.theme-code-block {
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
+}
+
+.theme-code-block [class*='codeBlockTitle'] {
+  border-bottom: var(--lu-size-hairline) solid var(--lu-line) !important;
+  font: var(--lu-type-label);
+  color: var(--lu-ink-muted);
+}
+
+.theme-code-block pre code {
+  font: var(--lu-type-code);
+}
+
+/* Tables: hairlines between rows only. */
+.markdown table {
+  /* Infima makes tables blocks so they scroll; size the box to the rows. */
+  width: fit-content;
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--lu-radius-control);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
+  overflow: hidden;
+}
+
+.markdown table tr {
+  border: none;
+}
+
+.markdown table th,
+.markdown table td {
+  border: none;
+  border-bottom: var(--lu-size-hairline) solid var(--lu-line);
+}
+
+.markdown table tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown table th {
+  text-align: start;
+  font: var(--lu-type-caption);
+  font-size: 12px;
+  color: var(--lu-ink-muted);
+}
+
+.pagination-nav__link {
+  border: none;
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-surface-sunken);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.pagination-nav__link:hover {
+  background: var(--lu-hover);
+}
+
+.pagination-nav__sublabel {
+  font: var(--lu-type-caption);
+  color: var(--lu-ink-muted);
+}

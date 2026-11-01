@@ -1,0 +1,29 @@
+/* Inter's Lucent features: cv05 (lowercase l with a tail) and ss03 (round quotes).
+   Every `font:` shorthand resets font-feature-settings, so set it on each element
+   rather than relying on inheritance; code keeps Commit Mono's defaults. */
+body,
+body * {
+  font-feature-settings: var(--lu-font-features);
+}
+
+code,
+pre,
+kbd,
+code * {
+  font-feature-settings: normal;
+}
+
+body {
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--lu-accent) 28%, transparent);
+}
+
+:focus-visible {
+  outline: var(--lu-size-hairline) solid transparent;
+  box-shadow: var(--lu-ring-focus);
+  border-radius: var(--lu-radius-sm);
+}

@@ -1,0 +1,254 @@
+/* Window: glass chrome over the window ground, content on a sheet */
+
+/* The window ground: an aura of ember and orange at the top, fixed so the
+   glass chrome always has light to pick up. */
+html {
+  background:
+    radial-gradient(
+      1100px 620px at 92% -160px,
+      var(--lu-aura-b),
+      transparent 70%
+    ),
+    radial-gradient(
+      1000px 640px at 4% -200px,
+      var(--lu-aura-a),
+      transparent 70%
+    ),
+    radial-gradient(
+      800px 480px at 55% -240px,
+      var(--lu-aura-c),
+      transparent 70%
+    ),
+    var(--lu-window);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+body,
+.main-wrapper {
+  background: transparent;
+}
+
+/* Glass: a soft sheen from the top left, and a lit rim along the bottom edge. */
+.navbar {
+  background:
+    radial-gradient(
+      760px circle at 16% -120%,
+      var(--lu-sheen-glass),
+      transparent 62%
+    ),
+    var(--lu-material-chrome);
+  -webkit-backdrop-filter: var(--lu-blur-chrome);
+  backdrop-filter: var(--lu-blur-chrome);
+  box-shadow:
+    inset 0 calc(-1 * var(--lu-size-hairline)) 0 var(--lu-rim-soft),
+    0 var(--lu-size-hairline) 0 var(--lu-line);
+}
+
+/* Navbar controls gather into one glass capsule. */
+@media (min-width: 997px) {
+  .navbar__items--right {
+    flex: 0 0 auto;
+    /* Wrap the 30px items with an even 3px, so each hover pill sits
+       concentric with the capsule's rounded ends. */
+    align-self: center;
+    height: auto;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--lu-radius-capsule);
+    background: var(--lu-capsule);
+    box-shadow: var(--lu-shadow-capsule);
+  }
+
+  .navbar__items--right > .navbar__item {
+    padding: 0;
+  }
+
+  .navbar__items--right .navbar__link,
+  .navbar__items--right [class*='toggleButton'] {
+    height: var(--lu-size-toolbar-inner);
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    border-radius: var(--lu-radius-capsule);
+    transition: background-color var(--lu-dur-fast) var(--lu-ease);
+  }
+
+  .navbar__items--right [class*='toggleButton'] {
+    width: var(--lu-size-toolbar-inner);
+    padding: 0;
+    justify-content: center;
+  }
+
+  .navbar__items--right .navbar__link:hover,
+  .navbar__items--right [class*='toggleButton']:hover {
+    background: var(--lu-capsule-hover);
+  }
+
+  .navbar__items--right .navbar__search {
+    margin-left: 2px;
+  }
+}
+
+.navbar__title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.navbar__link {
+  font: var(--lu-type-label);
+  letter-spacing: var(--lu-type-label-tracking);
+}
+
+.navbar-sidebar {
+  background: var(--lu-material-overlay);
+  -webkit-backdrop-filter: var(--lu-blur-overlay);
+  backdrop-filter: var(--lu-blur-overlay);
+}
+
+/* The docs sidebar is chrome: it sits on the window ground with no divider. */
+.theme-doc-sidebar-container {
+  border-right: none !important;
+}
+
+/* The current page is a raised chip on the glass, like a selected row in Fiddle's tree. */
+.theme-doc-sidebar-menu .menu__link[aria-current='page'] {
+  background: var(--lu-chip);
+  box-shadow: var(--lu-shadow-lift);
+  color: var(--lu-ink);
+}
+
+.theme-doc-sidebar-menu .menu__link:not(.menu__link--active):hover {
+  background: var(--lu-capsule);
+}
+
+.theme-doc-sidebar-menu .menu__link {
+  min-height: var(--lu-size-row);
+  padding: 4px 10px;
+  border-radius: var(--lu-radius-item);
+  font: var(--lu-type-label);
+  font-weight: 400;
+}
+
+.theme-doc-sidebar-menu .menu__list {
+  --ifm-menu-link-padding-horizontal: 10px;
+}
+
+.theme-doc-sidebar-menu .menu__list-item:not(:first-child) {
+  margin-top: 1px;
+}
+
+.theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
+  font-weight: 500;
+}
+
+.theme-doc-sidebar-menu .menu__list-item-collapsible {
+  border-radius: var(--lu-radius-item);
+}
+
+/* Top-level groups: Lucent's caption style, sentence case, never shouted. */
+.theme-doc-sidebar-item-category-level-1 {
+  margin-top: var(--lu-space-4) !important;
+}
+
+.theme-doc-sidebar-item-category-level-1
+  > .menu__list-item-collapsible
+  > .menu__link {
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  color: var(--lu-ink-faint);
+}
+
+/* The page: one solid sheet, inset from the chrome, lifted by shadow rather than a border. */
+@media (min-width: 997px) {
+  /* Room around the sheet: the chrome reads as a frame, not a wall. */
+  .main-wrapper main {
+    margin: var(--lu-space-4) var(--lu-space-4) var(--lu-space-4)
+      var(--lu-space-2);
+    background: var(--lu-surface);
+    border-radius: var(--lu-radius-sheet);
+    box-shadow:
+      var(--lu-shadow-island),
+      inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  }
+
+  /* Inside the sheet: generous padding from its edges to the content. */
+  .main-wrapper main > .container {
+    padding: var(--lu-space-8) 40px var(--lu-space-8) 48px !important;
+  }
+
+  .theme-doc-sidebar-menu {
+    padding: var(--lu-space-2) var(--lu-space-2) var(--lu-space-6);
+  }
+}
+
+@media (max-width: 996px) {
+  .main-wrapper main {
+    background: var(--lu-surface);
+  }
+}
+
+/* The navbar mark, sized to the wordmark. */
+.navbar__logo {
+  height: 30px;
+  margin-right: 8px;
+}
+
+/* Search: a field on glass. */
+.navbar .navbar__search-input,
+.navbar [class*='searchBar'] input {
+  border-radius: var(--lu-radius-control);
+  background-color: var(--lu-field-on-glass);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-button-edge);
+  color: var(--lu-ink);
+}
+
+.navbar .navbar__items--right [class*='searchBar'] input {
+  border-radius: var(--lu-radius-capsule);
+  background-color: var(--lu-field-on-glass);
+  box-shadow: none;
+}
+
+/* Light mode's faint ink vanishes on the glass field. */
+.navbar [class*='searchBar'] input::placeholder {
+  color: var(--lu-ink-muted);
+  opacity: 1;
+}
+
+/* Focus: the assist ring, Lucent's one gradient border. */
+.navbar [class*='searchBar'] input:focus {
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--lu-field), var(--lu-field)) padding-box,
+    var(--lu-assist-ring) border-box;
+  box-shadow: 0 0 18px -4px
+    color-mix(in srgb, var(--lu-accent) 45%, transparent);
+}
+
+/* Search results: a glass menu; the selected hit is a soft accent row, not a fill. */
+:root {
+  /* Solid: a blur can't reach through the navbar's own glass. */
+  --search-local-modal-background: var(--lu-surface-raised);
+  --search-local-modal-shadow:
+    var(--lu-shadow-popover),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  --search-local-hit-background: transparent;
+  --search-local-hit-shadow: none;
+  --search-local-hit-color: var(--lu-ink);
+  --search-local-hit-active-color: var(--lu-ink);
+  --search-local-muted-color: var(--lu-ink-faint);
+  --search-local-highlight-color: var(--lu-accent);
+  --search-local-input-active-border-color: transparent;
+}
+
+[class*='dropdownMenu'] {
+  border-radius: var(--lu-radius-panel);
+}
+
+[class*='dropdownMenu'] [class*='suggestion'] {
+  border-radius: var(--lu-radius-item);
+}
+
+[class*='dropdownMenu'] [class*='suggestion'][class*='cursor'] {
+  background: var(--lu-accent-soft) !important;
+}

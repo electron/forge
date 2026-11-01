@@ -1,0 +1,83 @@
+/* Admonitions: Lucent callouts
+   Fiddle's Callout: no border or side rule, a quiet fill, the icon in its own
+   column, a 600-weight title and muted body text. Only the icon (and the fill,
+   faintly) carries the intent; danger also tints its title. */
+
+.theme-admonition.alert {
+  --ifm-alert-border-width: 0;
+  --ifm-alert-border-left-width: 0;
+  --ifm-alert-foreground-color: var(--lu-ink-muted);
+  --ifm-alert-shadow: none;
+  --lu-intent: var(--lu-ink-muted);
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--lu-radius-control);
+  background: color-mix(in srgb, var(--lu-intent) 8%, var(--lu-surface));
+  color: var(--lu-ink-muted);
+}
+
+/* The heading's icon takes the first column; its text becomes the title. */
+.theme-admonition [class*='admonitionHeading'] {
+  display: contents;
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  /* Sentence case: "Warning", not "WARNING". */
+  text-transform: capitalize;
+}
+
+.theme-admonition [class*='admonitionIcon'] {
+  display: grid;
+  grid-row: 1 / span 2;
+  margin: 2px 0 0;
+  align-self: start;
+}
+
+.theme-admonition [class*='admonitionIcon'] svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--lu-intent);
+}
+
+.theme-admonition [class*='admonitionContent'] {
+  grid-column: 2;
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+.theme-admonition [class*='admonitionContent'] strong,
+.theme-admonition [class*='admonitionContent'] code {
+  color: var(--lu-ink);
+}
+
+.theme-admonition.alert--secondary {
+  --lu-intent: var(--lu-ink-muted);
+  background: var(--lu-fill);
+}
+
+.theme-admonition.alert--success {
+  --lu-intent: var(--lu-success);
+}
+
+.theme-admonition.alert--info {
+  --lu-intent: var(--lu-info);
+  background: color-mix(in srgb, var(--lu-info-soft) 70%, var(--lu-surface));
+}
+
+.theme-admonition.alert--warning {
+  --lu-intent: var(--lu-warning);
+}
+
+.theme-admonition.alert--danger {
+  --lu-intent: var(--lu-spark);
+  background: var(--lu-spark-soft);
+}
+
+.theme-admonition.alert--danger [class*='admonitionHeading'] {
+  color: var(--lu-spark);
+}
