@@ -195,7 +195,9 @@ body,
 }
 
 .navbar-sidebar__close {
-  margin-left: 0;
+  /* At the drawer's far edge, past its rounded corner. */
+  margin-left: auto;
+  margin-right: var(--lu-space-2);
   color: var(--lu-ink-muted);
 }
 
