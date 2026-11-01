@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import { useState } from 'react';
 
-import Pipeline from '../components/Pipeline';
+import Pipeline, { ElectronMark } from '../components/Pipeline';
 
 import styles from './index.module.css';
 
@@ -195,30 +195,40 @@ export default function Home(): React.ReactElement {
     <Layout description={siteConfig.tagline} wrapperClassName={styles.home}>
       <header className={styles.hero}>
         <Embers />
-        <Link
-          className={styles.badge}
-          href="https://github.com/electron/forge/releases"
-        >
-          Electron Forge 8 is out
-        </Link>
-        <h1 className={styles.title}>Build, package and ship Electron apps.</h1>
-        <p className={styles.lead}>
-          Forge is the all-in-one toolchain for Electron. Scaffold a project,
-          then package, sign, make installers for every platform and publish,
-          with one command each.
-        </p>
-        <div className={styles.actions}>
-          <Link className="button button--primary" to="/getting-started/">
-            Get started
-          </Link>
+        <div className={styles.intro}>
           <Link
-            className="button button--secondary"
-            href="https://github.com/electron/forge"
+            className={styles.badge}
+            href="https://github.com/electron/forge/releases"
           >
-            View on GitHub
+            Electron Forge 8 is out
           </Link>
+          <h1 className={styles.title}>
+            Build, package and ship Electron apps.
+          </h1>
+          <p className={styles.lead}>
+            Forge is the all-in-one toolchain for Electron. Scaffold a project,
+            then package, sign, make installers for every platform and publish,
+            with one command each.
+          </p>
+          <div className={styles.actions}>
+            <Link className="button button--primary" to="/getting-started/">
+              Get started
+            </Link>
+            <Link
+              className="button button--secondary"
+              href="https://github.com/electron/forge"
+            >
+              View on GitHub
+            </Link>
+          </div>
+          <CopyCommand />
         </div>
-        <CopyCommand />
+        <figure className={styles.art} aria-hidden="true">
+          <span className={styles.appIcon}>
+            <ElectronMark size={104} />
+          </span>
+          <figcaption className={styles.appName}>My App.app</figcaption>
+        </figure>
       </header>
 
       <main>
