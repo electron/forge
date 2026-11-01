@@ -104,7 +104,7 @@
 }
 
 .casting[data-slot='0'] {
-  transform: translateX(-50%) translateX(-116px) rotate(-8deg);
+  transform: translateX(-50%) translateX(-108px) rotate(-8deg) scale(0.88);
   opacity: 0.85;
 }
 
@@ -112,7 +112,7 @@
   /* Its left edge sits behind the front card, so its text hugs the right. */
   align-items: flex-end;
   text-align: right;
-  transform: translateX(-50%) translateX(116px) rotate(8deg);
+  transform: translateX(-50%) translateX(108px) rotate(8deg) scale(0.88);
   opacity: 0.85;
 }
 
@@ -493,6 +493,8 @@
 
   .castings {
     height: 224px;
+    /* The scale doesn't shrink its box, so pull the command up to match. */
+    margin-bottom: -31px;
     transform: scale(0.86);
     transform-origin: 50% 0;
   }
