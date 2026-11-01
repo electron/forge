@@ -6,102 +6,254 @@
   gap: var(--lu-space-2);
 }
 
-/* ---------- The track the app travels along ---------- */
+/* ---------- The line: a conveyor with a station for each step ---------- */
 
-.track {
+.line {
+  /* One trip across the line. Items move at a constant speed: no stops. */
+  --period: 18s;
+  --belt-y: 40px;
+  container-type: inline-size;
   position: relative;
-  height: 72px;
+  height: 112px;
+  overflow: hidden;
+  /* Fade the belt in and out at the edges, so apps arrive and leave. */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
 }
 
-.rail,
-.fill {
+.belt {
   position: absolute;
-  top: 50%;
-  left: 12.5%;
+  top: calc(var(--belt-y) - 1px);
+  left: 0;
+  right: 0;
   height: 2px;
-  margin-top: -1px;
-  border-radius: var(--lu-radius-capsule);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--lu-line-strong) 0 8px,
+    transparent 8px 16px
+  );
+  opacity: 0.6;
+  animation: belt var(--period) linear infinite;
 }
 
-.rail {
-  width: 75%;
-  background: var(--lu-line);
+@keyframes belt {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 100cqw;
+  }
 }
 
-/* The road already travelled: Lucent's assist-ring gradient. */
-.fill {
-  background: var(--lu-assist-ring);
-  background-size: 133% 100%;
-  transition: width var(--lu-dur-enter) var(--lu-ease);
-}
-
-.node {
+.item {
   position: absolute;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  border-radius: 50%;
-  background: var(--lu-surface);
-  box-shadow: inset 0 0 0 1.5px var(--lu-line-strong);
-  transition:
-    background-color var(--lu-dur-base) var(--lu-ease),
-    box-shadow var(--lu-dur-base) var(--lu-ease);
+  top: calc(var(--belt-y) - 16px);
+  left: 0;
+  width: 120px;
+  height: 56px;
+  animation: travel var(--period) linear infinite;
+  animation-delay: calc(var(--i) * var(--period) / -3);
 }
 
-.nodeDone {
-  background: var(--lu-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+@keyframes travel {
+  from {
+    transform: translateX(-60px);
+  }
+  to {
+    transform: translateX(calc(100cqw - 60px));
+  }
 }
 
-/* The app: a glass capsule that slides between steps and changes form at each. */
-.token {
+/* An app: the icon on top, its name under it. Its five forms are stacked, and
+   each shows only on its stretch of the line; the switch happens inside a station. */
+.form {
   position: absolute;
-  top: 50%;
-  z-index: 1;
-  transform: translate(-50%, -50%);
-  transition:
-    left var(--lu-dur-enter) var(--lu-ease),
-    opacity var(--lu-dur-base) var(--lu-ease);
-}
-
-.tokenHidden {
-  opacity: 0;
-}
-
-.tokenInner {
-  display: inline-flex;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
-  height: 34px;
-  padding: 0 14px 0 11px;
-  border-radius: var(--lu-radius-capsule);
-  background: var(--lu-material-overlay);
-  -webkit-backdrop-filter: var(--lu-blur-overlay);
-  backdrop-filter: var(--lu-blur-overlay);
-  box-shadow:
-    var(--lu-shadow-popover),
-    inset 0 var(--lu-size-hairline) 0 var(--lu-rim);
-  color: var(--lu-ink);
-  font: var(--lu-type-label);
-  white-space: nowrap;
-  animation: arrive var(--lu-dur-slow) var(--lu-ease);
+  gap: 5px;
+  opacity: 0;
+  animation-duration: var(--period);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: inherit;
 }
 
-.tokenInner svg {
+.form[data-form='0'] {
+  animation-name: form0;
+}
+.form[data-form='1'] {
+  animation-name: form1;
+}
+.form[data-form='2'] {
+  animation-name: form2;
+}
+.form[data-form='3'] {
+  animation-name: form3;
+}
+.form[data-form='4'] {
+  animation-name: form4;
+}
+
+/* Station centres are at 12.5%, 37.5%, 62.5% and 87.5% of the trip. */
+@keyframes form0 {
+  0%,
+  12.5% {
+    opacity: 1;
+  }
+  12.51%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form1 {
+  0%,
+  12.49% {
+    opacity: 0;
+  }
+  12.5%,
+  37.5% {
+    opacity: 1;
+  }
+  37.51%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form2 {
+  0%,
+  37.49% {
+    opacity: 0;
+  }
+  37.5%,
+  62.5% {
+    opacity: 1;
+  }
+  62.51%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form3 {
+  0%,
+  62.49% {
+    opacity: 0;
+  }
+  62.5%,
+  87.5% {
+    opacity: 1;
+  }
+  87.51%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form4 {
+  0%,
+  87.49% {
+    opacity: 0;
+  }
+  87.5%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--lu-radius-item);
+  background: var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
   color: var(--lu-accent);
 }
 
-/* Each new form pops in as the app arrives. */
-@keyframes arrive {
-  from {
-    opacity: 0;
-    transform: scale(0.88);
+.form[data-form='4'] .tile {
+  background: var(--lu-action);
+  color: var(--lu-on-action);
+  box-shadow: var(--lu-shadow-primary);
+}
+
+.label {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  white-space: nowrap;
+}
+
+/* A station: a glass housing over the belt. Apps go in on the left and come out
+   on the right in their next form. */
+.station {
+  position: absolute;
+  top: calc(var(--belt-y) - 28px);
+  left: calc((var(--s) + 0.5) * 25%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 112px;
+  height: 76px;
+  padding: 9px 0 8px;
+  transform: translateX(-50%);
+  border-radius: var(--lu-radius-panel);
+  /* Nearly opaque: an app inside is only a shadow until it comes out. */
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    color-mix(in srgb, var(--lu-surface-raised) 94%, transparent);
+  -webkit-backdrop-filter: var(--lu-blur-overlay);
+  backdrop-filter: var(--lu-blur-overlay);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim);
+}
+
+/* A working light, pulsing as each app passes through. */
+.stationLight {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lu-accent);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+  animation: work calc(var(--period) / 3) var(--lu-ease) infinite;
+  animation-delay: calc(
+    (var(--s) + 0.5) * var(--period) / 4 - var(--period) / 30
+  );
+}
+
+@keyframes work {
+  0%,
+  20%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
   }
-  to {
+  10% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.25);
   }
+}
+
+.stationName {
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
 }
 
 /* ---------- The steps ---------- */
@@ -127,12 +279,9 @@
 }
 
 .step:hover {
+  background: var(--lu-hover);
   color: var(--lu-ink);
   text-decoration: none;
-}
-
-.stepActive {
-  background: var(--lu-hover);
 }
 
 .stepIndex {
@@ -149,7 +298,7 @@
     color var(--lu-dur-base) var(--lu-ease);
 }
 
-.stepActive .stepIndex {
+.step:hover .stepIndex {
   background: var(--lu-action);
   color: var(--lu-on-action);
 }
@@ -174,7 +323,7 @@
 /* ---------- Smaller screens: no track, the steps stack ---------- */
 
 @media (max-width: 996px) {
-  .track {
+  .line {
     display: none;
   }
 
@@ -191,20 +340,18 @@
 
 /* ---------- Preferences ---------- */
 
+/* Reduced motion: the line stands still, with apps stopped at different steps. */
 @media (prefers-reduced-motion: reduce) {
-  .fill,
-  .token,
-  .node {
-    transition: none;
-  }
-
-  .tokenInner {
-    animation: none;
+  .belt,
+  .item,
+  .form,
+  .stationLight {
+    animation-play-state: paused;
   }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .tokenInner {
+  .station {
     background: var(--lu-surface-raised);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

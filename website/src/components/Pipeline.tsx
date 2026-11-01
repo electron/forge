@@ -1,60 +1,52 @@
 import Link from '@docusaurus/Link';
-import { useEffect, useState } from 'react';
 
 import styles from './Pipeline.module.css';
 
-type Artifact = 'source' | 'bundle' | 'installers' | 'release';
-
-const STEPS: {
-  command: string;
-  title: string;
-  body: string;
-  to: string;
-  artifact: Artifact;
-  label: string;
-}[] = [
+const STEPS = [
   {
     command: 'start',
     title: 'Develop',
     body: 'Run your app with live reload for the main and renderer processes.',
     to: '/cli/#start',
-    artifact: 'source',
-    label: 'my-app/src',
   },
   {
     command: 'package',
     title: 'Package',
     body: 'Bundle an executable for each platform, with native modules rebuilt and macOS signing handled.',
     to: '/core-concepts/build-lifecycle/#step-1-package',
-    artifact: 'bundle',
-    label: 'My App.app',
   },
   {
     command: 'make',
     title: 'Make',
     body: 'Turn that bundle into installers and archives your users can download.',
     to: '/core-concepts/build-lifecycle/#step-2-make',
-    artifact: 'installers',
-    label: '.dmg  .exe  .deb',
   },
   {
     command: 'release',
     title: 'Publish',
     body: 'Upload the results to wherever you distribute updates.',
     to: '/core-concepts/build-lifecycle/#step-3-publish',
-    artifact: 'release',
-    label: 'v1.0.0 released',
   },
 ];
 
-const cx = (...names: (string | false | undefined)[]) =>
-  names.filter(Boolean).join(' ');
+/**
+ * What an app looks like on each stretch of the line. Each station sits between
+ * two stretches: what goes in on its left comes out on its right.
+ */
+const FORMS = [
+  { label: 'template', icon: 'template' },
+  { label: 'src/', icon: 'source' },
+  { label: 'My App.app', icon: 'bundle' },
+  { label: '.dmg .exe .deb', icon: 'installers' },
+  { label: 'v1.0.0', icon: 'release' },
+] as const;
 
-/** How long the app rests at each step, and how long it takes to fade back to the start. */
-const DWELL_MS = 2400;
-const RESET_MS = 320;
+type Icon = (typeof FORMS)[number]['icon'];
 
-function ArtifactIcon({ artifact }: { artifact: Artifact }) {
+/** Apps on the line at once, evenly spaced. */
+const ITEMS = 3;
+
+function FormIcon({ icon }: { icon: Icon }) {
   const common = {
     width: 16,
     height: 16,
@@ -66,7 +58,14 @@ function ArtifactIcon({ artifact }: { artifact: Artifact }) {
     strokeLinejoin: 'round' as const,
     'aria-hidden': true,
   };
-  switch (artifact) {
+  switch (icon) {
+    case 'template':
+      return (
+        <svg {...common}>
+          <path d="M4 2.5h5l3 3v8H4z" />
+          <path d="M8 7.5v4M6 9.5h4" />
+        </svg>
+      );
     case 'source':
       return (
         <svg {...common}>
@@ -98,101 +97,54 @@ function ArtifactIcon({ artifact }: { artifact: Artifact }) {
 }
 
 /**
- * The build pipeline: an app travels from Develop to Publish, changing form at
- * each step (source, app bundle, installers, a release). Hovering or focusing a
- * step moves the app there. With reduced motion, the app only moves on hover or
- * focus, without the slide.
+ * The build pipeline as a factory line: apps ride a conveyor at a steady pace,
+ * pass through a station for each step, and come out the other side in their
+ * next form (template, source, app bundle, installers, release). Pure CSS, so
+ * it runs without JavaScript and pauses under reduced motion.
  */
 export default function Pipeline(): React.ReactElement {
-  const [active, setActive] = useState(0);
-  const [hidden, setHidden] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReducedMotion(query.matches);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
-
-  useEffect(() => {
-    if (paused || reducedMotion) return undefined;
-    let reset: ReturnType<typeof setTimeout> | undefined;
-    const tick = setTimeout(() => {
-      if (active < STEPS.length - 1) {
-        setActive(active + 1);
-        return;
-      }
-      // Back to the start: fade out, jump, fade in, rather than sliding backwards.
-      setHidden(true);
-      reset = setTimeout(() => {
-        setActive(0);
-        setHidden(false);
-      }, RESET_MS);
-    }, DWELL_MS);
-    return () => {
-      clearTimeout(tick);
-      if (reset) clearTimeout(reset);
-    };
-  }, [active, paused, reducedMotion]);
-
-  const step = STEPS[active];
-  // Column centres: 12.5%, 37.5%, 62.5%, 87.5%.
-  const position = `${(active + 0.5) * (100 / STEPS.length)}%`;
-  const progress = `${(active / (STEPS.length - 1)) * 75}%`;
-
   return (
-    <div
-      className={styles.pipeline}
-      onMouseLeave={() => setPaused(false)}
-      onBlur={() => setPaused(false)}
-    >
-      <div className={styles.track} aria-hidden="true">
-        <div className={styles.rail} />
-        <div className={styles.fill} style={{ width: progress }} />
-        {STEPS.map((s, i) => (
-          <span
-            key={s.command}
-            className={cx(styles.node, i <= active && styles.nodeDone)}
-            style={{ left: `${(i + 0.5) * (100 / STEPS.length)}%` }}
-          />
+    <div className={styles.pipeline}>
+      <div className={styles.line} aria-hidden="true">
+        <div className={styles.belt} />
+        {Array.from({ length: ITEMS }, (_, i) => (
+          <div
+            key={i}
+            className={styles.item}
+            style={{ '--i': i } as React.CSSProperties}
+          >
+            {FORMS.map((form, f) => (
+              <span key={form.icon} className={styles.form} data-form={f}>
+                <span className={styles.tile}>
+                  <FormIcon icon={form.icon} />
+                </span>
+                <span className={styles.label}>{form.label}</span>
+              </span>
+            ))}
+          </div>
         ))}
-        <div
-          className={cx(styles.token, hidden && styles.tokenHidden)}
-          style={{ left: position }}
-        >
-          <span key={step.artifact} className={styles.tokenInner}>
-            <ArtifactIcon artifact={step.artifact} />
-            <span>{step.label}</span>
-          </span>
-        </div>
+        {STEPS.map((step, i) => (
+          <div
+            key={step.command}
+            className={styles.station}
+            style={{ '--s': i } as React.CSSProperties}
+          >
+            <span className={styles.stationLight} />
+            <span className={styles.stationName}>{step.title}</span>
+          </div>
+        ))}
       </div>
 
       <ol className={styles.steps}>
-        {STEPS.map((s, i) => (
-          <li key={s.command}>
-            <Link
-              className={cx(styles.step, i === active && styles.stepActive)}
-              to={s.to}
-              onMouseEnter={() => {
-                setPaused(true);
-                setHidden(false);
-                setActive(i);
-              }}
-              onFocus={() => {
-                setPaused(true);
-                setHidden(false);
-                setActive(i);
-              }}
-            >
+        {STEPS.map((step, i) => (
+          <li key={step.command}>
+            <Link className={styles.step} to={step.to}>
               <span className={styles.stepIndex}>{i + 1}</span>
-              <span className={styles.stepTitle}>{s.title}</span>
+              <span className={styles.stepTitle}>{step.title}</span>
               <code className={styles.stepCommand}>
-                electron-forge {s.command}
+                electron-forge {step.command}
               </code>
-              <span className={styles.stepBody}>{s.body}</span>
+              <span className={styles.stepBody}>{step.body}</span>
             </Link>
           </li>
         ))}
