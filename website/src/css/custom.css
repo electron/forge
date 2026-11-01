@@ -43,6 +43,18 @@
   --lu-aura-b: rgba(159, 234, 249, 0.42);
   --lu-aura-c: rgba(27, 28, 38, 0.08);
   --lu-sheen-glass: rgba(255, 255, 255, 0.34);
+  /* The primary button's sheen. Light mode's action is near-black, so white
+     on top is enough. */
+  --lu-sheen-action: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0) 55%
+  );
+  --lu-sheen-action-hover: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 255, 255, 0.04) 55%
+  );
 }
 
 [data-theme='dark'] {
@@ -50,6 +62,21 @@
   --lu-aura-b: rgba(159, 234, 249, 0.16);
   --lu-aura-c: rgba(27, 28, 38, 0.5);
   --lu-sheen-glass: rgba(255, 255, 255, 0.05);
+  /* Dark mode's action is pale cyan, which a faint white sheen vanishes
+     into. A brighter top and a teal shade at the bottom give it the same
+     curve. */
+  --lu-sheen-action: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(13, 42, 49, 0.16)
+  );
+  --lu-sheen-action-hover: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.62),
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(13, 42, 49, 0.12)
+  );
 }
 
 /* ---------- Infima, mapped to Lucent ---------- */
@@ -648,11 +675,7 @@ code {
   --ifm-button-background-color: var(--lu-action);
   --ifm-button-border-color: transparent;
   --ifm-button-color: var(--lu-on-action);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0) 55%
-  );
+  background-image: var(--lu-sheen-action);
   box-shadow: var(--lu-shadow-primary);
 }
 
@@ -669,11 +692,7 @@ code {
   --ifm-button-background-color: var(--lu-action);
   --ifm-button-border-color: transparent;
   color: var(--lu-on-action);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.28),
-    rgba(255, 255, 255, 0.04) 55%
-  );
+  background-image: var(--lu-sheen-action-hover);
   box-shadow:
     var(--lu-shadow-primary),
     0 8px 22px -8px color-mix(in srgb, var(--lu-action) 70%, transparent);

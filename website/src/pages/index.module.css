@@ -204,7 +204,7 @@
 }
 
 .card:hover .cardIcon {
-  background: var(--lu-action);
+  background: var(--lu-sheen-action), var(--lu-action);
   color: var(--lu-on-action);
   box-shadow:
     var(--lu-shadow-primary),
