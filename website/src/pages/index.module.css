@@ -88,11 +88,9 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
   width: 140px;
   height: 180px;
-  padding: 14px;
+  overflow: hidden;
   border-radius: var(--lu-radius-panel);
   background:
     linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
@@ -103,6 +101,98 @@
   transform-origin: 50% 100%;
 }
 
+/* A title bar in each platform's style, and the platform's system font. */
+.titleBar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  padding: 0 10px;
+}
+
+.castingBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 0;
+  padding: 4px 14px 14px;
+}
+
+/* macOS: traffic lights, generous corners, a unified title bar. */
+.casting[data-os='mac'] {
+  border-radius: 14px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', var(--lu-font-sans);
+}
+
+.lights {
+  display: flex;
+  gap: 6px;
+}
+
+.lights i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.lights i:nth-child(2) {
+  background: #febc2e;
+}
+
+.lights i:nth-child(3) {
+  background: #28c840;
+}
+
+/* Windows 11: tighter corners, caption buttons on the right, a Mica tint. */
+.casting[data-os='windows'] {
+  border-radius: 8px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #5b8def 7%, transparent),
+      transparent 70%
+    ),
+    var(--lu-surface-raised);
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', var(--lu-font-sans);
+}
+
+.casting[data-os='windows'] .titleBar {
+  padding-right: 8px;
+}
+
+.captions {
+  display: flex;
+  gap: 12px;
+  color: var(--lu-ink-muted);
+}
+
+/* GNOME: a flat header bar with a round close button. */
+.casting[data-os='linux'] {
+  border-radius: 12px;
+  font-family: Cantarell, 'Adwaita Sans', Ubuntu, var(--lu-font-sans);
+}
+
+.casting[data-os='linux'] .titleBar {
+  background: var(--lu-fill);
+  box-shadow: inset 0 calc(-1 * var(--lu-size-hairline)) 0 var(--lu-line);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lu-fill-strong, var(--lu-fill));
+  color: var(--lu-ink);
+}
+
 .casting[data-slot='0'] {
   transform: translateX(-50%) translateX(-108px) rotate(-8deg) scale(0.88);
   opacity: 0.85;
@@ -110,7 +200,6 @@
 
 .casting[data-slot='1'] {
   /* Its left edge sits behind the front card, so its text hugs the right. */
-  align-items: flex-end;
   text-align: right;
   transform: translateX(-50%) translateX(108px) rotate(8deg) scale(0.88);
   opacity: 0.85;
@@ -132,6 +221,10 @@
   color: var(--lu-ink-muted);
   font: 700 11px/1 var(--lu-font-mono);
   letter-spacing: 0.04em;
+}
+
+.casting[data-slot='1'] .castingBody {
+  align-items: flex-end;
 }
 
 .casting[data-slot='2'] .format {
@@ -162,6 +255,7 @@
 .platform {
   color: var(--lu-ink-faint);
   font: var(--lu-type-caption);
+  font-family: inherit;
 }
 
 /* The hearth: warm light behind the cards, brightest under the front one. */

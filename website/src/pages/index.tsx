@@ -192,28 +192,88 @@ function Embers() {
 
 /** What `npm run make` leaves in out/make, one per platform. */
 const CASTINGS = [
-  {
-    file: 'My App.msix',
-    format: 'MSIX',
-    platform: 'Windows',
-  },
-  { file: 'my-app.deb', format: 'DEB', platform: 'Linux' },
-  { file: 'My App.dmg', format: 'DMG', platform: 'macOS' },
-];
+  { file: 'My App.msix', format: 'MSIX', platform: 'Windows', os: 'windows' },
+  { file: 'my-app.deb', format: 'DEB', platform: 'Linux', os: 'linux' },
+  { file: 'My App.dmg', format: 'DMG', platform: 'macOS', os: 'mac' },
+] as const;
 
-/** The hero's right side: fresh installers, fanned out on the hearth. */
+type Os = (typeof CASTINGS)[number]['os'];
+
+const glyph = {
+  width: 10,
+  height: 10,
+  viewBox: '0 0 10 10',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1,
+} as const;
+
+/**
+ * Each card's title bar, in its platform's style (no logos): traffic lights on
+ * macOS, caption buttons on Windows 11, a round close button in GNOME's
+ * header bar.
+ */
+function TitleBar({ os, format }: { os: Os; format: string }) {
+  const chip = <span className={styles.format}>{format}</span>;
+  switch (os) {
+    case 'mac':
+      return (
+        <span className={styles.titleBar}>
+          <span className={styles.lights}>
+            <i />
+            <i />
+            <i />
+          </span>
+          {chip}
+        </span>
+      );
+    case 'windows':
+      return (
+        <span className={styles.titleBar}>
+          {chip}
+          <span className={styles.captions}>
+            <svg {...glyph}>
+              <path d="M1 5.5h8" />
+            </svg>
+            <svg {...glyph}>
+              <rect x="1.5" y="1.5" width="7" height="7" rx="1" />
+            </svg>
+            <svg {...glyph}>
+              <path d="m1.5 1.5 7 7m0-7-7 7" />
+            </svg>
+          </span>
+        </span>
+      );
+    case 'linux':
+      return (
+        <span className={styles.titleBar}>
+          {chip}
+          <span className={styles.close}>
+            <svg {...glyph} width={8} height={8} strokeWidth={1.4}>
+              <path d="m2 2 6 6m0-6-6 6" />
+            </svg>
+          </span>
+        </span>
+      );
+  }
+}
+
+/** The hero's right side: fresh installers, fanned out on the hearth, each
+    in its own platform's window. */
 function Castings() {
   return (
     <div className={styles.castings} aria-hidden="true">
       <Embers />
-      {CASTINGS.map(({ file, format, platform }, i) => (
-        <div key={format} className={styles.casting} data-slot={i}>
-          <span className={styles.format}>{format}</span>
-          <span className={styles.mark}>
-            <ElectronMark size={44} />
+      {CASTINGS.map(({ file, format, platform, os }, i) => (
+        <div key={format} className={styles.casting} data-slot={i} data-os={os}>
+          <TitleBar os={os} format={format} />
+          <span className={styles.castingBody}>
+            <span className={styles.mark}>
+              <ElectronMark size={44} />
+            </span>
+            <span className={styles.file}>{file}</span>
+            <span className={styles.platform}>{platform}</span>
           </span>
-          <span className={styles.file}>{file}</span>
-          <span className={styles.platform}>{platform}</span>
         </div>
       ))}
     </div>
