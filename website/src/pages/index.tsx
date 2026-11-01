@@ -3,36 +3,11 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import { useState } from 'react';
 
+import Pipeline from '../components/Pipeline';
+
 import styles from './index.module.css';
 
 const CREATE_COMMAND = 'npx create-electron-app@latest my-app';
-
-const STEPS = [
-  {
-    command: 'start',
-    title: 'Develop',
-    body: 'Run your app with live reload for the main and renderer processes.',
-    to: '/cli/#start',
-  },
-  {
-    command: 'package',
-    title: 'Package',
-    body: 'Bundle an executable for each platform, with native modules rebuilt and macOS signing handled.',
-    to: '/core-concepts/build-lifecycle/#step-1-package',
-  },
-  {
-    command: 'make',
-    title: 'Make',
-    body: 'Turn that bundle into installers and archives your users can download.',
-    to: '/core-concepts/build-lifecycle/#step-2-make',
-  },
-  {
-    command: 'release',
-    title: 'Publish',
-    body: 'Upload the results to wherever you distribute updates.',
-    to: '/core-concepts/build-lifecycle/#step-3-publish',
-  },
-];
 
 const FEATURES = [
   {
@@ -144,20 +119,7 @@ export default function Home(): React.ReactElement {
           <h2 id="pipeline" className={styles.sectionTitle}>
             One pipeline, from first run to release
           </h2>
-          <ol className={styles.steps}>
-            {STEPS.map((step, i) => (
-              <li key={step.command}>
-                <Link className={styles.step} to={step.to}>
-                  <span className={styles.stepIndex}>{i + 1}</span>
-                  <span className={styles.stepTitle}>{step.title}</span>
-                  <code className={styles.stepCommand}>
-                    electron-forge {step.command}
-                  </code>
-                  <span className={styles.stepBody}>{step.body}</span>
-                </Link>
-              </li>
-            ))}
-          </ol>
+          <Pipeline />
         </section>
 
         <section className={styles.features} aria-labelledby="features">

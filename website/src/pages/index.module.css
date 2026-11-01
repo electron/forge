@@ -145,60 +145,6 @@
     inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
 }
 
-.steps {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--lu-space-3);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  gap: var(--lu-space-2);
-  height: 100%;
-  padding: var(--lu-space-4);
-  border-radius: var(--lu-radius-panel);
-  color: var(--lu-ink);
-  transition: background-color var(--lu-dur-fast) var(--lu-ease);
-}
-
-.step:hover {
-  background: var(--lu-hover);
-  color: var(--lu-ink);
-  text-decoration: none;
-}
-
-.stepIndex {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--lu-radius-capsule);
-  background: var(--lu-accent-soft);
-  color: var(--lu-accent);
-  font: var(--lu-type-caption);
-}
-
-.stepTitle {
-  font: var(--lu-type-headline);
-  letter-spacing: var(--lu-type-headline-tracking);
-}
-
-.stepCommand {
-  width: fit-content;
-  font-size: 12.5px;
-}
-
-.stepBody {
-  color: var(--lu-ink-muted);
-  font: var(--lu-type-body);
-  font-size: 14px;
-  line-height: 20px;
-}
-
 /* Features: glass cards over the aura. */
 .features {
   max-width: 1120px;
@@ -276,10 +222,6 @@
     letter-spacing: var(--lu-type-display-tracking);
   }
 
-  .steps {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -291,7 +233,6 @@
 }
 
 @media (max-width: 600px) {
-  .steps,
   .grid {
     grid-template-columns: 1fr;
   }

@@ -1,0 +1,212 @@
+/* The build pipeline on the homepage. Values come from --lu-* tokens. */
+
+.pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+}
+
+/* ---------- The track the app travels along ---------- */
+
+.track {
+  position: relative;
+  height: 72px;
+}
+
+.rail,
+.fill {
+  position: absolute;
+  top: 50%;
+  left: 12.5%;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: var(--lu-radius-capsule);
+}
+
+.rail {
+  width: 75%;
+  background: var(--lu-line);
+}
+
+/* The road already travelled: Lucent's assist-ring gradient. */
+.fill {
+  background: var(--lu-assist-ring);
+  background-size: 133% 100%;
+  transition: width var(--lu-dur-enter) var(--lu-ease);
+}
+
+.node {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--lu-surface);
+  box-shadow: inset 0 0 0 1.5px var(--lu-line-strong);
+  transition:
+    background-color var(--lu-dur-base) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease);
+}
+
+.nodeDone {
+  background: var(--lu-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+}
+
+/* The app: a glass capsule that slides between steps and changes form at each. */
+.token {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  transition:
+    left var(--lu-dur-enter) var(--lu-ease),
+    opacity var(--lu-dur-base) var(--lu-ease);
+}
+
+.tokenHidden {
+  opacity: 0;
+}
+
+.tokenInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px 0 11px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-material-overlay);
+  -webkit-backdrop-filter: var(--lu-blur-overlay);
+  backdrop-filter: var(--lu-blur-overlay);
+  box-shadow:
+    var(--lu-shadow-popover),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim);
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  white-space: nowrap;
+  animation: arrive var(--lu-dur-slow) var(--lu-ease);
+}
+
+.tokenInner svg {
+  color: var(--lu-accent);
+}
+
+/* Each new form pops in as the app arrives. */
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---------- The steps ---------- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--lu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+  height: 100%;
+  padding: var(--lu-space-4);
+  border-radius: var(--lu-radius-panel);
+  color: var(--lu-ink);
+  transition: background-color var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover {
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.stepActive {
+  background: var(--lu-hover);
+}
+
+.stepIndex {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+  font: var(--lu-type-caption);
+  transition:
+    background-color var(--lu-dur-base) var(--lu-ease),
+    color var(--lu-dur-base) var(--lu-ease);
+}
+
+.stepActive .stepIndex {
+  background: var(--lu-action);
+  color: var(--lu-on-action);
+}
+
+.stepTitle {
+  font: var(--lu-type-headline);
+  letter-spacing: var(--lu-type-headline-tracking);
+}
+
+.stepCommand {
+  width: fit-content;
+  font-size: 12.5px;
+}
+
+.stepBody {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* ---------- Smaller screens: no track, the steps stack ---------- */
+
+@media (max-width: 996px) {
+  .track {
+    display: none;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Preferences ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .fill,
+  .token,
+  .node {
+    transition: none;
+  }
+
+  .tokenInner {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .tokenInner {
+    background: var(--lu-surface-raised);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
