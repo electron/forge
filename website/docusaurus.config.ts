@@ -22,6 +22,7 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
   onBrokenAnchors: 'warn',
+  favicon: 'img/favicon.svg',
   markdown: {
     mermaid: true,
     hooks: {
