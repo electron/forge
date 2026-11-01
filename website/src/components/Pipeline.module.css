@@ -397,10 +397,7 @@
   margin-left: -1.5px;
   border-radius: 50%;
   background: #fff3d6;
-  box-shadow:
-    0 0 4px 1px
-      color-mix(in srgb, var(--hearth, var(--lu-accent)) 80%, transparent),
-    0 0 10px 2px color-mix(in srgb, var(--lu-accent) 40%, transparent);
+  box-shadow: 0 0 2px color-mix(in srgb, var(--lu-accent) 50%, transparent);
   opacity: 0;
   pointer-events: none;
   animation: spark calc(var(--period) / 3) cubic-bezier(0.2, 0.7, 0.4, 1)
