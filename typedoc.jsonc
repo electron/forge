@@ -58,8 +58,14 @@
     },
     // @electron-forge/maker-dmg
     "electron-installer-dmg": {
+      // No hosted API docs; the README documents these options
+      "ElectronInstallerDMGOptions": "https://github.com/electron-userland/electron-installer-dmg/blob/v5.0.1/README.md#opts",
       // Links to in-interface names
       "__type.name": "#name",
+    },
+    "@types/appdmg": {
+      "appdmg.Specification": "https://github.com/LinusU/node-appdmg#specification",
+      "appdmg.SpecificationContents": "https://github.com/LinusU/node-appdmg#specification",
     },
     // @electron-forge/maker-snap
     "electron-installer-snap": {
