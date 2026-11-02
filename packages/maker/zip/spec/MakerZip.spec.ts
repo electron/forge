@@ -697,6 +697,32 @@ describe('MakerZip', () => {
         expect(spawn).not.toHaveBeenCalled();
       });
 
+      it('should replace an existing file at output', async () => {
+        vi.mocked(spawn).mockImplementation(async (cmd, args = []) => {
+          if (cmd === 'plutil') return '412';
+          if (cmd === binaryDeltaPath && args[0] === 'create') {
+            const out = args[args.length - 1];
+            if (fs.existsSync(out)) throw new Error(`${out} already exists`);
+            fs.writeFileSync(out, deltaContents);
+          }
+          return '';
+        });
+        const oldApp = path.join(tmpDir, 'old', 'My Old App.app');
+        writeApp(oldApp);
+        fs.mkdirSync(path.dirname(output()), { recursive: true });
+        fs.writeFileSync(output(), 'stale delta');
+
+        await expect(
+          createMacDelta({
+            from: { app: oldApp },
+            to: newApp,
+            output: output(),
+            binaryDeltaPath,
+          }),
+        ).resolves.toMatchObject({ sha256: sha256(deltaContents) });
+        expect(fs.readFileSync(output(), 'utf8')).toEqual(deltaContents);
+      });
+
       it('should throw and remove the partial delta when BinaryDelta fails', async () => {
         vi.mocked(spawn).mockImplementation(async (cmd, args = []) => {
           if (cmd === 'plutil') return '412';

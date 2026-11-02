@@ -141,8 +141,8 @@ Packager creates some files after this hook, such as `app.asar`, so build with a
 
 If you sign or publish your app outside Forge, or want to offer deltas from more than one earlier release, call `createMacDelta` from `@electron-forge/maker-zip` yourself. It runs the same steps as `macUpdateDelta`: the permission check, `BinaryDelta create`, then the apply and `codesign` self-check. It returns the delta's manifest fields except `url`, which depends on where you upload it:
 
-```javascript
-const { createMacDelta } = require('@electron-forge/maker-zip');
+```javascript title="make-delta.mjs"
+import { createMacDelta } from '@electron-forge/maker-zip';
 
 const delta = await createMacDelta({
   // The release users update from: { app }, { zip } or { url, sha256, size }
