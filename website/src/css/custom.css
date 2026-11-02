@@ -26,6 +26,7 @@
 @import './theme/content.css';
 @import './theme/tabs.css';
 @import './theme/admonitions.css';
+@import './theme/api.css';
 @import './theme/buttons.css';
 @import './theme/footer.css';
 @import './theme/mermaid.css';

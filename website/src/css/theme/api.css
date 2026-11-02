@@ -1,0 +1,111 @@
+/*
+ * API reference (/api/, the `api` docs instance). Types in parameter lists,
+ * return types and other prose are links or plain names, not code chips:
+ * monospace, coloured like the declaration blocks, no fill.
+ */
+.plugin-id-api .markdown :not(pre) > code {
+  padding: 0;
+  background: none;
+  font: var(--lu-type-code);
+  color: var(--lu-syntax-function);
+}
+
+.plugin-id-api .markdown a > code {
+  color: inherit;
+}
+
+/* Flags such as `optional` and `readonly` stay muted. */
+.plugin-id-api .markdown blockquote {
+  border-left: none;
+  padding: 0;
+  color: var(--lu-ink-muted);
+}
+
+/*
+ * Sidebar kind badges (sidebars-api.ts adds `api-kind api-kind-<kind>`):
+ * a letter in a rounded square before each module, class, interface, ...
+ */
+.api-kind {
+  --api-kind-letter: '?';
+  --api-kind-color: var(--lu-ink-muted);
+}
+.api-kind-module {
+  --api-kind-letter: 'M';
+  --api-kind-color: #9d4edd;
+}
+.api-kind-namespace {
+  --api-kind-letter: 'N';
+  --api-kind-color: #9d4edd;
+}
+.api-kind-class {
+  --api-kind-letter: 'C';
+  --api-kind-color: #1f5fd1;
+}
+.api-kind-interface {
+  --api-kind-letter: 'I';
+  --api-kind-color: #1a8a3a;
+}
+.api-kind-type {
+  --api-kind-letter: 'T';
+  --api-kind-color: #c42e58;
+}
+.api-kind-enum {
+  --api-kind-letter: 'E';
+  --api-kind-color: #b26a00;
+}
+.api-kind-variable {
+  --api-kind-letter: 'V';
+  --api-kind-color: #5b5bd6;
+}
+.api-kind-function {
+  --api-kind-letter: 'F';
+  --api-kind-color: #b26a00;
+}
+
+html[data-theme='dark'] .api-kind-module,
+html[data-theme='dark'] .api-kind-namespace {
+  --api-kind-color: #d6a4ff;
+}
+html[data-theme='dark'] .api-kind-class {
+  --api-kind-color: #86b4ff;
+}
+html[data-theme='dark'] .api-kind-interface {
+  --api-kind-color: #8ee6a0;
+}
+html[data-theme='dark'] .api-kind-type {
+  --api-kind-color: #ff8fae;
+}
+html[data-theme='dark'] .api-kind-enum,
+html[data-theme='dark'] .api-kind-function {
+  --api-kind-color: #ffc66b;
+}
+html[data-theme='dark'] .api-kind-variable {
+  --api-kind-color: #a9a9ff;
+}
+
+.api-kind > .menu__link::before,
+.api-kind > .menu__list-item-collapsible > .menu__link::before {
+  content: var(--api-kind-letter);
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  border: 1.5px solid var(--api-kind-color);
+  border-radius: 0.3rem;
+  color: var(--api-kind-color);
+  font: 600 0.7rem/1 var(--lu-font-mono);
+}
+
+.api-kind > .menu__link,
+.api-kind > .menu__list-item-collapsible > .menu__link {
+  display: flex;
+  align-items: center;
+}
+
+.typedoc-sidebar-item-deprecated > .menu__link {
+  text-decoration: line-through;
+  text-decoration-color: var(--lu-ink-muted);
+}

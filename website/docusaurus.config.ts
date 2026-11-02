@@ -92,7 +92,9 @@ const config: Config = {
         plugin: [
           path.resolve(__dirname, 'typedoc/source-links.mjs'),
           path.resolve(__dirname, 'typedoc/declaration-preview.mjs'),
+          path.resolve(__dirname, 'typedoc/forge-theme.mjs'),
         ],
+        theme: 'forge',
         out: './api',
         // The docs preset renders `../docs`; this output belongs to the
         // separate `api` docs instance below.

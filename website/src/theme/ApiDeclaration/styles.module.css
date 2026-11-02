@@ -7,6 +7,7 @@
   padding: var(--ifm-pre-padding);
   background: var(--prism-background-color);
   color: var(--prism-color);
+  font: var(--lu-type-code);
   white-space: pre;
   overflow-x: auto;
 }
@@ -19,4 +20,13 @@
 
 .link:hover {
   text-decoration-color: currentColor;
+}
+
+.signature {
+  margin-bottom: var(--ifm-paragraph-margin-bottom);
+}
+
+.signature .pre {
+  padding: 0.6rem 1rem;
+  white-space: pre-wrap;
 }

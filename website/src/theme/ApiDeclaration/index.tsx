@@ -9,21 +9,31 @@ import styles from './styles.module.css';
 type Token = [text: string, kind?: string, href?: string];
 
 /**
- * The TypeScript declaration summary at the top of an API reference page.
+ * A TypeScript declaration in the API reference: the summary at the top of a
+ * page, or one member's signature.
  * Rendered from tokens rather than a fenced code block so that referenced
  * types can link to their own pages.
  */
 export default function ApiDeclaration({
   tokens,
+  variant = 'summary',
 }: {
   tokens: Token[];
+  // `summary`: the whole declaration at the top of a page.
+  // `signature`: one member's signature line.
+  variant?: 'summary' | 'signature';
 }): ReactNode {
   const prism = usePrismTheme();
   const styleFor = (kind?: string): CSSProperties | undefined =>
     prism.styles.find((entry) => kind && entry.types.includes(kind))?.style;
 
   return (
-    <Container as="div" className={styles.declaration}>
+    <Container
+      as="div"
+      className={
+        variant === 'signature' ? styles.signature : styles.declaration
+      }
+    >
       <pre className={styles.pre}>
         <code>
           {tokens.map(([text, kind, href], i) => {
