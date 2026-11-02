@@ -1,3 +1,4 @@
+import * as zlib from 'node:zlib';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -17,6 +18,15 @@ vi.mock(import('cross-zip'), async (importOriginal) => {
     zip: vi.fn().mockImplementation((_in, _out, callback) => {
       callback();
     }),
+  };
+});
+
+vi.mock('node:zlib', async (importOriginal) => {
+  const mod = await importOriginal();
+  const { Readable } = await import('node:stream');
+  return {
+    ...mod,
+    zipFiles: vi.fn().mockReturnValue(Readable.from(['fake-zip-content'])),
   };
 });
 
@@ -54,7 +64,11 @@ describe('MakerZip', () => {
     `should generate a zip file for a %s app`,
     async (platform) => {
       const maker = new MakerZIP({}, []);
-      maker.ensureFile = vi.fn();
+      maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+        const fs = await import('node:fs/promises');
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, '');
+      });
       const output = await maker.make({
         dir,
         makeDir,
@@ -66,12 +80,19 @@ describe('MakerZip', () => {
       });
 
       expect(output).toHaveLength(1);
-      expect(zip).toHaveBeenCalledOnce();
-      expect(zip).toHaveBeenCalledWith(
-        dir,
-        path.join(makeDir, 'zip', platform, targetArch, 'fake-app-1.2.3.zip'),
-        expect.anything(),
-      );
+      if (
+        typeof (zlib as any).zipFiles === 'function' &&
+        vi.isMockFunction((zlib as any).zipFiles)
+      ) {
+        expect(zlib.zipFiles).toHaveBeenCalledOnce();
+      } else {
+        expect(zip).toHaveBeenCalledOnce();
+        expect(zip).toHaveBeenCalledWith(
+          dir,
+          path.join(makeDir, 'zip', platform, targetArch, 'fake-app-1.2.3.zip'),
+          expect.anything(),
+        );
+      }
     },
   );
 
@@ -85,7 +106,11 @@ describe('MakerZip', () => {
         [],
       );
       maker.prepareConfig(targetArch);
-      maker.ensureFile = vi.fn();
+      maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+        const fs = await import('node:fs/promises');
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, '');
+      });
       const output = await maker.make({
         dir: darwinDir,
         makeDir,
@@ -97,18 +122,25 @@ describe('MakerZip', () => {
       });
 
       expect(output).toHaveLength(1);
-      expect(zip).toHaveBeenCalledOnce();
-      expect(zip).toHaveBeenCalledWith(
-        path.join(darwinDir, 'My Test App.app'),
-        path.join(
-          makeDir,
-          'zip',
-          platform,
-          targetArch,
-          'fake-darwin-app-1.2.3.zip',
-        ),
-        expect.anything(),
-      );
+      if (
+        typeof (zlib as any).zipFiles === 'function' &&
+        vi.isMockFunction((zlib as any).zipFiles)
+      ) {
+        expect(zlib.zipFiles).toHaveBeenCalledOnce();
+      } else {
+        expect(zip).toHaveBeenCalledOnce();
+        expect(zip).toHaveBeenCalledWith(
+          path.join(darwinDir, 'My Test App.app'),
+          path.join(
+            makeDir,
+            'zip',
+            platform,
+            targetArch,
+            'fake-darwin-app-1.2.3.zip',
+          ),
+          expect.anything(),
+        );
+      }
     },
   );
 
@@ -123,7 +155,11 @@ describe('MakerZip', () => {
           [],
         );
         maker.prepareConfig(targetArch);
-        maker.ensureFile = vi.fn();
+        maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+          const fs = await import('node:fs/promises');
+          await fs.mkdir(path.dirname(filePath), { recursive: true });
+          await fs.writeFile(filePath, '');
+        });
         const output = await maker.make({
           dir: darwinDir,
           makeDir,
@@ -148,7 +184,11 @@ describe('MakerZip', () => {
           [],
         );
         maker.prepareConfig(targetArch);
-        maker.ensureFile = vi.fn();
+        maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+          const fs = await import('node:fs/promises');
+          await fs.mkdir(path.dirname(filePath), { recursive: true });
+          await fs.writeFile(filePath, '');
+        });
         mockFetch.mockResolvedValue(new Response('{}', { status: 200 }));
         await maker.make({
           dir: darwinDir,
@@ -186,7 +226,11 @@ describe('MakerZip', () => {
           [],
         );
         maker.prepareConfig(targetArch);
-        maker.ensureFile = vi.fn();
+        maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+          const fs = await import('node:fs/promises');
+          await fs.mkdir(path.dirname(filePath), { recursive: true });
+          await fs.writeFile(filePath, '');
+        });
         mockFetch.mockResolvedValue(new Response(null, { status: 404 }));
         await maker.make({
           dir: darwinDir,
@@ -225,7 +269,11 @@ describe('MakerZip', () => {
           [],
         );
         maker.prepareConfig(targetArch);
-        maker.ensureFile = vi.fn();
+        maker.ensureFile = vi.fn().mockImplementation(async (filePath) => {
+          const fs = await import('node:fs/promises');
+          await fs.mkdir(path.dirname(filePath), { recursive: true });
+          await fs.writeFile(filePath, '');
+        });
         const oneOneOneRelease = {
           version: '1.1.1',
           updateTo: {

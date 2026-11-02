@@ -1,4 +1,8 @@
+import * as zlib from 'node:zlib';
 import path from 'node:path';
+import { createWriteStream } from 'node:fs';
+import { readdir } from 'node:fs/promises';
+import { pipeline } from 'node:stream/promises';
 import { promisify } from 'node:util';
 
 import { writeJson } from '@electron-forge/core-utils';
@@ -23,6 +27,22 @@ type SquirrelMacReleases = {
   currentRelease: string;
   releases: SquirrelMacRelease[];
 };
+
+async function zipDirectory(dir: string, output: string) {
+  const entries = await readdir(dir, { recursive: true, withFileTypes: true });
+
+  const files: [string, string][] = [
+    [dir, dir],
+    ...entries.map((entry) => {
+      const fullPath = path.join(entry.parentPath, entry.name);
+      const relative = path.relative(dir, fullPath).replaceAll(path.sep, '/');
+      return [fullPath, `${dir}/${relative}`] as [string, string];
+    }),
+  ];
+
+  const zipFiles = (zlib as any).zipFiles;
+  await pipeline(zipFiles(files), createWriteStream(output));
+}
 
 export default class MakerZIP extends MakerBase<MakerZIPConfig> {
   name = 'zip';
@@ -55,7 +75,11 @@ export default class MakerZIP extends MakerBase<MakerZIPConfig> {
     );
 
     await this.ensureFile(zipPath);
-    await promisify(zip)(zipDir, zipPath);
+    if (typeof (zlib as any).zipFiles === 'function') {
+      await zipDirectory(zipDir, zipPath);
+    } else {
+      await promisify(zip)(zipDir, zipPath);
+    }
 
     // Only generate RELEASES.json for darwin builds (not MAS)
     if (targetPlatform === 'darwin' && this.config.macUpdateManifestBaseUrl) {
