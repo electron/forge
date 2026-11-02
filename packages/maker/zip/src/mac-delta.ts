@@ -264,7 +264,7 @@ export async function createMacDelta({
 
     const fromVersion = await readBundleVersion(previousApp);
     const binaryDelta = await getBinaryDelta(binaryDeltaPath);
-    await fs.rm(output, { recursive: true, force: true });
+    await fs.rm(output, { force: true });
     await fs.mkdir(path.dirname(output), { recursive: true });
     const scratchDir = path.join(tmpDir, 'check');
     await fs.mkdir(scratchDir);

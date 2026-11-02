@@ -723,6 +723,30 @@ describe('MakerZip', () => {
         expect(fs.readFileSync(output(), 'utf8')).toEqual(deltaContents);
       });
 
+      it('should not delete a directory given as output', async () => {
+        const oldApp = path.join(tmpDir, 'old', 'My Old App.app');
+        writeApp(oldApp);
+        const outputDir = path.join(tmpDir, 'deltas');
+        fs.mkdirSync(outputDir, { recursive: true });
+        fs.writeFileSync(path.join(outputDir, 'keep.txt'), 'keep');
+
+        await expect(
+          createMacDelta({
+            from: { app: oldApp },
+            to: newApp,
+            output: outputDir,
+            binaryDeltaPath,
+          }),
+        ).rejects.toThrow();
+        expect(
+          fs.readFileSync(path.join(outputDir, 'keep.txt'), 'utf8'),
+        ).toEqual('keep');
+        expect(spawn).not.toHaveBeenCalledWith(
+          binaryDeltaPath,
+          expect.anything(),
+        );
+      });
+
       it('should throw and remove the partial delta when BinaryDelta fails', async () => {
         vi.mocked(spawn).mockImplementation(async (cmd, args = []) => {
           if (cmd === 'plutil') return '412';
