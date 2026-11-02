@@ -11,6 +11,8 @@ import path from 'node:path';
 
 import { Converter } from 'typedoc';
 
+import { externalPackage } from './tokens.mjs';
+
 const REPO = 'https://github.com/electron/forge';
 const ROOT = path.resolve(import.meta.dirname, '../..');
 const REVISION = `v${JSON.parse(fs.readFileSync(path.join(ROOT, 'lerna.json'), 'utf8')).version}`;
@@ -76,8 +78,16 @@ export function load(app) {
       for (const source of reflection.sources ?? []) {
         let file = source.fullFileName;
         let line = source.line;
-        if (!file || file.includes(`${path.sep}node_modules${path.sep}`))
+        if (!file) continue;
+
+        // Declared in a dependency (e.g. options inherited from Packager):
+        // name the package and link to it on npm instead of a local path.
+        const pkg = externalPackage(file);
+        if (pkg) {
+          source.fileName = pkg;
+          source.url = `https://www.npmjs.com/package/${pkg}`;
           continue;
+        }
 
         if (file.endsWith('.d.ts')) {
           const mapped = mapFor(file)?.[line - 1];

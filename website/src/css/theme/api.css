@@ -109,3 +109,18 @@ html[data-theme='dark'] .api-kind-variable {
   text-decoration: line-through;
   text-decoration-color: var(--lu-ink-muted);
 }
+
+/*
+ * Links that leave the Forge docs (other packages' docs, npm, GitHub source)
+ * get an arrow, like TypeDoc's HTML theme, so they read differently from
+ * links to other API pages.
+ */
+.plugin-id-api .markdown a[href^='http']::after,
+.api-external::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 0.1em;
+  font-size: 0.8em;
+  text-decoration: none;
+  opacity: 0.7;
+}

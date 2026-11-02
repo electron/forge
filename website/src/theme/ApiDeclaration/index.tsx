@@ -46,7 +46,16 @@ export default function ApiDeclaration({
               );
             }
             return (
-              <Link key={i} to={href} style={style} className={styles.link}>
+              <Link
+                key={i}
+                to={href}
+                style={style}
+                className={
+                  /^https?:/.test(href)
+                    ? `${styles.link} api-external`
+                    : styles.link
+                }
+              >
                 {text}
               </Link>
             );

@@ -5,6 +5,60 @@ import { ReflectionKind } from 'typedoc';
 
 export const INDENT = '  ';
 
+/**
+ * The npm package a declaration comes from when it isn't Forge's own code
+ * (e.g. `@electron/packager` for options inherited from Packager), else
+ * undefined.
+ */
+export function externalPackage(fullFileName) {
+  const parts = (fullFileName ?? '').split(/[\\/]node_modules[\\/]/);
+  if (parts.length < 2) return undefined;
+  const segments = parts.at(-1).split(/[\\/]/);
+  return segments[0].startsWith('@')
+    ? `${segments[0]}/${segments[1]}`
+    : segments[0];
+}
+
+/** `  // from @electron/packager` for a member declared in another package. */
+const NPM = 'https://www.npmjs.com/package/';
+
+export function originPackage(reflection) {
+  const source = reflection?.sources?.[0];
+  return (
+    externalPackage(source?.fullFileName) ??
+    (source?.url?.startsWith(NPM) ? source.url.slice(NPM.length) : undefined)
+  );
+}
+
+export function originComment(reflection) {
+  const pkg = originPackage(reflection);
+  return pkg ? [t(`  // from ${pkg}`, 'comment')] : [];
+}
+
+/**
+ * Members of a declaration: Forge's own first, then one block per dependency
+ * they come from, headed `// from @electron/packager`.
+ */
+function body(children, context) {
+  const own = [];
+  const byPackage = new Map();
+  for (const child of children ?? []) {
+    const pkg = originPackage(child);
+    if (!pkg) {
+      own.push(...member(child, context));
+      continue;
+    }
+    if (!byPackage.has(pkg)) byPackage.set(pkg, []);
+    byPackage.get(pkg).push(...member(child, context, { origin: false }));
+  }
+  const lines = [...own];
+  for (const [pkg, members] of byPackage) {
+    if (lines.length) lines.push([t('')]);
+    lines.push([t(INDENT), t(`// from ${pkg}`, 'comment')], ...members);
+  }
+  return lines;
+}
+
 export const t = (text, kind = 'plain', href) =>
   href ? [text, kind, href] : [text, kind];
 export const p = (text) => t(text, 'punctuation');
@@ -142,7 +196,7 @@ export function type(node, context, parent) {
   }
 }
 
-export function member(child, context) {
+export function member(child, context, { origin = true } = {}) {
   if (child.flags.isPrivate || child.name.startsWith('#')) return [];
   const prefix = [];
   if (child.flags.isProtected) prefix.push(kw('protected '));
@@ -169,6 +223,7 @@ export function member(child, context) {
       p(': '),
       ...type(sig.type, context),
       p(';'),
+      ...(origin ? originComment(child) : []),
     ]);
   }
   if (child.kindOf(ReflectionKind.Accessor)) {
@@ -204,6 +259,7 @@ export function member(child, context) {
       p(child.flags.isOptional ? '?: ' : ': '),
       ...type(child.type, context),
       p(';'),
+      ...(origin ? originComment(child) : []),
     ],
   ];
 }
@@ -228,10 +284,7 @@ export function container(keyword, model, context) {
     ...heritage('implements', model.implementedTypes, context),
     p(' {'),
   ];
-  const body = (model.children ?? []).flatMap((child) =>
-    member(child, context),
-  );
-  return [head, ...body, [p('}')]];
+  return [head, ...body(model.children, context), [p('}')]];
 }
 
 export function typeAlias(model, context) {
@@ -244,8 +297,7 @@ export function typeAlias(model, context) {
   const decl =
     model.type?.type === 'reflection' ? model.type.declaration : undefined;
   if (decl?.children?.length && !decl.signatures?.length) {
-    const body = decl.children.flatMap((child) => member(child, context));
-    return [[...head, p('{')], ...body, [p('};')]];
+    return [[...head, p('{')], ...body(decl.children, context), [p('};')]];
   }
   return [[...head, ...type(model.type, context), p(';')]];
 }

@@ -13,6 +13,7 @@ import { MarkdownTheme, MarkdownThemeContext } from 'typedoc-plugin-markdown';
 import {
   apiDeclaration,
   kw,
+  originComment,
   p,
   parameters,
   t,
@@ -44,6 +45,7 @@ function signatureLine(model, options, context) {
   line.push(...typeParameters(model.typeParameters, context));
   line.push(...parameters(model, context));
   if (model.type) line.push(p(': '), ...type(model.type, context));
+  line.push(...originComment(model.sources?.length ? model : model.parent));
   return line;
 }
 
@@ -68,6 +70,7 @@ function declarationLine(model, context) {
     line.push(p(isAlias ? ' = ' : model.flags.isOptional ? '?: ' : ': '));
     line.push(...type(declType, context));
   }
+  line.push(...originComment(model));
   return line;
 }
 
@@ -140,6 +143,16 @@ class ForgeThemeContext extends MarkdownThemeContext {
         }
         flush();
         return md.join('\n\n');
+      },
+
+      // Declarations from a dependency (see source-links.mjs) name the
+      // package instead of a file and line.
+      sources: (model, options) => {
+        const source = model.sources?.[0];
+        if (!source?.url?.startsWith('https://www.npmjs.com/package/')) {
+          return base.sources(model, options);
+        }
+        return `From the [\`${source.fileName}\`](${source.url}) package`;
       },
 
       signatureReturns: (model, options) => {
