@@ -65,6 +65,10 @@ export function getConfig(
       fileName: () => '[name].cjs',
       formats: ['cjs'],
     };
+    // An SSR build ignores `lib.fileName` and names entries `[name].js` or
+    // `[name].cjs` from the nearest package.json's `type`, so a CommonJS
+    // project would otherwise get `main.js` instead of `main.cjs`.
+    config.build!.rollupOptions!.output = { entryFileNames: '[name].cjs' };
   }
 
   return mergeConfig(mergeConfig(buildConfig, config), userConfig);
