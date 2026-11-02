@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-snap",
-  "version": "8.0.0-alpha.10",
+  "version": "8.0.1",
   "type": "module",
   "description": "Snap maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -8,6 +8,7 @@
   "exports": "./dist/MakerSnap.js",
   "typings": "dist/MakerSnap.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

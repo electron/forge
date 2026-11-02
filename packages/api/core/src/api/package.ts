@@ -517,112 +517,111 @@ export const listrPackage = (
             return delayTraceTillSignal(
               childTrace,
               task.newListr(
-                targets.map(
-                  (target): ForgeListrTaskDefinition =>
-                    target.arch === 'universal'
-                      ? {
-                          title: `Stitching ${styleText('cyan', `${target.platform}/x64`)} and ${styleText('cyan', `${target.platform}/arm64`)} into a ${styleText(
-                            'green',
-                            `${target.platform}/universal`,
-                          )} package`,
-                          task: async () => {
-                            await addSignalAndWait(signalPackageDone, target);
-                          },
-                          rendererOptions: {
-                            timer: { ...PRESET_TIMER },
-                          },
-                        }
-                      : {
-                          title: `Packaging for ${styleText('cyan', target.arch)} on ${styleText('cyan', target.platform)}${
-                            target.forUniversal
-                              ? styleText('italic', ' (for universal package)')
-                              : ''
-                          }`,
-                          task: childTrace<Parameters<ForgeListrTaskFn<never>>>(
-                            {
-                              name: `package-app-${target.platform}-${target.arch}${target.forUniversal ? '-universal-tmp' : ''}`,
-                              category: '@electron-forge/core',
-                              extraDetails: {
-                                arch: target.arch,
-                                platform: target.platform,
-                              },
-                              newRoot: true,
+                targets.map((target): ForgeListrTaskDefinition =>
+                  target.arch === 'universal'
+                    ? {
+                        title: `Stitching ${styleText('cyan', `${target.platform}/x64`)} and ${styleText('cyan', `${target.platform}/arm64`)} into a ${styleText(
+                          'green',
+                          `${target.platform}/universal`,
+                        )} package`,
+                        task: async () => {
+                          await addSignalAndWait(signalPackageDone, target);
+                        },
+                        rendererOptions: {
+                          timer: { ...PRESET_TIMER },
+                        },
+                      }
+                    : {
+                        title: `Packaging for ${styleText('cyan', target.arch)} on ${styleText('cyan', target.platform)}${
+                          target.forUniversal
+                            ? styleText('italic', ' (for universal package)')
+                            : ''
+                        }`,
+                        task: childTrace<Parameters<ForgeListrTaskFn<never>>>(
+                          {
+                            name: `package-app-${target.platform}-${target.arch}${target.forUniversal ? '-universal-tmp' : ''}`,
+                            category: '@electron-forge/core',
+                            extraDetails: {
+                              arch: target.arch,
+                              platform: target.platform,
                             },
-                            async (childTrace, _, task) => {
-                              return delayTraceTillSignal(
-                                childTrace,
-                                task.newListr(
-                                  [
-                                    {
-                                      title: 'Copying files',
-                                      task: childTrace(
-                                        {
-                                          name: 'copy-files',
-                                          category: '@electron-forge/core',
-                                        },
-                                        async () => {
-                                          await addSignalAndWait(
-                                            signalCopyDone,
-                                            target,
-                                          );
-                                        },
-                                      ),
-                                    },
-                                    {
-                                      title: 'Preparing native dependencies',
-                                      task: childTrace(
-                                        {
-                                          name: 'prepare-native-dependencies',
-                                          category: '@electron-forge/core',
-                                        },
-                                        async (_, __, task) => {
-                                          signalRebuildStart
-                                            .get(getTargetKey(target))
-                                            ?.pop()?.(task);
-                                          await addSignalAndWait(
-                                            signalRebuildDone,
-                                            target,
-                                          );
-                                        },
-                                      ),
-                                      rendererOptions: {
-                                        persistentOutput: true,
-                                        bottomBar: Infinity,
-                                        timer: { ...PRESET_TIMER },
-                                      },
-                                    },
-                                    {
-                                      title: 'Finalizing package',
-                                      task: childTrace(
-                                        {
-                                          name: 'finalize-package',
-                                          category: '@electron-forge/core',
-                                        },
-                                        async () => {
-                                          await addSignalAndWait(
-                                            signalPackageDone,
-                                            target,
-                                          );
-                                        },
-                                      ),
-                                    },
-                                  ],
+                            newRoot: true,
+                          },
+                          async (childTrace, _, task) => {
+                            return delayTraceTillSignal(
+                              childTrace,
+                              task.newListr(
+                                [
                                   {
-                                    concurrent: false,
+                                    title: 'Copying files',
+                                    task: childTrace(
+                                      {
+                                        name: 'copy-files',
+                                        category: '@electron-forge/core',
+                                      },
+                                      async () => {
+                                        await addSignalAndWait(
+                                          signalCopyDone,
+                                          target,
+                                        );
+                                      },
+                                    ),
+                                  },
+                                  {
+                                    title: 'Preparing native dependencies',
+                                    task: childTrace(
+                                      {
+                                        name: 'prepare-native-dependencies',
+                                        category: '@electron-forge/core',
+                                      },
+                                      async (_, __, task) => {
+                                        signalRebuildStart
+                                          .get(getTargetKey(target))
+                                          ?.pop()?.(task);
+                                        await addSignalAndWait(
+                                          signalRebuildDone,
+                                          target,
+                                        );
+                                      },
+                                    ),
                                     rendererOptions: {
-                                      collapseSubtasks: true,
-                                      collapseErrors: false,
+                                      persistentOutput: true,
+                                      bottomBar: Infinity,
+                                      timer: { ...PRESET_TIMER },
                                     },
                                   },
-                                ),
-                                'run',
-                              );
-                            },
-                          ),
-                          rendererOptions: {
-                            timer: { ...PRESET_TIMER },
+                                  {
+                                    title: 'Finalizing package',
+                                    task: childTrace(
+                                      {
+                                        name: 'finalize-package',
+                                        category: '@electron-forge/core',
+                                      },
+                                      async () => {
+                                        await addSignalAndWait(
+                                          signalPackageDone,
+                                          target,
+                                        );
+                                      },
+                                    ),
+                                  },
+                                ],
+                                {
+                                  concurrent: false,
+                                  rendererOptions: {
+                                    collapseSubtasks: true,
+                                    collapseErrors: false,
+                                  },
+                                },
+                              ),
+                              'run',
+                            );
                           },
+                        ),
+                        rendererOptions: {
+                          timer: { ...PRESET_TIMER },
                         },
+                      },
                 ),
                 {
                   concurrent: true,

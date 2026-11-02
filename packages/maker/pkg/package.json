@@ -1,6 +1,6 @@
 {
   "name": "@electron-forge/maker-pkg",
-  "version": "8.0.0-alpha.10",
+  "version": "8.0.1",
   "type": "module",
   "description": "PKG maker for Electron Forge",
   "repository": "https://github.com/electron/forge",
@@ -8,6 +8,7 @@
   "exports": "./dist/MakerPKG.js",
   "typings": "dist/MakerPKG.d.ts",
   "devDependencies": {
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

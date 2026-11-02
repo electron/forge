@@ -4,18 +4,11 @@ import { ResolvedForgeConfig } from '@electron-forge/shared-types';
 import { describe, expect, it, vi } from 'vitest';
 
 import findConfig, {
+  defaultForgeConfig,
   forgeConfigIsValidFilePath,
   registerForgeConfigForDirectory,
   unregisterForgeConfigForDirectory,
 } from '../../../src/util/forge-config.js';
-
-const DEFAULTS = {
-  packagerConfig: {},
-  rebuildConfig: {},
-  makers: [],
-  publishers: [],
-  plugins: [],
-};
 
 describe('findConfig', () => {
   it('falls back to default if no config exists', async () => {
@@ -25,7 +18,7 @@ describe('findConfig', () => {
     );
     const config = await findConfig(fixturePath);
     expect(config).toEqual({
-      ...DEFAULTS,
+      ...defaultForgeConfig,
       pluginInterface: expect.objectContaining({}),
     });
   });
@@ -104,7 +97,7 @@ describe('findConfig', () => {
       );
       const config = await findConfig(fixturePath);
       expect(config).toEqual({
-        ...DEFAULTS,
+        ...defaultForgeConfig,
         packagerConfig: {
           baz: {},
         },
@@ -123,7 +116,7 @@ describe('findConfig', () => {
       const config = await findConfig(fixturePath);
       expect(config).toEqual(
         expect.objectContaining({
-          ...DEFAULTS,
+          ...defaultForgeConfig,
           buildIdentifier: 'beta',
           packagerConfig: { foo: 'bar', baz: {} },
           s3: {},
@@ -160,7 +153,7 @@ describe('findConfig', () => {
       );
       const config = await findConfig(fixturePath);
       expect(config).toEqual({
-        ...DEFAULTS,
+        ...defaultForgeConfig,
         makers: [
           {
             name: '@electron-forge/maker-zip',
@@ -265,7 +258,7 @@ describe('findConfig', () => {
         registerForgeConfigForDirectory(fixture, { outDir: 'magic' });
         const config = await findConfig(fixture);
         expect(config).toEqual({
-          ...DEFAULTS,
+          ...defaultForgeConfig,
           outDir: 'magic',
           pluginInterface: expect.objectContaining({}),
         });
@@ -283,7 +276,7 @@ describe('findConfig', () => {
         registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
         const config = await findConfig(fixturePath);
         expect(config).toEqual({
-          ...DEFAULTS,
+          ...defaultForgeConfig,
           outDir: 'magic',
           pluginInterface: expect.objectContaining({}),
         });
@@ -301,7 +294,7 @@ describe('findConfig', () => {
         registerForgeConfigForDirectory(fixturePath, { outDir: 'magic' });
         const config = await findConfig(fixturePath);
         expect(config).toEqual({
-          ...DEFAULTS,
+          ...defaultForgeConfig,
           outDir: 'magic',
           pluginInterface: expect.objectContaining({}),
         });
