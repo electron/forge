@@ -26,7 +26,7 @@ module.exports = {
 };
 ```
 
-All configuration options are optional, and options are documented in the API docs for [MakerZIPConfig](https://js.electronforge.io/interfaces/\_electron\_forge\_maker\_zip.MakerZIPConfig.html).
+All configuration options are optional, and options are documented in the API docs for [MakerZIPConfig](/api/maker-zip/interfaces/MakerZIPConfig/).
 
 ### Static file auto-updates (macOS)
 

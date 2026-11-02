@@ -2,7 +2,7 @@
 
 An Electron Forge Publisher has to export a single class that extends the base publisher. The base plugin can be depended on by installing`@electron-forge/publisher-base`.
 
-Check out the interface of [`PublisherBase`](https://js.electronforge.io/modules/_electron_forge_publisher_base.html) for more advanced API details.
+Check out the interface of [`PublisherBase`](/api/publisher-base/) for more advanced API details.
 
 The publisher **must** implement one method:
 
@@ -14,7 +14,7 @@ Please note for a given version, publish will be called multiple times, once for
 
 The `config` for the publisher will be available on `this.config`.
 
-The options object is documented in [`PublisherOptions`](https://js.electronforge.io/interfaces/_electron_forge_publisher_base.PublisherOptions.html).
+The options object is documented in [`PublisherOptions`](/api/publisher-base/interfaces/PublisherOptions/).
 
 ```javascript
 export default class MyPublisher extends PublisherBase {

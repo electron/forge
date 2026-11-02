@@ -69,6 +69,43 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      // Generates Markdown API reference from the packages' TypeScript sources
+      // into `./api` (gitignored) on every build, reusing the repo's
+      // typedoc.jsonc (entry points, external symbol links).
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'api',
+        options: '../typedoc.jsonc',
+        out: './api',
+        // The docs preset renders `../docs`; this output belongs to the
+        // separate `api` docs instance below.
+        docsPath: './api',
+        entryFileName: 'index.md',
+        // /api/maker-zip/... rather than /api/@electron-forge/maker-zip/...
+        excludeScopesInPaths: true,
+        pageTitleTemplates: { index: 'API reference' },
+        readme: 'none',
+        mergeReadme: true,
+        hidePageHeader: true,
+        hideBreadcrumbs: true,
+        // Escape `<`, `{` etc. in TSDoc comments so MDX doesn't parse them.
+        sanitizeComments: true,
+        sidebar: { pretty: true },
+      },
+    ],
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'api',
+        path: 'api',
+        routeBasePath: 'api',
+        sidebarPath: './sidebars-api.ts',
+      },
+    ],
+  ],
+
   themes: [
     '@docusaurus/theme-mermaid',
     [
@@ -109,15 +146,14 @@ const config: Config = {
           to: '/getting-started/',
           label: 'Docs',
           position: 'left',
-          // Every route but the homepage is a docs page.
-          activeBaseRegex: '^/.+',
+          // Every route but the homepage and the API reference is a docs page.
+          activeBaseRegex: '^/(?!api/).+',
         },
         {
-          // TODO: switch to packages.electronjs.org/forge/latest/ once the API
-          // docs move there (electron/forge#4385)
-          href: 'https://js.electronforge.io/',
+          to: '/api/',
           label: 'API',
-          position: 'right',
+          position: 'left',
+          activeBaseRegex: '^/api/',
         },
         {
           href: 'https://www.electronjs.org/',

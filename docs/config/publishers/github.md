@@ -30,7 +30,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`PublisherGitHubConfig`](https://js.electronforge.io/interfaces/_electron_forge_publisher_github.PublisherGitHubConfig.html).
+Configuration options are documented in [`PublisherGitHubConfig`](/api/publisher-github/interfaces/PublisherGitHubConfig/).
 
 ### Authentication
 

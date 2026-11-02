@@ -27,6 +27,9 @@
     "@docusaurus/types": "^3.10.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "docusaurus-plugin-typedoc": "^1.4.3",
+    "typedoc": "~0.28.0",
+    "typedoc-plugin-markdown": "^4.14.1",
     "typescript": "~5.9.0"
   },
   "browserslist": {

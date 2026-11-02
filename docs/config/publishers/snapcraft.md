@@ -30,4 +30,4 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`PublisherSnapConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_publisher\_snapcraft.PublisherSnapcraftConfig.html).
+Configuration options are documented in [`PublisherSnapConfig`](/api/publisher-snapcraft/interfaces/PublisherSnapcraftConfig/).

@@ -49,7 +49,7 @@ module.exports = {
 };
 ```
 
-Configuration options are documented in [`MakerRpmConfig`](https://js.electronforge.io/interfaces/\_electron\_forge\_maker\_rpm.MakerRpmConfig.html).
+Configuration options are documented in [`MakerRpmConfig`](/api/maker-rpm/interfaces/MakerRpmConfig/).
 
 ## Debugging
 
