@@ -8,27 +8,34 @@ type PackageCategory = { type: 'category'; label: string; items: SidebarItems };
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const packages: PackageCategory[] = require('./api/typedoc-sidebar.cjs');
 
-const GROUPS: [label: string, test: (name: string) => boolean][] = [
-  ['Core', (name) => name === 'core' || name === 'shared-types'],
-  ['Makers', (name) => name.startsWith('maker-')],
-  ['Plugins', (name) => name.startsWith('plugin-')],
-  ['Publishers', (name) => name.startsWith('publisher-')],
-];
-
 const shortName = (item: PackageCategory) =>
   item.label.replace(/^@electron-forge\//, '');
+
+const pkg = (name: string, label: string): PackageCategory => {
+  const item = packages.find((p) => shortName(p) === name);
+  if (!item) throw new Error(`No API docs generated for ${name}`);
+  return { ...item, label };
+};
+
+// Makers, plugins and publishers are grouped, with the group's prefix
+// dropped from each label (Makers > zip, not Makers > maker-zip).
+const group = (label: string, prefix: string) => ({
+  type: 'category' as const,
+  label,
+  collapsed: true,
+  items: packages
+    .filter((p) => shortName(p).startsWith(prefix))
+    .map((p) => ({ ...p, label: shortName(p).slice(prefix.length) })),
+});
 
 const sidebars: SidebarsConfig = {
   api: [
     { type: 'doc', id: 'index', label: 'Overview' },
-    ...GROUPS.map(([label, test]) => ({
-      type: 'category' as const,
-      label,
-      collapsed: label !== 'Core',
-      items: packages
-        .filter((item) => test(shortName(item)))
-        .map((item) => ({ ...item, label: shortName(item) })),
-    })),
+    pkg('core', 'Core'),
+    pkg('shared-types', 'Shared types'),
+    group('Makers', 'maker-'),
+    group('Plugins', 'plugin-'),
+    group('Publishers', 'publisher-'),
   ],
 };
 

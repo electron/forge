@@ -1,7 +1,18 @@
 import type * as Preset from '@docusaurus/preset-classic';
 import type { Config } from '@docusaurus/types';
 
+import fs from 'node:fs';
+import path from 'node:path';
+
 import lucentPrism from './src/prism/lucent';
+
+// The Forge release this site documents (all packages share one version).
+// The navbar links to its release notes; API source links (typedoc/source-links.mjs)
+// point at its tag.
+const forgeVersion: string = JSON.parse(
+  fs.readFileSync(path.resolve(__dirname, '../lerna.json'), 'utf8'),
+).version;
+const releaseTag = `v${forgeVersion}`;
 
 // This site renders the Markdown/MDX content in `../docs` at the site root.
 // It is a standalone Yarn project (own lockfile) and not a monorepo workspace.
@@ -78,6 +89,7 @@ const config: Config = {
       {
         id: 'api',
         options: '../typedoc.jsonc',
+        plugin: [path.resolve(__dirname, 'typedoc/source-links.mjs')],
         out: './api',
         // The docs preset renders `../docs`; this output belongs to the
         // separate `api` docs instance below.
@@ -123,6 +135,8 @@ const config: Config = {
     ],
   ],
 
+  customFields: { forgeVersion },
+
   themeConfig: {
     // Lucent colours come from custom.css; these only set Mermaid's layout
     // defaults and the base each mode starts from.
@@ -154,6 +168,11 @@ const config: Config = {
           label: 'API',
           position: 'left',
           activeBaseRegex: '^/api/',
+        },
+        {
+          href: `https://github.com/electron/forge/releases/tag/${releaseTag}`,
+          label: releaseTag,
+          position: 'right',
         },
         {
           href: 'https://www.electronjs.org/',
