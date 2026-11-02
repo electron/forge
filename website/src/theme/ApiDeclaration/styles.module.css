@@ -1,0 +1,22 @@
+.declaration {
+  margin-bottom: var(--ifm-leading);
+}
+
+.pre {
+  margin: 0;
+  padding: var(--ifm-pre-padding);
+  background: var(--prism-background-color);
+  color: var(--prism-color);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.link {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.link:hover {
+  text-decoration-color: currentColor;
+}

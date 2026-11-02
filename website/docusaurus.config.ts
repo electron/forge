@@ -89,7 +89,10 @@ const config: Config = {
       {
         id: 'api',
         options: '../typedoc.jsonc',
-        plugin: [path.resolve(__dirname, 'typedoc/source-links.mjs')],
+        plugin: [
+          path.resolve(__dirname, 'typedoc/source-links.mjs'),
+          path.resolve(__dirname, 'typedoc/declaration-preview.mjs'),
+        ],
         out: './api',
         // The docs preset renders `../docs`; this output belongs to the
         // separate `api` docs instance below.
