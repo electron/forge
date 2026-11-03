@@ -1,6 +1,14 @@
 /* Site tokens: values the docs need that Lucent doesn't name */
 
 :root {
+  /* The current page in a sidebar: the accent, a step stronger than
+     --lu-accent-soft so it reads at a glance on the glass. */
+  --lu-selected: color-mix(in srgb, var(--lu-accent) 14%, transparent);
+  --lu-selected-rim: inset 0 0 0 var(--lu-size-hairline)
+    color-mix(in srgb, var(--lu-accent) 26%, transparent);
+  /* Nested corners are concentric: an inner radius is the outer radius
+     minus the gap between them, so the curves run parallel. The floor keeps
+     small items from going square. */
   /* Code blocks sit in the sheet, so they take the sunken surface. */
   --lu-code-sheet: var(--lu-surface-sunken);
   /* Docs type: Lucent's scale, with body and code one step up from Fiddle's
@@ -12,6 +20,7 @@
   --lu-docs-line-height: calc(24rem / 15);
   --lu-type-docs-body: 400 var(--lu-docs-font-size) / var(--lu-docs-line-height)
     var(--lu-font-sans);
+  --lu-type-docs-h1: 650 calc(40rem / 15) / calc(44rem / 15) var(--lu-font-sans);
   --lu-type-docs-h2: 650 calc(22rem / 15) / calc(28rem / 15) var(--lu-font-sans);
   --lu-type-docs-h3: 600 calc(17rem / 15) / calc(24rem / 15) var(--lu-font-sans);
   --lu-type-docs-h4: 600 1rem / calc(20rem / 15) var(--lu-font-sans);

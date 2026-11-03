@@ -63,9 +63,19 @@
   color: var(--lu-ink);
 }
 
+/* Inline code takes a stronger tint of the callout's own intent, so it
+   stands out from the callout's fill. */
+/* Only inline code: code blocks in a callout keep their own sheet. */
+.theme-admonition [class*='admonitionContent'] :not(pre) > code {
+  background: color-mix(in srgb, var(--lu-intent) 14%, transparent);
+}
+
 .theme-admonition.alert--secondary {
   --lu-intent: var(--lu-ink-muted);
-  background: var(--lu-fill);
+  /* Note: a sunken panel with a hairline edge, so it doesn't share the grey
+     fill of inline code. */
+  background: var(--lu-surface-sunken);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
 }
 
 .theme-admonition.alert--success {
@@ -88,4 +98,14 @@
 
 .theme-admonition.alert--danger [class*='admonitionHeading'] {
   color: var(--lu-spark);
+}
+
+/* Links in a callout use the accent, like links everywhere else. */
+.theme-admonition.alert a {
+  color: var(--lu-accent);
+  text-decoration-color: color-mix(in srgb, var(--lu-accent) 40%, transparent);
+}
+
+.theme-admonition.alert a:hover {
+  text-decoration-color: var(--lu-accent);
 }

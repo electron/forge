@@ -29,6 +29,7 @@
 @import './theme/buttons.css';
 @import './theme/footer.css';
 @import './theme/mermaid.css';
+@import './theme/details.css';
 
 /* Last, so the fallbacks win. */
 @import './theme/a11y.css';

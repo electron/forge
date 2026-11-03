@@ -1,38 +1,50 @@
-/* Footer: quiet chrome on the window ground, not Infima's slate block. */
+/* Footer: one quiet glass panel on the window ground, on the same 16px
+   gutter as the navbar and the page sheet, not Infima's slate block. */
 .footer,
 .footer--dark {
   --ifm-footer-background-color: transparent;
   --ifm-footer-color: var(--lu-ink-muted);
   --ifm-footer-link-color: var(--lu-ink-muted);
   --ifm-footer-title-color: var(--lu-ink);
-  background: transparent;
-  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-line);
+  margin: 0 var(--lu-space-4) var(--lu-space-4);
+  padding: 40px 40px var(--lu-space-6);
+  border-radius: var(--lu-radius-sheet);
+  background:
+    radial-gradient(
+      900px circle at 12% -60%,
+      var(--lu-sheen-glass),
+      transparent 62%
+    ),
+    var(--lu-material-thin);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
   font: var(--lu-type-body);
-  /* The container sets the side margins. */
-  padding-inline: 0;
 }
 
-/* Columns on the homepage's 1120px edge, with the copyright under them on
-   the left. */
+/* The panel's padding sets the edges, so the container fills it. */
 .footer .container {
-  max-width: min(1120px, 100% - 2 * var(--lu-space-6));
+  max-width: none;
+  margin: 0;
   padding: 0;
 }
 
+/* Columns share the panel's width evenly. */
 .footer__links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--lu-space-6) var(--lu-space-8);
   margin: 0;
-  gap: var(--lu-space-8);
-  flex-wrap: wrap;
 }
 
 .footer__col {
-  flex: 0 0 auto;
   width: auto;
   max-width: none;
-  min-width: 140px;
+  margin: 0;
   padding: 0;
 }
 
+/* The one divider, across the whole panel. */
 .footer__bottom {
   margin-top: var(--lu-space-8);
   padding-top: var(--lu-space-6);
@@ -41,13 +53,21 @@
 }
 
 @media (max-width: 996px) {
-  .footer .container {
-    max-width: calc(100% - 2 * var(--lu-space-4));
+  .footer,
+  .footer--dark {
+    padding-inline: var(--lu-space-6);
+  }
+}
+
+@media (max-width: 600px) {
+  .footer,
+  .footer--dark {
+    margin-inline: var(--lu-space-2);
+    padding-inline: var(--lu-space-4);
   }
 
-  .footer__col {
-    flex-basis: 40%;
-    margin-bottom: 0;
+  .footer__links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -69,4 +89,5 @@
 
 .footer__copyright {
   color: var(--lu-ink-faint);
+  font: 400 12.5px/19px var(--lu-font-sans);
 }

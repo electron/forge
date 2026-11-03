@@ -22,8 +22,10 @@ body {
   background: color-mix(in srgb, var(--lu-accent) 28%, transparent);
 }
 
+/* Focus is a solid accent outline, not a box-shadow ring: buttons, tabs and
+   the sidebar set their own box-shadow and would hide a shadow ring, and the
+   soft ring was under 3:1 against the page. */
 :focus-visible {
-  outline: var(--lu-size-hairline) solid transparent;
-  box-shadow: var(--lu-ring-focus);
-  border-radius: var(--lu-radius-sm);
+  outline: 2px solid var(--lu-accent);
+  outline-offset: 2px;
 }

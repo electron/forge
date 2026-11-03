@@ -71,7 +71,7 @@
   --ifm-global-radius: var(--lu-radius-control);
   --ifm-button-border-radius: var(--lu-radius-capsule);
   --ifm-code-border-radius: var(--lu-radius-code);
-  --ifm-pre-border-radius: var(--lu-radius-panel);
+  --ifm-pre-border-radius: var(--lu-radius-control);
   --ifm-card-border-radius: var(--lu-radius-panel);
   --ifm-alert-border-radius: var(--lu-radius-control);
   --ifm-global-shadow-lw: var(--lu-shadow-lift);
@@ -81,7 +81,8 @@
   --ifm-transition-timing-default: var(--lu-ease);
 
   --ifm-code-background: var(--lu-fill);
-  --ifm-code-font-size: 13px;
+  /* Relative, so code in a heading scales with it (13px in body text). */
+  --ifm-code-font-size: 0.875em;
   --ifm-code-padding-horizontal: 0.35rem;
   --ifm-pre-background: var(--lu-code-sheet);
   --docusaurus-highlighted-code-line-bg: color-mix(

@@ -711,8 +711,9 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* The same gap at the top as at the sides. */
   .sheet {
-    padding: var(--lu-space-6) var(--lu-space-4);
+    padding: var(--lu-space-4);
   }
 }
 

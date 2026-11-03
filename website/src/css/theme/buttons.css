@@ -28,7 +28,7 @@
   box-shadow: var(--lu-shadow-primary);
 }
 
-.button--secondary {
+.button.button--secondary {
   --ifm-button-background-color: var(--lu-button);
   --ifm-button-border-color: transparent;
   --ifm-button-color: var(--lu-ink);
@@ -52,7 +52,7 @@
   --ifm-button-background-color: var(--lu-action-pressed, var(--lu-action));
 }
 
-.button--secondary:hover {
+.button.button--secondary:hover {
   --ifm-button-background-color: var(--lu-button-hover);
   --ifm-button-border-color: transparent;
   color: var(--lu-ink);
@@ -61,7 +61,7 @@
     0 6px 16px -8px rgba(20, 24, 48, 0.35);
 }
 
-.button--secondary:active {
+.button.button--secondary:active {
   --ifm-button-background-color: var(--lu-fill-strong);
 }
 

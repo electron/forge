@@ -229,10 +229,10 @@ body,
   .menu__list:not(.theme-doc-sidebar-menu)
   > .menu__list-item
   > .menu__link--active {
-  background: var(--lu-chip);
-  box-shadow: var(--lu-shadow-lift);
-  color: var(--lu-ink);
-  font-weight: 500;
+  background: var(--lu-selected);
+  box-shadow: var(--lu-selected-rim);
+  color: var(--lu-accent);
+  font-weight: 600;
 }
 
 .navbar-sidebar .menu__link svg {
@@ -262,11 +262,11 @@ body,
   border-right: none !important;
 }
 
-/* The current page is a raised chip on the glass, like a selected row in Fiddle's tree. */
+/* The current page: an accent row, in the docs sidebar and the mobile menu. */
 .theme-doc-sidebar-menu .menu__link[aria-current='page'] {
-  background: var(--lu-chip);
-  box-shadow: var(--lu-shadow-lift);
-  color: var(--lu-ink);
+  background: var(--lu-selected);
+  box-shadow: var(--lu-selected-rim);
+  color: var(--lu-accent);
 }
 
 .theme-doc-sidebar-menu .menu__link:not(.menu__link--active):hover {
@@ -290,14 +290,16 @@ body,
 }
 
 .theme-doc-sidebar-menu .menu__link--active:not(.menu__link--sublist) {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .theme-doc-sidebar-menu .menu__list-item-collapsible {
   border-radius: var(--lu-radius-item);
 }
 
-/* Top-level groups: Lucent's caption style, sentence case, never shouted. */
+/* Top-level groups: section labels, sentence case, never shouted. Lucent's
+   caption size is too small for labels this long, so they use the label
+   size at a heavier weight. */
 .theme-doc-sidebar-item-category-level-1 {
   margin-top: var(--lu-space-4) !important;
 }
@@ -305,9 +307,9 @@ body,
 .theme-doc-sidebar-item-category-level-1
   > .menu__list-item-collapsible
   > .menu__link {
-  font: var(--lu-type-caption);
-  letter-spacing: var(--lu-type-caption-tracking);
-  color: var(--lu-ink-faint);
+  font: 600 14px/20px var(--lu-font-sans);
+  letter-spacing: 0;
+  color: var(--lu-ink-muted);
 }
 
 /* The page: one solid sheet, inset from the chrome, lifted by shadow rather than a border. */
@@ -323,9 +325,16 @@ body,
       inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
   }
 
-  /* Inside the sheet: generous padding from its edges to the content. */
+  /* Inside the sheet: the same 40px gap from every edge to the content. */
   .main-wrapper main > .container {
-    padding: var(--lu-space-8) 40px var(--lu-space-8) 48px !important;
+    padding: 40px !important;
+  }
+
+  /* A page whose main is a centred .container (the 404 page) keeps its
+     centring and gets the same room inside the sheet. */
+  .main-wrapper main.container {
+    margin: var(--lu-space-4) auto;
+    padding: var(--lu-space-8) 40px;
   }
 
   .theme-doc-sidebar-menu {

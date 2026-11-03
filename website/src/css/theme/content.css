@@ -15,7 +15,7 @@
 }
 
 .markdown header h1 {
-  font: var(--lu-type-display);
+  font: var(--lu-type-docs-h1);
   letter-spacing: var(--lu-type-display-tracking);
   margin-bottom: var(--lu-space-4);
 }
@@ -74,6 +74,16 @@
   color: var(--lu-ink-muted);
 }
 
+/* Code in headings shows in the table of contents as plain text: a mono
+   pill per line is hard to scan. */
+.table-of-contents code {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
 .table-of-contents li {
   margin: 6px var(--ifm-toc-padding-vertical);
 }
@@ -99,20 +109,11 @@ code {
   vertical-align: baseline;
 }
 
-/* Code in a heading scales with the heading. */
-.markdown :is(h1, h2, h3, h4, h5, h6) code {
-  font-size: 0.9em;
-}
-
 /* Code blocks: a sunken panel inside the sheet. */
 .theme-code-block {
+  /* The frame (this) and the fill (pre) share one radius. */
+  border-radius: var(--ifm-pre-border-radius);
   box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
-}
-
-.theme-code-block [class*='codeBlockTitle'] {
-  border-bottom: var(--lu-size-hairline) solid var(--lu-line) !important;
-  font: var(--lu-type-label);
-  color: var(--lu-ink-muted);
 }
 
 .theme-code-block pre code {
@@ -126,10 +127,11 @@ code {
   max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  border: var(--lu-size-hairline) solid var(--lu-line);
   border-radius: var(--lu-radius-control);
-  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
-  /* Wide tables scroll sideways; the radius still clips the corners. */
-  overflow: auto;
+  /* Wide tables scroll sideways; the scroll box also clips the cells to the
+     rounded corners. (An inset shadow would sit under the cell fills.) */
+  overflow-x: auto;
 }
 
 .markdown table tr {
@@ -154,9 +156,10 @@ code {
 }
 
 .pagination-nav__link {
+  /* An outlined card with no fill or sheen: secondary to the page above. */
+  padding: 12px 16px;
   border: none;
-  border-radius: var(--lu-radius-panel);
-  /* A secondary link: an outline, no fill. */
+  border-radius: var(--lu-radius-control);
   background: transparent;
   box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
   transition: background-color var(--lu-dur-fast) var(--lu-ease);
@@ -166,7 +169,40 @@ code {
   background: var(--lu-hover);
 }
 
+.pagination-nav__label {
+  font-weight: 500;
+}
+
 .pagination-nav__sublabel {
   font: var(--lu-type-caption);
   color: var(--lu-ink-muted);
+}
+
+/* Badges: soft capsules in the accent, never white text on a saturated
+   fill. Scoped to page content: the sidebar has its own. */
+.markdown .badge {
+  padding: 1px 7px;
+  border: none;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  vertical-align: 0.1em;
+}
+
+.markdown .badge--warning {
+  background: color-mix(in srgb, var(--lu-warning) 16%, transparent);
+  color: var(--lu-ink);
+}
+
+.markdown .badge--info,
+.markdown .badge--secondary {
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+}
+
+.markdown .badge--danger {
+  background: var(--lu-spark-soft);
+  color: var(--lu-spark);
 }
