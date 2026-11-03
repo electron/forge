@@ -59,8 +59,41 @@ export class ForgeAPI {
   }
 }
 
-const api = new ForgeAPI();
-const utils = new ForgeUtils();
+/**
+ * Forge's commands as functions, for scripts and tools that drive Forge
+ * without the CLI. Each method takes the same options as its command.
+ *
+ * @example
+ * ```ts
+ * import { api } from '@electron-forge/core';
+ *
+ * const results = await api.make({ dir: process.cwd(), platform: 'darwin' });
+ * for (const result of results) {
+ *   console.log(result.platform, result.arch, result.artifacts);
+ * }
+ * ```
+ */
+const api: ForgeAPI = new ForgeAPI();
+/**
+ * Helpers for Forge configurations and scripts, such as values that depend
+ * on the build identifier.
+ *
+ * @example
+ * ```ts title="forge.config.ts"
+ * import { utils } from '@electron-forge/core';
+ *
+ * export default {
+ *   buildIdentifier: process.env.IS_BETA ? 'beta' : 'prod',
+ *   packagerConfig: {
+ *     appBundleId: utils.fromBuildIdentifier({
+ *       beta: 'com.example.app.beta',
+ *       prod: 'com.example.app',
+ *     }),
+ *   },
+ * };
+ * ```
+ */
+const utils: ForgeUtils = new ForgeUtils();
 
 export {
   ForgeMakeResult,
