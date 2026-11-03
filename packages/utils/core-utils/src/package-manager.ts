@@ -99,6 +99,12 @@ export interface ResolvePackageManagerOptions {
    * against a project other than the one in `process.cwd()`.
    */
   cwd?: string;
+  /**
+   * Prefer a lockfile found from `cwd` over the package manager that is
+   * running the current command (`npm_config_user_agent`). Useful for commands
+   * that act on an existing project, where `npx` always reports npm.
+   */
+  preferLockfile?: boolean;
 }
 
 /**
@@ -107,6 +113,7 @@ export interface ResolvePackageManagerOptions {
  * 1. An explicit arg being passed into the function.
  * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
  * 3. The presence of a lockfile in `options.cwd` (default: the current working directory) or an ancestor directory.
+ *    With `options.preferLockfile`, this check runs before the user agent check.
  * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
@@ -160,7 +167,7 @@ export const resolvePackageManager: (
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  if (executingPM) {
+  if (executingPM && !(options.preferLockfile && lockfilePM)) {
     installer = executingPM.name;
     installerVersion = executingPM.version;
   } else if (lockfilePM) {

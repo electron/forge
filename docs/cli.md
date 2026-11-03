@@ -72,10 +72,10 @@ If the project already has a Forge configuration (a `forge.config.js`, `forge.co
 
 All flags are optional.
 
-| Flag                | Value                                | Description                                                                                                                 |
-| ------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `--skip-git`        | N/A                                  | Skip initializing a git repository in the imported project.                                                                 |
-| `--package-manager` | Package manager, e.g. `yarn@1.22.22` | Set a specific package manager to use. Defaults to the package manager detected from the lockfile in the project directory. |
+| Flag                | Value                                | Description                                                                                                                               |
+| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--skip-git`        | N/A                                  | Skip initializing a git repository in the imported project.                                                                               |
+| `--package-manager` | Package manager, e.g. `yarn@1.22.22` | Set a specific package manager to use. Defaults to the one the project's lockfile indicates, falling back to the one running the command. |
 
 #### Usage
 

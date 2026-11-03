@@ -85,8 +85,8 @@ const FORGE_CONFIG_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
 /**
  * Returns the name of the project's existing Forge config: `package.json` when
  * it holds a `config.forge` object, the file `config.forge` points to when it
- * is a string, or the first `forge.config.*` file found. Returns `undefined`
- * when the project has none.
+ * is a string and that file exists, or the first `forge.config.*` file found.
+ * Returns `undefined` when the project has none.
  */
 export async function findExistingForgeConfig(
   dir: string,
@@ -97,7 +97,13 @@ export async function findExistingForgeConfig(
   if (configForge && typeof configForge === 'object') {
     return 'package.json';
   }
-  if (typeof configForge === 'string' && configForge.length > 0) {
+  // Mirrors `forgeConfigIsValidFilePath` in `@electron-forge/core`.
+  if (
+    typeof configForge === 'string' &&
+    configForge.length > 0 &&
+    ((await pathExists(path.resolve(dir, configForge))) ||
+      (await pathExists(path.resolve(dir, `${configForge}.js`))))
+  ) {
     return configForge;
   }
   for (const extension of FORGE_CONFIG_EXTENSIONS) {
@@ -283,7 +289,11 @@ export const forgeImport = async ({
           await updatePackageScript('start', 'electron-forge start');
           await updatePackageScript('package', 'electron-forge package');
           await updatePackageScript('make', 'electron-forge make');
-          await updatePackageScript('release', 'electron-forge release');
+          // Unlike the scripts above, `release` was never part of import, so
+          // only add it when the project has no release workflow of its own.
+          if (!packageJSON.scripts.release) {
+            await updatePackageScript('release', 'electron-forge release');
+          }
 
           d('forgified scripts object:', packageJSON.scripts);
 
@@ -300,12 +310,15 @@ export const forgeImport = async ({
                 task: async (ctx, task) => {
                   ctx.pm = await resolvePackageManager(packageManager, {
                     cwd: dir,
+                    // The project already has a lockfile; it says more about
+                    // the project than the package manager that ran `npx`.
+                    preferLockfile: true,
                   });
                   task.title = `Resolved package manager: ${styleText('cyan', ctx.pm.executable)}`;
                 },
               },
               {
-                title: 'Configuring package manager (if applicable)',
+                title: 'Configuring Yarn (if applicable)',
                 task: async ({ pm }) => {
                   if (pm.executable === 'yarn' && isYarnBerry(pm.version)) {
                     // Yarn 2+ defaults to PnP, which doesn't work with the
@@ -317,24 +330,6 @@ export const forgeImport = async ({
                       await fs.copyFile(
                         path.resolve(baseTemplate.templateDir, '_yarnrc.yml'),
                         yarnrcPath,
-                      );
-                    }
-                  } else if (pm.executable === 'pnpm') {
-                    // pnpm 10+ skips dependency build scripts unless they are
-                    // allowed, and Electron needs its postinstall to download
-                    // the binary
-                    const workspacePath = path.resolve(
-                      dir,
-                      'pnpm-workspace.yaml',
-                    );
-                    if (!(await pathExists(workspacePath))) {
-                      d('creating pnpm-workspace.yaml from the base template');
-                      await fs.copyFile(
-                        path.resolve(
-                          baseTemplate.templateDir,
-                          'pnpm-workspace.yaml',
-                        ),
-                        workspacePath,
                       );
                     }
                   }

@@ -125,6 +125,33 @@ describe('package-manager', () => {
         vi.mocked(findUp).mockResolvedValue(undefined);
       });
 
+      it('should prefer the lockfile over the user agent with preferLockfile', async () => {
+        process.env.npm_config_user_agent =
+          'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
+        vi.mocked(findUp).mockResolvedValue('/some/project/yarn.lock');
+        vi.mocked(spawn).mockResolvedValue('1.22.22');
+        const pm = await resolvePackageManager(undefined, {
+          cwd: '/some/project',
+          preferLockfile: true,
+        });
+        expect(pm.executable).toBe('yarn');
+        expect(pm.version).toBe('1.22.22');
+        expect(spawn).toHaveBeenCalledWith(
+          'yarn',
+          ['--version'],
+          expect.objectContaining({ cwd: '/some/project' }),
+        );
+      });
+
+      it('should still use the user agent with preferLockfile when there is no lockfile', async () => {
+        process.env.npm_config_user_agent =
+          'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64';
+        vi.mocked(findUp).mockResolvedValue(undefined);
+        await expect(
+          resolvePackageManager(undefined, { preferLockfile: true }),
+        ).resolves.toHaveProperty('executable', 'pnpm');
+      });
+
       it('should search for a lockfile starting from the given directory', async () => {
         vi.mocked(findUp).mockResolvedValue('/some/project/pnpm-lock.yaml');
         vi.mocked(spawn).mockResolvedValue('10.0.0');

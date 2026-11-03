@@ -78,6 +78,18 @@ describe('import', () => {
     await fs.promises.rm(dir, { recursive: true, force: true });
   });
 
+  it('keeps an existing release script', async () => {
+    await writePackageJSON({
+      scripts: { release: 'standard-version', make: 'old' },
+    });
+
+    await runImport();
+
+    const { scripts } = await readPackageJSON();
+    expect(scripts.release).toEqual('standard-version');
+    expect(scripts.make).toEqual('electron-forge make');
+  });
+
   it('writes the base template forge.config.js and the Forge scripts', async () => {
     await writePackageJSON({ scripts: { test: 'vitest' } });
 
@@ -205,9 +217,18 @@ export default {
       await expect(
         findExistingForgeConfig(dir, { config: { forge: {} } }),
       ).resolves.toEqual('package.json');
+      // A string only counts when the file it points to exists
+      await expect(
+        findExistingForgeConfig(dir, { config: { forge: './build/forge.js' } }),
+      ).resolves.toEqual('forge.config.ts');
+      await fs.promises.mkdir(path.join(dir, 'build'));
+      await fs.promises.writeFile(path.join(dir, 'build', 'forge.js'), '');
       await expect(
         findExistingForgeConfig(dir, { config: { forge: './build/forge.js' } }),
       ).resolves.toEqual('./build/forge.js');
+      await expect(
+        findExistingForgeConfig(dir, { config: { forge: './build/forge' } }),
+      ).resolves.toEqual('./build/forge');
     });
   });
 
@@ -222,8 +243,21 @@ export default {
       const [pm, installDir] = vi.mocked(installDependencies).mock.calls[0];
       expect(pm.executable).toEqual('pnpm');
       expect(installDir).toEqual(dir);
-      // pnpm projects need Electron's build script allowed
-      expect(fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))).toBe(true);
+    });
+
+    it('prefers the lockfile in the project directory over the package manager running the command', async () => {
+      await writePackageJSON();
+      await fs.promises.rm(path.join(dir, 'package-lock.json'));
+      await fs.promises.writeFile(path.join(dir, 'pnpm-lock.yaml'), '');
+      // `npx create-electron-app import` always reports npm here
+      process.env.npm_config_user_agent =
+        'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
+
+      await runImport();
+
+      expect(
+        vi.mocked(installDependencies).mock.calls[0][0].executable,
+      ).toEqual('pnpm');
     });
 
     it('does not write .yarnrc.yml for Yarn Classic', async () => {
