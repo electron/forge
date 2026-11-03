@@ -19,23 +19,31 @@
   color: var(--lu-ink-muted);
 }
 
-/* The heading's icon takes the first column; its text becomes the title. */
+/* The title sits in the second column as one line box, so code or links in
+   a custom title stay inline. The icon hangs into the first column. */
 .theme-admonition [class*='admonitionHeading'] {
-  display: contents;
+  position: relative;
+  grid-column: 2;
+  margin: 0;
   color: var(--lu-ink);
   font: var(--lu-type-label);
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
-  /* Sentence case: "Warning", not "WARNING". */
-  text-transform: capitalize;
+  text-transform: none;
+}
+
+/* Sentence case: "Warning", not "WARNING", and custom titles as written. */
+.theme-admonition [class*='admonitionHeading']::first-letter {
+  text-transform: uppercase;
 }
 
 .theme-admonition [class*='admonitionIcon'] {
+  position: absolute;
+  top: 2px;
+  left: -26px;
   display: grid;
-  grid-row: 1 / span 2;
-  margin: 2px 0 0;
-  align-self: start;
+  margin: 0;
 }
 
 .theme-admonition [class*='admonitionIcon'] svg {

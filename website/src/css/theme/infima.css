@@ -58,7 +58,7 @@
   --ifm-font-family-base: var(--lu-font-sans);
   --ifm-heading-font-family: var(--lu-font-sans);
   --ifm-font-family-monospace: var(--lu-font-mono);
-  --ifm-font-size-base: var(--lu-docs-font-size);
+  --ifm-font-size-base: var(--lu-docs-root-size);
   --ifm-line-height-base: var(--lu-docs-line-height);
   --ifm-spacing-vertical: var(--lu-space-3);
   --ifm-paragraph-margin-bottom: var(--lu-space-3);

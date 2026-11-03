@@ -47,5 +47,9 @@
   "engines": {
     "node": ">= 22.13.0"
   },
-  "packageManager": "yarn@4.18.0"
+  "packageManager": "yarn@4.18.0",
+  "resolutions": {
+    "tinypool": "^2.1.2",
+    "encoding-sniffer": "^1.0.2"
+  }
 }
