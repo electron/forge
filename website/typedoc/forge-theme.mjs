@@ -20,6 +20,7 @@ import {
   type,
   typeParameters,
 } from './tokens.mjs';
+import { canonicalOf } from './reexports.mjs';
 
 function flags(reflection) {
   const out = [];
@@ -94,7 +95,15 @@ const indent = (md) =>
     .map((line) => (line ? `  ${line}` : line))
     .join('\n');
 
+// Utility types whose "Inherited from Omit.foo" lines say nothing useful.
+const UTILITY_TYPES = /^(Omit|Partial|Pick|Required|Readonly)\./;
+
 class ForgeThemeContext extends MarkdownThemeContext {
+  // Re-exports link to the declaring package's page (reexports.mjs).
+  urlTo(reflection) {
+    return super.urlTo(canonicalOf(reflection));
+  }
+
   constructor(...args) {
     super(...args);
     const base = this.partials;
@@ -143,6 +152,18 @@ class ForgeThemeContext extends MarkdownThemeContext {
         }
         flush();
         return md.join('\n\n');
+      },
+
+      inheritance: (model, options) => {
+        if (UTILITY_TYPES.test(model.inheritedFrom?.name ?? '')) {
+          return base.inheritance(
+            Object.assign(Object.create(Object.getPrototypeOf(model)), model, {
+              inheritedFrom: undefined,
+            }),
+            options,
+          );
+        }
+        return base.inheritance(model, options);
       },
 
       // Declarations from a dependency (see source-links.mjs) name the

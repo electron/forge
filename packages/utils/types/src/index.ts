@@ -136,6 +136,16 @@ export interface ForgeRebuildOptions extends Omit<
   RebuildOptions,
   'buildPath' | 'electronVersion' | 'arch'
 > {}
+/**
+ * Options for packaging your app, set as `packagerConfig` in your Forge
+ * configuration.
+ *
+ * These are passed through to `@electron/packager`, which documents each
+ * of them. Forge sets `dir`, `arch`, `platform`, `out` and `electronVersion`
+ * itself, so those can't be configured here.
+ *
+ * @see [Electron Packager config](https://electronforge.io/config/configuration#electron-packager-config)
+ */
 export interface ForgePackagerOptions extends Omit<
   ElectronPackagerOptions,
   'dir' | 'arch' | 'platform' | 'out' | 'electronVersion'
@@ -156,6 +166,11 @@ export interface ResolvedForgeConfig {
    * Output directory. Default is './out'.
    */
   outDir?: string;
+  /**
+   * Functions that run at points in Forge's build lifecycle.
+   * See {@link ForgeSimpleHookSignatures} and
+   * {@link ForgeMutatingHookSignatures} for each hook's arguments.
+   */
   hooks?: ForgeHookMap;
   /**
    * @internal
@@ -165,12 +180,62 @@ export interface ResolvedForgeConfig {
    * An array of Forge plugins or a tuple consisting of [pluginName, pluginOptions]
    */
   plugins: ForgeConfigPlugin[];
+  /**
+   * Options for rebuilding native Node modules against your Electron version,
+   * passed through to `@electron/rebuild`.
+   */
   rebuildConfig: ForgeRebuildOptions;
+  /**
+   * Options for packaging your app, passed through to `@electron/packager`.
+   */
   packagerConfig: ForgePackagerOptions;
+  /**
+   * The makers that turn your packaged app into distributables, such as
+   * `@electron-forge/maker-zip`. Each entry is a maker instance or a
+   * `{ name, config }` object.
+   */
   makers: ForgeConfigMaker[];
+  /**
+   * The publishers that upload your distributables, such as
+   * `@electron-forge/publisher-github`.
+   */
   publishers: ForgeConfigPublisher[];
+  /**
+   * Options for Forge's terminal output.
+   */
   logger: ForgeLoggerOptions;
 }
+/**
+ * The type of your Forge configuration, `forge.config.ts` or the
+ * `config.forge` field in `package.json`. Every property is optional.
+ *
+ * | Property | Description |
+ * | --- | --- |
+ * | {@link ResolvedForgeConfig.packagerConfig packagerConfig} | Options for `@electron/packager` |
+ * | {@link ResolvedForgeConfig.rebuildConfig rebuildConfig} | Options for `@electron/rebuild` |
+ * | {@link ResolvedForgeConfig.makers makers} | Makers that build distributables |
+ * | {@link ResolvedForgeConfig.publishers publishers} | Publishers that upload them |
+ * | {@link ResolvedForgeConfig.plugins plugins} | Plugins such as Vite or webpack |
+ * | {@link ResolvedForgeConfig.hooks hooks} | Lifecycle hooks |
+ * | {@link ResolvedForgeConfig.buildIdentifier buildIdentifier} | Suffix for the output directory |
+ * | {@link ResolvedForgeConfig.outDir outDir} | Output directory, `./out` by default |
+ * | {@link ResolvedForgeConfig.logger logger} | Terminal output options |
+ *
+ * @example
+ * ```ts title="forge.config.ts"
+ * import type { ForgeConfig } from '@electron-forge/shared-types';
+ * import { MakerZIP } from '@electron-forge/maker-zip';
+ *
+ * const config: ForgeConfig = {
+ *   packagerConfig: { asar: true },
+ *   makers: [new MakerZIP({}, ['darwin'])],
+ * };
+ *
+ * export default config;
+ * ```
+ *
+ * @see [Configuration guide](https://electronforge.io/config/configuration)
+ */
 export type ForgeConfig = Partial<Omit<ResolvedForgeConfig, 'pluginInterface'>>;
 
 /**

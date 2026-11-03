@@ -16,10 +16,12 @@ import { apiDeclaration, container, typeAlias } from './tokens.mjs';
 export function load(app) {
   // Package pages start with the package README, whose heading is an h2
   // (`## maker-zip`), so Docusaurus would title them "index". Give module
-  // pages their npm name as the title.
+  // pages their npm name as the title, and other pages their plain name:
+  // the h1 (`Abstract Class: PluginBase\<C\>`) is escaped Markdown, which
+  // would otherwise show up as-is in the browser tab.
   app.renderer.markdownHooks.on('page.begin', (context) => {
     const model = context.page.model;
-    if (!model?.kindOf?.(ReflectionKind.Module)) return '';
+    if (!model?.kindOf || model.kindOf(ReflectionKind.Project)) return '';
     return `---\ntitle: ${JSON.stringify(model.name)}\n---`;
   });
 

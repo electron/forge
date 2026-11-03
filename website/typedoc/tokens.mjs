@@ -3,6 +3,8 @@
 // types as links to their API pages.
 import { ReflectionKind } from 'typedoc';
 
+import { canonicalOf } from './reexports.mjs';
+
 export const INDENT = '  ';
 
 /**
@@ -65,6 +67,7 @@ export const p = (text) => t(text, 'punctuation');
 export const kw = (text) => t(text, 'keyword');
 
 export function hrefFor(reflection, context) {
+  reflection = reflection && canonicalOf(reflection);
   if (!reflection || !context.router.hasUrl(reflection)) return undefined;
   const url = context.router.getFullUrl(reflection);
   const [file, hash] = url.split('#');

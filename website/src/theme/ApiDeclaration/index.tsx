@@ -1,6 +1,7 @@
 import Link from '@docusaurus/Link';
 import { usePrismTheme } from '@docusaurus/theme-common';
 import Container from '@theme/CodeBlock/Container';
+import clsx from 'clsx';
 import type { CSSProperties, ReactNode } from 'react';
 
 import styles from './styles.module.css';
@@ -30,9 +31,12 @@ export default function ApiDeclaration({
   return (
     <Container
       as="div"
-      className={
-        variant === 'signature' ? styles.signature : styles.declaration
-      }
+      // `api-declaration` keeps these blocks out of search snippets
+      // (ignoreCssSelectors in docusaurus.config.ts).
+      className={clsx(
+        'api-declaration',
+        variant === 'signature' ? styles.signature : styles.declaration,
+      )}
     >
       <pre className={styles.pre}>
         <code>

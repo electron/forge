@@ -93,6 +93,8 @@ const config: Config = {
           path.resolve(__dirname, 'typedoc/source-links.mjs'),
           path.resolve(__dirname, 'typedoc/declaration-preview.mjs'),
           path.resolve(__dirname, 'typedoc/forge-theme.mjs'),
+          path.resolve(__dirname, 'typedoc/reexports.mjs'),
+          path.resolve(__dirname, 'typedoc/guide-links.mjs'),
         ],
         theme: 'forge',
         out: './api',
@@ -136,6 +138,9 @@ const config: Config = {
         docsDir: '../docs',
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
+        // API declaration blocks (src/theme/ApiDeclaration) repeat the
+        // members listed below them; index the prose instead.
+        ignoreCssSelectors: ['.api-declaration'],
       },
     ],
   ],

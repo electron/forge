@@ -1,0 +1,101 @@
+{
+  "$comment": "Package catalog for the API reference: the config page each maker, publisher and plugin opens on in the sidebar (sidebars-api.ts), and the guide each links back to (typedoc/guide-links.mjs). Doc ids are relative to ./api.",
+  "makers": {
+    "maker-appx": {
+      "config": "maker-appx/interfaces/MakerAppXConfig",
+      "guide": "config/makers/appx.md"
+    },
+    "maker-deb": {
+      "config": "maker-deb/interfaces/MakerDebConfig",
+      "guide": "config/makers/deb.md"
+    },
+    "maker-dmg": {
+      "config": "maker-dmg/interfaces/MakerDMGConfig",
+      "guide": "config/makers/dmg.mdx"
+    },
+    "maker-flatpak": {
+      "config": "maker-flatpak/interfaces/MakerFlatpakConfig",
+      "guide": "config/makers/flatpak.md"
+    },
+    "maker-msix": {
+      "config": "maker-msix/interfaces/MakerMSIXConfig",
+      "guide": "config/makers/msix.md"
+    },
+    "maker-pkg": {
+      "config": "maker-pkg/interfaces/MakerPKGConfig",
+      "guide": "config/makers/pkg.mdx"
+    },
+    "maker-rpm": {
+      "config": "maker-rpm/interfaces/MakerRpmConfig",
+      "guide": "config/makers/rpm.md"
+    },
+    "maker-snap": {
+      "config": "maker-snap/interfaces/MakerSnapConfig",
+      "guide": "config/makers/snapcraft.md"
+    },
+    "maker-squirrel": {
+      "config": "maker-squirrel/interfaces/MakerSquirrelConfig",
+      "guide": "config/makers/squirrel.windows.md"
+    },
+    "maker-wix": {
+      "config": "maker-wix/interfaces/MakerWixConfig",
+      "guide": "config/makers/wix-msi.md"
+    },
+    "maker-zip": {
+      "config": "maker-zip/interfaces/MakerZIPConfig",
+      "guide": "config/makers/zip.md"
+    }
+  },
+  "publishers": {
+    "publisher-bitbucket": {
+      "config": "publisher-bitbucket/interfaces/PublisherBitbucketConfig",
+      "guide": "config/publishers/bitbucket.md"
+    },
+    "publisher-electron-release-server": {
+      "config": "publisher-electron-release-server/interfaces/PublisherERSConfig",
+      "guide": "config/publishers/electron-release-server.md"
+    },
+    "publisher-gcs": {
+      "config": "publisher-gcs/interfaces/PublisherGCSConfig",
+      "guide": "config/publishers/gcs.md"
+    },
+    "publisher-github": {
+      "config": "publisher-github/interfaces/PublisherGitHubConfig",
+      "guide": "config/publishers/github.md"
+    },
+    "publisher-nucleus": {
+      "config": "publisher-nucleus/interfaces/PublisherNucleusConfig",
+      "guide": "config/publishers/nucleus.md"
+    },
+    "publisher-s3": {
+      "config": "publisher-s3/interfaces/PublisherS3Config",
+      "guide": "config/publishers/s3.mdx"
+    },
+    "publisher-snapcraft": {
+      "config": "publisher-snapcraft/interfaces/PublisherSnapcraftConfig",
+      "guide": "config/publishers/snapcraft.md"
+    }
+  },
+  "plugins": {
+    "plugin-auto-unpack-natives": {
+      "config": "plugin-auto-unpack-natives/interfaces/AutoUnpackNativesConfig",
+      "guide": "config/plugins/auto-unpack-natives.md"
+    },
+    "plugin-fuses": {
+      "config": "plugin-fuses/classes/FusesPlugin",
+      "guide": "config/plugins/fuses.mdx"
+    },
+    "plugin-local-electron": {
+      "config": "plugin-local-electron/interfaces/LocalElectronPluginConfig",
+      "guide": "config/plugins/local-electron.md"
+    },
+    "plugin-vite": {
+      "config": "plugin-vite/VitePlugin/interfaces/VitePluginConfig",
+      "guide": "config/plugins/vite.mdx"
+    },
+    "plugin-webpack": {
+      "config": "plugin-webpack/interfaces/WebpackPluginConfig",
+      "guide": "config/plugins/webpack.mdx"
+    }
+  }
+}

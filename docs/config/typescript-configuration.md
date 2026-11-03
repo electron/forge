@@ -14,7 +14,7 @@ For older versions, follow the [Alternate file syntaxes](typescript-configuratio
 
 ## Configuration file
 
-Forge's TypeScript format is functionally identical to `forge.config.js`. Types can be imported from the [`@electron-forge/shared-types`](https://www.npmjs.com/package/@electron-forge/shared-types) package.
+Forge's TypeScript format is functionally identical to `forge.config.js`. Types can be imported from the [`@electron-forge/shared-types`](/api/shared-types/) package, starting with [`ForgeConfig`](/api/shared-types/type-aliases/ForgeConfig/) for the configuration object itself.
 
 ```typescript title="forge.config.ts"
 import type { ForgeConfig } from '@electron-forge/shared-types';
