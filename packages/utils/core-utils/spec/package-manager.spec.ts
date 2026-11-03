@@ -102,6 +102,15 @@ describe('package-manager', () => {
       );
     });
 
+    it('should explain when the lockfile package manager cannot be run', async () => {
+      delete process.env.npm_config_user_agent;
+      vi.mocked(findUp).mockResolvedValue('/Users/foo/bar/yarn.lock');
+      vi.mocked(spawn).mockRejectedValue(new Error('spawn yarn ENOENT'));
+      await expect(resolvePackageManager()).rejects.toThrow(
+        /Found yarn\.lock, but "yarn" could not be run: spawn yarn ENOENT/,
+      );
+    });
+
     it('should fall back to npm if no other strategy worked', async () => {
       delete process.env.npm_config_user_agent;
       vi.mocked(findUp).mockResolvedValue(undefined);

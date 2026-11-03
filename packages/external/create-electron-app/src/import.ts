@@ -11,6 +11,7 @@ import {
   PMDetails,
   readJson,
   resolvePackageManager,
+  spawnPackageManager,
   updateElectronDependency,
   writeJson,
 } from '@electron-forge/core-utils';
@@ -93,9 +94,18 @@ export async function findExistingForgeConfig(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   packageJSON: any,
 ): Promise<string | undefined> {
+  // Same precedence as `@electron-forge/core`: a `config.forge` object, then
+  // the first `forge.config.*` file, and a `config.forge` path string only
+  // when no such file exists.
   const configForge = packageJSON?.config?.forge;
   if (configForge && typeof configForge === 'object') {
     return 'package.json';
+  }
+  for (const extension of FORGE_CONFIG_EXTENSIONS) {
+    const configName = `forge.config${extension}`;
+    if (await pathExists(path.resolve(dir, configName))) {
+      return configName;
+    }
   }
   // Mirrors `forgeConfigIsValidFilePath` in `@electron-forge/core`.
   if (
@@ -106,12 +116,6 @@ export async function findExistingForgeConfig(
   ) {
     return configForge;
   }
-  for (const extension of FORGE_CONFIG_EXTENSIONS) {
-    const configName = `forge.config${extension}`;
-    if (await pathExists(path.resolve(dir, configName))) {
-      return configName;
-    }
-  }
   return undefined;
 }
 
@@ -121,12 +125,20 @@ export async function findExistingForgeConfig(
  * `.js` file is loaded as ESM, so `require()` and `module.exports` would throw.
  */
 export function toESModuleConfig(source: string): string {
-  return source
+  const converted = source
     .replace(
       /^const (\{[^}]*\}|\w+) = require\((['"][^'"]+['"])\);$/gm,
       'import $1 from $2;',
     )
     .replace(/^module\.exports = /m, 'export default ');
+  // Fail loudly if the template drifts from the shapes rewritten above, rather
+  // than emit a config that Node will refuse to load.
+  if (/\brequire\(|\bmodule\.exports\b/.test(converted)) {
+    throw new Error(
+      'Could not convert the base template forge.config.js to an ES module: it contains CommonJS syntax the converter does not handle.',
+    );
+  }
+  return converted;
 }
 
 export const forgeImport = async ({
@@ -320,7 +332,19 @@ export const forgeImport = async ({
               {
                 title: 'Configuring Yarn (if applicable)',
                 task: async ({ pm }) => {
-                  if (pm.executable === 'yarn' && isYarnBerry(pm.version)) {
+                  if (pm.executable !== 'yarn') {
+                    return;
+                  }
+                  // `--package-manager yarn` resolves to the `latest` tag,
+                  // which says nothing about the Yarn the project actually
+                  // runs, so ask it.
+                  const yarnVersion =
+                    pm.version === 'latest'
+                      ? await spawnPackageManager(pm, ['--version'], {
+                          cwd: dir,
+                        })
+                      : pm.version;
+                  if (isYarnBerry(yarnVersion)) {
                     // Yarn 2+ defaults to PnP, which doesn't work with the
                     // CommonJS requires in our forge config, so ensure that
                     // nodeLinker is set to node-modules

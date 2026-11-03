@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { installDependencies, readJson } from '@electron-forge/core-utils';
+import { spawn } from '@malept/cross-spawn-promise';
 import baseTemplate from '@electron-forge/template-base';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -74,7 +75,11 @@ describe('import', () => {
   });
 
   afterEach(async () => {
-    process.env.npm_config_user_agent = originalUserAgent;
+    if (originalUserAgent === undefined) {
+      delete process.env.npm_config_user_agent;
+    } else {
+      process.env.npm_config_user_agent = originalUserAgent;
+    }
     await fs.promises.rm(dir, { recursive: true, force: true });
   });
 
@@ -152,6 +157,15 @@ describe('import', () => {
       expect(loaded.default).toHaveProperty('plugins');
     });
 
+    it('throws if CommonJS syntax survives the conversion', () => {
+      expect(() =>
+        toESModuleConfig("const x = require('a') || require('b');\n"),
+      ).toThrow(/CommonJS syntax/);
+      expect(() => toESModuleConfig('  module.exports = {};\n')).toThrow(
+        /CommonJS syntax/,
+      );
+    });
+
     it('converts every require and the module.exports of the base template config', () => {
       const converted =
         toESModuleConfig(`const { FusesPlugin } = require('@electron-forge/plugin-fuses');
@@ -208,19 +222,12 @@ export default {
       expect(fs.existsSync(path.join(dir, 'forge.config.js'))).toBe(false);
     });
 
-    it('findExistingForgeConfig prefers package.json, then the first matching file', async () => {
+    it('findExistingForgeConfig follows the precedence of @electron-forge/core', async () => {
       await expect(findExistingForgeConfig(dir, {})).resolves.toBeUndefined();
-      await fs.promises.writeFile(path.join(dir, 'forge.config.ts'), '');
-      await expect(findExistingForgeConfig(dir, {})).resolves.toEqual(
-        'forge.config.ts',
-      );
-      await expect(
-        findExistingForgeConfig(dir, { config: { forge: {} } }),
-      ).resolves.toEqual('package.json');
       // A string only counts when the file it points to exists
       await expect(
         findExistingForgeConfig(dir, { config: { forge: './build/forge.js' } }),
-      ).resolves.toEqual('forge.config.ts');
+      ).resolves.toBeUndefined();
       await fs.promises.mkdir(path.join(dir, 'build'));
       await fs.promises.writeFile(path.join(dir, 'build', 'forge.js'), '');
       await expect(
@@ -229,6 +236,18 @@ export default {
       await expect(
         findExistingForgeConfig(dir, { config: { forge: './build/forge' } }),
       ).resolves.toEqual('./build/forge');
+      // A forge.config.* file beats the string, as it does in core
+      await fs.promises.writeFile(path.join(dir, 'forge.config.ts'), '');
+      await expect(
+        findExistingForgeConfig(dir, { config: { forge: './build/forge.js' } }),
+      ).resolves.toEqual('forge.config.ts');
+      await expect(findExistingForgeConfig(dir, {})).resolves.toEqual(
+        'forge.config.ts',
+      );
+      // and a config.forge object beats everything
+      await expect(
+        findExistingForgeConfig(dir, { config: { forge: {} } }),
+      ).resolves.toEqual('package.json');
     });
   });
 
@@ -268,6 +287,20 @@ export default {
       expect(
         vi.mocked(installDependencies).mock.calls[0][0].executable,
       ).toEqual('yarn');
+      expect(fs.existsSync(path.join(dir, '.yarnrc.yml'))).toBe(false);
+    });
+
+    it('asks the project for its Yarn version when --package-manager yarn has no version', async () => {
+      await writePackageJSON();
+      vi.mocked(spawn).mockResolvedValueOnce('1.22.22\n');
+
+      await runImport({ packageManager: 'yarn' });
+
+      expect(spawn).toHaveBeenCalledWith(
+        'yarn',
+        ['--version'],
+        expect.objectContaining({ cwd: dir }),
+      );
       expect(fs.existsSync(path.join(dir, '.yarnrc.yml'))).toBe(false);
     });
 

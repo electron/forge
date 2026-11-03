@@ -184,13 +184,22 @@ export const resolvePackageManager: (
     installerVersion = executingPM.version;
   } else if (lockfilePM) {
     installer = lockfilePM;
-    // Run in the project directory so a Corepack shim picks up that
-    // project's `packageManager` field rather than the current directory's.
-    installerVersion = await spawnPackageManager(
-      PACKAGE_MANAGERS[installer as SupportedPackageManager],
-      ['--version'],
-      { cwd: options.cwd },
-    );
+    try {
+      // Run in the project directory so a Corepack shim picks up that
+      // project's `packageManager` field rather than the current directory's.
+      installerVersion = await spawnPackageManager(
+        PACKAGE_MANAGERS[installer as SupportedPackageManager],
+        ['--version'],
+        { cwd: options.cwd },
+      );
+    } catch (err) {
+      throw new Error(
+        `Found ${path.basename(lockfile as string)}, but "${installer}" could not be run: ${
+          err instanceof Error ? err.message : String(err)
+        }. Install it, or specify a different package manager explicitly.`,
+        { cause: err },
+      );
+    }
   }
 
   switch (installer) {
