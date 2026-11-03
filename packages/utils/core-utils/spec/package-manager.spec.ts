@@ -116,6 +116,27 @@ describe('package-manager', () => {
       );
     });
 
+    describe('cwd option', () => {
+      beforeEach(() => {
+        delete process.env.npm_config_user_agent;
+      });
+
+      afterEach(() => {
+        vi.mocked(findUp).mockResolvedValue(undefined);
+      });
+
+      it('should search for a lockfile starting from the given directory', async () => {
+        vi.mocked(findUp).mockResolvedValue('/some/project/pnpm-lock.yaml');
+        vi.mocked(spawn).mockResolvedValue('10.0.0');
+        await expect(
+          resolvePackageManager(undefined, { cwd: '/some/project' }),
+        ).resolves.toHaveProperty('executable', 'pnpm');
+        expect(findUp).toHaveBeenCalledWith(expect.any(Array), {
+          cwd: '/some/project',
+        });
+      });
+    });
+
     describe('with an explicit package manager passed in', () => {
       beforeEach(() => {
         vi.resetModules();

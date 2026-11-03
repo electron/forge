@@ -66,14 +66,24 @@ npx electron-forge init --template=webpack
 
 This command will attempt to take an existing Electron app and make it compatible with Forge. Normally, this just creates a base Electron Forge configuration and adds the required dependencies.
 
+If the project already has a Forge configuration (a `forge.config.js`, `forge.config.ts` or similar file, or a `config.forge` object in package.json), the existing configuration is kept as-is.
+
 #### Options
 
-There are no options for the Import command.
+All flags are optional.
+
+| Flag                | Value                                | Description                                                                                                                 |
+| ------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `--skip-git`        | N/A                                  | Skip initializing a git repository in the imported project.                                                                 |
+| `--package-manager` | Package manager, e.g. `yarn@1.22.22` | Set a specific package manager to use. Defaults to the package manager detected from the lockfile in the project directory. |
 
 #### Usage
 
 ```bash
-npx electron-forge import
+# Import the project in the current directory
+npx create-electron-app@latest import
+# Import the project in a specific directory
+npx create-electron-app@latest import path/to/my-app
 ```
 
 ## Build commands

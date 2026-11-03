@@ -25,11 +25,12 @@ Importing an existing Electron app into the Electron Forge workflow can be done 
 
 ```shell
 cd my-app
-npm install --save-dev @electron-forge/cli
-npm exec --package=@electron-forge/cli -c "electron-forge import"
+npx create-electron-app@latest import
 ```
 
-This script will set up Forge to package your app and build installers for it.
+This script will set up Forge to package your app and build installers for it. It installs the Forge CLI and the default Makers as devDependencies, adds the `start`, `package`, `make` and `release` scripts to your package.json, and writes a `forge.config.js` file (as an ES module if your package.json has `"type": "module"`). If your project already has a Forge configuration, it is kept as-is.
+
+The package manager is detected from the lockfile in your project directory. Pass `--package-manager` to override it, for example `npx create-electron-app@latest import --package-manager pnpm`.
 
 :::info
 If you're already using other Electron tooling, it will try to automatically migrate the settings as much as possible, but some of it may need to be migrated manually.
@@ -59,7 +60,7 @@ To start using Forge, add a few command scripts to your package.json file:
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "release": "electron-forge release"
   }
   // ... 
 }

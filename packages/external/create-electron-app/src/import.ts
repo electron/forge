@@ -6,6 +6,7 @@ import {
   DepType,
   DepVersionRestriction,
   installDependencies,
+  isYarnBerry,
   pathExists,
   PMDetails,
   readJson,
@@ -17,11 +18,9 @@ import { ForgeListrOptions } from '@electron-forge/shared-types';
 import baseTemplate from '@electron-forge/template-base';
 import debug from 'debug';
 import { Listr } from 'listr2';
-import { merge } from 'lodash-es';
 
 import { initGit } from './init-scripts/init-git.js';
 import { deps, devDeps, exactDevDeps } from './init-scripts/init-npm.js';
-import { pathToFileURL } from 'node:url';
 
 const d = debug('electron-forge:import');
 
@@ -66,11 +65,63 @@ export interface ImportOptions {
    * By default, Forge initializes a git repository in the project directory. Set this option to `true` to skip this step.
    */
   skipGit?: boolean;
+  /**
+   * Force a package manager to use (npm|yarn|pnpm). By default, the package
+   * manager is detected from the lockfile in the project directory.
+   */
+  packageManager?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const readRawPackageJson = async (dir: string): Promise<any> =>
   readJson(path.resolve(dir, 'package.json'));
+
+/**
+ * The config file extensions Forge looks for, in the order it looks for them.
+ * Mirrors the lookup in `@electron-forge/core`'s `forge-config.ts`.
+ */
+const FORGE_CONFIG_EXTENSIONS = ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'];
+
+/**
+ * Returns the name of the project's existing Forge config: `package.json` when
+ * it holds a `config.forge` object, the file `config.forge` points to when it
+ * is a string, or the first `forge.config.*` file found. Returns `undefined`
+ * when the project has none.
+ */
+export async function findExistingForgeConfig(
+  dir: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  packageJSON: any,
+): Promise<string | undefined> {
+  const configForge = packageJSON?.config?.forge;
+  if (configForge && typeof configForge === 'object') {
+    return 'package.json';
+  }
+  if (typeof configForge === 'string' && configForge.length > 0) {
+    return configForge;
+  }
+  for (const extension of FORGE_CONFIG_EXTENSIONS) {
+    const configName = `forge.config${extension}`;
+    if (await pathExists(path.resolve(dir, configName))) {
+      return configName;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Rewrites the base template's CommonJS `forge.config.js` as an ES module, for
+ * projects whose `package.json` has `"type": "module"`. In those projects a
+ * `.js` file is loaded as ESM, so `require()` and `module.exports` would throw.
+ */
+export function toESModuleConfig(source: string): string {
+  return source
+    .replace(
+      /^const (\{[^}]*\}|\w+) = require\((['"][^'"]+['"])\);$/gm,
+      'import $1 from $2;',
+    )
+    .replace(/^module\.exports = /m, 'export default ');
+}
 
 export const forgeImport = async ({
   dir = process.cwd(),
@@ -81,6 +132,7 @@ export const forgeImport = async ({
   shouldUpdateScript,
   outDir,
   skipGit = false,
+  packageManager,
 }: ImportOptions): Promise<void> => {
   const listrOptions: ForgeListrOptions<{ pm: PMDetails }> = {
     concurrent: false,
@@ -134,31 +186,28 @@ export const forgeImport = async ({
           let importDevDeps = ([] as string[]).concat(devDeps);
           let importExactDevDeps = ([] as string[]).concat(exactDevDeps);
 
-          let packageJSON = await readRawPackageJson(dir);
+          const packageJSON = await readRawPackageJson(dir);
           if (!packageJSON.version) {
             task.output = styleText(
               'yellow',
               `Please set the ${styleText('green', '"version"')} in your application's package.json`,
             );
           }
-          if (packageJSON.config && packageJSON.config.forge) {
-            if (packageJSON.config.forge.makers) {
-              task.output = styleText(
-                'green',
-                'Existing Electron Forge configuration detected',
-              );
-              if (typeof shouldContinueOnExisting === 'function') {
-                if (!(await shouldContinueOnExisting())) {
-                  // TODO: figure out if we can just return early here
-                  // eslint-disable-next-line no-process-exit
-                  process.exit(0);
-                }
+          const existingConfig = await findExistingForgeConfig(
+            dir,
+            packageJSON,
+          );
+          if (existingConfig) {
+            task.output = styleText(
+              'green',
+              `Existing Electron Forge configuration detected in ${existingConfig}, keeping it as-is`,
+            );
+            if (typeof shouldContinueOnExisting === 'function') {
+              if (!(await shouldContinueOnExisting())) {
+                // TODO: figure out if we can just return early here
+                // eslint-disable-next-line no-process-exit
+                process.exit(0);
               }
-            } else if (!(typeof packageJSON.config.forge === 'object')) {
-              task.output = styleText(
-                'yellow',
-                "We can't tell if the Electron Forge config is compatible because it's in an external JavaScript file, not trying to convert it and continuing anyway",
-              );
             }
           }
 
@@ -234,6 +283,7 @@ export const forgeImport = async ({
           await updatePackageScript('start', 'electron-forge start');
           await updatePackageScript('package', 'electron-forge package');
           await updatePackageScript('make', 'electron-forge make');
+          await updatePackageScript('release', 'electron-forge release');
 
           d('forgified scripts object:', packageJSON.scripts);
 
@@ -248,22 +298,43 @@ export const forgeImport = async ({
               {
                 title: `Resolving package manager`,
                 task: async (ctx, task) => {
-                  ctx.pm = await resolvePackageManager();
-                  task.title = `Resolving package manager: ${styleText('cyan', ctx.pm.executable)}`;
+                  ctx.pm = await resolvePackageManager(packageManager, {
+                    cwd: dir,
+                  });
+                  task.title = `Resolved package manager: ${styleText('cyan', ctx.pm.executable)}`;
                 },
               },
               {
-                title: 'Configuring Yarn (if applicable)',
+                title: 'Configuring package manager (if applicable)',
                 task: async ({ pm }) => {
-                  // Yarn v4 defaults to PnP which doesn't work well with CommonJS requires in our forge config
-                  // lets ensure that nodeLinker is set to node-modules
-                  if (pm.executable === 'yarn') {
+                  if (pm.executable === 'yarn' && isYarnBerry(pm.version)) {
+                    // Yarn 2+ defaults to PnP, which doesn't work with the
+                    // CommonJS requires in our forge config, so ensure that
+                    // nodeLinker is set to node-modules
                     const yarnrcPath = path.resolve(dir, '.yarnrc.yml');
                     if (!(await pathExists(yarnrcPath))) {
                       d('creating .yarnrc.yml with nodeLinker: node-modules');
-                      await fs.writeFile(
+                      await fs.copyFile(
+                        path.resolve(baseTemplate.templateDir, '_yarnrc.yml'),
                         yarnrcPath,
-                        'nodeLinker: node-modules\n',
+                      );
+                    }
+                  } else if (pm.executable === 'pnpm') {
+                    // pnpm 10+ skips dependency build scripts unless they are
+                    // allowed, and Electron needs its postinstall to download
+                    // the binary
+                    const workspacePath = path.resolve(
+                      dir,
+                      'pnpm-workspace.yaml',
+                    );
+                    if (!(await pathExists(workspacePath))) {
+                      d('creating pnpm-workspace.yaml from the base template');
+                      await fs.copyFile(
+                        path.resolve(
+                          baseTemplate.templateDir,
+                          'pnpm-workspace.yaml',
+                        ),
+                        workspacePath,
                       );
                     }
                   }
@@ -310,39 +381,27 @@ export const forgeImport = async ({
               },
               {
                 title: 'Copying base template Forge configuration',
+                skip: () =>
+                  existingConfig
+                    ? `Keeping the existing configuration in ${existingConfig}`
+                    : false,
                 task: async () => {
-                  const pathToTemplateConfig = path.resolve(
-                    baseTemplate.templateDir,
-                    'forge.config.js',
+                  let templateConfig = await fs.readFile(
+                    path.resolve(baseTemplate.templateDir, 'forge.config.js'),
+                    'utf8',
                   );
-
-                  // if there's an existing config.forge object in package.json
-                  if (
-                    packageJSON?.config?.forge &&
-                    typeof packageJSON.config.forge === 'object'
-                  ) {
+                  if (packageJSON.type === 'module') {
                     d(
-                      'detected existing Forge config in package.json, merging with base template Forge config',
+                      'package.json has "type": "module", writing an ESM forge.config.js',
                     );
-                    const templateConfig = await import(
-                      pathToFileURL(
-                        path.resolve(
-                          baseTemplate.templateDir,
-                          'forge.config.js',
-                        ),
-                      ).toString()
-                    );
-                    packageJSON = await readRawPackageJson(dir);
-                    merge(templateConfig, packageJSON.config.forge); // mutates the templateConfig object
-                    await writeChanges();
-                    // otherwise, write to forge.config.js
+                    templateConfig = toESModuleConfig(templateConfig);
                   } else {
                     d('writing new forge.config.js');
-                    await fs.copyFile(
-                      pathToTemplateConfig,
-                      path.resolve(dir, 'forge.config.js'),
-                    );
                   }
+                  await fs.writeFile(
+                    path.resolve(dir, 'forge.config.js'),
+                    templateConfig,
+                  );
                 },
               },
               {

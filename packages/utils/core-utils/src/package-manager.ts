@@ -6,6 +6,7 @@ import {
   spawn,
 } from '@malept/cross-spawn-promise';
 import debug from 'debug';
+import semver from 'semver';
 
 import { findUp } from './find-up.js';
 
@@ -78,11 +79,34 @@ function pmFromUserAgent() {
 }
 
 /**
+ * Whether a resolved Yarn version is Yarn 2+ (Berry). An explicitly requested
+ * package manager can carry a partial version (e.g. `yarn@1`), which
+ * `semver.gte` rejects, so the version is coerced first. A version that can't
+ * be parsed is not Berry.
+ */
+export function isYarnBerry(version: string | undefined): boolean {
+  if (version === 'latest') {
+    return true;
+  }
+  const yarnVersion = semver.coerce(version);
+  return yarnVersion !== null && semver.gte(yarnVersion, '2.0.0');
+}
+
+export interface ResolvePackageManagerOptions {
+  /**
+   * The directory to start the lockfile search from. Defaults to the current
+   * working directory. Pass the project directory when the command can be run
+   * against a project other than the one in `process.cwd()`.
+   */
+  cwd?: string;
+}
+
+/**
  * Resolves the package manager to use. In order, it checks the following:
  *
  * 1. An explicit arg being passed into the function.
  * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
- * 3. The presence of a lockfile in an ancestor directory.
+ * 3. The presence of a lockfile in `options.cwd` (default: the current working directory) or an ancestor directory.
  * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
@@ -92,7 +116,8 @@ function pmFromUserAgent() {
  */
 export const resolvePackageManager: (
   packageManager?: string,
-) => Promise<PMDetails> = async (packageManager) => {
+  options?: ResolvePackageManagerOptions,
+) => Promise<PMDetails> = async (packageManager, options = {}) => {
   let installer: string | undefined;
   let installerVersion: string | undefined;
 
@@ -126,12 +151,10 @@ export const resolvePackageManager: (
 
   const executingPM = pmFromUserAgent();
   let lockfilePM;
-  const lockfile = await findUp([
-    'package-lock.json',
-    'yarn.lock',
-    'pnpm-lock.yaml',
-    'pnpm-workspace.yaml',
-  ]);
+  const lockfile = await findUp(
+    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
+    { cwd: options.cwd },
+  );
   if (lockfile) {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];

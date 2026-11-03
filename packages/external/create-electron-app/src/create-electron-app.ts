@@ -212,12 +212,17 @@ program
     '--skip-git',
     'Skip initializing a git repository in the imported project.',
   )
+  .option(
+    '--package-manager [name]',
+    'Set a specific package manager to use for the imported project. Supported package managers are `npm`, `pnpm`, and `yarn`. You can also specify an exact version to use (e.g. `yarn@1.22.22`). Defaults to the package manager detected from the lockfile in the project directory.',
+  )
   .action(async (dir, options) => {
     const workingDir = resolveWorkingDir(dir, false);
     await forgeImport({
       dir: workingDir,
       interactive: true,
       skipGit: Boolean(options.skipGit),
+      packageManager: options.packageManager,
     });
   });
 
