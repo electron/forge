@@ -13,11 +13,17 @@ import {
   toESModuleConfig,
 } from '../../src/import.js';
 
-// Stub out everything that would hit the network. Files are still written to a
-// real temporary directory.
+// Stub out everything that would hit the network or run a package manager.
+// Files are still written to a real temporary directory.
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => ({
   ...(await importOriginal()),
   installDependencies: vi.fn(),
+}));
+// `resolvePackageManager` runs `<pm> --version` for a package manager found
+// via lockfile. A Corepack shim refuses to run a package manager other than
+// the one this repository is configured with, so never spawn one for real.
+vi.mock('@malept/cross-spawn-promise', () => ({
+  spawn: vi.fn().mockResolvedValue('10.0.0\n'),
 }));
 
 const templateConfigPath = path.resolve(

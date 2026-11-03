@@ -165,9 +165,12 @@ export const resolvePackageManager: (
     installerVersion = executingPM.version;
   } else if (lockfilePM) {
     installer = lockfilePM;
+    // Run in the project directory so a Corepack shim picks up that
+    // project's `packageManager` field rather than the current directory's.
     installerVersion = await spawnPackageManager(
       PACKAGE_MANAGERS[installer as SupportedPackageManager],
       ['--version'],
+      { cwd: options.cwd },
     );
   }
 
