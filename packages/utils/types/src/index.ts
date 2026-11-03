@@ -55,7 +55,7 @@ export interface ForgeSimpleHookSignatures {
    * Runs before `start` and `package`. Generate files your app needs at
    * runtime that aren't in its source, such as a licenses file.
    */
-  generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  generateAssets: [platform: ForgePlatform, arch: ForgeArch];
   /** Runs before `start` launches your app in development. */
   preStart: [];
   /**
@@ -65,7 +65,7 @@ export interface ForgeSimpleHookSignatures {
    */
   postStart: [appProcess: ElectronProcess];
   /** Runs before `package` calls `@electron/packager`. */
-  prePackage: [platform: ForgePlatform, version: ForgeArch];
+  prePackage: [platform: ForgePlatform, arch: ForgeArch];
   /**
    * Runs in `@electron/packager`'s `afterCopy` hook, once your app is copied
    * to `buildPath`, a temporary folder.
