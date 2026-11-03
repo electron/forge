@@ -194,6 +194,56 @@ export function type(node, context, parent) {
       });
       return [...out, p(' }')];
     }
+    case 'namedTupleMember':
+      return [
+        t(node.name, 'property'),
+        p(node.isOptional ? '?: ' : ': '),
+        ...type(node.element, context),
+      ];
+    case 'optional':
+      return [...type(node.elementType, context), p('?')];
+    case 'rest':
+      return [p('...'), ...type(node.elementType, context)];
+    case 'mapped': {
+      // { [S in ForgeHookName]?: ForgeHookFn<S> }
+      const optional =
+        node.optionalModifier === '+'
+          ? '?'
+          : node.optionalModifier === '-'
+            ? '-?'
+            : '';
+      return [
+        p('{ '),
+        ...(node.readonlyModifier === '+' ? [kw('readonly ')] : []),
+        p('['),
+        t(node.parameter, 'class-name'),
+        kw(' in '),
+        ...type(node.parameterType, context),
+        ...(node.nameType ? [kw(' as '), ...type(node.nameType, context)] : []),
+        p(`]${optional}: `),
+        ...type(node.templateType, context),
+        p(' }'),
+      ];
+    }
+    case 'conditional':
+      return [
+        ...type(node.checkType, context),
+        kw(' extends '),
+        ...type(node.extendsType, context),
+        p(' ? '),
+        ...type(node.trueType, context),
+        p(' : '),
+        ...type(node.falseType, context),
+      ];
+    case 'inferred':
+      return [kw('infer '), t(node.name, 'class-name')];
+    case 'templateLiteral': {
+      const out = [t(`\`${node.head}`, 'string')];
+      for (const [inner, text] of node.tail) {
+        out.push(p('${'), ...type(inner, context), p('}'), t(text, 'string'));
+      }
+      return [...out, t('`', 'string')];
+    }
     default:
       return [t(node.toString())];
   }

@@ -45,29 +45,59 @@ export type ForgeConfigPublisher = IForgeResolvablePublisher | IForgePublisher;
 export type ForgeConfigMaker = IForgeResolvableMaker | IForgeMaker;
 export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 
+/**
+ * Arguments of each simple hook, after the Forge configuration that every
+ * hook receives first. Simple hooks run for their side effects; what they
+ * return is ignored.
+ */
 export interface ForgeSimpleHookSignatures {
+  /**
+   * Runs before `start` and `package`. Generate files your app needs at
+   * runtime that aren't in its source, such as a licenses file.
+   */
   generateAssets: [platform: ForgePlatform, version: ForgeArch];
+  /** Runs before `start` launches your app in development. */
   preStart: [];
+  /**
+   * Runs after `start` launches your app, and again after every restart.
+   * Observe the process (`pid`, the `exit` event) rather than reading its
+   * output streams, which Forge already consumes or which are `null`.
+   */
   postStart: [appProcess: ElectronProcess];
+  /** Runs before `package` calls `@electron/packager`. */
   prePackage: [platform: ForgePlatform, version: ForgeArch];
+  /**
+   * Runs in `@electron/packager`'s `afterCopy` hook, once your app is copied
+   * to `buildPath`, a temporary folder.
+   */
   packageAfterCopy: [
     buildPath: string,
     electronVersion: string,
     platform: ForgePlatform,
     arch: ForgeArch,
   ];
+  /**
+   * Runs in `@electron/packager`'s `afterPrune` hook, once development
+   * dependencies are pruned from `buildPath`. Skipped when
+   * `packagerConfig.prune` is `false`.
+   */
   packageAfterPrune: [
     buildPath: string,
     electronVersion: string,
     platform: ForgePlatform,
     arch: ForgeArch,
   ];
+  /**
+   * Runs in `@electron/packager`'s `afterExtract` hook, once the Electron
+   * binary is extracted to `buildPath`.
+   */
   packageAfterExtract: [
     buildPath: string,
     electronVersion: string,
     platform: ForgePlatform,
     arch: ForgeArch,
   ];
+  /** Runs after `package` succeeds, with the paths it wrote. */
   postPackage: [
     packageResult: {
       platform: ForgePlatform;
@@ -75,37 +105,72 @@ export interface ForgeSimpleHookSignatures {
       outputPaths: string[];
     },
   ];
+  /** Runs before `make`. */
   preMake: [];
 }
 
+/**
+ * Arguments of each mutating hook, after the Forge configuration. A
+ * mutating hook can return a new value for its first argument, which
+ * replaces it for the rest of the build; returning nothing keeps it.
+ */
 export interface ForgeMutatingHookSignatures {
+  /** Runs after `make` succeeds. Return new results to replace them for the rest of the build. */
   postMake: [makeResults: ForgeMakeResult[]];
+  /** Runs once Forge has loaded your configuration. Return a new one to replace it. */
   resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
+  /**
+   * Runs every time Forge reads your `package.json`. Return a new object to
+   * change what Forge sees, such as the `version` field.
+   */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readPackageJson: [packageJson: Record<string, any>];
 }
 
+/** The name of any hook, simple or mutating. */
 export type ForgeHookName = keyof (ForgeSimpleHookSignatures &
   ForgeMutatingHookSignatures);
+/** A simple hook: called with the Forge configuration and the hook's arguments. */
 export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeSimpleHookSignatures[Hook]
 ) => Promise<Listr | void>;
+/** A mutating hook: may resolve to a replacement for its first argument. */
 export type ForgeMutatingHookFn<
   Hook extends keyof ForgeMutatingHookSignatures,
 > = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeMutatingHookSignatures[Hook]
 ) => Promise<ForgeMutatingHookSignatures[Hook][0] | void>;
+/** The function type of the hook named `Hook`. */
 export type ForgeHookFn<Hook extends ForgeHookName> =
   Hook extends keyof ForgeSimpleHookSignatures
     ? ForgeSimpleHookFn<Hook>
     : Hook extends keyof ForgeMutatingHookSignatures
       ? ForgeMutatingHookFn<Hook>
       : never;
+/**
+ * The `hooks` in your Forge configuration: an optional function for each
+ * hook, keyed by its name.
+ *
+ * @example
+ * ```ts title="forge.config.ts"
+ * const config: ForgeConfig = {
+ *   hooks: {
+ *     postPackage: async (forgeConfig, { outputPaths }) => {
+ *       console.log('Packaged to', outputPaths);
+ *     },
+ *   },
+ * };
+ * ```
+ */
 export type ForgeHookMap = {
   [S in ForgeHookName]?: ForgeHookFn<S>;
 };
+/**
+ * Hooks as plugins provide them (see {@link IForgePlugin.getHooks}): like
+ * {@link ForgeHookMap}, but each hook may be an array of functions.
+ */
 export type ForgeMultiHookMap = {
   [S in ForgeHookName]?: ForgeHookFn<S> | ForgeHookFn<S>[];
 };
