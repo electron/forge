@@ -9,6 +9,7 @@ import debug from 'debug';
 import semver from 'semver';
 
 import { findUp } from './find-up.js';
+import { pathExists } from './fs.js';
 
 const d = debug('electron-forge:package-manager');
 
@@ -100,9 +101,12 @@ export interface ResolvePackageManagerOptions {
    */
   cwd?: string;
   /**
-   * Prefer a lockfile found from `cwd` over the package manager that is
-   * running the current command (`npm_config_user_agent`). Useful for commands
-   * that act on an existing project, where `npx` always reports npm.
+   * Prefer the project's lockfile over the package manager that is running
+   * the current command (`npm_config_user_agent`). Useful for commands that
+   * act on an existing project, where `npx` always reports npm. Only a
+   * lockfile in `cwd` itself, or in an ancestor that is a project root (has a
+   * `package.json`, e.g. a workspace root), counts; a stray lockfile higher up
+   * the tree does not.
    */
   preferLockfile?: boolean;
 }
@@ -167,7 +171,15 @@ export const resolvePackageManager: (
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  if (executingPM && !(options.preferLockfile && lockfilePM)) {
+  const lockfileIsProjects =
+    lockfile !== undefined &&
+    (path.dirname(lockfile) === path.resolve(options.cwd ?? process.cwd()) ||
+      (await pathExists(path.join(path.dirname(lockfile), 'package.json'))));
+
+  if (
+    executingPM &&
+    !(options.preferLockfile && lockfilePM && lockfileIsProjects)
+  ) {
     installer = executingPM.name;
     installerVersion = executingPM.version;
   } else if (lockfilePM) {

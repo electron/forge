@@ -143,6 +143,21 @@ describe('package-manager', () => {
         );
       });
 
+      it('should ignore a stray ancestor lockfile with preferLockfile', async () => {
+        process.env.npm_config_user_agent =
+          'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
+        // No package.json next to this lockfile, so it is not a project root
+        vi.mocked(findUp).mockResolvedValue(
+          '/nonexistent-forge-spec-home/yarn.lock',
+        );
+        await expect(
+          resolvePackageManager(undefined, {
+            cwd: '/nonexistent-forge-spec-home/code/app',
+            preferLockfile: true,
+          }),
+        ).resolves.toHaveProperty('executable', 'npm');
+      });
+
       it('should still use the user agent with preferLockfile when there is no lockfile', async () => {
         process.env.npm_config_user_agent =
           'pnpm/10.0.0 npm/? node/v20.11.1 darwin arm64';
