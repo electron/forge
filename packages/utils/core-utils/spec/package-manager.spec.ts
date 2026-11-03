@@ -128,10 +128,12 @@ describe('package-manager', () => {
       it('should prefer the lockfile over the user agent with preferLockfile', async () => {
         process.env.npm_config_user_agent =
           'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
-        vi.mocked(findUp).mockResolvedValue('/some/project/yarn.lock');
+        // Platform-native paths, since the real `findUp` returns resolved ones
+        const cwd = path.resolve('/some/project');
+        vi.mocked(findUp).mockResolvedValue(path.join(cwd, 'yarn.lock'));
         vi.mocked(spawn).mockResolvedValue('1.22.22');
         const pm = await resolvePackageManager(undefined, {
-          cwd: '/some/project',
+          cwd,
           preferLockfile: true,
         });
         expect(pm.executable).toBe('yarn');
@@ -139,7 +141,7 @@ describe('package-manager', () => {
         expect(spawn).toHaveBeenCalledWith(
           'yarn',
           ['--version'],
-          expect.objectContaining({ cwd: '/some/project' }),
+          expect.objectContaining({ cwd }),
         );
       });
 
@@ -147,12 +149,11 @@ describe('package-manager', () => {
         process.env.npm_config_user_agent =
           'npm/10.9.2 node/v22.13.0 darwin arm64 workspaces/false';
         // No package.json next to this lockfile, so it is not a project root
-        vi.mocked(findUp).mockResolvedValue(
-          '/nonexistent-forge-spec-home/yarn.lock',
-        );
+        const home = path.resolve('/nonexistent-forge-spec-home');
+        vi.mocked(findUp).mockResolvedValue(path.join(home, 'yarn.lock'));
         await expect(
           resolvePackageManager(undefined, {
-            cwd: '/nonexistent-forge-spec-home/code/app',
+            cwd: path.join(home, 'code', 'app'),
             preferLockfile: true,
           }),
         ).resolves.toHaveProperty('executable', 'npm');
