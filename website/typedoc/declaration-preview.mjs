@@ -11,7 +11,15 @@
 // [text, kind, href?] tuples, so referenced types stay links.
 import { ReflectionKind } from 'typedoc';
 
-import { apiDeclaration, container, typeAlias } from './tokens.mjs';
+import {
+  apiDeclaration,
+  container,
+  kw,
+  p,
+  t,
+  type,
+  typeAlias,
+} from './tokens.mjs';
 
 export function load(app) {
   // Package pages start with the package README, whose heading is an h2
@@ -35,6 +43,16 @@ export function load(app) {
       lines = container('class', model, context);
     } else if (model.kindOf(ReflectionKind.TypeAlias)) {
       lines = typeAlias(model, context);
+    } else if (model.kindOf(ReflectionKind.Variable)) {
+      // `const api: ForgeAPI`, with the type linked.
+      lines = [
+        [
+          kw(model.flags.isConst ? 'const ' : 'let '),
+          t(model.name, 'property'),
+          ...(model.type ? [p(': '), ...type(model.type, context)] : []),
+          p(';'),
+        ],
+      ];
     } else {
       return '';
     }

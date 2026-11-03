@@ -227,6 +227,42 @@ export function load(app) {
       return;
     }
 
+    // An instance of a class (`api`, `utils`) lists what you can call on it.
+    const instanceOf = page.model.kindOf(ReflectionKind.Variable)
+      ? page.model.type?.reflection
+      : undefined;
+    if (instanceOf?.kindOf(ReflectionKind.Class)) {
+      const classUrl = relative(url, router.getFullUrl(instanceOf));
+      const members = (instanceOf.children ?? []).filter(
+        (child) =>
+          !child.kindOf(ReflectionKind.Constructor) &&
+          !child.flags.isPrivate &&
+          !child.flags.isProtected,
+      );
+      const rows = members.map((child) => {
+        const deprecated = (child.signatures?.[0] ?? child).comment?.getTag(
+          '@deprecated',
+        );
+        const label = child.signatures ? `${child.name}()` : child.name;
+        const name = deprecated ? `~~\`${label}\`~~` : `\`${label}\``;
+        const summary = summaryOf(child) || fallbackSummary(child);
+        return `| [${name}](${classUrl}#${child.name.toLowerCase()}) | ${cell(
+          deprecated ? `Deprecated. ${summary}` : summary,
+        )} |`;
+      });
+      page.contents += [
+        '',
+        `## Members`,
+        '',
+        `\`${page.model.name}\` is a [\`${instanceOf.name}\`](${classUrl}).`,
+        '',
+        '| Member | Description |',
+        '| --- | --- |',
+        ...rows,
+        '',
+      ].join('\n');
+    }
+
     page.contents = page.contents
       // https://js.electronforge.io/interfaces/_electron-forge_maker-zip.MakerZIPConfig.html
       .replace(

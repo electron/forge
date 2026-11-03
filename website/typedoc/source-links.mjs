@@ -90,10 +90,15 @@ export function load(app) {
         }
 
         if (file.endsWith('.d.ts')) {
+          // Built declarations map back to their .ts source; hand-written
+          // ones (plugin-vite's forge-vite-env.d.ts) are the source.
           const mapped = mapFor(file)?.[line - 1];
-          if (!mapped) continue;
-          file = mapped.source;
-          line = mapped.line + 1;
+          if (mapped) {
+            file = mapped.source;
+            line = mapped.line + 1;
+          } else if (file.includes(`${path.sep}dist${path.sep}`)) {
+            continue;
+          }
         }
 
         const relative = path.relative(ROOT, file).split(path.sep).join('/');
