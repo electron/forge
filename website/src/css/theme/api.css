@@ -134,10 +134,9 @@ html[data-theme='dark'] .api-kind-variable {
 }
 
 /*
- * A maker, publisher or plugin's class and helpers ("Implementation") and
- * its README sit below its config types, in a quieter colour.
+ * A maker, publisher or plugin's class and helpers ("Implementation") sit
+ * below its config types, in a quieter colour.
  */
-.api-implementation > .menu__list-item-collapsible > .menu__link,
-.api-readme > .menu__link {
+.api-implementation > .menu__list-item-collapsible > .menu__link {
   color: var(--lu-ink-muted);
 }

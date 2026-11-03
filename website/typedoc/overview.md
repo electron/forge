@@ -5,40 +5,45 @@ sidebar_label: Overview
 
 # API reference
 
-Types and classes for every `@electron-forge/*` package, generated from the Forge {{FORGE_VERSION}} source. Start from what you're trying to do.
+Types, classes and functions of every `@electron-forge/*` package, generated from the Forge {{FORGE_VERSION}} source.
 
-## Configure Forge
+## Configuration
 
-Your `forge.config.ts` is typed as [`ForgeConfig`](shared-types/type-aliases/ForgeConfig.md).
+Your Forge configuration is a [`ForgeConfig`](shared-types/type-aliases/ForgeConfig.md) object.
 
-- [`packagerConfig`](shared-types/interfaces/ForgePackagerOptions.md) passes options to `@electron/packager`, and [`rebuildConfig`](shared-types/interfaces/ForgeRebuildOptions.md) to `@electron/rebuild`.
-- Each maker, publisher and plugin takes a config object. The sidebar opens each package on that page, for example [`MakerZIPConfig`](maker-zip/interfaces/MakerZIPConfig.md), [`PublisherGitHubConfig`](publisher-github/interfaces/PublisherGitHubConfig.md) or [`VitePluginConfig`](plugin-vite/VitePlugin/interfaces/VitePluginConfig.md).
-- [`hooks`](shared-types/type-aliases/ForgeHookMap.md) run your own code during the build. [Hooks](/config/hooks/) explains when each one runs.
+| Key              | Type                                                                            |
+| ---------------- | ------------------------------------------------------------------------------- |
+| `packagerConfig` | [`ForgePackagerOptions`](shared-types/interfaces/ForgePackagerOptions.md)       |
+| `rebuildConfig`  | [`ForgeRebuildOptions`](shared-types/interfaces/ForgeRebuildOptions.md)         |
+| `makers`         | [`ForgeConfigMaker`](shared-types/type-aliases/ForgeConfigMaker.md)`[]`         |
+| `publishers`     | [`ForgeConfigPublisher`](shared-types/type-aliases/ForgeConfigPublisher.md)`[]` |
+| `plugins`        | [`ForgeConfigPlugin`](shared-types/type-aliases/ForgeConfigPlugin.md)`[]`       |
+| `hooks`          | [`ForgeHookMap`](shared-types/type-aliases/ForgeHookMap.md)                     |
 
-Each config page links back to its guide, and the [configuration guide](/config/configuration/) covers the whole file.
+Each maker, publisher and plugin takes its own config object, such as [`MakerZIPConfig`](maker-zip/interfaces/MakerZIPConfig.md) or [`VitePluginConfig`](plugin-vite/VitePlugin/interfaces/VitePluginConfig.md). Its package page in the sidebar lists it first.
 
-## Call Forge from code
+## Programmatic API
 
-`@electron-forge/core` exports [`api`](core/variables/api.md), an instance of [`ForgeAPI`](core/classes/ForgeAPI.md) with the same commands as the [CLI](/cli/). Each method returns a promise of the result:
+`@electron-forge/core` exports [`api`](core/variables/api.md), an instance of [`ForgeAPI`](core/classes/ForgeAPI.md).
 
-| Method                                        | Options                                                   | Returns                                                                   |
+| Method                                        | Options                                                   | Resolves to                                                               |
 | --------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------- |
 | [`package`](core/classes/ForgeAPI.md#package) | [`PackageOptions`](core/interfaces/PackageOptions.md)     | [`ForgePackageResult`](shared-types/interfaces/ForgePackageResult.md)`[]` |
 | [`make`](core/classes/ForgeAPI.md#make)       | [`MakeOptions`](core/interfaces/MakeOptions.md)           | [`ForgeMakeResult`](shared-types/interfaces/ForgeMakeResult.md)`[]`       |
 | [`release`](core/classes/ForgeAPI.md#release) | [`ReleaseOptions`](core/interfaces/ReleaseOptions.md)     | `void`                                                                    |
 | [`start`](core/classes/ForgeAPI.md#start)     | [`StartOptions`](shared-types/interfaces/StartOptions.md) | [`ElectronProcess`](shared-types/interfaces/ElectronProcess.md)           |
 
-## Extend Forge
+## Extending Forge
 
-Write your own maker, publisher or plugin by extending its base class:
+| To write a | Extend                                                     | Main method receives                                                                          | Implements                                                      |
+| ---------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Maker      | [`MakerBase`](maker-base/classes/MakerBase.md)             | `make`: [`MakerOptions`](maker-base/interfaces/MakerOptions.md)                               | [`IForgeMaker`](shared-types/interfaces/IForgeMaker.md)         |
+| Publisher  | [`PublisherBase`](publisher-base/classes/PublisherBase.md) | `publish`: [`PublisherOptions`](publisher-base/interfaces/PublisherOptions.md)                | [`IForgePublisher`](shared-types/interfaces/IForgePublisher.md) |
+| Plugin     | [`PluginBase`](plugin-base/classes/PluginBase.md)          |                                                                                               | [`IForgePlugin`](shared-types/interfaces/IForgePlugin.md)       |
+| Template   |                                                            | `initializeTemplate`: [`InitTemplateOptions`](shared-types/interfaces/InitTemplateOptions.md) | [`ForgeTemplate`](shared-types/interfaces/ForgeTemplate.md)     |
 
-- [`MakerBase`](maker-base/classes/MakerBase.md), see [Writing makers](/advanced/extending-electron-forge/writing-makers/)
-- [`PublisherBase`](publisher-base/classes/PublisherBase.md), see [Writing publishers](/advanced/extending-electron-forge/writing-publishers/)
-- [`PluginBase`](plugin-base/classes/PluginBase.md), see [Writing plugins](/advanced/extending-electron-forge/writing-plugins/)
-- [`ForgeTemplate`](shared-types/interfaces/ForgeTemplate.md), see [Writing templates](/advanced/extending-electron-forge/writing-templates/)
+Hooks receive the arguments in [`ForgeSimpleHookSignatures`](shared-types/interfaces/ForgeSimpleHookSignatures.md) and [`ForgeMutatingHookSignatures`](shared-types/interfaces/ForgeMutatingHookSignatures.md).
 
-Plugins can also tap into [`ForgeSimpleHookSignatures`](shared-types/interfaces/ForgeSimpleHookSignatures.md) and [`ForgeMutatingHookSignatures`](shared-types/interfaces/ForgeMutatingHookSignatures.md).
+## Links
 
-## Links in these pages
-
-Types from Forge's own packages link to other pages here. Types that come from other projects, such as `@electron/packager` options, link to those projects' docs and are marked with an external-link icon.
+Types from Forge's packages link to their pages here. Types from other projects, such as the `@electron/packager` options, link to those projects' docs and end with an external-link icon.

@@ -94,7 +94,7 @@ const config: Config = {
           path.resolve(__dirname, 'typedoc/declaration-preview.mjs'),
           path.resolve(__dirname, 'typedoc/forge-theme.mjs'),
           path.resolve(__dirname, 'typedoc/reexports.mjs'),
-          path.resolve(__dirname, 'typedoc/guide-links.mjs'),
+          path.resolve(__dirname, 'typedoc/package-pages.mjs'),
         ],
         theme: 'forge',
         out: './api',

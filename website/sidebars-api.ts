@@ -88,9 +88,15 @@ const byKind = (a: string, b: string) =>
   ORDER.indexOf(kindOf(a)) - ORDER.indexOf(kindOf(b)) ||
   nameOf(a).localeCompare(nameOf(b));
 
-// A maker, publisher or plugin opens on its config page. The rest of the
-// package follows, with the class and helpers under "Implementation" and
-// the package README last.
+// The package page (typedoc/package-pages.mjs) summarises its exports; a
+// package's category opens on it.
+const packageLink = (name: string): Partial<Item> => {
+  placed.add(`${name}/index`);
+  return { link: { type: 'doc', id: `${name}/index` } };
+};
+
+// A maker, publisher or plugin lists its config type first, then its
+// other types, with the class and helpers under "Implementation".
 function configurable(name: string, entry: PackageEntry, prefix: string): Item {
   const config = doc(entry.config);
   const rest = docsIn(name).filter((id) => !id.endsWith('index'));
@@ -98,7 +104,6 @@ function configurable(name: string, entry: PackageEntry, prefix: string): Item {
     ['interface', 'type', 'enum'].includes(kindOf(id)),
   );
   const implementation = rest.filter((id) => !types.includes(id));
-  // plugin-vite has a module page per entry point besides its README.
   const readme = docsIn(name)
     .filter((id) => id.endsWith('index'))
     .sort((a, b) => a.length - b.length);
@@ -116,13 +121,12 @@ function configurable(name: string, entry: PackageEntry, prefix: string): Item {
             ),
           ]
         : []),
-      ...readme.map((id) =>
-        id === `${name}/index`
-          ? doc(id, { label: 'Package README', className: 'api-readme' })
-          : doc(id, { label: id.split('/').at(-2) }),
-      ),
+      // plugin-vite's entry points (VitePlugin, forge-vite-env).
+      ...readme
+        .filter((id) => id !== `${name}/index`)
+        .map((id) => doc(id, { label: id.split('/').at(-2) })),
     ],
-    { link: { type: 'doc', id: entry.config } },
+    packageLink(name),
   );
 }
 
@@ -138,22 +142,12 @@ const group = (
     ),
   );
 
-// A base package's pages, with its README last.
-const packageDocs = (name: string): Item[] => [
-  ...docsIn(name)
+// A base package's pages; its category opens on the package page.
+const baseDocs = (name: string): Item[] =>
+  docsIn(name)
     .filter((id) => id !== `${name}/index`)
     .sort(byKind)
-    .map((id) => doc(id)),
-  doc(`${name}/index`, { label: `${name} README`, className: 'api-readme' }),
-];
-
-// Links from the "Extending Forge" groups to their guides.
-const guideLink = (label: string, href: string): Item => ({
-  type: 'link',
-  label: `Guide: ${label}`,
-  href,
-  className: 'api-readme',
-});
+    .map((id) => doc(id));
 
 const shared = (name: string) => `shared-types/${name}`;
 
@@ -195,13 +189,11 @@ const sidebars: SidebarsConfig = {
           .filter((id) => id !== 'core/index')
           .sort(byKind)
           .map((id) => doc(id)),
-        doc('core/index', { label: 'Package README', className: 'api-readme' }),
       ],
-      { link: { type: 'doc', id: 'core/classes/ForgeAPI' } },
+      packageLink('core'),
     ),
     category('Extending Forge', [
       category('Hooks', [
-        guideLink('Hooks', '/config/hooks/'),
         doc(shared('type-aliases/ForgeHookMap')),
         doc(shared('interfaces/ForgeSimpleHookSignatures')),
         doc(shared('interfaces/ForgeMutatingHookSignatures')),
@@ -211,52 +203,47 @@ const sidebars: SidebarsConfig = {
         doc(shared('type-aliases/ForgeMutatingHookFn')),
         doc(shared('type-aliases/ForgeMultiHookMap')),
       ]),
-      category('Writing a maker', [
-        guideLink(
-          'Writing makers',
-          '/advanced/extending-electron-forge/writing-makers/',
-        ),
-        ...packageDocs('maker-base'),
-        doc(shared('interfaces/IForgeMaker')),
-      ]),
-      category('Writing a publisher', [
-        guideLink(
-          'Writing publishers',
-          '/advanced/extending-electron-forge/writing-publishers/',
-        ),
-        ...packageDocs('publisher-base'),
-        ...packageDocs('publisher-static'),
-        doc(shared('interfaces/IForgePublisher')),
-      ]),
-      category('Writing a plugin', [
-        guideLink(
-          'Writing plugins',
-          '/advanced/extending-electron-forge/writing-plugins/',
-        ),
-        ...packageDocs('plugin-base'),
-        doc(shared('interfaces/IForgePlugin')),
-        doc(shared('interfaces/IForgePluginInterface')),
-      ]),
-      category('Writing a template', [
-        guideLink(
-          'Writing templates',
-          '/advanced/extending-electron-forge/writing-templates/',
-        ),
+      category(
+        'Makers',
+        [...baseDocs('maker-base'), doc(shared('interfaces/IForgeMaker'))],
+        packageLink('maker-base'),
+      ),
+      category(
+        'Publishers',
+        [
+          ...baseDocs('publisher-base'),
+          doc(shared('interfaces/IForgePublisher')),
+          category(
+            'publisher-static',
+            baseDocs('publisher-static'),
+            packageLink('publisher-static'),
+          ),
+        ],
+        packageLink('publisher-base'),
+      ),
+      category(
+        'Plugins',
+        [
+          ...baseDocs('plugin-base'),
+          doc(shared('interfaces/IForgePlugin')),
+          doc(shared('interfaces/IForgePluginInterface')),
+        ],
+        packageLink('plugin-base'),
+      ),
+      category('Templates', [
         doc(shared('interfaces/ForgeTemplate')),
         doc(shared('interfaces/InitTemplateOptions')),
       ]),
     ]),
     // Everything in shared-types not placed above.
-    category('Shared types', [
-      ...docsIn('shared-types')
+    category(
+      'Shared types',
+      docsIn('shared-types')
         .filter((id) => !id.endsWith('index'))
         .sort(byKind)
         .map((id) => doc(id)),
-      doc('shared-types/index', {
-        label: 'Package README',
-        className: 'api-readme',
-      }),
-    ]),
+      packageLink('shared-types'),
+    ),
   ] as SidebarItems,
 };
 
