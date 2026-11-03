@@ -10,7 +10,9 @@ declare global {
    * running `electron-forge start`; `undefined` in a packaged app.
    *
    * Forge defines a `<NAME>_VITE_DEV_SERVER_URL` constant for every entry in
-   * {@link VitePluginConfig.renderer}, with the renderer's `name` upper-cased.
+   * {@link VitePluginConfig.renderer}: the renderer's `name` upper-cased,
+   * with `-` replaced by `_`. The declared type is `string`, so check it
+   * before use.
    *
    * @example
    * ```ts
