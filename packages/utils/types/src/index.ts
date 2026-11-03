@@ -47,8 +47,9 @@ export type ForgeConfigPlugin = IForgeResolvablePlugin | IForgePlugin;
 
 /**
  * Arguments of each simple hook, after the Forge configuration that every
- * hook receives first. Simple hooks run for their side effects; what they
- * return is ignored.
+ * hook receives first. Simple hooks run for their side effects. A plugin's
+ * hook can return a `Listr` for Forge to run as subtasks; anything else it
+ * returns is ignored.
  */
 export interface ForgeSimpleHookSignatures {
   /**
@@ -105,13 +106,13 @@ export interface ForgeSimpleHookSignatures {
       outputPaths: string[];
     },
   ];
-  /** Runs before `make`. */
+  /** Runs during `make`, after packaging and before the makers run. */
   preMake: [];
 }
 
 /**
  * Arguments of each mutating hook, after the Forge configuration. A
- * mutating hook can return a new value for its first argument, which
+ * mutating hook can return a new value for the argument after the Forge configuration, which
  * replaces it for the rest of the build; returning nothing keeps it.
  */
 export interface ForgeMutatingHookSignatures {
@@ -120,8 +121,9 @@ export interface ForgeMutatingHookSignatures {
   /** Runs once Forge has loaded your configuration. Return a new one to replace it. */
   resolveForgeConfig: [currentConfig: ResolvedForgeConfig];
   /**
-   * Runs every time Forge reads your `package.json`. Return a new object to
-   * change what Forge sees, such as the `version` field.
+   * Runs when Forge reads your app's `package.json` during `start`, `package`
+   * and `make`. Return a new object to change what Forge sees. It doesn't
+   * change the name or version `@electron/packager` uses for app metadata.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readPackageJson: [packageJson: Record<string, any>];
@@ -135,7 +137,7 @@ export type ForgeSimpleHookFn<Hook extends keyof ForgeSimpleHookSignatures> = (
   forgeConfig: ResolvedForgeConfig,
   ...args: ForgeSimpleHookSignatures[Hook]
 ) => Promise<Listr | void>;
-/** A mutating hook: may resolve to a replacement for its first argument. */
+/** A mutating hook: may resolve to a replacement for the argument after `forgeConfig`. */
 export type ForgeMutatingHookFn<
   Hook extends keyof ForgeMutatingHookSignatures,
 > = (
