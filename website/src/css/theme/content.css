@@ -99,6 +99,11 @@ code {
   vertical-align: baseline;
 }
 
+/* Code in a heading scales with the heading. */
+.markdown :is(h1, h2, h3, h4, h5, h6) code {
+  font-size: 0.9em;
+}
+
 /* Code blocks: a sunken panel inside the sheet. */
 .theme-code-block {
   box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
@@ -123,7 +128,8 @@ code {
   border-spacing: 0;
   border-radius: var(--lu-radius-control);
   box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
-  overflow: hidden;
+  /* Wide tables scroll sideways; the radius still clips the corners. */
+  overflow: auto;
 }
 
 .markdown table tr {
@@ -150,9 +156,8 @@ code {
 .pagination-nav__link {
   border: none;
   border-radius: var(--lu-radius-panel);
-  background:
-    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
-    var(--lu-surface-sunken);
+  /* A secondary link: an outline, no fill. */
+  background: transparent;
   box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
   transition: background-color var(--lu-dur-fast) var(--lu-ease);
 }

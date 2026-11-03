@@ -4,14 +4,17 @@
   /* Code blocks sit in the sheet, so they take the sunken surface. */
   --lu-code-sheet: var(--lu-surface-sunken);
   /* Docs type: Lucent's scale, with body and code one step up from Fiddle's
-     13px desktop UI because docs are read at length. Same weights and tracking. */
-  --lu-docs-font-size: 15px;
-  --lu-docs-line-height: 24px;
+     13px desktop UI because docs are read at length. Same weights and tracking.
+     The root is 93.75% of the browser's font size (15px at the default 16px),
+     and these are rem of that, so text follows the browser's setting. */
+  --lu-docs-root-size: 93.75%;
+  --lu-docs-font-size: 1rem;
+  --lu-docs-line-height: calc(24rem / 15);
   --lu-type-docs-body: 400 var(--lu-docs-font-size) / var(--lu-docs-line-height)
     var(--lu-font-sans);
-  --lu-type-docs-h2: 650 22px/28px var(--lu-font-sans);
-  --lu-type-docs-h3: 600 17px/24px var(--lu-font-sans);
-  --lu-type-docs-h4: 600 15px/20px var(--lu-font-sans);
+  --lu-type-docs-h2: 650 calc(22rem / 15) / calc(28rem / 15) var(--lu-font-sans);
+  --lu-type-docs-h3: 600 calc(17rem / 15) / calc(24rem / 15) var(--lu-font-sans);
+  --lu-type-docs-h4: 600 1rem / calc(20rem / 15) var(--lu-font-sans);
   --lu-ring-focus: 0 0 0 3.5px
     color-mix(in srgb, var(--lu-accent) 26%, transparent);
 }
