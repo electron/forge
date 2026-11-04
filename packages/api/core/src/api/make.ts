@@ -362,9 +362,7 @@ export const listrMake = (
                     },
                     async () => {
                       try {
-                        await Promise.resolve(
-                          uniqMaker.prepareConfig(targetArch),
-                        );
+                        await uniqMaker.prepareConfig(targetArch);
                         const artifacts = await uniqMaker.make({
                           appName,
                           forgeConfig,
