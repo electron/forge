@@ -35,6 +35,16 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
 }
 
 /**
+ * The output options a user config gives. Vite 8 reads `build.rolldownOptions`
+ * and treats `build.rollupOptions` as its deprecated alias, ignoring the alias
+ * when both are set.
+ */
+export function getUserOutput(userConfig: UserConfig) {
+  const build = userConfig.build;
+  return (build?.rolldownOptions ?? build?.rollupOptions)?.output;
+}
+
+/**
  * Main and preload are built in Vite's `ssr` environment, which reads
  * `ssr.resolve` and ignores the top-level `resolve`. Carry a user's top-level
  * `conditions` / `mainFields` over so configs written for the old browser

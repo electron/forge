@@ -15,6 +15,7 @@ import {
   external,
   getBuildConfig,
   getBuildDefine,
+  getUserOutput,
   pluginHotRestart,
 } from './vite.base.config.js';
 
@@ -84,11 +85,7 @@ export function getConfig(
   const lib = userConfig.build?.lib ?? config.build!.lib;
   if (lib) {
     config.plugins!.push(
-      pluginLibEntryNames(
-        lib,
-        forgeEnv.root,
-        userConfig.build?.rollupOptions?.output,
-      ),
+      pluginLibEntryNames(lib, forgeEnv.root, getUserOutput(userConfig)),
     );
   }
 

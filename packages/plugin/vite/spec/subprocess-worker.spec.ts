@@ -284,6 +284,55 @@ describe('subprocess-worker', () => {
     const contents = fs.readFileSync(outFile, 'utf8');
     expect(contents).not.toContain('process.env.NODE_ENV');
     expect(contents).toMatch(/["'`]production["'`]/);
+
+    // A sandboxed preload has no `globalThis.process`, so every spelling
+    // must be inlined for the script to load.
+    const sandboxed: Record<string, unknown> = {};
+    vm.runInNewContext(contents, sandboxed);
+    expect(sandboxed.nodeEnv).toBe('production');
+    expect(sandboxed.globalNodeEnv).toBe('production');
+    expect(sandboxed.globalThisNodeEnv).toBe('production');
+  });
+
+  it('keeps entry names a user sets through build.rolldownOptions', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.rolldown.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    expect(fs.readdirSync(path.join(viteOutDir, 'build'))).toEqual([
+      'index.cjs',
+    ]);
+  });
+
+  it('keeps native import.meta in ES module preloads set through build.rolldownOptions', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload-import-meta.js',
+          config: path.join(projectDir, 'vite.preload.esm-rolldown.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'preload-import-meta.mjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).toContain('import.meta.url');
+    expect(contents).not.toContain('__filename');
   });
 
   it('carries a top-level resolve config over to main targets', async () => {

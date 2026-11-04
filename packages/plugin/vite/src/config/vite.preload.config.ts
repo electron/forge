@@ -10,6 +10,7 @@ import {
   carryResolveToSsr,
   external,
   getBuildConfig,
+  getUserOutput,
   pluginHotRestart,
 } from './vite.base.config.js';
 
@@ -55,8 +56,11 @@ export function getConfig(
       // The `ssr` environment keeps `process.env.NODE_ENV` as a runtime read,
       // but browser-oriented dependencies in a preload rely on it being
       // inlined to drop their development builds, as the old browser build
-      // did.
+      // did for all three spellings. A sandboxed preload has no
+      // `globalThis.process`, so the other two would throw if left as reads.
       'process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
+      'global.process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
+      'globalThis.process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
     },
     ssr: {
       // Forge bundles everything but `electron` and Node builtins, which are
@@ -83,7 +87,7 @@ export function getConfig(
   // `__dirname`, so lowering `import.meta` to them would throw there. Keep the
   // values the old browser build gave (`undefined`) in that case. An ES module
   // preload keeps its native `import.meta`, so leave it alone.
-  const userOutput = userConfig.build?.rollupOptions?.output;
+  const userOutput = getUserOutput(userConfig);
   const userFormat = Array.isArray(userOutput)
     ? userOutput.map((output) => output.format)
     : [userOutput?.format];

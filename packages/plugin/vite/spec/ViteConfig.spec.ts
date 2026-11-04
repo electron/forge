@@ -194,6 +194,8 @@ describe('ViteConfigGenerator', () => {
       'global.process.env': 'global.process.env',
       'globalThis.process.env': 'globalThis.process.env',
       'process.env.NODE_ENV': JSON.stringify('production'),
+      'global.process.env.NODE_ENV': JSON.stringify('production'),
+      'globalThis.process.env.NODE_ENV': JSON.stringify('production'),
       'import.meta.url':
         '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
       'import.meta.filename':
