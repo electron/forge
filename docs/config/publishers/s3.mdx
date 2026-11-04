@@ -108,6 +108,8 @@ module.exports = {
 };
 ```
 
+To also publish smaller delta updates for macOS, see [Delta updates](../makers/zip.md#delta-updates-macos) in the ZIP maker docs.
+
 With Forge configured correctly, the second step is to configure the `autoUpdater` module inside your app's main process. The simplest form is shown below but you might want to hook additional events to show UI to your user or ask them if they want to update your app right now.
 
 ```javascript title="main.js"
