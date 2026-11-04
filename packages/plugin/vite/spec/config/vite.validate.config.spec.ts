@@ -1,7 +1,7 @@
 import path from 'node:path';
 
-import { build, createLogger } from 'vite';
-import { describe, expect, it, vi } from 'vitest';
+import { build } from 'vite';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { pluginValidateConfig } from '../../src/config/vite.validate.config';
 
@@ -38,18 +38,15 @@ function rendererEnv(name = 'main_window'): ConfigEnv<'renderer'> {
 }
 
 /**
- * Warnings go through `config.logger`, so the build gets one we can spy on.
- * Only the validator's own warnings are of interest here; Vite emits its own.
+ * Warnings go to `console.warn` so that they survive the `logLevel: 'error'`
+ * Forge packages with. Only the validator's own warnings are of interest here.
  */
-function spyLogger() {
-  const customLogger = createLogger('silent');
-  const warn = vi.spyOn(customLogger, 'warn');
-  const forgeWarnings = () =>
+function spyWarnings() {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  return () =>
     warn.mock.calls
-      .map(([message]) => message)
+      .map(([message]) => String(message))
       .filter((message) => message.includes('@electron-forge/plugin-vite'));
-
-  return { customLogger, forgeWarnings };
 }
 
 // Builds are kept in memory: the validator runs in `configResolved`, long
@@ -65,6 +62,10 @@ function buildWith(config: InlineConfig) {
 }
 
 describe('pluginValidateConfig', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('names the plugin after its target', () => {
     expect(pluginValidateConfig('main', buildEnv('src/main.js')).name).toEqual(
       '@electron-forge/plugin-vite:validate-main',
@@ -103,13 +104,91 @@ describe('pluginValidateConfig', () => {
     await expect(
       buildWith({
         build: {
-          lib: { entry: 'src/main.js', formats: ['es'] },
+          lib: {
+            entry: 'src/main.js',
+            fileName: () => '[name].cjs',
+            formats: ['es'],
+          },
         },
         plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
       }),
     ).rejects.toThrow(
-      /emits the "es" output format\. ESM main bundles are not supported yet/,
+      /emits the "es" output format into "\[name\]\.cjs"\. Electron parses "\.cjs" files as CommonJS/,
     );
+  });
+
+  it('accepts ESM main output that Vite names itself', async () => {
+    const forgeWarnings = spyWarnings();
+
+    await buildWith({
+      build: {
+        lib: { entry: 'src/main.js', formats: ['es'] },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
+    });
+
+    expect(forgeWarnings()).toEqual([]);
+  });
+
+  it('lets build.lib.formats override an object output format', async () => {
+    await buildWith({
+      build: {
+        lib: { entry: 'src/main.js', formats: ['cjs'] },
+        rollupOptions: { output: { format: 'es' } },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
+    });
+  });
+
+  it('counts one output per build.lib.formats entry', async () => {
+    await expect(
+      buildWith({
+        build: {
+          lib: { entry: 'src/main.js', formats: ['cjs', 'es'] },
+          rollupOptions: { output: { entryFileNames: '[name].cjs' } },
+        },
+        plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
+      }),
+    ).rejects.toThrow(/is configured to emit 2 outputs \("cjs", "es"\)/);
+  });
+
+  it('accepts the "commonjs" alias for the cjs format', async () => {
+    await buildWith({
+      build: {
+        rollupOptions: {
+          input: 'src/preload.js',
+          output: { format: 'commonjs', entryFileNames: '[name].cjs' },
+        },
+      },
+      plugins: [
+        pluginValidateConfig('preload', buildEnv('src/preload.js', 'preload')),
+      ],
+    });
+  });
+
+  it('checks the input that Vite builds when lib.entry is also set', async () => {
+    await buildWith({
+      build: {
+        lib: { entry: 'src/stale.js', formats: ['cjs'] },
+        rollupOptions: { input: 'src/main.js' },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
+    });
+  });
+
+  it('does not treat aliased entries as missing files', async () => {
+    await buildWith({
+      resolve: { alias: { '@': path.join(root, 'src') } },
+      build: {
+        rollupOptions: {
+          input: '@/preload.js',
+          output: { format: 'cjs', entryFileNames: '[name].cjs' },
+        },
+      },
+      plugins: [
+        pluginValidateConfig('preload', buildEnv('@/preload.js', 'preload')),
+      ],
+    });
   });
 
   it('throws when a preload target emits more than one output', async () => {
@@ -134,11 +213,10 @@ describe('pluginValidateConfig', () => {
   });
 
   it('accepts an output that only customizes file names', async () => {
-    const { customLogger, forgeWarnings } = spyLogger();
+    const forgeWarnings = spyWarnings();
 
     // The format comes from `build.lib.formats`, not from the output.
     await buildWith({
-      customLogger,
       build: {
         lib: { entry: 'src/main.js', formats: ['cjs'] },
         rollupOptions: { output: { entryFileNames: '[name].cjs' } },
@@ -159,15 +237,54 @@ describe('pluginValidateConfig', () => {
         plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
       }),
     ).rejects.toThrow(
-      /sets "build\.target" to "chrome120", but main code runs in Electron's Node\.js runtime/,
+      /sets "build\.target" to "chrome120", which does not describe Electron's main process/,
     );
   });
 
-  it('accepts a node build target for main', async () => {
-    const { customLogger, forgeWarnings } = spyLogger();
+  it('checks a build target set by another plugin', async () => {
+    await expect(
+      buildWith({
+        build: {
+          lib: { entry: 'src/main.js', formats: ['cjs'] },
+        },
+        plugins: [
+          {
+            name: 'sets-target',
+            config: () => ({ build: { target: 'safari16' } }),
+          },
+          pluginValidateConfig('main', buildEnv('src/main.js')),
+        ],
+      }),
+    ).rejects.toThrow(/sets "build\.target" to "safari16"/);
+  });
+
+  it('accepts ES version targets for main and Chromium targets for preload', async () => {
+    await buildWith({
+      build: {
+        target: 'esnext',
+        lib: { entry: 'src/main.js', formats: ['cjs'] },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
+    });
 
     await buildWith({
-      customLogger,
+      build: {
+        target: 'chrome120',
+        rollupOptions: {
+          input: 'src/preload.js',
+          output: { format: 'cjs', entryFileNames: '[name].cjs' },
+        },
+      },
+      plugins: [
+        pluginValidateConfig('preload', buildEnv('src/preload.js', 'preload')),
+      ],
+    });
+  });
+
+  it('accepts a node build target for main', async () => {
+    const forgeWarnings = spyWarnings();
+
+    await buildWith({
       build: {
         target: 'node22',
         lib: { entry: 'src/main.js', formats: ['cjs'] },
@@ -192,10 +309,9 @@ describe('pluginValidateConfig', () => {
   });
 
   it('warns but still builds when a renderer sets an unusual base', async () => {
-    const { customLogger, forgeWarnings } = spyLogger();
+    const forgeWarnings = spyWarnings();
 
     await buildWith({
-      customLogger,
       base: '/foo/',
       plugins: [pluginValidateConfig('renderer', rendererEnv())],
     });
@@ -208,10 +324,9 @@ describe('pluginValidateConfig', () => {
   });
 
   it('warns when a renderer is built for Node', async () => {
-    const { customLogger, forgeWarnings } = spyLogger();
+    const forgeWarnings = spyWarnings();
 
     await buildWith({
-      customLogger,
       base: './',
       build: { target: 'node22' },
       plugins: [pluginValidateConfig('renderer', rendererEnv())],
@@ -225,9 +340,8 @@ describe('pluginValidateConfig', () => {
   });
 
   it('passes valid main, preload and renderer configs without warnings', async () => {
-    const main = spyLogger();
+    const forgeWarnings = spyWarnings();
     await buildWith({
-      customLogger: main.customLogger,
       build: {
         lib: {
           entry: 'src/main.js',
@@ -237,11 +351,8 @@ describe('pluginValidateConfig', () => {
       },
       plugins: [pluginValidateConfig('main', buildEnv('src/main.js'))],
     });
-    expect(main.forgeWarnings()).toEqual([]);
 
-    const preload = spyLogger();
     await buildWith({
-      customLogger: preload.customLogger,
       build: {
         rollupOptions: {
           input: 'src/preload.js',
@@ -252,14 +363,11 @@ describe('pluginValidateConfig', () => {
         pluginValidateConfig('preload', buildEnv('src/preload.js', 'preload')),
       ],
     });
-    expect(preload.forgeWarnings()).toEqual([]);
 
-    const renderer = spyLogger();
     await buildWith({
-      customLogger: renderer.customLogger,
       base: './',
       plugins: [pluginValidateConfig('renderer', rendererEnv())],
     });
-    expect(renderer.forgeWarnings()).toEqual([]);
+    expect(forgeWarnings()).toEqual([]);
   });
 });

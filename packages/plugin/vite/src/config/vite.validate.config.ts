@@ -1,11 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { styleText } from 'node:util';
 
 import type {
   VitePluginBuildConfig,
   VitePluginRendererConfig,
 } from '../Config.js';
-import type { ConfigEnv, Plugin, ResolvedConfig } from 'vite';
+import type { ConfigEnv, Plugin, ResolvedConfig, UserConfig } from 'vite';
 
 type ValidateTarget = 'main' | 'preload' | 'renderer';
 
@@ -41,20 +42,33 @@ function looksLikeFilePath(entry: string): boolean {
   );
 }
 
-function normalizeOutputs(output: unknown): { format?: string }[] {
-  if (!output) return [];
-  return (Array.isArray(output) ? output : [output]) as { format?: string }[];
+/**
+ * Entries such as `@/main.ts` go through `resolve.alias`, so they are not
+ * paths relative to the root.
+ */
+function isAliased(config: ResolvedConfig, entry: string): boolean {
+  return config.resolve.alias.some(({ find }) =>
+    typeof find === 'string'
+      ? entry === find || entry.startsWith(`${find}/`)
+      : find.test(entry),
+  );
 }
 
-/**
- * Vite always resolves `build.target`: when nothing sets it, it becomes Vite's
- * own browser baseline list. `configResolved` therefore cannot tell whether a
- * target was actually chosen. Forge always builds with `configFile: false` and
- * hands Vite the merged Forge + user config inline, so `inlineConfig` is the
- * record of what was asked for.
- */
-function configuredTarget(config: ResolvedConfig): string[] | undefined {
-  const target = config.inlineConfig?.build?.target;
+type OutputOptions = { format?: string; entryFileNames?: unknown };
+
+function normalizeOutputs(output: unknown): OutputOptions[] {
+  if (!output) return [];
+  return (Array.isArray(output) ? output : [output]) as OutputOptions[];
+}
+
+// Rollup and Rolldown accept these aliases for the two formats Forge cares about.
+function normalizeFormat(format: string): string {
+  if (format === 'commonjs') return 'cjs';
+  if (format === 'esm' || format === 'module') return 'es';
+  return format;
+}
+
+function targetList(target: unknown): string[] | undefined {
   if (!target) return undefined;
   const targets = (Array.isArray(target) ? target : [target]).filter(
     (t) => typeof t === 'string',
@@ -79,12 +93,19 @@ export function pluginValidateConfig(
     self.config ? ` (${self.config})` : ''
   }`;
 
+  // Vite always resolves `build.target`: when nothing sets it, it becomes
+  // Vite's own browser baseline list, so `configResolved` cannot tell whether a
+  // target was actually chosen. The `config` hook below records the target
+  // that the inline config and every earlier plugin's `config` hook asked for.
+  let configuredTargets: string[] | undefined;
+
   const validateBuild = (config: ResolvedConfig) => {
     const { build } = config;
     const lib = typeof build.lib === 'object' ? build.lib : undefined;
     const input =
       build.rollupOptions?.input ?? build.rolldownOptions?.input ?? undefined;
-    const entry = lib?.entry ?? input;
+    // Vite builds `input` when both are set.
+    const entry = input || lib?.entry;
 
     if (!hasEntry(entry)) {
       throw new Error(
@@ -95,6 +116,7 @@ export function pluginValidateConfig(
     const missing = entryList(entry).filter(
       (file) =>
         looksLikeFilePath(file) &&
+        !isAliased(config, file) &&
         !fs.existsSync(path.resolve(config.root, file)),
     );
     if (missing.length > 0) {
@@ -107,25 +129,40 @@ export function pluginValidateConfig(
       );
     }
 
-    const targets = configuredTarget(config);
-    const nonNode = targets?.filter((t) => !t.startsWith('node'));
-    if (nonNode && nonNode.length > 0) {
+    // ES versions are runtime-agnostic, and sandboxed preload scripts (the
+    // default) run in Chromium.
+    const unsupported = configuredTargets?.filter(
+      (t) =>
+        !t.startsWith('node') &&
+        !/^es(20\d\d|next)$/.test(t) &&
+        !(target === 'preload' && t.startsWith('chrome')),
+    );
+    if (unsupported && unsupported.length > 0) {
+      const allowed =
+        target === 'preload'
+          ? 'a "node*", "chrome*" or "es20xx"/"esnext" target (for example "node22" or "chrome120" for a sandboxed preload)'
+          : 'a "node*" or "es20xx"/"esnext" target (for example "node22")';
       throw new Error(
-        `${PREFIX} ${where} sets "build.target" to ${nonNode.map((t) => JSON.stringify(t)).join(', ')}, but ${target} code runs in Electron's Node.js runtime. Use a "node*" target (for example "node22"), or leave "build.target" unset.`,
+        `${PREFIX} ${where} sets "build.target" to ${unsupported.map((t) => JSON.stringify(t)).join(', ')}, which does not describe Electron's ${target} process. Use ${allowed}, or leave "build.target" unset.`,
       );
     }
 
-    const outputs = normalizeOutputs(
-      build.rollupOptions?.output ?? build.rolldownOptions?.output,
-    );
-    // An output may customize file names only and leave the format to
-    // `build.lib.formats`, so fall back to it rather than reporting a missing
-    // format.
-    const libFormats = lib?.formats ?? [];
-    const formats =
-      outputs.length > 0
-        ? outputs.map((output, index) => output?.format ?? libFormats[index])
-        : libFormats;
+    const rawOutput =
+      build.rollupOptions?.output ?? build.rolldownOptions?.output;
+    const outputs = normalizeOutputs(rawOutput);
+    // Mirrors Vite's `resolveBuildOutputs`: in lib mode an object output is
+    // emitted once per `build.lib.formats` (which overrides its `format`), and
+    // an array output ignores `build.lib.formats`. A missing format means "es".
+    const libFormats =
+      lib?.formats ??
+      (entryList(lib?.entry).length > 1 ? ['es', 'cjs'] : ['es', 'umd']);
+    const formats = (
+      Array.isArray(rawOutput)
+        ? outputs.map((output) => output?.format ?? 'es')
+        : lib
+          ? libFormats
+          : [outputs[0]?.format ?? 'es']
+    ).map(normalizeFormat);
 
     if (formats.length > 1) {
       throw new Error(
@@ -144,33 +181,45 @@ export function pluginValidateConfig(
       ? 'Set "build.lib.formats" to ["cjs"].'
       : 'Set "build.rollupOptions.output.format" to "cjs".';
     if (format === 'es') {
+      // ESM is only a problem when the file is still named `.cjs` (as Forge's
+      // defaults name it), because Electron would then parse it as CommonJS.
+      // Vite gives ESM lib output a `.mjs` or `.js` name of its own, and a
+      // file-name function we cannot evaluate is given the benefit of the doubt.
+      const entryFileNames = outputs[0]?.entryFileNames;
+      const fileName =
+        typeof entryFileNames === 'string'
+          ? entryFileNames
+          : entryFileNames === undefined && typeof lib?.fileName === 'function'
+            ? lib.fileName('es', 'index')
+            : undefined;
+      if (!fileName?.endsWith('.cjs')) return;
       throw new Error(
-        `${PREFIX} ${where} emits the "es" output format. ESM ${target} bundles are not supported yet: Forge writes them with a ".cjs" extension, so Electron would parse the output as CommonJS and fail. ${fix}`,
+        `${PREFIX} ${where} emits the "es" output format into ${JSON.stringify(fileName)}. Electron parses ".cjs" files as CommonJS, so the bundle would fail to load. ${fix}`,
       );
     }
     throw new Error(
-      `${PREFIX} ${where} ${
-        format === undefined
-          ? 'does not set an output format'
-          : `emits the ${JSON.stringify(format)} output format`
-      }, but ${target} bundles must be CommonJS. ${fix}`,
+      `${PREFIX} ${where} emits the ${JSON.stringify(format)} output format, but ${target} bundles must be CommonJS. ${fix}`,
     );
   };
 
+  // `package` and `make` run Vite with `logLevel: 'error'`, which would hide
+  // `config.logger.warn`, so warnings go straight to the console.
+  const warn = (message: string) =>
+    console.warn(styleText('yellow', `${PREFIX} ${message}`));
+
   const validateRenderer = (config: ResolvedConfig) => {
     if (config.base !== './' && config.base !== '/') {
-      config.logger.warn(
-        `${PREFIX} ${where} sets "base" to ${JSON.stringify(config.base)}. Packaged renderers are loaded from the file system, where only "./" resolves assets correctly ("/" works when you serve the renderer over HTTP).`,
+      warn(
+        `${where} sets "base" to ${JSON.stringify(config.base)}. Packaged renderers are loaded from the file system, where only "./" resolves assets correctly ("/" works when you serve the renderer over HTTP).`,
       );
     }
 
-    const targets = configuredTarget(config);
-    const unsupported = targets?.filter(
+    const unsupported = configuredTargets?.filter(
       (t) => !t.startsWith('chrome') && !/^es(20\d\d|next)$/.test(t),
     );
     if (unsupported && unsupported.length > 0) {
-      config.logger.warn(
-        `${PREFIX} ${where} sets "build.target" to ${unsupported
+      warn(
+        `${where} sets "build.target" to ${unsupported
           .map((t) => JSON.stringify(t))
           .join(
             ', ',
@@ -196,9 +245,12 @@ export function pluginValidateConfig(
 
   return {
     name: `@electron-forge/plugin-vite:validate-${target}`,
-    // Run after every user plugin's `config` hook so that what is validated is
-    // what will actually be built.
+    // Run the `config` hook after the other plugins' so it sees the targets
+    // they set. `configResolved` runs after every `config` hook regardless.
     enforce: 'post',
+    config(config: UserConfig) {
+      configuredTargets = targetList(config.build?.target);
+    },
     configResolved(config) {
       if (target === 'renderer') {
         validateRenderer(config);

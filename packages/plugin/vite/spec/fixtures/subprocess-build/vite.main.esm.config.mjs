@@ -4,6 +4,7 @@ export default {
   build: {
     lib: {
       entry: 'src/main.js',
+      fileName: () => '[name].cjs',
       formats: ['es'],
     },
   },

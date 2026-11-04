@@ -221,7 +221,7 @@ describe('subprocess-worker', () => {
     expect(stderr).toContain('[@electron-forge/plugin-vite]');
     expect(stderr).toContain('The main target "src/main.js"');
     expect(stderr).toContain('vite.main.esm.config.mjs');
-    expect(stderr).toMatch(/ESM main bundles are not supported yet/);
+    expect(stderr).toMatch(/emits the "es" output format into "\[name\]\.cjs"/);
   });
 
   it('exits nonzero when required env vars are missing', async () => {
