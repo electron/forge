@@ -186,11 +186,18 @@ describe('pluginValidateConfig', () => {
   });
 
   it('resolves root-relative entries the way Vite does', async () => {
+    // Vite's lib mode resolves `build.lib.entry` with `path.resolve`, which
+    // leaves "/src/..." at the drive root on Windows, so use an input.
     await buildWith({
       build: {
-        lib: { entry: '/src/main.js', formats: ['cjs'] },
+        rollupOptions: {
+          input: '/src/preload.js',
+          output: { format: 'cjs', entryFileNames: '[name].cjs' },
+        },
       },
-      plugins: [pluginValidateConfig('main', buildEnv('/src/main.js'))],
+      plugins: [
+        pluginValidateConfig('preload', buildEnv('/src/preload.js', 'preload')),
+      ],
     });
   });
 
