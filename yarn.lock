@@ -864,7 +864,6 @@ __metadata:
     "@malept/cross-spawn-promise": "npm:^2.0.0"
     debug: "npm:^4.3.1"
     oxfmt: "npm:^0.71.0"
-    semver: "npm:^7.2.1"
     username: "npm:^5.1.0"
     vite: "catalog:"
     vitest: "catalog:"
@@ -4252,22 +4251,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4.17.12":
-  version: 4.17.12
-  resolution: "@types/lodash-es@npm:4.17.12"
-  dependencies:
-    "@types/lodash": "npm:*"
-  checksum: 10c0/5d12d2cede07f07ab067541371ed1b838a33edb3c35cb81b73284e93c6fd0c4bbeaefee984e69294bffb53f62d7272c5d679fdba8e595ff71e11d00f2601dde0
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*":
-  version: 4.17.21
-  resolution: "@types/lodash@npm:4.17.21"
-  checksum: 10c0/73cb006e047d8871e9d63f3a165543bf16c44a5b6fe3f9f6299e37cb8d67a7b1d55ac730959a81f9def510fd07232ff7e30e05413e5d5a12793baad84ebe36c3
-  languageName: node
-  linkType: hard
-
 "@types/mdast@npm:^4.0.0":
   version: 4.0.4
   resolution: "@types/mdast@npm:4.0.4"
@@ -6877,7 +6860,6 @@ __metadata:
     commander: "npm:^11.1.0"
     debug: "npm:^4.3.1"
     listr2: "npm:^11.1.0"
-    lodash-es: "npm:^4.17.21"
     semver: "npm:^7.2.1"
   bin:
     create-electron-app: dist/index.js
@@ -7421,7 +7403,6 @@ __metadata:
     "@types/debug": "npm:^4.1.12"
     "@types/graceful-fs": "npm:^4.1.9"
     "@types/keyv": "npm:^3.1.4"
-    "@types/lodash-es": "npm:^4.17.12"
     "@types/mime-types": "npm:^2.1.0"
     "@types/node": "npm:^22.10.7"
     "@types/semver": "npm:^7.3.4"
@@ -10961,13 +10942,6 @@ __metadata:
   dependencies:
     signal-exit: "npm:^3.0.2"
   checksum: 10c0/80b7777ceb43105d9e588733c3efc2514653a5e3a0dae3e61347a1f5381da34dcaa2caaa60c39ed5d4ad31c1735a4831e5639a0ba1c508bfea8dbc9c89777b37
-  languageName: node
-  linkType: hard
-
-"lodash-es@npm:^4.17.21":
-  version: 4.18.1
-  resolution: "lodash-es@npm:4.18.1"
-  checksum: 10c0/35d4dcf87ef07f8d090f409447575800108057e360b445f590d0d25d09e3d1e33a163d2fc100d4d072b0f901d5e2fc533cd7c4bfd8eeb38a06abec693823c8b8
   languageName: node
   linkType: hard
 

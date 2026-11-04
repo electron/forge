@@ -6,8 +6,10 @@ import {
   spawn,
 } from '@malept/cross-spawn-promise';
 import debug from 'debug';
+import semver from 'semver';
 
 import { findUp } from './find-up.js';
+import { pathExists } from './fs.js';
 
 const d = debug('electron-forge:package-manager');
 
@@ -78,11 +80,44 @@ function pmFromUserAgent() {
 }
 
 /**
+ * Whether a resolved Yarn version is Yarn 2+ (Berry). An explicitly requested
+ * package manager can carry a partial version (e.g. `yarn@1`), which
+ * `semver.gte` rejects, so the version is coerced first. A version that can't
+ * be parsed is not Berry.
+ */
+export function isYarnBerry(version: string | undefined): boolean {
+  if (version === 'latest') {
+    return true;
+  }
+  const yarnVersion = semver.coerce(version);
+  return yarnVersion !== null && semver.gte(yarnVersion, '2.0.0');
+}
+
+export interface ResolvePackageManagerOptions {
+  /**
+   * The directory to start the lockfile search from. Defaults to the current
+   * working directory. Pass the project directory when the command can be run
+   * against a project other than the one in `process.cwd()`.
+   */
+  cwd?: string;
+  /**
+   * Prefer the project's lockfile over the package manager that is running
+   * the current command (`npm_config_user_agent`). Useful for commands that
+   * act on an existing project, where `npx` always reports npm. Only a
+   * lockfile in `cwd` itself, or in an ancestor that is a project root (has a
+   * `package.json`, e.g. a workspace root), counts; a stray lockfile higher up
+   * the tree does not.
+   */
+  preferLockfile?: boolean;
+}
+
+/**
  * Resolves the package manager to use. In order, it checks the following:
  *
  * 1. An explicit arg being passed into the function.
  * 2. The `process.env.npm_config_user_agent` value set by the executing package manager.
- * 3. The presence of a lockfile in an ancestor directory.
+ * 3. The presence of a lockfile in `options.cwd` (default: the current working directory) or an ancestor directory.
+ *    With `options.preferLockfile`, this check runs before the user agent check.
  * 4. If an unknown package manager is used (or none of the above apply), then we fall back to `npm`.
  *
  * The version of the executing package manager is also returned if it is detected via user agent.
@@ -92,7 +127,8 @@ function pmFromUserAgent() {
  */
 export const resolvePackageManager: (
   packageManager?: string,
-) => Promise<PMDetails> = async (packageManager) => {
+  options?: ResolvePackageManagerOptions,
+) => Promise<PMDetails> = async (packageManager, options = {}) => {
   let installer: string | undefined;
   let installerVersion: string | undefined;
 
@@ -126,26 +162,44 @@ export const resolvePackageManager: (
 
   const executingPM = pmFromUserAgent();
   let lockfilePM;
-  const lockfile = await findUp([
-    'package-lock.json',
-    'yarn.lock',
-    'pnpm-lock.yaml',
-    'pnpm-workspace.yaml',
-  ]);
+  const lockfile = await findUp(
+    ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
+    { cwd: options.cwd },
+  );
   if (lockfile) {
     const lockfileName = path.basename(lockfile);
     lockfilePM = PM_FROM_LOCKFILE[lockfileName];
   }
 
-  if (executingPM) {
+  const lockfileIsProjects =
+    lockfile !== undefined &&
+    (path.dirname(lockfile) === path.resolve(options.cwd ?? process.cwd()) ||
+      (await pathExists(path.join(path.dirname(lockfile), 'package.json'))));
+
+  if (
+    executingPM &&
+    !(options.preferLockfile && lockfilePM && lockfileIsProjects)
+  ) {
     installer = executingPM.name;
     installerVersion = executingPM.version;
   } else if (lockfilePM) {
     installer = lockfilePM;
-    installerVersion = await spawnPackageManager(
-      PACKAGE_MANAGERS[installer as SupportedPackageManager],
-      ['--version'],
-    );
+    try {
+      // Run in the project directory so a Corepack shim picks up that
+      // project's `packageManager` field rather than the current directory's.
+      installerVersion = await spawnPackageManager(
+        PACKAGE_MANAGERS[installer as SupportedPackageManager],
+        ['--version'],
+        { cwd: options.cwd },
+      );
+    } catch (err) {
+      throw new Error(
+        `Found ${path.basename(lockfile as string)}, but "${installer}" could not be run: ${
+          err instanceof Error ? err.message : String(err)
+        }. Install it, or specify a different package manager explicitly.`,
+        { cause: err },
+      );
+    }
   }
 
   switch (installer) {
