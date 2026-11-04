@@ -21,6 +21,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     dir,
     makeDir,
     appName,
+    forgeConfig,
     packageJSON,
     targetArch,
   }: MakerOptions): Promise<string[]> {
@@ -30,7 +31,7 @@ export default class MakerDMG extends MakerBase<MakerDMGConfig> {
     const outPath = path.resolve(dmgDir, `${this.config.name || appName}.dmg`);
     const forgeDefaultOutPath = path.resolve(
       dmgDir,
-      `${appName}-${packageJSON.version}-${targetArch}.dmg`,
+      `${appName}-${forgeConfig.packagerConfig.appVersion || packageJSON.version}-${targetArch}.dmg`,
     );
 
     await this.ensureFile(outPath);
