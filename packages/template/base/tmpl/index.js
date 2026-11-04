@@ -11,9 +11,18 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+  });
+
+  // Show after the first render, not after app-specific initialization.
+  // https://www.electronjs.org/docs/latest/api/browser-window#showing-the-window-gracefully
+  // Keep paintWhenInitiallyHidden enabled for ready-to-show to fire.
+  // For immediate display, remove show: false and this listener, and set a backgroundColor.
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
   // and load the index.html of the app.
