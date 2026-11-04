@@ -91,6 +91,9 @@ function spawnViteBuild(
     child.on('error', reject);
     child.on('close', (code, signal) => {
       if (code === 0) {
+        // Pass on warnings, such as the config validator's, that a successful
+        // build would otherwise swallow.
+        if (stderr) process.stderr.write(stderr);
         resolve();
       } else {
         const output = [stdout, stderr].filter(Boolean).join('\n');

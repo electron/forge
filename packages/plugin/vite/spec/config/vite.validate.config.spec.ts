@@ -176,6 +176,15 @@ describe('pluginValidateConfig', () => {
     });
   });
 
+  it('resolves extensionless entries the way Vite does', async () => {
+    await buildWith({
+      build: {
+        lib: { entry: './src/main', formats: ['cjs'] },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('./src/main'))],
+    });
+  });
+
   it('does not treat aliased entries as missing files', async () => {
     await buildWith({
       resolve: { alias: { '@': path.join(root, 'src') } },
@@ -256,6 +265,31 @@ describe('pluginValidateConfig', () => {
         ],
       }),
     ).rejects.toThrow(/sets "build\.target" to "safari16"/);
+  });
+
+  it("accepts Vite's default target for preload and renderer", async () => {
+    const forgeWarnings = spyWarnings();
+
+    await buildWith({
+      build: {
+        target: 'baseline-widely-available',
+        rollupOptions: {
+          input: 'src/preload.js',
+          output: { format: 'cjs', entryFileNames: '[name].cjs' },
+        },
+      },
+      plugins: [
+        pluginValidateConfig('preload', buildEnv('src/preload.js', 'preload')),
+      ],
+    });
+
+    await buildWith({
+      base: './',
+      build: { target: 'baseline-widely-available' },
+      plugins: [pluginValidateConfig('renderer', rendererEnv())],
+    });
+
+    expect(forgeWarnings()).toEqual([]);
   });
 
   it('accepts ES version targets for main and Chromium targets for preload', async () => {

@@ -54,6 +54,26 @@ function isAliased(config: ResolvedConfig, entry: string): boolean {
   );
 }
 
+/**
+ * Vite resolves path-like entries such as `./src/main` by also trying
+ * `resolve.extensions` and a directory index, so an entry only counts as
+ * missing when none of those exist.
+ */
+function entryExists(config: ResolvedConfig, entry: string): boolean {
+  const file = path.resolve(config.root, entry);
+  const extensions = config.resolve.extensions ?? [];
+  return [
+    file,
+    ...extensions.map((ext) => `${file}${ext}`),
+    ...extensions.map((ext) => path.join(file, `index${ext}`)),
+  ].some((candidate) =>
+    fs.statSync(candidate, { throwIfNoEntry: false })?.isFile(),
+  );
+}
+
+// Vite's own default target, a browser list that includes current Chromium.
+const VITE_DEFAULT_TARGET = 'baseline-widely-available';
+
 type OutputOptions = { format?: string; entryFileNames?: unknown };
 
 function normalizeOutputs(output: unknown): OutputOptions[] {
@@ -117,7 +137,7 @@ export function pluginValidateConfig(
       (file) =>
         looksLikeFilePath(file) &&
         !isAliased(config, file) &&
-        !fs.existsSync(path.resolve(config.root, file)),
+        !entryExists(config, file),
     );
     if (missing.length > 0) {
       throw new Error(
@@ -135,7 +155,10 @@ export function pluginValidateConfig(
       (t) =>
         !t.startsWith('node') &&
         !/^es(20\d\d|next)$/.test(t) &&
-        !(target === 'preload' && t.startsWith('chrome')),
+        !(
+          target === 'preload' &&
+          (t.startsWith('chrome') || t === VITE_DEFAULT_TARGET)
+        ),
     );
     if (unsupported && unsupported.length > 0) {
       const allowed =
@@ -203,7 +226,8 @@ export function pluginValidateConfig(
   };
 
   // `package` and `make` run Vite with `logLevel: 'error'`, which would hide
-  // `config.logger.warn`, so warnings go straight to the console.
+  // `config.logger.warn`, so warnings go straight to the console (the build
+  // subprocess's stderr, which `spawnViteBuild` passes on).
   const warn = (message: string) =>
     console.warn(styleText('yellow', `${PREFIX} ${message}`));
 
@@ -215,7 +239,10 @@ export function pluginValidateConfig(
     }
 
     const unsupported = configuredTargets?.filter(
-      (t) => !t.startsWith('chrome') && !/^es(20\d\d|next)$/.test(t),
+      (t) =>
+        !t.startsWith('chrome') &&
+        t !== VITE_DEFAULT_TARGET &&
+        !/^es(20\d\d|next)$/.test(t),
     );
     if (unsupported && unsupported.length > 0) {
       warn(

@@ -132,14 +132,14 @@ For main and preload targets, the plugin errors when:
 
 * there is no entry to build (neither `build.rollupOptions.input` nor `build.lib.entry`);
 * an entry does not exist on disk, relative to the Vite `root` (entries that go through `resolve.alias` are skipped);
-* `build.target` is set to something other than a `node*` or `es20xx`/`esnext` target (preload targets also accept `chrome*`, since sandboxed preload scripts run in Chromium);
+* `build.target` is set to something other than a `node*` or `es20xx`/`esnext` target (preload targets also accept `chrome*` and Vite's default `baseline-widely-available`, since sandboxed preload scripts run in Chromium);
 * Vite would emit more than one output, since Electron loads a single bundle per target;
 * the output format is neither `cjs` nor `es`, or it is `es` but the file is still named `.cjs` (as Forge's default `build.lib.fileName` names it), which Electron would parse as CommonJS.
 
 For renderer targets, the plugin errors when there is no `index.html` in the
 Vite `root` and no `build.rollupOptions.input`. It warns — without failing the
 build — when `base` is neither `./` nor `/`, or when `build.target` is set to
-something other than a `chrome*` or `es20xx`/`esnext` target.
+something other than a `chrome*`, `baseline-widely-available` or `es20xx`/`esnext` target.
 
 ## Advanced configuration
 
