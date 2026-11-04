@@ -34,6 +34,22 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
   };
 }
 
+/**
+ * Main and preload are built in Vite's `ssr` environment, which reads
+ * `ssr.resolve` and ignores the top-level `resolve`. Carry a user's top-level
+ * `conditions` / `mainFields` over so configs written for the old browser
+ * builds keep resolving the same way, unless they set `ssr.resolve` already.
+ */
+export function carryResolveToSsr(config: UserConfig, userConfig: UserConfig) {
+  for (const key of ['conditions', 'mainFields'] as const) {
+    const value = userConfig.resolve?.[key];
+    if (value && userConfig.ssr?.resolve?.[key] == null) {
+      config.ssr ??= {};
+      config.ssr.resolve = { ...config.ssr.resolve, [key]: [...value] };
+    }
+  }
+}
+
 export function getDefineKeys(names: string[]) {
   const define: { [name: string]: VitePluginRuntimeKeys } = {};
 

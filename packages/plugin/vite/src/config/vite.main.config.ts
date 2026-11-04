@@ -9,6 +9,7 @@ import {
 } from 'vite';
 
 import {
+  carryResolveToSsr,
   external,
   getBuildConfig,
   getBuildDefine,
@@ -56,13 +57,14 @@ export function getConfig(
       // Resolution is deliberately left to the `ssr` environment's defaults:
       // they are already the Node-first lists this config used to spell out
       // by hand — conditions `['module', 'node', 'development|production']`
-      // and main fields `['module', 'jsnext:main', 'jsnext']`. The top-level
-      // `resolve.conditions` would be dead config here, because it only
-      // configures the `client` environment. `ssr.resolve.externalConditions`
+      // and main fields `['module', 'jsnext:main', 'jsnext']`. A user's top-level
+      // `resolve` options only configure the `client` environment, so
+      // `carryResolveToSsr` below copies them here. `ssr.resolve.externalConditions`
       // likewise does not apply: it only affects dependencies left external,
       // and the externals above never reach Vite's resolver.
     },
   };
+  carryResolveToSsr(config, userConfig);
   const buildConfig = getBuildConfig(forgeEnv);
 
   if (userConfig.build?.lib == null) {

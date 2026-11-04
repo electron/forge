@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import vm from 'node:vm';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -283,6 +284,65 @@ describe('subprocess-worker', () => {
     const contents = fs.readFileSync(outFile, 'utf8');
     expect(contents).not.toContain('process.env.NODE_ENV');
     expect(contents).toMatch(/["'`]production["'`]/);
+  });
+
+  it('carries a top-level resolve config over to main targets', async () => {
+    // The `ssr` environment ignores the top-level `resolve`, so Forge copies a
+    // user's `mainFields` over to keep configs written for the old builds
+    // resolving the same way.
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main-browser-field.js',
+          config: path.join(projectDir, 'vite.main.resolve.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'main-browser-field.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).toContain('resolved-browser-entry');
+    expect(contents).not.toContain('resolved-node-entry');
+  });
+
+  it('keeps import.meta undefined in sandboxed preload targets', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload-import-meta.js',
+          config: path.join(projectDir, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'preload-import-meta.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    const require = createRequire(outFile);
+
+    // A sandboxed preload has `require` but no `__filename` or `__dirname`.
+    const sandboxed: Record<string, unknown> = { require };
+    vm.runInNewContext(contents, sandboxed);
+    expect(sandboxed.metaUrl).toBeUndefined();
+    expect(sandboxed.metaDirname).toBeUndefined();
+
+    const unsandboxed: Record<string, unknown> = {
+      require,
+      __filename: outFile,
+      __dirname: path.dirname(outFile),
+    };
+    vm.runInNewContext(contents, unsandboxed);
+    expect(unsandboxed.metaUrl).toBe(pathToFileURL(outFile).href);
+    expect(unsandboxed.metaDirname).toBe(path.dirname(outFile));
   });
 
   it('builds a preload target', async () => {

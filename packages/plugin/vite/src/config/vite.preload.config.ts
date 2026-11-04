@@ -7,6 +7,7 @@ import {
 } from 'vite';
 
 import {
+  carryResolveToSsr,
   external,
   getBuildConfig,
   pluginHotRestart,
@@ -56,6 +57,15 @@ export function getConfig(
       // inlined to drop their development builds, as the old browser build
       // did.
       'process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
+      // A sandboxed preload (Electron's default) has no `__filename` or
+      // `__dirname`, so lowering `import.meta` to them would throw there.
+      // Keep the values the old browser build gave (`undefined`) in that case.
+      'import.meta.url':
+        '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
+      'import.meta.filename':
+        '(typeof __filename === "string" ? __filename : undefined)',
+      'import.meta.dirname':
+        '(typeof __dirname === "string" ? __dirname : undefined)',
     },
     ssr: {
       // Forge bundles everything but `electron` and Node builtins, which are
@@ -67,15 +77,16 @@ export function getConfig(
       // by default, so override it with the browser-first lists Vite uses for
       // its `client` environment. Only these resolver options are overridden;
       // `ssr.resolve.externalConditions` applies to dependencies left
-      // external, and the externals above never reach Vite's resolver. The
-      // top-level `resolve.conditions` is not set alongside, because it only
-      // configures the `client` environment, which `build.ssr` bypasses.
+      // external, and the externals above never reach Vite's resolver. A
+      // user's top-level `resolve` options are carried over by
+      // `carryResolveToSsr` below.
       resolve: {
         conditions: [...defaultClientConditions],
         mainFields: [...defaultClientMainFields],
       },
     },
   };
+  carryResolveToSsr(config, userConfig);
   const buildConfig = getBuildConfig(forgeEnv);
 
   return mergeConfig(mergeConfig(buildConfig, config), userConfig);

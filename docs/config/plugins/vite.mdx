@@ -121,9 +121,9 @@ If using the Vite template, this should be automatically set up for you.
 The main process and preload bundles are emitted with a `.cjs` extension, so Electron parses them as CommonJS even if your `package.json` has `"type": "module"`. Any preload path you build in the main process needs to use that extension too, for example `path.join(__dirname, 'preload.cjs')`.
 :::
 
-The main process and preload bundles are built as Node targets rather than browser bundles, so `process.env` is read at runtime instead of being inlined at build time. In the main process (and non-sandboxed preloads), Node globals such as `__dirname` and `import.meta.url` compile to working CommonJS. Sandboxed preloads, the default, have no `__filename` or `__dirname`, so `import.meta.url` throws a `ReferenceError` there. Preload bundles still inline `process.env.NODE_ENV`, so browser libraries drop their development builds.
+The main process and preload bundles are built as Node targets rather than browser bundles, so `process.env` is read at runtime instead of being inlined at build time. In the main process (and non-sandboxed preloads), Node globals such as `__dirname` and `import.meta.url` compile to working CommonJS. Sandboxed preloads, the default, have no `__filename` or `__dirname`, so `import.meta.url` and `import.meta.dirname` are `undefined` there. Preload bundles still inline `process.env.NODE_ENV`, so browser libraries drop their development builds.
 
-Because these builds use Vite's `ssr` environment, a top-level `resolve.conditions` or `resolve.mainFields` in your main or preload Vite config no longer applies to them. Set `ssr.resolve.conditions` and `ssr.resolve.mainFields` instead.
+These builds use Vite's `ssr` environment, which reads `ssr.resolve` rather than the top-level `resolve`. If your main or preload Vite config sets `resolve.conditions` or `resolve.mainFields` and not their `ssr.resolve` counterparts, Forge copies them over for you.
 
 ## Advanced configuration
 

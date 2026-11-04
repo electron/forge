@@ -165,6 +165,12 @@ describe('ViteConfigGenerator', () => {
       'global.process.env': 'global.process.env',
       'globalThis.process.env': 'globalThis.process.env',
       'process.env.NODE_ENV': JSON.stringify('production'),
+      'import.meta.url':
+        '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
+      'import.meta.filename':
+        '(typeof __filename === "string" ? __filename : undefined)',
+      'import.meta.dirname':
+        '(typeof __dirname === "string" ? __dirname : undefined)',
     });
     // Preload scripts are a hybrid environment, so the Node-first defaults of
     // the `ssr` environment are replaced with Vite's browser-first lists.
