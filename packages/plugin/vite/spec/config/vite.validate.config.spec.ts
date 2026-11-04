@@ -201,6 +201,30 @@ describe('pluginValidateConfig', () => {
     });
   });
 
+  it('accepts entries that only another plugin can resolve', async () => {
+    await buildWith({
+      build: {
+        rollupOptions: {
+          input: 'virtual:preload.js',
+          output: { format: 'cjs', entryFileNames: '[name].cjs' },
+        },
+      },
+      plugins: [
+        {
+          name: 'virtual-entry',
+          resolveId: (id) =>
+            id === 'virtual:preload.js' ? `\0${id}` : undefined,
+          load: (id) =>
+            id === '\0virtual:preload.js' ? 'console.log(1);' : undefined,
+        },
+        pluginValidateConfig(
+          'preload',
+          buildEnv('virtual:preload.js', 'preload'),
+        ),
+      ],
+    });
+  });
+
   it('does not treat aliased entries as missing files', async () => {
     await buildWith({
       resolve: { alias: { '@': path.join(root, 'src') } },
