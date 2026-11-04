@@ -57,15 +57,6 @@ export function getConfig(
       // inlined to drop their development builds, as the old browser build
       // did.
       'process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
-      // A sandboxed preload (Electron's default) has no `__filename` or
-      // `__dirname`, so lowering `import.meta` to them would throw there.
-      // Keep the values the old browser build gave (`undefined`) in that case.
-      'import.meta.url':
-        '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
-      'import.meta.filename':
-        '(typeof __filename === "string" ? __filename : undefined)',
-      'import.meta.dirname':
-        '(typeof __dirname === "string" ? __dirname : undefined)',
     },
     ssr: {
       // Forge bundles everything but `electron` and Node builtins, which are
@@ -87,6 +78,29 @@ export function getConfig(
     },
   };
   carryResolveToSsr(config, userConfig);
+
+  // A sandboxed preload (Electron's default) has no `__filename` or
+  // `__dirname`, so lowering `import.meta` to them would throw there. Keep the
+  // values the old browser build gave (`undefined`) in that case. An ES module
+  // preload keeps its native `import.meta`, so leave it alone.
+  const userOutput = userConfig.build?.rollupOptions?.output;
+  const userFormat = Array.isArray(userOutput)
+    ? userOutput.map((output) => output.format)
+    : [userOutput?.format];
+  if (
+    userFormat.every(
+      (format) => format == null || format === 'cjs' || format === 'commonjs',
+    )
+  ) {
+    Object.assign(config.define!, {
+      'import.meta.url':
+        '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
+      'import.meta.filename':
+        '(typeof __filename === "string" ? __filename : undefined)',
+      'import.meta.dirname':
+        '(typeof __dirname === "string" ? __dirname : undefined)',
+    });
+  }
   const buildConfig = getBuildConfig(forgeEnv);
 
   return mergeConfig(mergeConfig(buildConfig, config), userConfig);

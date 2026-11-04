@@ -39,13 +39,21 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
  * `ssr.resolve` and ignores the top-level `resolve`. Carry a user's top-level
  * `conditions` / `mainFields` over so configs written for the old browser
  * builds keep resolving the same way, unless they set `ssr.resolve` already.
+ * `previous` holds the lists Forge itself used to put before the user's.
  */
-export function carryResolveToSsr(config: UserConfig, userConfig: UserConfig) {
+export function carryResolveToSsr(
+  config: UserConfig,
+  userConfig: UserConfig,
+  previous: { conditions?: string[]; mainFields?: string[] } = {},
+) {
   for (const key of ['conditions', 'mainFields'] as const) {
     const value = userConfig.resolve?.[key];
     if (value && userConfig.ssr?.resolve?.[key] == null) {
       config.ssr ??= {};
-      config.ssr.resolve = { ...config.ssr.resolve, [key]: [...value] };
+      config.ssr.resolve = {
+        ...config.ssr.resolve,
+        [key]: [...(previous[key] ?? []), ...value],
+      };
     }
   }
 }

@@ -46,8 +46,11 @@ describe('ViteConfigGenerator', () => {
       'electron/main',
     ]);
     expect(buildConfig.clearScreen).toBe(false);
-    // Hot restart is opt-in, so the main config carries no plugins by default.
-    expect(buildConfig.plugins).toEqual([]);
+    // Hot restart is opt-in, so by default the main config only carries the
+    // plugin that names entries the way a library build would.
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:lib-entry-names']);
     // Only the `process.env` self-defines, since this fixture has no renderers.
     expect(buildConfig.define).toEqual({
       'process.env': 'process.env',
@@ -100,7 +103,33 @@ describe('ViteConfigGenerator', () => {
 
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    ).toEqual([
+      '@electron-forge/plugin-vite:hot-restart',
+      '@electron-forge/plugin-vite:lib-entry-names',
+    ]);
+  });
+
+  it('getBuildConfigs:main keeps the Node-first lists ahead of a top-level resolve', async () => {
+    // Forge used to set `resolve.conditions: ['node']` and Vite appended a
+    // user's own list, so carrying a user's list over to `ssr.resolve` keeps
+    // that order.
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(
+            import.meta.dirname,
+            'fixtures/subprocess-build/vite.main.conditions.config.mjs',
+          ),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.ssr?.resolve?.conditions).toEqual(['node', 'custom']);
   });
 
   it('getBuildConfigs:preload', async () => {

@@ -345,6 +345,69 @@ describe('subprocess-worker', () => {
     expect(unsandboxed.metaDirname).toBe(path.dirname(outFile));
   });
 
+  it('names main entries for each output when the output is an array', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.array.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    expect(fs.readdirSync(path.join(viteOutDir, 'build'))).toEqual([
+      'main.cjs',
+    ]);
+  });
+
+  it('names main entries per format for a multi-format build.lib', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.multi.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    expect(fs.readdirSync(path.join(viteOutDir, 'build')).sort()).toEqual([
+      'main.cjs',
+      'main.es',
+    ]);
+  });
+
+  it('keeps native import.meta in ES module preload targets', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload-import-meta.js',
+          config: path.join(projectDir, 'vite.preload.esm.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'preload-import-meta.mjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).toContain('import.meta.url');
+    expect(contents).toContain('import.meta.dirname');
+    expect(contents).not.toContain('__filename');
+  });
+
   it('builds a preload target', async () => {
     const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
       build: [
