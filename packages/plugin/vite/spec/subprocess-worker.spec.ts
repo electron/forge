@@ -242,6 +242,49 @@ describe('subprocess-worker', () => {
     expect(contents).not.toContain('modulepreload');
   });
 
+  it('names main entries from a user-supplied build.lib.fileName', async () => {
+    // An SSR build ignores `lib.fileName`, so Forge names the entry the way a
+    // library build would.
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.lib.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    expect(fs.readdirSync(path.join(viteOutDir, 'build'))).toEqual([
+      'custom-main.cjs',
+    ]);
+  });
+
+  it('inlines process.env.NODE_ENV in preload targets', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/preload-node-env.js',
+          config: path.join(projectDir, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+    expect(code, stderr).toBe(0);
+
+    const outFile = path.join(viteOutDir, 'build', 'preload-node-env.cjs');
+    const contents = fs.readFileSync(outFile, 'utf8');
+    expect(contents).not.toContain('process.env.NODE_ENV');
+    expect(contents).toMatch(/["'`]production["'`]/);
+  });
+
   it('builds a preload target', async () => {
     const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
       build: [

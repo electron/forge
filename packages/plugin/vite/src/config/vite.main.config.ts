@@ -1,4 +1,12 @@
-import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
+import fs from 'node:fs';
+import path from 'node:path';
+
+import {
+  type ConfigEnv,
+  type LibraryOptions,
+  mergeConfig,
+  type UserConfig,
+} from 'vite';
 
 import {
   external,
@@ -34,10 +42,8 @@ export function getConfig(
       ...(forgeEnv.forgeConfig.hotRestart ? [pluginHotRestart('restart')] : []),
     ],
     define: {
-      // Pin `process.env` to itself so a Node bundle can never end up with
-      // build-time environment values baked in. Vite 8 already leaves it
-      // alone in the `ssr` environment, so these are a no-op today; they exist
-      // so that stays true. Forge's own defines are spread last so they win.
+      // Keep `process.env` a runtime read (a no-op on Vite 8, kept as
+      // insurance). Forge's own defines are spread last so they win.
       'process.env': 'process.env',
       'global.process.env': 'global.process.env',
       'globalThis.process.env': 'globalThis.process.env',
@@ -65,11 +71,62 @@ export function getConfig(
       fileName: () => '[name].cjs',
       formats: ['cjs'],
     };
-    // An SSR build ignores `lib.fileName` and names entries `[name].js` or
-    // `[name].cjs` from the nearest package.json's `type`, so a CommonJS
-    // project would otherwise get `main.js` instead of `main.cjs`.
-    config.build!.rollupOptions!.output = { entryFileNames: '[name].cjs' };
+  }
+
+  // An SSR build ignores `lib.fileName` and names entries `[name].js` or
+  // `[name].cjs` from the nearest package.json's `type`, so a CommonJS project
+  // would get `main.js` where its `main` field expects `main.cjs`. Name the
+  // entry the way a library build would, unless the user names it directly.
+  const lib = userConfig.build?.lib ?? config.build!.lib;
+  const userOutput = userConfig.build?.rollupOptions?.output;
+  if (lib && !Array.isArray(userOutput) && userOutput?.entryFileNames == null) {
+    config.build!.rollupOptions!.output = {
+      entryFileNames: libEntryFileNames(lib, forgeEnv.root),
+    };
   }
 
   return mergeConfig(mergeConfig(buildConfig, config), userConfig);
+}
+
+/**
+ * Mirrors how Vite names a library build's entry file, which an SSR build
+ * otherwise skips. Only the first format is named, since Forge emits one.
+ */
+function libEntryFileNames(lib: LibraryOptions, root: string) {
+  const format = lib.formats?.[0] ?? 'es';
+  return ({ name }: { name: string }) => {
+    if (typeof lib.fileName === 'function') return lib.fileName(format, name);
+    const pkgName = findPackageJson(root, (pkg) => !!pkg.name)?.name;
+    const base =
+      lib.fileName ??
+      (pkgName && typeof lib.entry === 'string'
+        ? pkgName.replace(/^@[^/]+\//, '')
+        : name);
+    const type = findPackageJson(root, () => true)?.type;
+    const ext =
+      type === 'module'
+        ? format === 'cjs' || format === 'umd'
+          ? 'cjs'
+          : 'js'
+        : format === 'es'
+          ? 'mjs'
+          : 'js';
+    return format === 'cjs' || format === 'es'
+      ? `${base}.${ext}`
+      : `${base}.${format}.${ext}`;
+  };
+}
+
+function findPackageJson(
+  dir: string,
+  match: (pkg: { name?: string; type?: string }) => boolean,
+): { name?: string; type?: string } | undefined {
+  for (let current = dir; ; current = path.dirname(current)) {
+    const file = path.join(current, 'package.json');
+    if (fs.existsSync(file)) {
+      const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+      if (match(pkg)) return pkg;
+    }
+    if (path.dirname(current) === current) return undefined;
+  }
 }

@@ -1,4 +1,10 @@
-import { type ConfigEnv, mergeConfig, type UserConfig } from 'vite';
+import {
+  type ConfigEnv,
+  defaultClientConditions,
+  defaultClientMainFields,
+  mergeConfig,
+  type UserConfig,
+} from 'vite';
 
 import {
   external,
@@ -41,13 +47,15 @@ export function getConfig(
     },
     plugins: [pluginHotRestart('reload')],
     define: {
-      // Pin `process.env` to itself so a Node bundle can never end up with
-      // build-time environment values baked in. Vite 8 already leaves it
-      // alone in the `ssr` environment, so these are a no-op today; they exist
-      // so that stays true.
+      // Keep `process.env` a runtime read (a no-op on Vite 8, kept as insurance).
       'process.env': 'process.env',
       'global.process.env': 'global.process.env',
       'globalThis.process.env': 'globalThis.process.env',
+      // The `ssr` environment keeps `process.env.NODE_ENV` as a runtime read,
+      // but browser-oriented dependencies in a preload rely on it being
+      // inlined to drop their development builds, as the old browser build
+      // did.
+      'process.env.NODE_ENV': JSON.stringify(forgeEnv.mode),
     },
     ssr: {
       // Forge bundles everything but `electron` and Node builtins, which are
@@ -63,8 +71,8 @@ export function getConfig(
       // top-level `resolve.conditions` is not set alongside, because it only
       // configures the `client` environment, which `build.ssr` bypasses.
       resolve: {
-        conditions: ['module', 'browser', 'development|production'],
-        mainFields: ['browser', 'module', 'jsnext:main', 'jsnext'],
+        conditions: [...defaultClientConditions],
+        mainFields: [...defaultClientMainFields],
       },
     },
   };
