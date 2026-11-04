@@ -185,6 +185,15 @@ describe('pluginValidateConfig', () => {
     });
   });
 
+  it('resolves root-relative entries the way Vite does', async () => {
+    await buildWith({
+      build: {
+        lib: { entry: '/src/main.js', formats: ['cjs'] },
+      },
+      plugins: [pluginValidateConfig('main', buildEnv('/src/main.js'))],
+    });
+  });
+
   it('does not treat aliased entries as missing files', async () => {
     await buildWith({
       resolve: { alias: { '@': path.join(root, 'src') } },

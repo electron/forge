@@ -42,35 +42,6 @@ function looksLikeFilePath(entry: string): boolean {
   );
 }
 
-/**
- * Entries such as `@/main.ts` go through `resolve.alias`, so they are not
- * paths relative to the root.
- */
-function isAliased(config: ResolvedConfig, entry: string): boolean {
-  return config.resolve.alias.some(({ find }) =>
-    typeof find === 'string'
-      ? entry === find || entry.startsWith(`${find}/`)
-      : find.test(entry),
-  );
-}
-
-/**
- * Vite resolves path-like entries such as `./src/main` by also trying
- * `resolve.extensions` and a directory index, so an entry only counts as
- * missing when none of those exist.
- */
-function entryExists(config: ResolvedConfig, entry: string): boolean {
-  const file = path.resolve(config.root, entry);
-  const extensions = config.resolve.extensions ?? [];
-  return [
-    file,
-    ...extensions.map((ext) => `${file}${ext}`),
-    ...extensions.map((ext) => path.join(file, `index${ext}`)),
-  ].some((candidate) =>
-    fs.statSync(candidate, { throwIfNoEntry: false })?.isFile(),
-  );
-}
-
 // Vite's own default target, a browser list that includes current Chromium.
 const VITE_DEFAULT_TARGET = 'baseline-widely-available';
 
@@ -119,7 +90,7 @@ export function pluginValidateConfig(
   // that the inline config and every earlier plugin's `config` hook asked for.
   let configuredTargets: string[] | undefined;
 
-  const validateBuild = (config: ResolvedConfig) => {
+  const validateBuild = async (config: ResolvedConfig) => {
     const { build } = config;
     const lib = typeof build.lib === 'object' ? build.lib : undefined;
     const input =
@@ -133,12 +104,14 @@ export function pluginValidateConfig(
       );
     }
 
-    const missing = entryList(entry).filter(
-      (file) =>
-        looksLikeFilePath(file) &&
-        !isAliased(config, file) &&
-        !entryExists(config, file),
-    );
+    // Resolve entries with Vite's own resolver, which applies `resolve.alias`,
+    // `resolve.extensions`, directory indexes and root-relative "/" paths.
+    const resolveEntry = config.createResolver();
+    const importer = path.join(config.root, 'index.html');
+    const missing: string[] = [];
+    for (const file of entryList(entry).filter(looksLikeFilePath)) {
+      if (!(await resolveEntry(file, importer))) missing.push(file);
+    }
     if (missing.length > 0) {
       throw new Error(
         `${PREFIX} ${where} has ${missing.length > 1 ? 'entries' : 'an entry'} that ${
@@ -278,11 +251,11 @@ export function pluginValidateConfig(
     config(config: UserConfig) {
       configuredTargets = targetList(config.build?.target);
     },
-    configResolved(config) {
+    async configResolved(config) {
       if (target === 'renderer') {
         validateRenderer(config);
       } else {
-        validateBuild(config);
+        await validateBuild(config);
       }
     },
   };
