@@ -185,12 +185,19 @@ export default class WebpackConfigGenerator {
       }
       for (const entryPoint of pluginRendererOptions.entryPoints) {
         const entryKey = this.toEnvironmentVariable(entryPoint);
-        if (isLocalWindow(entryPoint)) {
-          defines[entryKey] = this.rendererEntryPoint(entryPoint, 'index.html');
-        } else {
-          defines[entryKey] = this.rendererEntryPoint(entryPoint, 'index.js');
+        // A preload-only entry builds no renderer script, so it must not replace
+        // the URL that another entry with the same name has defined.
+        if (!isPreloadOnly(entryPoint) || !(entryKey in defines)) {
+          if (isLocalWindow(entryPoint)) {
+            defines[entryKey] = this.rendererEntryPoint(
+              entryPoint,
+              'index.html',
+            );
+          } else {
+            defines[entryKey] = this.rendererEntryPoint(entryPoint, 'index.js');
+          }
+          defines[`process.env.${entryKey}`] = defines[entryKey];
         }
-        defines[`process.env.${entryKey}`] = defines[entryKey];
 
         const preloadDefineKey = this.toEnvironmentVariable(entryPoint, true);
         defines[preloadDefineKey] = this.getPreloadDefine(entryPoint);
