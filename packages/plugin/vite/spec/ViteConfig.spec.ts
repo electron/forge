@@ -55,6 +55,30 @@ describe('ViteConfigGenerator', () => {
     });
   });
 
+  it('getBuildConfigs:main with type module', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+      outputFormat: 'es',
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.lib && buildConfig.build.lib.formats).toEqual([
+      'es',
+    ]);
+    expect(
+      buildConfig.build?.lib &&
+        (buildConfig.build.lib.fileName as () => string)(),
+    ).toEqual('[name].mjs');
+  });
+
   it('getBuildConfigs:main adds the hot restart plugin when hotRestart is enabled', async () => {
     const forgeConfig: VitePluginConfig = {
       build: [
@@ -112,6 +136,30 @@ describe('ViteConfigGenerator', () => {
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
     ).toEqual(['@electron-forge/plugin-vite:hot-reload']);
+  });
+
+  it('getBuildConfigs:preload with type module', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+      outputFormat: 'es',
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.rollupOptions?.output).toEqual({
+      format: 'es',
+      codeSplitting: false,
+      entryFileNames: '[name].mjs',
+      chunkFileNames: '[name].mjs',
+      assetFileNames: '[name].[ext]',
+    });
   });
 
   it('getRendererConfig:renderer', async () => {
