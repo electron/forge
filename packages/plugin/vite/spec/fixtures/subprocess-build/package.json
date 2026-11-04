@@ -1,0 +1,5 @@
+{
+  "name": "subprocess-build-fixture",
+  "private": true,
+  "type": "commonjs"
+}

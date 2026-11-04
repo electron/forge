@@ -46,13 +46,44 @@ describe('ViteConfigGenerator', () => {
       'electron/main',
     ]);
     expect(buildConfig.clearScreen).toBe(false);
-    // Hot restart is opt-in, so the main config carries no plugins by default.
-    expect(buildConfig.plugins).toEqual([]);
-    expect(buildConfig.define).toEqual({});
-    expect(buildConfig.resolve).toEqual({
-      conditions: ['node'],
-      mainFields: ['module', 'jsnext:main', 'jsnext'],
+    // Hot restart is opt-in, so by default the main config only carries the
+    // plugin that names entries the way a library build would.
+    expect(
+      buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
+    ).toEqual(['@electron-forge/plugin-vite:lib-entry-names']);
+    // Only the `process.env` self-defines, since this fixture has no renderers.
+    expect(buildConfig.define).toEqual({
+      'process.env': 'process.env',
+      'global.process.env': 'global.process.env',
+      'globalThis.process.env': 'globalThis.process.env',
     });
+    // Node resolution now comes from the `ssr` environment's defaults, so the
+    // top-level `resolve` (which only configures the `client` environment) is
+    // left untouched.
+    expect(buildConfig.resolve).toBeUndefined();
+  });
+
+  it('getBuildConfigs:main builds as a Node (SSR) target', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(configRoot, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.ssr).toBe(true);
+    expect(buildConfig.build?.ssrEmitAssets).toBe(true);
+    expect(buildConfig.build?.modulePreload).toBe(false);
+    // Everything but `electron` and the Node builtins stays bundled.
+    expect(buildConfig.ssr?.noExternal).toBe(true);
+    // The `ssr` environment already resolves Node-first, so nothing to override.
+    expect(buildConfig.ssr?.resolve).toBeUndefined();
   });
 
   it('getBuildConfigs:main adds the hot restart plugin when hotRestart is enabled', async () => {
@@ -72,7 +103,33 @@ describe('ViteConfigGenerator', () => {
 
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
-    ).toEqual(['@electron-forge/plugin-vite:hot-restart']);
+    ).toEqual([
+      '@electron-forge/plugin-vite:hot-restart',
+      '@electron-forge/plugin-vite:lib-entry-names',
+    ]);
+  });
+
+  it('getBuildConfigs:main keeps the Node-first lists ahead of a top-level resolve', async () => {
+    // Forge used to set `resolve.conditions: ['node']` and Vite appended a
+    // user's own list, so carrying a user's list over to `ssr.resolve` keeps
+    // that order.
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(
+            import.meta.dirname,
+            'fixtures/subprocess-build/vite.main.conditions.config.mjs',
+          ),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.ssr?.resolve?.conditions).toEqual(['node', 'custom']);
   });
 
   it('getBuildConfigs:preload', async () => {
@@ -112,6 +169,47 @@ describe('ViteConfigGenerator', () => {
     expect(
       buildConfig.plugins?.map((plugin) => (plugin as Plugin).name),
     ).toEqual(['@electron-forge/plugin-vite:hot-reload']);
+  });
+
+  it('getBuildConfigs:preload builds as a Node (SSR) target that resolves browser entries', async () => {
+    const forgeConfig: VitePluginConfig = {
+      build: [
+        {
+          entry: 'src/preload.js',
+          config: path.join(configRoot, 'vite.preload.config.mjs'),
+          target: 'preload',
+        },
+      ],
+      renderer: [],
+    };
+    const generator = new ViteConfigGenerator(forgeConfig, configRoot, true);
+    const buildConfig = (await generator.getBuildConfigs())[0];
+
+    expect(buildConfig.build?.ssr).toBe(true);
+    expect(buildConfig.build?.ssrEmitAssets).toBe(true);
+    expect(buildConfig.build?.modulePreload).toBe(false);
+    expect(buildConfig.ssr?.noExternal).toBe(true);
+    expect(buildConfig.define).toEqual({
+      'process.env': 'process.env',
+      'global.process.env': 'global.process.env',
+      'globalThis.process.env': 'globalThis.process.env',
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      'global.process.env.NODE_ENV': JSON.stringify('production'),
+      'globalThis.process.env.NODE_ENV': JSON.stringify('production'),
+      'import.meta.url':
+        '(typeof __filename === "string" ? require("url").pathToFileURL(__filename).href : undefined)',
+      'import.meta.filename':
+        '(typeof __filename === "string" ? __filename : undefined)',
+      'import.meta.dirname':
+        '(typeof __dirname === "string" ? __dirname : undefined)',
+    });
+    // Preload scripts are a hybrid environment, so the Node-first defaults of
+    // the `ssr` environment are replaced with Vite's browser-first lists.
+    expect(buildConfig.ssr?.resolve).toEqual({
+      conditions: ['module', 'browser', 'development|production'],
+      mainFields: ['browser', 'module', 'jsnext:main', 'jsnext'],
+    });
+    expect(buildConfig.resolve).toBeUndefined();
   });
 
   it('getRendererConfig:renderer', async () => {
