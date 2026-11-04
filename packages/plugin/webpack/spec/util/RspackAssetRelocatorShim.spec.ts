@@ -22,23 +22,26 @@ class FakeRuntimeModule {
 }
 
 function createFakeCompiler() {
-  const thisCompilationTaps: Fn[] = [];
-  const compilationTaps: Fn[] = [];
+  const compilationTaps: { stage: number; fn: Fn }[] = [];
   const compiler = {
     webpack: { RuntimeModule: FakeRuntimeModule },
     options: { output: { path: '/out/renderer' } },
     hooks: {
-      thisCompilation: {
-        tap: (_: string, fn: Fn) => thisCompilationTaps.push(fn),
+      compilation: {
+        tap: (options: string | { stage?: number }, fn: Fn) => {
+          const stage = typeof options === 'string' ? 0 : (options.stage ?? 0);
+          compilationTaps.push({ stage, fn });
+          compilationTaps.sort((a, b) => a.stage - b.stage);
+        },
       },
-      compilation: { tap: (_: string, fn: Fn) => compilationTaps.push(fn) },
     },
   };
 
-  const compile = (runLoader: boolean) => {
+  const compile = (runLoader: boolean, { child = false } = {}) => {
     const runtimeRequirementTaps: Fn[] = [];
     const runtimeModules: FakeRuntimeModule[] = [];
     const compilation: any = {
+      compiler: child ? { name: 'child' } : compiler,
       hooks: {
         additionalTreeRuntimeRequirements: {
           tap: (_: string, fn: Fn) => runtimeRequirementTaps.push(fn),
@@ -47,8 +50,7 @@ function createFakeCompiler() {
       addRuntimeModule: (_chunk: unknown, mod: FakeRuntimeModule) =>
         runtimeModules.push(mod),
     };
-    for (const fn of thisCompilationTaps) fn(compilation);
-    for (const fn of compilationTaps) fn(compilation);
+    for (const { fn } of compilationTaps) fn(compilation);
     if (runLoader) fakeRelocatorLoader(compilation);
     const chunk = { name: 'main_window/index' };
     for (const fn of runtimeRequirementTaps) fn(chunk, new Set());
@@ -100,6 +102,26 @@ describe('RspackAssetRelocatorShim', () => {
     new RspackAssetRelocatorShim().apply(compiler as any);
     compile(true);
     expect(compile(true).match(/__webpack_require__\.ab/g)).toHaveLength(1);
+  });
+
+  it('gives child compilations the hook without sharing taps', () => {
+    const { compiler, compile } = createFakeCompiler();
+    new RspackAssetRelocatorShim().apply(compiler as any);
+    // A child compilation that runs the loader gets the hook...
+    expect(compile(true, { child: true })).toContain(
+      '__webpack_require__.ab = __dirname',
+    );
+    // ...but its tap is not replayed into the next top-level compilation.
+    expect(compile(false)).toEqual('');
+  });
+
+  it('runs ahead of AssetRelocatorPatch whatever the plugin order', () => {
+    const { compiler, compile } = createFakeCompiler();
+    new AssetRelocatorPatch(true, true).apply(compiler as any);
+    new RspackAssetRelocatorShim().apply(compiler as any);
+    expect(compile(true)).toContain(
+      'require("path").resolve(__dirname, "..") + "/native_modules/"',
+    );
   });
 
   it('lets AssetRelocatorPatch rewrite the base path', () => {

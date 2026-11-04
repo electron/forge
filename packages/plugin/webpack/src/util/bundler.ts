@@ -42,35 +42,44 @@ type RspackModule = {
 
 async function importRspack(projectDir: string): Promise<RspackModule> {
   // `@rspack/core` is an optional peer dependency, so it is installed by the
-  // app rather than by this plugin. Resolve it from the plugin first (which
-  // works for hoisted installs and for pnpm's peer linking), then from the
-  // app's own `node_modules`.
-  const candidates: (() => string)[] = [
-    () => RSPACK_PACKAGE,
-    () =>
-      pathToFileURL(
-        createRequire(path.resolve(projectDir, 'package.json')).resolve(
-          RSPACK_PACKAGE,
-        ),
-      ).toString(),
+  // app rather than by this plugin. Resolve it from the app first, so the app
+  // gets the version it asked for even when a workspace hoists another one.
+  // Then fall back to the plugin's own resolution, which covers pnpm's peer
+  // linking and Yarn PnP.
+  const resolvers = [
+    createRequire(path.resolve(projectDir, 'package.json')),
+    createRequire(import.meta.url),
   ];
 
-  let lastError: unknown;
-  for (const candidate of candidates) {
+  let resolved: string | undefined;
+  let notFoundError: unknown;
+  for (const resolver of resolvers) {
     try {
-      const specifier = candidate();
-      d('trying to import rspack from', specifier);
-      const mod = await import(specifier);
-      return (mod.rspack ? mod : mod.default) as RspackModule;
+      resolved = resolver.resolve(RSPACK_PACKAGE);
+      break;
     } catch (err) {
-      lastError = err;
+      notFoundError ??= err;
     }
   }
 
-  throw new Error(
-    `The webpack plugin is configured with \`bundler: 'rspack'\`, but "${RSPACK_PACKAGE}" could not be loaded. Install it in your app with your package manager (for example \`npm install --save-dev ${RSPACK_PACKAGE}\`).`,
-    { cause: lastError },
-  );
+  if (!resolved) {
+    throw new Error(
+      `The webpack plugin is configured with \`bundler: 'rspack'\`, but "${RSPACK_PACKAGE}" is not installed. Install it in your app with your package manager (for example \`npm install --save-dev ${RSPACK_PACKAGE}\`).`,
+      { cause: notFoundError },
+    );
+  }
+
+  try {
+    d('importing rspack from', resolved);
+    const mod = await import(pathToFileURL(resolved).toString());
+    return (mod.rspack ? mod : mod.default) as RspackModule;
+  } catch (err) {
+    // For example, a platform binding that was not installed.
+    throw new Error(
+      `The webpack plugin is configured with \`bundler: 'rspack'\`, but "${RSPACK_PACKAGE}" (resolved to ${resolved}) failed to load: ${err instanceof Error ? err.message : String(err)}`,
+      { cause: err },
+    );
+  }
 }
 
 const cache = new Map<string, Promise<Bundler>>();

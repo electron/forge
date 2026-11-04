@@ -1,6 +1,7 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
+import { BundlerName } from './util/bundler.js';
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig.js';
 
 export interface WebpackPluginEntryPointBase {
@@ -136,7 +137,7 @@ export interface WebpackPluginConfig {
    *
    * The dev server is still `webpack-dev-server`.
    */
-  bundler?: 'webpack' | 'rspack';
+  bundler?: BundlerName;
   /**
    * The webpack config for your main process
    */

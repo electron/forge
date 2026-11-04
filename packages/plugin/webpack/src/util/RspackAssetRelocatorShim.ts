@@ -43,7 +43,7 @@ class RequireExtensionsHook {
     }
   }
 
-  get isUsed(): boolean {
+  isUsed(): boolean {
     return this.taps.length > 0;
   }
 
@@ -76,45 +76,56 @@ export default class RspackAssetRelocatorShim {
     // Rspack's compiler exposes its own exports as `compiler.webpack`.
     const { RuntimeModule } = compiler.webpack;
 
-    // `thisCompilation` runs before `compilation`, where AssetRelocatorPatch
-    // looks for the hook.
-    compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
-      if (compilation.mainTemplate) return;
+    // `compilation` also fires for child compilations (such as
+    // html-webpack-plugin's template build), which can run the loader too.
+    // The early stage keeps this ahead of AssetRelocatorPatch, which looks for
+    // the hook in its own `compilation` tap.
+    compiler.hooks.compilation.tap(
+      { name: pluginName, stage: -100 },
+      (compilation) => {
+        if (compilation.mainTemplate) return;
 
-      const requireExtensions = new RequireExtensionsHook(({ name, fn }) =>
-        this.knownTaps.set(name, fn),
-      );
-      for (const [name, fn] of this.knownTaps) {
-        requireExtensions.tap(name, fn);
-      }
-      Object.defineProperty(compilation, 'mainTemplate', {
-        configurable: true,
-        value: { hooks: { requireExtensions } },
-      });
-
-      compilation.hooks.additionalTreeRuntimeRequirements.tap(
-        pluginName,
-        (chunk) => {
-          // The loader taps the hook the first time it runs, so there is
-          // nothing to add for bundles that do not use it.
-          if (!requireExtensions.isUsed) return;
-
-          class AssetRelocatorBaseRuntimeModule extends RuntimeModule {
-            constructor() {
-              super('asset-relocator-base', RuntimeModule.STAGE_ATTACH);
-            }
-
-            generate(): string {
-              return requireExtensions.call('', chunk);
-            }
+        // Only replay taps within the top-level compilations of this
+        // compiler. A child compilation runs the loader itself when it needs
+        // it.
+        const isChild = compilation.compiler !== compiler;
+        const requireExtensions = new RequireExtensionsHook(({ name, fn }) => {
+          if (!isChild) this.knownTaps.set(name, fn);
+        });
+        if (!isChild) {
+          for (const [name, fn] of this.knownTaps) {
+            requireExtensions.tap(name, fn);
           }
+        }
+        Object.defineProperty(compilation, 'mainTemplate', {
+          configurable: true,
+          value: { hooks: { requireExtensions } },
+        });
 
-          compilation.addRuntimeModule(
-            chunk,
-            new AssetRelocatorBaseRuntimeModule(),
-          );
-        },
-      );
-    });
+        compilation.hooks.additionalTreeRuntimeRequirements.tap(
+          pluginName,
+          (chunk) => {
+            // The loader taps the hook the first time it runs, so there is
+            // nothing to add for bundles that do not use it.
+            if (!requireExtensions.isUsed()) return;
+
+            class AssetRelocatorBaseRuntimeModule extends RuntimeModule {
+              constructor() {
+                super('asset-relocator-base', RuntimeModule.STAGE_ATTACH);
+              }
+
+              generate(): string {
+                return requireExtensions.call('', chunk);
+              }
+            }
+
+            compilation.addRuntimeModule(
+              chunk,
+              new AssetRelocatorBaseRuntimeModule(),
+            );
+          },
+        );
+      },
+    );
   }
 }

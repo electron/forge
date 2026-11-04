@@ -14,7 +14,7 @@ describe('loadBundler', () => {
   // `@rspack/core` is deliberately not installed in this repo.
   it('explains how to install Rspack when it is missing', async () => {
     await expect(loadBundler('rspack', process.cwd())).rejects.toThrow(
-      /"@rspack\/core" could not be loaded/,
+      /"@rspack\/core" is not installed/,
     );
   });
 
