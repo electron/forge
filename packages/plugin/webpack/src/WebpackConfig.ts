@@ -3,9 +3,6 @@ import path from 'node:path';
 import debug from 'debug';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import type * as webpack from 'webpack';
-import webpackPkg from 'webpack';
-
-const { DefinePlugin, ExternalsPlugin } = webpackPkg;
 import { merge as webpackMerge } from 'webpack-merge';
 
 import {
@@ -16,7 +13,9 @@ import {
   WebpackPluginRendererConfig,
 } from './Config.js';
 import AssetRelocatorPatch from './util/AssetRelocatorPatch.js';
+import { Bundler, loadBundler } from './util/bundler.js';
 import processConfig from './util/processConfig.js';
+import RspackAssetRelocatorShim from './util/RspackAssetRelocatorShim.js';
 import {
   isLocalOrNoWindowEntries,
   isLocalWindow,
@@ -90,6 +89,22 @@ export default class WebpackConfigGenerator {
     this.port = port;
 
     d('Config mode:', this.mode);
+  }
+
+  /**
+   * Load the bundler (webpack or Rspack) that the plugin config asks for.
+   */
+  getBundler(): Promise<Bundler> {
+    return loadBundler(this.pluginConfig.bundler, this.projectDir);
+  }
+
+  /**
+   * Plugins that make webpack loaders work under Rspack. Empty for webpack.
+   */
+  private get bundlerCompatPlugins(): webpack.WebpackPluginInstance[] {
+    return this.pluginConfig.bundler === 'rspack'
+      ? [new RspackAssetRelocatorShim()]
+      : [];
   }
 
   async resolveConfig(
@@ -223,6 +238,7 @@ export default class WebpackConfigGenerator {
       return ret;
     };
     mainConfig.entry = fix(mainConfig.entry as EntryType);
+    const { DefinePlugin } = await this.getBundler();
 
     return webpackMerge(
       {
@@ -234,7 +250,10 @@ export default class WebpackConfigGenerator {
           filename: 'index.cjs',
           libraryTarget: 'commonjs2',
         },
-        plugins: [new DefinePlugin(this.getDefines())],
+        plugins: [
+          ...this.bundlerCompatPlugins,
+          new DefinePlugin(this.getDefines()),
+        ],
         node: {
           __dirname: false,
           __filename: false,
@@ -327,6 +346,7 @@ export default class WebpackConfigGenerator {
         __filename: false,
       },
       plugins: [
+        ...this.bundlerCompatPlugins,
         new AssetRelocatorPatch(
           this.isProd,
           target === RendererTarget.ElectronRenderer ||
@@ -405,6 +425,7 @@ export default class WebpackConfigGenerator {
     const rendererConfig = await this.resolveConfig(
       entryPoints[0].preload?.config || rendererOptions.config,
     );
+    const { ExternalsPlugin } = await this.getBundler();
 
     for (const entryPoint of entryPoints) {
       entry[entryPoint.name] = (entryPoint.prefixedEntries || []).concat([

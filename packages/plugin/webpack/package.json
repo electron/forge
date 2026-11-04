@@ -33,6 +33,14 @@
     "webpack-dev-server": "^5.2.4",
     "webpack-merge": "^5.7.3"
   },
+  "peerDependencies": {
+    "@rspack/core": "^1.1.0 || ^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

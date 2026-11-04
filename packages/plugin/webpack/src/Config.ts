@@ -1,6 +1,7 @@
 import { Configuration as RawWebpackConfiguration } from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
+import { BundlerName } from './util/bundler.js';
 import { ConfigurationFactory as WebpackConfigurationFactory } from './WebpackConfig.js';
 
 export interface WebpackPluginEntryPointBase {
@@ -126,6 +127,17 @@ export interface EntryPointPluginConfig {
 }
 
 export interface WebpackPluginConfig {
+  /**
+   * The bundler that builds your main, preload and renderer code. Defaults to `'webpack'`.
+   *
+   * Set this to `'rspack'` to build with [Rspack](https://rspack.rs), a
+   * webpack-compatible bundler. Rspack is not installed with this plugin: add
+   * `@rspack/core` to your app's `devDependencies` to use it. Your webpack configs are passed to
+   * Rspack as they are, so loaders and plugins must be ones that Rspack supports.
+   *
+   * The dev server is still `webpack-dev-server`.
+   */
+  bundler?: BundlerName;
   /**
    * The webpack config for your main process
    */
