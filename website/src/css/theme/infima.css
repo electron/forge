@@ -1,0 +1,105 @@
+/* Infima, mapped to Lucent */
+
+:root {
+  --ifm-color-primary: var(--lu-accent);
+  --ifm-color-primary-dark: color-mix(
+    in srgb,
+    var(--lu-accent) 90%,
+    var(--lu-ink)
+  );
+  --ifm-color-primary-darker: color-mix(
+    in srgb,
+    var(--lu-accent) 85%,
+    var(--lu-ink)
+  );
+  --ifm-color-primary-darkest: color-mix(
+    in srgb,
+    var(--lu-accent) 70%,
+    var(--lu-ink)
+  );
+  --ifm-color-primary-light: color-mix(
+    in srgb,
+    var(--lu-accent) 90%,
+    var(--lu-surface)
+  );
+  --ifm-color-primary-lighter: color-mix(
+    in srgb,
+    var(--lu-accent) 85%,
+    var(--lu-surface)
+  );
+  --ifm-color-primary-lightest: color-mix(
+    in srgb,
+    var(--lu-accent) 70%,
+    var(--lu-surface)
+  );
+
+  --ifm-color-success: var(--lu-success);
+  --ifm-color-warning: var(--lu-warning);
+  --ifm-color-danger: var(--lu-spark);
+  --ifm-color-info: var(--lu-accent);
+
+  --ifm-background-color: var(--lu-surface);
+  --ifm-background-surface-color: var(--lu-window);
+  --ifm-font-color-base: var(--lu-ink);
+  --ifm-heading-color: var(--lu-ink);
+  --ifm-color-content: var(--lu-ink);
+  --ifm-color-content-secondary: var(--lu-ink-muted);
+  --ifm-link-color: var(--lu-accent);
+  --ifm-link-hover-color: var(--lu-accent);
+  --ifm-hr-background-color: var(--lu-line);
+  --ifm-toc-border-color: var(--lu-line);
+  --ifm-table-border-color: var(--lu-line);
+  --ifm-table-stripe-background: transparent;
+  --ifm-table-head-background: var(--lu-surface-sunken);
+  --ifm-color-emphasis-100: var(--lu-hover);
+  --ifm-color-emphasis-200: var(--lu-fill);
+  --ifm-color-emphasis-300: var(--lu-line);
+
+  --ifm-font-family-base: var(--lu-font-sans);
+  --ifm-heading-font-family: var(--lu-font-sans);
+  --ifm-font-family-monospace: var(--lu-font-mono);
+  --ifm-font-size-base: var(--lu-docs-root-size);
+  --ifm-line-height-base: var(--lu-docs-line-height);
+  --ifm-spacing-vertical: var(--lu-space-3);
+  --ifm-paragraph-margin-bottom: var(--lu-space-3);
+  --ifm-list-item-margin: var(--lu-space-1);
+  --ifm-list-paragraph-margin: var(--lu-space-1);
+  --ifm-leading: var(--lu-space-3);
+  --ifm-heading-font-weight: 650;
+  --ifm-font-weight-semibold: 600;
+
+  --ifm-global-radius: var(--lu-radius-control);
+  --ifm-button-border-radius: var(--lu-radius-capsule);
+  --ifm-code-border-radius: var(--lu-radius-code);
+  --ifm-pre-border-radius: var(--lu-radius-control);
+  --ifm-card-border-radius: var(--lu-radius-panel);
+  --ifm-alert-border-radius: var(--lu-radius-control);
+  --ifm-global-shadow-lw: var(--lu-shadow-lift);
+  --ifm-global-shadow-md: var(--lu-shadow-popover);
+  --ifm-global-shadow-tl: var(--lu-shadow-popover);
+  --ifm-transition-fast: var(--lu-dur-fast);
+  --ifm-transition-timing-default: var(--lu-ease);
+
+  --ifm-code-background: var(--lu-fill);
+  /* Relative, so code in a heading scales with it (13px in body text). */
+  --ifm-code-font-size: 0.875em;
+  --ifm-code-padding-horizontal: 0.35rem;
+  --ifm-pre-background: var(--lu-code-sheet);
+  --docusaurus-highlighted-code-line-bg: color-mix(
+    in srgb,
+    var(--lu-accent) 12%,
+    transparent
+  );
+
+  --ifm-navbar-background-color: var(--lu-material-chrome);
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-height: 56px;
+  --ifm-navbar-link-color: var(--lu-ink-muted);
+  --ifm-navbar-link-hover-color: var(--lu-ink);
+
+  --ifm-menu-color: var(--lu-ink-muted);
+  --ifm-menu-color-active: var(--lu-ink);
+  --ifm-menu-color-background-active: var(--lu-accent-soft);
+  --ifm-menu-color-background-hover: var(--lu-hover);
+  --ifm-menu-link-padding-vertical: 0.3rem;
+}

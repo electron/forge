@@ -1,0 +1,773 @@
+/* The homepage, in Lucent: content on the window ground under the aura, the
+   pipeline on a solid sheet, features on glass. Values come from --lu-* tokens. */
+
+/* No docs sheet here: the page sits straight on the window ground. */
+.home {
+  /* One container for every section, so the hero, the pipeline, the features
+     and the footer share a left edge. */
+  --home-width: min(1120px, 100% - 2 * var(--lu-space-6));
+  /* The hearth's colour: warmer than the accent in light mode, where a glow
+     of the deep red-orange reads pink. */
+  --hearth: #ff6430;
+  /* The hearth's glow and embers spill past the cards; clip them at the
+     window's edge (clip, not hidden, so nothing becomes a scroll box). */
+  overflow-x: clip;
+}
+
+:global(html[data-theme='dark']) .home {
+  --hearth: var(--lu-accent);
+}
+
+.home main {
+  margin: 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  /* The text keeps to a 600px column; the hearth fills the right. */
+  width: var(--home-width);
+  display: grid;
+  grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--lu-space-8);
+  margin: 0 auto;
+  padding: 96px 0 64px;
+}
+
+/* Grouped spacing: the headline and lead belong together, then the actions,
+   with the create command tucked under the buttons. */
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.badge {
+  margin-bottom: var(--lu-space-6);
+}
+
+.title {
+  margin-bottom: var(--lu-space-4);
+}
+
+.lead {
+  margin-bottom: var(--lu-space-8);
+}
+
+/* The right column: the installer fan with the create command under it. */
+.forge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: start;
+  gap: var(--lu-space-8);
+  min-width: 0;
+}
+
+.intro > * {
+  max-width: 100%;
+}
+
+/* What Forge makes: three installers fanned out on the hearth, the front one
+   catching the light. */
+.castings {
+  /* The hearth's cone of light rises from the command's centre, below the
+     cards' base (the gap plus half the command's height), and spreads to
+     twice this angle either side. */
+  --cone-apex: calc(var(--lu-space-8) + 26px);
+  --cone-angle: 30deg;
+  position: relative;
+  align-self: stretch;
+  height: 260px;
+}
+
+.casting {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: 140px;
+  height: 180px;
+  overflow: hidden;
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  transform-origin: 50% 100%;
+}
+
+/* A title bar in each platform's style, and the platform's system font. */
+.windowTitle {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  font-family: inherit;
+  font-weight: 600;
+}
+
+/* GNOME centres the window title. */
+.casting[data-os='linux'] .windowTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.casting[data-os='linux'] .titleBar {
+  justify-content: flex-end;
+}
+
+/* The card is narrower than a real window, so the title follows the traffic
+   lights instead of centring, like a compact toolbar window. */
+.casting[data-os='mac'] .titleBar {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.casting[data-os='mac'] .windowTitle {
+  position: static;
+  transform: none;
+}
+
+.casting[data-slot='2'] .windowTitle {
+  color: var(--lu-ink);
+}
+
+.titleBar {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  padding: 0 10px;
+}
+
+.castingBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 0;
+  padding: 4px 14px 14px;
+}
+
+/* macOS: traffic lights, generous corners, a unified title bar. */
+.casting[data-os='mac'] {
+  border-radius: 14px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', var(--lu-font-sans);
+}
+
+.lights {
+  display: flex;
+  gap: 6px;
+}
+
+.lights i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.lights i:nth-child(2) {
+  background: #febc2e;
+}
+
+.lights i:nth-child(3) {
+  background: #28c840;
+}
+
+/* Windows 11: tighter corners, caption buttons on the right, a Mica tint. */
+.casting[data-os='windows'] {
+  border-radius: 8px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #5b8def 7%, transparent),
+      transparent 70%
+    ),
+    var(--lu-surface-raised);
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', var(--lu-font-sans);
+}
+
+.casting[data-os='windows'] .titleBar {
+  padding-right: 8px;
+}
+
+.captions {
+  display: flex;
+  gap: 12px;
+  color: var(--lu-ink-muted);
+}
+
+/* GNOME: a flat header bar with a round close button. */
+.casting[data-os='linux'] {
+  border-radius: 12px;
+  font-family: Cantarell, 'Adwaita Sans', Ubuntu, var(--lu-font-sans);
+}
+
+.casting[data-os='linux'] .titleBar {
+  background: var(--lu-fill);
+  box-shadow: inset 0 calc(-1 * var(--lu-size-hairline)) 0 var(--lu-line);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lu-fill-strong, var(--lu-fill));
+  color: var(--lu-ink);
+}
+
+.casting[data-slot='0'] {
+  transform: translateX(-50%) translateX(-108px) rotate(-8deg) scale(0.88);
+  opacity: 0.85;
+}
+
+.casting[data-slot='1'] {
+  /* Its left edge sits behind the front card, so its text hugs the right. */
+  text-align: right;
+  transform: translateX(-50%) translateX(108px) rotate(8deg) scale(0.88);
+  opacity: 0.85;
+}
+
+.casting[data-slot='2'] {
+  z-index: 1;
+  transform: translateX(-50%) translateY(-4px);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft),
+    0 26px 50px -24px color-mix(in srgb, var(--lu-accent) 65%, transparent);
+}
+
+.casting[data-slot='1'] .castingBody {
+  align-items: flex-end;
+}
+
+.mark {
+  display: grid;
+  flex: 1;
+  align-self: stretch;
+  place-items: center;
+  color: var(--lu-ink-faint);
+  opacity: 0.6;
+}
+
+.casting[data-slot='2'] .mark {
+  color: var(--lu-accent);
+  opacity: 0.85;
+}
+
+.file {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+  font: 600 12px/16px var(--lu-font-mono);
+  white-space: nowrap;
+}
+
+.casting[data-slot='2'] .file {
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+}
+
+/* The hearth: a cone of warm light rising from the command through the
+   cards, widest where they fan out and fading with height. */
+.castings::before {
+  content: '';
+  position: absolute;
+  z-index: -2;
+  inset: -80px -160px calc(-1 * var(--cone-apex));
+  background: conic-gradient(
+    from calc(-1.5 * var(--cone-angle)) at 50% 100%,
+    transparent,
+    color-mix(in srgb, var(--hearth) 16%, transparent)
+      calc(0.6 * var(--cone-angle)),
+    color-mix(in srgb, var(--hearth) 26%, transparent)
+      calc(1.5 * var(--cone-angle)),
+    color-mix(in srgb, var(--hearth) 16%, transparent)
+      calc(2.4 * var(--cone-angle)),
+    transparent calc(3 * var(--cone-angle))
+  );
+  /* Fades with distance from the command. */
+  -webkit-mask-image: radial-gradient(
+    50% 100% at 50% 100%,
+    #000 30%,
+    transparent
+  );
+  mask-image: radial-gradient(50% 100% at 50% 100%, #000 30%, transparent);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+/* Off screen, the embers stop. */
+.hero[data-paused] .embers span {
+  animation-play-state: paused;
+}
+
+/* Embers drifting up from the cards' base, behind them. Kept to a handful
+   and slow. */
+.embers {
+  position: absolute;
+  z-index: -1;
+  left: -90px;
+  right: -90px;
+  bottom: 0;
+  height: 380px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.embers span {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--hearth) 70%, #ffd9a0);
+  box-shadow: 0 0 6px 1px color-mix(in srgb, var(--hearth) 60%, transparent);
+  opacity: 0;
+  animation-name: rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -360px);
+  }
+}
+
+.badge {
+  padding: 5px 14px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-capsule);
+  box-shadow: var(--lu-shadow-capsule);
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.badge:hover {
+  background: var(--lu-capsule-hover);
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin: 0 8px 1px 0;
+  border-radius: var(--lu-radius-round, 50%);
+  background: var(--lu-accent);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+}
+
+/* Lucent's display style (650, -0.028em), scaled up for the hero. */
+.title {
+  margin-top: 0;
+  font: 650 56px/60px var(--lu-font-sans);
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.title > span {
+  display: block;
+}
+
+/* The second line is the quieter half of the statement. */
+.titleQuiet {
+  color: var(--lu-ink-muted);
+}
+
+.lead {
+  max-width: 34em;
+  margin-top: 0;
+  color: var(--lu-ink-muted);
+  font: 400 19px/28px var(--lu-font-sans);
+  text-wrap: balance;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lu-space-3);
+}
+
+.actions :global(.button) {
+  padding: 10px 22px;
+  font: var(--lu-type-label);
+  font-size: 15px;
+}
+
+/* The create command: a field on glass. */
+.command {
+  display: flex;
+  align-items: center;
+  gap: var(--lu-space-3);
+  max-width: 100%;
+  padding: 6px 6px 6px 18px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-material-chrome);
+  -webkit-backdrop-filter: var(--lu-blur-chrome);
+  backdrop-filter: var(--lu-blur-chrome);
+  box-shadow: var(--lu-shadow-capsule);
+}
+
+.command code {
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  background: none;
+  font: var(--lu-type-code);
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.prompt {
+  color: var(--lu-ink-faint);
+  font: var(--lu-type-code);
+  user-select: none;
+}
+
+.copy {
+  flex: none;
+  height: var(--lu-size-control);
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-button);
+  box-shadow: var(--lu-shadow-button);
+  color: var(--lu-ink);
+  font: var(--lu-type-label);
+  cursor: pointer;
+  transition: background-color var(--lu-dur-fast) var(--lu-ease);
+}
+
+.copy:hover {
+  background: var(--lu-button-hover);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--lu-space-6);
+  font: 650 32px/38px var(--lu-font-sans);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+/* The homepage trades the site's overhead aura for hearth light: one warm glow
+   rising from behind the pipeline sheet. */
+:global(html):has(.home) {
+  background: var(--lu-window);
+}
+
+/* The pipeline: the one solid sheet on the page, sitting on the hearth. Its
+   title sits above it, on the shared left edge. */
+.pipeline {
+  position: relative;
+  width: var(--home-width);
+  margin: var(--lu-space-8) auto 0;
+}
+
+.sheet {
+  position: relative;
+  padding: var(--lu-space-8);
+  border-radius: var(--lu-radius-sheet);
+  background: var(--lu-surface);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+}
+
+.sheet::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -200px 0 40% 0;
+  background: radial-gradient(
+    36% 65% at 70% 74%,
+    color-mix(in srgb, var(--hearth) 16%, transparent),
+    color-mix(in srgb, var(--hearth) 6%, transparent) 40%,
+    transparent 76%
+  );
+  pointer-events: none;
+}
+
+/* Features: glass cards over the aura. */
+.features {
+  width: var(--home-width);
+  margin: 72px auto 64px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--lu-space-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+  padding: var(--lu-space-6);
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-material-thin);
+  -webkit-backdrop-filter: var(--lu-blur-thin);
+  backdrop-filter: var(--lu-blur-thin);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  color: var(--lu-ink);
+  transition:
+    background-color var(--lu-dur-fast) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.card:hover {
+  color: var(--lu-ink);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+.cardIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: var(--lu-space-2);
+  border-radius: var(--lu-radius-item);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 70%),
+    var(--lu-accent-soft);
+  box-shadow: inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  color: var(--lu-accent);
+  transition:
+    background-color var(--lu-dur-base) var(--lu-ease),
+    color var(--lu-dur-base) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.card:hover .cardIcon {
+  background: var(--lu-sheen-action), var(--lu-action);
+  color: var(--lu-on-action);
+  box-shadow:
+    var(--lu-shadow-primary),
+    0 0 0 4px color-mix(in srgb, var(--lu-accent) 16%, transparent);
+  transform: scale(1.06);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font: var(--lu-type-headline);
+  letter-spacing: var(--lu-type-headline-tracking);
+}
+
+/* The arrow slides in on hover, so the card reads as a link. */
+.cardArrow {
+  color: var(--lu-accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.card:hover .cardArrow,
+.card:focus-visible .cardArrow {
+  opacity: 1;
+  transform: none;
+}
+
+.cardBody {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--lu-space-2);
+}
+
+.chip {
+  padding: 2px 9px;
+  border-radius: var(--lu-radius-capsule);
+  background: var(--lu-fill);
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  font-weight: 500;
+}
+
+/* Between the mobile layout and full width, the fan is wider than its
+   column, so it shrinks to fit. */
+@media (max-width: 1180px) {
+  .hero {
+    grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+    gap: var(--lu-space-6);
+  }
+
+  .castings {
+    height: 224px;
+    /* The scale doesn't shrink its box, so pull the command up to match. */
+    margin-bottom: -31px;
+    transform: scale(0.86);
+    transform-origin: 50% 0;
+  }
+
+  /* Tighter, so the whole command still fits under the fan. */
+  .command {
+    gap: var(--lu-space-2);
+    padding-left: 14px;
+  }
+
+  .command code {
+    font-size: 12px;
+  }
+
+  .copy {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 996px) {
+  .home {
+    --home-width: calc(100% - 2 * var(--lu-space-4));
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--lu-space-3);
+    padding: 64px 0 var(--lu-space-6);
+  }
+
+  .castings {
+    display: none;
+  }
+
+  .forge {
+    align-items: flex-start;
+  }
+
+  /* No cards here, so the hearth glows behind the text instead. */
+  .hero::before {
+    content: '';
+    position: absolute;
+    z-index: -2;
+    inset: 0 0 -120px;
+    background: radial-gradient(
+      60% 46% at 70% 60%,
+      color-mix(in srgb, var(--hearth) 14%, transparent),
+      transparent 76%
+    );
+    pointer-events: none;
+  }
+
+  .title {
+    font: var(--lu-type-display);
+    letter-spacing: var(--lu-type-display-tracking);
+  }
+
+  .sectionTitle {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* The same gap at the top as at the sides. */
+  .sheet {
+    padding: var(--lu-space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* The whole command fits on a phone: no prompt, tighter type. */
+  .command {
+    gap: var(--lu-space-2);
+    padding-left: 14px;
+  }
+
+  .prompt {
+    display: none;
+  }
+
+  .command code {
+    font-size: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .copy {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 374px) {
+  .command code {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .command,
+  .card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card {
+    background: var(--lu-surface-raised);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .embers {
+    display: none;
+  }
+
+  .card:hover,
+  .card:hover .cardIcon,
+  .cardArrow {
+    transform: none;
+  }
+}

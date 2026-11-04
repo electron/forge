@@ -1,0 +1,31 @@
+/* Inter's Lucent features: cv05 (lowercase l with a tail) and ss03 (round quotes).
+   Every `font:` shorthand resets font-feature-settings, so set it on each element
+   rather than relying on inheritance; code keeps Commit Mono's defaults. */
+body,
+body * {
+  font-feature-settings: var(--lu-font-features);
+}
+
+code,
+pre,
+kbd,
+code * {
+  font-feature-settings: normal;
+}
+
+body {
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--lu-accent) 28%, transparent);
+}
+
+/* Focus is a solid accent outline, not a box-shadow ring: buttons, tabs and
+   the sidebar set their own box-shadow and would hide a shadow ring, and the
+   soft ring was under 3:1 against the page. */
+:focus-visible {
+  outline: 2px solid var(--lu-accent);
+  outline-offset: 2px;
+}

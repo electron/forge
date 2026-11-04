@@ -1,0 +1,35 @@
+/**
+ * Global styles for forge.electronjs.org: Docusaurus classic, rethemed in Lucent,
+ * the design system of Electron Fiddle (electron/fiddle docs/design/).
+ *
+ * `lucent/lucent-tokens.css` is a verbatim copy of Fiddle's tokens. The modules in
+ * `theme/` point Infima's variables at them and add the few rules Infima has no
+ * variable for, one file per part of the site. Lucent's rules, in short: glass for chrome, a solid sheet for anything you
+ * read; one accent for links, focus and action; depth instead of borders.
+ * Forge's accent is orange (Fiddle's is Electron cyan), so the site reads as
+ * its own product next to electronjs.org.
+ * The classic theme sets data-theme="light|dark" on <html>, which is the same
+ * switch the tokens use.
+ */
+
+@import './lucent/fonts/fonts.css';
+@import './lucent/lucent-tokens.css';
+
+/* Forge's values on top of Lucent: the accent, the aura and docs type. */
+@import './theme/tokens.css';
+/* Infima's variables, pointed at Lucent. */
+@import './theme/infima.css';
+@import './theme/base.css';
+
+/* The window: glass navbar and sidebar, the content sheet, search. */
+@import './theme/chrome.css';
+@import './theme/content.css';
+@import './theme/tabs.css';
+@import './theme/admonitions.css';
+@import './theme/buttons.css';
+@import './theme/footer.css';
+@import './theme/mermaid.css';
+@import './theme/details.css';
+
+/* Last, so the fallbacks win. */
+@import './theme/a11y.css';

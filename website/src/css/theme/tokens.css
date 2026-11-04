@@ -1,0 +1,122 @@
+/* Site tokens: values the docs need that Lucent doesn't name */
+
+:root {
+  /* The current page in a sidebar: the accent, a step stronger than
+     --lu-accent-soft so it reads at a glance on the glass. */
+  --lu-selected: color-mix(in srgb, var(--lu-accent) 14%, transparent);
+  --lu-selected-rim: inset 0 0 0 var(--lu-size-hairline)
+    color-mix(in srgb, var(--lu-accent) 26%, transparent);
+  /* Nested corners are concentric: an inner radius is the outer radius
+     minus the gap between them, so the curves run parallel. The floor keeps
+     small items from going square. */
+  /* Code blocks sit in the sheet, so they take the sunken surface. */
+  --lu-code-sheet: var(--lu-surface-sunken);
+  /* Docs type: Lucent's scale, with body and code one step up from Fiddle's
+     13px desktop UI because docs are read at length. Same weights and tracking.
+     The root is 93.75% of the browser's font size (15px at the default 16px),
+     and these are rem of that, so text follows the browser's setting. */
+  --lu-docs-root-size: 93.75%;
+  --lu-docs-font-size: 1rem;
+  --lu-docs-line-height: calc(24rem / 15);
+  --lu-type-docs-body: 400 var(--lu-docs-font-size) / var(--lu-docs-line-height)
+    var(--lu-font-sans);
+  --lu-type-docs-h1: 650 calc(40rem / 15) / calc(44rem / 15) var(--lu-font-sans);
+  --lu-type-docs-h2: 650 calc(22rem / 15) / calc(28rem / 15) var(--lu-font-sans);
+  --lu-type-docs-h3: 600 calc(17rem / 15) / calc(24rem / 15) var(--lu-font-sans);
+  --lu-type-docs-h4: 600 1rem / calc(20rem / 15) var(--lu-font-sans);
+  --lu-ring-focus: 0 0 0 3.5px
+    color-mix(in srgb, var(--lu-accent) 26%, transparent);
+}
+
+[data-theme='dark'] {
+  --lu-code-sheet: var(--lu-window);
+}
+
+/* ---------- Forge's accent: orange, for the fire in "Forge" ----------
+   Replaces Lucent's cyan in every token built from it. The selectors match the
+   token file's so these win by order. Syntax colours stay Lucent's. */
+
+:root {
+  /* Info notes keep Lucent's cyan, so they don't read as warnings (which
+     are amber). */
+  --lu-info: #006f85;
+  --lu-info-soft: #dcf3f8;
+  /* A red-leaning orange, 5.6:1 on white. */
+  --lu-accent: #c62a14;
+  --lu-accent-soft: #feede6;
+  /* The primary action is the accent itself, with white text (5.6:1). */
+  --lu-action: #c62a14;
+  --lu-action-pressed: #a82110;
+  --lu-on-action: #ffffff;
+  --lu-assist-ring: linear-gradient(
+    100deg,
+    #ff3d1f,
+    #ff5a2a 38%,
+    #ffa06a 70%,
+    #1b1c26
+  );
+}
+
+:root[data-theme='dark'] {
+  --lu-info: #9feaf9;
+  --lu-info-soft: #1c3945;
+  --lu-accent: #ff8268;
+  --lu-accent-soft: #42211a;
+  /* A hotter orange than the accent for the primary action, with dark text
+     (5.9:1). */
+  --lu-action: #ff5a3d;
+  --lu-action-pressed: #f04a2e;
+  --lu-on-action: #2a0b03;
+  --lu-assist-ring: linear-gradient(
+    100deg,
+    #ff8268,
+    #ff5a3d 38%,
+    #ff3d4d 70%,
+    #ffc08a
+  );
+}
+
+/* Light from the Lucent direction (felixrieseberg/fiddle-design, #dir=electron),
+   which Fiddle's tokens don't carry: the aura behind the glass and the lit rim
+   on glass edges. */
+:root {
+  --lu-aura-a: rgba(255, 90, 50, 0.22);
+  --lu-aura-b: rgba(255, 160, 120, 0.38);
+  --lu-aura-c: rgba(27, 28, 38, 0.08);
+  --lu-sheen-glass: rgba(255, 255, 255, 0.34);
+  /* The primary button's sheen: white on top, an ember shade at the bottom. */
+  --lu-sheen-action: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0) 55%,
+    rgba(64, 12, 0, 0.12)
+  );
+  --lu-sheen-action-hover: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.34),
+    rgba(255, 255, 255, 0.06) 55%,
+    rgba(64, 12, 0, 0.08)
+  );
+}
+
+[data-theme='dark'] {
+  --lu-aura-a: rgba(255, 70, 40, 0.2);
+  --lu-aura-b: rgba(255, 140, 110, 0.12);
+  --lu-aura-c: rgba(27, 28, 38, 0.5);
+  --lu-sheen-glass: rgba(255, 255, 255, 0.05);
+  /* Dark mode's action is a bright orange, which a faint white sheen vanishes
+     into. A brighter top and an ember shade at the bottom give it the same
+     curve. */
+  --lu-sheen-action: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(64, 18, 8, 0.16)
+  );
+  --lu-sheen-action-hover: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.52),
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(64, 18, 8, 0.12)
+  );
+}
