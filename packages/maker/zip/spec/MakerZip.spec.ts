@@ -1,5 +1,7 @@
+import * as zlib from 'node:zlib';
 import os from 'node:os';
 import path from 'node:path';
+import { Writable } from 'node:stream';
 
 import { writeJson } from '@electron-forge/core-utils';
 import { ForgeArch } from '@electron-forge/shared-types';
@@ -20,6 +22,42 @@ vi.mock(import('cross-zip'), async (importOriginal) => {
   };
 });
 
+vi.mock(import('node:fs'), async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    createWriteStream: vi.fn().mockImplementation(() => {
+      return new Writable({
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
+    }),
+  };
+});
+
+const zlibMock = vi.hoisted(() => ({
+  zipFilesEnabled: true,
+  zipFiles: vi.fn(),
+}));
+
+vi.mock('node:zlib', async (importOriginal) => {
+  const mod = await importOriginal();
+  const { Readable } = await import('node:stream');
+
+  zlibMock.zipFiles.mockImplementation(() =>
+    Readable.from(['fake-zip-content']),
+  );
+
+  return {
+    ...mod,
+    get zipFiles() {
+      return zlibMock.zipFilesEnabled ? zlibMock.zipFiles : undefined;
+    },
+  };
+});
+
 vi.mock(import('@electron-forge/core-utils'), async (importOriginal) => {
   const mod = await importOriginal();
   return {
@@ -33,6 +71,7 @@ describe('MakerZip', () => {
 
   beforeEach(() => {
     vi.stubGlobal('fetch', mockFetch);
+    zlibMock.zipFilesEnabled = true;
   });
 
   afterEach(() => {
@@ -51,8 +90,9 @@ describe('MakerZip', () => {
   const packageJSON = { version: '1.2.3' };
 
   it.each([['win32', 'linux'] as const])(
-    `should generate a zip file for a %s app`,
+    `should generate a zip file for a %s app using cross-zip`,
     async (platform) => {
+      zlibMock.zipFilesEnabled = false;
       const maker = new MakerZIP({}, []);
       maker.ensureFile = vi.fn();
       const output = await maker.make({
@@ -66,6 +106,7 @@ describe('MakerZip', () => {
       });
 
       expect(output).toHaveLength(1);
+      expect(zlibMock.zipFiles).not.toHaveBeenCalled();
       expect(zip).toHaveBeenCalledOnce();
       expect(zip).toHaveBeenCalledWith(
         dir,
@@ -75,9 +116,43 @@ describe('MakerZip', () => {
     },
   );
 
-  it.each([['darwin', 'mas'] as const])(
-    `should generate a zip file for a %s app`,
+  it.each([['win32', 'linux'] as const])(
+    `should generate a zip file for a %s app using zipFiles`,
     async (platform) => {
+      zlibMock.zipFilesEnabled = true;
+      const maker = new MakerZIP({}, []);
+      maker.ensureFile = vi.fn();
+      const output = await maker.make({
+        dir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform: platform,
+        packageJSON,
+        forgeConfig: null as any,
+      });
+
+      expect(zip).not.toHaveBeenCalled();
+      expect(zlibMock.zipFiles).toHaveBeenCalledOnce();
+      const files = vi.mocked(zlib.zipFiles).mock.calls[0][0];
+
+      expect(files).toContainEqual([dir, path.basename(dir)]);
+
+      expect(files).toContainEqual([
+        path.join(dir, 'index.js'),
+        `${path.basename(dir)}/index.js`,
+      ]);
+
+      expect(output).toEqual([
+        path.join(makeDir, 'zip', platform, targetArch, 'fake-app-1.2.3.zip'),
+      ]);
+    },
+  );
+
+  it.each([['darwin', 'mas'] as const])(
+    `should generate a zip file for a %s app using cross-zip`,
+    async (platform) => {
+      zlibMock.zipFilesEnabled = false;
       const maker = new MakerZIP(
         {
           macUpdateManifestBaseUrl: undefined,
@@ -98,6 +173,7 @@ describe('MakerZip', () => {
 
       expect(output).toHaveLength(1);
       expect(zip).toHaveBeenCalledOnce();
+      expect(zlibMock.zipFiles).not.toHaveBeenCalled();
       expect(zip).toHaveBeenCalledWith(
         path.join(darwinDir, 'My Test App.app'),
         path.join(
@@ -109,6 +185,53 @@ describe('MakerZip', () => {
         ),
         expect.anything(),
       );
+    },
+  );
+
+  it.each([['darwin', 'mas'] as const])(
+    `should generate a zip file for a %s app using zipFiles`,
+    async (platform) => {
+      zlibMock.zipFilesEnabled = true;
+      const maker = new MakerZIP(
+        {
+          macUpdateManifestBaseUrl: undefined,
+        },
+        [],
+      );
+      maker.prepareConfig(targetArch);
+      maker.ensureFile = vi.fn();
+      const output = await maker.make({
+        dir: darwinDir,
+        makeDir,
+        appName,
+        targetArch,
+        targetPlatform: platform,
+        packageJSON,
+        forgeConfig: null as any,
+      });
+
+      expect(zip).not.toHaveBeenCalled();
+      expect(zlibMock.zipFiles).toHaveBeenCalledOnce();
+      const files = vi.mocked(zlib.zipFiles).mock.calls[0][0];
+
+      const zipDir = path.join(darwinDir, 'My Test App.app');
+
+      expect(files).toContainEqual([zipDir, path.basename(zipDir)]);
+
+      expect(files).toContainEqual([
+        path.join(zipDir, 'index.js'),
+        `${path.basename(zipDir)}/index.js`,
+      ]);
+
+      expect(output).toEqual([
+        path.join(
+          makeDir,
+          'zip',
+          platform,
+          targetArch,
+          'fake-darwin-app-1.2.3.zip',
+        ),
+      ]);
     },
   );
 
