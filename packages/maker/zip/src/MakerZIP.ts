@@ -31,12 +31,13 @@ type SquirrelMacReleases = {
 async function zipDirectory(dir: string, output: string) {
   const entries = await readdir(dir, { recursive: true, withFileTypes: true });
 
+  const baseName = path.basename(dir);
   const files: [string, string][] = [
-    [dir, dir],
+    [dir, baseName],
     ...entries.map((entry) => {
       const fullPath = path.join(entry.parentPath, entry.name);
       const relative = path.relative(dir, fullPath).replaceAll(path.sep, '/');
-      return [fullPath, `${dir}/${relative}`] as [string, string];
+      return [fullPath, `${baseName}/${relative}`] as [string, string];
     }),
   ];
 
