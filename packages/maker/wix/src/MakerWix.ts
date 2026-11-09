@@ -8,6 +8,7 @@ import { MSICreator } from 'electron-wix-msi';
 import semver from 'semver';
 
 import { MakerWixConfig } from './Config.js';
+import { sign } from '@electron/windows-sign';
 
 function isValidWixArch(arch: string): arch is 'x64' | 'ia64' | 'x86' {
   return ['x64', 'ia64', 'x86'].includes(arch);
@@ -67,7 +68,32 @@ export default class MakerWix extends MakerBase<MakerWixConfig> {
     if (this.config.beforeCreate) {
       await Promise.resolve(this.config.beforeCreate(creator));
     }
-    await creator.create();
+
+    const { supportBinaries } = await creator.create();
+
+    const {
+      windowsSign,
+      signWithParams,
+      certificateFile,
+      certificatePassword,
+    } = this.config;
+
+    // Additionally sign the stub executable and Update.exe
+    if (windowsSign) {
+      await sign({
+        ...windowsSign,
+        files: supportBinaries,
+      });
+    } else if (signWithParams || certificateFile || certificatePassword) {
+      // Deprecated options
+      await sign({
+        signWithParams,
+        certificateFile,
+        certificatePassword,
+        files: supportBinaries,
+      });
+    }
+
     const { msiFile } = await creator.compile();
 
     return [msiFile];
