@@ -611,6 +611,7 @@ __metadata:
     "@electron-forge/core-utils": "workspace:*"
     "@electron-forge/maker-base": "workspace:*"
     "@electron-forge/shared-types": "workspace:*"
+    "@electron/windows-sign": "npm:^2.1.0"
     electron-wix-msi: "npm:^5.1.3"
     semver: "npm:^7.2.1"
   languageName: unknown
@@ -1126,6 +1127,19 @@ __metadata:
   bin:
     electron-windows-sign: bin/electron-windows-sign.mjs
   checksum: 10c0/3e027a664b5cbae3aa01b3eb4d8b58fa2d8e5ea1ed9b7f81a27307f3c1bb27b3a7b606580ac098cd5c58312bcd56d2570db975851d9ef5de2d2ba80a76561088
+  languageName: node
+  linkType: hard
+
+"@electron/windows-sign@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@electron/windows-sign@npm:2.1.0"
+  dependencies:
+    debug: "npm:^4.3.4"
+    graceful-fs: "npm:^4.2.11"
+    postject: "npm:^1.0.0-alpha.6"
+  bin:
+    electron-windows-sign: bin/electron-windows-sign.mjs
+  checksum: 10c0/954bce4db68a11e041a19be91017d57c4190beca94e1d05eb3434e2dc464176ff541764f0d8c41eff157b6b8cd498cf2e671cf9239b694da8e852f2f281f4d21
   languageName: node
   linkType: hard
 
