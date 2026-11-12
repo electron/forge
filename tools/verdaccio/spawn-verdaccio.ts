@@ -144,6 +144,9 @@ async function publishPackages(): Promise<void> {
       {
         cwd: FORGE_ROOT_DIR,
         stdio: 'inherit',
+        // The tests never make delta updates, so don't download Sparkle's
+        // BinaryDelta when packing @electron-forge/binary-delta
+        env: { ...process.env, ELECTRON_FORGE_SKIP_BINARY_DELTA_FETCH: '1' },
       },
     );
     console.log('✅ All packages published to Verdaccio registry');
