@@ -1,0 +1,84 @@
+/* Tabs: a segmented control. `.markdown ul` would add list padding on the
+   left, so the selector needs the extra class to keep the inset even. */
+.tabs,
+.markdown .tabs {
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  border-radius: var(--lu-radius-control);
+  background: var(--lu-fill);
+  display: inline-flex;
+  list-style: none;
+}
+
+.tabs__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: calc(var(--lu-radius-control) - 3px);
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lu-ink-muted);
+}
+
+.tabs__item:hover {
+  background: var(--lu-hover);
+}
+
+.tabs__item--active {
+  background: var(--lu-thumb);
+  color: var(--lu-ink);
+  box-shadow: var(--lu-shadow-lift);
+}
+
+/* File-type badges on tabs named after a file (set by src/theme/Tabs). Each
+   language keeps its own colour, muted until the tab is selected. */
+.tabs__item[data-filetype]::before {
+  content: var(--filetype-label);
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: var(--filetype-color);
+  color: var(--filetype-ink, #fff);
+  font: 700 8.5px/1 var(--lu-font-mono);
+  letter-spacing: 0;
+  opacity: 0.55;
+  transition: opacity var(--lu-dur-fast) var(--lu-ease);
+}
+
+.tabs__item--active[data-filetype]::before,
+.tabs__item[data-filetype]:hover::before {
+  opacity: 1;
+}
+
+.tabs__item[data-filetype='js'] {
+  --filetype-label: 'JS';
+  --filetype-color: #f0d23c;
+  --filetype-ink: #24231f;
+}
+.tabs__item[data-filetype='ts'] {
+  --filetype-label: 'TS';
+  --filetype-color: #3178c6;
+}
+.tabs__item[data-filetype='jsx'],
+.tabs__item[data-filetype='tsx'] {
+  --filetype-label: '</>';
+  --filetype-color: #149eca;
+}
+.tabs__item[data-filetype='json'] {
+  --filetype-label: '{}';
+  --filetype-color: #8a90aa;
+}
+.tabs__item[data-filetype='html'] {
+  --filetype-label: '<>';
+  --filetype-color: #e34c26;
+}
+.tabs__item[data-filetype='vue'] {
+  --filetype-label: 'V';
+  --filetype-color: #41b883;
+}

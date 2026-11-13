@@ -1,0 +1,646 @@
+/* The build pipeline on the homepage. Values come from --lu-* tokens. */
+
+.pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lu-space-2);
+}
+
+/* ---------- The line: a conveyor with a station for each step ---------- */
+
+.line {
+  /* One trip across the line. Items move at a constant speed: no stops. */
+  --period: 18s;
+  /* 32px of headroom above and below, so the stations' glow isn't clipped by
+     the mask; the negative margins keep the layout where it was. */
+  --belt-y: 72px;
+  container-type: inline-size;
+  position: relative;
+  height: 176px;
+  margin-block: -32px;
+  overflow: hidden;
+}
+
+.belt {
+  position: absolute;
+  top: calc(var(--belt-y) - 1px);
+  left: 0;
+  right: 0;
+  height: 2px;
+  overflow: hidden;
+  opacity: 0.6;
+  /* The belt fades in and out at the edges; apps fade on their own (see dip),
+     so a label is never cut mid-word. */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+
+/* The dashes run on a strip twice the belt's width, moved by transform so
+   the compositor animates it without repainting. */
+.belt::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 200%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--lu-line-strong) 0 8px,
+    transparent 8px 16px
+  );
+  animation: belt var(--period) linear infinite;
+}
+
+@keyframes belt {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.item {
+  position: absolute;
+  top: calc(var(--belt-y) - 16px);
+  left: 0;
+  width: 120px;
+  height: 56px;
+  animation:
+    travel var(--period) linear infinite,
+    dip var(--period) linear infinite;
+  animation-delay: calc(var(--i) * var(--period) / -3);
+}
+
+/* Apps fade in at the start of the line, out just as they reach a station
+   and back in as they come out, and out at the end, so a still frame never
+   shows one cut off. Each fade covers about a tile's width before a station. */
+@keyframes dip {
+  4%,
+  13%,
+  19%,
+  37%,
+  43%,
+  61%,
+  67%,
+  85%,
+  91%,
+  97% {
+    opacity: 1;
+  }
+  0%,
+  15%,
+  17%,
+  39%,
+  41%,
+  63%,
+  65%,
+  87%,
+  89%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The trip, in time: apps appear in place near the left end and take the
+   first stretch a little slower, so the input is seen before Develop. They
+   pass the stations at 16%, 40%, 64% and 88% of the period. */
+@keyframes travel {
+  0% {
+    transform: translateX(-28px);
+  }
+  16% {
+    transform: translateX(calc(12.5cqw - 60px));
+  }
+  100% {
+    transform: translateX(calc(100cqw - 60px));
+  }
+}
+
+/* An app: the icon on top, its name under it. Its five forms are stacked, and
+   each shows only on its stretch of the line; the switch happens inside a station. */
+.form {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation-duration: var(--period);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: inherit;
+}
+
+.form[data-form='0'] {
+  animation-name: form0;
+}
+.form[data-form='1'] {
+  animation-name: form1;
+}
+.form[data-form='2'] {
+  animation-name: form2;
+}
+.form[data-form='3'] {
+  animation-name: form3;
+}
+.form[data-form='4'] {
+  animation-name: form4;
+}
+
+/* Apps pass the stations at 16%, 40%, 64% and 88% of the period. */
+@keyframes form0 {
+  0%,
+  16% {
+    opacity: 1;
+  }
+  16.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form1 {
+  0%,
+  15.99% {
+    opacity: 0;
+  }
+  16%,
+  40% {
+    opacity: 1;
+  }
+  40.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form2 {
+  0%,
+  39.99% {
+    opacity: 0;
+  }
+  40%,
+  64% {
+    opacity: 1;
+  }
+  64.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form3 {
+  0%,
+  63.99% {
+    opacity: 0;
+  }
+  64%,
+  88% {
+    opacity: 1;
+  }
+  88.01%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes form4 {
+  0%,
+  87.99% {
+    opacity: 0;
+  }
+  88%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.tile {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--lu-radius-item);
+  background: var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  color: var(--lu-accent);
+}
+
+/* The packaged app: an app icon, Electron's mark on Electron navy in both modes. */
+/* The afterglow: each new form comes out of its station still charged, and
+   settles back. Form 0 is the template, which no station made. */
+.tile {
+  position: relative;
+}
+
+/* A brightening wash and a glow over the tile that fade out: only opacity
+   animates, so it stays off the main thread. */
+.form:not([data-form='0']) .tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--lu-accent) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: charge var(--period) var(--lu-ease) infinite;
+  animation-delay: calc(
+    var(--i) * var(--period) / -3 + (var(--f) * 0.24 - 0.08) * var(--period)
+  );
+}
+
+@keyframes charge {
+  0% {
+    opacity: 1;
+  }
+  9%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.form[data-form='2'] .tile {
+  background: radial-gradient(120% 90% at 30% 0%, #3a3e55, #2f3242 60%);
+  color: #a2ecfb;
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 rgba(255, 255, 255, 0.18);
+}
+
+.form[data-form='4'] .tile {
+  background: var(--lu-action);
+  color: var(--lu-on-action);
+  box-shadow: var(--lu-shadow-primary);
+}
+
+.label {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-caption);
+  letter-spacing: var(--lu-type-caption-tracking);
+  white-space: nowrap;
+}
+
+/* Make's output: one maker name per pass, stacked and shown in turn. Each
+   name shows for one of its app's loops out of every ten. */
+.makers {
+  display: grid;
+  justify-items: center;
+}
+
+.makers > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: maker calc(var(--period) * 10) linear infinite;
+  animation-delay: calc(
+    var(--i) * var(--period) / -3 - var(--loops) * var(--period)
+  );
+}
+
+@keyframes maker {
+  0%,
+  9.99% {
+    opacity: 1;
+  }
+  10%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A station: a solid housing over the belt, centred over its step's column.
+   Apps go in on the left and come out on the right in their next form. */
+.station {
+  position: absolute;
+  top: calc(var(--belt-y) - 22px);
+  left: calc((var(--s) + 0.5) * 25%);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 44px;
+  transform: translateX(-50%);
+  border-radius: var(--lu-radius-panel);
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim);
+}
+
+/* A working light, pulsing as each app passes through. */
+.stationLight {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lu-accent);
+  box-shadow: 0 0 0 2.5px color-mix(in srgb, var(--lu-accent) 22%, transparent);
+  animation: work calc(var(--period) / 3) var(--lu-ease) infinite;
+  animation-delay: calc(
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30
+  );
+}
+
+@keyframes work {
+  0%,
+  20%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+/* The zap: as an app changes form inside, the housing flickers once and
+   flashes with accent light, in step with the working light. */
+.station::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    70% 90% at 50% 40%,
+    color-mix(in srgb, var(--lu-accent) 20%, transparent),
+    transparent 70%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--lu-accent) 55%, transparent),
+    0 0 24px 2px color-mix(in srgb, var(--lu-accent) 35%, transparent);
+  opacity: 0;
+  animation: zap calc(var(--period) / 3) linear infinite;
+  animation-delay: calc(
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30
+  );
+}
+
+@keyframes zap {
+  0%,
+  6% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 0.55;
+  }
+  8% {
+    opacity: 0.15;
+  }
+  10% {
+    opacity: 1;
+  }
+  28%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Sparks: on each zap, embers burst off the top of the housing, arc out and
+   fall away as they cool from white-hot to the accent. */
+.spark {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  /* A white-hot core cooling to orange at the rim; only transform and
+     opacity animate. */
+  background: radial-gradient(circle, #fff3d6 30%, #ffb36b 75%);
+  box-shadow: 0 0 2px color-mix(in srgb, var(--lu-accent) 50%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: spark calc(var(--period) / 3) cubic-bezier(0.2, 0.7, 0.4, 1)
+    infinite;
+  animation-delay: calc(
+    (0.16 + var(--s) * 0.24) * var(--period) - var(--period) / 30 + var(--lag) *
+      var(--period) / 60
+  );
+}
+
+/* Dark mode keeps the full ember glow; on light it reads as a smudge. */
+[data-theme='dark'] .spark {
+  box-shadow:
+    0 0 4px 1px
+      color-mix(in srgb, var(--hearth, var(--lu-accent)) 80%, transparent),
+    0 0 10px 2px color-mix(in srgb, var(--lu-accent) 40%, transparent);
+}
+
+@keyframes spark {
+  0%,
+  8.9% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  9% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.3);
+  }
+  17% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 0.7), var(--dy)) scale(1);
+  }
+  27% {
+    opacity: 0;
+    transform: translate(var(--dx), calc(var(--dy) + 18px)) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- The steps ---------- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--lu-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* Centred under its station on the line. */
+  align-items: center;
+  text-align: center;
+  gap: var(--lu-space-2);
+  height: 100%;
+  padding: var(--lu-space-4);
+  border-radius: var(--lu-radius-panel);
+  color: var(--lu-ink);
+  transition:
+    transform var(--lu-dur-base) var(--lu-ease),
+    box-shadow var(--lu-dur-base) var(--lu-ease);
+}
+
+/* The hover surface: a raised glass card with a sheen, faded in rather than
+   switched on. */
+.step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, var(--lu-sheen-glass), transparent 60%),
+    radial-gradient(
+      120% 80% at 0% 0%,
+      color-mix(in srgb, var(--lu-accent) 10%, transparent),
+      transparent 60%
+    ),
+    var(--lu-surface-raised);
+  box-shadow:
+    var(--lu-shadow-lift),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim-soft);
+  opacity: 0;
+  transition: opacity var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover {
+  transform: translateY(-3px);
+  color: var(--lu-ink);
+  text-decoration: none;
+}
+
+.step:hover::before {
+  opacity: 1;
+}
+
+.step:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.stepTitle {
+  position: relative;
+  font: var(--lu-type-headline);
+  letter-spacing: var(--lu-type-headline-tracking);
+}
+
+.stepArrow {
+  /* Out of the flow, so the centred title doesn't shift when it appears. */
+  position: absolute;
+  left: calc(100% + 6px);
+  color: var(--lu-accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--lu-dur-base) var(--lu-ease),
+    transform var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover .stepArrow {
+  opacity: 1;
+  transform: none;
+}
+
+.stepCommand {
+  width: fit-content;
+  font-size: 12.5px;
+  transition:
+    background-color var(--lu-dur-base) var(--lu-ease),
+    color var(--lu-dur-base) var(--lu-ease);
+}
+
+.step:hover .stepCommand {
+  background: var(--lu-accent-soft);
+  color: var(--lu-accent);
+}
+
+/* Hovering a step lights up its station on the line. */
+.station {
+  transition: box-shadow var(--lu-dur-base) var(--lu-ease);
+}
+
+.pipeline:has(.step[data-step='0']:hover) .station[data-step='0'],
+.pipeline:has(.step[data-step='1']:hover) .station[data-step='1'],
+.pipeline:has(.step[data-step='2']:hover) .station[data-step='2'],
+.pipeline:has(.step[data-step='3']:hover) .station[data-step='3'] {
+  box-shadow:
+    var(--lu-shadow-island),
+    inset 0 var(--lu-size-hairline) 0 var(--lu-rim),
+    0 0 0 1px color-mix(in srgb, var(--lu-accent) 50%, transparent),
+    0 0 20px color-mix(in srgb, var(--lu-accent) 28%, transparent);
+}
+
+.stepBody {
+  color: var(--lu-ink-muted);
+  font: var(--lu-type-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* ---------- Smaller screens: no track, the steps stack ---------- */
+
+@media (max-width: 996px) {
+  .line {
+    display: none;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* No line above them here, so the steps read as text again. */
+  .step {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Off screen, the line stops (see Pipeline.tsx). */
+.pipeline[data-paused] *,
+.pipeline[data-paused] *::before,
+.pipeline[data-paused] *::after {
+  animation-play-state: paused !important;
+}
+
+/* ---------- Preferences ---------- */
+
+/* Reduced motion: the line stands still, with apps stopped at different steps. */
+@media (prefers-reduced-motion: reduce) {
+  .belt::before,
+  .item,
+  .form,
+  .stationLight {
+    animation-play-state: paused;
+  }
+
+  .station::after,
+  .spark,
+  .tile::after {
+    animation: none !important;
+  }
+
+  .step,
+  .step:hover,
+  .step:active,
+  .step:hover .stepArrow {
+    transform: none;
+  }
+}

@@ -1,0 +1,78 @@
+/* Mermaid diagrams, in Lucent */
+
+/* A diagram sits on its own sheet, like a code block. Mermaid scopes its
+   styles to the diagram's id, so these need !important to win. */
+.docusaurus-mermaid-container {
+  margin-bottom: var(--ifm-leading);
+  padding: var(--lu-space-6) var(--lu-space-4);
+  border-radius: var(--lu-radius-panel);
+  background: var(--lu-code-sheet);
+  box-shadow: inset 0 0 0 var(--lu-size-hairline) var(--lu-line);
+  text-align: center;
+}
+
+.docusaurus-mermaid-container svg {
+  font-family: var(--lu-font-sans) !important;
+}
+
+.docusaurus-mermaid-container .node rect,
+.docusaurus-mermaid-container .node polygon,
+.docusaurus-mermaid-container .node circle,
+.docusaurus-mermaid-container .node path {
+  fill: var(--lu-surface-raised) !important;
+  stroke: var(--lu-line-strong) !important;
+  stroke-width: 1px !important;
+  filter: drop-shadow(0 1px 2px rgba(20, 24, 48, 0.08));
+}
+
+.docusaurus-mermaid-container .node rect {
+  rx: 10px;
+  ry: 10px;
+}
+
+.docusaurus-mermaid-container .nodeLabel,
+.docusaurus-mermaid-container .node .label {
+  color: var(--lu-ink) !important;
+  fill: var(--lu-ink) !important;
+  font: var(--lu-type-label);
+}
+
+/* Lucide icons (src/theme/Mermaid), in the accent, sized to the label. */
+.docusaurus-mermaid-container .label-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: -3px;
+  color: var(--lu-accent);
+}
+
+/* The node shape rules above reach the icon's paths too; give them back. */
+.docusaurus-mermaid-container .node .label-icon :is(path, circle) {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2px !important;
+  filter: none;
+}
+
+.docusaurus-mermaid-container .flowchart-link {
+  stroke: var(--lu-ink-faint) !important;
+  stroke-width: 1.5px !important;
+}
+
+.docusaurus-mermaid-container marker path {
+  fill: var(--lu-ink-faint) !important;
+  stroke: var(--lu-ink-faint) !important;
+}
+
+.docusaurus-mermaid-container .edgeLabel,
+.docusaurus-mermaid-container .edgeLabel p,
+.docusaurus-mermaid-container .labelBkg {
+  background-color: var(--lu-code-sheet) !important;
+  fill: var(--lu-code-sheet) !important;
+}
+
+.docusaurus-mermaid-container .edgeLabel,
+.docusaurus-mermaid-container .edgeLabel span {
+  color: var(--lu-ink-muted) !important;
+  font: var(--lu-type-caption);
+}
