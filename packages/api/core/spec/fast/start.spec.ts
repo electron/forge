@@ -4,7 +4,10 @@ import { PassThrough } from 'node:stream';
 
 import { requestAppRestart } from '@electron-forge/core-utils/restart';
 import { ElectronProcess } from '@electron-forge/shared-types';
-import { ensureSharedLogger } from '@electron-forge/multi-logger';
+import {
+  ensureSharedLogger,
+  LoggerOptions,
+} from '@electron-forge/multi-logger';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import start from '../../src/api/start';
@@ -47,7 +50,12 @@ const fakeLogger = vi.hoisted(() => {
 });
 
 vi.mock(import('@electron-forge/multi-logger'), () => ({
-  ensureSharedLogger: vi.fn(() => fakeLogger as never),
+  ensureSharedLogger: vi.fn((options?: LoggerOptions | undefined) => {
+    if (options?.interactive != null) {
+      fakeLogger.mode = options.interactive ? 'ink' : 'plain';
+    }
+    return fakeLogger as never;
+  }),
 }));
 
 vi.mock(import('node:child_process'), async (importOriginal) => {
