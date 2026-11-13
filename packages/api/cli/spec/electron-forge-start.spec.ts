@@ -25,6 +25,13 @@ describe('electron-forge-start', () => {
 
   beforeEach(() => {
     vi.resetModules();
+    // Each test imports the command again, but `vi.resetModules()` does not
+    // reset commander's global `program`. Give every import a fresh one: since
+    // commander 12, defining `--version` twice on the same command throws.
+    vi.doMock(import('commander'), async (importOriginal) => {
+      const commander = await importOriginal();
+      return { ...commander, program: new commander.Command() };
+    });
     process.argv = ['node', 'electron-forge-start.js'];
     originalIsTTY = process.stdin.isTTY;
   });

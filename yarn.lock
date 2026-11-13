@@ -399,7 +399,7 @@ __metadata:
     "@electron-forge/shared-types": "workspace:*"
     "@electron/get": "npm:^5.1.0"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
-    commander: "npm:^11.1.0"
+    commander: "npm:^12.1.0"
     debug: "npm:^4.3.1"
     listr2: "npm:^11.1.0"
     semver: "npm:^7.2.1"
@@ -6543,10 +6543,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^11.1.0":
-  version: 11.1.0
-  resolution: "commander@npm:11.1.0"
-  checksum: 10c0/13cc6ac875e48780250f723fb81c1c1178d35c5decb1abb1b628b3177af08a8554e76b2c0f29de72d69eef7c864d12613272a71fabef8047922bc622ab75a179
+"commander@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
   languageName: node
   linkType: hard
 
@@ -6857,7 +6857,7 @@ __metadata:
     "@inquirer/prompts": "npm:^6.0.1"
     "@listr2/prompt-adapter-inquirer": "npm:^4.2.7"
     "@malept/cross-spawn-promise": "npm:^2.0.0"
-    commander: "npm:^11.1.0"
+    commander: "npm:^12.1.0"
     debug: "npm:^4.3.1"
     listr2: "npm:^11.1.0"
     semver: "npm:^7.2.1"

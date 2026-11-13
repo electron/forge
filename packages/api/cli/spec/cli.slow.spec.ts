@@ -21,6 +21,35 @@ describe('cli', () => {
     await expect(runForgeCLI('nonexistent')).rejects.toThrow(Error);
   });
 
+  // Windows has no signals: a killed child process still reports an exit code.
+  it.skipIf(process.platform === 'win32')(
+    'should fail when a subcommand is killed by a signal',
+    async () => {
+      const killMake = path.resolve(
+        import.meta.dirname,
+        'fixtures/kill-make-subcommand.cjs',
+      );
+      // `--help` skips the system check, so only the killed child decides the exit code.
+      await expect(
+        spawn(
+          'yarn',
+          [
+            'tsx',
+            path.resolve(import.meta.dirname, '../src/electron-forge.ts'),
+            'make',
+            '--help',
+          ],
+          {
+            env: {
+              ...process.env,
+              NODE_OPTIONS: `--require ${JSON.stringify(killMake)}`,
+            },
+          },
+        ),
+      ).rejects.toThrow(Error);
+    },
+  );
+
   it('should list the release command in help output', async () => {
     await expect(runForgeCLI('help')).resolves.toMatch(/\brelease\b/);
   });
