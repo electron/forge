@@ -10,6 +10,7 @@ import type {
   VitePluginConfig,
   VitePluginRendererConfig,
 } from './Config.js';
+import type { WorkerMessage } from './worker-messages.js';
 import type { Rollup } from 'vite';
 
 const projectDir = process.env.FORGE_VITE_PROJECT_DIR;
@@ -81,11 +82,13 @@ if (!watch) {
         ? input.join(' ')
         : Object.keys(input).join(' ');
 
+  const send = (msg: WorkerMessage) => process.send?.(msg);
+
   let firstBuildSent = false;
-  const sendOnce = (msg: { type: string; message?: string }) => {
+  const sendOnce = (msg: WorkerMessage) => {
     if (firstBuildSent) return;
     firstBuildSent = true;
-    process.send?.(msg);
+    send(msg);
   };
 
   const result = await build({
@@ -109,7 +112,7 @@ if (!watch) {
           if (target === 'preload') {
             // pluginHotRestart('reload') is a no-op here because viteDevServers
             // lives in the parent; ask the parent to fan out the ws full-reload.
-            process.send?.({ type: 'reload-renderers' });
+            send({ type: 'reload-renderers' });
           }
         },
       },
@@ -127,22 +130,28 @@ if (!watch) {
     typeof x.close === 'function';
 
   if (isRollupWatcher(result)) {
-    // The Rollup watcher emits events for subsequent builds.
+    // The Rollup watcher emits events for subsequent builds. The parent shows
+    // them as the target's status; stdout and stderr land in the same tab.
     result.on('event', (event) => {
-      if (event.code === 'ERROR' && resolved.logLevel !== 'silent') {
-        console.error(
-          `\n${styleText('dim', timeFormatter.format(new Date()))} ${event.error.message}`,
-        );
-      } else if (
-        event.code === 'BUNDLE_END' &&
-        (!resolved.logLevel || resolved.logLevel === 'info')
-      ) {
-        console.log(
-          `${styleText('dim', timeFormatter.format(new Date()))} ${styleText(['cyan', 'bold'], '[@electron-forge/plugin-vite]')} ${styleText(
-            'green',
-            'target built',
-          )} ${styleText('dim', targetDisplay)}`,
-        );
+      if (event.code === 'START') {
+        send({ type: 'build-start' });
+      } else if (event.code === 'ERROR') {
+        send({ type: 'build-error', message: event.error.message });
+        if (resolved.logLevel !== 'silent') {
+          console.error(
+            `\n${styleText('dim', timeFormatter.format(new Date()))} ${event.error.message}`,
+          );
+        }
+      } else if (event.code === 'BUNDLE_END') {
+        send({ type: 'build-done', durationMs: event.duration });
+        if (!resolved.logLevel || resolved.logLevel === 'info') {
+          console.log(
+            `${styleText('dim', timeFormatter.format(new Date()))} ${styleText(['cyan', 'bold'], '[@electron-forge/plugin-vite]')} ${styleText(
+              'green',
+              'target built',
+            )} ${styleText('dim', targetDisplay)}`,
+          );
+        }
       }
     });
   }
