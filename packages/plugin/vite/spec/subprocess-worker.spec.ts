@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { fork, spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -199,6 +199,74 @@ describe('subprocess-worker', () => {
     const { code, stderr } = await runWorker('build', 0, config);
     expect(code).not.toBe(0);
     expect(stderr).toMatch(/does-not-exist/);
+  });
+
+  it('reports a missing entry as the first watch build error', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/nope.js',
+          config: path.join(projectDir, 'vite.main.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    // `electron-forge start` waits for this message, so the entry check (which
+    // runs in `buildStart`) must reach it rather than leave the watcher idle.
+    const message = await new Promise<{ type: string; message?: string }>(
+      (resolve, reject) => {
+        const child = fork(workerPath, [], {
+          cwd: projectDir,
+          env: {
+            ...process.env,
+            FORGE_VITE_PROJECT_DIR: projectDir,
+            FORGE_VITE_KIND: 'build',
+            FORGE_VITE_INDEX: '0',
+            FORGE_VITE_WATCH: '1',
+            FORGE_VITE_CONFIG: JSON.stringify(config),
+          },
+          stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+        });
+        child.on('error', reject);
+        child.on('message', (msg) => {
+          child.kill();
+          resolve(msg as { type: string; message?: string });
+        });
+        child.on('exit', () =>
+          reject(new Error('watch worker exited without reporting')),
+        );
+      },
+    );
+
+    expect(message.type).toBe('first-build-error');
+    expect(message.message).toContain(
+      'has an entry that does not exist: "src/nope.js"',
+    );
+  });
+
+  it('surfaces config validation errors from a bad user config', async () => {
+    const config: Pick<VitePluginConfig, 'build' | 'renderer'> = {
+      build: [
+        {
+          entry: 'src/main.js',
+          config: path.join(projectDir, 'vite.main.esm.config.mjs'),
+          target: 'main',
+        },
+      ],
+      renderer: [],
+    };
+
+    const { code, stderr } = await runWorker('build', 0, config);
+
+    // `spawnViteBuild` folds the worker's stderr into the error it rejects
+    // with, so this is what the user ends up reading.
+    expect(code).not.toBe(0);
+    expect(stderr).toContain('[@electron-forge/plugin-vite]');
+    expect(stderr).toContain('The main target "src/main.js"');
+    expect(stderr).toContain('vite.main.esm.config.mjs');
+    expect(stderr).toMatch(/emits the "es" output format into "\[name\]\.cjs"/);
   });
 
   it('exits nonzero when required env vars are missing', async () => {
