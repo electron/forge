@@ -105,8 +105,12 @@ if (!watch) {
           }
         },
         closeBundle() {
+          const isRebuild = firstBuildSent;
           sendOnce({ type: 'first-build-done' });
-          if (target === 'preload') {
+          // The first build finishes before Electron starts, so no renderer has
+          // loaded the preload yet. Vite would buffer a full-reload sent now and
+          // deliver it to the first client that connects, loading the page twice.
+          if (target === 'preload' && isRebuild) {
             // pluginHotRestart('reload') is a no-op here because viteDevServers
             // lives in the parent; ask the parent to fan out the ws full-reload.
             process.send?.({ type: 'reload-renderers' });
