@@ -9,8 +9,14 @@ import semver from 'semver';
 
 import { MakerWixConfig } from './Config.js';
 
-function isValidWixArch(arch: string): arch is 'x64' | 'ia64' | 'x86' {
-  return ['x64', 'ia64', 'x86'].includes(arch);
+function isValidWixArch(
+  arch: string,
+): arch is 'x64' | 'ia64' | 'x86' | 'arm64' {
+  // arm64 is not officially supported by electron-wix-msi
+  // But it is supported by WiX toolset v3.14 and later
+  // And it does not break in electron-wix-msi
+  // Ref: https://github.com/electron-userland/electron-wix-msi/issues/150
+  return ['x64', 'ia64', 'x86', 'arm64'].includes(arch);
 }
 
 export default class MakerWix extends MakerBase<MakerWixConfig> {

@@ -44,4 +44,8 @@ export interface MakerWixConfig extends Omit<
    * Allows for the modification of the MSICreator before create is called.
    */
   beforeCreate?: (creator: MSICreator) => Promise<void> | void;
+  /**
+   * The target architecture
+   */
+  arch?: 'x64' | 'ia64' | 'x86' | 'arm64';
 }
