@@ -1,0 +1,6 @@
+{
+  "name": "browser-field-pkg",
+  "version": "1.0.0",
+  "main": "./node.js",
+  "browser": "./browser.js"
+}
