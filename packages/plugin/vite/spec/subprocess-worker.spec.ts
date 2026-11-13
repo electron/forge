@@ -21,7 +21,7 @@ const workerPath = path.resolve(
 function runWorker(
   kind: 'build' | 'renderer',
   index: number,
-  config: Pick<VitePluginConfig, 'build' | 'renderer'>,
+  config: Pick<VitePluginConfig, 'build' | 'renderer' | 'outputFormat'>,
 ) {
   return new Promise<{ code: number | null; stderr: string }>(
     (resolve, reject) => {
