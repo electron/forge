@@ -9,6 +9,7 @@ import {
   WebpackPluginEntryPoint,
 } from '../src/Config';
 import AssetRelocatorPatch from '../src/util/AssetRelocatorPatch';
+import RspackAssetRelocatorShim from '../src/util/RspackAssetRelocatorShim';
 import WebpackConfigGenerator, {
   ConfigurationFactory,
 } from '../src/WebpackConfig';
@@ -296,6 +297,48 @@ describe('WebpackConfigGenerator', () => {
       expect(hasAssetRelocatorPatchPlugin(webpackConfig.plugins)).toEqual(
         false,
       );
+    });
+
+    it('adds the Rspack shim to renderer configs in Rspack mode', () => {
+      const config = {
+        bundler: 'rspack',
+        mainConfig: {},
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const { plugins } = generator.buildRendererBaseConfig(0);
+      expect(plugins?.[0]).toBeInstanceOf(RspackAssetRelocatorShim);
+      expect(hasAssetRelocatorPatchPlugin(plugins)).toEqual(true);
+    });
+
+    it('does not add the Rspack shim in webpack mode', async () => {
+      const config = {
+        mainConfig: {
+          entry: 'main.js',
+        },
+        renderer: {
+          entryPoints: [] as WebpackPluginEntryPoint[],
+        },
+      } as WebpackPluginConfig;
+      const generator = new WebpackConfigGenerator(
+        config,
+        mockProjectDir,
+        true,
+        3000,
+      );
+      const webpackConfig = await generator.getMainConfig();
+      expect(
+        webpackConfig.plugins?.some(
+          (plugin) => plugin instanceof RspackAssetRelocatorShim,
+        ),
+      ).toEqual(false);
     });
 
     it('generates a config with a relative entry path', async () => {

@@ -400,6 +400,35 @@ In the below configuration example, webpack will compile to the `electron-render
 It is important that you enable `nodeIntegration` in **both** in the main process code and the webpack plugin configuration. This option duplication is necessary because webpack targets are fixed upon compilation, but BrowserWindow's web preferences are determined on run time.
 :::
 
+### Building with Rspack
+
+The plugin can build your code with [Rspack](https://rspack.rs), a bundler that implements webpack's API, instead of webpack. Rspack is opt-in: it is not installed with the plugin, and the plugin only loads it when you ask for it.
+
+To switch, install `@rspack/core` (1.1 or later, on the 1.x or 2.x line) in your app and set `bundler` to `'rspack'`:
+
+```shell
+npm install --save-dev @rspack/core
+```
+
+```javascript title="forge.config.js"
+{
+  name: '@electron-forge/plugin-webpack',
+  config: {
+    bundler: 'rspack',
+    mainConfig: './webpack.main.config.js',
+    renderer: {
+      /* renderer config here, see above section */
+    }
+  }
+}
+```
+
+Your existing webpack configs are passed to Rspack unchanged, and the dev server is still `webpack-dev-server`, with hot module replacement provided by Rspack. Loaders and plugins in your configs need to be ones that Rspack supports. Everything in Forge's webpack templates works, including `ts-loader`, `css-loader`, `style-loader`, `fork-ts-checker-webpack-plugin` and the [native module](#native-node-modules) setup. See Rspack's [compatibility list](https://rspack.rs/guide/compatibility/plugin) for others.
+
+:::info
+`@vercel/webpack-asset-relocator-loader` relies on a webpack internal that Rspack does not have. In Rspack mode, the plugin provides a stand-in for it, so native modules work the same way as with webpack.
+:::
+
 ## Hot module replacement
 
 In development mode, all your renderer processes in development will have [Hot Module Replacement (HMR)](https://webpack.js.org/concepts/hot-module-replacement/) enabled by default thanks to `webpack-dev-server`.

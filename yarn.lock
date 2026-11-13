@@ -726,6 +726,11 @@ __metadata:
     webpack-merge: "npm:^5.7.3"
     which: "npm:^6.0.0"
     xvfb-maybe: "npm:^0.2.1"
+  peerDependencies:
+    "@rspack/core": ^1.1.0 || ^2.0.0
+  peerDependenciesMeta:
+    "@rspack/core":
+      optional: true
   languageName: unknown
   linkType: soft
 
