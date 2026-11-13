@@ -51,6 +51,18 @@ export interface VitePluginConfig {
   concurrent?: boolean | number;
 
   /**
+   * Installs the [Devtron](https://github.com/electron/devtron) DevTools
+   * extension into your app while running `electron-forge start`.
+   *
+   * Requires `@electron/devtron` to be installed as a devDependency of your
+   * app and Electron >= 36. The extension is only injected in development;
+   * packaged builds are never affected.
+   *
+   * @defaultValue false
+   */
+  devtron?: boolean;
+
+  /**
    * Restart the running app whenever the main process bundle is rebuilt during
    * `electron-forge start`. Has no effect when packaging.
    * @defaultValue `false`
